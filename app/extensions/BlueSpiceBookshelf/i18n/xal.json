@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Алия"
+		]
+	},
+	"bs-bookshelf-specialpage-title": "Дегтрмүд",
+	"bs-bookshelf-tag-next": "Дарук",
+	"bs-bookshelf-tag-prev": "Өмнк",
+	"bs-bookshelf-tag-edit-book": "Дегтриг ясврлх",
+	"bs-bookshelf-ve-booklist-attr-filter-label": "Шүүлтүр",
+	"bs-bookshelf-ve-bookmeta-attr-title-label": "Һарцг",
+	"bs-bookshelf-ve-bookmeta-attr-author-label": "Зокаһач",
+	"bs-bookshelf-ve-bookmeta-attr-version-label": "Хүвлвр",
+	"bs-bookshelf-booknav-chapter-label": "Бөлг"
+}

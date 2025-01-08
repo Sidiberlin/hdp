@@ -1,0 +1,36 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mschlindwein",
+			"ThisCarthing"
+		]
+	},
+	"menueditor-desc": "Deutsche Beschreibung von MenuEditor",
+	"menueditor-ui-menu-wiki-link-label": "Wiki-Link",
+	"menueditor-ui-menu-wiki-link-label-edit": "Wiki-Link bearbeiten",
+	"menueditor-ui-menu-wiki-link-help": "Link zu einer Wiki-Seite",
+	"menueditor-ui-menu-two-fold-link-spec-label": "Link",
+	"menueditor-ui-menu-two-fold-link-spec-label-edit": "Link bearbeiten",
+	"menueditor-ui-menu-two-fold-link-spec-help": "Linkspezifikation.<br> Ziel kann sein:<ul><li> ein Nachrichtenschlüssel, der sich in einen Seitennamen auflöst</li><li> ein externer Link</li><li> Name der Seite im Wiki</li><li> Interwiki-Link</li></ul>",
+	"menueditor-ui-menu-keyword-label": "Schlüsselwort",
+	"menueditor-ui-menu-keyword-label-edit": "Schlüsselwort bearbeiten",
+	"menueditor-ui-menu-keyword-help": "Eines der verfügbaren '''Schlüsselwörter''', das das entsprechende Widget anzeigt",
+	"menueditor-ui-form-field-keyword": "Schlüsselwort",
+	"menueditor-ui-form-field-target": "Linkziel",
+	"menueditor-ui-form-field-label": "Link-Label",
+	"menueditor-ui-dialog-action-done": "Fertig",
+	"menueditor-ui-dialog-action-cancel": "Abbrechen",
+	"menueditor-ui-submit": "Speichern",
+	"menueditor-ui-cancel": "Abbrechen",
+	"menueditor-ui-redlink-notice": "Dieses Menü ist noch nicht vorhanden!",
+	"menueditor-action-menueditsource": "Quelltext bearbeiten",
+	"menueditor-action-menuedit": "Bearbeiten",
+	"menueditor-ui-dialog-title": "Element bearbeiten",
+	"menueditor-ui-mediawiki-sidebar-keyword-label-edit": "Schlüsselwort bearbeiten",
+	"menueditor-ui-mediawiki-sidebar-keyword-label": "Schlüsselwort",
+	"menueditor-toolbar-submit": "Änderungen speichern",
+	"menueditor-toolbar-cancel": "Bearbeitung abbrechen",
+	"menueditor-toolbar-add-label": "Element hinzufügen",
+	"menueditor-ui-edit-label": "Bearbeiten",
+	"menueditor-ui-add-sub-element-label": "Unterpunkt hinzufügen"
+}

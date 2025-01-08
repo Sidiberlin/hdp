@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Adriendelucca"
+		]
+	},
+	"droplets-modal-dialog-bg-color-blue": "glas",
+	"droplets-modal-dialog-bg-color-red": "ruz",
+	"droplets-modal-dialog-bg-color-neutral": "gwenn",
+	"bs-pro-distribution-pdfembed-inspector-input-label": "Restr PDF",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "Ledander",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "Uhelder",
+	"bs-pro-distribution-pdfembed-droplet-name": "Rakwel PDF"
+}

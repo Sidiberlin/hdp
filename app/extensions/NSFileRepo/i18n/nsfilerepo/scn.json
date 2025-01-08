@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf"
+		]
+	},
+	"nsfilerepo-nsmain": "(Principali)",
+	"nsfilerepo-move-file-namespace-dialog-button-done": "Fattu",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "Annulla",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "Namespace"
+}

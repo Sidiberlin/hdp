@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf"
+		]
+	},
+	"bs-bookshelfui-widget-editor-link-text": "Cancia stu libbru",
+	"bs-bookshelfui-new-book-title": "Crea nu libbru novu",
+	"bs-bookshelfui-new-book-text": "Tìtulu dû libbru",
+	"bs-bookshelfui-delete-book-title": "Cancella libbru",
+	"bs-bookshelfui-manager-title": "Tìtulu",
+	"bs-bookshelfui-dlg-choosewikipage-title": "Pàggina wiki",
+	"bs-bookshelfui-dlg-choosewikipage-cbxArticleLabel": "Pàggina wiki",
+	"bs-bookshelfui-dlg-choosewikipage-tfDisplayName": "Ammustra tìtulu",
+	"bs-bookshelfui-dlg-tagsettings-title": "Mpustazzioni di l'etichetta",
+	"bs-bookshelfui-grouping-template-books": "({{PLURAL:$1|Nu libbru|$1 libbra}})",
+	"bs-bookshelfui-book-type": "Tipu dû libbru",
+	"bs-bookshelfui-dlg-choosecategory-label": "Catigurìa",
+	"bs-bookshelfui-dlg-type-label": "Fonti",
+	"bs-bookshelfui-type-category": "Tutti li pàggini di na catigurìa",
+	"bs-bookshelfui-type-subpages": "Tutti li suttapàggini di na pàggina",
+	"bs-bookshelfui-nav-link-title-all-books": "Libbra ginirali",
+	"bs-bookshelfui-flyout-title": "Elencu di libbri",
+	"bs-bookshelfui-book-title-link-edit": "Cancia libbru",
+	"bs-bookshelfui-book-title-link-edit-text": "Cancia libbru",
+	"bs-bookshelfui-bookmetatag-title": "Tìtulu",
+	"bs-bookshelfui-bookmetatag-subtitle": "Suttatìtulu",
+	"bs-bookshelfui-bookmetatag-author1": "Auturi 1",
+	"bs-bookshelfui-bookmetatag-author2": "Auturi 2",
+	"bs-bookshelfui-bookmetatag-docummenttype": "Tipu di ducumentu",
+	"bs-bookshelfui-bookmetatag-version": "Virsioni",
+	"bs-bookshelfui-prof-defaultview-grid": "Grigghia",
+	"bs-bookshelfui-prof-defaultview-images": "Mmàggini"
+}

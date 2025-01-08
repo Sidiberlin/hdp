@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"bs-authors-desc": "АгӀонийн авторшна профилан сурт гойту",
+	"prefs-authors": "ХӀокху агӀонан авторш",
+	"bs-authors-title": "{{PLURAL:$1|{{GENDER:$2|Автор}}|Авторш}}",
+	"bs-authors-profileimage": "Сурт профиль чохь ду",
+	"bs-authors-profileimage-change": "Бехк ма билла сурт профиль чохь ду",
+	"bs-authors-show-all-authors": "Кхин бу авторш",
+	"bs-authors-pref-show": "Гайта авторш",
+	"bs-authors-switch-description": "ХӀокху агӀонан авторш къайлабоху.",
+	"bs-authors-navigation-link-title": "ХӀокху агӀонан авторш",
+	"bs-authors-navigation-link-text": "Авторш",
+	"bs-authors-flyout-title": "ХӀокху агӀонан авторш",
+	"bs-authors-author-type-originator": "Оригиналан автор",
+	"bs-authors-author-type-editor": "Редактор",
+	"bs-authors-info-dialog": "ХӀокху агӀонан авторш"
+}

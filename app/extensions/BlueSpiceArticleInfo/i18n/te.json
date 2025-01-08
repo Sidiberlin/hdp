@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Chaduvari",
+			"Kiranmayee",
+			"Veeven"
+		]
+	},
+	"bs-articleinfo-desc": "స్టేటస్ బార్లో ఓ పేజీకి సంబంధించిన సమాచారాన్ని చూపిస్తుంది",
+	"prefs-articleinfo": "ప్రతి సమాచారం",
+	"bs-articleinfo-pref-CheckRevisionInterval": "అంతరాన్ని ఇన్ని సెకండ్లలో తాజాకరించు:",
+	"bs-articleinfo-flyout-title": "పేజీ సమాచారం",
+	"bs-articleinfo-nav-link-title": "పేజీ సమాచారం",
+	"bs-articleinfo-flyout-categorylinks-title": "వర్గాలు",
+	"bs-articleinfo-flyout-templatelinks-title": "పేజీలో వాడిన మూసలు",
+	"bs-articleinfo-flyout-templatelinks-emptytext": "మూసలేమీ వాడలేదు",
+	"bs-articleinfo-flyout-subpages-title": "ఉపపేజీలు",
+	"bs-articleinfo-pagetool-subpages-tooltip": "ఉపపేజీలు",
+	"bs-articleinfo-dialog-subpages-title": "ఉపపేజీలు"
+}

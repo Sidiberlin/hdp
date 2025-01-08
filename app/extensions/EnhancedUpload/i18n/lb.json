@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robby",
+			"Volvox"
+		]
+	},
+	"enhancedupload": "Eroplueden",
+	"enhancedupload-details-namespace-label": "Nummraum",
+	"enhancedupload-details-categories-label": "Kategorien",
+	"enhancedupload-list-header-error": "Feeler",
+	"enhancedupload-attachments-add-new-media-button-title": "Nei Fichieren op d'Wiki derbäisetzen",
+	"enhancedupload-attachments-tag-grid-category-label": "Kategorien",
+	"enhancedupload-attachments-media-dialog-cancel-title": "Ofbriechen",
+	"enhancedupload-attachments-media-dialog-details-cancel": "Ofbriechen",
+	"enhancedupload-ve-attachmentinspector-categories": "Kategorien",
+	"enhancedupload-ve-attachmentinspector-grid-categories": "Kategorië weisen",
+	"enhancedupload-attachments-tag-grid-details-title": "Detailer",
+	"enhancedupload-config-height-label": "Héicht vum Bild:",
+	"enhancedupload-config-width-label": "Breet vum Bild:",
+	"enhancedupload-upload-warning-exists": "Dëse Fichiernumm gëtt et schonn",
+	"enhancedupload-upload-warning-duplicate": "Dëse Fichier ass en Duplikat",
+	"enhancedupload-upload-error-duplicate": "E Ficher, dee mat dësem Fichier identesch ass, ($1) gouf schonn eng Kéier geläscht.",
+	"enhancedupload-single-file-dlg-title": "Nei Versioun vun „$1“",
+	"enhancedupload-toggle-details-button-hide-label": "Detailer verstoppen",
+	"enhancedupload-toggle-details-button-show-label": "Detailer weisen",
+	"enhancedupload-preview-widget-remove-label": "$1 ewechhuelen"
+}

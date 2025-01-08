@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nokeoo"
+		]
+	},
+	"bs-wikiexplorer-extension-description": "Rūšiuoti straipsnius pagal kriterijus",
+	"bs-wikiexplorer-page-title": "Pavadinimas",
+	"bs-wikiexplorer-page-namespace": "Vardų sritis",
+	"bs-wikiexplorer-creation-date": "Sukūrimo data",
+	"bs-wikiexplorer-is-redirect": "Yra nukreipimas",
+	"bs-wikiexplorer-last-comment": "Paskutinis komentaras",
+	"bs-wikiexplorer-last-edit-time": "Paskutinio redagavimo data",
+	"bs-wikiexplorer-page-size": "Dydis",
+	"bs-wikiexplorer-last-author": "Paskutinis redaktorius",
+	"bs-wikiexplorer-categories": "Kategorijos",
+	"bs-wikiexplorer-linked-files": "Susieti failai",
+	"bs-wikiexplorer-linked-pages": "Susieti puslapiai",
+	"apihelp-bs-wikiexplorer-store-description": "Pateikia visus WikiExplorer plėtinio duomenis",
+	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "API parametras, nurodantis, ar metaduomenys jau buvo įkelti.",
+	"apihelp-bs-wikiexplorer-store-summary": "Pateikia visus WikiExplorer plėtinio duomenis",
+	"bs-wikiexplorer-icon-bool-true-aria-label": "pažymėta",
+	"bs-wikiexplorer-icon-bool-false-aria-label": "nepažymėta"
+}

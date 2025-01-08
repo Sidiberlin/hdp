@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80"
+		]
+	},
+	"at-mentions-desc": "Description of AtMentions for [[Special:Version]]",
+	"at-mentions-inspector-title": "Title of inspector to add a user mention",
+	"at-mentions-inspector-title-add": "Title of inspector to add a user mention",
+	"at-mentions-inspector-title-edit": "Title of inspector to edit a user mention",
+	"at-mentions-ci-title": "Title of user mention",
+	"at-mentions-tag-item-actor": "Title of user who mentioned current user",
+	"at-mentions-tag-item-time": "Title of time of user mention",
+	"at-mentions-mentionslist-header-mine-all": "Title of list of mentions of current user on specific page",
+	"at-mentions-mentionslist-header-mine": "Title of list of mentions of current user",
+	"at-mentions-mentionslist-header-all": "Title of list of mentions of specific user",
+	"at-mentions-mentionslist-header": "Title of list of mentions of user within date range",
+	"at-mentions-mention-notification-message": "Title of notification message if user has been mentioned.\n$1 agent\n$2 page anchor",
+	"at-mentions-mention-notification-key": "Key for notification message if user has been mentioned",
+	"at-mentions-mention-in-entity-notification-key": "Key for notification message if user has been mentioned in a comment or a post",
+	"at-mentions-mention-in-entity-notification-message": "Title of notification message if user has been mentioned in a comment or a post",
+	"at-mentions-toolbar-tool-title": "Title of tool in toolbar to add a user mention"
+}

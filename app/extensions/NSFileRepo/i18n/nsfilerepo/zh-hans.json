@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			")8",
+			"Anterdc99",
+			"Liuxinyu970226",
+			"NekoCharm",
+			"Xiplus",
+			"Yfdyh000",
+			"沈澄心"
+		]
+	},
+	"nsfilerepo-desc": "提供基于命名空间的特性到上传的文件",
+	"nsfilerepo-upload-target": "命名空间中的目标文件名称",
+	"nsfilerepo-nsmain": "（主）",
+	"nsfilerepo-reupload-namespaceselector-disabled-helptext": "重新上传文件时无法修改此字段",
+	"nsfilerepo-move-file-namespace-action-label": "设置文件命名空间",
+	"nsfilerepo-move-file-namespace-dialog-title": "设置文件命名空间",
+	"nsfilerepo-move-file-namespace-dialog-button-done": "完成",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "取消",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "命名空间",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "命名空间",
+	"nsfilerepo-enhanced-filelist-grid-namespace-title": "命名空间"
+}

@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hakimi97"
+		]
+	},
+	"droplets-smw-report-count-label": "Nombor",
+	"droplets-smw-report-ns-label": "Ruang nama",
+	"droplets-smw-report-cat-label": "Kategori",
+	"droplets-smw-report-modified-label": "Pengubahsuaian",
+	"droplets-smw-report-printouts-label": "Mencetak penyata",
+	"droplets-pro-con-advantages-title-label": "Tajuk untuk kelebihan",
+	"droplets-pro-con-advantages-label": "Kelebihan",
+	"droplets-pro-con-disadvantages-title-label": "Tajuk untuk kekurangan",
+	"droplets-pro-con-disadvantages-label": "Kekurangan",
+	"droplets-modal-dialog-btn-label": "Teks pada butang",
+	"droplets-modal-dialog-title-label": "Tajuk dialog",
+	"droplets-modal-dialog-body-label": "Isi kandungan untuk dialog",
+	"droplets-modal-dialog-footer-label": "Nota kaki untuk dialog",
+	"droplets-decision-label": "Semakan"
+}

@@ -1,0 +1,113 @@
+{
+	"name": "BlueSpiceInstanceStatus",
+	"version": "4.5.2",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "http://www.bluespice.com",
+	"descriptionmsg": "bs-instancestatus-desc",
+	"type": "bluespice",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"MessagesDirs": {
+		"BlueSpiceInstanceStatus": "i18n"
+	},
+	"ExtensionMessagesFiles": {
+		"BlueSpiceInstanceStatusAlias": "languages/InstanceStatus.alias.php"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\InstanceStatus\\": "src/"
+	},
+	"attributes": {
+		"BlueSpiceInstanceStatus": {
+			"PluginModules": [ "ext.bs.instancestatus.overview" ],
+			"InstanceStatusProvider": {
+				"bluespiceversion": {
+					"class": "BlueSpice\\InstanceStatus\\InstanceStatusProvider\\BlueSpiceVersion",
+					"services": [ "ConfigFactory" ]
+				},
+				"created": {
+					"class": "BlueSpice\\InstanceStatus\\InstanceStatusProvider\\Created",
+					"services": [ "DBLoadBalancer", "ContentLanguage" ]
+				},
+				"lastupdate": {
+					"class": "BlueSpice\\InstanceStatus\\InstanceStatusProvider\\LastUpdate",
+					"services": [ "DBLoadBalancer", "ContentLanguage" ]
+				},
+				"salescontact": {
+					"class": "BlueSpice\\InstanceStatus\\InstanceStatusProvider\\SalesContact",
+					"services": [ "ConfigFactory" ]
+				}
+			}
+		}
+	},
+	"ResourceModules": {
+		"ext.bs.instancestatus.overview": {
+			"scripts": [
+				"ui/page/OverviewPage.js"
+			],
+			"messages": [
+				"bs-instancestatus-instance-status-main-label"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"ext.bluespice"
+			]
+		},
+		"ext.blueSpiceInstanceStatus.special": {
+			"class": "MWStake\\MediaWiki\\Component\\CommonUserInterface\\ResourceLoader\\LessVars",
+			"packageFiles": [
+				"ext.blueSpiceInstanceStatus.special.js",
+				{
+					"name": "pluginModules.json",
+					"callback": "BlueSpice\\InstanceStatus\\InstanceStatusPluginModules::getPluginModules"
+				}
+			],
+			"styles": [
+				"ext.blueSpiceInstanceStatus.special.less"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"oojs-ui.styles.icons-user",
+				"oojs-ui.styles.icons-interactions",
+				"oojs-ui.styles.icons-alerts",
+				"oojs-ui.styles.icons-movement",
+				"oojs-ui.styles.icons-content",
+				"oojs-ui.styles.icons-moderation",
+				"oojs-ui.styles.icons-editing-core",
+				"oojs-ui.styles.icons-location"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceInstanceStatus/resources"
+	},
+	"SpecialPages": {
+		"InstanceStatus": {
+			"class": "BlueSpice\\InstanceStatus\\Special\\InstanceStatus",
+			"services": [
+				"ObjectFactory"
+			]
+		}
+	},
+	"config_prefix": "bsg",
+	"config": {
+		"InstanceStatusBSContactLink": {
+			"value": "https://bluespice.com/contact/"
+		}
+	},
+	"Hooks": {
+		"MWStakeCommonUIRegisterSkinSlotComponents": "addGlobalAction"
+	},
+	"HookHandlers": {
+		"addGlobalAction": {
+			"class": "BlueSpice\\InstanceStatus\\Hook\\AddGlobalAction",
+			"services": [ "SpecialPageFactory" ]
+		}
+	},
+	"load_composer_autoloader": true,
+	"manifest_version": 2
+}

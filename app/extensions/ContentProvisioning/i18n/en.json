@@ -1,0 +1,12 @@
+{
+	"contentprovisioning-desc": "English description of ContentProvisioning",
+	"contentprovisioning": "Content provisioning",
+	"contentprovisioning-ui-overview-grid-section-page": "Page",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "In sync?",
+	"contentprovisioning-ui-overview-grid-action-force-sync": "Force sync",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "Show difference",
+	"contentprovisioning-diff-no-change": "No difference between manifest version and wiki page version",
+	"contentprovisioning-ui-content-diff-title": "Content differences",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "Wiki",
+	"contentprovisioning-ui-content-diff-headline-provisioner-content": "Remote"
+}

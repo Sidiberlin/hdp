@@ -1,0 +1,51 @@
+[
+	{
+		"name": "bs_books",
+		"columns": [
+			{
+				"name": "book_id",
+				"type": "integer",
+				"options": {
+					"unsigned": true,
+					"notnull": true,
+					"autoincrement": true
+				}
+			},
+			{
+				"name": "book_namespace",
+				"type": "binary",
+				"options": {
+					"length": 255,
+					"notnull": false
+				}
+			},
+			{
+				"name": "book_title",
+				"type": "binary",
+				"options": {
+					"length": 255,
+					"notnull": false
+				}
+			},
+			{
+				"name": "book_type",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			}
+		],
+		"indexes": [
+			{
+				"name": "book_id_idx",
+				"columns": [
+					"book_id"
+				],
+				"unique": false
+			}
+		],
+		"pk": [
+			"book_id"
+		]
+	}
+]

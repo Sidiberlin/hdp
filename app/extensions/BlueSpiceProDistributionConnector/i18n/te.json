@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"V Bhavya"
+		]
+	},
+	"bs-pro-distribution-droplet-pro-con-list-name": "లాభాలు మరియు నష్టాలు",
+	"bs-pro-distribution-droplet-pro-con-list-desc": "లాభాలు మరియు నష్టాలను పోల్చడానికి పట్టిక",
+	"bs-pro-distribution-droplet-math-name": "గణిత సూత్రం",
+	"bs-pro-distribution-droplet-math-desc": "గణిత సూత్రాల ప్రదర్శన",
+	"bs-pro-distribution-droplet-chem-name": "రసాయనిక సూత్రం",
+	"bs-pro-distribution-droplet-chem-desc": "రసాయన సూత్రాల ప్రదర్శన",
+	"bs-pro-distribution-droplet-decision-name": "నిర్ణయం"
+}

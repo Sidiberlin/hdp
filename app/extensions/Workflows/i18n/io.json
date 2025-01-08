@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joao Xavier"
+		]
+	},
+	"workflows-ui-starter-action-done": "Facita",
+	"workflows-ui-starter-action-cancel": "Nuligar",
+	"workflows-ui-task-completion-action-complete": "Sendar",
+	"workflows-ui-task-completion-action-cancel": "Nuligar",
+	"workflows-form-placeholder-comment": "Komento",
+	"workflows-ui-workflow-overview-action-abort": "Interuptar",
+	"workflows-ui-workflow-overview-action-cancel": "Klozar",
+	"workflows-ui-workflow-overview-action-back": "Retroirar",
+	"workflows-ui-overview-details-state-label": "Stando:",
+	"workflows-ui-overview-details-state-column": "Stando",
+	"workflows-ui-overview-details-action-reason": "Motivo",
+	"workflows-ui-overview-details-workflow-type-label": "Tipo",
+	"workflows-ui-overview-grid-filter-state-all": "Omni",
+	"workflows-form-instructions-comment": "Komento",
+	"workflows-collect-data-form-username": "Uzero",
+	"workflows-ui-overview-details-raw-data-popup-prop": "Atributo",
+	"workflows-ui-action-cancel": "Nuligar",
+	"workflows-ui-trigger-action-create": "Konservez",
+	"workflows-ui-trigger-field-name": "Nomo",
+	"workflows-action-edit-label": "Redaktar",
+	"workflows-ui-overview-details-raw-data-popup-value": "Valoro"
+}

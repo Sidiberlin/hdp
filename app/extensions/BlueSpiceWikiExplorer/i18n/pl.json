@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mro"
+		]
+	},
+	"bs-wikiexplorer-extension-description": "Sortuj artykuły według kryteriów",
+	"wikiexplorer": "WikiExplorer",
+	"bs-wikiexplorer-page-title": "Tytuł",
+	"bs-wikiexplorer-page-namespace": "Przestrzeń nazw",
+	"bs-wikiexplorer-creation-date": "Data utworzenia",
+	"bs-wikiexplorer-is-redirect": "Przekierowanie",
+	"bs-wikiexplorer-last-comment": "Ostatni komentarz",
+	"bs-wikiexplorer-last-edit-time": "Data ostatniej edycji",
+	"bs-wikiexplorer-page-size": "Rozmiar",
+	"bs-wikiexplorer-last-author": "Ostatni edytujący",
+	"bs-wikiexplorer-categories": "Kategorie",
+	"bs-wikiexplorer-linked-files": "Powiązane pliki",
+	"bs-wikiexplorer-linked-pages": "Powiązane strony",
+	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "Parametr API wskazujący, czy MetaData zostały już załadowane.",
+	"apihelp-bs-wikiexplorer-store-summary": "Dostarcza wszystkie dane dotyczące rozszerzenia WikiExplorer",
+	"bs-wikiexplorer-icon-bool-true-aria-label": "zweryfikowany",
+	"bs-wikiexplorer-icon-bool-false-aria-label": "niezweryfikowany"
+}

@@ -1,0 +1,36 @@
+{
+	"@metadata": {
+		"authors": [
+			"Римма"
+		]
+	},
+	"simple-tasks-desc": "Лӧсьӧтӧ задачаэз вӧдитчиссезлӧ",
+	"simple-tasks-task-duedate": "Мынтісян кад: $1",
+	"simple-tasks-task-desc": "Листбок пытшкӧсын лосьӧтӧм задача",
+	"simple-tasks-notif-key": "Задача сетӧм",
+	"simple-tasks-notif-message": "Тіянлӧ лӧсьӧтісӧ задача:\"$1\"",
+	"simple-tasks-taskreport-no-results": "Бӧрйӧм фильтыррезӧн задачаэз эз адззисьӧ.",
+	"simple-tasks-taskreport-header-task": "Задача",
+	"simple-tasks-taskreport-header-assignee": "Право босьтісь",
+	"simple-tasks-taskreport-header-page": "Мыччисьӧ листбокӧ",
+	"simple-tasks-taskreport-header-due-to": "Вештісян кад",
+	"simple-tasks-taskreport-header-state": "Канму",
+	"simple-tasks-droplet-taskreport-name": "Задачаись отчет",
+	"simple-tasks-droplet-taskreport-description": "Лӧсьӧтны задачаэз мыччалӧм",
+	"simple-tasks-taskreport-inspector-title": "Задачаись отчет",
+	"simple-tasks-taskreport-inspector-state-done": "Керӧма",
+	"simple-tasks-taskreport-inspector-state-open": "Осьтны",
+	"simple-tasks-taskreport-inspector-label-user": "Право босьтіссез",
+	"simple-tasks-taskreport-inspector-label-namespaces": " Ниммез ин",
+	"simple-tasks-taskreport-inspector-label-due-date": "Лоас оз одзжык",
+	"simple-tasks-taskreport-inspector-label-state": "Канму",
+	"simple-tasks-taskreport-state-title-open": "Задача осьтӧм",
+	"simple-tasks-taskreport-state-title-done": "Задача тыртӧма",
+	"simple-tasks-taskreport-state-filter-done": "Керӧма",
+	"simple-tasks-taskreport-state-filter-open": "Осьтны",
+	"echo-category-title-simple-tasks-notification-cat": "Задачаэз",
+	"simple-tasks-notification-cat-tooltip": "Юӧртӧ меным,кӧр лоасӧ лӧсьӧтӧмӧсь меным задачаэз",
+	"simple-tasks-echo-notification-task-subject": "Листбокын $1 тіянлӧ лӧсьӧтӧм задача",
+	"simple-tasks-echo-notification-task-email-body": "{{GENDER:$2|$3 иньдӧм}}тіянлӧ задача листбокӧ $1.\n\n$4",
+	"simple-tasks-echo-notification-task-web-body": "{{GENDER:$1|$2 иньдӧм}} тіянлӧ лӧсьӧтӧма задача: $3"
+}

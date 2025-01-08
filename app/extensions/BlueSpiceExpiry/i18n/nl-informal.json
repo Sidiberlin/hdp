@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bs-expiry-text-delete": "Weet je zeker dat je deze vervaldat{{PLURAL:$1|um|a}} wilt verwijderen?"
+}

@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80"
+		]
+	},
+	"bs-uemodulehtml-extension-description": "אפשרות יצוא ל־HTML",
+	"bs-uemodulehtml-pref-DefaultTemplate": "תבנית סטנדרטית",
+	"bs-uemodulehtml-pref-SuppressNS": "הסתרת התחילית של מרחב השם ב־HTML",
+	"bs-uemodulehtml-pref-Backend": "שרת",
+	"bs-uemodulehtml-widgetlink-single-text": "דף HTML בודד (מאורכב)",
+	"bs-uemodulehtml-widgetlink-single-title": "יצא הדף הזה כ־HTML יחד עם המשאבים שלו כארכיון",
+	"bs-uemodulehtml-overview-title": "מסמך HTML (מאורכב)",
+	"bs-uemodulehtml-overview-description": "יצוא דפים (דפים מיוחדים ודפי תוכן) ל־HTML.",
+	"bs-uemodulehtml-pref-suppressns-help": "מרחב השם של הדף מושמט מכותרת ה־HTML.",
+	"bs-uemodulehtml-export-dialog-label-module-name": "דף HTML בודד (מאורכב)"
+}

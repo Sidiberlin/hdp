@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bs-saferedit-desc": "Emitte advertimentos si altere usatores modifica le pagina",
+	"bs-saferedit-user-editing": "$1 modifica justo ora iste pagina{{PLURAL:$2|}}{{GENDER:$1|}}",
+	"bs-saferedit-someone-editing": "Qualcuno modifica justo ora iste pagina",
+	"bs-saferedit-pref-interval": "Intervallo de verification de modificationes concurrente:",
+	"bs-saferedit-pref-shownameofeditinguser": "Monstrar le nomine del autor actual",
+	"bs-saferedit-pref-interval-help": "Defini le tempore in secundas pro verificar si un altere persona modifica presentemente le pagina.",
+	"bs-saferedit-pref-shownameofeditinguser-help": "Monstra le usatores que modifica presentemente le pagina como aviso in alto del pagina."
+}

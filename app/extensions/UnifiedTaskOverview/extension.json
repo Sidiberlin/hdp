@@ -1,0 +1,76 @@
+{
+	"name": "UnifiedTaskOverview",
+	"version": "2.0.10",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:UnifiedTaskOverview",
+	"descriptionmsg": "unifiedtaskoverview-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"attributes": {
+		"UnifiedTaskOverview": {
+			"AttentionIndicatorCollectionRegistry": []
+		},
+		"BlueSpiceDiscovery": {
+			"AttentionIndicatorRegistry": {
+				"taskoverview": "\\MediaWiki\\Extension\\UnifiedTaskOverview\\AttentionIndicator\\TaskOverview::factory"
+			}
+		}
+	},
+	"callback": "mwsInitComponents",
+	"MessagesDirs": {
+		"UnifiedTaskOverview": "i18n"
+	},
+	"ExtensionMessagesFiles": {
+		"UnifiedTaskOverviewAlias": "languages/UnifiedTaskOverview.i18n.alias.php"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\UnifiedTaskOverview\\": "src/"
+	},
+	"SpecialPages": {
+		"UnifiedTaskOverview": "MediaWiki\\Extension\\UnifiedTaskOverview\\Special\\UnifiedTaskOverview"
+	},
+	"ResourceModules": {
+		"ext.unifiedTaskOverview.specialPage": {
+			"packageFiles": [
+				"specialPage/init.js",
+				"specialPage/Tiles.vue",
+				"specialPage/SingleTile.vue"
+			],
+			"messages": [
+				"unifiedtaskoverview-label-no-task",
+				"unifiedtaskoverview-search-placeholder"
+			],
+			"es6": true,
+			"dependencies": [
+				"vue",
+				"mediawiki.misc-authed-ooui",
+				"@wikimedia/codex"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "UnifiedTaskOverview/resources"
+	},
+	"HookHandlers": {
+		"setup": {
+			"class": "\\MediaWiki\\Extension\\UnifiedTaskOverview\\HookHandler\\SkinTemplateNavigation\\Setup"
+		}
+	},
+	"Hooks": {
+		"SkinTemplateNavigation::Universal": "setup"
+	},
+	"RestRoutes": [
+		{
+			"path": "/unifiedtaskoverview/list",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\UnifiedTaskOverview\\Rest\\ListHandler",
+			"services": [ "HookContainer" ]
+		}
+	],
+	"manifest_version": 2
+}

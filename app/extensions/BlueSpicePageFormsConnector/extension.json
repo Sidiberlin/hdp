@@ -1,0 +1,62 @@
+{
+	"name": "BlueSpicePageFormsConnector",
+	"license-name": "GPL-3.0-only",
+	"version": "4.5.2",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpicePageFormsConnector",
+	"author": "Dejan Savuljesku",
+	"descriptionmsg": "bs-pageformsconnector-desc",
+	"type": "bluespice",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 4.3",
+			"PageForms": ">= 5.4"
+		}
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpicePageFormsConnector": {
+					"className": "\\BlueSpice\\PageFormsConnector\\Extension",
+					"extPath": "/BlueSpicePageFormsConnector"
+				}
+			}
+		},
+		"BlueSpiceSaferEdit": {
+			"EnvironmentCheckers": {
+				"formedit": "\\BlueSpice\\PageFormsConnector\\SaferEdit\\EnvironmentChecker\\FormEdit::factory"
+			}
+		},
+		"BlueSpiceDiscovery": {
+			"BreadcrumbDataProviderRegistry": {
+				"form-edit": {
+					"class": "BlueSpice\\PageFormsConnector\\BreadcrumbDataProvider\\FormEditProvider"
+				}
+			}
+		}
+	},
+	"MessagesDirs": {
+		"BlueSpicePageFormsConnector": [
+			"i18n"
+		]
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\PageFormsConnector\\": "src/"
+	},
+	"ResourceModules": {
+		"ext.bluespice.pageformsconnector.styles": {
+			"styles": [
+				"stylesheets/ext.bluespice.pageformsconnector.less"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpicePageFormsConnector/resources"
+	},
+	"Hooks": {
+		"BeforePageDisplay": "\\BlueSpice\\PageFormsConnector\\Hook\\BeforePageDisplay\\AddModuleStyles::callback"
+	},
+	"load_composer_autoloader": true,
+	"manifest_version": 2
+}

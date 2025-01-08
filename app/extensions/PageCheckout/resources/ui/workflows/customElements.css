@@ -1,0 +1,7 @@
+.activity-icon.activity-page-checkin::before {
+	background-image: url( ./../../images/activity-checkin-icon.svg );
+}
+
+.activity-icon.activity-page-checkout::before {
+	background-image: url( ./../../images/activity-checkout-icon.svg );
+}

@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"TayfunEt.",
+			"Don Alessandro",
+			"Zolgoyo"
+		]
+	},
+	"wikieditor-toolbar-tool-bold": "Qalın",
+	"wikieditor-toolbar-tool-italic": "İtalik",
+	"wikieditor-toolbar-tool-link": "Bağlantı",
+	"wikieditor-toolbar-tool-file": "Resimler ve mediya",
+	"wikieditor-toolbar-tool-file-title": "Fayl qoy",
+	"wikieditor-toolbar-tool-reference": "Tüpbilgiler",
+	"wikieditor-toolbar-tool-big": "Balaban",
+	"wikieditor-toolbar-tool-small": "Kiçkene",
+	"wikieditor-toolbar-tool-superscript": "Satırüstü",
+	"wikieditor-toolbar-tool-subscript": "Satırastı"
+}

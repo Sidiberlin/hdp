@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Miriam Schlindwein"
+		]
+	},
+	"datetimetools-desc": "Description of DateTimeTools for [[Special:Version]]",
+	"datetimetools-ve-inspector-title": "Title of inspector for date tool",
+	"datetimetools-ve-inspector-date-picker-label": "Label for date picker to select date",
+	"datetimetools-droplet-date-name": "Title label for droplet card for tag datetime",
+	"datetimetools-droplet-date-description": "Description label for droplet card for tag datetime"
+}

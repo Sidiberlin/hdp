@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong"
+		]
+	},
+	"bs-uemodulehtml-extension-description": "HTML로 내보내기 활성화",
+	"bs-uemodulehtml-pref-DefaultTemplate": "표준 템플릿",
+	"bs-uemodulehtml-pref-SuppressNS": "HTML에서 이름공간 접두어 숨김",
+	"bs-uemodulehtml-pref-Backend": "백엔드",
+	"bs-uemodulehtml-widgetlink-single-text": "HTML 단일 페이지 (보관됨)",
+	"bs-uemodulehtml-overview-title": "HTML 도큐먼트 (보관됨)",
+	"bs-uemodulehtml-overview-description": "문서(특수 문서와 콘텐츠 문서)를 HTML로 내보냅니다.",
+	"bs-uemodulehtml-pref-suppressns-help": "문서의 이름공간은 HTML 제목에서 생략됩니다."
+}

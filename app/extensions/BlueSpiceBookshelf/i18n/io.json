@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joao Xavier"
+		]
+	},
+	"bs-bookshelf-action-editbook": "Redaktar fonto",
+	"bs-bookshelf-book-grid-title": "Libri",
+	"bs-bookshelf-ga-manager-label": "Libri",
+	"bs-bookshelf-ve-bookmeta-attr-title-label": "Titulo",
+	"bs-bookshelf-ve-bookmeta-attr-author-label": "Autoro",
+	"bs-bookshelf-prof-defaultview-images": "Imaji",
+	"bs-bookshelf-mainlinks-label": "Libri"
+}

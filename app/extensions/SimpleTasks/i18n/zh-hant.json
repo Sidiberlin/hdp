@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"simple-tasks-desc": "替使用者建立任務",
+	"simple-tasks-task-duedate": "到期日：$1",
+	"simple-tasks-task-desc": "在頁面內容裡建立的任務",
+	"simple-tasks-notif-key": "任務分配",
+	"simple-tasks-notif-message": "{{GENDER:$1|分配了}}一個任務給您：「$1 」",
+	"simple-tasks-taskreport-no-results": "所選定的過濾器找不到任務",
+	"simple-tasks-taskreport-header-task": "任務",
+	"simple-tasks-taskreport-header-assignee": "受託人",
+	"simple-tasks-taskreport-header-page": "出現在頁面上",
+	"simple-tasks-taskreport-header-due-to": "到期日",
+	"simple-tasks-taskreport-header-state": "狀態",
+	"simple-tasks-droplet-taskreport-name": "任務報告",
+	"simple-tasks-droplet-taskreport-description": "建立任務概要",
+	"simple-tasks-taskreport-inspector-title": "任務報告",
+	"simple-tasks-taskreport-inspector-state-done": "完成",
+	"simple-tasks-taskreport-inspector-state-open": "開放",
+	"simple-tasks-taskreport-inspector-label-user": "受託人",
+	"simple-tasks-taskreport-inspector-label-namespaces": "命名空間",
+	"simple-tasks-taskreport-inspector-label-due-date": "截止至",
+	"simple-tasks-taskreport-inspector-label-state": "狀態",
+	"simple-tasks-taskreport-state-title-open": "任務已開放",
+	"simple-tasks-taskreport-state-title-done": "任務已完成",
+	"simple-tasks-taskreport-state-filter-done": "完成",
+	"simple-tasks-taskreport-state-filter-open": "開放"
+}

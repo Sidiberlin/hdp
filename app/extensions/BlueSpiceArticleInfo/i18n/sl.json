@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eleassar",
+			"Skalcaa"
+		]
+	},
+	"bs-articleinfo-desc": "Prikazuje informacije o strani v vrstici stanja",
+	"prefs-articleinfo": "Podatki o strani",
+	"bs-articleinfo-pref-CheckRevisionInterval": "Interval posodobitev v sekundah:",
+	"bs-articleinfo-flyout-subpages-title": "Podstrani",
+	"bs-articleinfo-pagetool-subpages-tooltip": "Podstrani",
+	"bs-articleinfo-dialog-subpages-title": "Podstrani",
+	"bs-articleinfo-flyout-lasteditedtime-text": "Zadnje urejanje",
+	"bs-articleinfo-flyout-lastediteduser-text": "Zadnji urejevalec",
+	"bs-articleinfo-flyout-title": "Informacije o strani",
+	"bs-articleinfo-flyout-intro": "Tu najdete informacije v zvezi s stranjo. Lahko preverite njeno kakovost in ažurnost ter vidite, kako je povezana z drugimi stranmi v vikiju.",
+	"bs-articleinfo-nav-link-title": "Informacije o strani",
+	"bs-articleinfo-flyout-categorylinks-title": "Kategorije",
+	"bs-articleinfo-flyout-templatelinks-title": "Predloge, uporabljene na strani",
+	"bs-articleinfo-flyout-categorylinks-emptytext": "Ni dodeljenih kategorij",
+	"bs-articleinfo-flyout-templatelinks-emptytext": "Ni uporabljenih predlog",
+	"bs-articleinfo-newrevision-info-text": "Na voljo je nova različica te strani. Za ogled trenutne vsebine znova naložite stran.",
+	"bs-articleinfo-newrevision-info-text-reload": "Na voljo je nova različica te strani. Za ogled trenutne vsebine [[:$1|znova naložite]] stran.",
+	"bs-articleinfo-pref-checkrevisioninterval-help": "Nastavite hitrost osveževanja za vrednost »Zadnje urejanje«. Ta vrednost je prikazana na informacijah strani pod orodji za upravljanje kakovosti."
+}

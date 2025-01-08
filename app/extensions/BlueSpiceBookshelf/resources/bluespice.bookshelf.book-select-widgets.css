@@ -1,0 +1,21 @@
+.book-select-widget {
+    width: 100%;
+    padding: 20px 15px;
+}
+
+.book-select-widget .dropdown-toggle {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px;
+    background-color: white;
+    border-radius: 5px;
+    position: relative;
+    text-decoration: none;
+    color: #252525;
+}
+.book-select-widget .dropdown-toggle::after {
+    margin-top: 0.5em;
+}
+.book-select-widget .dropdown-menu {
+    width: calc( 100% - 30px );
+}

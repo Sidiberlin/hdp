@@ -1,0 +1,67 @@
+<div class="databox">
+<div class="tbl">
+{|
+|-
+!Betreff:
+|Name der betroffenen Thematik
+|-
+!Stakeholder:
+|Wer beeinflusst die Resultate oder ist davon betroffen?
+|-
+!Erstellt:
+|tt.mm.jjjj
+|}
+</div>
+<div class="tbl">
+{| 
+|-
+!Initiator:
+|Benutzername
+|-
+!Status:
+|'''Entwurf''' / Diskussion / Angenommen /  Abgelehnt
+|-
+!Enddatum:
+|tt.mm.jjjj
+|}
+</div>
+</div>
+==Beschreibung==
+Eine Aufforderung zur Stellungnahme (AzS)  ist ein Instrument zur Einschätzung und Bewertung interner Projekte oder Veränderungsvorschläge. Bis zur Entscheidung sollten maximal zwei Wochen vergehen. Wird die AzS genehmigt, werden nach Fertigstellung die entsprechenden Tickets zur Umsetzung erstellt.
+
+Erstellen Sie hier eine kurze Zusammenfassung des Themas.
+
+==Umsetzung==
+Folgende Vorgehensweise soll umgesetzt werden:
+
+{| class="wikitable wikitablee" style="width:100%;"
+!'''Schritt'''
+!'''Beschreibung'''
+|-
+|Was soll geschehen?
+|Einzelheiten zu diesem Schritt
+|-
+|..
+|
+|-
+|..
+|
+|}
+
+==Vorteile / Chancen==
+Warum sollten wir das tun?
+
+==Nachteile / Risiken==
+Welche Probleme erwarten wir?
+
+==Betroffene Bereiche==
+Welche Bereiche sind betroffen und wie sind sie betroffen?
+
+==Zeiteinschätzung==
+Wie lange soll es dauern?
+
+==Kommentare und Evaluation==
+Was denken alle von dieser Idee?
+
+*Kommentar, Name / Signatur
+*Kommentar, Name / Signatur

@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bs-bookshelfui-delete-book-text": "Wil je dit boek echt verwijderen? De \"bookshelf\"-tags worden <em>niet</em> automatisch verwijderd uit de gekoppelde wikipagina's!",
+	"bs-bookshelfui-confirm-delete-text": "Wil je het geselecteerde hoofdstuk echt verwijderen? Subhoofdstukken worden ook verwijderd.",
+	"bs-bookshelfui-override-tag-text": "Wil je de boekassociaties (<code>&lt;bs:bookshelf /&gt;</code>) binnen de wikipagina's toevoegen of bijwerken? Er wordt een nieuwe versie van de wikipagina gemaakt.",
+	"bs-bookshelfui-nothingtoexport-text": "Je keuze is leeg",
+	"bs-bookshelfui-flyout-intro": "Hier zie je alle boeken die er zijn. Als je een nieuw boek toe wilt voegen ga je naar de pagina [[Special:Bookmanager|boekbeheer]]."
+}

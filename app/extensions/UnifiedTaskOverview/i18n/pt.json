@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hamilton Abreu"
+		]
+	},
+	"unifiedtaskoverview-desc": "Fornece uma página especial com uma visão geral das tarefas dos utilizadores",
+	"unifiedtaskoverview": "Tarefas",
+	"unifiedtaskoverview-label-no-task": "Neste momento não há tarefas a cumprir.",
+	"unifiedtaskoverview-personal-url-my-tasks": "Tarefas",
+	"unifiedtaskoverview-search-placeholder": "Pesquisar"
+}

@@ -1,0 +1,41 @@
+.pro-con-list {
+	margin: 1em 0;
+	border-collapse: collapse;
+}
+.pro-con-list th {
+	text-align: center;
+	padding: 8px;
+}
+.pro-con-list th:first-child {
+	color: #5C7813;
+}
+.pro-con-list th:last-child {
+	color: #bd1d1d;
+}
+.pro-con-list ul {
+	margin: 0 !important;;
+}
+.pro-con-list li {
+	border-radius: 1em;
+	padding: 0.5em;
+	list-style: none;
+}
+.pro-con-list .pro li {
+	background-color: #eff6dd;
+}
+.pro-con-list .contra li {
+	background-color: #f5dcdc;
+}
+.pro-con-list .pro li:before {
+	font-family: 'fontawesome' !important;
+	content: "\f067";
+	padding-right: 0.5em;
+	color: #5C7813;
+	background-color: #eff6dd;
+}
+.pro-con-list .contra li:before {
+	font-family: 'fontawesome' !important;
+	content: "\f068";
+	padding-right: 0.5em;
+	color: #bd1d1d;
+}

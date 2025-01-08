@@ -1,0 +1,6 @@
+/* overwrite bootstrap alert colors for WCAG */
+:root{
+	--bs-warning-text: #8C6A04;
+	--bs-info-text: #08768D;
+	--bs-secondary-text: #6B747C;
+}

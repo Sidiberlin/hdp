@@ -1,0 +1,8 @@
+fileignoreconfig:
+- filename: package-lock.json
+  checksum: 50ea7222ac65a5bf679c86b622e59d4f71a5c98010a530170150ff0318cec17c
+- filename: resources/ui/ImportDialog.js
+  checksum: 71186ffd1b62d773c2ffb5909ffec79df0f89beffec026a55d62bc23c2f99106
+- filename: resources/ui/booklet/pages/ImportProgressPage.js
+  checksum: a40f08f4b5b512b67bf57b6beb7bdfa643cd7a5535f63d592d607d8f9f5f6627
+version: "1.0"

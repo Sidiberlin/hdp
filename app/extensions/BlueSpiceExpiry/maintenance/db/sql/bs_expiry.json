@@ -1,0 +1,57 @@
+[
+	{
+		"name": "bs_expiry",
+		"columns": [
+			{
+				"name": "exp_id",
+				"type": "integer",
+				"options": {
+					"unsigned": true,
+					"notnull": true,
+					"autoincrement": true
+				}
+			},
+			{
+				"name": "exp_page_id",
+				"type": "integer",
+				"options": {
+					"length": 10,
+					"notnull": true
+				}
+			},
+			{
+				"name": "exp_date",
+				"type": "datetimetz",
+				"options": {
+					"notnull": true
+				}
+			},
+			{
+				"name": "exp_comment",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			}
+		],
+		"indexes": [
+			{
+				"name": "exp_page_id_idx",
+				"columns": [
+					"exp_page_id"
+				],
+				"unique": false
+			},
+			{
+				"name": "exp_date_idx",
+				"columns": [
+					"exp_date"
+				],
+				"unique": false
+			}
+		],
+		"pk": [
+			"exp_id"
+		]
+	}
+]

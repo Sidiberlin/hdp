@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			")8",
+			"Lakejason0",
+			"Vikarna",
+			"Wzl19371",
+			"Xyb",
+			"沈澄心",
+			"落花有意12138"
+		]
+	},
+	"bs-readconfirmation-column-read": "已读取？",
+	"bs-readconfirmation-column-read-at": "继续读取",
+	"bs-readconfirmation-not-read": "未读取",
+	"bs-readconfirmation-action-remind": "请求读取允许",
+	"bs-readconfirmation-action-log": "阅读确认日志",
+	"bs-readconfirmation-action-remind-confirm": "请求阅读确认？",
+	"bs-readconfirmation-confirm-read-heading": "阅读确认",
+	"bs-readconfirmation-confirm-read-checkbox-label": "是的，我已完整阅读本页。",
+	"bs-readconfirmation-confirm-read-button-label": "确认",
+	"bs-readconfirmation-action-apiread-check-description": "检查$1的阅读确认",
+	"bs-readconfirmation-action-apiread-confirm-description": "标记$1为已读",
+	"bs-readconfirmation-action-apiread-remind-description": "请求$1的阅读确认？",
+	"bs-readconfirmation-api-error-cant-confirm": "无法处理此页面的阅读确认",
+	"bs-readconfirmation-api-error-no-page": "未提供页面",
+	"bs-readconfirmation-api-error-no-non-minor-revision": "找不到修订版本",
+	"echo-category-title-bs-readconfirmation-cat": "阅读确认",
+	"log-name-bs-readconfirmation": "阅读确认日志",
+	"logeventslist-bs-readconfirmation-log": "阅读确认日志",
+	"log-description-bs-readconfirmation": "读取确认的日志",
+	"log-show-hide-bs-readconfirmation": "$1读取确认日志",
+	"logentry-bs-readconfirmation-confirm": "$1{{GENDER:$2|已}}确认阅读过页面$3",
+	"bs-readconfirmation-label-ns-manager": "阅读确认",
+	"bs-readconfirmation-disabled-ns-short": "已禁用",
+	"bs-readconfirmation-graphicallist-btn-read": "阅读",
+	"bs-readconfirmation-uto-task-header": "需要阅读确认",
+	"bs-readconfirmation-dlg-title": "阅读确认",
+	"bs-readconfirmation-view-confirmations": "查看阅读确认",
+	"bs-readconfirmation-page-info-read-confirmations": "阅读确认",
+	"logentry-bs-readconfirmation-remind": "$1{{GENDER:$2|已}}请求用户$4去确认页面$3的阅读"
+}

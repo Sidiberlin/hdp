@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"bs-readconfirmation-column-read": "Йеша?",
+	"bs-readconfirmation-column-read-at": "Йешна",
+	"bs-readconfirmation-not-read": "йешна йац",
+	"bs-readconfirmation-confirm-read-button-label": "Бакъдан",
+	"bs-readconfirmation-action-apiread-confirm-description": "$1 билгалйе йешна санна",
+	"bs-readconfirmation-logentry-confirm-suffix-as-of": "($1 тӀера)"
+}

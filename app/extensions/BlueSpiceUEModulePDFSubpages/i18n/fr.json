@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aaribaud",
+			"Eihel",
+			"Gomoko",
+			"Verdy p"
+		]
+	},
+	"bs-uemodulepdfsubpages-extension-description": "Permet l’exportation récursive de pages au format PDF avec leurs sous-pages."
+}

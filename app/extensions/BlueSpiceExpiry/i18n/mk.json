@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Vlad5250"
+		]
+	},
+	"bs-expiry-extension-description": "Страниците може да се означат како истечени.",
+	"expiry": "Истек",
+	"specialexpiry": "Статии со истечен рок",
+	"prefs-expiry": "Истек",
+	"bs-expiry-unexpire-article": "Страницата е истечена",
+	"bs-expiry-do-unexpire-article": "Избриши го датумот на истекување",
+	"bs-expiry-header-pagename": "Страница",
+	"bs-expiry-header-date": "Истекува на",
+	"bs-expiry-header-comment": "Коментар",
+	"bs-expiry-dialog-title": "Уреди истекување",
+	"bs-expiry-date-label": "Истекува на",
+	"bs-expiry-article-label": "Страница",
+	"bs-expiry-comment-label": "Коментар",
+	"bs-expiry-delete-error-unknown": "Истекот не може да се избрише.",
+	"bs-expiry-unknown-page-msg": "Страницата не постои.",
+	"bs-expiry-create-error": "Истекот не може да се создаде.",
+	"bs-expiry-update-error": "Истекот не може да се ажурира."
+}

@@ -1,0 +1,256 @@
+{
+	"name": "ImportOfficeFiles",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[http://www.hallowelt.com Hallo Welt! GmbH]",
+		"Daniel Vogel",
+		"Alexei Kulbii"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:ImportOfficeFiles",
+	"version": "2.0.10",
+	"descriptionmsg": "importofficefiles-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"MessagesDirs": {
+		"ImportOfficeFiles": "i18n"
+	},
+	"attributes": {
+		"ImportOfficeFiles": {
+			"ModuleRegistry": {
+				"ms-office-word": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Modules\\MSOfficeWord::factory",
+					"services": [ "MainConfig" ]
+				}
+			},
+			"Word2007TagProcessorRegistry": {
+				"line-break": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Tag\\LineBreak::factory"
+				},
+				"tabulator": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Tag\\Tabulator::factory"
+				},
+				"text": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Tag\\Text::factory"
+				},
+				"textrun": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Tag\\Textrun::factory"
+				},
+				"bookmarkStart": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Tag\\BookmarkStart::factory"
+				},
+				"bookmarkEnd": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Tag\\BookmarkEnd::factory"
+				},
+				"hyperlink": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Tag\\Hyperlink::factory"
+				},
+				"paragraph": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Tag\\Paragraph::factory"
+				},
+				"table": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Tag\\Table::factory"
+				},
+				"drawing": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Tag\\Drawing::factory"
+				},
+				"instr-text": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Tag\\InstrText::factory"
+				}
+			},
+			"Word2007TagPropertyProcessorRegistry": {
+				"style": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Property\\Style::factory"
+				},
+				"bold": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Property\\Bold::factory"
+				},
+				"strikethrough": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Property\\StrikeThrough::factory"
+				},
+				"italic": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Property\\Italic::factory"
+				},
+				"highlight": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Property\\Highlight::factory"
+				},
+				"shadow": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Property\\Shadow::factory"
+				},
+				"color": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Property\\Color::factory"
+				},
+				"verticalalign": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Property\\VerticalAlign::factory"
+				},
+				"underline": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Property\\Underline::factory"
+				},
+				"justify": {
+					"factory": "\\MediaWiki\\Extension\\ImportOfficeFiles\\Reader\\Property\\JustifyContent::factory"
+				}
+			}
+		}
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\ImportOfficeFiles\\": "src/",
+		"MediaWiki\\Extension\\ImportOfficeFiles\\Tests\\": "tests/phpunit"
+	},
+	"ResourceModules": {
+		"ext.importofficefiles.bootstrap": {
+			"scripts": "bootstrap.js"
+		},
+		"ext.importofficefiles.ui.form": {
+			"scripts": [
+				"ui/ImportDialog.js",
+				"ui/PreviewDialog.js",
+				"ui/booklet/ImportBooklet.js",
+				"ui/booklet/pages/SelectFilePage.js",
+				"ui/booklet/pages/ConfigurationPage.js",
+				"ui/booklet/pages/StructurePreviewPage.js",
+				"ui/booklet/pages/ImportProgressPage.js"
+			],
+			"styles": [
+				"styles/import-dialog.less"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"mediawiki.widgets",
+				"oojs-ui.styles.icons-accessibility"
+			],
+			"messages": [
+				"importofficefiles-ui-import-dialog-title",
+				"importofficefiles-ui-import-completed",
+				"importofficefiles-ui-import-in-progress",
+				"importofficefiles-ui-dialog-action-cancel",
+				"importofficefiles-ui-dialog-action-import",
+				"importofficefiles-ui-dialog-action-next",
+				"importofficefiles-ui-dialog-action-back",
+				"importofficefiles-ui-dialog-action-done",
+				"importofficefiles-ui-dialog-label-select-file",
+				"importofficefiles-ui-dialog-configuration-settings-title",
+				"importofficefiles-ui-dialog-settings-page-title",
+				"importofficefiles-ui-dialog-settings-pagetitle-label",
+				"importofficefiles-ui-dialog-settings-structure-label",
+				"importofficefiles-ui-dialog-settings-structure-label-checkbox",
+				"importofficefiles-ui-dialog-settings-conflicts-title",
+				"importofficefiles-ui-dialog-settings-conflicts-rename",
+				"importofficefiles-ui-dialog-settings-conflicts-override",
+				"importofficefiles-ui-dialog-settings-conflicts-behavior-label",
+				"importofficefiles-ui-dialog-settings-choose-split-level-label",
+				"importofficefiles-ui-dialog-settings-split-level-1",
+				"importofficefiles-ui-dialog-settings-split-level-2",
+				"importofficefiles-ui-dialog-settings-split-level-3",
+				"importofficefiles-ui-dialog-preview-title",
+				"importofficefiles-ui-dialog-preview-label",
+				"importofficefiles-ui-dialog-link-import-files-text",
+				"importofficefiles-ui-dialog-link-imported-page-text",
+				"importofficefiles-ui-dialog-page-collection-protected-namespace",
+				"importofficefiles-ui-progress-import-images-step",
+				"importofficefiles-ui-progress-import-pages-step",
+				"importofficefiles-ui-progress-remove-files-step",
+				"importofficefiles-ui-import-error",
+				"importofficefiles-ui-analyze-error"
+			]
+		},
+		"ext.importofficefiles.api": {
+			"scripts": [
+				"api/Api.js"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "ImportOfficeFiles/resources"
+	},
+	"Hooks": {
+		"BlueSpiceDiscoveryTemplateDataProviderAfterInit": "discovery-skin",
+		"SkinTemplateNavigation::Universal": "skin",
+		"BeforePageDisplay": "skin",
+		"MWStakeRunJobsTriggerRegisterHandlers": "MediaWiki\\Extension\\ImportOfficeFiles\\MediaWiki\\Hook\\MWStakeRunJobsTriggerRegisterHandlers\\AddOrphanedDirectoriesHandler::callback"
+	},
+	"HookHandlers": {
+		"discovery-skin": {
+			"class": "MediaWiki\\Extension\\ImportOfficeFiles\\MediaWiki\\HookHandler\\DiscoverySkin"
+		},
+		"skin": {
+			"class": "MediaWiki\\Extension\\ImportOfficeFiles\\MediaWiki\\HookHandler\\Skin",
+			"services": [
+				"MainConfig", "PermissionManager"
+			]
+		},
+		"addBootstrap": {
+			"class": "MediaWiki\\Extension\\ImportOfficeFiles\\MediaWiki\\HookHandler\\AddBootstrap"
+		}
+	},
+	"RestRoutes": [
+		{
+			"path": "/officeimport/file_storage",
+			"method": "POST",
+			"class": "MediaWiki\\Extension\\ImportOfficeFiles\\Rest\\FileStorageHandler",
+			"services": [
+				"MainConfig"
+			]
+		},
+		{
+			"path": "/officeimport/file_analyze/start/{uploadId}/{filename}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\ImportOfficeFiles\\Rest\\FileAnalyzeHandler"
+		},
+		{
+			"path": "/officeimport/file_analyze/status/{processId}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\ImportOfficeFiles\\Rest\\ProcessStatusHandler"
+		},
+		{
+			"path": "/officeimport/file_structure/{uploadId}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\ImportOfficeFiles\\Rest\\FileStructureHandler",
+			"services": [
+				"MainConfig",
+				"ConfigFactory"
+			]
+		},
+		{
+			"path": "/officeimport/file_content/{uploadId}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\ImportOfficeFiles\\Rest\\FileContentHandler",
+			"services": [
+				"MainConfig",
+				"ConfigFactory"
+			]
+		},
+		{
+			"path": "/officeimport/file_import/start/{uploadId}/{filename}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\ImportOfficeFiles\\Rest\\FileImportHandler",
+			"services": [
+				"MainConfig",
+				"ConfigFactory"
+			]
+		},
+		{
+			"path": "/officeimport/file_import/status/{processId}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\ImportOfficeFiles\\Rest\\ProcessStatusHandler"
+		},
+		{
+			"path": "/officeimport/file_import/proceed/{processId}",
+			"method": "POST",
+			"class": "MediaWiki\\Extension\\ImportOfficeFiles\\Rest\\ImportProceedHandler"
+		}
+	],
+	"config_prefix": "wg",
+	"config": {
+		"ImportOfficeFilesWord2007TagProcessorPipeline": {
+			"value": [ "instr-text", "drawing", "tabulator", "line-break", "text", "textrun", "bookmarkStart", "bookmarkEnd", "hyperlink", "paragraph", "table" ],
+			"public": true
+		},
+		"ImportOfficeFilesWord2007TagPropertyProcessorPipeline": {
+			"value": [ "style", "color", "justify", "highlight", "shadow", "verticalalign", "italic", "strikethrough", "underline", "bold" ],
+			"public": true
+		}
+	},
+	"load_composer_autoloader": true,
+	"manifest_version": 2
+}

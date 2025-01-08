@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"HarpyWar",
+			"Katunchik",
+			"Meshkov.a",
+			"Okras",
+			"Pacha Tchernof",
+			"Shuba"
+		]
+	},
+	"bs-whoisonline-desc": "Отображает список участников_ниц, которые сейчас онлайн",
+	"bs-whoisonline-nousers": "Никто не вошёл в систему.",
+	"bs-whoisonline-widget-title": "Кто онлайн?",
+	"prefs-whoisonline": "Кто онлайн?",
+	"bs-whoisonline-pref-limitcount": "Максимальное количество показываемых участников_ниц:",
+	"bs-whoisonline-pref-orderby": "Сортировка по:",
+	"bs-whoisonline-pref-maxidletime": "Время в секундах до тех пор, как участник_ница имеет отметку «офлайн»:",
+	"bs-whoisonline-pref-orderby-time": "Время «в сети»",
+	"bs-whoisonline-pref-orderby-name": "Имя",
+	"bs-whoisonline-pref-interval": "Интервал обновления в секундах:",
+	"bs-whoisonline-tag-whoisonlinecount-desc": "Показывает количество участников, которые вошли в течение последних 10 минут.",
+	"bs-whoisonline-tag-whoisonlinepopup-desc": "Показывает всех участников, которые вошли в течение последних 10 минут.",
+	"bs-whoisonline-collection-var-login": "Логин"
+}

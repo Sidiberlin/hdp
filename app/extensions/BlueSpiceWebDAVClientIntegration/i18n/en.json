@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"bs-webdav-ci-desc": "Allows opening files from the browser directly in the client application (Requires WebDAV)",
+	"bs-webdav-ci-edit-with": "Edit with $1",
+	"bs-webdav-ci-show-history": "Show file history",
+	"bs-webdav-ci-ms-word": "Microsoft Word",
+	"bs-webdav-ci-ms-excel": "Microsoft Excel",
+	"bs-webdav-ci-ms-powerpoint": "Microsoft PowerPoint",
+	"bs-webdav-ci-zip": "file archive",
+	"bs-webdav-ci-generic": "client application",
+	"bs-webdav-ci-filehistory": "Version history of $1",
+	"bs-webdav-ci-filehistory-timestamp": "Version of",
+	"bs-webdav-ci-filehistory-size": "Size",
+	"bs-webdav-ci-filehistory-user": "User",
+	"bs-webdav-ci-cannot-open-file": "File could not be opened with client application",
+	"bs-webdav-ci-file-locked-title": "File already being edited",
+	"bs-webdav-ci-file-locked": "This file is already being edited by $1. You can only open it in read-only mode or as a local copy. Do you wish to continue?"
+}

@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Armin1392",
+			"Beginneruser",
+			"Jeeputer"
+		]
+	},
+	"nsfilerepo-desc": "ایجاد فضای نام مبتنی بر ویژگی‌ها برای پوشه‌های منتقل شده",
+	"nsfilerepo-nsmain": "(مقاله)",
+	"nsfilerepo-move-file-namespace-action-label": "تنظیم فضای نام پرونده",
+	"nsfilerepo-move-file-namespace-dialog-title": "تنظیم فضای نام پرونده",
+	"nsfilerepo-move-file-namespace-dialog-button-done": "انجام شد",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "لغو",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "فضای نام"
+}

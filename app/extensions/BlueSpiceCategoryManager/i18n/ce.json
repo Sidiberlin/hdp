@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"bs-categorymanager-collection-var-namespacename": "ЦӀерийн меттиг",
+	"bluespicecategorymanager": "Категорийн менеджер",
+	"bluespicecategorymanager-desc": "Тобанашна урхалладан гӀирс",
+	"action-categorymanager-viewspecialpage": "категорийн менеджере хьажар",
+	"bs-categorymanager-text": "Категореш",
+	"bs-categorymanager-draganddrop-text": "Хийцамаш бе drag-and-drop гӀоьнца",
+	"bs-categorymanager-label": "Категорийн менеджер",
+	"bs-categorymanager-dlg-new-title": "Кхолла категори",
+	"bs-categorymanager-dlg-new-prompt": "Дехар до, дӀайазйе цӀе:",
+	"bs-categorymanager-removecategoryconfirm-text": "Бакъалла лаьий хьуна, хӀара категори дӀайаккха?",
+	"bs-categorymanager-removecategoryconfirm-title": "ДӀайаккха категори",
+	"bs-categorymanager-addcategory-dialog-error-title": "Категори кхолла аьтту ца хили",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-title": "Категори хӀинцале йолуш йу",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Дехар до, категорин кхий цӀе хьажа",
+	"bs-categorymanager-action-show-category": "Гайта категори",
+	"right-categorymanager-viewspecialpage": "белхан [[Special:BlueSpiceCategoryManager]] агӀонан тӀекхачар",
+	"bs-categorymanager-collection-type-categorizedpages": "Категори чуйиллар",
+	"bs-categorymanager-collection-var-categorizedpages": "Категореш йолуш агӀонаш",
+	"bs-categorymanager-collection-var-uncategorizedpages": "Категореш йоцуш агӀонаш",
+	"bs-categorymanager-rename-category": "Категорин цӀе хийца",
+	"bs-categorymanager-rename-category-new-name": "Категорин керла цӀе:",
+	"bs-categorymanager-move-new-name": "Йазйе категорин керла цӀе. Керла цӀе:",
+	"bs-categorymanager-replace-in-pages": "АгӀонан тӀе цӀе хийца:",
+	"bs-categorymanager-statistics-report-category-pages": "АгӀонаш категореш чохь",
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "АгӀонийн дукхалла"
+}

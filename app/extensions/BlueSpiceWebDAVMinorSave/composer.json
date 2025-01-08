@@ -1,0 +1,16 @@
+{
+	"name": "bluespice/webdavminorsave",
+	"type": "mediawiki-extension",
+	"license": "GPL-3.0-only",
+	"extra": {
+		"installer-name": "BlueSpiceWebDAVMinorSave"
+	},
+	"require": {
+		"composer/installers": "~1.0|~2"
+	},
+	"config": {
+		"allow-plugins": {
+			"composer/installers": true
+		}
+	}
+}

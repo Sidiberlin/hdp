@@ -1,0 +1,142 @@
+<div class="databox">
+<div class="tbl">
+{|
+|-
+!Author:
+|responsible for report content
+|-
+! Reports to:
+| recipient of the report
+|-
+!Report date:
+|mm/dd/yyyy
+|}
+</div>
+<div class="tbl">
+{| 
+|-
+!Team / Department / Project:
+|scope of the report
+|-
+!Reporting period / milestone:
+|what time period/project milestone is covered?
+|-
+!Report status:
+|'''draft''' / finished
+|}
+</div>
+</div>
+==Executive summary==
+Give a brief executive summary about takeaways from this report.
+
+==Details==
+List major tasks that have been completed and evaluate their outcomes.
+
+{| class="wikitable" style="width:100%;"
+!Business area
+!Topic
+!Highlights
+!Major obstacles
+unexpected (project) risks
+!Lessons learned
+|-
+|Marketing
+|All
+|
+*Leads
+*Campaigns Q1
+|
+*Unexpected cost
+*New competitor
+|
+*review of cost estimation plan is necessary
+|-
+|..
+|
+|
+|
+|
+|-
+|..
+|
+|
+|
+|
+|}
+==Business review==
+Evaluate the impact of key results for the reporting period.
+ 
+{| class="wikitable" style="width:100%;"
+!Metric
+!Target
+!Previous <br />period
+!This <br />period
+!Change
+!New target
+|-
+|Number of customers
+|700
+|631
+|
+| +24
+|680
+|-
+|Billable time (hrs)
+|650
+|620
+|
+|<nowiki>-70</nowiki>
+|
+|-
+|..
+|
+|
+|
+|
+|
+|}
+
+==Measures==
+Based on the performance of the reporting period, the following measures for the above metrics will be implemented.
+
+===Metric 1===
+{| class="wikitable" style="width:100%;"
+!'''Responsibe'''
+!'''Measures'''
+|-
+|Who will make sure this gets done in a timely manner?
+|To improve this metric, it is necessary to complete the following tasks:
+
+# First measure
+#Second measure
+|-
+|..
+| 
+|-
+| ..
+|
+|}
+
+===Metric 2===
+{| class="wikitable" style="width:100%;"
+!'''Responsibe'''
+!'''Measures'''
+|-
+|Who will make sure this gets done in a timely manner?
+|To improve this metric, it is necessary to complete the following tasks:
+
+#First measure
+#Second measure
+|-
+|..
+|
+|-
+|..
+|
+|}
+
+==Supporting documents==
+Link to any documents related to this report:
+
+* Document 1
+* Document 2

@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Piano1forte2"
+		]
+	},
+	"echo-pref-tooltip-bs-expiry-weekly-cat": "Menyesha Iyo page nirangira mucyumweru",
+	"notification-bs-expiry-today-subject": "Page '$1' has expired",
+	"notification-bs-expiry-today-web-body": "The page '$1' has expired. Please review the page's content to decide whether it needs to be updated. If the page content is still up-to-date, you can simply unexpire the page. \n\nExpiry comment:\n$2",
+	"notification-bs-expiry-today-email-body": "The page '$1' has expired. Please review the page's content to decide whether it needs to be updated. If the page content is still up-to-date, you can simply unexpire the page. \n\nExpiry comment:\n$2",
+	"notification-bs-expiry-one-week-subject": "Page '$1' will expire this week",
+	"notification-bs-expiry-one-week-web-body": "The page '$1' will expire this week. Please review the page's content to decide whether it needs to be updated. \n\nExpiry comment:\n$2",
+	"notification-bs-expiry-one-week-email-body": "The page '$1' will expire this week. Please review the page's content to decide whether it needs to be updated. \n\nExpiry comment:\n$2"
+}

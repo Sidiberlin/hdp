@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eduardoaddad"
+		]
+	},
+	"importofficefiles-ui-import-dialog-title": "Importar arquivo",
+	"importofficefiles-ui-import-completed": "Importação concluída!",
+	"importofficefiles-ui-import-in-progress": "Importação em progresso...",
+	"importofficefiles-ui-dialog-action-cancel": "Cancelar",
+	"importofficefiles-ui-dialog-action-import": "Importar",
+	"importofficefiles-ui-dialog-action-next": "Próximo",
+	"importofficefiles-ui-dialog-action-back": "Voltar",
+	"importofficefiles-ui-dialog-action-done": "Feito",
+	"importofficefiles-ui-dialog-label-select-file": "Selecionar arquivo",
+	"importofficefiles-ui-dialog-settings-page-title": "Título",
+	"importofficefiles-ui-dialog-settings-pagetitle-label": "Selecionar um título para a página nova",
+	"importofficefiles-ui-dialog-settings-structure-label": "Estrutura de conteúdo",
+	"importofficefiles-ui-dialog-settings-split-level-1": "Cabeçalhos de nível 1",
+	"importofficefiles-ui-dialog-settings-split-level-2": "Cabeçalhos de nível 2",
+	"importofficefiles-ui-dialog-settings-split-level-3": "Cabeçalhos de nível 3",
+	"importofficefiles-ui-dialog-preview-title": "Pré-visualizar"
+}

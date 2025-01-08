@@ -1,0 +1,30 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beta16",
+			"Selven"
+		]
+	},
+	"bs-bssmwconnector-desc": "Integra SemanticMediaWiki in BlueSpice",
+	"bs-bssmwconnector-srf-printername-bsgrid": "Griglia di BlueSpice",
+	"bs-dlg-choosesmwprop-label": "Proprietà",
+	"bs-dlg-choosesmwprop-type-smwprop": "Proprietà semantica",
+	"bs-extendedsearch-add-filter-group-smwproperty-label": "Proprietà semantiche",
+	"bs-extendedsearch-search-center-result-smwproperty-label": "Proprietà semantiche:",
+	"bs-smwconnector-extendedsearch-boolean-property-true": "Sì",
+	"bs-smwconnector-extendedsearch-boolean-property-false": "No",
+	"bs-swm-connector-ask-store-page-label": "Pagina",
+	"bs-smwconnector-extendedsearch-anon-user-label": "Utente anonimo",
+	"bs-smwconnector-dataquery-category-label": "Categoria",
+	"bs-smwconnector-dataquery-namespace-label": "Namespace",
+	"bs-smwconnector-dataquery-modified-operator-label": "Modificato",
+	"bs-smwconnector-dataquery-modified-operator-all": "Tutto",
+	"bs-smwconnector-dataquery-modified-operator-since": "Da",
+	"bs-smwconnector-dataquery-modified-date-label": "Data",
+	"bs-smwconnector-dataquery-format-label": "Formato",
+	"bs-smwconnector-dataquery-format-bulleted-list": "Elenco puntato",
+	"bs-smwconnector-dataquery-count-label": "Numero",
+	"bs-smwconnector-dataquery-count-help": "Limita il numero dei risultati restituiti",
+	"bs-smwconnector-decision-overview-categories-label": "Categorie",
+	"bs-smwconnector-decision-overview-namespaces-label": "Namespace"
+}

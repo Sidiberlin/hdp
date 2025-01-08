@@ -1,0 +1,66 @@
+<div class="databox">
+<div class="tbl">
+{|
+|-
+!Eigner:
+|Benutzername
+|-
+!Stakeholder:
+|Wer beeinflusst die Entscheidung oder ist betroffen?
+|-
+!Entscheidung:
+|Endgültige Entscheidung hier eintragen
+|}
+</div>
+<div class="tbl">
+{| 
+|-
+!Mitwirkende:
+|Benutzername , Benutzername
+|-
+!Status:
+|'''nicht begonnen''' / in Bearbeitung / abgeschlossen
+|-
+!Fällig am:
+|tt.mm.jjjj
+|}
+</div>
+</div>
+==Derzeitiger Stand==
+Erklären Sie den jetzigen Stand, der eine Entscheidung erfordert.
+
+==Entscheidungsmatrix==
+Geben Sie nur  Optionen an und  bewerten Sie diese. Führen Sie Sie keine Optionen auf, die Sie bereits ausgeschlossen haben (diese werden  unter  [[Template:SV Entscheidungsmatrix#ausgeschlossene Optionen|ausgeschlossene Optionen]] unterhalb der Entscheidungsmatrix gesammelt).
+{| class="wikitable pagetemplate" style="width:100%;"
+!
+!<span class="bi bi-plus-circle-dotted">&nbsp;</span> Vorteile
+!<span class="bi bi-dash-circle-dotted">&nbsp;</span> Risiken
+!<span class="bi bi-chat-right-text">&nbsp;</span> Anmerkungen
+|-
+!Option 1
+|
+|
+|
+|-
+!Option 2
+|
+|
+|
+|-
+!Option 3
+|
+|
+|
+|}
+
+===Ausgeschlossene Optionen===
+*ausgeschlossene Option 1
+*ausgeschlossene Option 2
+
+==Nächste Schritte==
+Nachdem eine Entscheidung getroffen wurde, dokumentieren Sie die nächsten Schritte. Was ist zur Umsetzung der Entscheidung notwendig?
+==Begleitende Dokumente==
+Verlinken Sie auf Seiten oder Dateien, die sich auf diesen Entscheidungsprozess beziehen. 
+
+*Seite / Dokument 1
+*Seite / Dokument 2

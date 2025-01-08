@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eleassar",
+			"Upwinxp"
+		]
+	},
+	"at-mentions-desc": "Dodaj omembo uporabnika",
+	"at-mentions-inspector-title": "Omeni uporabnika",
+	"at-mentions-inspector-title-add": "Dodaj omembo",
+	"at-mentions-inspector-title-edit": "Uredi omembo uporabnika",
+	"at-mentions-ci-title": "Omemba uporabnika",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|od [[User:$1]]}}",
+	"at-mentions-tag-item-time": "ob $1",
+	"at-mentions-mentionslist-header-mine-all": "Omenjeni ste bili na tej strani",
+	"at-mentions-mentionslist-header-mine": "V {{PLURAL:$1|zadnjem dnevu|zadnjih $1 dneh}} ste bili omenjeni na teh straneh:",
+	"at-mentions-mentionslist-header-all": "{{GENDER:$2|Uporabnik [[User:$2]] je bil omenjen|Uporabnica [[User:$2]] je bila omenjena|Uporabnik_ca [[User:$2]] je bil_a omenjen_a na teh straneh}}:",
+	"at-mentions-mentionslist-header": "V {{PLURAL:$1|zadnjem dnevu|zadnjih $1 dneh}} {{GENDER:$2|je bil [[User:$2]] omenjen|je bila uporabnica [[User:$2]] omenjena|je bil_a uporabnik_ca [[User:$2]] omenjen_a}} na teh straneh:",
+	"at-mentions-mention-notification-message": "vas je {{GENDER:$1|omenil|omenila|omenil_a}} na strani $2",
+	"at-mentions-mention-notification-key": "Bili ste omenjeni",
+	"at-mentions-mention-in-entity-notification-key": "Bili ste omenjeni v komentarju ali objavi",
+	"at-mentions-mention-in-entity-notification-message": "vas je {{GENDER:$1|omenil|omenila|omenil_a}} v komentarju ali objavi »$3« na strani $2",
+	"at-mentions-toolbar-tool-title": "Dodaj omembo"
+}

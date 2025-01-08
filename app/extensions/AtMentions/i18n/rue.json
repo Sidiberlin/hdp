@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Constraque"
+		]
+	},
+	"at-mentions-tag-item-actor": "{{GENDER:$1|од [[User:$1|$1]]}}"
+}

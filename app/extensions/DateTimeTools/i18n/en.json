@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Miriam Schlindwein"
+		]
+	},
+	"datetimetools-desc": "Provides date tools in VisualEditor",
+	"datetimetools-ve-inspector-title": "Edit Date",
+	"datetimetools-ve-inspector-date-picker-label": "Select date",
+	"datetimetools-droplet-date-name": "Date",
+	"datetimetools-droplet-date-description": "Inserts a date"
+}

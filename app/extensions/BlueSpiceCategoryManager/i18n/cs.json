@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fraxinus.cs",
+			"Meliganai"
+		]
+	},
+	"bs-categorymanager-addcategory-dialog-error-title": "Vytvoření kategorie se nezdařilo",
+	"bs-categorymanager-statistics-report-category-pages": "Stránky v kategoriích"
+}

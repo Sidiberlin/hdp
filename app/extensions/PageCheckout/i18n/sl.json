@@ -1,0 +1,35 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eleassar",
+			"Upwinxp"
+		]
+	},
+	"pagecheckout-desc": "Omogoča izključne pravice za uporabnika na izbrani strani",
+	"pagecheckout-error-no-title": "Neveljaven naslov",
+	"pagecheckout-error-no-user": "Naveden je neveljaven uporabnik",
+	"pagecheckout-error-has-checkout": "Stran je že rezervirana",
+	"pagecheckout-error-save-failed": "Rezervacija strani ni uspela",
+	"pagecheckout-error-no-checkout": "Ni mogoče shraniti strani, ki trenutno ni rezervirana",
+	"pagecheckout-error-no-checkout-id": "Neuspešno shranjevanje! ID rezervacije ni nastavljen",
+	"pagecheckout-error-db-insert": "Napaka pri vstavljanju rezervacije",
+	"pagecheckout-error-db-retrieve-inserted": "Prej vstavljene rezervacije ni bilo mogoče pridobiti",
+	"pagecheckout-error-save-event": "Dogodka ni bilo mogoče shraniti",
+	"pagecheckout-lockdown-reason": "Dejanje »$1« ni dovoljeno, ker je stran rezerviral_a $2",
+	"pagecheckout-action-clear-label": "Počisti rezervacijo",
+	"apihelp-pagecheckout-clear-example": "Počisti rezervacijo za Main_Page",
+	"apihelp-pagecheckout-clear-summary": "Po;isti aktivno rezervacijo strani",
+	"apihelp-pagecheckout-clear-param-page_title": "Naslov strani, za katero želite počistiti rezervacije",
+	"pagecheckout-ui-clear-confirm": "Želite potrditi počiščenje aktivne rezervacije te strani? S tem bodo stran lahko urejali vsi običajno upravičeni uporabniki",
+	"log-name-pagecheckout": "Rezervacije strani",
+	"log-description-pagecheckout": "Sledi stanju rezervacij in shranjevanj strani",
+	"logentry-pagecheckout-checkin": "$1 je {{GENDER:$2|shranil|shranila|shranil_a}} stran $3, ki je bila rezervirana za {{GENDER:$4|uporabnika|uporabnico|uporabnika_co}} $4",
+	"logentry-pagecheckout-checkout": "$1 je {{GENDER:$2|rezerviral|rezervirala|rezerviral_a}} stran $3 za {{GENDER:$4|uporabnika|uporabnico|uporabnika_co}} $4",
+	"pagecheckout-alertbanner-checkout": "Ta stran je trenutno {{GENDER:$1|rezervirana}} za $2",
+	"action-page-checkout-clear": "počistiti rezervacijo strani",
+	"right-page-checkout-clear": "Počisti rezervacijo strani",
+	"pagecheckout-alertbanner-checkout-with-comment": "Ta stran je trenutno {{GENDER:$1|rezervirana}} za $2. Komentar: $3",
+	"page-checkout-workflow-activity-checkout-reason": "Ta stran je trenutno rezervirana zaradi potekajočega delovnega toka",
+	"page-checkout-workflow-activity-checkout-non-generic-reason": "Rezervirano med izvajanjem delovnega toka",
+	"page-checkout-workflow-clear-checkout": "Rezervacija počiščena pri prekinitvi delovnega toka"
+}

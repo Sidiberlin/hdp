@@ -1,0 +1,69 @@
+{
+	"name": "BlueSpiceFilterableTables",
+	"version": "4.5.2",
+	"license-name": "GPL-3.0-only",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceFilterableTables",
+	"author": "Patric Wirth",
+	"descriptionmsg": "bs-filterabletables-extension-description",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 4.3"
+		}
+	},
+	"type": "bluespice",
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceFilterableTables": {
+					"className": "\\BlueSpice\\FilterableTables\\Extension",
+					"extPath": "/BlueSpiceFilterableTables",
+					"package": "BlueSpice Pro"
+				}
+			}
+		},
+		"BlueSpiceVisualEditorConnector": {
+			"PluginModules": [
+				"ext.bluespice.filterabletables.visualEditorPlugin"
+			]
+		}
+	},
+	"MessagesDirs": {
+		"BlueSpiceFilterableTables": [
+			"i18n"
+		]
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\FilterableTables\\": "src/"
+	},
+	"ResourceModules": {
+		"ext.bluespice.filterabletables": {
+			"scripts": [
+				"bluespice.filterabletables.js"
+			]
+		},
+		"ext.bluespice.filterabletables.visualEditorPlugin": {
+			"scripts": [
+				"vec/plugin/FilterableOption.js"
+			],
+			"messages": [
+				"bs-filterabletables-ve-filterable-option"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceFilterableTables/resources"
+	},
+	"HookHandlers": {
+		"addPageProperty": {
+			"class": "BlueSpice\\FilterableTables\\HookHandler\\AddPageProperty"
+		}
+	},
+	"Hooks": {
+		"BeforePageDisplay": "\\BlueSpice\\FilterableTables\\Hook\\BeforePageDisplay\\AddResources::callback",
+		"BSUsageTrackerRegisterCollectors": "BlueSpice\\FilterableTables\\Hook\\BSUsageTrackerRegisterCollectors\\NoOfFilterableTables::callback",
+		"ContentAlterParserOutput": "addPageProperty"
+	},
+	"manifest_version": 2
+}

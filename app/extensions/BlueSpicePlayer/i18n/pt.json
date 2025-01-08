@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hamilton Abreu"
+		]
+	},
+	"bs-player-extension-description": "Embutir um reprodutor multimédia numa página.",
+	"bs-player-pref-autostart": "Iniciar vídeo automaticamente",
+	"bs-player-file-does-not-exist": "O ficheiro não existe.",
+	"bs-player-tag-showtime-desc": "Esta etiqueta permite-lhe embutir um vídeo.",
+	"bs-player-unsupported-type": "Este tipo de ficheiro não é suportado.",
+	"bs-player-config-prefwidth": "Largura padrão dos vídeos",
+	"bs-player-config-prefheight": "Altura padrão dos vídeos",
+	"prefs-videoplayer": "Reprodutor de vídeo"
+}

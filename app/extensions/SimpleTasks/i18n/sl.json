@@ -1,0 +1,36 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eleassar"
+		]
+	},
+	"simple-tasks-desc": "Ustvarjanje nalog za uporabnike",
+	"simple-tasks-task-duedate": "Rok: $1",
+	"simple-tasks-task-desc": "V vsebini strani je ustvarjena naloga",
+	"simple-tasks-notif-key": "Dodelitev naloge",
+	"simple-tasks-notif-message": "vam je {{GENDER:|dodelil|dodelila|dodelil_a}} nalogo: »$1«",
+	"simple-tasks-taskreport-no-results": "Ob izbranih filtrih ni bilo najdenih nalog",
+	"simple-tasks-taskreport-header-task": "Naloga",
+	"simple-tasks-taskreport-header-assignee": "Prejemnik",
+	"simple-tasks-taskreport-header-page": "Pojavi se na strani",
+	"simple-tasks-taskreport-header-due-to": "Rok",
+	"simple-tasks-taskreport-header-state": "Stanje",
+	"simple-tasks-droplet-taskreport-name": "Poročilo o nalogi",
+	"simple-tasks-droplet-taskreport-description": "Ustvari pregled nalog",
+	"simple-tasks-taskreport-inspector-title": "Poročilo o nalogi",
+	"simple-tasks-taskreport-inspector-state-done": "opravljeno",
+	"simple-tasks-taskreport-inspector-state-open": "odprto",
+	"simple-tasks-taskreport-inspector-label-user": "Prejemniki",
+	"simple-tasks-taskreport-inspector-label-namespaces": "Imenski prostori",
+	"simple-tasks-taskreport-inspector-label-due-date": "Rok do",
+	"simple-tasks-taskreport-inspector-label-state": "Stanje",
+	"simple-tasks-taskreport-state-title-open": "Naloga je odprta",
+	"simple-tasks-taskreport-state-title-done": "Naloga je opravljena.",
+	"simple-tasks-taskreport-state-filter-done": "Opravljeno",
+	"simple-tasks-taskreport-state-filter-open": "Odprto",
+	"echo-category-title-simple-tasks-notification-cat": "Naloge",
+	"simple-tasks-notification-cat-tooltip": "Obvesti me, ko so mi dodeljene naloge",
+	"simple-tasks-echo-notification-task-subject": "Na strani $1 vam je dodeljena naloga",
+	"simple-tasks-echo-notification-task-email-body": "{{GENDER:$2|$3 vam je}} na strani $1 {{GENDER:$2|dodelil|dodelila|dodelil_a}} nalogo.\n\n$4",
+	"simple-tasks-echo-notification-task-web-body": "{{GENDER:$1|$2 vam je dodelil|$2 vam je dodelila|$2 vam je dodelil_a}} nalogo: $3"
+}

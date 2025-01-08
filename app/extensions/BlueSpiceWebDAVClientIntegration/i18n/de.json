@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"bs-webdav-ci-desc": "Ermöglicht das Öffnen von Dateien direkt aus dem Browser heraus (Benötigt WebDAV)",
+	"bs-webdav-ci-edit-with": "Mit $1 zur Bearbeitung öffnen",
+	"bs-webdav-ci-show-history": "Dateiversionen anzeigen",
+	"bs-webdav-ci-ms-word": "Microsoft Word",
+	"bs-webdav-ci-ms-excel": "Microsoft Excel",
+	"bs-webdav-ci-ms-powerpoint": "Microsoft PowerPoint",
+	"bs-webdav-ci-zip": "Dateiarchiv",
+	"bs-webdav-ci-generic": "Clientanwendung",
+	"bs-webdav-ci-filehistory": "Versionsgeschichte von $1",
+	"bs-webdav-ci-filehistory-timestamp": "Version vom",
+	"bs-webdav-ci-filehistory-size": "Größe",
+	"bs-webdav-ci-filehistory-user": "Benutzer",
+	"bs-webdav-ci-cannot-open-file": "Die Datei konnte nicht mit Clientanwendung geöffnet werden",
+	"bs-webdav-ci-file-locked-title": "Datei in Bearbeitung",
+	"bs-webdav-ci-file-locked": "Diese Datei ist von '$1' zur Bearbeitung geöffnet. Soll sie schreibgeschützt geöffnet werden?"
+}

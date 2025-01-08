@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kimberli Mäkäräinen (WMNO)",
+			"Yupik"
+		]
+	},
+	"enhancedupload-details-namespace-label": "Nammagomuvuohta",
+	"enhancedupload-list-header-filename": "fiilanamma",
+	"enhancedupload-list-header-error": "meattáhus",
+	"enhancedupload-attachments-tag-grid-file-label": "Fiila",
+	"enhancedupload-attachments-media-dialog-cancel-title": "Gaskkalduhte",
+	"enhancedupload-attachments-media-dialog-add-title": "Lasit",
+	"enhancedupload-attachments-media-dialog-title": "Vállje fiilla",
+	"enhancedupload-ui-action-new-upload-text": "Ođđa fiila",
+	"enhancedupload-upload-media-dialog-cancel-title": "Gaskkalduhte",
+	"enhancedupload-attachments-media-dialog-details-cancel": "Gaskkalduhte",
+	"enhancedupload-ve-attachmentinspector-grid-version": "Čiega veršuvnna",
+	"enhancedupload-attachments-tag-grid-remove-title": "Sihko"
+}

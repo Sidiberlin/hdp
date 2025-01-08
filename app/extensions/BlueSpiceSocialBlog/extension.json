@@ -1,0 +1,184 @@
+{
+	"name": "BlueSpiceSocialBlog",
+	"version": "4.5.2",
+	"license-name": "GPL-3.0-only",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceSocialBlog",
+	"author": "Patric Wirth",
+	"descriptionmsg": "bs-socialblog-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 4.3",
+			"BlueSpiceSocial": ">= 4.3"
+		}
+	},
+	"type": "bluespice",
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceSocialBlog": {
+					"className": "\\BlueSpice\\Social\\Blog\\Extension",
+					"extPath": "/BlueSpiceSocialBlog",
+					"status": "beta",
+					"package": "BlueSpiceSocial"
+				}
+			},
+			"ConfigDefinitionRegistry": {
+				"BSSocialUseBlogTeaser": "\\BlueSpice\\Social\\Blog\\ConfigDefinition\\BSSocialUseBlogTeaser::getInstance",
+				"SocialBlogMainLinksBlog": "\\BlueSpice\\Social\\Blog\\ConfigDefinition\\MainLinksBlog::getInstance"
+			},
+			"EntityRegistry": {
+				"blog": "\\BlueSpice\\Social\\Blog\\EntityConfig\\Blog",
+				"groupblog": "\\BlueSpice\\Social\\Blog\\EntityConfig\\GroupBlog"
+			},
+			"RendererRegistry": {
+				"socialentityblog": "\\BlueSpice\\Social\\Blog\\Renderer\\Entity\\Blog::factory"
+			},
+			"PermissionRegistry": {
+				"social-blog": {
+					"type": "global",
+					"roles": [
+						"editor",
+						"admin",
+						"maintenanceadmin"
+					]
+				},
+				"social-blog-comment": {
+					"type": "global",
+					"roles": [
+						"commenter",
+						"editor",
+						"admin",
+						"maintenanceadmin"
+					]
+				}
+			}
+		},
+		"NotifyMe": {
+			"Events": {
+				"bs-social-event-blog": {
+					"spec": {
+						"class": "\\BlueSpice\\Social\\Blog\\Event\\SocialBlogEvent",
+						"services": [ "DBLoadBalancer", "UserFactory", "GroupPermissionsLookup", "BSEntityFactory" ]
+					},
+					"testable": false,
+					"buckets": [ "content-high-freq" ]
+				}
+			}
+		}
+	},
+	"MessagesDirs": {
+		"BlueSpiceSocialBlog": [
+			"i18n"
+		]
+	},
+	"ExtensionMessagesFiles": {
+		"BlueSpiceSocialBlogAlias": "languages/Blog.alias.php"
+	},
+	"GroupPermissions": {
+		"*": {
+			"social-blog": false,
+			"social-blog-comment": false
+		},
+		"user": {
+			"social-blog": true,
+			"social-blog-comment": true
+		},
+		"sysop": {
+			"social-blog": true,
+			"social-blog-comment": true
+		}
+	},
+	"AvailableRights": [
+		"social-blog",
+		"social-blog-comment"
+	],
+	"SpecialPages": {
+		"Blog": "\\BlueSpice\\Social\\Blog\\Special\\Blog"
+	},
+	"AutoloadClasses": {
+		"BSMigrateBlog": "maintenance/BSMigrateBlog.php"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\Social\\Blog\\": "src/"
+	},
+	"ResourceModules": {
+		"ext.bluespice.socialblog.styles": {
+			"styles": [
+				"bluespice.socialblog.css"
+			]
+		},
+		"ext.bluespice.social.entity.blog": {
+			"dependencies": [
+				"ext.bluespice.social",
+				"ext.bluespice.social.entity",
+				"ext.bluespice.social.entity.text"
+			],
+			"scripts": [
+				"entities/bluespice.social.Entity.Blog.js"
+			],
+			"messages": [
+				"bs-socialblog-entityblog-content-more-btn-more",
+				"bs-socialblog-entityblog-content-more-btn-less"
+			]
+		},
+		"ext.bluespice.social.entity.editor.blog": {
+			"dependencies": [
+				"ext.bluespice.social.entity.editor.text"
+			],
+			"scripts": [
+				"ui/EntityEditorBlog.js"
+			]
+		},
+		"ext.bluespice.social.entity.groupblog": {
+			"dependencies": [
+				"ext.bluespice.social.entity.blog"
+			],
+			"scripts": [
+				"entities/bluespice.social.Entity.GroupBlog.js"
+			]
+		},
+		"ext.bluespice.social.entity.editor.groupblog": {
+			"dependencies": [
+				"ext.bluespice.social.entity.editor.blog"
+			],
+			"scripts": [
+				"ui/EntityEditorGroupBlog.js"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceSocialBlog/resources"
+	},
+	"config_prefix": "bsg",
+	"config": {
+		"BSSocialUseBlogTeaser": {
+			"value": true,
+			"descriptionmsg": "bs-socialblog-toc-useblogteaser",
+			"public": true
+		},
+		"SocialBlogPreloadTitle": {
+			"value": "Template:Blog"
+		},
+		"SocialBlogMainLinksBlog": {
+			"value": false,
+			"public": true,
+			"descriptionmsg": "bs-socialblog-config-mainlinks-blog-label"
+		}
+	},
+	"HookHandlers": {
+		"common-user-interface": {
+			"class": "\\BlueSpice\\Social\\Blog\\HookHandler\\CommonUserInterface",
+			"services": [ "ConfigFactory" ]
+		}
+	},
+	"Hooks": {
+		"LoadExtensionSchemaUpdates": "\\BlueSpice\\Social\\Blog\\Hook\\LoadExtensionSchemaUpdates\\AddBlogMigrationMaintenanceScript::callback",
+		"SkinBuildSidebar": "\\BlueSpice\\Social\\Blog\\Hook\\SkinBuildSidebar\\AddNavigationItem::callback",
+		"BeforePageDisplay": "\\BlueSpice\\Social\\Blog\\Hook\\BeforePageDisplay\\AddResources::callback",
+		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface",
+		"BSUsageTrackerRegisterCollectors": "\\BlueSpice\\Social\\Blog\\Hook\\BSUsageTrackerRegisterCollectors\\NoOfBlogEntries::callback"
+	},
+	"manifest_version": 2
+}

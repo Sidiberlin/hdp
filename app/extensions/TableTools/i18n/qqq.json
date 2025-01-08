@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"HalloWelt! GmbH <support@hallowelt.com>"
+		]
+	},
+	"tabletools-desc": "{{desc|name=tabletools|url=https://www.mediawiki.org/wiki/Extension:TableTools}}",
+	"tabletools-ve-plugin-table-style-sticky": "VisualEditor table option label"
+}

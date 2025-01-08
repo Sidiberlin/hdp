@@ -1,0 +1,35 @@
+{
+	"name": "bluespice/emoticons",
+	"type": "mediawiki-extension",
+	"description": "Renders emoticons in a text as images",
+	"license": "GPL-3.0-only",
+	"require": {
+		"composer/installers": "~1.0|~2"
+	},
+	"require-dev": {
+		"mediawiki/mediawiki-codesniffer": "39.0.0",
+		"mediawiki/minus-x": "1.1.1",
+		"php-parallel-lint/php-console-highlighter": "1.0.0",
+		"php-parallel-lint/php-parallel-lint": "1.3.2"
+	},
+	"scripts": {
+		"test": [
+			"parallel-lint . --exclude vendor --exclude node_modules",
+			"minus-x check .",
+			"@phpcs"
+		],
+		"fix": [
+			"minus-x fix .",
+			"phpcbf"
+		],
+		"phpcs": "phpcs -sp --cache"
+	},
+	"extra": {
+		"installer-name": "BlueSpiceEmoticons"
+	},
+	"config": {
+		"allow-plugins": {
+			"composer/installers": true
+		}
+	}
+}

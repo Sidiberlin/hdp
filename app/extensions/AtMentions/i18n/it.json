@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beta16"
+		]
+	},
+	"at-mentions-inspector-title": "Menziona un utente",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|da [[User:$1|$1]]}}"
+}

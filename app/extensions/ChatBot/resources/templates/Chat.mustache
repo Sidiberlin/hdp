@@ -1,0 +1,47 @@
+<div id="chat" role="region" aria-label="chatbot" style="display: none">
+  <div id="chatContainer" role="dialog" aria-modal="true">
+    <div class="chat-header">
+      <div class="header-background"></div>
+      <div class="header-top-row">
+        <h2>{{headline}}</h2>
+        <div class="button-bar">
+          <button id="resizeChat" title="{{resize_button}}"></button>
+          <button id="minimizeChat" title="{{minimize_button}}"></button>
+          <button id="closeChat" title="{{close_button}}"></button>
+        </div>
+      </div>
+      <div class="header-bottom-row">
+        <a href="{{logo_link}}" target="_blank"> <div class="header-logo active"></div></a>
+        <div class="button-bar">
+          <button id="exportChat" title="{{export_button}}"></button>
+        </div>
+      </div>
+    </div>
+	<div id="chat-banner" class="chat-banner invisible">
+		<div class="chat-banner-buttons">
+			<button id="chat-banner-help" class="chat-banner-help" title="{{banner_help_button}}"></button>
+			<button id="chat-banner-close" class="chat-banner-close" title="{{banner_close_button}}"></button>
+		</div>
+		<div class="chat-banner-message" role="alert">{{{chat_banner_message}}}</div>
+	</div>
+    <div class="chat-body" id="chatBody"></div>
+    <div class="chat-footer">
+      <div id="errorMessageContainer" role="alert">
+        <button id="dismissError" title="{{dismiss_error_button}}"></button>
+      </div>
+      <div id="followUpPanel" class="follow-up-options hidden"></div>
+      <div class="send-message-container">
+        <textarea rows="3" id="messageInput" placeholder="{{input_placeholder}}"></textarea>
+        <button id="sendMessage" title="{{send_button}}"></button>
+      </div>
+      <div class="chat-disclaimers">
+        <p>{{{disclaimer_footer}}}</p>
+      </div>
+    </div>
+    <div id="restoreSessionMessage">
+      <div>{{restore_session}}</div>
+      <div class="spinner"></div>
+    </div>
+  </div>
+  <button id="maximizeChat" title="{{maximize_button}}"></button>
+</div>

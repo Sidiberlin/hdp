@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"GuoPC",
+			"Lakejason0"
+		]
+	},
+	"unifiedtaskoverview-desc": "提供包含用户任务总览的特殊页面",
+	"unifiedtaskoverview": "我的任务",
+	"unifiedtaskoverview-label-no-task": "目前没有需要完成的任务。",
+	"unifiedtaskoverview-personal-url-my-tasks": "任务",
+	"unifiedtaskoverview-search-placeholder": "搜索"
+}

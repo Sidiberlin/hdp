@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bosogo"
+		]
+	},
+	"bs-bookshelf-prof-defaultview-images": "Сүрөттөр",
+	"bs-bookshelf-ve-bookmeta-attr-title-label": "Аталыш",
+	"bs-bookshelf-book-grid-title": "Китептер",
+	"bs-bookshelf-ga-manager-label": "Китептер",
+	"bs-bookshelf-ve-bookshelf-attr-book-label": "Китеп",
+	"bs-bookshelf-ve-bookmeta-attr-author-label": "Автор",
+	"bs-bookshelf-mainlinks-label": "Китептер"
+}

@@ -1,0 +1,41 @@
+	/**
+	 * Create a direct link to a given uploaded file.
+	 * This will make a broken link if $file is false.
+	 *
+	 * @param Title $title
+	 * @param File|bool $file File object or false
+	 * @param string $html Pre-sanitized HTML
+	 * @return string HTML
+	 *
+	 * @todo Handle invalid or missing images better.
+	 */
+	public static function makeMediaLinkFile( Title $title, $file, $html = '' ) {
+		if ( $file && $file->exists() ) {
+			$url = $file->getURL();
+			$class = 'internal';
+		} else {
+			$url = self::getUploadUrl( $title );
+			$class = 'new';
+		}
+
+		$alt = $title->getText();
+		if ( $html == '' ) {
+			$html = $alt;
+		}
+
+		$ret = '';
+		$attribs = array(
+			'href' => $url,
+			'class' => $class,
+			'title' => $alt
+		);
+
+		if ( !Hooks::run( 'LinkerMakeMediaLinkFile',
+			array( $title, $file, &$html, &$attribs, &$ret ) ) ) {
+			wfDebug( "Hook LinkerMakeMediaLinkFile changed the output of link "
+				. "with url {$url} and text {$html} to {$ret}\n", true );
+			return $ret;
+		}
+
+		return Html::rawElement( 'a', $attribs, $html );
+	}

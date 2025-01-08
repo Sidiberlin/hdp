@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"আফতাবুজ্জামান"
+		]
+	},
+	"datetimetools-desc": "দৃশ্যমান সম্পাদনায় তারিখের সরঞ্জাম প্রদান করে",
+	"datetimetools-ve-inspector-title": "তারিখ সম্পাদনা করুন",
+	"datetimetools-ve-inspector-date-picker-label": "তারিখ নির্বাচন করুন",
+	"datetimetools-droplet-date-name": "তারিখ",
+	"datetimetools-droplet-date-description": "একটি তারিখ সন্নিবেশ করুন"
+}

@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"FinlandMan",
+			"MITO",
+			"Nike",
+			"Pxos",
+			"Pyscowicz",
+			"Silvonen",
+			"Yupik"
+		]
+	},
+	"bs-privacy-admintool-text": "Yksityisyys",
+	"bs-privacy-anonymization-new-username-label": "Uusi käyttäjänimi",
+	"bs-privacy-cancel-request-button": "Peruuta pyyntö",
+	"bs-privacy-admin-request-grid-column-user": "Käyttäjä",
+	"bs-privacy-admin-request-grid-column-action": "Toiminto",
+	"bs-privacy-transparency-show-all-data-button": "Näytä kaikki tiedot",
+	"bs-privacy-transparency-export-export-format-label": "Vientimuoto",
+	"bs-privacy-transparency-view-data-dialog-close": "Sulje",
+	"bs-privacy-prefs-consent-cookies": "Hyväksyn evästeiden tallentamisen",
+	"bs-privacy-prefs-privacypolicyonlogin-label": "Hyväksy \"Tietosuojakäytäntö\" ja \"Käyttöehdot\" kirjautuessasi",
+	"bs-privacy-consent-save-button": "Tallenna",
+	"bs-privacy-timestamp-with-days-ago-today": "$1 (tänään)",
+	"bs-privacy-consent-bool-true": "Kyllä",
+	"bs-privacy-consent-bool-false": "Ei",
+	"echo-category-title-bs-privacy-cat": "Tietosuojaan liittyvät toimet",
+	"bs-privacy-cookie-consent-mw-provider-accept-all-btn-label": "Hyväksy kaikki",
+	"bs-privacy-cookie-consent-group-necessary-label": "Välttämättömät evästeet",
+	"bs-privacy-cookie-consent-group-necessary-desc": "Evästeet, jotka ovat tarpeellisia sivuston toiminnan kannalta",
+	"bs-privacy-cookie-convenience-group-label": "Hyödylliset evästeet",
+	"bs-privacy-cookie-consent-mw-provider-settings-dialog-save": "Tallenna",
+	"bs-privacy-cookie-consent-mw-provider-settings-dialog-cancel": "Sulje"
+}

@@ -1,0 +1,305 @@
+{
+    "name": "ChatBot",
+    "version": "1.0",
+    "license-name": "GPL-3.0-only",
+    "author": [
+        "[http://www.hallowelt.com Hallo Welt! GmbH]"
+    ],
+    "url": "http://www.hallowelt.com",
+    "descriptionmsg": "chatbot-desc",
+    "requires": {
+        "MediaWiki": ">= 1.39.0"
+    },
+    "MessagesDirs": {
+        "ChatBot": "i18n"
+    },
+    "AutoloadNamespaces": {
+        "ChatBot\\": "src/",
+        "ChatBot\\Tests\\": "tests/phpunit"
+    },
+    "callback": "\\ChatBot\\Extension::onRegistration",
+    "attributes": {
+		"MWStakeContentProvisioner": {
+			"ContentManifests": {
+				"DefaultContentProvisioner": [
+					"extensions/ChatBot/data/Content/ContentDropletsTemplates/manifest.json"
+				]
+			}
+		},
+        "BlueSpiceExtendedSearch": {
+            "ExternalIndexRegistry": {
+                "bmbf-update-index-table": "ChatBot\\ExternalIndex\\UpdateIndexTable::factory"
+            }
+        },
+		"BlueSpiceFoundation": {
+			"ConfigDefinitionRegistry": {
+				"BmbfFeedbackAnswerProblemSelection": "ChatBot\\ConfigDefinition\\ProblemSelection::getInstance",
+				"BmbfFeedbackAnswerCauseSelection": "ChatBot\\ConfigDefinition\\ProblemCause::getInstance"
+			}
+		},
+		"ContentDroplets": {
+			"Droplets": {
+				"chatbotmeta": {
+					"class": "ChatBot\\ContentDroplets\\ChatbotMetaDroplet"
+				}
+			}
+		},
+		"ChatBot": {
+			"AdminModule": {
+				"stats": {
+					"class": "ChatBot\\AdminModule\\Stats",
+					"services": [ "DeepsetFeedbackApi" ]
+				}
+			}
+		},
+		"BlueSpicePrivacy": {
+			"CookieConsentNativeMWCookies": {
+				"chatbot_attention_tracker": {
+					"group": "convenience",
+					"addPrefix": true
+				}
+			}
+		}
+	},
+    "Hooks": {
+        "LoadExtensionSchemaUpdates": "add-tables",
+        "MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface",
+        "MWStakeRunJobsTriggerRegisterHandlers": "ChatBot\\Hook\\MWStakeRunJobsTriggerRegisterHandlers\\AddBackgroundProcess::callback",
+        "SetupAfterCache": "setUpPermissions",
+        "getUserPermissionsErrors": "setUpPermissions",
+		"ParserFirstCallInit": "addTags",
+		"UserLoggedIn": "setUserLoggedInFlag",
+		"MakeGlobalVariablesScript": "setUserLoggedInFlag"
+    },
+    "HookHandlers": {
+        "add-tables": {
+            "class": "ChatBot\\HookHandler\\AddTables"
+        },
+        "common-user-interface": {
+            "class": "ChatBot\\HookHandler\\CommonUserInterface",
+            "services": [ "MainConfig", "BmbfRoleLookup" ]
+        },
+        "setUpPermissions": {
+            "class": "ChatBot\\Hook\\SetUpPermissions"
+        },
+		"addTags": {
+			"class": "ChatBot\\HookHandler\\AddTags",
+			"services": [ "Deepset.AdminModuleFactory" ]
+		},
+		"setUserLoggedInFlag": {
+			"class": "ChatBot\\HookHandler\\SetUserLoggedInFlag"
+		}
+    },
+    "ResourceFileModulePaths": {
+        "localBasePath": "resources",
+        "remoteExtPath": "ChatBot/resources"
+    },
+    "ResourceModules": {
+        "ext.chatbot": {
+            "scripts": [
+                "js/dist/bmbf.chat.bundle.js"
+            ],
+            "styles": [
+                "styles/chatBot.less"
+            ],
+            "messages": [
+                "chat-greeting",
+                "chat-api-error",
+                "chat-api-load-error",
+                "chat-answer-processing",
+                "chat-missing-config",
+                "chat-api-references-not-found-error",
+                "chat-reference-list-button",
+				"chat-close-popup-info-label",
+				"chat-close-popup-close-and-export-btn-label",
+				"chat-close-popup-close-btn-label",
+				"chat-close-popup-cancel-btn-label",
+                "chat-export-popup-title",
+                "chat-export-popup-export-button",
+                "chat-export-popup-cancel-button",
+                "chat-export-popup-format-label",
+				"chat-close-popup-header",
+                "chat-export-error",
+				"chat-copy-to-clipboard",
+				"chat-popup-feedback-problem-heading",
+				"chat-popup-feedback-problem-cause",
+				"chat-popup-feedback-problem-desc",
+				"chat-popup-feedback-problem-mail",
+				"chat-popup-feedback-problem-optional",
+				"chat-popup-feedback-send-button-label",
+				"chatbot-followup_short",
+				"chatbot-followup_elaborate",
+				"chatbot-followup_bulletpoints",
+				"chatbot-followup_onlytext",
+				"chatbot-followup_citations",
+				"chatbot-follow-up",
+				"chatbot-attachments-popup-header",
+				"chat-reference-attachments",
+				"chatbot-all-documents-popup-header",
+                "chat-copy-button-title",
+                "chat-accurate-feedback-button-title",
+                "chat-fairly-accurate-feedback-button-title",
+                "chat-inaccurate-feedback-button-title",
+                "chat-restore-session-text",
+                "chat-status-mode-side-by-side",
+                "chat-status-mode-normal",
+                "chat-status-mode-full-screen"
+            ],
+            "dependecies": [
+                "ext.bluespice"
+            ]
+        },
+		"ext.chatbot.meta": {
+			"scripts": [
+				"js/objects/ChatbotMetaDroplet.js"
+			],
+			"messages": [
+				"chatbot-droplet-meta-label"
+			]
+		},
+		"ext.chatbot.admin.feedbackstats": {
+			"scripts": [
+				"js/ext.chatbot.admin.feedbackstats.js"
+			],
+			"styles": [
+				"styles/ext.chatbot.admin.feedbackstats.less"
+			],
+			"messages": [
+				"chatbot-admin-help-msg"
+			]
+		},
+		"ext.chatbot.attention.seeker": {
+			"scripts": [
+				"js/ext.chatbot.attention.seeker.js"
+			]
+		}
+    },
+    "RestRoutes": [
+        {
+            "path": "/bmbf-export-chat",
+            "method": "POST",
+            "class": "ChatBot\\Rest\\CreateChatPdf",
+            "services": [
+                "BmbfChatMessageFactory",
+                "ConfigFactory",
+				"TitleFactory"
+            ]
+        },
+		{
+            "path": "/bmbf-odf-export-chat",
+            "method": "POST",
+            "class": "ChatBot\\Rest\\CreateChatOdf",
+            "services": [
+                "BmbfChatMessageFactory",
+				"TitleFactory"
+            ]
+        },
+        {
+            "path": "/bmbf/chat",
+            "method": "GET",
+            "class": "ChatBot\\Rest\\Chat",
+            "services": [ "DeepsetChatApi" ]
+        },
+        {
+            "path": "/bmbf/session",
+            "method": "GET",
+            "class": "ChatBot\\Rest\\Session",
+            "services": [ "DeepsetSessionApi" ]
+        },
+        {
+            "path": "/bmbf/history",
+            "method": "POST",
+            "class": "ChatBot\\Rest\\History",
+            "services": [ "DeepsetHistoryApi" ]
+        },
+		{
+            "path": "/bmbf-feedback-mail/{id}",
+            "method": "POST",
+            "class": "ChatBot\\Rest\\SendFeedbackMail",
+			"services": [ "MainConfig", "TitleFactory", "BmbfChatMessageFactory" ]
+        },
+		{
+            "path": "/bmbf/feedback/{id}",
+            "method": "POST",
+            "class": "ChatBot\\Rest\\ChatFeedback",
+			"services": [ "DeepsetFeedbackApi" ]
+        }
+    ],
+    "ServiceWiringFiles": [
+        "includes/ServiceWiring.php"
+    ],
+    "config": {
+        "BmbfDeepsetApiIndexUrl": {
+            "value": "",
+            "description": "Deepset API URL for indexing files"
+        },
+        "BmbfDeepsetIndexSupportedFileExtensions": {
+            "value": ["txt", "csv", "json", "xml", "html", "md", "pdf", "docx", "pptx", "xlsx"],
+            "description": "Index files with these extensions"
+        },
+        "BmbfDeepsetApiChatUrl": {
+            "value": "",
+            "description": "Deepset API URL for interacting with chatbot"
+        },
+        "BmbfDeepsetApiSearchSessionsUrl": {
+            "value": "",
+            "description": "Deepset API URL for creating new search session for chatbot"
+        },
+        "BmbfDeepsetApiFeedbackUrl": {
+            "value": "",
+            "description": "Deepset API URL for creating user feedback to a specific response. This url uses v2 and IDs instead on names for workspace and pipeline"
+        },
+        "BmbfDeepsetApiKey": {
+            "value": "",
+            "description": "Add and insert API Key from: https://cloud.deepset.ai/settings/connections"
+        },
+		"BmbfFeedbackAnswerProblemSelection": {
+			"value": [ "unvollständige Antwort", "falsche Antwort", "zu kurze Antwort", "missverständliche Antwort", "keine inhaltliche Antwort", "falsche Referenzen", "Auffälliges Chatbotverhalten", "Sonstiges" ],
+            "description": "Pre selection of problems for answer feedbakc"
+		},
+		"BmbfFeedbackAnswerCauseSelection": {
+			"value": [ "unklar", "HdP-Inhalt", "Chatbot" ]
+		},
+		"BMBFFeedbackMail": {
+			"value": ""
+		},
+		"BmbfDeepsetApiTagUrl": {
+			"value": "",
+			"description": "Deepset API URL for creating tags for feedbacl to a specific response. This url uses v2 and IDs instead on names for workspace and pipeline"
+		},
+		"BmbfDeepsetPipelineStatsUrl": {
+			"value": "",
+			"description": "Deepset API URL for getting statistics of a pipeline"
+		}
+    },
+    "namespaces": [
+        {
+            "id": 5000,
+            "constant": "NS_BMBF",
+            "name": "BMBF",
+            "content": true,
+            "defaultcontentmodel": "wikitext"
+        },
+        {
+            "id": 5001,
+            "constant": "NS_BMBF_TALK",
+            "name": "BMBF_talk",
+            "defaultcontentmodel": "wikitext"
+        },
+        {
+            "id": 5002,
+            "constant": "NS_PT",
+            "name": "Projektträger",
+            "content": true,
+            "defaultcontentmodel": "wikitext"
+        },
+        {
+            "id": 5003,
+            "constant": "NS_PT_TALK",
+            "name": "Projektträger_talk",
+            "defaultcontentmodel": "wikitext"
+        }
+    ],
+    "load_composer_autoloader": true,
+    "manifest_version": 2
+}

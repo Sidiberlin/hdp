@@ -1,0 +1,475 @@
+{
+	"name": "CollabPads",
+	"author": [
+		"Hamish Slater",
+		"Pavlo Yashchenko",
+		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:CollabPads",
+	"descriptionmsg": "collabpads-desc",
+	"license-name": "GPL-3.0-only",
+	"type": "other",
+	"version": "1.0.2",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"VisualEditor": "*",
+			"OOJSPlus": ">= 2.0.0"
+		}
+	},
+	"DefaultUserOptions": {
+		"collabPads-startSessionDialog-dontShowAgain": 0
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"PermissionRegistry": {
+				"collabpadsessions-admin": {
+					"type": "global",
+					"roles": [ "admin" ]
+				}
+			}
+		},
+		"BlueSpiceDiscoveryTitleActionPrimaryActionModifier": {
+			"editaction": {
+				"class": "MediaWiki\\Extension\\CollabPads\\CollabEditActionModifier",
+				"services": []
+			}
+		},
+		"BlueSpiceDiscovery": {
+			"BreadcrumbDataProviderRegistry": {
+				"collab-edit": {
+					"class": "MediaWiki\\Extension\\CollabPads\\BreadcrumbDataProvider\\CollabEditProvider"
+				}
+			}
+		},
+		"CollabPads": {
+			"PluginModules": []
+		},
+		"EnhancedStandardUIs": {
+			"HistoryPagePlugins": {
+				"collabpads": {
+					"class": "MediaWiki\\Extension\\CollabPads\\EnhancedStandardUIs\\CollabPadsHistoryPlugin",
+					"services": [ "DBLoadBalancer" ]
+				}
+			}
+		}
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\CollabPads\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"MediaWiki\\Extension\\CollabPads\\Tests": "tests/phpunit"
+	},
+	"GroupPermissions": {
+		"*": {
+			"collabpadsessions-admin": false
+		},
+		"sysop": {
+			"collabpadsessions-admin": true
+		}
+	},
+	"RecentChangesFlags": {
+		"collab-edit": {
+			"letter": "collabpads-recentchangesflags-letter",
+			"title": "collabpads-recentchangesflags-title",
+			"legend": "collabpads-recentchangesflags-legend",
+			"class": "collab-edit",
+			"grouping": "any"
+		}
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"config": {
+		"CollabPadsBackendServiceURL": {
+			"description": "Where to connect to for the backend service",
+			"value": "http://localhost:8081/collabpad"
+		}
+	},
+	"SpecialPages": {
+		"CollabPadSessions": {
+			"class": "MediaWiki\\Extension\\CollabPads\\Special\\CollabPadSessions",
+			"services": [ "PermissionManager" ]
+		}
+	},
+	"HookHandlers": {
+		"discovery-skin": {
+			"class": "MediaWiki\\Extension\\CollabPads\\HookHandler\\DiscoverySkin",
+			"services": [ "CollabPadsCollabSessionManager", "HookContainer" ]
+		},
+		"CollabEditAction": {
+			"class": "MediaWiki\\Extension\\CollabPads\\HookHandler\\CollabEditActionHookHandler",
+			"services": [ "NamespaceInfo", "PermissionManager", "DBLoadBalancer" ]
+		},
+		"RecentChangeSave": {
+			"class": "MediaWiki\\Extension\\CollabPads\\HookHandler\\RecentChangeSaveHandler",
+			"services": [ "CollabPadsCollabSessionManager", "CollabPadsCollabRevisionManager" ]
+		},
+		"IntegrateIntoHistory": {
+			"class": "MediaWiki\\Extension\\CollabPads\\Hook\\PageHistoryLineEnding\\IntegrateIntoHistory",
+			"services": [ "LinkRenderer", "CollabPadsCollabRevisionManager" ]
+		},
+		"IntegrateIntoNonGroupedRecentChanges": {
+			"class": "MediaWiki\\Extension\\CollabPads\\Hook\\EnhancedChangesListModifyLineData\\IntegrateIntoNonGroupedRecentChanges",
+			"services": [ "LinkRenderer", "CollabPadsCollabRevisionManager" ]
+		},
+		"IntegrateIntoGroupedRecentChanges": {
+			"class": "MediaWiki\\Extension\\CollabPads\\Hook\\EnhancedChangesListModifyLineData\\IntegrateIntoGroupedRecentChanges",
+			"services": [ "LinkRenderer", "CollabPadsCollabRevisionManager" ]
+		},
+		"IntegrateIntoContributions": {
+			"class": "MediaWiki\\Extension\\CollabPads\\Hook\\ContributionsLineEnding\\IntegrateIntoContributions",
+			"services": [ "LinkRenderer", "CollabPadsCollabRevisionManager", "UserFactory" ]
+		},
+		"AddCollabPadSessionTable": {
+			"class": "MediaWiki\\Extension\\CollabPads\\Hook\\LoadExtensionSchemaUpdates\\AddCollabPadSessionTable"
+		},
+		"AddCollabPadRevisionTable": {
+			"class": "MediaWiki\\Extension\\CollabPads\\Hook\\LoadExtensionSchemaUpdates\\AddCollabPadRevisionTable"
+		},
+		"AddCollabPadAclTokenTable": {
+			"class": "MediaWiki\\Extension\\CollabPads\\Hook\\LoadExtensionSchemaUpdates\\AddCollabPadAclTokenTable"
+		},
+		"userPreference": {
+			"class": "MediaWiki\\Extension\\CollabPads\\HookHandler\\UserPreference"
+		},
+		"saferEditMessage": {
+			"class": "MediaWiki\\Extension\\CollabPads\\HookHandler\\SaferEditMessage",
+			"services": [ "DBLoadBalancer" ]
+		},
+		"articleInfoSkip": {
+			"class": "MediaWiki\\Extension\\CollabPads\\HookHandler\\ArticleInfoSkip",
+			"services": [ "DBLoadBalancer" ]
+		},
+		"BlockDefaultEdit": {
+			"class": "MediaWiki\\Extension\\CollabPads\\Hook\\GetUserPermissionsErrors\\BlockDefaultEdit",
+			"services": [
+				"CollabPadsCollabSessionManager"
+			]
+		},
+		"lastEditInfo": {
+			"class": "MediaWiki\\Extension\\CollabPads\\HookHandler\\LastEditInfo",
+			"services": [ "DBLoadBalancer" ]
+		},
+		"addModules": {
+			"class": "MediaWiki\\Extension\\CollabPads\\HookHandler\\AddModules"
+		}
+	},
+	"Hooks": {
+		"BlueSpiceDiscoveryTemplateDataProviderAfterInit": "discovery-skin",
+		"SkinTemplateNavigation::Universal": [ "CollabEditAction" ],
+		"LoadExtensionSchemaUpdates": [
+			"AddCollabPadSessionTable",
+			"AddCollabPadRevisionTable",
+			"AddCollabPadAclTokenTable"
+		],
+		"MediaWikiPerformAction": "CollabEditAction",
+		"ListDefinedTags": "MediaWiki\\Extension\\CollabPads\\HookHandler\\CollabEditActionHookHandler::onRegisterTags",
+		"ChangeTagsListActive": "MediaWiki\\Extension\\CollabPads\\HookHandler\\CollabEditActionHookHandler::onRegisterTags",
+		"RecentChange_save": [ "RecentChangeSave" ],
+		"PageHistoryLineEnding": "IntegrateIntoHistory",
+		"EnhancedChangesListModifyBlockLineData": "IntegrateIntoNonGroupedRecentChanges",
+		"EnhancedChangesListModifyLineData": "IntegrateIntoGroupedRecentChanges",
+		"ContributionsLineEnding": "IntegrateIntoContributions",
+		"ContribsPager::getQueryInfo": "IntegrateIntoContributions",
+		"SpecialContributions::formatRow::flags": "IntegrateIntoContributions",
+		"GetPreferences": "userPreference",
+		"BSSaferEditMessage": "saferEditMessage",
+		"BSArticleInfoSkip": "articleInfoSkip",
+		"getUserPermissionsErrors": "BlockDefaultEdit",
+		"LastEditInfo": "lastEditInfo",
+		"BeforePageDisplay": "addModules"
+	},
+	"MessagesDirs": {
+		"CollabPads": [
+			"i18n"
+		]
+	},
+	"ResourceModules": {
+		"ext.collabPads": {
+			"scripts": [
+				"init.js",
+				"tools/collabpad.ui.StartSessionDialog.js"
+			],
+			"styles": [
+				"styles/dialogWidows.css"
+			],
+			"dependencies": [
+				"ext.visualEditor.core",
+				"oojs-ui",
+				"mediawiki.widgets",
+				"ext.visualEditor.supportCheck",
+				"ext.visualEditor.targetLoader",
+				"ext.visualEditor.base",
+				"ext.visualEditor.mediawiki",
+				"oojs-ui.styles.icons-interactions",
+				"oojs-ui.styles.icons-layout",
+				"ext.oOJSPlus.widgets",
+				"mediawiki.widgets.UsersMultiselectWidget",
+				"oojs-ui.styles.icons-accessibility"
+			],
+			"messages": [
+				"collabpads-start-dialog-title",
+				"collabpads-start-dialog-message",
+				"collabpads-dialog-cancel-button",
+				"collabpads-start-label",
+				"collabpads-toolbar-save-button",
+				"collabpads-dialog-accept-button",
+				"collabpads-start-dialog-show-again",
+				"collabpads-save-dialog-minor-edit",
+				"collabpads-save-dialog-watch-page"
+			]
+		},
+		"ext.CollabPads.collabTarget": {
+			"scripts": [
+				"ve/ve.init.mw.CollabTarget.js",
+				"tools/collabpad.ui.LeaveSessionDialog.js",
+				"tools/collabpad.ui.ResetChangesDialog.js",
+				"tools/collabpad.ui.ExportWikitextDialog.js",
+				"tools/ve.ui.CollabAuthorListPopupTool.js",
+				"tools/collabpad.ui.CollabAuthorItemWidget.js",
+				"tools/collabpad.ui.InvalidChangeDialog.js"
+			],
+			"styles": [
+				"styles/dialogWidows.css",
+				"styles/ve/ve.init.mw.CollabTarget.css",
+				"styles/collabpad.ui.CollabAuthorItemWidget.css"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"color-picker",
+				"ext.visualEditor.core",
+				"ext.visualEditor.targetLoader",
+				"ext.visualEditor.base",
+				"ext.visualEditor.mediawiki",
+				"oojs-ui.styles.icons-interactions",
+				"oojs-ui.styles.icons-layout",
+				"mediawiki.widgets",
+				"ext.oOJSPlus.widgets",
+				"bs.socket.io"
+			],
+			"messages": [
+				"collabpads-save-dialog-save-button",
+				"collabpads-copylink-label",
+				"collabpads-participants-label",
+				"collabpads-leave-tooltip",
+				"visualeditor-pagemenu-tooltip",
+				"collabpads-leave-dialog-leave-button",
+				"collabpads-save-dialog-title",
+				"collabpads-save-dialog-summary",
+				"collabpads-leave-dialog-message",
+				"collabpads-leave-dialog-title",
+				"collabpads-reset-changes-dialog-title",
+				"collabpads-reset-changes-dialog-message",
+				"collabpads-reset-changes-dialog-reset-changes-button",
+				"collabpads-reset-changes-tooltip",
+				"collabpads-dialog-cancel-button",
+				"collabpads-clipboard-copy-success",
+				"collabpads-clipboard-copy-fail",
+				"collabpads-save-complete-notif",
+				"collabpads-invalid-change-dialog-title",
+				"collabpads-invalid-change-dialog-message",
+				"collabpads-invalid-change-dialog-delete-button",
+				"collabpads-invalid-change-dialog-save-button"
+			],
+			"targets": [
+				"desktop",
+				"mobile"
+			]
+		},
+		"ext.CollabPads.collabTarget.desktop": {
+			"scripts": [
+				"ve/ve.init.mw.DesktopCollabTarget.js"
+			],
+			"styles": [
+				"styles/ve/ve.init.mw.DesktopArticleTarget.css"
+			],
+			"skinStyles": {
+				"vector": [
+					"includes/ve/mw/ve-mw/init/styles/ve.init.mw.DesktopArticleTarget-vector.css"
+				],
+				"apex": [
+					"includes/ve/mw/ve-mw/init/styles/ve.init.mw.DesktopArticleTarget-apex.css"
+				],
+				"monobook": [
+					"includes/ve/mw/ve-mw/init/styles/ve.init.mw.DesktopArticleTarget-monobook.css"
+				],
+				"minerva": [
+					"includes/ve/mw/ve-mw/init/styles/ve.init.mw.DesktopArticleTarget-minerva.css"
+				]
+			},
+			"dependencies": [
+				"ext.CollabPads.collabTarget",
+				"ext.visualEditor.core.desktop",
+				"ext.visualEditor.mwextensions.desktop",
+				"ext.visualEditor.desktopTarget"
+			],
+			"messages": [
+			],
+			"targets": [
+				"desktop"
+			]
+		},
+		"ext.CollabPads.collabTarget.init": {
+			"packageFiles": [
+				"ext.collabpads.CollabTarget.init.js",
+				{
+					"name": "backendServiceURL.json",
+					"callback": "MediaWiki\\Extension\\CollabPads\\InsertCollabpadsConfig::makeConfig"
+				},
+				{
+					"name": "pluginModules.json",
+					"callback": "MediaWiki\\Extension\\CollabPads\\InsertCollabpadsConfig::getPluginModules"
+				}
+			]
+		},
+		"ext.CollabPads.rebase": {
+			"scripts": [
+				"ve/dm/ve.dm.RebaseClient.js",
+				"ve/dm/ve.dm.SurfaceSynchronizer.js"
+			],
+			"dependencies": [
+				"ext.CollabPads.collabTarget.init",
+				"oojs-ui",
+				"mediawiki.widgets",
+				"ext.visualEditor.supportCheck",
+				"ext.visualEditor.core",
+				"ext.visualEditor.sanitize",
+				"bs.socket.io",
+				"ext.oOJSPlus.widgets"
+			],
+			"messages": [
+				"visualeditor-rebase-corrupted-document-error",
+				"visualeditor-rebase-corrupted-document-title",
+				"visualeditor-rebase-client-connecting",
+				"visualeditor-template-tools-definition.json",
+				"collabpads-author-join",
+				"collabpads-author-leave",
+				"collabpads-author-save",
+				"collabpads-already-participating-title",
+				"collabpads-already-participating-message",
+				"collabpads-out-of-sync",
+				"collabpads-session-ended-title",
+				"collabpads-session-ended-message"
+			],
+			"targets": [
+				"desktop",
+				"mobile"
+			]
+		},
+		"collabpads.grid": {
+			"scripts": [
+				"panel/collabpad.panel.SessionList.js",
+				"store/collabpad.store.Sessions.js"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"ext.collabpads.api",
+				"ext.oOJSPlus.dialogs",
+				"ext.oOJSPlus.widgets",
+				"ext.oOJSPlus.data"
+			],
+			"messages": [
+				"visualeditor-template-tools-definition.json",
+				"collabpads-namespace-label",
+				"collabpads-page-label",
+				"collabpads-owner-label",
+				"collabpads-participants-label"
+			]
+		},
+		"ext.collabpads.sessions": {
+			"scripts": [
+				"ext.collabpads.sessions.js"
+			],
+			"dependencies": [
+				"collabpads.grid",
+				"mediawiki.api"
+			],
+			"messages": [
+				"bs-categorymanager-draganddrop-text",
+				"bs-categorymanager-dlg-new-prompt",
+				"bs-categorymanager-dlg-new-title",
+				"bs-categorymanager-removecategoryconfirm-text",
+				"bs-categorymanager-removecategoryconfirm-title",
+				"bs-categorymanager-addcategory-dialog-error-title",
+				"bs-categorymanager-addcategory-dialog-error-duplicate-title",
+				"bs-categorymanager-addcategory-dialog-error-duplicate-text",
+				"bs-categorymanager-action-show-category",
+				"bs-categorymanager-rename-category",
+				"bs-categorymanager-rename-category-new-name",
+				"bs-categorymanager-move-new-name",
+				"bs-categorymanager-replace-in-pages"
+			]
+		},
+		"ext.collabpads.api": {
+			"scripts": [
+				"api/Api.js"
+			]
+		},
+		"bs.socket.io": {
+			"scripts": [
+				"socket.io/socket.io.min.js"
+			],
+			"targets": [
+				"desktop",
+				"mobile"
+			]
+		},
+		"collabpad.ui.participants.styles": {
+			"styles": [
+				"styles/collabpad.ui.participants.styles.css"
+			]
+		},
+		"ext.collabpads.enhanced.history": {
+			"scripts": [
+				"ext.collabpads.enhanced.history.js"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "CollabPads/resources"
+	},
+	"Actions": {
+		"collab-edit": "EditAction"
+	},
+	"RestRoutes": [
+		{
+			"method": "GET",
+			"path": "/collabpads/session/delete/{pageNamespace}/{pageTitle}",
+			"class": "MediaWiki\\Extension\\CollabPads\\Api\\Rest\\DeleteSessionHandler",
+			"services": [ "CollabPadsCollabSessionManager" ]
+		}, {
+			"method": "GET",
+			"path": "/collabpads/acl/{pageTitle}/{token}",
+			"class": "MediaWiki\\Extension\\CollabPads\\Api\\Rest\\AccessUserHandler",
+			"services": [ "PermissionManager", "UserFactory", "DBLoadBalancer" ]
+		}, {
+			"path": "/collabpads/session/start/{pageNamespace}/{pageTitle}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\CollabPads\\Api\\Rest\\GetSessionHandler",
+			"services": [ "CollabPadsCollabSessionManager" ]
+		}, {
+			"path": "/collabpads/session/exists/{pageNamespace}/{pageTitle}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\CollabPads\\Api\\Rest\\GetSessionExistsHandler",
+			"services": [ "CollabPadsCollabSessionManager" ]
+		}, {
+			"path": "/collabpads/session/create",
+			"method": "POST",
+			"class": "MediaWiki\\Extension\\CollabPads\\Api\\Rest\\SetSessionHandler",
+			"services": [ "CollabPadsCollabSessionManager" ]
+		}, {
+			"path": "/collabpads/session/recordrevisionparticipants/{pageNamespace}/{pageTitle}/{revisionId}",
+			"method": "POST",
+			"class": "MediaWiki\\Extension\\CollabPads\\Api\\Rest\\SessionRecordRevisionParticipants",
+			"services": [ "CollabPadsCollabSessionManager", "CollabPadsCollabRevisionManager", "RevisionLookup", "ActorNormalization", "DBLoadBalancer" ]
+		}, {
+			"path": "/collabpads/allsessions",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\CollabPads\\Api\\Rest\\GetSessionsHandler",
+			"services": [ "CollabPadsCollabSessionManager", "PermissionManager" ]
+		}
+	],
+	"manifest_version": 2
+}

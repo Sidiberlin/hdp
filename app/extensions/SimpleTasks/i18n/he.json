@@ -1,0 +1,36 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80"
+		]
+	},
+	"simple-tasks-desc": "יצירת מטלות למשתמשים",
+	"simple-tasks-task-duedate": "תאריך יעד: $1",
+	"simple-tasks-task-desc": "מטלה שנוצרה בתוכן הדף",
+	"simple-tasks-notif-key": "הקצאת מטלה",
+	"simple-tasks-notif-message": "{{GENDER:$1|הקצה|הקצתה}} לך משימה: \"$1\"",
+	"simple-tasks-taskreport-no-results": "לא נמצאו מטלות עם המסננים שנבחרו",
+	"simple-tasks-taskreport-header-task": "מטלה",
+	"simple-tasks-taskreport-header-assignee": "המבצע המוקצה",
+	"simple-tasks-taskreport-header-page": "מופיעה בדף",
+	"simple-tasks-taskreport-header-due-to": "תאריך יעד",
+	"simple-tasks-taskreport-header-state": "מצב",
+	"simple-tasks-droplet-taskreport-name": "דו\"ח משימה",
+	"simple-tasks-droplet-taskreport-description": "יצירת סקירה כללית של משימות",
+	"simple-tasks-taskreport-inspector-title": "דו\"ח משימה",
+	"simple-tasks-taskreport-inspector-state-done": "בוצעה",
+	"simple-tasks-taskreport-inspector-state-open": "פתוחה",
+	"simple-tasks-taskreport-inspector-label-user": "המבצעים המוקצים",
+	"simple-tasks-taskreport-inspector-label-namespaces": "מרחבי שם",
+	"simple-tasks-taskreport-inspector-label-due-date": "לביצוע עד",
+	"simple-tasks-taskreport-inspector-label-state": "מצב",
+	"simple-tasks-taskreport-state-title-open": "המטלה פתוחה",
+	"simple-tasks-taskreport-state-title-done": "המטלה פתוחה",
+	"simple-tasks-taskreport-state-filter-done": "בוצעה",
+	"simple-tasks-taskreport-state-filter-open": "פתוחה",
+	"echo-category-title-simple-tasks-notification-cat": "משימות",
+	"simple-tasks-notification-cat-tooltip": "להודיע לי כאשר מוקצות לי משימות",
+	"simple-tasks-echo-notification-task-subject": "הוקצתה לך משימה בדף $1",
+	"simple-tasks-echo-notification-task-email-body": "$3 {{GENDER:$2|הקצה|הקצתה}} לך משימה לך בדף $1.\n\n$4",
+	"simple-tasks-echo-notification-task-web-body": "$2 {{GENDER:$1|הקצה|הקצתה}} לך משימה לך בדף $3."
+}

@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong"
+		]
+	},
+	"bs-pro-distribution-createaccount-fail-max-accounts-exceed": "최대 계정 수를 초과했습니다",
+	"droplets-modal-dialog-bg-color-label": "버튼 배경색",
+	"bs-pro-distribution-pdfembed-inspector-input-label": "PDF 파일",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "너비",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "높이",
+	"bs-pro-distribution-pdfembed-inspector-title": "PDF 포함",
+	"bs-pro-distribution-pdfembed-droplet-name": "PDF 미리 보기",
+	"bs-pro-distribution-pdfembed-droplet-description": "위키페이지에 PDF 파일의 미리 보기 포함"
+}

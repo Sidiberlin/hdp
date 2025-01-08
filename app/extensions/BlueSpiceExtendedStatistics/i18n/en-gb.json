@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Piano1forte2"
+		]
+	},
+	"apihelp-query+statistics-reports-example": "Provide all reports for type 'mytype', for dates 2021-09-14 and 2021-09-15"
+}

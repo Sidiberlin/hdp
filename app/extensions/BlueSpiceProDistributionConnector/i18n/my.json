@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dr Lotus Black"
+		]
+	},
+	"droplets-modal-dialog-bg-color-blue": "အပြာ",
+	"droplets-modal-dialog-bg-color-red": "အနီ",
+	"droplets-modal-dialog-bg-color-neutral": "အဖြူ",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "အကျယ်",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "အမြင့်",
+	"bs-pro-distribution-pdfembed-inspector-page-label": "စာမျက်နှာဖြင့် စတင်ပါ"
+}

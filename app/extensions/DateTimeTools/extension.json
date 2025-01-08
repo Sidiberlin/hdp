@@ -1,0 +1,79 @@
+{
+	"name": "DateTimeTools",
+	"version": "1.0.6",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[https://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:DateTimeTools",
+	"descriptionmsg": "datetimetools-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"attributes": {
+		"VisualEditor": {
+			"PluginModules": [
+				"ext.dateTimeTools.ve"
+			]
+		},
+		"ContentDroplets": {
+			"Droplets": {
+				"date": {
+					"class": "MediaWiki\\Extension\\DateTimeTools\\ContentDroplets\\DateDroplet"
+				}
+			}
+		}
+	},
+	"MessagesDirs": {
+		"DateTimeTools": "i18n"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\DateTimeTools\\": "src/",
+		"MediaWiki\\Extension\\DateTimeTools\\Tests\\": "tests/phpunit"
+	},
+	"ResourceModules": {
+		"ext.dateTimeTools.styles": {
+			"styles": [
+				"ext.dateTimeTools.less"
+			]
+		},
+		"ext.dateTimeTools.ve": {
+			"scripts": [
+				"bootstrap.js",
+				"ce/DateTimeToolsNode.js",
+				"dm/DateTimeToolsNode.js",
+				"inspector/DateTimeToolsInspector.js",
+				"tool/DateTimeToolsInspectorTool.js"
+			],
+			"styles": [
+				"ext.dateTimeTools.less"
+			],
+			"messages": [
+				"datetimetools-ve-inspector-title",
+				"datetimetools-ve-inspector-date-picker-label"
+			],
+			"dependencies": [
+				"ext.visualEditor.mwcore",
+				"mediawiki.widgets.DateInputWidget"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "DateTimeTools/resources"
+	},
+	"Hooks": {
+		"ParserFirstCallInit": "handleTag"
+	},
+	"HookHandlers": {
+		"handleTag": {
+			"class": "MediaWiki\\Extension\\DateTimeTools\\Hook\\HandleTag",
+			"services": [ "DateTimeToolParser" ]
+		}
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"manifest_version": 2,
+	"load_composer_autoloader": true
+}

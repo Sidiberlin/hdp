@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hanna Tardos"
+		]
+	},
+	"bs-pro-distribution-createaccount-fail-max-accounts-exceed": "Túllépted a maximális fiókszámot",
+	"bs-pro-distribution-config-license-key": "BlueSpice licenckulcs"
+}

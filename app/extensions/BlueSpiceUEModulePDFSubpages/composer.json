@@ -1,0 +1,40 @@
+{
+	"name": "bluespice/uemodulepdfsubpages",
+	"type": "mediawiki-extension",
+	"description": "Enables recursive export of pages into PDF format with subpages",
+	"license": "GPL-3.0-only",
+	"require": {
+		"composer/installers": "~1.0|~2"
+	},
+	"autoload": {
+		"psr-4": {
+			"BlueSpice\\UEModulePDFSubpages\\": "src"
+		}
+	},
+	"require-dev": {
+		"mediawiki/mediawiki-codesniffer": "39.0.0",
+		"mediawiki/minus-x": "1.1.1",
+		"php-parallel-lint/php-console-highlighter": "1.0.0",
+		"php-parallel-lint/php-parallel-lint": "1.3.2"
+	},
+	"scripts": {
+		"test": [
+			"parallel-lint . --exclude vendor --exclude node_modules",
+			"minus-x check .",
+			"@phpcs"
+		],
+		"fix": [
+			"minus-x fix .",
+			"phpcbf"
+		],
+		"phpcs": "phpcs -sp --cache"
+	},
+	"extra": {
+		"installer-name": "BlueSpiceUEModulePDFSubpages"
+	},
+	"config": {
+		"allow-plugins": {
+			"composer/installers": true
+		}
+	}
+}

@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"bs-usagetracker-db-collector-desc": "Дукхалла $1",
+	"bs-usagetracker-open-tasks": "ХӀинца йолу ханна сайтан Анализ йеш йу. {{PLURAL:$1|Цхьа анализ|$1 анализ}} йисина йиллина. <a href='$2'>(Карлайаккха)</a>"
+}

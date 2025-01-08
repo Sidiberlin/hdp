@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"W"
+		]
+	},
+	"bs-bookshelfui-widget-editor-link-text": "Рэдагаваць гэтую кнігу",
+	"bs-bookshelfui-new-book-title": "Стварыць новую кнігу",
+	"bs-bookshelfui-new-book-text": "Загаловак кнігі",
+	"bs-bookshelfui-delete-book-title": "Выдаліць кнігу",
+	"bs-bookshelfui-manager-title": "Загаловак",
+	"bs-bookshelfui-manager-deletingprogress-title": "Выдаленьне...",
+	"bs-bookshelfui-dlg-choosewikipage-title": "Вікістаронка",
+	"bs-bookshelfui-dlg-choosewikipage-cbxArticleLabel": "Вікістаронка",
+	"bs-bookshelfui-dlg-metadata-title": "Мэтазьвесткі",
+	"bs-bookshelfui-book-type": "Від кнігі",
+	"bs-bookshelfui-dlg-choosecategory-label": "Катэгорыя",
+	"bs-bookshelfui-dlg-type-label": "Крыніца",
+	"bs-bookshelfui-flyout-title": "Сьпіс кніг",
+	"bs-bookshelfui-book-title-link-edit": "Рэдагаваць кнігу",
+	"bs-bookshelfui-book-title-link-edit-text": "Рэдагаваць кнігу",
+	"bs-bookshelfui-bookmetatag-title": "Загаловак",
+	"bs-bookshelfui-bookmetatag-subtitle": "Падзагаловак"
+}

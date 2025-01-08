@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Cedric31",
+			"Nicolas Eynaud"
+		]
+	},
+	"prefs-articleinfo": "Informacion sus la pagina",
+	"bs-articleinfo-pref-CheckRevisionInterval": "Interval de mesa a jorn en segondas:",
+	"bs-articleinfo-flyout-title": "Pagina d'informacion",
+	"bs-articleinfo-nav-link-title": "Pagina d'informacion",
+	"bs-articleinfo-flyout-categorylinks-title": "Categorias",
+	"bs-articleinfo-flyout-lasteditedtime-text": "Darriera modificacion",
+	"bs-articleinfo-flyout-lastediteduser-text": "Darrier editor",
+	"bs-articleinfo-flyout-subpages-title": "Sospaginas",
+	"bs-articleinfo-pagetool-subpages-tooltip": "Sospaginas",
+	"bs-articleinfo-dialog-subpages-title": "Sospaginas"
+}

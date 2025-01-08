@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"CERminator",
+			"Srđan"
+		]
+	},
+	"spl-desc": "Omogućava ispis i brojanje podstranica",
+	"spl-nosubpages": "Stranica \"$1\" nema podstranica za prikaz.",
+	"spl-subpages-par-sort": "Smjer za sortiranje. Dozvoljene vrijednosti: \"asc\" i \"desc\"."
+}

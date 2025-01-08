@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"EbelleMarcel",
+			"Olivier Moukodi"
+		]
+	},
+	"vector-languages": "Bwambo",
+	"vector-language-button-label": "{{PLURAL:$1|$1 bwambo}}",
+	"vector-no-language-button-label": "Bata bwambo",
+	"vector-action-addsection": "Báta tótí",
+	"vector-action-delete": "Sumwa",
+	"vector-action-move": "Dina lá peńa",
+	"vector-action-protect": "Tata",
+	"vector-view-create": "Béwékédi",
+	"vector-view-history": "Jènè la kwaṅ",
+	"vector-more-actions": "Pètè",
+	"vector-searchsuggest-containing": "Wasa la mapapa ma alidi <strong class=\"cdx-typeahead-search__search-footer__query\">$1</strong>",
+	"vector-toc-beginning": "Bebotedi"
+}

@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aguve",
+			"Amuzujoe",
+			"Azorbli",
+			"Natsubee",
+			"E4Esau"
+		]
+	},
+	"vector-languages": "Gbegbɔgblɔwo",
+	"vector-language-button-label": "{{PLURAL:$1|$1 gbe|$1 gbeawo}}",
+	"vector-no-language-button-label": "Tsɔ gbegbɔgblɔwo kpe ɖe eŋu",
+	"vector-action-addsection": "Tsɔ tanya kpi",
+	"vector-action-delete": "Tutui",
+	"vector-action-move": "Ɖɔli eƒe nɔƒe",
+	"vector-action-protect": "Kpɔ eta",
+	"vector-view-create": "Dze egɔme",
+	"vector-view-edit": "Trɔ asi le eŋu",
+	"vector-view-history": "Kpɔ xoxoawo",
+	"vector-view-view": "Xlẽ",
+	"vector-view-viewsource": "Kpɔ alesi woŋlɔe",
+	"vector-more-actions": "Bubuwo",
+	"vector-searchsuggest-containing": "Di axa siwo me<strong class=\"cdx-typeahead-search__search-footer__query\">$1</strong> le"
+}

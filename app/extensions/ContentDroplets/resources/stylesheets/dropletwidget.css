@@ -1,0 +1,49 @@
+.droplet {
+	padding: 10px;
+	border-radius: 5px;
+	border: 1px solid #e9e9ee;
+	width: 48%;
+}
+
+.droplet:hover,
+.droplet:focus,
+.droplet.droplet-selected {
+	background-color: #e9e9ee;
+}
+
+.droplet .droplet-title {
+	font-weight: bold;
+}
+
+.droplet .droplet-text {
+	font-size: 11px;
+	color: #696969;
+}
+
+.oo-ui-horizontalLayout > .oo-ui-widget {
+	display: flex;
+}
+
+.droplet .oo-ui-horizontalLayout {
+	align-items: center;
+	display: flex;
+}
+
+.droplet .content-droplet {
+	margin-left: 10px;
+	margin-top: 8px;
+}
+
+.droplet .oo-ui-fieldLayout {
+	margin-top: 0;
+}
+
+.droplet .icon-droplet {
+	margin-top: 8px;
+	background-position: center;
+	background-repeat: no-repeat;
+	background-size: 50px;
+	background-image: url('./../images/contentdroplets-icon.svg' );
+	height: 50px;
+	flex: 0 0 3rem;
+}

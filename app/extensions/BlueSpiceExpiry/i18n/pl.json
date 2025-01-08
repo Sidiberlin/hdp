@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Chrumps",
+			"Rail",
+			"WaldiSt"
+		]
+	},
+	"bs-expiry-unexpire-article": "Strona wygasła",
+	"bs-expiry-header-pagename": "Strona",
+	"bs-expiry-header-date": "Upływa w dniu",
+	"bs-expiry-article-label": "Strona",
+	"bs-expiry-unknown-page-msg": "Strona nie istnieje.",
+	"bs-expiry-title-delete": "Usuń wygaśnięcie",
+	"bs-expiry-edit-grid-header-username": "Użytkownik",
+	"bs-expiry-edit-grid-header-date": "Data",
+	"bs-expiry-edit-grid-header-comment": "Komentarz",
+	"bs-expiry-create-reminder-label": "Stwórz przypomnienie",
+	"bs-expiry-reminder-type-expiry": "Wygasa",
+	"bs-expiry-smwpropertyvalueprovider-isexpired-desc": "Mówi, jeśli strona wygasła",
+	"bs-expiry-dialog-action-no": "Nie"
+}

@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Winston Sung"
+		]
+	},
+	"pagecheckout-desc": "Omogućuje ekskluzivna prava na stranici za korisnika",
+	"pagecheckout-error-no-title": "Nevažeći naslov",
+	"pagecheckout-error-no-user": "Nevažeći korisnik"
+}

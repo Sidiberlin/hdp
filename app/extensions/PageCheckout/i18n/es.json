@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"DiegoAmbrocio"
+		]
+	},
+	"pagecheckout-error-no-title": "El título no es válido",
+	"pagecheckout-error-no-user": "Usuario dado no es válido",
+	"pagecheckout-error-has-checkout": "Página ya revisada",
+	"pagecheckout-error-save-failed": "No se pudo comprobar la página",
+	"pagecheckout-error-save-event": "No se ha podido guardar el evento",
+	"pagecheckout-lockdown-reason": "La acción \"$1\" no está permitida, porque la página es comprobada por $2"
+}

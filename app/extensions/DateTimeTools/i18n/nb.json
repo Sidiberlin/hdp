@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jon Harald Søby"
+		]
+	},
+	"datetimetools-desc": "Tilbyr datoverktøy i VisualEditor",
+	"datetimetools-ve-inspector-title": "Rediger dato",
+	"datetimetools-ve-inspector-date-picker-label": "Velg dato",
+	"datetimetools-droplet-date-name": "Dato",
+	"datetimetools-droplet-date-description": "Setter inn en dato"
+}

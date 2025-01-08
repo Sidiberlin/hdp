@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saraiki"
+		]
+	},
+	"notifyme-desc": "اطلاع نامے",
+	"notifyme-channel-email": "ای میل",
+	"notifyme-ui-subscription-set-add": "شامل کرو",
+	"notifyme-ui-subscription-manager-type-none": "کوئی وی کائنی",
+	"notifyme-ui-email-frequency-instant": "فوری",
+	"notifyme-ui-email-frequency-daily": "روزانہ",
+	"notifyme-ui-subscriptionset-editor-category-label": "ونکی",
+	"notifyme-ui-subscriptionset-category-label": "ونکی",
+	"notifyme-ui-subscriptionset-watchlist-label": "پارھا تندیر",
+	"notifyme-ui-dialog-set-editor-cancel": "منسوخ",
+	"notifyme-ui-dialog-set-editor-create": "تھی ڳیا",
+	"notifyme-mail-template-edit-help-category-logo": "لوگو",
+	"notifyme-mail-template-edit-help-category-int": "بین الاقوامیت",
+	"notifyme-mail-template-edit-help-category-colors": "رنگ",
+	"notifyme-mail-template-edit-help-header-description": "تفصیل",
+	"notifyme-mail-template-edit-help-header-example": "مثال",
+	"notifyme-mail-greeting": "سلام",
+	"notifyme-mail-manage-notifications-link": "نوٹیفکیشن ترجیحاں",
+	"notifyme-notification-center-filter-label-categories": "ونکیاں",
+	"notifyme-notification-center-filter-label-namespaces-none": "مین",
+	"notifyme-notification-tester-field-agent": "عامل",
+	"notifyme-notification-tester-field-title": "ورقہ",
+	"notifyme-notification-tester-field-event": "ایونٹ",
+	"notifyme-ui-edit": "لکھو",
+	"notifyme-ui-delete": "مٹاؤ",
+	"notifyme-navbar-button-title": "اطلاع نامے",
+	"notifyme-navbar-button-aria-label": "اطلاع نامے",
+	"notifyme-notification-center-tab-label-unread": "اݨ پڑھے",
+	"notifyme-notification-center-tab-label-read": "پڑھا ہویا",
+	"notifyme-notification-center-tab-label-all": "یکے",
+	"notifyme-notification-center-help-menu-aria-label": "ترتیباں",
+	"notifyme-notification-center-help-menu-preferences-label": "ترجیحاں",
+	"notifyme-notification-center-pagination-aria-next": "اڳلا",
+	"notifyme-notification-center-pagination-aria-previous": "پچھلا"
+}

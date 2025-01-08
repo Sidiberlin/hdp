@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"MthulisiNcube"
+		]
+	},
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-title": "Pheji tsheki - out tjiyeto",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "N'hingisi",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user-help": "Pheji ileli lohhuligwa yani",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename": "Pheji zina",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename-help": "Hhapo kusazolebhwa, pheji lendongoloso yokuti kohingwa tjini inohingisiwa",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-force": "Kombeledza?",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-force-help": "Ma kulilebeswa, ndoodusa tjeki awuthi iyapo (kutigwa bamwe banohhingisi) ndikobumba tjeki awuthi intswa",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-title": "Pheji tsheki - in tjiyeto",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "N'hingisi",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user-help": "Pheji ileli lohhuligwa yani",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Pheji zina",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename-help": "Hhapo kusazolebhwa, pheji lendongoloso yokuti kohingwa tjini inohingisiwa"
+}

@@ -1,0 +1,52 @@
+{
+	"name": "HeaderFooter",
+	"version": "4.0.0",
+	"author": "Jean-Lou Dupont, James Montalvo, Douglas Mason",
+	"url": "https://www.mediawiki.org/wiki/Extension:HeaderFooter",
+	"descriptionmsg": "headerfooter-desc",
+	"type": "other",
+	"requires": {
+		"MediaWiki": ">= 1.35.0"
+	},
+	"AutoloadClasses": {
+		"HeaderFooter": "HeaderFooter.class.php",
+		"ApiGetHeaderFooter": "ApiGetHeaderFooter.php"
+	},
+	"APIModules": {
+		"getheaderfooter": "ApiGetHeaderFooter"
+	},
+	"Hooks": {
+		"OutputPageParserOutput": "HeaderFooter::hOutputPageParserOutput",
+		"ResourceLoaderGetConfigVars": "HeaderFooter::onResourceLoaderGetConfigVars",
+		"GetDoubleUnderscoreIDs": "HeaderFooter::onGetDoubleUnderscoreIDs"
+	},
+	"MessagesDirs": {
+		"HeaderFooter": [
+			"i18n"
+		]
+	},
+	"ExtensionMessagesFiles": {
+		"HeaderFooterMagic": "languages/HeaderFooter.i18n.magic.php"
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "modules",
+		"remoteExtPath": "HeaderFooter/modules"
+	},
+	"ResourceModules": {
+		"ext.headerfooter.dynamicload": {
+			"scripts": [
+				"dynamicload.js"
+			]
+		}
+	},
+	"config_prefix": "egHeaderFooter",
+	"config": {
+		"EnableAsyncHeader": {
+			"value": false
+		},
+		"EnableAsyncFooter":  {
+			"value": false
+		}
+	},
+	"manifest_version": 2
+}

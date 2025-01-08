@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Krisztina"
+		]
+	},
+	"bs-bookshelf-tag-bookshelf-desc": "Egy könyv fejezet szerinti navigációját szúrja be a könyv lapjába. Ezen a címkén keresztül az említett lapok bekerülnek a könyvbe. A számozás automatikusan a tartalomjegyzékhez igazodik.",
+	"bs-bookshelf-tagerror-no-attribute-given": "Nincs megadott attribútum! Használja a <strong>src</strong> hogy beállítsa a  tartalomjegyzéket.",
+	"bs-bookshelf-add-to-book-added": "\"$1\" könyvhöz hozzáadta a lapot.",
+	"bs-bookshelf-tag-bookshelf-box-desc": "Egy könyv fejezet szerinti navigációját szúrja be a könyv lapjába, amely nem része a könyvnek. A számozás automatikusan a tartalomjegyzékhez igazodik."
+}

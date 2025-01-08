@@ -1,0 +1,55 @@
+/*!
+ * VisualEditor AuthorInterface AuthorItemWidget styles.
+ *
+ * @copyright 2011-2020 VisualEditor Team and others; see http://ve.mit-license.org
+ */
+
+.collabpad-ui-authorItemWidget {
+	position: relative;
+	margin: 0.2em 0;
+	padding-left: 2.5em;
+	line-height: 2em;
+}
+
+.collabpad-ui-authorItemWidget-color {
+	position: absolute;
+	width: 2em;
+	height: 2em;
+	left: 0;
+}
+
+.collabpad-ui-authorItemWidget-color .oojsplus-color-picker-tool-button {
+	width: 100%;
+	height: 100%;
+	bottom: 3px;
+}
+
+.collabpad-ui-authorItemWidget-color .oojsplus-color-picker-tool-button .oo-ui-buttonElement-button {
+	width: 100%;
+	height: 100%;
+}
+
+:root {
+	--default-color: #066244;
+}
+
+.collabpads-participants-heading {
+	padding-top: 0.1em;
+	padding-bottom: 0.5em;
+}
+
+.collabpads-copy-link {
+	display: inline-flex;
+	text-decoration: none;
+	margin: 0.2em;
+}
+
+.collabpads-copy-link span {
+	display: flex;
+	position: relative;
+}
+
+.collabpads-copy-link .oo-ui-iconElement-icon {
+	margin-left: 0.1em;
+	margin-right: 0.8em;
+}

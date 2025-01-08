@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80"
+		]
+	},
+	"datetimetools-desc": "מספקת כלי תאריך לעורך החזותי",
+	"datetimetools-ve-inspector-title": "עריכת תאריך",
+	"datetimetools-ve-inspector-date-picker-label": "בחירת תאריך",
+	"datetimetools-droplet-date-name": "תאריך",
+	"datetimetools-droplet-date-description": "הוספת תאריך"
+}

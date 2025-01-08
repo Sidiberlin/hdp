@@ -1,0 +1,71 @@
+{
+	"name": "BlueSpicePlayer",
+	"version": "4.5.2",
+	"license-name": "GPL-3.0-only",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpicePlayer",
+	"author": [
+		"Tobias Weichart",
+		"Markus Glaser"
+	],
+	"descriptionmsg": "bs-player-extension-description",
+	"type": "bluespice",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpicePlayer": {
+					"className": "\\BlueSpice\\Player\\Extension",
+					"extPath": "/BlueSpicePlayer",
+					"package": "BlueSpice Pro"
+				}
+			},
+			"TagRegistry": {
+				"showtime": "BlueSpice\\Player\\Tag\\ShowTime"
+			}
+		}
+	},
+	"MessagesDirs": {
+		"BlueSpicePlayer": [
+			"i18n"
+		]
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\Player\\": "src/"
+	},
+	"ResourceModules": {
+		"ext.bluespice.showtime": {
+			"scripts": [
+				"vendor/plyr/js/plyr.js",
+				"bluespice.bluespiceplayer.js"
+			],
+			"styles": [
+				"vendor/plyr/css/plyr.css",
+				"plyr.settings.css"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpicePlayer/resources"
+	},
+	"DefaultUserOptions": {
+		"bs-showtime-pref-autostart": false
+	},
+	"config_prefix": "bsg",
+	"config": {
+		"ShowtimePrefWidth": {
+			"value": 320,
+			"descriptionmsg": "bs-player-config-prefwidth"
+		},
+		"ShowtimePrefHeight": {
+			"value": 240,
+			"descriptionmsg": "bs-player-config-prefheight"
+		}
+	},
+	"Hooks": {
+		"GetPreferences": "\\BlueSpice\\Player\\Hook\\GetPreferences\\Autostart::callback"
+	},
+	"manifest_version": 2
+}

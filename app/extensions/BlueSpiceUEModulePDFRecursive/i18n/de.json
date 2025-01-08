@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mglaser",
+			"Robert Vogel <vogel@hallowelt.biz>",
+			"Schmackes"
+		]
+	},
+	"bs-uemodulepdfrecursive-extension-description": "Ermöglicht die Ausgabe von Artikeln und verlinkten Artikel im PDF Format."
+}

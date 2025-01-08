@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Borichèt",
+			"Dragonòt"
+		]
+	},
+	"oathauth-desc": "A dà un supòrt d'autenticassion dovrand HMAC basà su dle ciav a usagi ùnich",
+	"specialpages-group-oath": "Autenticassion a Doi Fator",
+	"oathauth-account": "Nòm dël Cont dij Doi Fator:",
+	"oathauth-secret": "Ciav Segreta dij Doi Fator:",
+	"oathauth-enable": "Abilité l'Autenticassion a Doi Fator",
+	"oathauth-token": "Marca-pòst",
+	"oathauth-disable": "Disabilité l'Autenticassion a Doi Fator",
+	"oathauth-validatedoath": "Credensiaj a doi fator validà. L'autenticassion a doi fator a sarà dorenavan aplicà.",
+	"oathauth-failedtovalidateoath": "Falì a validé le credensiaj a doi fator",
+	"oathauth-disabledoath": "Autenticassion a doi fator disabilità."
+}

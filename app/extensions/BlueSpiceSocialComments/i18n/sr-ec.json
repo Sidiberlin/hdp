@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kizule",
+			"Milicevic01"
+		]
+	},
+	"bs-social-comment-event-create-desc": "Нови коментар",
+	"bs-social-comment-event-edit-desc": "Коментар измењен",
+	"bs-social-comment-event-delete-desc": "Коментар обрисан",
+	"bs-social-comment-for-user-event-create-desc": "Нови коментар на вашој корисничкој страници",
+	"bs-social-comment-for-user-event-edit": "{{GENDER:$1|изменио је|изменила је}} коментар на $2",
+	"bs-social-comment-for-user-event-edit-desc": "Коментар на вашој корисничкој страници је измењен",
+	"bs-social-comment-for-user-event-delete": "{{GENDER:$1|обрисао је|обрисала је}} коментар на $2",
+	"bs-social-comment-for-user-event-delete-desc": "Коментар на вашој корисничкој страници је обрисан"
+}

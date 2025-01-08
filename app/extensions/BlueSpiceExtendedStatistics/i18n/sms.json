@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yupik"
+		]
+	},
+	"bs-statistics-diagram": "Kõjldõs",
+	"bs-statistics-year": "Eeʹǩǩ",
+	"bs-statistics-month": "Määnpââʹjj",
+	"bs-statistics-day": "Peiʹvv",
+	"bs-statistics-list": "Listt",
+	"bs-statistics-label-name": "Nõmm",
+	"bs-statistics-label-page": "Seidd",
+	"bs-statistics-diag-number-of-edits": "Muttsi lååkkmieʹrr",
+	"bs-statistics-label-searchterm": "Ooccâmsääʹnn",
+	"bs-statistics-filter-category": "Kategoria",
+	"bs-statistics-portlet-numberofedits": "Muttsi lååkkmieʹrr",
+	"bs-statistics-portlet-numberofpages": "Seiddmieʹrr",
+	"bs-statistics-portletconfig-periodday": "Jåhtta",
+	"bs-statistics-panel-title-result": "Puåđõs",
+	"bs-statistics-paging-page-size": "Seeid šorradvuõtt",
+	"bs-statistics-aggregated-report-filter-category-multi": "Kategoria",
+	"bs-statistics-aggregated-report-filter-date-start": "Äʹlǧǧempeiʹvv",
+	"bs-statistics-aggregated-report-filter-interval-day": "Peiʹvv",
+	"bs-statistics-aggregated-report-filter-interval-week": "Neäʹttel",
+	"bs-statistics-aggregated-report-filter-interval-month": "Määnpââʹjj",
+	"bs-statistics-aggregated-report-filter-interval-year": "Eeʹǩǩ",
+	"bs-statistics-aggregated-report-filter-page": "Seidd",
+	"bs-statistics-aggregated-report-filter-user": "Õõʹnni",
+	"bs-statistics-aggregated-report-filter-user-multi": "Õõʹnni",
+	"bs-statistics-ve-progress-attr-width-label": "Kobddâdvuõtt",
+	"bs-statistics-filters": "Siʹllʼjeei",
+	"bs-statistics-diag-search-queries": "Ooccâmkõjldõõzz"
+}

@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fraxinus.cs"
+		]
+	},
+	"notification-bs-readconfirmation-remind-daily-summary": "Upozornění na potvrzení, že jste přečetli $1",
+	"notification-bs-readconfirmation-remind-daily-subject": "Upozornění na potvrzení, že jste přečetli $1",
+	"notification-bs-readconfirmation-remind-daily-body": "Potvrďte prosím, že jste přečetli $1"
+}

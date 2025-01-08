@@ -1,0 +1,77 @@
+<div class="databox">
+<div class="tbl">
+{|
+|-
+!Owner / assigned to:
+|role or (user-)name
+|-
+!Scope:
+|business units affected
+|-
+!Approver:
+|(user-)name
+|-
+!
+|
+|}
+</div>
+<div class="tbl">
+{| 
+|-
+!Status:
+|'''in progress''' / active / obsolete
+|-
+!Valid from - to:
+|mm/dd/yyyy - mm/dd/yyyy
+|-
+!
+|
+|}
+</div>
+</div>
+==Purpose==
+Why is this guideline necessary? Who benefits from it?  
+
+Policies are designed to help employees make decisions in line with company values.  
+
+==Provisions==
+Describe in sub-sections what rules are established by this policy. Consider your audience and make sure your statements are concise and clear. Rules of conduct are important so that everyone knows their rights and obligations.
+
+Policies should be supported by procedures set out in various documents, such as work instructions.
+
+A policy is only effective if it clearly defines what the consequences of non-compliance with individual rules are.
+===Rule 1===
+Explain, with concrete examples, what the rule specifies and how it is intended to be implemented. 
+
+=== Rule 2 ===
+Explain, with concrete examples, what the rule specifies and how it is intended to be implemented.
+
+==Roles and responsibilities==
+Please list all roles related to this guideline and link to any supporting documents, such as procedure, work instructions or checklists.
+{| class="wikitable" style="width:100%;"
+!'''Role'''
+!'''Currently assigned'''
+!'''Responsibility'''
+!Supporting documents
+|-
+|Position title
+|Person currently responsible
+|Description of the responsibility
+|
+|-
+|...
+|
+|
+|
+|-
+|...
+|
+|
+|
+|}
+
+==Definitions==
+Define terms that are potentially ambiguous,  technical or specialized.
+
+*'''Term 1:''' Definition
+*'''Term 2:''' Definition

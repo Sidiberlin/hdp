@@ -1,0 +1,32 @@
+.bs-userminiprofile[data-bs-whoisonline-marker] {
+	&.bs-whoisonline-marker-online {
+		a::after {
+			color: greenyellow;
+			text-stroke: 1px grey;
+			-webkit-text-stroke: 1px grey;
+			content: '\2B24';
+			position: absolute;
+			vertical-align: bottom;
+			right: 5%;
+			bottom: 5%;
+			font-size: 100%;
+		}
+	}
+	&[data-bs-userinfo] {
+		pointer-events: none;
+	}
+}
+
+.wo-tooltip {
+	opacity: 1;
+}
+
+// overlay can be behind sidebars
+.wo-link > div.oo-ui-popupWidget {
+	z-index: 1050;
+}
+
+.wo-link .oojsplus-user-widget {
+	display: block;
+	padding: 5px 0;
+}

@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Pyscowicz"
+		]
+	},
+	"bs-pro-distribution-pdfembed-inspector-input-label": "PDF-tiedosto",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "Leveys",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "Korkeus"
+}

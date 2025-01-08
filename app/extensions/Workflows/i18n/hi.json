@@ -1,0 +1,30 @@
+{
+	"@metadata": {
+		"authors": [
+			"Abijeet Patro"
+		]
+	},
+	"workflows-ui-starter-action-done": "शुरू करें",
+	"workflows-ui-workflow-overview-action-back": "पीछे",
+	"workflows-ui-action-cancel": "रद्द करें",
+	"workflows-ui-trigger-action-create": "सहेजें",
+	"workflows-ui-trigger-action-choose": "जारी रखें",
+	"workflows-ui-trigger-action-delete": "हटाएँ",
+	"workflows-ui-trigger-field-name": "नाम",
+	"workflows-ui-trigger-field-active": "सक्रिय",
+	"workflows-action-edit-label": "संपादित करें",
+	"workflows-action-delete-label": "हटाएँ",
+	"workflows-ui-trigger-field-description": "विवरण",
+	"workflows-activity-property-username": "सदस्यनाम",
+	"workflows-activity-property-comment": "टिप्पणी",
+	"workflows-editor-editor-button-save": "सहेजें",
+	"workflows-ui-editor-inspector-properties": "गुणधर्म",
+	"workflows-ui-editor-inspector-properties-additional-name": "नाम",
+	"workflows-ui-editor-inspector-name": "नाम",
+	"workflows-ui-editor-inspector-activity-send-mail-property-subject": "विषय",
+	"workflows-ui-editor-inspector-activity-send-mail-property-body": "मुख्यभाग",
+	"workflows-ui-editor-inspector-activity-edit-page-property-user": "सदस्य",
+	"workflows-ui-editor-inspector-activity-edit-page-property-mode-replace": "बदलें",
+	"workflows-ui-editor-inspector-activity-set-template-param-property-user": "सदस्य",
+	"workflows-ui-editor-inspector-activity-set-template-param-property-comment": "टिप्पणी"
+}

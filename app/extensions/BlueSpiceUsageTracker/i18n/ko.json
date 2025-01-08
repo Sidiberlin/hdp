@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dr1t jg",
+			"Ykhwong"
+		]
+	},
+	"prefs-usagetracker": "사용률 추적기",
+	"usagetracker": "사용률 추적기",
+	"bs-usagetracker-startjobs": "지금 업데이트",
+	"bs-usagetracker-create-statistics": "사용 통계 업데이트",
+	"bs-usagetracker-col-identifier": "식별자",
+	"bs-usagetracker-col-desc": "설명",
+	"bs-usagetracker-col-last-updated": "최근 업데이트",
+	"bs-usagetracker-base-collector-desc": "$1을(를) 사용하는 페이지 수",
+	"bs-usagetracker-tag-collector-desc": "<$1> 태그를 사용하는 페이지 수",
+	"bs-usagetracker-desc": "확장 사용에 대한 통계적 자료를 가지고 있음",
+	"bs-usagetracker-col-count": "개수",
+	"bs-usagetracker-caution": "주의: 사용 통계를 업데이트하는 데 시간이랑 자원이 조금 걸릴 수 있음. 최신 자료를 정말 필요한 경우에만 업데이트를 실행해. 업데이트는 연기된 작업을 통해 수행되어서 자료가 완전히 수집될 때까지 여러 번 다시 올려야 할 수도 있음.",
+	"bs-usagetracker-db-collector-desc": "$1의 수",
+	"bs-usagetracker-open-tasks": "현재 사이트 분석이 진행 중. {{PLURAL:$1|한 분석}}은 아직 열려 있음.<a href='$2'>(새로 고치기)</a>",
+	"apihelp-bs-usagetracker-store-summary": "확장 사용에 대한 통계적 자료를 가지고 있음",
+	"action-usagetracker-update": "[[Special:UsageTracker]] 특별 문서에서 추적된 모든 자료를 수집하는 업데이트 과정을 다시 실행해.",
+	"right-usagetracker-update": "[[Special:UsageTracker]] 특별 문서에서 추적된 모든 자료를 수집하는 업데이트 과정을 다시 실행하기 위해 접근해."
+}

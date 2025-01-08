@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saraiki"
+		]
+	},
+	"simple-tasks-taskreport-header-task": "کم",
+	"simple-tasks-taskreport-inspector-state-done": "تھی ڳیا",
+	"simple-tasks-taskreport-inspector-state-open": "کھولو",
+	"simple-tasks-taskreport-inspector-label-namespaces": "ناں جاہیں",
+	"simple-tasks-taskreport-inspector-label-state": "حالت",
+	"simple-tasks-taskreport-state-filter-done": "تھی ڳیا",
+	"simple-tasks-taskreport-state-filter-open": "کھولو"
+}

@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robert Vogel"
+		]
+	},
+	"containerfilter-desc": "Allows to filter content elements within a page",
+	"containerfilter-inspector-title": "Content Filter",
+	"containerfilter-inspector-input-selector": "Selector",
+	"containerfilter-inspector-input-selector-placeholder": "Add selectors to customise the range to be filtered. Without specification, filtering is done by \".wikitable tr\"",
+	"containerfiler-droplet-name": "Content Filter",
+	"containerfiler-droplet-description": "Allows filtering by content in definable areas",
+	"containerfilter-input-aria-label": "Filter",
+	"containerfilter-filter-results-label": "$1 {{PLURAL:$1|result|results}} found"
+}

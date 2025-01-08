@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Daniel Vogel"
+		]
+	},
+	"numberheadings-desc": "Number headings in content namespaces",
+	"numberheadings-conf-exlude-namespaces": "Exclude namespaces from heading numbering",
+	"numberheadings-conf-enable": "Enable heading numbering"
+}

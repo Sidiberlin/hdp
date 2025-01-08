@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"BlueCamille",
+			"MacOS Weed"
+		]
+	},
+	"simple-tasks-notif-message": "vous a {{GENDER:$1|}} attribué une tâche : « $1 »",
+	"simple-tasks-taskreport-no-results": "Aucune tâche trouvée avec les filtres sélectionnés",
+	"simple-tasks-taskreport-header-task": "Tâche",
+	"simple-tasks-taskreport-header-page": "Apparaît sur la page",
+	"simple-tasks-droplet-taskreport-description": "Crée une vue d'ensemble des tâches",
+	"simple-tasks-taskreport-inspector-state-done": "terminé",
+	"simple-tasks-taskreport-inspector-state-open": "ouvert",
+	"simple-tasks-taskreport-inspector-label-state": "État",
+	"simple-tasks-taskreport-state-title-done": "La tâche est terminée",
+	"simple-tasks-taskreport-state-filter-done": "Terminé",
+	"simple-tasks-taskreport-state-filter-open": "Ouvert"
+}

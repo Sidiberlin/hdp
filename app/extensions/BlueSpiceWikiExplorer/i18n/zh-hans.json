@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			")8",
+			"Lakejason0",
+			"Xiplus"
+		]
+	},
+	"bs-wikiexplorer-page-title": "标题",
+	"bs-wikiexplorer-page-namespace": "命名空间",
+	"bs-wikiexplorer-creation-date": "创建日期",
+	"bs-wikiexplorer-last-comment": "最后评论",
+	"bs-wikiexplorer-last-edit-time": "上次编辑日期",
+	"bs-wikiexplorer-page-size": "大小",
+	"bs-wikiexplorer-last-author": "最后编辑者",
+	"bs-wikiexplorer-categories": "分类",
+	"bs-wikiexplorer-linked-files": "链接的文件",
+	"bs-wikiexplorer-linked-pages": "链接的页面"
+}

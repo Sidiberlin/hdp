@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"SongNgu.xyz"
+		]
+	},
+	"bs-articleinfo-desc": "Cung cấp thông tin về một trang trên thanh trạng thái",
+	"prefs-articleinfo": "Thông tin trang",
+	"bs-articleinfo-pref-CheckRevisionInterval": "Khoảng thời gian cập nhật tính bằng giây:",
+	"bs-articleinfo-flyout-title": "Thông tin trang",
+	"bs-articleinfo-flyout-intro": "Tại đây bạn tìm thấy thông tin liên quan đến trang. Bạn có thể kiểm tra chất lượng và tính cập nhật của trang và xem nó liên quan như thế nào đến các trang khác trong wiki.",
+	"bs-articleinfo-nav-link-title": "Thông tin trang",
+	"bs-articleinfo-flyout-categorylinks-title": "Thể loại",
+	"bs-articleinfo-flyout-templatelinks-title": "Bản mẫu được sử dụng",
+	"bs-articleinfo-flyout-categorylinks-emptytext": "Không có thể loại nào được gán",
+	"bs-articleinfo-flyout-templatelinks-emptytext": "Không có bản mẫu nào được sử dụng",
+	"bs-articleinfo-flyout-lasteditedtime-text": "Lần sửa đổi cuối",
+	"bs-articleinfo-flyout-lastediteduser-text": "Biên tập viên cuối cùng",
+	"bs-articleinfo-newrevision-info-text-reload": "Có phiên bản mới của trang này. Vui lòng [[:$1|tải lại]] trang để xem nội dung hiện tại.",
+	"bs-articleinfo-flyout-subpages-title": "Trang con",
+	"bs-articleinfo-pagetool-subpages-tooltip": "Trang con",
+	"bs-articleinfo-dialog-subpages-title": "Trang con",
+	"bs-articleinfo-pref-checkrevisioninterval-help": "Đặt tốc độ làm mới cho giá trị \"Lần sửa đổi cuối\". Giá trị này được hiển thị trên thông tin trang trong công cụ quản lý chất lượng."
+}

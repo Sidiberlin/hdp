@@ -1,0 +1,36 @@
+#nb-pri form {
+	align-items: center;
+	min-width: 180px;
+	max-width: 650px;
+	margin: 0 auto;
+}
+#nb-pri form button {
+	height: 40px;
+	border-radius: 5px 0px 0px 5px;
+	background-color: var(--navbar-primary-searchform-bg);
+	border-color: var(--navbar-primary-searchform-bg);
+	color: var(--navbar-primary-searchform-fg);
+	border-width: 0.5px 0 0.5px 0.5px;
+}
+#nb-pri form button:focus {
+	outline: 0;
+	box-shadow: none;
+	border: 2px solid var(--navbar-primary-border-color);
+	border-right: none;
+	color: var(--navbar-primary-searchform-fg);
+}
+#nb-pri form input {
+	height: 40px;
+	font-size: 15px;
+	background-color: var(--navbar-primary-searchform-bg);
+	border-color: var(--navbar-primary-searchform-bg);
+	border-width: 0.5px 0.5px 0.5px 0;
+	margin: 0;
+	border-radius: 0px 5px 5px 0px ;
+}
+#nb-pri form input:focus {
+	outline: 0;
+	box-shadow: none;
+	border: 1px solid var(--navbar-primary-border-color);
+	border-left: none;
+}

@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"MITO",
+			"Pyscowicz"
+		]
+	},
+	"blog": "Blogi",
+	"bs-socialblog-entityblog-header-create": "Luo uusi blogi...",
+	"action-social-blog": "luoda ja muokata blogeja",
+	"action-social-blog-comment": "kommentoida blogeja",
+	"right-social-blog": "Luoda ja muokata blogeja",
+	"right-social-blog-comment": "Kommentoida blogeja"
+}

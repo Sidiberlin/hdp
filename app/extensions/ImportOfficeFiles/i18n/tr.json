@@ -1,0 +1,40 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hedda"
+		]
+	},
+	"importofficefiles-desc": "Ofis dosyalarının viki sayfası olarak içe aktarılmasına izin verir",
+	"importofficefiles-ui-import-dialog-title": "Dosyayı içe aktar",
+	"importofficefiles-ui-import-completed": "İçe aktarma tamamlandı!",
+	"importofficefiles-ui-import-in-progress": "İçe aktarma devam ediyor ...",
+	"importofficefiles-ui-dialog-action-cancel": "İptal",
+	"importofficefiles-ui-dialog-action-import": "İçe aktar",
+	"importofficefiles-ui-dialog-action-next": "İleri",
+	"importofficefiles-ui-dialog-action-back": "Geri",
+	"importofficefiles-ui-dialog-action-done": "Yapıldı",
+	"importofficefiles-ui-dialog-label-select-file": "Dosya seç",
+	"importofficefiles-ui-dialog-configuration-settings-title": "İçe aktarma ayarlarını yapılandırın",
+	"importofficefiles-ui-dialog-settings-page-title": "Başlık",
+	"importofficefiles-ui-dialog-settings-pagetitle-label": "Yeni sayfa için bir başlık seçin",
+	"importofficefiles-ui-dialog-settings-structure-label": "İçerik yapısı",
+	"importofficefiles-ui-dialog-settings-structure-label-checkbox": "Sayfalardaki içeriği böl",
+	"importofficefiles-ui-dialog-settings-conflicts-title": "Sayfa başlığıyla çakışmalar",
+	"importofficefiles-ui-dialog-settings-conflicts-behavior-label": "Sayfa adı zaten varsa yapılacaklar",
+	"importofficefiles-ui-dialog-settings-conflicts-rename": "Yeniden adlandır",
+	"importofficefiles-ui-dialog-settings-conflicts-override": "Üzerine yaz",
+	"importofficefiles-ui-dialog-settings-choose-split-level-label": "Sayfaların bölüneceği seviyeyi seçin",
+	"importofficefiles-ui-dialog-settings-split-level-1": "1. Seviye Başlıklar",
+	"importofficefiles-ui-dialog-settings-split-level-2": "2. Seviye Başlıklar",
+	"importofficefiles-ui-dialog-settings-split-level-3": "3. Seviye Başlıklar",
+	"importofficefiles-ui-dialog-preview-title": "Önizleme",
+	"importofficefiles-ui-dialog-preview-label": "Aşağıdaki sayfalar içe aktarılacak",
+	"importofficefiles-ui-dialog-link-import-files-text": "$1 sayfasına aktarılarak içe aktarılan dosyaların listesi",
+	"importofficefiles-api-storage-error-no-available-file": "Yüklenen dosyası yok",
+	"importofficefiles-api-storage-error-save-temp": "Geçici kaydetme mümkün değil",
+	"importofficefiles-ui-progress-import-images-step": "Görüntüler içe aktarılıyor...",
+	"importofficefiles-ui-progress-import-pages-step": "Sayfalar içe aktarılıyor...",
+	"importofficefiles-ui-progress-remove-files-step": "Geçici dosyalar kaldırılıyor...",
+	"importofficefiles-ui-import-error": "İçe aktarma sırasında bazı hatalar oluştu.",
+	"importofficefiles-ui-analyze-error": "Analiz işlemi bir nedenden dolayı başarısız oldu."
+}

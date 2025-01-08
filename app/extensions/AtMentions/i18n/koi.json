@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"Римма"
+		]
+	},
+	"at-mentions-desc": "Содтӧ касьтылӧм вӧдитчисьсӧ",
+	"at-mentions-inspector-title": "Казьмӧтны вӧдитчисьӧс",
+	"at-mentions-inspector-title-add": "Содтыны касьтылӧм",
+	"at-mentions-inspector-title-edit": "Вежны вӧдитчись йылісь касьтылӧм",
+	"at-mentions-ci-title": "Вӧдитчисьӧс касьтылӧм",
+	"at-mentions-tag-item-actor": "{{GENDER:$1| [[User:$1]] сянь}}",
+	"at-mentions-tag-item-time": "$1 донісь",
+	"at-mentions-mentionslist-header-mine-all": "Тіянӧс касьтылісӧ эта листбокын",
+	"at-mentions-mentionslist-header-mine": "Бӧрья{{PLURAL:$1|лун|$1 луннэз}} тіянӧс касьтылісӧ этна листбоккезын:",
+	"at-mentions-mentionslist-header-all": "Вӧдитчись {{GENDER:$2|[[User:$2]] вӧлі казьмӧтӧма этна листбоккезын }}:",
+	"at-mentions-mentionslist-header": "Бӧрья {{PLURAL:$1|лун|$1 луннэз}},{{GENDER:$2|[[User:$2]] касьтылӧма этна листбоккезын}}:",
+	"at-mentions-mention-notification-message": "Касьтыліс тіянӧс листбокын $1",
+	"at-mentions-mention-notification-key": "Тіянӧс касьтылісӧ",
+	"at-mentions-mention-in-entity-notification-key": "Тіянӧс касьтылісӧ комментарийын или постын",
+	"at-mentions-mention-in-entity-notification-message": "Касьтыліс тіянӧс комментарийын или юӧрын \"$2\" листбок вылын $1",
+	"at-mentions-mention-in-entity-notification-post-link": "Вуджӧ веськыта лэдзӧм дынӧ",
+	"at-mentions-toolbar-tool-title": "Содтыны касьтылӧм",
+	"at-mentions-echo-mention-notification-summary": "Тіянӧс касьтылісӧ листбокын $1",
+	"at-mentions-echo-mention-notification-web-body": "{{GENDER:$2|$3 касьтылӧм}} ті",
+	"at-mentions-echo-mention-notification-subject": "{{GENDER:$2|$3 касьтыліс}} тінӧс листбокын $1",
+	"at-mentions-echo-mention-notification-email-body": "Тіянӧс касьтылісӧ листбокын $1",
+	"at-mentions-echo-mention-entity-notification-summary": "Тіянӧс касьтылісӧ комментарийын или постын: $1",
+	"at-mentions-echo-mention-entity-notification-subject": "{{GENDER:$2|$3 касьтыліс}} тіянӧс комментарийын или юӧрын листбок вылын $1",
+	"at-mentions-echo-mention-entity-notification-email-body": "Тіянӧс касьтылісӧ юӧр дынӧ комменарийын листбок вылын $1"
+}

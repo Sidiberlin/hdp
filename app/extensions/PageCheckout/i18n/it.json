@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf",
+			"Beta16"
+		]
+	},
+	"pagecheckout-error-no-title": "Titolo non valido",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "Utente",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "Utente",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Nome della pagina"
+}

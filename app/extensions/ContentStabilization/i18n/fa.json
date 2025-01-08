@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jeeputer"
+		]
+	},
+	"contentstabilization-pageinfoelement-versionswitch-has-unstable-text": "دارای یک نسخهٔ پیش‌نویس است",
+	"contentstabilization-pageinfoelement-versionswitch-has-unstable-title": "نمایش نسخهٔ پیش‌نویس",
+	"contentstabilization-pageinfoelement-pagestatus-is-unstable-text": "یک پیش‌نویس",
+	"contentstabilization-pageinfoelement-pagestatus-is-unstable-title": "نسخهٔ پیش‌نویس",
+	"contentstabilization-pageinfoelement-pagestatus-is-first-unstable-text": "یک پیش‌نویس اولیه",
+	"contentstabilization-pageinfoelement-pagestatus-is-stable-text": "تأییدشده",
+	"contentstabilization-ui-approve-cancel": "لغو",
+	"contentstabilization-export-stablerevisiondate-tag-text": "نسخه: $1",
+	"log-name-stabilization": "سیاههٔ پایدارسازی محتوا",
+	"contentstabilization-status-unstable": "پیش‌نویس",
+	"contentstabilization-status-first-unstable": "اولین پیش‌نویس",
+	"contentstabilization-overview-header-title": "صفحه",
+	"contentstabilization-stabilizationhistory-comment": "نظر",
+	"echo-category-title-content-stabilization-cat": "تأییدیه",
+	"content-stabilization-echo-cat-tooltip": "هرگاه صفحه تأیید شد به من اطلاع بده",
+	"content-stabilization-approval-notification-summary": "$3 صفحهٔ $1 را {{GENDER:$2|تأیید کرد}}",
+	"content-stabilization-approval-notification-subject": "صفحهٔ $1 تأیید شد",
+	"content-stabilization-approval-notification-email-body": "$3 صفحهٔ $1 را {{GENDER:$2|تأیید کرد}}"
+}

@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac",
+			"Սերգեյ Սաֆարյան"
+		]
+	},
+	"workflows-ui-starter-action-choose": "Ընտրել",
+	"workflows-ui-starter-action-done": "Սկսել",
+	"workflows-ui-starter-action-cancel": "Չեղարկել",
+	"workflows-ui-task-completion-action-cancel": "Չեղարկել",
+	"workflows-form-placeholder-comment": "Մեկնաբանություն",
+	"workflows-form-label-vote-widget-approve": "Հաստատել",
+	"workflows-ui-workflow-overview-action-restore": "Վերականգնել",
+	"workflows-ui-workflow-overview-action-cancel": "Փակել",
+	"workflows-ui-workflow-overview-action-back": "Հետ",
+	"workflows-ui-overview-details-action-reason": "Պատճառ",
+	"workflows-ui-overview-details-page-context-page": "Էջ",
+	"workflows-ui-overview-grid-filter-state-all": "Բոլորը",
+	"workflows-form-instructions-comment": "Մեկնաբանություն",
+	"workflows-ui-overview-details-action-details-column": "դիտել մանրամասները",
+	"workflows-collect-data-form-groupname": "Խումբ",
+	"workflows-activity-history-vote-result-yes": "Հաստատվել է",
+	"workflows-ui-action-cancel": "Չեղարկել",
+	"workflows-ui-trigger-action-create": "Հիշել",
+	"workflows-ui-trigger-action-choose": "Շարունակել",
+	"workflows-ui-trigger-action-delete": "Ջնջել",
+	"workflows-action-edit-label": "Խմբագրել",
+	"workflows-action-delete-label": "Ջնջել",
+	"workflows-ui-trigger-field-description": "Նկարագրություն",
+	"workflows-activity-property-instructions": "Հրահանգներ",
+	"workflows-activity-property-username": "Օգտանուն",
+	"workflows-activity-property-due_date": "Վերջնաժամկետ",
+	"workflows-activity-property-groupname": "Խմբի անվանումը",
+	"workflows-activity-property-usernameEditor": "Խմբագիր",
+	"workflows-activity-property-instructionsApprover": "Հաստատող հրահանգներ",
+	"workflows-activity-property-comment": "Մեկնաբանություն",
+	"workflows-activity-property-assigned_user": "Նշանակված մասնակից",
+	"workflows-activity-property-action": "Գործողություն",
+	"workflows-ui-trigger-field-conditions": "Պայմաններ",
+	"workflows-editor-editor-dialog-save-action-save": "Հիշել",
+	"workflows-editor-editor-dialog-save-action-cancel": "Չեղարկել"
+}

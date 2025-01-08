@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robert Vogel <vogel@hallowelt.com>"
+		]
+	},
+	"bs-signhere-desc": "{{desc|name=BlueSpiceSignHere|url=https://www.mediawiki.org/wiki/Extension:BlueSpiceSignHere}}",
+	"bs-signhere-signatures": "Label of the button that shows up on the wikipage",
+	"bs-signhere-edit-summary": "Text that is being stored together with the edit made by this extension",
+	"bs-signhere-tooltip": "Tool tip text for the button provided by the extension",
+	"bs-signhere-arialabel": "Aria-label text for the button provided by the extension",
+	"bs-signhere-tag-signhere-title": "Label for the signhere tag in various dialoges",
+	"bs-signhere-tag-signhere-desc": "Description of the signhere tag in various dialoges",
+	"bs-signhere-droplet-name": "Title of droplet for tag SignHere",
+	"bs-signhere-droplet-description": "Description of droplet for tag SignHere",
+	"bs-signhere-anouncement-label": "Label hint to be announced when the button is clicked"
+}

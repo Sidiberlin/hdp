@@ -1,0 +1,10 @@
+<templatestyles src="Template:ProConList/styles.css" />
+{| class="pro-con-list" style="width:100%;"
+! {{{title-advantages}}} 
+! style="width:50%;" | {{{title-disadvantages}}}
+|-
+| style="vertical-align:top;text-align:left;" class="pro"|
+{{{advantages}}}
+| style="vertical-align:top;text-align:left;width:50%;" class="contra" |
+{{{disadvantages}}}
+|}

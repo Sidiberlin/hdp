@@ -1,0 +1,393 @@
+{
+	"name": "BlueSpiceSMWConnector",
+	"descriptionmsg": "bs-bssmwconnector-desc",
+	"license-name": "GPL-3.0-only",
+	"type": "bluespice",
+	"version": "4.5.2",
+	"author": [
+		"Robert Vogel",
+		"Leonid Verhovskij"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceSMWConnector",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 4.3"
+		}
+	},
+	"attributes": {
+		"BlueSpiceExtendedSearch": {
+			"PluginRegistry": {
+				"smw": {
+					"class": "BlueSpice\\SMWConnector\\ExtendedSearch\\SMWData"
+				}
+			}
+		},
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceSMWConnector": {
+					"className": "\\BlueSpice\\SMWConnector\\Extension",
+					"extPath": "/BlueSpiceSMWConnector",
+					"package": "BlueSpice Pro"
+				}
+			},
+			"TagRegistry": {
+				"dataquery": "\\BlueSpice\\SMWConnector\\Tag\\DataQuery",
+				"decisionOverview": "\\BlueSpice\\SMWConnector\\Tag\\DecisionOverview"
+			},
+			"PermissionRegistry": {
+				"createclass": {
+					"type": "global",
+					"roles": [
+						"admin",
+						"author",
+						"editor",
+						"maintenanceadmin"
+					]
+				},
+				"editrestrictedfields": {
+					"type": "global",
+					"roles": [
+						"admin",
+						"editor",
+						"maintenanceadmin"
+					]
+				},
+				"geocode": {
+					"type": "global",
+					"roles": [
+						"admin",
+						"author",
+						"editor",
+						"maintenanceadmin"
+					]
+				},
+				"smw-admin": {
+					"type": "global",
+					"roles": [
+						"admin",
+						"maintenanceadmin"
+					]
+				},
+				"viewedittab": {
+					"type": "global",
+					"roles": [
+						"admin",
+						"editor",
+						"maintenanceadmin",
+						"structuremanager"
+					]
+				}
+			}
+		},
+		"BlueSpiceSmartList": {
+			"ModeRegistry": {
+				"dataquery": {
+					"class": "BlueSpice\\SMWConnector\\SmartListMode\\DataQueryMode"
+				}
+			}
+		},
+		"BlueSpiceBookshelfUI": {
+			"MassAddHandlerRegistry": {
+				"smwproperty": "BSSMWPropertyPageProvider::factory"
+			}
+		},
+		"BlueSpiceSMWConnector": {
+			"ExtraPropertyRegistry": {
+				"usermentions": "BlueSpice\\SMWConnector\\PropertyValueProvider\\UserMentions::factory"
+			},
+			"AsyncAskHandlers": {
+				"grid": "\\BlueSpice\\SMWConnector\\AsyncAskHandler\\Grid::factory",
+				"tree": "\\BlueSpice\\SMWConnector\\AsyncAskHandler\\Tree::factory"
+			}
+		},
+		"BlueSpiceDiscovery": {
+			"BreadcrumbDataProviderRegistry": {
+				"special-browse": {
+					"class": "BlueSpice\\SMWConnector\\BreadcrumbDataProvider\\SpecialBrowseProvider"
+				},
+				"special-ask": {
+					"class": "BlueSpice\\SMWConnector\\BreadcrumbDataProvider\\SpecialAskProvider",
+					"services": [ "SpecialPageFactory" ]
+				}
+			},
+			"TitleActionPrimaryActionModifier": {
+				"form-edit": {
+					"class": "BlueSpice\\SMWConnector\\TitleActionModifier"
+				}
+			}
+		},
+		"VisualEditor": {
+			"PluginModules": [
+				"ext.BSSMWConnector.DataQuery.visualEditor",
+				"ext.BSSMWConnector.decisionOverview.visualEditor"
+			]
+		},
+		"ContentDroplets": {
+			"Droplets": {
+				"dataquery": {
+					"class": "\\BlueSpice\\SMWConnector\\ContentDroplets\\DataQueryDroplet"
+				},
+				"decisionOverview": {
+					"class": "\\BlueSpice\\SMWConnector\\ContentDroplets\\DecisionOverviewDroplet"
+				}
+			}
+		},
+		"BlueSpicePrivacy": {
+			"Handlers": [
+				"\\BlueSpice\\SMWConnector\\Privacy\\Handler"
+			]
+		}
+	},
+	"GroupPermissions": {
+		"sysop": {
+			"smw-admin": true,
+			"smw-patternedit": true,
+			"smw-pageedit": true,
+			"geocode": true,
+			"editrestrictedfields": true
+		},
+		"*": {
+			"viewedittab": true
+		},
+		"user": {
+			"createclass": true
+		}
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\SMWConnector\\": "src/",
+		"BlueSpice\\SMWConnector\\Tests\\": "tests/phpunit/"
+	},
+	"AutoloadClasses": {
+		"BSSMWConnectorHooks": "includes/BSSMWConnectorHooks.php",
+		"BSSMWCNamespaceManager": "includes/BSSMWCNamespaceManager.php",
+		"BSGridResultPrinter": "includes/formats/Grid/BSGridResultPrinter.php",
+		"BSSMWCPageTemplates": "includes/BSSMWCPageTemplates.php",
+		"BSSMWPropertyPageProvider": "includes/BSSMWPropertyPageProvider.php",
+		"ApiSMWPropertyStore": "includes/api/ApiSMWPropertyStore.php"
+	},
+	"APIModules": {
+		"bs-smw-connector-smw-property-store": "ApiSMWPropertyStore",
+		"bs-smw-connector-ask-store": "\\BlueSpice\\SMWConnector\\Api\\Store\\Ask",
+		"bs-smw-connector-tree-ask-store": "\\BlueSpice\\SMWConnector\\Api\\Store\\TreeAsk"
+	},
+	"MessagesDirs": {
+		"BSSMWConnectorHooks": "i18n"
+	},
+	"ExtensionMessagesFiles": {
+		"BlueSpiceSMWConnectorMagic": "BlueSpiceSMWConnector.magic.php"
+	},
+	"ExtensionFunctions": [
+		"BlueSpice\\SMWConnector\\Extension::setup"
+	],
+	"HookHandlers": {
+		"discovery-skin": {
+			"class": "\\BlueSpice\\SMWConnector\\HookHandler\\DiscoverySkin"
+		},
+		"forceLinksUpdate": {
+			"class": "\\BlueSpice\\SMWConnector\\HookHandler\\ForceLinksUpdates"
+		},
+		"writeNamespaceConfiguration": {
+			"class": "\\BlueSpice\\SMWConnector\\Hook\\WriteNamespaceConfiguration"
+		},
+		"integrateSMWDataIntoSearch": {
+			"class": "\\BlueSpice\\SMWConnector\\Hook\\IntegrateSMWDataIntoSearch"
+		}
+	},
+	"Hooks": {
+		"SetupAfterCache": "BlueSpice\\SMWConnector\\PropertyValueProvidersRegistration::addExtensions",
+		"BeforePageDisplay": [
+			"BSSMWConnectorHooks::onBeforePageDisplay",
+			"BlueSpice\\SMWConnector\\Hook\\BeforePageDisplay\\AddModules::callback"
+		],
+		"PageForms::FormPrinterSetup": [
+			"BlueSpice\\SMWConnector\\Hook\\PFFormPrinterSetup\\RegisterInputTypes::callback"
+		],
+		"BSBookshelfExportTag": "BSSMWConnectorHooks::onBSBookshelfExportTag",
+		"NamespaceManager::getMetaFields": "BSSMWCNamespaceManager::onGetMetaFields",
+		"BSApiNamespaceStoreMakeData": "BSSMWCNamespaceManager::onGetNamespaceData",
+		"NamespaceManager::editNamespace": "BSSMWCNamespaceManager::onEditNamespace",
+		"NamespaceManagerBeforePersistSettings": "writeNamespaceConfiguration",
+		"BSPageTemplatesBeforeRender": "BSSMWCPageTemplates::onBSPageTemplatesBeforeRender",
+		"PageSaveComplete": "BSSMWConnectorHooks::onPageSaveComplete",
+		"SMW::Store::AfterQueryResultLookupComplete": "BlueSpice\\SMWConnector\\Hook\\SMWStoreAfterQueryResultLookupComplete\\ApplySecurityTrimming::callback",
+		"BSUEModulePDFcollectMetaData": "BlueSpice\\SMWConnector\\Hook\\BSUEModulePDFcollectMetaData\\AddSemanitcMetaData::callback",
+		"ParserFirstCallInit": "BlueSpice\\SMWConnector\\Hook\\ParserFirstCallInit\\AsyncAsk::callback",
+		"BlueSpiceDiscoveryTemplateDataProviderAfterInit": "discovery-skin",
+		"RevisionDataUpdates": "forceLinksUpdate"
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceSMWConnector/resources"
+	},
+	"ResourceModules": {
+		"ext.BSSMWConnector.styles": {
+			"styles": [
+				"ext.BSSMWConnector.css"
+			]
+		},
+		"ext.BSSMWConnector": {
+			"scripts": [
+				"ext.BSSMWConnector.smwc.js",
+				"ext.BSSMWConnector.util.js"
+			],
+			"messages": [
+				"bs-extendedsearch-add-filter-group-smwproperty-label",
+				"bs-extendedsearch-search-center-result-smwproperty-label"
+			],
+			"dependencies": [
+				"ext.bluespice",
+				"ext.smw.api"
+			]
+		},
+		"ext.BSSMWConnector.visualEditor": {
+			"scripts": [
+				"ext.BSSMWConnector.smwc.ve.init.js"
+			],
+			"dependencies": [
+				"ext.bluespice"
+			]
+		},
+		"ext.BSSMWConnector.PF.Inputs.MWVisualEditor": {
+			"scripts": [
+				"ext.BSSMWConnector.PF.Inputs.MWVisualEditor.js"
+			]
+		},
+		"ext.BSSMWConnector.PF.Input.Grid": {
+			"scripts": [
+				"ext.BSSMWConnector.PF.Inputs.Grid.js"
+			]
+		},
+		"ext.BSSMWConnector.PF.Input.UserCombo": {
+			"scripts": [
+				"ext.BSSMWConnector.PF.Inputs.UserCombo.js"
+			]
+		},
+		"ext.BSSMWConnector.PF.Input.UserTags": {
+			"scripts": [
+				"ext.BSSMWConnector.PF.Inputs.UserTags.js"
+			]
+		},
+		"ext.srf.bsextjsgrid": {
+			"scripts": [
+				"ext.srf.bsextjsgrid.js"
+			],
+			"dependencies": [
+				"ext.BSSMWConnector",
+				"ext.smw.api",
+				"ext.bluespice.extjs",
+				"ext.extjsbase.ux"
+			]
+		},
+		"ext.BSSMWConnector.async.grid": {
+			"scripts": "ext.BSSMWConnector.async.grid.js",
+			"dependencies": [
+				"ext.bluespice.extjs"
+			],
+			"messages": [
+				"bs-smw-connector-async-error"
+			]
+		},
+		"ext.BSSMWConnector.async.tree": {
+			"scripts": "ext.BSSMWConnector.async.tree.js",
+			"dependencies": [
+				"ext.bluespice.extjs"
+			],
+			"messages": [
+				"bs-smw-connector-async-error"
+			]
+		},
+		"ext.BSSMWConnector.PageForms.DateTimePicker.fix": {
+			"scripts": [
+				"ext.BSSMWConnector.PageForms.DateTimePicker.fix.js"
+			]
+		},
+		"ext.BSSMWConnector.widgets": {
+			"scripts": [
+				"ui/widget/SMWPropertyInputWidget.js"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"ext.bluespice"
+			]
+		},
+		"ext.BSSMWConnector.DataQuery.visualEditor": {
+			"scripts": [
+				"nodes/bs.smwconnector.ce.DataQueryNode.js",
+				"nodes/bs.smwconnector.dm.DataQueryNode.js",
+				"nodes/bs.smwconnector.ui.DataQueryInspector.js",
+				"nodes/bs.smwconnector.ui.DataQueryInspectorTool.js"
+			],
+			"styles": "stylesheets/droplet.dataquery.css",
+			"messages": [
+				"bs-smwconnector-dataquery-name",
+				"bs-smwconnector-dataquery-desc",
+				"bs-smwconnector-dataquery-category-label",
+				"bs-smwconnector-dataquery-category-help",
+				"bs-smwconnector-dataquery-namespace-label",
+				"bs-smwconnector-dataquery-namespace-help",
+				"bs-smwconnector-dataquery-modified-operator-label",
+				"bs-smwconnector-dataquery-modified-operator-help",
+				"bs-smwconnector-dataquery-modified-operator-all",
+				"bs-smwconnector-dataquery-modified-operator-since",
+				"bs-smwconnector-dataquery-modified-operator-before",
+				"bs-smwconnector-dataquery-modified-date-label",
+				"bs-smwconnector-dataquery-modified-date-help",
+				"bs-smwconnector-dataquery-printouts-label",
+				"bs-smwconnector-dataquery-printouts-help",
+				"bs-smwconnector-dataquery-format-label",
+				"bs-smwconnector-dataquery-format-help",
+				"bs-smwconnector-dataquery-format-bulleted-list",
+				"bs-smwconnector-dataquery-format-numbered-list",
+				"bs-smwconnector-dataquery-count-label",
+				"bs-smwconnector-dataquery-count-help"
+			],
+			"dependencies": [
+				"ext.visualEditor.mwcore",
+				"ext.bluespice"
+			]
+		},
+		"ext.BSSMWConnector.decisionOverview.visualEditor": {
+			"scripts": [
+				"nodes/bs.smwconnector.ce.DecisionOverviewNode.js",
+				"nodes/bs.smwconnector.dm.DecisionOverviewNode.js",
+				"nodes/bs.smwconnector.ui.DecisionOverviewInspector.js",
+				"nodes/bs.smwconnector.ui.DecisionOverviewInspectorTool.js"
+			],
+			"styles": "stylesheets/droplet.decisionoverview.css",
+			"messages": [
+				"bs-smwconnector-decision-overview-title",
+				"bs-smwconnector-decision-overview-categories-label",
+				"bs-smwconnector-decision-overview-categories-help",
+				"bs-smwconnector-decision-overview-namespaces-label",
+				"bs-smwconnector-decision-overview-namespaces-help",
+				"bs-smwconnector-decision-overview-prefix-label",
+				"bs-smwconnector-decision-overview-prefix-help"
+			],
+			"dependencies": [
+				"ext.visualEditor.mwcore",
+				"ext.bluespice"
+			]
+		},
+		"ext.BSSMWConnector.decisionOverview.styles": {
+			"styles": [
+				"ext.BSSSMWConnector.decisionOverview.css"
+			]
+		}
+	},
+	"config_prefix": "bsg",
+	"config": {
+		"UEModulePDFsmwProperties": {
+			"value": {}
+		},
+		"ESSMWPropertyFilter": {
+			"description": "Which SMW properties to offer as filters. List of regex-es. Properties are matched against the names as written in ES filter list",
+			"value": {
+				"type": "blacklist",
+				"props": []
+			}
+		}
+	},
+	"load_composer_autoloader": true,
+	"manifest_version": 2
+}

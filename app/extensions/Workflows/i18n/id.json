@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"Agam Riyandana",
+			"Ekirahardian",
+			"Leapofod",
+			"Veracious"
+		]
+	},
+	"workflows-ui-task-completion-action-complete": "Kirim",
+	"workflows-ui-task-completion-action-cancel": "Batal",
+	"workflows-form-placeholder-comment": "Komentar",
+	"workflows-ui-workflow-overview-action-abort": "Batalkan",
+	"workflows-ui-workflow-overview-action-cancel": "Tutup",
+	"workflows-ui-overview-details-state-finished": "Selesai",
+	"workflows-ui-overview-details-action-reason": "Alasan",
+	"workflows-ui-overview-details-workflow-type-label": "Tipe",
+	"workflows-ui-overview-grid-filter-state-all": "Semua",
+	"workflows-form-instructions-comment": "Komentar",
+	"workflows-error-generic": "Terjadi galat",
+	"workflows-ui-trigger-action-create": "Simpan",
+	"workflows-activity-property-username": "Nama pengguna",
+	"workflows-activity-property-usernameEditor": "Penyunting",
+	"workflows-activity-property-usernameReviewer": "Peninjau",
+	"workflows-activity-property-usernameApprover": "Penyetuju",
+	"workflows-activity-property-vote": "Berikan suara",
+	"workflows-activity-property-comment": "Komentar",
+	"workflows-activity-property-delegate_to": "Delegasikan ke",
+	"workflows-activity-property-action": "Tindakan",
+	"logentry-ext-workflows-sendmail-send": "Kirim surat: Surat dengan subjek ' $4 ' terkirim",
+	"workflows-editor-editor-dialog-save-title": "Simpan diagram",
+	"workflows-editor-editor-dialog-save-action-save": "Simpan",
+	"workflows-editor-editor-dialog-save-action-cancel": "Batal"
+}

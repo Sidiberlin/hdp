@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"at-mentions-desc": "Een gebruikersvermelding toevoegen",
+	"at-mentions-inspector-title": "Een gebruiker vermelden",
+	"at-mentions-inspector-title-add": "Een vermelding toevoegen",
+	"at-mentions-inspector-title-edit": "Gebruikersvermelding bewerken",
+	"at-mentions-ci-title": "Gebruikersvermelding",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|door [[User:$1|$1]]}}",
+	"at-mentions-tag-item-time": "om $1",
+	"at-mentions-mentionslist-header-mine-all": "U bent vermeld op deze pagina",
+	"at-mentions-mentionslist-header-mine": "In de afgelopen {{PLURAL:$1|dag|$1 dagen}} bent u op deze pagina’s vermeld:",
+	"at-mentions-mentionslist-header-all": "De gebruiker {{GENDER:$2|[[User:$2|$2]] is op deze pagina’s vermeld}}:",
+	"at-mentions-mentionslist-header": "In de afgelopen {{PLURAL:$1|dag|$1 dagen}} is {{GENDER:$2|[[User:$2|$2]] op deze pagina’s vermeld}}:",
+	"at-mentions-mention-notification-message": "{{GENDER:$1|heeft}} u vermeld op de pagina $2",
+	"at-mentions-mention-notification-key": "U bent vermeld",
+	"at-mentions-mention-in-entity-notification-key": "U bent in een reactie of bericht vermeld",
+	"at-mentions-mention-in-entity-notification-message": "{{GENDER:$1|heeft}} u vermeld in een reactie of bericht “$3” op de pagina $2",
+	"at-mentions-toolbar-tool-title": "Vermelding toevoegen"
+}

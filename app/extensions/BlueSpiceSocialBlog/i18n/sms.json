@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yupik"
+		]
+	},
+	"bs-socialblog-type": "Blogg",
+	"blog": "Blogg",
+	"bs-socialblog-entityblog-header-create": "Raaj ođđ bloog...",
+	"bs-socialblog-var-blogtitle": "Bloog nõmm",
+	"bs-socialblog-entityblog-content-more-btn-more": "Lââʹzz",
+	"bs-socialblog-special-blog-heading": "Blogg",
+	"bs-socialblog-special-blog-heading-entry": "Blogg/$1",
+	"bs-social-notifications-blog-create": "Õõʹnni {{GENDER:$1|$2 raaji}} ođđ blogg \"$3\"",
+	"bs-social-notifications-email-blog-create-subject": "Õõʹnni {{GENDER:$1|$2 raaji}} ođđ blogg \"$3\"",
+	"bs-social-notifications-email-blog-create-body": "Õõʹnni {{GENDER:$1|$2 raaji}} ođđ blogg \"$3\" da tõʹst lij puõʹtti teʹkstt:\n\n\n$4",
+	"bs-social-notifications-web-blog-create-body": "{{GENDER:$1|$2 raaji}} ođđ blogg \"$3\"",
+	"bs-social-notifications-blog-edit": "Õõʹnni {{GENDER:$1|$2 muuʹtti}} bloog \"$3\"",
+	"bs-social-notifications-email-blog-edit-subject": "Õõʹnni {{GENDER:$1|$2 muuʹtti}} bloog \"$3\"",
+	"bs-social-notifications-email-blog-edit-body": "Õõʹnni {{GENDER:$1|$2 muuʹtti}} bloog \"$3\". Ođđ teʹkstt lij:\n\n\n$4",
+	"bs-social-notifications-web-blog-edit-body": "{{GENDER:$1|$2 muuʹtti}} bloog \"$3\"",
+	"bs-social-notifications-blog-delete": "Õõʹnni {{GENDER:$1|$2 jaukkii}} bloog \"$3\"",
+	"bs-social-notifications-email-blog-delete-subject": "Õõʹnni {{GENDER:$1|$2 jaukkii}} bloog \"$3\"",
+	"bs-social-notifications-email-blog-delete-body": "Õõʹnni {{GENDER:$1|$2 jaukkii}} bloog \"$3\"",
+	"bs-social-notifications-web-blog-delete-body": "{{GENDER:$1|$2 jaukkii}} bloog \"$3\"",
+	"bs-social-notification-blog-primary-link-label": "Čuäʹjet bloog",
+	"action-social-blog": "raajjâd da muʹtted bloogid",
+	"action-social-blog-comment": "kommentâʹstted bloogid",
+	"right-social-blog": "Raajjâd da muʹtted bloogid",
+	"right-social-blog-comment": "Kommentâʹstted bloogid",
+	"bs-socialblog-type-groupblog": "Joukkblogg"
+}

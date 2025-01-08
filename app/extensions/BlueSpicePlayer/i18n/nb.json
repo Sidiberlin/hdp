@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jon Harald Søby"
+		]
+	},
+	"bs-player-extension-description": "Bygg inn en mediespiller på en side.",
+	"bs-player-pref-autostart": "Start video automatisk",
+	"bs-player-file-does-not-exist": "Fila fins ikke.",
+	"bs-player-tag-showtime-desc": "Denne taggen lar deg bygge inn en video.",
+	"bs-player-unsupported-type": "Denne filtypen støttes ikke.",
+	"bs-player-config-prefwidth": "Standard bredde for videoer",
+	"bs-player-config-prefheight": "Standard høyde for videoer",
+	"prefs-videoplayer": "Videospiller"
+}

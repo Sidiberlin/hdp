@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf",
+			"Beta16",
+			"GpieroMW",
+			"Selven",
+			"Stefano"
+		]
+	},
+	"bs-socialblog-type": "Blog",
+	"blog": "Blog",
+	"bs-socialblog-entityblog-header-create": "Crea un nuovo blog...",
+	"bs-socialblog-var-blogtitle": "Titolo",
+	"bs-socialblog-entityblog-content-more-btn-more": "Altro",
+	"bs-socialblog-entityblog-content-more-btn-less": "Meno",
+	"bs-socialblog-toc-useblogteaser": "Usa il testo del teaser per i post del blog nella barra temporale",
+	"bs-socialblog-special-blog-heading": "Blog",
+	"bs-socialblog-special-blog-heading-entry": "Blog/$1",
+	"bs-social-notifications-blog-create": "Utente {{GENDER:$1|$2 ha creato}} nuovo blog \"$3\"",
+	"bs-social-notifications-email-blog-create-subject": "Utente {{GENDER:$1|$2 ha creato}} un nuovo blog \"$3\"",
+	"bs-social-notifications-email-blog-create-body": "Utente {{GENDER:$1|$2 creato}} nuovo blog \"$3\" con il seguente testo:\n\n$4",
+	"bs-social-notification-blog-primary-link-label": "Visualizza blog",
+	"bs-social-blog-mainlinks-label": "Blog"
+}

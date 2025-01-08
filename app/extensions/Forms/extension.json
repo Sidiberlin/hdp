@@ -1,0 +1,304 @@
+{
+	"name": "Forms",
+	"version": "2.0.10",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:Forms",
+	"descriptionmsg": "forms-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"MessagesDirs": {
+		"Forms": "i18n"
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"PermissionRegistry": {
+				"forms-create-form": {
+					"type": "global",
+					"roles": [
+						"editor"
+					]
+				},
+				"forms-edit-form-definition": {
+					"type": "global",
+					"roles": [
+						"admin"
+					]
+				}
+			}
+		},
+		"Forms": {
+			"Targets": {
+				"json-on-wikipage": "MediaWiki\\Extension\\Forms\\Target\\JsonOnWikiPage::factory",
+				"form-definition": "MediaWiki\\Extension\\Forms\\Target\\FormDefinition::factory",
+				"database": "MediaWiki\\Extension\\Forms\\Target\\Database::factory",
+				"email": "MediaWiki\\Extension\\Forms\\Target\\Email::factory",
+				"template":  "MediaWiki\\Extension\\Forms\\Target\\Template::factory"
+			}
+		}
+	},
+	"callback": "mwsInitComponents",
+	"ServiceWiringFiles": [
+		"ServiceWiring.php"
+	],
+	"SpecialPages": {
+		"CreateFormInstance": "MediaWiki\\Extension\\Forms\\Special\\CreateFormInstance",
+		"FormEditor": {
+			"class":  "MediaWiki\\Extension\\Forms\\Special\\FormEditor",
+			"services": [
+				"MainConfig"
+			]
+		}
+	},
+	"ExtensionMessagesFiles": {
+		"FormsAlias": "languages/Forms.alias.php"
+	},
+	"config": {
+		"FormsTargetEMailRecipients": {
+			"value":  {}
+		}
+	},
+	"GroupPermissions": {
+		"user": {
+			"forms-create-form": true
+		},
+		"sysop": {
+			"forms-create-form": true,
+			"forms-edit-form-definition": true
+		}
+	},
+	"AvailableRights": [
+		"forms-create-form",
+		"forms-edit-form-definition"
+	],
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\Forms\\": "src/"
+	},
+	"ContentHandlers": {
+		"FormDefinition": "MediaWiki\\Extension\\Forms\\ContentHandler\\FormDefinitionHandler",
+		"FormData": "MediaWiki\\Extension\\Forms\\ContentHandler\\FormDataHandler"
+	},
+	"APIModules": {
+		"forms-get-definitions": "MediaWiki\\Extension\\Forms\\Api\\GetDefinitions",
+		"forms-form-submit": "MediaWiki\\Extension\\Forms\\Api\\FormSubmit"
+	},
+	"Actions": {
+		"editdefinitionsource": "MediaWiki\\Extension\\Forms\\Action\\FormDefinitionSourceEditAction"
+	},
+	"ResourceModules": {
+		"ext.forms.form.editor": {
+			"scripts": [
+				"target/FormTarget.js",
+				"target/JsonOnWikiPage.js",
+				"target/Database.js",
+				"target/Template.js",
+				"target/Email.js",
+				"widget/edit/JSInput.js",
+				"formElement/JSInput.js",
+				"widget/edit/StyleTextarea.js",
+				"formElement/StyleTextarea.js",
+				"elementGroup/Group.js",
+				"elementGroup/Inputs.js",
+				"elementGroup/Layouts.js",
+				"elementGroup/Other.js",
+				"widget/editor/FormElementGroup.js",
+				"widget/editor/FormEditorElementDescriptor.js",
+				"widget/editor/FormElementWrapper.js",
+				"formElement/FormElementGroup.js",
+				"formElement/FormElementWrapper.js",
+				"widget/editor/ElementPicker.js",
+				"widget/editor/ElementPickerItem.js",
+				"form/Items.js",
+				"form/FormProperties.js",
+				"FormEditor.js",
+				"dialog/FormPropertiesDialog.js",
+				"dialog/SaveFormDefinitionDialog.js",
+				"ext.forms.formEditor.bootstrap.js"
+			],
+			"styles": [
+				"ext.forms.editor.less"
+			],
+			"messages": [
+				"forms-form-editor-title",
+				"forms-form-editor-form-name-label",
+				"forms-form-editor-prop-title",
+				"forms-form-editor-prop-showtitle",
+				"forms-form-editor-prop-showFormName",
+				"forms-form-editor-prop-sealaftercreation",
+				"forms-form-editor-prop-buttonsfloat",
+				"forms-form-editor-prop-categories",
+				"forms-form-editor-prop-enableprogresssave",
+				"forms-form-editor-prop-enableeditsummary",
+				"forms-form-editor-prop-includable",
+				"forms-form-editor-prop-abstract",
+				"forms-form-editor-prop-partial",
+				"forms-form-editor-prop-targettype",
+				"forms-form-editor-prop-targettitle",
+				"forms-form-editor-prop-targetafteraction",
+				"forms-form-editor-prop-targettypejsononwikipage",
+				"forms-form-editor-prop-targettypedatabase",
+				"forms-form-editor-prop-targetafteractiontype",
+				"forms-form-editor-prop-targetafteractiontyperedirect",
+				"forms-form-editor-prop-targetafteractiontypecallback",
+				"forms-form-editor-prop-targetafteractionurl",
+				"forms-form-editor-prop-targetafteractioncallback",
+				"forms-form-editor-prop-targetafteractiontypenone",
+				"forms-form-editor-prop-use-form-revs",
+				"forms-form-editor-prop-use-form-revs-help",
+				"forms-form-editor-prop-extends",
+				"forms-form-editor-form-props-label",
+				"forms-form-editor-form-items-label",
+				"mwstake-formengine-type-button",
+				"mwstake-formengine-type-checkbox",
+				"mwstake-formengine-type-checkbox_multiselect",
+				"mwstake-formengine-type-dropdown",
+				"mwstake-formengine-type-icon",
+				"mwstake-formengine-type-indicator",
+				"mwstake-formengine-type-label",
+				"mwstake-formengine-type-multi_step",
+				"mwstake-formengine-type-number",
+				"mwstake-formengine-type-progress_bar",
+				"mwstake-formengine-type-radio",
+				"mwstake-formengine-type-radio_multiselect",
+				"mwstake-formengine-type-section_label",
+				"mwstake-formengine-type-select_file",
+				"mwstake-formengine-type-textarea",
+				"mwstake-formengine-type-layout_horizontal",
+				"mwstake-formengine-type-layout_booklet",
+				"mwstake-formengine-type-layout_index",
+				"mwstake-formengine-type-text",
+				"mwstake-formengine-type-form_import",
+				"mwstake-formengine-type-multiplier",
+				"mwstake-formengine-type-menutag_multiselect",
+				"mwstake-formengine-type-category_multiselect",
+				"mwstake-formengine-type-layout_fieldset",
+				"mwstake-formengine-type-password",
+				"mwstake-formengine-type-combobox",
+				"mwstake-formengine-type-tag",
+				"mwstake-formengine-type-date",
+				"mwstake-formengine-label-checkbox-horizontal-layout",
+				"forms-label-appearance",
+				"forms-label-behaviour",
+				"forms-label-infrastructure",
+				"forms-label-target",
+				"mwstake-formengine-label-listeners",
+				"forms-label-company-name",
+				"forms-label-employees-number",
+				"forms-label-city",
+				"forms-label-contacts",
+				"forms-label-show-contacts",
+				"forms-label-show-address",
+				"forms-label-sales",
+				"mwstake-formengine-label-name",
+				"mwstake-formengine-label-label",
+				"mwstake-formengine-label-help",
+				"mwstake-formengine-label-no-layout",
+				"mwstake-formengine-label-show-on",
+				"mwstake-formengine-label-create",
+				"mwstake-formengine-label-edit",
+				"mwstake-formengine-label-view",
+				"mwstake-formengine-label-style",
+				"mwstake-formengine-label-custom-widget-properties",
+				"mwstake-formengine-label-choose-element-to-insert",
+				"mwstake-formengine-title-remove",
+				"forms-form-editor-form-props-label",
+				"forms-form-editor-form-items-label",
+				"mwstake-formengine-label-default-value",
+				"mwstake-formengine-label-required",
+				"mwstake-formengine-label-outlined",
+				"mwstake-formengine-label-framed",
+				"mwstake-formengine-form-formelement-index-layout-tab",
+				"mwstake-formengine-form-formelement-booklet-layout-page",
+				"mwstake-formengine-label-sel-by-default",
+				"mwstake-formengine-label-add-first",
+				"mwstake-formengine-label-max-number-to-add",
+				"mwstake-formengine-label-completion-step",
+				"mwstake-formengine-label-completion-step-help",
+				"mwstake-formengine-form-formelement-multi-step-step",
+				"mwstake-formengine-label-min",
+				"mwstake-formengine-label-max",
+				"mwstake-formengine-label-options",
+				"mwstake-formengine-label-data",
+				"mwstake-formengine-label-title",
+				"mwstake-formengine-label-show-drop-target",
+				"mwstake-formengine-label-wikitext",
+				"mwstake-formengine-label-number-of-rows",
+				"mwstake-formengine-label-placeholder",
+				"mwstake-formengine-label-indicator",
+				"mwstake-formengine-form-formelement-wikitext-input",
+				"forms-formelement-group-input",
+				"forms-formelement-group-layout",
+				"forms-formelement-group-other",
+				"mwstake-formengine-label-icon",
+				"mwstake-formengine-label-helpinline",
+				"forms-form-editor-prop-targettypetemplate",
+				"forms-form-editor-prop-targettemplate",
+				"forms-form-editor-target-template-field",
+				"forms-form-editor-target-template-field-manual",
+				"mwstake-formengine-type-title",
+				"mwstake-formengine-type",
+				"forms-form-editor-button-import-template",
+				"forms-form-editor-confirm-import-template",
+				"mwstake-formengine-type-combobox",
+				"mwstake-formengine-type-tag",
+				"mwstake-formengine-label-input-position",
+				"mwstake-formengine-label-allow-arbitrary",
+				"mwstake-formengine-label-allowed-values",
+				"forms-form-editor-prop-rl-deps",
+				"forms-form-editor-prop-rl-deps-help",
+				"forms-form-editor-prop-targettypeemail",
+				"forms-form-editor-prop-target-email-receiver",
+				"forms-form-editor-prop-target-email-subject",
+				"forms-form-editor-prop-target-email-body",
+				"forms-editor-toolbar-cancel",
+				"forms-editor-toolbar-save",
+				"forms-editor-group-empty-help",
+				"forms-editor-toolbar-done",
+				"forms-form-editor-form-props-summary-label",
+				"forms-form-editor-form-props-summary-placeholder",
+				"mwstake-formengine-type-hr"
+			],
+			"dependencies": [
+				"ext.forms.init",
+				"oojs-ui",
+				"jquery.ui",
+				"ext.forms.standalone"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "Forms/resources"
+	},
+	"HookHandlers": {
+		"discovery-skin": {
+			"class": "\\MediaWiki\\Extension\\Forms\\HookHandler\\DiscoverySkin"
+		},
+		"addFormAutosaveTable": {
+			"class": "MediaWiki\\Extension\\Forms\\HookHandler\\LoadExtensionSchemaUpdates\\AddFormAutosaveTable"
+		},
+		"addFormDataTable": {
+			"class": "MediaWiki\\Extension\\Forms\\HookHandler\\LoadExtensionSchemaUpdates\\AddFormDataTable"
+		},
+		"addFormRevisionTable": {
+			"class": "MediaWiki\\Extension\\Forms\\HookHandler\\LoadExtensionSchemaUpdates\\AddFormRevisionTable"
+		}
+	},
+	"Hooks": {
+		"ContentHandlerDefaultModelFor": "MediaWiki\\Extension\\Forms\\Setup::onContentHandlerDefaultModelFor",
+		"ParserFirstCallInit": "MediaWiki\\Extension\\Forms\\Setup::onParserFirstCallInit",
+		"SkinTemplateNavigation::Universal": "MediaWiki\\Extension\\Forms\\Setup::onSkinTemplateNavigation_Universal",
+		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\Forms\\Setup::onCodeEditorGetPageLanguage",
+		"LoadExtensionSchemaUpdates": [
+			"addFormAutosaveTable",
+			"addFormDataTable",
+			"addFormRevisionTable"
+		],
+		"BlueSpiceDiscoveryTemplateDataProviderAfterInit": "discovery-skin"
+	},
+	"manifest_version": 2,
+	"load_composer_autoloader": true
+}

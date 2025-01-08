@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eleassar"
+		]
+	},
+	"bs-categorymanager-text": "Kategorije",
+	"bs-categorymanager-collection-var-namespacename": "Imenski prostor",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-title": "Kategorija že obstaja",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Poskusite z drugim imenom kategorije",
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "Število strani",
+	"bluespicecategorymanager": "Upravitelj kategorij",
+	"bluespicecategorymanager-desc": "Vizualno orodje za upravljanje kategorij",
+	"action-categorymanager-viewspecialpage": "prikaz Upravitelja kategorij",
+	"bs-categorymanager-draganddrop-text": "Povlecite in spustite, da preuredite",
+	"bs-categorymanager-label": "Upravitelj kategorij",
+	"bs-categorymanager-dlg-new-title": "Ustvari kategorijo",
+	"bs-categorymanager-dlg-new-prompt": "Vnesite ime:",
+	"bs-categorymanager-removecategoryconfirm-text": "Ali res želite izbrisati to kategorijo?",
+	"bs-categorymanager-removecategoryconfirm-title": "Odstrani kategorijo",
+	"bs-categorymanager-addcategory-dialog-error-title": "Ustvaritev kategorije ni uspela",
+	"bs-categorymanager-action-show-category": "Prikaži kategorijo",
+	"right-categorymanager-viewspecialpage": "Dostop do posebne strani [[Special:BlueSpiceCategoryManager]]",
+	"bs-categorymanager-collection-type-categorizedpages": "Dodelitev kategorije",
+	"bs-categorymanager-collection-var-categorizedpages": "Strani s kategorijami",
+	"bs-categorymanager-collection-var-uncategorizedpages": "Strani brez kategorij",
+	"bs-categorymanager-rename-category": "Preimenuj kategorijo",
+	"bs-categorymanager-rename-category-new-name": "Novo ime kategorije:",
+	"bs-categorymanager-move-new-name": "Določite novo ime kategorije. Novo ime:",
+	"bs-categorymanager-replace-in-pages": "Preimenuj na strani:",
+	"bs-categorymanager-statistics-report-category-pages": "Strani v kategorijah"
+}

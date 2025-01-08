@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sonic Speedy",
+			"Veracious"
+		]
+	},
+	"bs-readconfirmation-confirm-read-checkbox-label": "Ya, saya telah selesai membaca halaman ini.",
+	"bs-readconfirmation-confirm-read-aria-description": "Baca konfirmasi yang diminta"
+}

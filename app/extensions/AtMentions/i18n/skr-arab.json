@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saraiki"
+		]
+	},
+	"at-mentions-inspector-title-add": "ہک ذکر شامل کرو",
+	"at-mentions-toolbar-tool-title": "ذکر شامل کرو",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|by [[ورتُو:$1|$1]]}}"
+}

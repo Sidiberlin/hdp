@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"ToniSant"
+		]
+	},
+	"bluespicecategorymanager-desc": "Għodda viżwali għall-amministrazzjoni tal-kategoriji",
+	"bs-categorymanager-text": "Kategoriji",
+	"bs-categorymanager-removecategoryconfirm-text": "Inti ċert li trid tħassar din il-kategorija?",
+	"bs-categorymanager-addcategory-dialog-error-title": "Il-ħolqien tal-kategorija falla",
+	"bs-categorymanager-collection-var-categorizedpages": "Paġni b'kategoriji",
+	"bs-categorymanager-collection-var-uncategorizedpages": "Paġni bla kategoriji"
+}

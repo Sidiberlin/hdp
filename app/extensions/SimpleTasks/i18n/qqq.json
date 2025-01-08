@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie",
+			"Miriam Schlindwein"
+		]
+	},
+	"simple-tasks-desc": "Description of SimpleTasks for [[Special:Version]]",
+	"simple-tasks-task-duedate": "Label in a card which shows due date of a task.\n\nParameters:\n* $1: due date",
+	"simple-tasks-task-desc": "Text label in a card",
+	"simple-tasks-notif-key": "Label for notification",
+	"simple-tasks-notif-message": "Label for notification body which informs about assigned a task.\n\nParameters:\n* $1 - agent\n* $2 - task description",
+	"simple-tasks-taskreport-no-results": "Label for tag if no task report results are found with selected filters",
+	"simple-tasks-taskreport-header-task": "Label for grid column header which contains task description",
+	"simple-tasks-taskreport-header-assignee": "Label for grid column header which contains username of assigned user",
+	"simple-tasks-taskreport-header-page": "Label for grid column header which contains page name on which task is defined",
+	"simple-tasks-taskreport-header-due-to": "Label for grid column header which contains due date of task",
+	"simple-tasks-taskreport-header-state": "Label for grid column header which contains state of task",
+	"simple-tasks-droplet-taskreport-name": "Label for card header which shows name of droplet according to tag task report",
+	"simple-tasks-droplet-taskreport-description": "Label for card body which shows description of droplet according to tag task report",
+	"simple-tasks-taskreport-inspector-title": "Title for inspector",
+	"simple-tasks-taskreport-inspector-state-done": "Label for task status 'done'",
+	"simple-tasks-taskreport-inspector-state-open": "Label for task status 'open'",
+	"simple-tasks-taskreport-inspector-label-user": "Label for input field to select assignees",
+	"simple-tasks-taskreport-inspector-label-namespaces": "Label for input field to select namespaces",
+	"simple-tasks-taskreport-inspector-label-due-date": "Label for input field to select due date",
+	"simple-tasks-taskreport-inspector-label-state": "Label for input field to select state of a task",
+	"simple-tasks-taskreport-state-title-open": "Title for status label open",
+	"simple-tasks-taskreport-state-title-done": "Title for status label done",
+	"simple-tasks-taskreport-state-filter-done": "Label for status filter with value done",
+	"simple-tasks-taskreport-state-filter-open": "Label for status filter with value open"
+}

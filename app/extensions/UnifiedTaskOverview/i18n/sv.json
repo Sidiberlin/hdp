@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sabelöga",
+			"WikiPhoenix"
+		]
+	},
+	"unifiedtaskoverview-desc": "Erbjuder en specialsida med med en översikt över användares uppgifter",
+	"unifiedtaskoverview": "Mina uppgifter",
+	"unifiedtaskoverview-label-no-task": "Det finns för nuvarande inga uppgifter att utföra.",
+	"unifiedtaskoverview-personal-url-my-tasks": "Uppgifter",
+	"unifiedtaskoverview-search-placeholder": "Sök"
+}

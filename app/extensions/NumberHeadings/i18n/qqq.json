@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Daniel Vogel"
+		]
+	},
+	"numberheadings-desc": "Part of the \"NumberHeadings\" extension. It is a description message. Number headings in content namespaces",
+	"numberheadings-conf-exlude-namespaces": "It is a description message. Exclude namespaces from heading numbering",
+	"numberheadings-conf-enable": "Label for NumberHeadings config option"
+}

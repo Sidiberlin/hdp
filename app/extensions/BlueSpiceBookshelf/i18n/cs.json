@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Adam N.",
+			"Fraxinus.cs",
+			"Kareyac"
+		]
+	},
+	"bs-bookshelf-action-editbook-create": "Upravit zdroj",
+	"bs-bookshelf-book-grid-title": "Knihy",
+	"bs-bookshelf-ga-manager-label": "Knihy",
+	"bs-bookshelf-ve-bookshelf-attr-book-label": "Kniha",
+	"bs-bookshelf-mainlinks-label": "Knihy"
+}

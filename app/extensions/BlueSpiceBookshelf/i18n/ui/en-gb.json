@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Piano1forte2"
+		]
+	},
+	"bs-bookshelfui-delete-book-text": "Do you really want to delete this book? 'bookshelf' tags will <em>not</em> be removed automatically from the linked wikipages!",
+	"bs-bookshelfui-dlg-copy-title": "Copy '$1'"
+}

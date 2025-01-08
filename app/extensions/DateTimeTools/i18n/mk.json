@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"datetimetools-desc": "Дава датумски алатки во Нагледниот уредник",
+	"datetimetools-ve-inspector-title": "Уреди датум",
+	"datetimetools-ve-inspector-date-picker-label": "Одберете датум",
+	"datetimetools-droplet-date-name": "Датум",
+	"datetimetools-droplet-date-description": "Вметнува датум"
+}

@@ -1,0 +1,266 @@
+{
+	"name": "BlueSpiceReadConfirmation",
+	"version": "4.5.2",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"Robert Vogel",
+		"Leonid Verhovskij"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceReadConfirmation",
+	"descriptionmsg": "bs-readconfirmation-desc",
+	"type": "bluespice",
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceReadConfirmation": {
+					"className": "\\BlueSpice\\ReadConfirmation\\Extension",
+					"extPath": "/BlueSpiceReadConfirmation",
+					"package": "BlueSpice Pro"
+				}
+			},
+			"PermissionRegistry": {
+				"readconfirmationremind": {
+					"type": "global",
+					"roles": [
+						"admin",
+						"maintenanceadmin"
+					]
+				},
+				"readconfirmationviewconfirmations": {
+					"type": "global",
+					"roles": [
+						"admin",
+						"maintenanceadmin",
+						"structuremanager"
+					]
+				}
+			},
+			"RunJobsTriggerHandlerRegistry": {
+				"bs-readconfirmation-autonotifier": "BlueSpice\\ReadConfirmation\\RunJobsTriggerHandler\\AutomaticReadConfirmationNotifier::factory"
+			}
+		},
+		"BlueSpicePrivacy": {
+			"Handlers": [
+				"\\BlueSpice\\ReadConfirmation\\Privacy\\Handler"
+			]
+		},
+		"BlueSpiceDiscovery": {
+			"AttentionIndicatorRegistry": {
+				"readconfirmation": "\\BlueSpice\\ReadConfirmation\\AttentionIndicator\\ReadConfirmation::factory"
+			}
+		},
+		"UnifiedTaskOverview": {
+			"AttentionIndicatorCollectionRegistry": [
+				"readconfirmation"
+			]
+		},
+		"NotifyMe": {
+			"Events": {
+				"bs-rc-request": {
+					"spec": {
+						"class": "\\BlueSpice\\ReadConfirmation\\Event\\ConfirmationRequestEvent"
+					},
+					"buckets": [ "personal" ]
+				},
+				"bs-rc-remind": {
+					"spec": {
+						"class": "\\BlueSpice\\ReadConfirmation\\Event\\ConfirmationRemindEvent"
+					},
+					"buckets": [ "personal" ]
+				}
+			}
+		}
+	},
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 4.3",
+			"BlueSpicePageAssignments": ">= 4.3"
+		}
+	},
+	"TestAutoloadNamespaces": {
+		"BlueSpice\\ReadConfirmation\\Tests\\": "tests/phpunit/"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\ReadConfirmation\\": "src/"
+	},
+	"AutoloadClasses": {
+		"ReadConfirmationHooks": "includes/ReadConfirmationHooks.php",
+		"ReadConfirmationPageAssignmentHooks": "includes/ReadConfirmationPageAssignmentHooks.php",
+		"BSApiReadConfirmationTasks": "includes/api/BSApiReadConfirmationTasks.php"
+	},
+	"ExtensionFunctions": [
+		"BlueSpice\\ReadConfirmation\\TriggerRegistration::addNotificationTrigger"
+	],
+	"APIModules": {
+		"bs-readconfirmation-tasks": "BSApiReadConfirmationTasks"
+	},
+	"ResourceModules": {
+		"ext.readconfirmation.styles": {
+			"styles": [
+				"ext.bluespice.readconfirmation.less"
+			]
+		},
+		"ext.readconfirmation.scripts": {
+			"scripts": [
+				"ext.bluespice.readconfirmation.js"
+			],
+			"messages": [
+				"bs-readconfirmation-confirm-read-heading",
+				"bs-readconfirmation-confirm-read-checkbox-label",
+				"bs-readconfirmation-confirm-read-button-label",
+				"bs-readconfirmation-confirm-read-aria-description"
+			],
+			"dependencies": [
+				"ext.bluespice"
+			]
+		},
+		"ext.readconfirmation.pageassignmentsintegration.styles": {
+			"styles": [
+				"ext.bluespice.readconfirmation.pageassignmentsintegration.less"
+			]
+		},
+		"ext.readconfirmation.pageassignmentsintegration": {
+			"scripts": [
+				"ext.bluespice.readconfirmation.pageassignmentsintegration.js"
+			],
+			"messages": [
+				"bs-readconfirmation-column-read",
+				"bs-readconfirmation-column-read-at",
+				"bs-readconfirmation-not-read",
+				"bs-readconfirmation-action-remind",
+				"bs-readconfirmation-action-log",
+				"bs-readconfirmation-action-remind-confirm",
+				"bs-readconfirmation-disabled-ns",
+				"bs-readconfirmation-disabled-ns-short",
+				"bs-readconfirmation-view-confirmations"
+			],
+			"dependencies": [
+				"ext.bluespice",
+				"ext.bluespice.extjs",
+				"ext.oOJSPlus.dialogs"
+			]
+		},
+		"ext.readconfirmation.uto.styles": {
+			"styles": [
+				"ext.bluespice.readconfirmation.uto.less"
+			]
+		},
+		"ext.readconfirmation.dialog.pages": {
+			"scripts": [
+				"ui/page/ReadConfirmationPage.js"
+			],
+			"messages": [
+				"bs-readconfirmation-dlg-title",
+				"bs-readconfirmation-dlg-label-page"
+			],
+			"dependencies": [
+				"ext.oOJSPlus.dialogs"
+			]
+		},
+		"ext.readconfirmation.dialog.info.page": {
+			"scripts": [
+				"ui/page/ReadConfirmationInformationPage.js"
+			],
+			"messages": [
+				"bs-readconfirmation-page-info-read-confirmations",
+				"bs-readconfirmation-page-info-user",
+				"bs-readconfirmation-page-info-confirmation"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceReadConfirmation/resources"
+	},
+	"MessagesDirs": {
+		"BlueSpiceReadConfirmation": [
+			"i18n"
+		]
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"Hooks": {
+		"BSApiExtJSStoreBaseBeforePostProcessData": "ReadConfirmationPageAssignmentHooks::onBSApiExtJSStoreBaseBeforePostProcessData",
+		"BSPageStoreDataProviderBeforeAppendRow": "ReadConfirmationPageAssignmentHooks::onBSPageStoreDataProviderBeforeAppendRow",
+		"BSPageAssignmentsManager": "ReadConfirmationPageAssignmentHooks::onBSPageAssignmentsSpecialPages",
+		"BSPageAssignmentsOverview": "addReadConfirmationInfoToPageAssignments",
+		"LoadExtensionSchemaUpdates": "\\BlueSpice\\ReadConfirmation\\Hook\\LoadExtensionSchemaUpdates\\AddReadConfirmationDatabase::callback",
+		"BeforePageDisplay": [
+			"\\BlueSpice\\ReadConfirmation\\Hook\\BeforePageDisplay\\AddManagePageAssignmentsIntegration::callback",
+			"\\BlueSpice\\ReadConfirmation\\Hook\\BeforePageDisplay\\AddResources::callback"
+		],
+		"PageSaveComplete": "ReadConfirmationHooks::onPageSaveComplete",
+		"NamespaceManager::getMetaFields": "ReadConfirmationHooks::onNamespaceManager_getMetaFields",
+		"NamespaceManager::editNamespace": "ReadConfirmationHooks::onNamespaceManager_editNamespace",
+		"BSApiNamespaceStoreMakeData": "ReadConfirmationHooks::onBSApiNamespaceStoreMakeData",
+		"UserMergeAccountFields": "\\BlueSpice\\ReadConfirmation\\Hook\\UserMergeAccountFields\\MergeReadConfirmationDBFields::callback",
+		"UnifiedTaskOverviewGetTaskDescriptors": "addUTOReadConfirmations",
+		"SkinTemplateNavigation::Universal": "skin",
+		"NamespaceManagerBeforePersistSettings": "writeNamespaceConfiguration",
+		"StandardDialogsRegisterPageInfoPanelModules": "standard-dialogs"
+	},
+	"HookHandlers": {
+		"addUTOReadConfirmations": {
+			"factory": "\\BlueSpice\\ReadConfirmation\\HookHandler\\UnifiedTaskOverview::factory",
+			"services": [ "DBLoadBalancer", "UserGroupManager", "BSReadConfirmationMechanismFactory", "MainConfig" ]
+		},
+		"skin": {
+			"class": "\\BlueSpice\\ReadConfirmation\\HookHandler\\Skin"
+		},
+		"writeNamespaceConfiguration": {
+			"class": "\\BlueSpice\\ReadConfirmation\\Hook\\WriteNamespaceConfiguration"
+		},
+		"standard-dialogs": {
+			"class": "\\BlueSpice\\ReadConfirmation\\HookHandler\\StandardDialogs"
+		},
+		"addReadConfirmationInfoToPageAssignments": {
+			"class": "\\BlueSpice\\ReadConfirmation\\HookHandler\\AddReadConfirmationInfoToPageAssignments"
+		}
+	},
+	"RestRoutes": [
+		{
+			"path": "/readconfirmation/{pageId}",
+			"method": "GET",
+			"class": "\\BlueSpice\\ReadConfirmation\\Rest\\GetReadConfirmations",
+			"services": [
+				"BSReadConfirmationMechanismFactory",
+				"BSPageAssignmentsAssignmentFactory",
+				"TitleFactory",
+				"UserFactory",
+				"PermissionManager"
+			]
+		}
+	],
+	"LogTypes": [
+		"bs-readconfirmation"
+	],
+	"FilterLogTypes": {
+		"bs-readconfirmation": true
+	},
+	"LogActionsHandlers": {
+		"bs-readconfirmation/*": "LogFormatter",
+		"bs-readconfirmation/confirm": "\\BlueSpice\\ReadConfirmation\\Logging\\ConfirmFormatter"
+	},
+	"GroupPermissions": {
+		"sysop": {
+			"readconfirmationremind": true,
+			"readconfirmationviewconfirmations": true
+		}
+	},
+	"AvailableRights": [
+		"readconfirmationremind",
+		"readconfirmationviewconfirmations"
+	],
+	"config_prefix": "bsgReadConfirmation",
+	"config": {
+		"Mechanism": {
+			"value": "BlueSpice\\ReadConfirmation\\Mechanism\\NonMinorEdit::factory"
+		},
+		"PageApprovedReminderDelay": {
+			"value": 168
+		}
+	},
+	"manifest_version": 2
+}

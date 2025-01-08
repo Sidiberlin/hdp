@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sheriff"
+		]
+	},
+	"books": "Awon iwe",
+	"bs-books-overview-page-loading-text": "Apejuwe iwe nbo",
+	"bs-books-overview-page-bookshelf-various-books": "Awon iwe orisirisi",
+	"bs-books-overview-page-book-actions-dropdown-menu-aria-label": "Se afikun igbese fun iwe yi",
+	"bs-books-overview-page-book-actions-dropdown-menu-title": "Fikun Igbese fun iwe yi",
+	"bs-books-overview-page-book-anchor-title": "Sii oju iwe akoko $1",
+	"bs-books-overview-page-book-anchor-aria-label": "Si oju iwe akoko $1",
+	"bs-books-overview-page-book-action-edit-text": "Atunse",
+	"bs-books-overview-page-book-action-edit-title": "Satunse iwe $1",
+	"bs-books-overview-page-book-action-delete-text": "Yo kuro",
+	"bs-books-overview-page-book-action-delete-title": "Yo iwe kuro $1"
+}

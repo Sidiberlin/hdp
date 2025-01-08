@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bs-uemodulepdfsubpages-extension-description": "Maakt recursieve export van pagina's in PDF-formaat met subpagina's mogelijk."
+}

@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dishual",
+			"Fohanno",
+			"Gwendal",
+			"Y-M D"
+		]
+	},
+	"sesp-property-author": "Aozer ar bajenn",
+	"sesp-property-first-author": "Krouer ar bajenn",
+	"sesp-property-page-img": "Skeudenn ar bajenn",
+	"sesp-property-view-count": "Niver a bajennoù gwelet",
+	"sesp-property-subpages": "Ispajenn",
+	"sesp-property-revisions": "Niver a adweladennoù",
+	"sesp-property-shorturl": "URL berr",
+	"sesp-property-approved-rev": "Adweladenn aprouet",
+	"sesp-property-approved-by": "Aprouet gant",
+	"sesp-property-user-registration-date": "Deiziad enskrivadur an implijer",
+	"sesp-property-user-group": "Strollad implijerien"
+}

@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Alshamiri1"
+		]
+	},
+	"pagecheckout-desc": "يسمح بحقوق حصرية على الصفحة للمستخدم",
+	"pagecheckout-error-no-title": "عنوان غير صالح",
+	"pagecheckout-error-no-user": "تم إعطاء \"مستخدم\" غير صالح",
+	"pagecheckout-error-has-checkout": "تم سحب الصفحة بالفعل",
+	"pagecheckout-error-save-failed": "فشل في الخروج من الصفحة",
+	"pagecheckout-error-no-checkout": "لا يمكن تسجيل الوصول إلى الصفحة التي لم يتم سحبها حاليًا",
+	"pagecheckout-error-no-checkout-id": "فشل في تسجيل الوصول! لم يتم تعيين معرف الخروج",
+	"pagecheckout-error-db-insert": "فشل في إدراج السحب",
+	"pagecheckout-error-db-retrieve-inserted": "فشل في استرداد الخروج المدرج مسبقًا",
+	"pagecheckout-error-save-event": "فشل حفظ الحدث",
+	"pagecheckout-lockdown-reason": "الإجراء \" $1 \" غير مسموح به ، لأنه تم سحب الصفحة بواسطة $2"
+}

@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"bs-bluespiceabout-desc": "BlueSpice лаьцна хаам.",
+	"action-bluespiceabout-viewspecialpage": "белхан агӀоне хьажар «{{int:bs-bluespiceabout-about-bluespice}}»",
+	"bs-bluespiceabout-about-bluespice": "BlueSpice лаьцна",
+	"bluespiceabout": "BlueSpice лаьцна",
+	"right-bluespiceabout-viewspecialpage": "белхан [[Special:BlueSpiceAbout]] агӀонан тӀекхачар"
+}

@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"BaRaN6161 TURK",
+			"Joseph",
+			"MrSchipunov"
+		]
+	},
+	"bs-uemoduledocx-extension-description": "DOCX'e aktarıma sağlar",
+	"bs-uemoduledocx-pref-SuppressNS": "DOCX'te ad alanı önekini gizle",
+	"bs-uemoduledocx-widgetlink-single-text": "DOCX tek sayfa",
+	"bs-uemoduledocx-widgetlink-single-title": "Bu sayfayı DOCX olarak dışa aktar.",
+	"bs-uemoduledocx-overview-title": "Microsoft&reg; Office Açık XML (DOCX)",
+	"bs-uemoduledocx-overview-description": "Sayfaları Microsoft DOCX'e dışa aktarır.",
+	"bs-uemoduledocx-overview-webservice-state-not-ok": "mevcut değil",
+	"bs-uemoduledocx-overview-webservice-state-ok": "mevcut",
+	"bs-uemoduledocx-overview-webservice-webadmin": "DOCX Hizmeti (BS html2 DOCX) Web Arayüzü",
+	"bs-uemoduledocx-overview-webservice-state": "DOCX Hizmeti (BShtml2DOCX) durumu",
+	"bs-uemoduledocx-widgetlink-subpages-text": "Alt sayfalara sahip DOCX sayfası",
+	"bs-uemoduledocx-widgetlink-subpages-title": "Bu sayfayı ve tüm alt sayfaları DOCX olarak dışa aktar.",
+	"action-uemoduledocxsubpages-export": "tüm alt sayfalar dahil bir sayfayı DOCX'e dışa aktarmaya",
+	"right-uemoduledocxsubpages-export": "Tüm alt sayfalar dahil bir sayfayı DOCX'e dışa aktar",
+	"action-uemoduledocx-export": "bir sayfayı DOCX'e dışa aktarın",
+	"right-uemoduledocx-export": "Bir sayfayı DOCX'e dışa aktar"
+}

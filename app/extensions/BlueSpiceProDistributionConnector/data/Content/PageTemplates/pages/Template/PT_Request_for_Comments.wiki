@@ -1,0 +1,67 @@
+<div class="databox">
+<div class="tbl">
+{|
+|-
+!Component:
+|name of the affected  component or structure
+|-
+!Stakeholders:
+|who is affected by or influences the idea or its results?
+|-
+!Created:
+|mm/dd/yyyy
+|}
+</div>
+<div class="tbl">
+{| 
+|-
+!Initiator / requester:
+|username
+|-
+!Status:
+|'''in draft''' / in discussion / accepted / declined
+|-
+!End date:
+|mm/dd/yyyy
+|}
+</div>
+</div>
+==Description==
+A Request for Comment (RfC) is a tool for assessing and evaluating internal projects or ideas for change. A maximum of two weeks should elapse before a decision is made. If the RfC is approved, the corresponding tickets for implementation will be created after completion.
+
+Give a brief executive summery of the topic here.
+
+==Realisation ==
+How to proceed:
+
+{| class="wikitable wikitablee" style="width:100%;"
+!'''Step'''
+!'''Description'''
+|-
+|What needs to happen
+|Details about this step
+|-
+|..
+|
+|-
+|..
+|
+|}
+
+==Advantages / chances==
+Why we should do this?
+
+==Disadvantages / risks==
+What issues do we expect?
+
+==Affected areas / effects==
+Which areas are affected and how?
+
+==Time estimate==
+How long will it take?
+
+== Comments and evaluation ==
+What does everyone think about the idea?
+
+*comment, name / sign
+*comment, name / sign

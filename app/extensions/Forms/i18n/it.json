@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf",
+			"Beta16"
+		]
+	},
+	"forms-createforminstance-form-name": "Crea $1",
+	"forms-form-edit-title": "Modifica $1",
+	"forms-form-editor-prop-title": "Titolo",
+	"forms-form-editor-prop-categories": "Categorie",
+	"forms-form-editor-prop-partial": "Parziale",
+	"forms-form-editor-prop-targettitle": "Titolo",
+	"forms-formelement-group-other": "Altro",
+	"forms-label-infrastructure": "Infrastruttura",
+	"forms-label-company-name": "Nome della compagnia",
+	"forms-label-contacts": "Contratti",
+	"forms-label-show-address": "Mostra indirizzo",
+	"forms-label-phone": "Telefono",
+	"forms-label-email": "Email",
+	"forms-label-production": "Produzione",
+	"forms-form-editor-prop-targettypetemplate": "Template",
+	"forms-form-editor-prop-targettemplate": "Template da usare",
+	"forms-action-editsource": "Modifica sorgente",
+	"forms-form-editor-prop-targettypeemail": "Email",
+	"forms-form-editor-prop-target-email-subject": "Oggetto",
+	"forms-form-editor-prop-target-email-body": "Contenuto",
+	"forms-error-target-mail-send-failed": "Invio email non riuscito",
+	"forms-error-target-mail-no-mail": "Nessun indirizzo email valido disponibile",
+	"forms-editor-toolbar-cancel": "Annulla",
+	"forms-editor-toolbar-save": "Salva modifiche",
+	"forms-editor-toolbar-done": "Fatto",
+	"forms-form-editor-form-props-summary-placeholder": "Descrivi cosa hai cambiato"
+}

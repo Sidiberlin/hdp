@@ -1,0 +1,39 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jakub Fabijan",
+			"Robin van der Vliet",
+			"Spenĉjo",
+			"Zarisi"
+		]
+	},
+	"bs-bookshelf-specialpage-title": "Libroj",
+	"bs-bookshelf-specialpage-allpages-ns-book-text": "Libraro",
+	"bs-bookshelf-tag-next": "Sekva",
+	"bs-bookshelf-tag-prev": "Antaŭe",
+	"bs-bookshelf-tag-edit-book": "Redakti libron",
+	"bs-bookshelf-personal-books-page-prefix": "$1/Libroj/",
+	"bs-bookshelf-add-to-book-label": "Aldoni al libron",
+	"bs-bookshelf-add-to-book-label-book": "Libro",
+	"bs-bookshelf-add-to-book-added": "La paĝo estis aldonita al libron '$1'.",
+	"bs-bookshelf-setting-path-feature": "Libro",
+	"bs-bookshelf-empty-selection": "Neniu elektita",
+	"bs-bookshelf-grouping-template-type-user_book": "Propraj libroj",
+	"bs-bookshelf-action-editbook": "Redakti libran fonton",
+	"bs-bookshelf-action-editbook-create": "Krei libran fonton",
+	"bs-bookshelf-action-export-book": "Elporti libron",
+	"bs-bookshelf-edit-title": "Redaktado de $1",
+	"bs-bookshelf-book-grid-title": "Libroj",
+	"bookshelf": "Bretaro",
+	"bookshelf-summary": "Ĝeneralaj Libroj",
+	"bs-bookshelf-prof-defaultview": "Defaŭlta vido",
+	"bs-bookshelf-prof-defaultview-images": "Bildoj",
+	"bs-bookshelf-ve-booklistinspector-title": "Librolisto",
+	"bs-bookshelf-ve-booklist-attr-filter-label": "Filtrilo",
+	"bs-bookshelf-ve-bookmeta-attr-title-label": "Titolo",
+	"bs-bookshelf-ve-bookmeta-attr-subtitle-label": "Subtitolo",
+	"bs-bookshelf-ve-bookmeta-attr-author-label": "Aŭtoro",
+	"bs-bookshelf-ve-bookmeta-attr-version-label": "Versio",
+	"bs-bookshelf-ve-bookshelfinspector-title": "Bretaro",
+	"bs-bookshelf-ve-bookshelf-attr-book-label": "Libro"
+}

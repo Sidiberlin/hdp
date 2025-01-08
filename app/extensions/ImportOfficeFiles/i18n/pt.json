@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hamilton Abreu"
+		]
+	},
+	"importofficefiles-desc": "Permite importar ficheiros do Office como páginas wiki",
+	"importofficefiles-ui-action-import-msword-text": "Importar ficheiro Word",
+	"importofficefiles-ui-action-import-msword-title": "Criar páginas de um ficheiro Microsoft Word",
+	"importofficefiles-ui-import-dialog-title": "Importar ficheiro",
+	"importofficefiles-ui-import-completed": "Importação concluída!",
+	"importofficefiles-ui-import-in-progress": "Importação em progresso...",
+	"importofficefiles-ui-dialog-action-cancel": "Cancelar",
+	"importofficefiles-ui-dialog-action-import": "Importar",
+	"importofficefiles-ui-dialog-action-next": "Seguinte",
+	"importofficefiles-ui-dialog-action-back": "Voltar",
+	"importofficefiles-ui-dialog-action-done": "Concluído",
+	"importofficefiles-ui-dialog-label-select-file": "Selecionar ficheiro",
+	"importofficefiles-ui-dialog-configuration-settings-title": "Configurar definições de importação",
+	"importofficefiles-ui-dialog-settings-page-title": "Título",
+	"importofficefiles-ui-dialog-settings-pagetitle-label": "Selecionar um título para a página nova",
+	"importofficefiles-ui-dialog-settings-structure-label": "Estrutura de conteúdo",
+	"importofficefiles-ui-dialog-settings-structure-label-checkbox": "Dividir o conteúdo em páginas",
+	"importofficefiles-ui-dialog-settings-conflicts-title": "Conflitos com o título da página",
+	"importofficefiles-ui-dialog-settings-conflicts-behavior-label": "Comportamento se o nome da página já existir",
+	"importofficefiles-ui-dialog-settings-conflicts-rename": "Alterar o nome",
+	"importofficefiles-ui-dialog-settings-conflicts-override": "Sobrepor",
+	"importofficefiles-ui-dialog-settings-choose-split-level-label": "Selecionar o nível em que as páginas devem ser divididas",
+	"importofficefiles-ui-dialog-settings-split-level-1": "Cabeçalhos de nível 1",
+	"importofficefiles-ui-dialog-settings-split-level-2": "Cabeçalhos de nível 2",
+	"importofficefiles-ui-dialog-settings-split-level-3": "Cabeçalhos de nível 3",
+	"importofficefiles-ui-dialog-preview-title": "Antevisão",
+	"importofficefiles-ui-dialog-preview-label": "Serão importadas as seguintes páginas",
+	"importofficefiles-ui-dialog-link-import-files-text": "Lista de ficheiros importados exportados para $1",
+	"importofficefiles-api-storage-error-no-available-file": "Não há nenhum ficheiro disponível para carregamento",
+	"importofficefiles-api-storage-error-save-temp": "Não é possível fazer uma gravação temporária",
+	"importofficefiles-api-storage-error-no-valid-module": "Não há nenhum módulo disponível para tratar este ficheiro",
+	"importofficefiles-ui-progress-import-images-step": "A importar imagens...",
+	"importofficefiles-ui-progress-import-pages-step": "A importar páginas...",
+	"importofficefiles-ui-progress-remove-files-step": "A remover ficheiros temporários...",
+	"importofficefiles-ui-import-error": "Ocorreu um erro não identificado durante a importação.",
+	"importofficefiles-ui-analyze-error": "O processo de análise falhou por motivo não identificado."
+}

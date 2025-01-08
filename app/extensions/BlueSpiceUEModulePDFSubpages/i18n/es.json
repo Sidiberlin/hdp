@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"DiegoAmbrocio"
+		]
+	},
+	"bs-uemodulepdfsubpages-extension-description": "Permite la exportación recursiva de páginas en formato PDF con subpáginas."
+}

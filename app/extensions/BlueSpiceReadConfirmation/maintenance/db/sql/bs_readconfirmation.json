@@ -1,0 +1,48 @@
+[
+	{
+		"name": "bs_readconfirmation",
+		"comment": "BlueSpiceReadConfirmation - Stores information about which revision was read by a user",
+		"columns": [
+			{
+				"name": "rc_rev_id",
+				"type": "integer",
+				"options": {
+					"unsigned": true,
+					"notnull": true
+				}
+			},
+			{
+				"name": "rc_user_id",
+				"type": "integer",
+				"options": {
+					"unsigned": true,
+					"notnull": true
+				}
+			},
+			{
+				"name": "rc_timestamp",
+				"type": "mwtimestamp",
+				"options": {
+					"notnull": true
+				}
+			}
+		],
+		"indexes": [
+			{
+				"name": "rc_rev_id",
+				"columns": [
+					"rc_rev_id"
+				],
+				"unique": false
+			},
+			{
+				"name": "rc_user_id",
+				"columns": [
+					"rc_user_id"
+				],
+				"unique": false
+			}
+		],
+		"pk": []
+	}
+]

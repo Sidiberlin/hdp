@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jon Harald Søby"
+		]
+	},
+	"bs-socialmicroblog-desc": "Mikrobloggfunksjonalitet for BlueSpiceSocial",
+	"bs-socialmicroblog-type": "Mikroblogg",
+	"action-social-microblog": "opprette og redigere mikroblogger",
+	"action-social-microblog-comment": "kommentere på mikroblogger",
+	"right-social-microblog": "Opprette og redigere mikroblogger",
+	"right-social-microblog-comment": "Kommentere på mikroblogger"
+}

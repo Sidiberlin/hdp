@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Piramidion"
+		]
+	},
+	"bs-uemodulepdfsubpages-extension-description": "Уможливлює рекурсивний експорт сторінок у формат PDF з усіма підсторінками."
+}

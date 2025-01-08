@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robby",
+			"Volvox"
+		]
+	},
+	"bs-prodistributionconnector-desc": "Verbënnt BlueSpice mat verschiddene MediaWiki Erweiderungen",
+	"bs-pro-distribution-droplet-math-name": "Mathematesch Formel",
+	"bs-pro-distribution-droplet-chem-name": "Cheemesch Formel",
+	"droplets-pro-con-advantages-label": "Virdeeler",
+	"droplets-modal-dialog-bg-color-blue": "blo",
+	"droplets-modal-dialog-bg-color-red": "rout",
+	"droplets-modal-dialog-bg-color-neutral": "wäiss",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "Breet",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "Héicht"
+}

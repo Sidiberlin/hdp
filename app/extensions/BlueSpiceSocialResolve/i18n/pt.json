@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hamilton Abreu",
+			"Mansil alfalb"
+		]
+	},
+	"bs-socialresolve-desc": "Funcionalidade de resolução para as entidades de BlueSpiceSocial",
+	"bs-socialresolve-status-resolved": "Resolvido",
+	"bs-socialresolve-status-notresolved": "Não resolvido",
+	"bs-socialresolve-var-resolved": "Estado de resolução",
+	"apihelp-bs-socialresolve-tasks-summary": "Fornece tarefas para editar o estado de resolução de entidades",
+	"action-social-resolve": "alterar o estado de resolução das entradas",
+	"right-social-resolve": "Alterar o estado de resolução das entradas"
+}

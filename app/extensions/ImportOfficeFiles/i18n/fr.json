@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Verdy p"
+		]
+	},
+	"importofficefiles-desc": "Permet d’importer des fichiers de bureau en tant que pages wiki",
+	"importofficefiles-ui-action-import-msword-text": "Importer un fichier Word",
+	"importofficefiles-ui-action-import-msword-title": "Créer des pages à partir d’un fichier Microsoft Word",
+	"importofficefiles-ui-import-dialog-title": "Importer le fichier",
+	"importofficefiles-ui-import-completed": "Import terminé !",
+	"importofficefiles-ui-import-in-progress": "Importation en cours...",
+	"importofficefiles-ui-dialog-action-cancel": "Annuler",
+	"importofficefiles-ui-dialog-action-import": "Importer",
+	"importofficefiles-ui-dialog-action-next": "Suivant",
+	"importofficefiles-ui-dialog-action-back": "Retour",
+	"importofficefiles-ui-dialog-action-done": "Fait",
+	"importofficefiles-ui-dialog-label-select-file": "Sélectionner un fichier",
+	"importofficefiles-ui-dialog-configuration-settings-title": "Configurer les paramètres d’import",
+	"importofficefiles-ui-dialog-settings-page-title": "Titre",
+	"importofficefiles-ui-dialog-settings-pagetitle-label": "Sélectionner un titre pour la nouvelle page",
+	"importofficefiles-ui-dialog-settings-structure-label": "Structure du contenu",
+	"importofficefiles-ui-dialog-settings-structure-label-checkbox": "Scinder le contenu sur les pages",
+	"importofficefiles-ui-dialog-settings-conflicts-title": "Conflits avec le titre de la page",
+	"importofficefiles-ui-dialog-settings-conflicts-behavior-label": "Comportement si le nom de page existe déjà",
+	"importofficefiles-ui-dialog-settings-conflicts-rename": "Renommer",
+	"importofficefiles-ui-dialog-settings-conflicts-override": "Écraser",
+	"importofficefiles-ui-dialog-settings-choose-split-level-label": "Sélectionner le niveau auquel les pages devrait être divisées",
+	"importofficefiles-ui-dialog-settings-split-level-1": "Titres de niveau 1",
+	"importofficefiles-ui-dialog-settings-split-level-2": "Titres de niveau 2",
+	"importofficefiles-ui-dialog-settings-split-level-3": "Titres de niveau 3",
+	"importofficefiles-ui-dialog-preview-title": "Aperçu",
+	"importofficefiles-ui-dialog-preview-label": "Les pages suivantes seront importées",
+	"importofficefiles-ui-dialog-link-import-files-text": "Liste de fichiers importés exportés vers $1",
+	"importofficefiles-api-storage-error-no-available-file": "Aucun fichier téléversé disponible",
+	"importofficefiles-api-storage-error-save-temp": "Aucun enregistrement temporaire possible",
+	"importofficefiles-api-storage-error-no-valid-module": "Aucun module disponible pour gérer ce fichier",
+	"importofficefiles-ui-progress-import-images-step": "Importation des images...",
+	"importofficefiles-ui-progress-import-pages-step": "Importation des pages...",
+	"importofficefiles-ui-progress-remove-files-step": "Retrait des fichiers temporaires...",
+	"importofficefiles-ui-import-error": "Une erreur est survenue durant l’import.",
+	"importofficefiles-ui-analyze-error": "Le processus d’analyse a échoué pour une certaine raison."
+}

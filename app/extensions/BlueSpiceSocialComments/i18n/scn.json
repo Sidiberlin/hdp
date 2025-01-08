@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf"
+		]
+	},
+	"bs-socialcomments-type": "Cummentu",
+	"bs-socialcomments-commenttext": "{{PLURAL:$1|Cummenu|Cummenti}} ($1)",
+	"bs-socialcomments-header-create": "Cummentu",
+	"bs-social-notifications-comment-edit": "L'utenti {{GENDER:$1|$2 canciau}} nu cummentu",
+	"bs-social-notifications-email-comment-edit-subject": "L'utenti {{GENDER:$1|$2 canciau}} nu cummentu",
+	"bs-social-notifications-comment-delete": "L'utenti {{GENDER:$1|$2 cancillau}} nu cummentu",
+	"bs-social-notifications-email-comment-delete-subject": "L'utenti {{GENDER:$1|$2 cancillau}} nu cummentu",
+	"bs-social-notification-comment-primary-link-label": "Talìa cummentu"
+}

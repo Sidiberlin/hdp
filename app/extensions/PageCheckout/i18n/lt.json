@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nokeoo"
+		]
+	},
+	"pagecheckout-desc": "Naudotojui suteikiamos išskirtinės teisės puslapyje",
+	"pagecheckout-error-no-title": "Neleistinas pavadinimas",
+	"pagecheckout-error-no-user": "Pateiktas negalimas naudotojas",
+	"pagecheckout-error-save-event": "Nepavyko išsaugoti įvykio"
+}

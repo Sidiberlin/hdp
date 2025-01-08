@@ -1,0 +1,51 @@
+[
+	{
+		"name": "collabpad_revision",
+		"comment": "Collabpads - Stores collabpad revisions ",
+		"columns": [
+			{
+				"name": "sr_rev_id",
+				"type": "integer",
+				"options": { "length": 6, "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "sr_session_id",
+				"type": "integer",
+				"options": { "length": 6, "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "sr_page_title",
+				"comment": "foreign key to page.page_title",
+				"type": "binary",
+				"options": { "length": 255, "notnull": false, "default": "null" }
+			},
+			{
+				"name": "sr_page_namespace",
+				"comment": "foreign key to page.page_namespace",
+				"type": "integer",
+				"options": { "length": 11, "notnull": false, "default": 0 }
+			},
+			{
+				"name": "sr_owner",
+				"comment": "foreign key to collabpad_author.author_id",
+				"type": "binary",
+				"options": { "length": 255, "notnull": false, "default": "null" }
+			},
+			{
+				"name": "sr_rev_actor",
+				"comment": "foreign key to collabpad_author.author_id",
+				"type": "integer",
+				"options": { "length": 6, "unsigned": true, "notnull": false, "default": "null" }
+			},
+			{
+				"name": "sr_participants",
+				"type": "blob",
+				"options": { "length": 65535, "notnull": true }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"sr_rev_id"
+		]
+	}
+]

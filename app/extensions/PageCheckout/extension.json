@@ -1,0 +1,166 @@
+{
+	"name": "PageCheckout",
+	"version": "2.0.10",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:PageCheckout",
+	"descriptionmsg": "pagecheckout-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"PermissionRegistry": {
+				"page-checkout-clear": {
+					"global": true,
+					"roles": [ "admin" ]
+				}
+			}
+		},
+		"Workflows": {
+			"LogicObjects": {
+				"ActivityRegistry": {
+					"page_checkout": {
+						"class": "MediaWiki\\Extension\\PageCheckout\\Activity\\PageCheckoutActivity",
+						"services": [
+							"PageCheckoutManager", "UserFactory", "TitleFactory"
+						]
+					},
+					"page_checkin": {
+						"class": "MediaWiki\\Extension\\PageCheckout\\Activity\\PageCheckInActivity",
+						"services": [
+							"PageCheckoutManager", "UserFactory", "TitleFactory"
+						]
+					}
+				}
+			},
+			"WorkflowListeners": {
+				"clear-checkout-on-abort": {
+					"class": "MediaWiki\\Extension\\PageCheckout\\Workflows\\Consumer\\ClearCheckoutOnAbort",
+					"services": [
+						"PageCheckoutManager"
+					]
+				}
+			},
+			"EditorPluginModules": [
+				"ext.pagecheckout.workflows.editor.customElements"
+			]
+		}
+	},
+	"MessagesDirs": {
+		"PageCheckout": "i18n"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\PageCheckout\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"MediaWiki\\Extension\\PageCheckout\\Tests\\": "tests/phpunit/"
+	},
+	"APIModules": {
+		"pagecheckout-clear": {
+			"class": "MediaWiki\\Extension\\PageCheckout\\Api\\ApiClearCheckout",
+				"services": [
+					"PageCheckoutManager"
+				]
+		}
+	},
+	"ResourceModules": {
+		"ext.pagecheckout.clear": {
+			"scripts": [
+				"clearAction.js"
+			],
+			"messages": [
+				"pagecheckout-ui-clear-confirm"
+			],
+			"dependencies": [
+				"mediawiki.api",
+				"oojs-ui-windows"
+			]
+		},
+		"ext.pagecheckout.workflows.editor.customElements": {
+			"scripts": [
+				"ui/workflows/inspector/PageCheckinInspector.js",
+				"ui/workflows/inspector/PageCheckoutInspector.js",
+				"ui/workflows/registerCustomElements.js"
+			],
+			"styles": [
+				"ui/workflows/customElements.css"
+			],
+			"messages": [
+				"pagecheckout-ui-workflows-inspector-activity-page-checkout-title",
+				"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user",
+				"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user-help",
+				"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename",
+				"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename-help",
+				"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-force",
+				"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-force-help",
+				"pagecheckout-ui-workflows-inspector-activity-page-checkin-title",
+				"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user",
+				"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user-help",
+				"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename",
+				"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename-help"
+			],
+			"dependencies": [
+				"ext.workflows.editor.inspector.bootstrap",
+				"ext.workflows.editor.customElements.bootstrap"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "PageCheckout/resources"
+	},
+	"Hooks": {
+		"LoadExtensionSchemaUpdates": "addDatabaseTables",
+		"getUserPermissionsErrors": "applyCheckout",
+		"SkinTemplateNavigation::Universal": "addClearCheckoutAction",
+		"BeforePageDisplay": "addClearCheckoutAction",
+		"BlueSpiceDiscoveryTemplateDataProviderAfterInit": "discovery-skin",
+		"MWStakeAlertBannersRegisterProviders": "addAlertBanner"
+	},
+	"HookHandlers": {
+		"addDatabaseTables": {
+			"class": "MediaWiki\\Extension\\PageCheckout\\Hook\\AddDatabaseTables"
+		},
+		"applyCheckout": {
+			"class": "MediaWiki\\Extension\\PageCheckout\\Hook\\ApplyCheckout",
+			"services": [
+				"PageCheckoutManager"
+			]
+		},
+		"addClearCheckoutAction": {
+			"class": "MediaWiki\\Extension\\PageCheckout\\Hook\\AddClearCheckoutAction",
+			"services": [
+				"PermissionManager",
+				"PageCheckoutManager"
+			]
+		},
+		"addAlertBanner": {
+			"class": "\\MediaWiki\\Extension\\PageCheckout\\Hook\\AddAlertBanner"
+		},
+		"discovery-skin": {
+			"class": "\\MediaWiki\\Extension\\PageCheckout\\HookHandler\\DiscoverySkin"
+		}
+	},
+	"GroupPermissions": {
+		"user": {
+			"page-checkout-clear": false
+		},
+		"sysop": {
+			"page-checkout-clear": true
+		}
+	},
+	"AvailableRights": [
+		"page-checkout-clear"
+	],
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"LogTypes": [ "pagecheckout" ],
+	"LogActionsHandlers": {
+		"pagecheckout/*": "LogFormatter"
+	},
+	"manifest_version": 2
+}

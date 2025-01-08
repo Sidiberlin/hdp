@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Pyscowicz"
+		]
+	},
+	"contentstabilization-ui-approve-cancel": "Peruuta",
+	"contentstabilization-export-laststable-tag-text": "Hyväksytty:",
+	"contentstabilization-export-stablerevisiondate-tag-text": "Versio: $1",
+	"contentstabilization-stabilizationhistory-title": "Sivu"
+}

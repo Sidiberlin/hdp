@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"W"
+		]
+	},
+	"bs-expiry-header-pagename": "Старонка",
+	"bs-expiry-article-label": "Старонка",
+	"bs-expiry-unknown-page-msg": "Старонка не існуе.",
+	"bs-expiry-edit-grid-header-date": "Дата",
+	"bs-expiry-create-reminder-label": "Стварыць напамін"
+}

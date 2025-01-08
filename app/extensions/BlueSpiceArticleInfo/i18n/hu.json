@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Krisztina"
+		]
+	},
+	"bs-articleinfo-desc": "Információt ad egy lapról az állapotsorban",
+	"prefs-articleinfo": "Lapinformáció",
+	"bs-articleinfo-pref-CheckRevisionInterval": "Frissítési időköz másodpercben:",
+	"bs-articleinfo-flyout-title": "Lapinformáció",
+	"bs-articleinfo-flyout-intro": "Itt találod a laphoz kapcsolódó információkat. Ellenőrizheted a minőségét és naprakészségét, és megnézheted, hogyan kapcsolódik a wiki más lapjaihoz.",
+	"bs-articleinfo-nav-link-title": "Lapinformáció",
+	"bs-articleinfo-flyout-categorylinks-title": "Kategóriák",
+	"bs-articleinfo-flyout-templatelinks-title": "Lapon használt sablonok",
+	"bs-articleinfo-flyout-categorylinks-emptytext": "Nincs hozzárendelve kategória",
+	"bs-articleinfo-flyout-templatelinks-emptytext": "Nem használt sablont",
+	"bs-articleinfo-flyout-lasteditedtime-text": "Utoljára szerkesztve",
+	"bs-articleinfo-flyout-lastediteduser-text": "Legutóbbi szerkesztő",
+	"bs-articleinfo-newrevision-info-text": "Elérhető a lap új verziója. Az aktuális tartalom megtekintéséhez töltsd be újra a lapot.",
+	"bs-articleinfo-newrevision-info-text-reload": "Elérhető a lap új verziója. Az aktuális tartalom megtekintéséhez [[:$1|töltsd be újra]] a lapot.",
+	"bs-articleinfo-flyout-subpages-title": "Allapok",
+	"bs-articleinfo-pagetool-subpages-tooltip": "Allapok",
+	"bs-articleinfo-dialog-subpages-title": "Allapok",
+	"bs-articleinfo-pref-checkrevisioninterval-help": "Beállítja az „Utolsó szerkesztés” érték frissítési gyakoriságát. Ez az érték a lapinformációban jelenik meg a minőségirányítási eszközök között."
+}

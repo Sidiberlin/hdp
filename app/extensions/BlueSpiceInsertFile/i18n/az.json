@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"NMW03",
+			"Nemoralis",
+			"Toghrul Rahimli",
+			"Wertuose"
+		]
+	},
+	"bs-insertfile-insert-file": "Fayl əlavə et",
+	"bs-insertfile-labelalt": "Alternativ mətn",
+	"bs-insertfile-alignnone": "heç biri",
+	"bs-insertfile-alignleft": "sol",
+	"bs-insertfile-aligncenter": "orta",
+	"bs-insertfile-alignright": "sağ",
+	"bs-insertfile-titlefile": "Fayl əlavə et",
+	"bs-insertfile-advanced-search-panel-label": "Ətraflı axtarış"
+}

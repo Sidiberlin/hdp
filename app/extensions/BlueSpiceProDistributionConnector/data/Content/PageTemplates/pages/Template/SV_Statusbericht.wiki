@@ -1,0 +1,143 @@
+<div class="databox">
+<div class="tbl">
+{|
+|-
+!Autor:
+|Verantwortlicher für den Inhalt
+|-
+!Empfänger:
+|Zielgruppe des Reports
+|-
+!Datum des Berichts:
+|tt.mm.jjjj
+|}
+</div>
+<div class="tbl">
+{| 
+|-
+!Team / Abteilung / Projekt:
+|Berichtsumfang
+|-
+!Berichtszeitraum/ Meilenstein:
+|welcher Zeitraum ist hier berücksichtigt?
+|-
+!Status des Berichts:
+|Entwurf / Abgeschlossen
+|}
+</div>
+</div>
+==Überblick==
+Geben Sie eine kurze Zusammenfassung der Erkenntnisse aus diesem Bericht.
+
+==Details==
+Führen Sie wichtige Aufgaben an, die abgeschlossen wurden. Bewerten Sie deren Ergebnisse.
+
+{| class="wikitable" style="width:100%;"
+!Geschäftsbereich
+!Thema
+!Highlights
+!Hindernisse
+unerwartete Projekt-Risiken
+!Gewonnene Erkenntnisse
+|-
+|Marketing
+|Alle
+|
+*Leads
+*Q1 Kampagnen
+|
+*Unerwartete Kosten
+*Neuer Mitbewerber
+|
+*Überprüfung des Kostenschätzungsplans erforderlich
+|-
+|..
+|
+|
+|
+|
+|-
+|..
+|
+|
+|
+|
+|}
+==Geschäftsrückblick==
+Bewerten Sie die Auswirkungen der wichtigsten Ergebnisse für den Berichtszeitraum.
+ 
+{| class="wikitable" style="width:100%;"
+!Metriken
+!Ziel
+!Vorheriger
+Zeitraum
+!Aktueller<br />Zeitraum
+!Änderung
+!Neues Ziel
+|-
+|Anzahl Kunden
+|700
+|631
+|
+| +24
+|680
+|-
+|Abrechenbare Zeit (in Stunden)
+|650
+|620
+|
+|<nowiki>-70</nowiki>
+|
+|-
+|..
+|
+|
+|
+|
+|
+|}
+
+==Maßnahmen==
+Basierend auf der Leistung des Berichtszeitraums werden die folgenden Maßnahmen für die oben genannten Kennzahlen umgesetzt.
+
+===Metrik 1===
+{| class="wikitable" style="width:100%;"
+!'''Verantwortlich'''
+!'''Maßnahmen'''
+|-
+|Wer stellt sicher, dass dies rechtzeitig erledigt wird?
+|Um diese Metrik zu verbessern, müssen die folgenden Aufgaben ausgeführt werden:
+
+#Erste Maßnahme
+#Zweite Maßnahme
+|-
+|..
+|..
+|-
+|..
+|..
+|}
+
+===Metrik 2===
+{| class="wikitable" style="width:100%;"
+!'''Responsibe'''
+!'''Measures'''
+|-
+|Wer stellt sicher, dass dies rechtzeitig erledigt wird?
+|Um diese Metrik zu verbessern, müssen die folgenden Aufgaben ausgeführt werden:
+
+# Erste Maßnahme
+# Zweite Maßnahme
+|-
+|..
+|
+|-
+|..
+|
+|}
+
+==Begleitdokumente==
+Link zu allen Dokumenten im Zusammenhang mit diesem Bericht:
+
+*Dokument 1
+*Dokument 2

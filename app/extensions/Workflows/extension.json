@@ -1,0 +1,996 @@
+{
+	"name": "Workflows",
+	"version": "2.1.3",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:Workflows",
+	"descriptionmsg": "workflows-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"Forms": ">= 1.2.0",
+			"OOJSPlus": ">= 2.0.0"
+		}
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"PermissionRegistry": {
+				"workflows-view": {
+					"type": "global",
+					"roles": [
+						"reader"
+					]
+				},
+				"workflows-execute": {
+					"type": "global",
+					"roles": [
+						"admin", "reviewer", "editor"
+					]
+				},
+				"workflows-admin": {
+					"type": "global",
+					"roles": [
+						"admin"
+					]
+				}
+			}
+		},
+		"Workflows": {
+			"LogicObjects": {
+				"ActivityRegistry": {
+					"user_vote": {
+						"class": "\\MediaWiki\\Extension\\Workflows\\Activity\\VoteActivity\\UserVoteActivity",
+						"services": [ "MWStake.Notifier" ]
+					},
+					"group_vote": {
+						"class": "\\MediaWiki\\Extension\\Workflows\\Activity\\VoteActivity\\GroupVoteActivity",
+						"services": [ "MWStake.Notifier", "WorkflowUtilGroupDataProvider", "UserFactory" ]
+					},
+					"user_feedback": {
+						"class": "\\MediaWiki\\Extension\\Workflows\\Activity\\FeedbackActivity\\UserFeedbackActivity"
+					},
+					"group_feedback": {
+						"class": "\\MediaWiki\\Extension\\Workflows\\Activity\\FeedbackActivity\\GroupFeedbackActivity",
+						"services": [ "WorkflowUtilGroupDataProvider" ]
+					},
+					"send_mail": {
+						"class": "\\MediaWiki\\Extension\\Workflows\\Activity\\SendMail\\SendMailActivity",
+						"services": [ "Emailer", "MainConfig" ]
+					},
+					"custom_form": {
+						"class": "\\MediaWiki\\Extension\\Workflows\\Activity\\CustomForm\\CustomFormActivity"
+					},
+					"edit_request": {
+						"class":"\\MediaWiki\\Extension\\Workflows\\Activity\\EditRequest\\EditRequestActivity"
+					},
+					"edit_page": {
+						"class": "\\MediaWiki\\Extension\\Workflows\\Activity\\EditPageActivity",
+						"services": [ "TitleFactory", "UserFactory", "PermissionManager" ]
+					},
+					"set_template_param": {
+						"class": "\\MediaWiki\\Extension\\Workflows\\Activity\\SetTemplateParamsActivity",
+						"services": [ "MWStakeWikitextParserFactory", "TitleFactory", "RevisionStore", "UserFactory", "PermissionManager" ]
+					}
+				},
+				"DecisionRegistry": {}
+			},
+			"DefinitionRepositories": {
+				"wikipage": {
+					"class": "\\MediaWiki\\Extension\\Workflows\\Definition\\Repository\\WikiPageDefinitionRepository",
+					"services": [ "DBLoadBalancer", "RevisionStore" ]
+				},
+				"workflow-file": {
+					"factory": "\\MediaWiki\\Extension\\Workflows\\Definition\\Repository\\WorkflowFileDefinitionRepository::factory",
+					"services": [ "MainConfig", "HookContainer" ]
+				}
+			},
+			"WorkflowListeners": {},
+			"WorkflowDefinitions": {
+				"group-feedback": "Workflows/workflow/GroupFeedback.bpmn",
+				"user-feedback": "Workflows/workflow/UserFeedback.bpmn"
+			},
+			"PropertyValidators": {
+				"existing-user": {
+					"class": "\\MediaWiki\\Extension\\Workflows\\PropertyValidator\\ExistingUser",
+					"services": [ "UserFactory" ]
+				},
+				"can-execute-task": {
+					"class": "\\MediaWiki\\Extension\\Workflows\\PropertyValidator\\CanExecuteTask",
+					"services": [ "UserFactory", "PermissionManager" ]
+				},
+				"existing-title": {
+					"class": "\\MediaWiki\\Extension\\Workflows\\PropertyValidator\\ExistingTitle",
+					"services": [ "TitleFactory" ]
+				},
+				"required": {
+					"class": "\\MediaWiki\\Extension\\Workflows\\PropertyValidator\\Required"
+				},
+				"email-recipient": {
+					"class": "\\MediaWiki\\Extension\\Workflows\\PropertyValidator\\EmailRecipient",
+					"services": [ "UserFactory" ]
+				}
+			},
+			"TriggerTypes": {
+				"edit": {
+					"factory": "\\MediaWiki\\Extension\\Workflows\\Trigger\\PageRelatedTrigger::factory",
+					"services": [ "TitleFactory" ]
+				},
+				"create": {
+					"factory": "\\MediaWiki\\Extension\\Workflows\\Trigger\\PageRelatedTrigger::factory",
+					"services": [ "TitleFactory" ]
+				},
+				"manual": {
+					"factory": "\\MediaWiki\\Extension\\Workflows\\Trigger\\PageRelatedTrigger::factory",
+					"services": [ "TitleFactory" ]
+				},
+				"time": {
+					"factory": "\\MediaWiki\\Extension\\Workflows\\Trigger\\TimeBasedTrigger::factory",
+					"services": [ "TitleFactory" ]
+				}
+			},
+			"TriggerEditors": {
+				"page-action": {
+					"supports": [ "edit", "create" ],
+					"module": "ext.workflows.trigger.editors",
+					"class": "workflows.ui.trigger.PageRelated"
+				},
+				"manual": {
+					"supports": [ "manual" ],
+					"module": "ext.workflows.trigger.editors",
+					"class": "workflows.ui.trigger.Manual"
+				}
+			},
+			"EditorPluginModules": [
+				"ext.workflows.editor.customElements"
+			]
+		},
+		"BlueSpiceDiscovery": {
+			"AttentionIndicatorRegistry": {
+				"workflows": "\\MediaWiki\\Extension\\Workflows\\AttentionIndicator\\Workflows::factory"
+			}
+		},
+		"UnifiedTaskOverview": {
+			"AttentionIndicatorCollectionRegistry": [
+				"workflows"
+			]
+		},
+		"NotifyMe": {
+			"Events": {
+				"workflows-event-task-assigned": {
+					"spec": {
+						"class": "MediaWiki\\Extension\\Workflows\\Event\\TaskAssignedEvent"
+					},
+					"buckets": [ "personal" ]
+				},
+				"workflows-event-task-due-date-proximity": {
+					"spec": {
+						"class": "MediaWiki\\Extension\\Workflows\\Event\\DueDateProximityEvent"
+					},
+					"buckets": [ "personal" ]
+				},
+				"workflows-event-workflow-ended": {
+					"spec": {
+						"class": "MediaWiki\\Extension\\Workflows\\Event\\WorkflowEndedEvent"
+					},
+					"buckets": [ "personal" ]
+				},
+				"workflows-event-workflow-aborted": {
+					"spec": {
+						"class": "MediaWiki\\Extension\\Workflows\\Event\\WorkflowAbortedEvent"
+					},
+					"buckets": [ "personal" ]
+				},
+				"workflows-event-vote": {
+					"spec": {
+						"class": "MediaWiki\\Extension\\Workflows\\Event\\VoteEvent"
+					},
+					"buckets": [ "personal" ]
+				},
+				"workflows-event-vote-delegate": {
+					"spec": {
+						"class": "MediaWiki\\Extension\\Workflows\\Event\\VoteDelegateEvent"
+					},
+					"buckets": [ "personal" ]
+				},
+				"workflows-event-feedback-task-assigned": {
+					"spec": {
+						"class": "MediaWiki\\Extension\\Workflows\\Event\\FeedbackTaskAssignedEvent"
+					},
+					"buckets": [ "personal" ]
+				}
+			}
+		}
+	},
+	"callback": "MediaWiki\\Extension\\Workflows\\Extension::register",
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"MessagesDirs": {
+		"Workflows": "i18n"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\Workflows\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"MediaWiki\\Extension\\Workflows\\Tests\\": "tests/phpunit/"
+	},
+	"ResourceModules": {
+		"ext.workflows.bootstrap": {
+			"scripts": "bootstrap.js"
+		},
+		"ext.workflows.api": {
+			"scripts": [
+				"api/Api.js"
+			]
+		},
+		"ext.workflows.objects": {
+			"scripts": [
+				"object/Element.js",
+				"object/Activity.js",
+				"object/DescribedActivity.js",
+				"object/UserInteractionModule.js",
+				"object/UserInteractiveActivity.js",
+				"object/ElementFactory.js",
+				"object/Workflow.js",
+				"object/NullWorkflow.js"
+			]
+		},
+		"ext.workflows.form": {
+			"scripts": [
+				"object/form/Form.js"
+			],
+			"dependencies": [
+				"ext.forms.standalone"
+			]
+		},
+		"ext.workflows.ui.workflowpicker": {
+			"scripts": [
+				"ui/WorkflowPicker.js"
+			],
+			"messages": [
+				"workflows-ui-starter-select-workflow"
+			]
+		},
+		"ext.workflows.ui.starter": {
+			"scripts": [
+				"ui/widget/ManualTriggerPicker.js",
+				"ui/booklet/WorkflowSelectionPage.js",
+				"ui/booklet/WorkflowStartPage.js",
+				"ui/booklet/WorkflowStartBooklet.js",
+				"ui/dialog/WorkflowStarter.js"
+			],
+			"styles": [
+				"styles/bootstrap.css"
+			],
+			"messages": [
+				"workflows-ui-starter-select-workflow",
+				"workflows-ui-starter-init-note",
+				"workflows-ui-starter-error-generic",
+				"workflows-ui-starter-dialog-title",
+				"workflows-ui-starter-action-choose",
+				"workflows-ui-starter-action-start",
+				"workflows-ui-starter-action-back",
+				"workflows-ui-starter-action-cancel",
+				"workflows-ui-starter-init-form-fail",
+				"workflows-ui-starter-action-done"
+			],
+			"dependencies": [
+				"ext.workflows.ui.workflowpicker"
+			]
+		},
+		"ext.workflows.ui.task.complete": {
+			"scripts": [
+				"ui/dialog/TaskCompletion.js"
+			],
+			"messages": [
+				"workflows-ui-task-completion-dialog-title",
+				"workflows-ui-task-completion-action-complete",
+				"workflows-ui-task-completion-action-cancel"
+			]
+		},
+		"ext.workflows.alert": {
+			"scripts": [
+				"ui/widget/ManageButton.js",
+				"ui/alert/Alert.js",
+				"ui/alert/ActivityAlert.js",
+				"ui/alert/Manager.js"
+			],
+			"styles": [
+				"styles/alert.css"
+			],
+			"dependencies": [
+				"mwstake.component.alertbanners",
+				"ext.workflows.dialog.overview.bootstrap"
+			],
+			"messages": [
+				"workflows-ui-alert-running-workflow"
+			]
+		},
+		"ext.workflows.dialog.overview.bootstrap": {
+			"scripts": [
+				"ui/dialog/WorkflowOverview.js"
+			],
+			"messages": [
+				"workflows-ui-workflow-overview-dialog-title",
+				"workflows-ui-workflow-overview-action-abort",
+				"workflows-ui-workflow-overview-action-restore",
+				"workflows-ui-workflow-overview-action-cancel",
+				"workflows-ui-workflow-overview-action-back"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"ext.workflows.bootstrap"
+			]
+		},
+		"ext.workflows.special.overview": {
+			"scripts": [
+				"special.overview.js"
+			],
+			"dependencies": [
+				"ext.workflows.panel.overview",
+				"ext.workflows.dialog.overview.bootstrap",
+				"ext.workflows.dialog.overview",
+				"oojs-ui"
+			]
+		},
+		"ext.workflows.panel.overview": {
+			"scripts": [
+				"store/Workflows.js",
+				"ui/panel/WorkflowList.js"
+			],
+			"messages": [
+				"workflows-ui-overview-details-start-time-column",
+				"workflows-ui-overview-details-last-time-column",
+				"workflows-ui-overview-details-state-column",
+				"workflows-ui-overview-details-state-not_started",
+				"workflows-ui-overview-details-state-running",
+				"workflows-ui-overview-details-state-finished",
+				"workflows-ui-overview-details-state-aborted",
+				"workflows-ui-overview-details-section-activity",
+				"workflows-ui-overview-details-section-page",
+				"workflows-ui-overview-details-workflow-type-label",
+				"workflows-ui-overview-grid-filter-state-all",
+				"workflows-ui-overview-grid-filter-state-active",
+				"workflows-error-generic",
+				"workflows-ui-overview-details-section-assignee",
+				"workflows-ui-overview-details-has-notice-label"
+			],
+			"dependencies": [
+				"ext.oOJSPlus.data",
+				"oojs-ui.styles.icons-alerts",
+				"oojs-ui.styles.icons-accessibility"
+			]
+		},
+		"ext.workflows.dialog.overview": {
+			"scripts": [
+				"ui/widget/ActivityRawDataPopup.js",
+				"ui/widget/InitialRawDataPopup.js",
+				"ui/booklet/WorkflowListPage.js",
+				"ui/booklet/WorkflowDetailsPage.js",
+				"ui/booklet/WorkflowAbortRestorePage.js",
+				"ui/booklet/WorkflowOverviewBooklet.js"
+			],
+			"styles": [
+				"styles/overview.less"
+			],
+			"messages": [
+				"workflows-ui-overview-details-start-time",
+				"workflows-ui-overview-details-last-time",
+				"workflows-ui-overview-details-state-label",
+				"workflows-ui-overview-details-state-not_started",
+				"workflows-ui-overview-details-state-running",
+				"workflows-ui-overview-details-state-finished",
+				"workflows-ui-overview-details-state-aborted",
+				"workflows-ui-overview-details-state-comment",
+				"workflows-ui-overview-details-end-time",
+				"workflows-ui-overview-details-section-activity",
+				"workflows-ui-overview-details-section-page",
+				"workflows-ui-overview-details-activity-assigned-users",
+				"workflows-ui-overview-details-activity-assigned-users-none",
+				"workflows-ui-overview-details-action-abort-note",
+				"workflows-ui-overview-details-action-restore-note",
+				"workflows-ui-overview-details-action-reason",
+				"workflows-ui-overview-details-page-context-revision",
+				"workflows-ui-overview-details-page-context-page",
+				"workflows-ui-overview-details-no-current-activity",
+				"workflows-ui-workflow-overview-dialog-title-list-page",
+				"workflows-ui-workflow-overview-dialog-title-list",
+				"workflows-ui-workflow-overview-dialog-title-abort",
+				"workflows-ui-workflow-overview-dialog-title-restore",
+				"workflows-ui-overview-details-state-autoabort-comment",
+				"workflows-ui-overview-details-activity-due-date",
+				"workflows-ui-overview-details-initiator",
+				"workflows-ui-overview-details-action-details-column",
+				"workflows-ui-overview-details-section-past",
+				"workflows-ui-overview-details-raw-data-popup-prop",
+				"workflows-ui-overview-details-raw-data-popup-value",
+				"workflows-ui-overview-details-raw-data-popup-label",
+				"workflows-ui-overview-details-section-details",
+				"workflows-ui-overview-details-due-date-label",
+				"workflows-ui-workflow-overview-initial-data-title",
+				"workflows-ui-overview-details-section-expired",
+				"workflows-ui-overview-details-activity-assigned-users-more"
+			],
+			"dependencies": [
+				"oojs-ui.styles.icons-moderation",
+				"oojs-ui.styles.icons-interactions",
+				"oojs-ui.styles.icons-content",
+				"oojs-ui.styles.icons-user",
+				"oojs-ui.styles.icons-alerts",
+				"ext.workflows.panel.overview"
+			]
+		},
+		"ext.workflows.widgets": {
+			"scripts": [
+				"ui/widget/VoteWidget.js",
+				"ui/widget/WorkflowMultiselect.js"
+			],
+			"styles": "styles/voteWidget.less"
+		},
+		"ext.workflows.activity.vote": {
+			"scripts": [
+				"object/form/formelement/Vote.js",
+				"object/form/UserVote.js",
+				"object/form/GroupVote.js"
+			],
+			"dependencies": [
+				"ext.workflows.widgets",
+				"ext.workflows.form",
+				"mediawiki.widgets.UserInputWidget"
+			],
+			"messages": [
+				"workflows-form-placeholder-comment",
+				"workflows-form-label-delegate-cancel",
+				"workflows-form-label-delegate",
+				"workflows-form-label-delegate-to",
+				"workflows-form-label-delegate-comment",
+				"workflows-form-label-vote-widget-approve",
+				"workflows-form-label-vote-widget-decline",
+				"workflows-form-delegate-header-comment",
+				"workflows-form-delegate-header",
+				"workflows-form-instructions-loading-text"
+			]
+		},
+		"ext.workflows.activity.edit.request": {
+			"scripts": [
+				"object/form/EditRequest.js"
+			],
+			"dependencies": [
+				"ext.workflows.widgets",
+				"ext.workflows.form"
+			],
+			"messages": [
+				"workflows-form-edit-request-submit-to-continue"
+			]
+		},
+		"ext.workflows.activity.activity.feedback": {
+			"scripts": [
+				"object/form/Feedback.js"
+			],
+			"dependencies": [
+				"ext.workflows.widgets",
+				"ext.workflows.form"
+			],
+			"messages": [
+				"workflows-form-instructions-comment",
+				"workflows-form-instructions-loading-text"
+			]
+		},
+		"ext.workflows.activity.collectdata.forms": {
+			"scripts": [
+				"object/form/formelement/GroupThresholdValue.js",
+				"ui/widget/GroupThresholdValue.js",
+				"object/form/GroupCollectDataForm.js",
+				"object/form/UserCollectDataForm.js"
+			],
+			"dependencies": [
+				"ext.oOJSPlus.formelements",
+				"ext.mws.commonwebapis"
+			],
+			"messages": [
+				"workflows-collect-data-form-username",
+				"workflows-collect-data-form-instructions",
+				"workflows-collect-data-form-reportrecipient",
+				"workflows-collect-data-form-groupname",
+				"workflows-collect-data-form-threshold-unit",
+				"workflows-collect-data-form-threshold-value",
+				"workflows-collect-data-form-threshold-unit-user",
+				"workflows-collect-data-form-threshold-unit-percent",
+				"workflows-ui-group-threshold-hint-user",
+				"workflows-ui-group-threshold-hint-percent"
+			]
+		},
+		"ext.workflows.uto.styles": {
+			"styles": [ "styles/utoStyles.css" ]
+		},
+		"ext.workflows.trigger.editors": {
+			"scripts": [
+				"ui/trigger/mixin/WorkflowSelector.js",
+				"ui/trigger/Trigger.js",
+				"ui/trigger/PageRelated.js",
+				"ui/trigger/Manual.js"
+			],
+			"messages": [
+				"workflows-trigger-ui-condition-include-namespace",
+				"workflows-trigger-ui-condition-exclude-namespace",
+				"workflows-trigger-ui-condition-exclude-category",
+				"workflows-trigger-ui-condition-include-category",
+				"workflows-trigger-ui-condition-exclude-editType",
+				"workflows-ui-trigger-field-name",
+				"workflows-ui-trigger-field-active",
+				"workflows-ui-trigger-field-description",
+				"workflows-ui-trigger-field-workflow-picker",
+				"workflows-ui-trigger-field-conditions",
+				"workflows-workflow-file-definition-group-feedback-title",
+				"workflows-workflow-file-definition-group-feedback-desc",
+				"workflows-workflow-file-definition-user-approval-title",
+				"workflows-workflow-file-definition-user-approval-desc",
+				"workflows-workflow-file-definition-user-feedback-title",
+				"workflows-workflow-file-definition-user-feedback-desc",
+				"workflows-workflow-file-definition-document-control-title",
+				"workflows-workflow-file-definition-document-control-desc"
+			],
+			"dependencies": [
+				"ext.workflows.ui.workflowpicker",
+				"ext.oOJSPlus.widgets",
+				"mediawiki.widgets",
+				"mediawiki.widgets.NamespacesMultiselectWidget",
+				"ext.oOJSPlus.widgets",
+				"ext.workflows.widgets"
+			]
+		},
+		"ext.workflows.trigger.editor.dialog": {
+			"scripts": [
+				"ui/booklet/TriggerSelectionPage.js",
+				"ui/booklet/TriggerDetailsPage.js",
+				"ui/booklet/TriggerEditorBooklet.js",
+				"ui/dialog/TriggerEditor.js",
+				"ui/dialog/DeleteTrigger.js"
+			],
+			"messages": [
+				"workflows-ui-action-cancel",
+				"workflows-ui-trigger-action-create",
+				"workflows-ui-trigger-action-choose",
+				"workflows-ui-trigger-editor-dialog-title",
+				"workflows-error-generic",
+				"workflows-ui-trigger-delete-dialog-title",
+				"workflows-ui-trigger-action-delete",
+				"workflows-ui-trigger-delete-prompt",
+				"workflows-ui-triggers-error-delete-fail",
+				"workflows-ui-trigger-choose-error",
+				"workflows-ui-triggers-error-persist-fail",
+				"workflows-ui-triggers-add-button",
+				"workflows-ui-workflow-trigger-editor-booklet-page-details-title",
+				"workflows-ui-trigger-editor-error",
+				"workflows-ui-trigger-init-form",
+				"workflows-ui-trigger-manual-workflows",
+				"workflows-ui-trigger-since-last-major-days",
+				"workflows-action-edit-label",
+				"workflows-action-delete-label",
+				"workflows-ui-trigger-type-label"
+			],
+			"dependencies": [
+				"oojs-ui"
+			]
+		},
+		"ext.workflows.trigger.editor.panel": {
+			"scripts": [
+				"ui/widget/TriggerEntity.js",
+				"ui/panel/TriggerEditor.js"
+			],
+			"styles": [
+				"styles/trigger.panel.less"
+			],
+			"messages": [
+				"workflows-ui-trigger-item-inactive"
+			],
+			"dependencies": [
+				"ext.workflows.trigger.editor.dialog",
+				"oojs-ui.styles.icons-editing-core"
+			]
+		},
+		"ext.workflows.triggers": {
+			"scripts": [
+				"triggerEditor.js"
+			]
+		},
+		"ext.workflows.editor.bpmn-js.viewer": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\ResourceModule\\BpmnJSViewer"
+		},
+		"ext.workflows.editor.bpmn-js.modeler": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\ResourceModule\\BpmnJSModeler"
+		},
+		"ext.workflows.editor": {
+			"scripts": [
+				"ui/editor/util.js",
+				"ui/editor/dialog/SaveDialog.js",
+				"ui/editor/toolbar/SaveTool.js",
+				"ui/editor/toolbar/CancelTool.js",
+				"ui/editor/toolbar/ProcessContextTool.js",
+				"ui/editor/schema.js",
+				"ui/editor/CustomMenu.js",
+				"ui/editor/BpmnEditor.js"
+			],
+			"styles": [
+				"ui/editor/editor.less"
+			],
+			"dependencies": [
+				"ext.workflows.editor.bpmn-js.modeler",
+				"oojs-ui",
+				"oojs-ui.styles.icons-movement",
+				"oojs-ui.styles.icons-layout"
+			],
+			"messages": [
+				"workflows-editor-editor-field-summary",
+				"workflows-editor-editor-button-save",
+				"workflows-editor-editor-button-cancel",
+				"workflows-ui-editor-inspector-process-title",
+				"workflows-editor-editor-dialog-save-title",
+				"workflows-editor-editor-dialog-save-action-save",
+				"workflows-editor-editor-dialog-save-action-cancel"
+			]
+		},
+		"ext.workflows.editor.customElements": {
+			"scripts": [
+				"ui/editor/inspector/CustomFormInspector.js",
+				"ui/editor/inspector/activityInspector/SendMailInspector.js",
+				"ui/editor/inspector/activityInspector/UserFeedbackInspector.js",
+				"ui/editor/inspector/activityInspector/UserVoteInspector.js",
+				"ui/editor/inspector/activityInspector/GroupFeedbackInspector.js",
+				"ui/editor/inspector/activityInspector/GroupVoteInspector.js",
+				"ui/editor/inspector/activityInspector/EditPageInspector.js",
+				"ui/editor/inspector/activityInspector/EditRequestInspector.js",
+				"ui/editor/inspector/activityInspector/SetTemplateParamInspector.js",
+				"ui/editor/inspector/ProcessInspector.js",
+				"ui/editor/inspector/GatewayInspector.js",
+				"ui/editor/registerCustomElements.js"
+			],
+			"styles": [
+				"ui/editor/customElements.css"
+			],
+			"messages": [
+				"workflows-activity-property-reportrecipient",
+				"workflows-activity-property-instructions",
+				"workflows-activity-property-username",
+				"workflows-activity-property-due_date",
+				"workflows-activity-property-groupname",
+				"workflows-uto-activity-custom_form",
+				"workflows-uto-activity-user_vote",
+				"workflows-ui-editor-inspector-activity-title",
+				"workflows-ui-editor-inspector-properties",
+				"workflows-ui-editor-inspector-properties-additional",
+				"workflows-ui-editor-inspector-properties-additional-name",
+				"workflows-ui-editor-inspector-properties-additional-value",
+				"workflows-ui-editor-inspector-activity-custom-form-title",
+				"workflows-ui-editor-inspector-activity-custom-form-form-to-use",
+				"workflows-ui-editor-inspector-activity-custom-form-form-type",
+				"workflows-ui-editor-inspector-activity-custom-form-form-type-on-wiki",
+				"workflows-ui-editor-inspector-activity-custom-form-form-type-backend",
+				"workflows-ui-editor-inspector-activity-custom-form-form-module",
+				"workflows-ui-editor-inspector-activity-custom-form-form-title",
+				"workflows-ui-editor-inspector-activity-custom-form-form-class",
+				"workflows-ui-editor-inspector-activity-initializer",
+				"workflows-ui-editor-inspector-activity-section-initializer",
+				"workflows-ui-editor-inspector-gateway-title",
+				"workflows-ui-editor-inspector-gateway-notice",
+				"workflows-ui-editor-inspector-name",
+				"workflows-ui-editor-inspector-process-title",
+				"workflows-ui-editor-inspector-process-bind-to-revision",
+				"workflows-ui-editor-inspector-process-name",
+				"workflows-ui-editor-inspector-activity-send-mail-title",
+				"workflows-ui-editor-inspector-activity-send-mail-property-recipient",
+				"workflows-ui-editor-inspector-activity-send-mail-property-subject",
+				"workflows-ui-editor-inspector-activity-send-mail-property-body",
+				"workflows-ui-editor-inspector-activity-user-feedback-title",
+				"workflows-ui-editor-inspector-activity-user-activity-property-assigned_user",
+				"workflows-ui-editor-inspector-activity-user-activity-property-instructions",
+				"workflows-ui-editor-inspector-activity-user-activity-property-due_date",
+				"workflows-ui-editor-inspector-activity-edit-page-title",
+				"workflows-ui-editor-inspector-activity-edit-page-property-title",
+				"workflows-ui-editor-inspector-activity-edit-page-property-user",
+				"workflows-ui-editor-inspector-activity-edit-page-property-user-help",
+				"workflows-ui-editor-inspector-activity-edit-page-property-content",
+				"workflows-ui-editor-inspector-activity-edit-page-property-minor",
+				"workflows-ui-editor-inspector-activity-edit-page-property-mode",
+				"workflows-ui-editor-inspector-activity-edit-page-property-mode-prepend",
+				"workflows-ui-editor-inspector-activity-edit-page-property-mode-append",
+				"workflows-ui-editor-inspector-activity-edit-page-property-mode-replace",
+				"workflows-ui-editor-inspector-activity-edit-request-title",
+				"workflows-ui-editor-inspector-activity-user-vote-title",
+				"workflows-ui-editor-inspector-activity-set-template-param-title",
+				"workflows-ui-editor-inspector-activity-set-template-param-property-user",
+				"workflows-ui-editor-inspector-activity-set-template-param-property-user-help",
+				"workflows-ui-editor-inspector-activity-set-template-param-property-title",
+				"workflows-ui-editor-inspector-activity-set-template-param-property-template_index",
+				"workflows-ui-editor-inspector-activity-set-template-param-property-template_param",
+				"workflows-ui-editor-inspector-activity-set-template-param-property-value",
+				"workflows-ui-editor-inspector-activity-set-template-param-property-minor",
+				"workflows-ui-editor-inspector-activity-set-template-param-property-comment",
+				"workflows-ui-editor-inspector-activity-group-feedback-title",
+				"workflows-ui-editor-inspector-activity-group-feedback-property-assignment-type",
+				"workflows-ui-editor-inspector-activity-group-feedback-property-assignment-type-user-list-assignment",
+				"workflows-ui-editor-inspector-activity-group-feedback-property-assignment-type-group-assignment",
+				"workflows-ui-editor-inspector-activity-group-feedback-property-assigned_users",
+				"workflows-ui-editor-inspector-activity-group-feedback-property-assigned_group",
+				"workflows-ui-editor-inspector-activity-group-feedback-property-threshold_unit",
+				"workflows-ui-editor-inspector-activity-group-feedback-property-threshold_unit-help",
+				"workflows-ui-editor-inspector-activity-group-feedback-property-threshold_unit-user",
+				"workflows-ui-editor-inspector-activity-group-feedback-property-threshold_unit-percent",
+				"workflows-ui-editor-inspector-activity-group-feedback-property-threshold_value",
+				"workflows-ui-editor-inspector-activity-group-vote-title",
+				"workflows-ui-editor-inspector-activity-group-vote-property-assignment-type",
+				"workflows-ui-editor-inspector-activity-group-vote-property-assignment-type-user-list-assignment",
+				"workflows-ui-editor-inspector-activity-group-vote-property-assignment-type-group-assignment",
+				"workflows-ui-editor-inspector-activity-group-vote-property-assigned_users",
+				"workflows-ui-editor-inspector-activity-group-vote-property-assigned_group",
+				"workflows-ui-editor-inspector-activity-group-vote-property-threshold_unit-user",
+				"workflows-ui-editor-inspector-activity-group-vote-property-threshold_unit-percent",
+				"workflows-ui-editor-inspector-activity-group-vote-property-threshold_yes_unit",
+				"workflows-ui-editor-inspector-activity-group-vote-property-threshold_yes_unit-help",
+				"workflows-ui-editor-inspector-activity-group-vote-property-threshold_yes_value",
+				"workflows-ui-editor-inspector-activity-group-vote-property-threshold_no_unit",
+				"workflows-ui-editor-inspector-activity-group-vote-property-threshold_no_unit-help",
+				"workflows-ui-editor-inspector-activity-group-vote-property-threshold_no_value",
+				"workflows-ui-editor-inspector-id",
+				"workflows-ui-editor-inspector-id-help",
+				"workflows-ui-editor-inspector-activity-set-template-param-property-template-index-help",
+				"workflows-ui-editor-inspector-activity-set-template-param-property-template-param-help"
+			],
+			"dependencies": [
+				"ext.workflows.editor.inspector.bootstrap",
+				"ext.workflows.editor.customElements.bootstrap"
+			]
+		},
+		"ext.workflows.editor.customElements.bootstrap": {
+			"scripts": [
+				"ui/editor/customElement/CustomElement.js",
+				"ui/editor/customElement/WorkflowActivityElement.js",
+				"ui/editor/customElement/Registry.js"
+			]
+		},
+		"ext.workflows.editor.inspector.bootstrap": {
+			"scripts": [
+				"ui/editor/inspector/Inspector.js",
+				"ui/editor/inspector/Registry.js",
+				"ui/editor/inspector/InspectorDialog.js",
+				"ui/editor/inspector/ActivityInspector.js"
+			],
+			"messages": [
+				"workflows-editor-editor-button-save",
+				"workflows-editor-editor-button-cancel"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"ext.forms.standalone"
+			]
+		},
+		"ext.workflows.viewer": {
+			"scripts": [
+				"ui/editor/BpmnViewer.js"
+			],
+			"dependencies": [
+				"ext.workflows.editor.bpmn-js.viewer",
+				"oojs-ui"
+			],
+			"messages": [
+				"workflows-editor-viewer-section-diagram",
+				"workflows-editor-viewer-section-xml"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "Workflows/resources"
+	},
+	"Hooks": {
+		"LoadExtensionSchemaUpdates": "runDatabaseUpdates",
+		"BeforePageDisplay": "addBootstrap",
+		"ContentHandlerDefaultModelFor": "setContentModels",
+		"SkinTemplateNavigation::Universal": "addActions",
+		"UnifiedTaskOverviewGetTaskDescriptors": "addUTOUserActivities",
+		"MWStakeRunJobsTriggerRegisterHandlers": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\MWStakeRunJobsTriggerRegisterHandlers\\AddBackgroundProcess::callback",
+		"BlueSpiceDiscoveryTemplateDataProviderAfterInit": "discovery-skin",
+		"PageDeleteComplete": "abortWorkflows",
+		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface",
+		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\IntegrateCodeEditor::onCodeEditorGetPageLanguage",
+		"PageSaveComplete": "triggerWorkflows"
+	},
+	"HookHandlers": {
+		"runDatabaseUpdates": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\RunDatabaseUpdates"
+		},
+		"addBootstrap": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\AddBootstrap"
+		},
+		"setContentModels": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\SetContentModels",
+			"services":  [ "WorkflowTriggerRepo" ]
+		},
+		"addActions": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\AddActions",
+			"services": [
+				"PermissionManager"
+			]
+		},
+		"addUTOUserActivities": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\AddUnifiedTaskOverviewUserActivities",
+			"services": [ "WorkflowsStateStore", "WorkflowFactory", "PermissionManager", "SpecialPageFactory" ]
+		},
+		"abortWorkflows": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\AbortWorkflowsOnDelete",
+			"services": [ "WorkflowFactory", "WorkflowsStateStore" ]
+		},
+		"discovery-skin": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\HookHandler\\DiscoverySkin"
+		},
+		"common-user-interface": {
+			"class": "\\MediaWiki\\Extension\\Workflows\\MediaWiki\\HookHandler\\CommonUserInterface",
+			"services": [ "SpecialPageFactory", "WorkflowTriggerRepo" ]
+		},
+		"triggerWorkflows": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\TriggerWorkflows",
+			"services": [ "WorkflowTriggerRunner", "WorkflowLogger" ]
+		}
+	},
+	"ContentHandlers": {
+		"BPMN": "MediaWiki\\Extension\\Workflows\\MediaWiki\\ContentHandler\\BPMNHandler",
+		"workflow-triggers": "MediaWiki\\Extension\\Workflows\\MediaWiki\\ContentHandler\\TriggerDefinitionHandler"
+	},
+	"GroupPermissions": {
+		"user": {
+			"workflows-view": true,
+			"workflows-admin": false
+		},
+		"sysop": {
+			"workflows-execute": true,
+			"workflows-admin": true
+		},
+		"review": {
+			"workflows-execute": true
+		}
+	},
+	"AvailableRights": [
+		"workflows-view",
+		"workflows-execute",
+		"workflows-admin"
+	],
+	"RestRoutes": [
+		{
+			"path": "/workflow/list",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\ListHandler",
+			"services": [
+				"WorkflowFactory",
+				"WorkflowsStateStore",
+				"WorkflowSerializer",
+				"TitleFactory",
+				"LinkRenderer",
+				"UserFactory"
+			]
+		},
+		{
+			"path": "/workflow/abort/{id}",
+			"method": "POST",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\AbortHandler",
+			"services": [
+				"WorkflowFactory"
+			]
+		},
+		{
+			"path": "/workflow/restore/{id}",
+			"method": "POST",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\RestoreHandler",
+			"services": [
+				"WorkflowFactory"
+			]
+		},
+		{
+			"path": "/workflow/start/{repository}/{id}",
+			"method": "POST",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\StartHandler",
+			"services": [
+				"WorkflowFactory"
+			]
+		},
+		{
+			"path": "/workflow/dry_start/{repository}/{id}",
+			"method": "POST",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\DryStartHandler",
+			"services": [
+				"WorkflowFactory"
+			]
+		},
+		{
+			"path": "/workflow/complete_task/{id}/{taskId}",
+			"method": "POST",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\CompleteHandler",
+			"services": [
+				"WorkflowFactory"
+			]
+		},
+		{
+			"path": "/workflow/retrieve/{id}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\RetrieveHandler",
+			"services": [
+				"WorkflowFactory"
+			]
+		},
+		{
+			"path": "/workflow/definition/list",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\DefinitionListHandler",
+			"services": [
+				"DefinitionRepositoryFactory"
+			]
+		},
+		{
+			"path": "/workflow/definition/details/{repo}/{definition}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\DefinitionDetailsHandler",
+			"services": [
+				"DefinitionRepositoryFactory"
+			]
+		},
+		{
+			"path": "/workflow/triggers/{key}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\RetrieveTriggersHandler",
+			"services": [
+				"WorkflowTriggerRepo"
+			]
+		},
+		{
+			"path": "/workflow/triggers/of_type/{key}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\RetrieveTriggersHandler",
+			"args": [ true ],
+			"services": [
+				"WorkflowTriggerRepo", "TitleFactory"
+			]
+		},
+		{
+			"path": "/workflow/triggers/{key}",
+			"method": "DELETE",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\DeleteTriggerHandler",
+			"services": [
+				"WorkflowTriggerRepo", "PermissionManager"
+			]
+		},
+		{
+			"path": "/workflow/triggers",
+			"method": "POST",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\PersistTriggersHandler",
+			"services": [
+				"WorkflowTriggerRepo", "PermissionManager"
+			]
+		},
+		{
+			"path": "/workflow/trigger_types",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\Workflows\\Rest\\RetrieveTriggerTypesHandler"
+		}
+	],
+	"LogTypes": [ "ext-workflows" ],
+	"LogActionsHandlers": {
+		"ext-workflows/*": "LogFormatter"
+	},
+	"SpecialPages": {
+		"WorkflowsOverview": {
+			"class": "\\MediaWiki\\Extension\\Workflows\\MediaWiki\\Special\\WorkflowOverview"
+		}
+	},
+	"ExtensionMessagesFiles": {
+		"WorkflowsOverviewAlias": "languages/SpecialWorkflowOverview.alias.php"
+	},
+	"DefaultUserOptions": {
+		"echo-subscriptions-email-workflow-cat": 1
+	},
+	"Actions": {
+		"editxml": "\\MediaWiki\\Extension\\Workflows\\MediaWiki\\Action\\EditDiagramXmlAction"
+	},
+	"manifest_version": 2,
+	"load_composer_autoloader": true
+}

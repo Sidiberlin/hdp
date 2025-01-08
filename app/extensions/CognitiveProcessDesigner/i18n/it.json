@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf",
+			"Beta16",
+			"GpieroMW",
+			"Pierpao"
+		]
+	},
+	"cpd-yes": "Sì",
+	"cpd-no": "No",
+	"cpd-keyboard-shortcuts": "Scorciatoie da tastiera",
+	"cpd-keyboard-shortcuts-select-all": "Seleziona tutto",
+	"cpd-btn-label-save": "Salva",
+	"cpd-saved": "Salvato",
+	"cpd-tag-bpmn-desc": "Tag BPMN",
+	"cpd-ve-bpmn-title": "BPMN",
+	"cpd-ve-bpmn-name-title": "Nome",
+	"cpd-error-dialog-title": "Si è verificato un errore!",
+	"cpd-droplet-bpmn-name": "Diagramma BPMN"
+}

@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"EdoAug",
+			"Jon Harald Søby"
+		]
+	},
+	"bs-uemodulepdf-desc": "Gjør at MediaWiki kan eksportere sider i PDF-format",
+	"prefs-uemodulepdf": "Universal PDF-eksporteringsmodul",
+	"uemodulepdf": "Universal PDF-eksporteringsmodul",
+	"bs-uemodulepdf-pref-suppressns": "Skjul navneromsprefikset i PDF",
+	"bs-uemodulepdf-widgetlink-single-no-attachments-text": "PDF-enkeltside",
+	"bs-uemodulepdf-widgetlink-single-no-attachments-title": "Eksporter denne siden som PDF.",
+	"bs-uemodulepdf-overview-title": "Portable Document Format (PDF)",
+	"bs-uemodulepdf-overview-desc": "Eksporterer sider (spesialsider og innholdssider) til PDF.",
+	"bs-uemodulepdf-overview-webservice-state": "Bakstykkestatus",
+	"bs-uemodulepdf-overview-webservice-state-ok": "tilgjengelig",
+	"bs-uemodulepdf-overview-webservice-state-not-ok": "ikke tilgjengelig",
+	"soap-service-url-not-valid": "URL-en til PDF-genereringstjenesten er ugyldig. Sjekk wikikonfigurasjonen.",
+	"soap-service-url-not-set": "URL-en til PDF-genereringstjenesten er ikke satt. Sjekk wikikonfigurasjonen.",
+	"bs-uemodulepdf-overview-webservice-webadmin": "Bakstykkegrensesnitt",
+	"action-uemodulepdf-export": "eksportere en side til PDF",
+	"right-uemodulepdf-export": "Eksportere en side til PDF",
+	"bs-uemodulepdf-widgetlink-subpages-text": "PDF-side med undersider",
+	"bs-uemodulepdf-widgetlink-subpages-title": "Eksporter denne siden og alle undersider som PDF.",
+	"action-uemodulepdfsubpages-export": "eksportere en side, inkludert alle undersider, som PDF",
+	"right-uemodulepdfsubpages-export": "Eksportere en side, inkludert alle undersider, til PDF",
+	"bs-uemodulepdf-widgetlink-recursive-text": "PDF-side med lenkede sider",
+	"bs-uemodulepdf-widgetlink-recursive-title": "Eksporter denne siden og alle lenkede sider som PDF.",
+	"right-uemodulepdfrecursive-export": "Eksporterer en side, inkludert alle lenkede sider, til PDF",
+	"action-uemodulepdfrecursive-export": "eksportere en side, inkludert alle lenkede sider, til PDF",
+	"bs-uemodulepdf-pref-suppressns-help": "Navnerommet til siden utelates fra PDF-tittelen.",
+	"bs-uemodulepdf-export-dialog-label-submodule-default": "Kun denne siden"
+}

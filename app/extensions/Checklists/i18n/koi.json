@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Римма"
+		]
+	},
+	"checklists": "Лыддьӧг",
+	"checklists-desc": "Сетӧ контрольнӧй лыддьӧггез VisualEditor-ӧ",
+	"checklists-confirm-change-status": "Тійӧ быль мӧдатӧ вежны контрольнӧй лыддьӧг элементлісь статуссӧ.Сія лӧсьӧтас листбоклісь виль веськӧтӧм",
+	"checklists-ve-tool-title": "Задачалӧн лыддьӧг",
+	"checklists-checkbox-dlg-title": "Пас",
+	"checklists-checkbox-dlg-action-done": "Керӧма",
+	"checklists-checkbox-dlg-action-cancel": "Дугдӧтны",
+	"checklists-checkbox-dlg-hide-revision-label": "Эдӧ мыччалӧ этӧ юӧрсӧ вились",
+	"checklists-droplet-checklist-title": "Задачалӧн лыддьӧг",
+	"checklists-droplet-checklist-description": "Сувтӧтӧ задачаэзлісь  лыддьӧг"
+}

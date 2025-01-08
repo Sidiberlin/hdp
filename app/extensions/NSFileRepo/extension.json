@@ -1,0 +1,205 @@
+{
+	"name": "NSFileRepo",
+	"version": "2.0.10",
+	"author": [
+		"Jack D. Pond",
+		"[https://www.hallowelt.com Hallo Welt! GmbH]",
+		"Robert Vogel"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:NSFileRepo",
+	"descriptionmsg": "nsfilerepo-desc",
+	"license-name": "GPL-2.0-or-later",
+	"type": "media",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"callback": "NSFileRepoHooks::register",
+	"MessagesDirs": {
+		"NSFileRepo": [
+			"i18n/nsfilerepo"
+		],
+		"img_auth": [
+			"i18n/imgauth"
+		]
+	},
+	"attributes": {
+		"EnhancedUpload": {
+			"UploadFormPluginModules": [
+				"ext.nsfilerepo.namespace.upload"
+			]
+		},
+		"DrawioEditor": {
+			"InspectorPluginModules": [
+				"ext.nsfilerepo.namespace.drawioeditor"
+			]
+		},
+		"CognitiveProcessDesigner": {
+			"InspectorPluginModules": [
+				"ext.nsfilerepo.namespace.cpd"
+			]
+		},
+		"EnhancedStandardUIs": {
+			"FilelistPluginModules": [
+				"ext.nsfilerepo.filelist"
+			]
+		}
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\NSFileRepo\\": "src/",
+		"NSFileRepo\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"MediaWiki\\Extension\\NSFileRepo\\Tests\\": "tests/phpunit/",
+		"NSFileRepo\\Tests\\": "tests/phpunit/"
+	},
+	"AutoloadClasses": {
+		"NSFileRepoHooks": "includes/NSFileRepoHooks.php",
+		"NSLocalRepo": "includes/filerepo/NSLocalRepo.php",
+		"NSLocalFile": "includes/filerepo/file/NSLocalFile.php",
+		"NSLocalFileMoveBatch": "includes/filerepo/file/NSLocalFile.php",
+		"NSOldLocalFile": "includes/filerepo/file/NSOldLocalFile.php",
+		"NSFileRepoFSFileBackend": "includes/filebackend/NSFileRepoFSFileBackend.php",
+		"NSFileRepoHelper": "includes/utility/NSFileRepoHelper.php"
+	},
+	"DefaultUserOptions": {
+		"filelist-show-namespace_text": 1
+	},
+	"ResourceModules": {
+		"ext.nsfilerepo.special.upload": {
+			"scripts": [
+				"ext.nsfilerepo.special.upload.js"
+			]
+		},
+		"ext.nsfilerepo.filepage.bootstrap": {
+			"scripts": [
+				"ext.nsfilerepo.filepage.bootstrap.js"
+			]
+		},
+		"ext.nsfilerepo.filepage": {
+			"scripts": [
+				"nsfr/ui/dialog/ChangeFileNamespaceAssociation.js"
+			],
+			"messages": [
+				"nsfilerepo-move-file-namespace-dialog-title",
+				"nsfilerepo-move-file-namespace-dialog-button-done",
+				"nsfilerepo-move-file-namespace-dialog-button-cancel",
+				"nsfilerepo-move-file-namespace-dialog-namespaceselector-label"
+			],
+			"dependencies": [
+				"mediawiki.widgets"
+			]
+		},
+		"ext.nsfilerepo.namespace.upload": {
+			"scripts": [
+				"ext.nsfilerepo.namespace.upload.js"
+			],
+			"dependencies": [
+				"ext.nsfilerepo.upload.paramsProcessor"
+			]
+		},
+		"ext.nsfilerepo.namespace.cpd": {
+			"scripts": [
+				"ext.nsfilerepo.namespace.cpd.js",
+				"nsfr/NamespaceFilenameProcessor.js"
+			],
+			"dependencies": [
+				"oojs-ui"
+			]
+		},
+		"ext.nsfilerepo.namespace.drawioeditor": {
+			"scripts": [
+				"ext.nsfilerepo.namespace.drawioeditor.js",
+				"nsfr/NamespaceFilenameProcessor.js"
+			],
+			"dependencies": [
+				"oojs-ui"
+			]
+		},
+		"ext.nsfilerepo.upload.paramsProcessor": {
+			"packageFiles": [
+				"nsfr/EnhancedUploadParamsProcessor.js",
+				{
+					"name": "nsfr/config.json",
+					"callback": "NSFileRepo\\ClientConfig::makeConfigJson"
+				}
+			],
+			"messages": [
+				"nsfilerepo-upload-file-namespace-namespaceselector-label"
+			],
+			"dependencies": [
+				"ext.enhancedUpload.paramsProcessor",
+				"mediawiki.widgets",
+				"oojs-ui"
+			]
+		},
+		"ext.nsfilerepo.filelist": {
+			"packageFiles": [
+				"ext.nsfilerepo.filelist.js"
+			],
+			"messages": [
+				"nsfilerepo-enhanced-filelist-grid-namespace-title"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "NSFileRepo/resources"
+	},
+	"HookHandlers": {
+		"permission-checker": {
+			"class": "MediaWiki\\Extension\\NSFileRepo\\HookHandler\\PermissionChecker",
+			"services": [ "MainConfig", "PermissionManager" ]
+		},
+		"addNamespaces": {
+			"class": "MediaWiki\\Extension\\NSFileRepo\\HookHandler\\AddNamespaceToFilelist",
+			"services": [ "MainConfig" ]
+		},
+		"userpreference": {
+			"class": "MediaWiki\\Extension\\NSFileRepo\\HookHandler\\AddUserPreference"
+		},
+		"specialFilelistAvailableNamespaces": {
+			"class": "NSFileRepo\\Hooks\\SpecialFilelistAvailableNamespaces",
+			"services": [ "DBLoadBalancer" ]
+		}
+	},
+	"Hooks": {
+		"UploadForm:BeforeProcessing": "NSFileRepo\\Hooks\\UploadFormBeforeProcessing::handle",
+		"getUserPermissionsErrors": "permission-checker",
+		"BeforePageDisplay": [ "NSFileRepoHooks::onBeforePageDisplay", "specialFilelistAvailableNamespaces" ],
+		"UploadFormInitDescriptor": "NSFileRepo\\Hooks\\UploadFormInitDescriptor::handle",
+		"ImgAuthBeforeCheckFileExists": "NSFileRepoHooks::onImgAuthBeforeCheckFileExists",
+		"ImgAuthBeforeStream": "NSFileRepoHooks::onImgAuthBeforeStream",
+		"UploadVerification": "NSFileRepoHooks::onUploadVerification",
+		"SkinTemplateNavigation::Universal": "NSFileRepo\\Hooks\\SkinTemplateNavigationUniversal::handle",
+		"MWStakeCommonWebAPIsQueryStoreResult": "addNamespaces",
+		"GetPreferences": "userpreference"
+	},
+	"QUnitTestModule": {
+		"localBasePath": "",
+		"remoteExtPath": "NSFileRepo",
+		"scripts": [
+			"tests/qunit/ext.nsfilerepo.upload.paramsProcessor.test.js"
+		],
+		"dependencies": [
+			"ext.nsfilerepo.upload.paramsProcessor"
+		]
+	},
+	"config_prefix": "egNSFileRepo",
+	"config": {
+		"NamespaceThreshold": {
+			"value": 100,
+			"description": "This should probably be 3000 as recommended by MediaWiki. But for backwards compatibility we'll stick with this default"
+		},
+		"NamespaceBlacklist": {
+			"value": [ 102, 104, 106, 108, 274, 828 ],
+			"description": "There are some widespread extensions that create namespaces. E.g. SemanticMediaWiki, PageForms, Widgets, Scribunto, ..."
+		},
+		"SkipTalk": {
+			"value": true
+		},
+		"ForceDownload": {
+			"value": [ "js", "css", "xml", "html", "htm", "xhtml" ]
+		}
+	},
+	"manifest_version": 2
+}

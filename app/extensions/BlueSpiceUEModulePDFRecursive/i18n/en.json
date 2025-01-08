@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robert Vogel <vogel@hallowelt.biz>"
+		]
+	},
+	"bs-uemodulepdfrecursive-extension-description": "Enables recursive export of pages into PDF format."
+}

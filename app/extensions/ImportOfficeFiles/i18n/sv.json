@@ -1,0 +1,40 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sabelöga"
+		]
+	},
+	"importofficefiles-desc": "Gör det möjligt att importera kontorsfiler som wikisidor",
+	"importofficefiles-ui-import-dialog-title": "Importera fil",
+	"importofficefiles-ui-import-completed": "Importering slutförd!",
+	"importofficefiles-ui-import-in-progress": "Importering pågår...",
+	"importofficefiles-ui-dialog-action-cancel": "Avbryt",
+	"importofficefiles-ui-dialog-action-import": "Importera",
+	"importofficefiles-ui-dialog-action-next": "Nästa",
+	"importofficefiles-ui-dialog-action-back": "Tillbaka",
+	"importofficefiles-ui-dialog-action-done": "Klar",
+	"importofficefiles-ui-dialog-label-select-file": "Välj fil",
+	"importofficefiles-ui-dialog-configuration-settings-title": "Konfigurera importeringsinställningar",
+	"importofficefiles-ui-dialog-settings-page-title": "Titel",
+	"importofficefiles-ui-dialog-settings-pagetitle-label": "Välj en titel för den nya sidan",
+	"importofficefiles-ui-dialog-settings-structure-label": "Innehållsstruktur",
+	"importofficefiles-ui-dialog-settings-structure-label-checkbox": "Dela upp innehållet på sidor",
+	"importofficefiles-ui-dialog-settings-conflicts-title": "I konflikt med sidtiteln",
+	"importofficefiles-ui-dialog-settings-conflicts-behavior-label": "Beteende om sidnamnet redan finns",
+	"importofficefiles-ui-dialog-settings-conflicts-rename": "Byt namn",
+	"importofficefiles-ui-dialog-settings-conflicts-override": "Skriv över",
+	"importofficefiles-ui-dialog-settings-choose-split-level-label": "Välj nivå som sidor ska delas upp på",
+	"importofficefiles-ui-dialog-settings-split-level-1": "Rubriker på nivå 1",
+	"importofficefiles-ui-dialog-settings-split-level-2": "Rubriker på nivå 2",
+	"importofficefiles-ui-dialog-settings-split-level-3": "Rubriker på nivå 3",
+	"importofficefiles-ui-dialog-preview-title": "Förhandsgranska",
+	"importofficefiles-ui-dialog-preview-label": "Följande sidor kommer importeras",
+	"importofficefiles-ui-dialog-link-import-files-text": "Lista över importerade filer som exporterats till $1",
+	"importofficefiles-api-storage-error-no-available-file": "Inga uppladdningsfiler tillgängliga",
+	"importofficefiles-api-storage-error-save-temp": "Ingen temporär sparfil tillgänglig",
+	"importofficefiles-ui-progress-import-images-step": "Importerar bilder...",
+	"importofficefiles-ui-progress-import-pages-step": "Importerar sidor...",
+	"importofficefiles-ui-progress-remove-files-step": "Tar bort temporära filer...",
+	"importofficefiles-ui-import-error": "Något fel uppstsod vid importering.",
+	"importofficefiles-ui-analyze-error": "Analyseringsprocessen misslyckades av någon anledning."
+}

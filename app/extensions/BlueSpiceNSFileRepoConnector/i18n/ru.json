@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"DDPAT",
+			"Ice bulldog",
+			"Kareyac",
+			"Okras"
+		]
+	},
+	"bs-nsfrc-namespacestore-label": "Пространство имён",
+	"bs-nsfrc-namespacecombo-emptytext": "Выберите пространство имён",
+	"bs-nsfrc-unprefixedfilename-label": "Заголовок",
+	"bs-nsfrc-uploaddialog-selector-label": "Цель пространства имён"
+}

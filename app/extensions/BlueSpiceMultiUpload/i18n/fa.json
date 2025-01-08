@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"FarsiNevis",
+			"Jeeputer"
+		]
+	},
+	"bs-upload-multiupload-link-label": "بارگذاری پرونده‌ها",
+	"bs-upload-multiuploaddialogtitle": "بارگذاری پرونده‌ها",
+	"bs-deferred-action-apiupload-description": "بارگذاری «$1» به «$2»",
+	"bs-uploader-mime-images-label": "تصویرها",
+	"bs-uploader-mime-files-label": "پرونده‌ها",
+	"bs-multiupload-tag-button-label-default": "بارگذاری پرونده",
+	"bs-multiupload-tag-error-invalid-categories": "{{PLURAL:$1|ردهٔ|رده‌های}} نامعتبر: «$2»",
+	"bs-multiupload-tag-hint-reloadpage": "صفحه مجدداً بارگذاری خواهد شد"
+}

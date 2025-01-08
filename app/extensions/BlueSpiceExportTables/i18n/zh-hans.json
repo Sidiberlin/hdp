@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Crowley666",
+			"Lakejason0",
+			"LaoShuBaby",
+			"Tr jason",
+			"沈澄心",
+			"飞小RAN"
+		]
+	},
+	"bs-exporttables-extension-description": "允许将表格导出为Excel和CSV",
+	"bs-exporttables-menu": "导出表格",
+	"bs-exporttables-menu-csv": "逗号分隔值（CSV）",
+	"bs-exporttables-ve-exportable-option": "可导出",
+	"bs-exporttables-loading-text": "正在生成导出数据，请稍候……",
+	"bs-exporttables-loading-title": "导出表格",
+	"bs-exporttables-statistics-btn-text": "导出"
+}

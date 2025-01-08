@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eitvys200",
+			"Nokeoo"
+		]
+	},
+	"bs-authors-desc": "Rodo puslapio autorių profilio nuotraukas",
+	"prefs-authors": "Šio puslapio autoriai",
+	"bs-authors-title": "{{PLURAL:$1|{{GENDER:$2|Autorius}}|Autoriai}}",
+	"bs-authors-profileimage": "Profilio nuotrauka",
+	"bs-authors-profileimage-change": "Keisti profilio nuotrauka",
+	"bs-authors-show-all-authors": "Yra daugiau autorių",
+	"bs-authors-pref-show": "Rodyti autorius",
+	"bs-authors-switch-description": "Slėpti autorius šiame puslapyje.",
+	"bs-authors-navigation-link-title": "Šio puslapio autoriai",
+	"bs-authors-navigation-link-text": "Autorius",
+	"bs-authors-flyout-title": "Šio puslapio autoriai",
+	"bs-authors-author-type-originator": "Originalus autorius",
+	"bs-authors-author-type-editor": "Redaktorius",
+	"apihelp-bs-pageauthors-store-summary": "Išvardyti visus kontekste pateikto puslapio autorius",
+	"bs-authors-pref-show-help": "Rodo puslapio redaktorius puslapio informacijoje, kokybės valdymo įrankiuose.",
+	"bs-authors-info-dialog": "Šio puslapio autoriai"
+}

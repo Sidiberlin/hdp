@@ -1,0 +1,53 @@
+{
+	"name": "mediawiki/ldap-sync-all",
+	"type": "mediawiki-extension",
+	"extra": {
+		"installer-name": "LDAPSyncAll"
+	},
+	"license": "GPL-2.0+",
+	"homepage": "https://www.mediawiki.org/wiki/Extension:LDAPSyncAll",
+	"repositories": [
+		{
+			"type": "package",
+			"package": [
+				{
+					"name": "ldaptools/ldaptools",
+					"type": "library",
+					"version": "0.25+PHP8compat",
+					"source": {
+						"url": "https://github.com/passbolt/ldaptools.git",
+						"type": "git",
+						"reference": "9e5ce1acb2d0dfa7f24c4d5628f778412f3ba617"
+					}
+				}
+			]
+		}
+	],
+	"require": {
+		"composer/installers": "~1.0|~2",
+		"ldaptools/ldaptools": "~0.25"
+	},
+	"require-dev": {
+		"mediawiki/mediawiki-codesniffer": "39.0.0",
+		"mediawiki/minus-x": "1.1.1",
+		"php-parallel-lint/php-console-highlighter": "1.0.0",
+		"php-parallel-lint/php-parallel-lint": "1.3.2"
+	},
+	"scripts": {
+		"test": [
+			"parallel-lint . --exclude vendor --exclude node_modules",
+			"minus-x check .",
+			"@phpcs"
+		],
+		"fix": [
+			"minus-x fix .",
+			"phpcbf"
+		],
+		"phpcs": "phpcs -sp"
+	},
+	"config": {
+		"allow-plugins": {
+			"composer/installers": true
+		}
+	}
+}

@@ -1,0 +1,33 @@
+{
+	"@metadata": {
+		"authors": [
+			"Patric Wirth",
+			"Dejan Savuljesku"
+		]
+	},
+	"bs-socialcomments-desc": "Comment functionality for BlueSpiceSocial",
+	"bs-socialcomments-type": "Comment",
+	"bs-socialcomments-commenttext": "{{PLURAL:$1|Comment|Comments}} ($1)",
+	"bs-socialcomments-header-create": "Answer here...",
+	"bs-socialcomments-header": "[[User:$1|$2]] commented \"[[$6|$7]]\"",
+	"bs-socialcomments-var-commentcount": "Comment count",
+	"bs-social-comment-event-create": "{{GENDER:$1|left a comment}} on the page $2",
+	"bs-social-comment-event-create-desc": "New comment",
+	"bs-social-comment-event-own-create": "{{GENDER:$1|left a comment}} on your post, on the page $2",
+	"bs-social-comment-event-own-create-desc": "New response to your post",
+	"bs-social-comment-event-edit": "{{GENDER:$1|edited a comment}} on the page $2",
+	"bs-social-comment-event-edit-desc": "Comment edited",
+	"bs-social-comment-event-own-edit": "{{GENDER:$1|edited a comment}} on your post, on the page $2",
+	"bs-social-comment-event-own-edit-desc": "Comment on your post edited",
+	"bs-social-comment-event-delete": "{{GENDER:$1|deleted a comment}} on the page $2",
+	"bs-social-comment-event-delete-desc": "Comment deleted",
+	"bs-social-comment-event-own-delete": "{{GENDER:$1|deleted a comment}} on your post, on the page $2",
+	"bs-social-comment-event-own-delete-desc": "Comment on your post deleted",
+	"bs-social-notification-comment-primary-link-label": "View comment",
+	"bs-social-comment-for-user-event-create": "{{GENDER:$1|left a comment}} on $2",
+	"bs-social-comment-for-user-event-create-desc": "New comment on your user page",
+	"bs-social-comment-for-user-event-edit": "{{GENDER:$1|edited a comment}} on $2",
+	"bs-social-comment-for-user-event-edit-desc": "Comment on your user page edited",
+	"bs-social-comment-for-user-event-delete": "{{GENDER:$1|deleted a comment}} on $2",
+	"bs-social-comment-for-user-event-delete-desc": "Comment on your user page deleted"
+}

@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jon Harald Søby",
+			"Orf3us"
+		]
+	},
+	"bs-bssmwconnector-desc": "Integrerer SemanticMediaWiki med BlueSpice",
+	"bs-bssmwconnector-srf-printername-bsgrid": "BlueSpice-rutenett",
+	"bs-dlg-choosesmwprop-label": "Egenskap",
+	"bs-dlg-choosesmwprop-type-smwprop": "Semantisk egenskap",
+	"bs-extendedsearch-add-filter-group-smwproperty-label": "Semantiske egenskaper",
+	"bs-extendedsearch-search-center-result-smwproperty-label": "Semantiske egenskaper",
+	"bs-smwconnector-extendedsearch-boolean-property-true": "Ja",
+	"bs-smwconnector-extendedsearch-boolean-property-false": "Nei",
+	"bs-smwconnector-propertyvalueprovider-usermentions-alias": "Nevninger av innhold/brukere",
+	"bs-smwconnector-propertyvalueprovider-usermentions-desc": "Brukersidene til brukerne som har blitt nevnt på denne siden",
+	"apihelp-bs-smw-connector-ask-store-summary": "ExtJS-kompatibelt lager for å kjøre semantiske spørringer",
+	"apihelp-bs-smw-connector-ask-store-props-param": "Egenskaper som skal hentes. Disse egenskapene korresponderer til skjemaet og dataene som returneres. Nøkkel–verdi-par, nøkkelen er egenskapsnavnet og verdien er den ønskede etiketten (JSON)",
+	"bs-swm-connector-ask-store-page-label": "Side",
+	"bs-smw-connector-async-ask-unknown-handler": "Behandling for formatet «$1» er ikke registrert eller ikke gyldig",
+	"apihelp-bs-smw-connector-ask-tree-store-node-param": "Nodeverdier som vil erstatte <nowiki>{{{node}}}</nowiki> i spørringen",
+	"bs-smwconnector-extendedsearch-anon-user-label": "Anonym bruker",
+	"apihelp-bs-smw-connector-smw-property-store-summary": "ExtJS-kompatibelt lager for å hente egenskapsverdier",
+	"apihelp-bs-smw-connector-tree-ask-store-summary": "ExtJS-kompatibelt trelager for å utføre semantiske spørringer",
+	"bs-smw-connector-async-error": "Dataene kunne ikke hentes",
+	"bs-smwconnector-dataquery-name": "Dataspørring",
+	"bs-smwconnector-dataquery-desc": "Aktiver innholdsspørringer i wikien",
+	"bs-smwconnector-dataquery-category-label": "Kategori",
+	"bs-smwconnector-dataquery-category-help": "Filtrer etter kategori(er); atskill flere oppføringer med «|». F.eks. vil «kat1|kat2» returnere sider som ligger i kategoriene «kat1» ELLER «kat2».",
+	"bs-smwconnector-dataquery-namespace-label": "Navnerom",
+	"bs-smwconnector-dataquery-namespace-help": "Filtrer etter navnerom. Atskill flere oppføringer med «|». F.eks. vil «ns1|ns2» returnere sider i navnerommene «ns1» ELLER «ns2».",
+	"bs-smwconnector-dataquery-modified-operator-label": "Endret"
+}

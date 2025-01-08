@@ -1,0 +1,1 @@
+Attribut Chatbotmeta ist ein Attribut mit dem Datentyp [[Has type::Text]]

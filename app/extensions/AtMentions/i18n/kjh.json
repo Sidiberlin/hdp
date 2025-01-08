@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Матыр"
+		]
+	},
+	"at-mentions-inspector-title": "Тузаланҷыны адаңар",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|by [[User:$1]]}}",
+	"at-mentions-mentionslist-header-all": "{{GENDER:$2|[[User:$2]] тузаланҷы пу страницаларда адалған}}:"
+}

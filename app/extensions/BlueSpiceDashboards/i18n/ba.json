@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sagan",
+			"З. ӘЙЛЕ",
+			"Ләйсән"
+		]
+	},
+	"bs-dashboards-desc": "Ҡатнашыусыларға һәм хакимдарға идара итеү панелен тәҡдим итә",
+	"bs-specialadmindashboard-label": "Эш ҡоралдары панеле",
+	"bs-dashboards-addportlet": "Модуль өҫтәргә",
+	"bs-dashboards-portlets": "Ялғаусы модулдәр",
+	"prefs-dashboards": "Эш ҡоралдары панелдәре",
+	"bs-dashboards-pref-userdashboardonlogo": "Ҡатнашыусының идара итеү панеле өсөн логоға һылтанма",
+	"admindashboard": "Хаким панеле",
+	"userdashboard": "Ҡатнашыусы панеле",
+	"bs-dashboard-userportlet-calendar-title": "Календарь",
+	"bs-dashboard-userportlet-calendar-description": "Календарь",
+	"bs-dashboard-userportlet-wikipage-wiki-article": "Вики-бит"
+}

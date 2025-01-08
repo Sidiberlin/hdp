@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"nsfilerepo-desc": "Provide functiones a base de spatio de nomines pro files incargate",
+	"nsfilerepo-upload-target": "Nomine del file de destination in le spatio de nomines",
+	"nsfilerepo-nsmain": "(Principal)",
+	"nsfilerepo-reupload-namespaceselector-disabled-helptext": "Iste campo non pote esser modificate quando se re-incarga un file",
+	"nsfilerepo-move-file-namespace-action-label": "Definir le spatio de nomines del file",
+	"nsfilerepo-move-file-namespace-dialog-title": "Definir le spatio de nomines del file",
+	"nsfilerepo-move-file-namespace-dialog-button-done": "Facite",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "Cancellar",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "Spatio de nomines",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "Spatio de nomines",
+	"nsfilerepo-enhanced-filelist-grid-namespace-title": "Spatio de nomines"
+}

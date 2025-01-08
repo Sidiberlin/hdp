@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dmitriy Shevliakov <dsh@astarios.com>",
+			"Robby",
+			"Yurina Tatiana"
+		]
+	},
+	"bs-uemoduledocx-extension-description": "{{desc|name=BlueSpiceUEModuleDOCX}}",
+	"bs-uemoduledocx-pref-SuppressNS": "Label of a setting that allows to suppress the namespace prefix in the title of the exported document",
+	"bs-uemoduledocx-widgetlink-single-text": "Label of a link that exports a wikipage as a DOCX file",
+	"bs-uemoduledocx-widgetlink-single-title": "Tooltip of a link that exports a wikipage as a DOCX file",
+	"bs-uemoduledocx-overview-title": "Title of a section on [[Special:UniversalExport]]",
+	"bs-uemoduledocx-overview-description": "Description of this particular module on [[Special:UniversalExport]]",
+	"bs-uemoduledocx-overview-webservice-state-not-ok": "Status message if webservice is not available",
+	"bs-uemoduledocx-overview-webservice-state-ok": "Status message if webservice is available\n{{Identical|Available}}",
+	"bs-uemoduledocx-overview-webservice-webadmin": "Label of a link that leads to the administration interface of the bound webservice",
+	"bs-uemoduledocx-overview-webservice-state": "Label of the status indicator",
+	"bs-uemoduledocx-widgetlink-subpages-text": "Short text for the link, that exports the page and it's subpages as DOCX",
+	"bs-uemoduledocx-widgetlink-subpages-title": "Title for the link, that exports the page and it's subpages as DOCX",
+	"action-uemoduledocxsubpages-export": "{{doc-action|uemoduledocxsubpages-export}}",
+	"right-uemoduledocxsubpages-export": "{{doc-right|uemoduledocxsubpages-export}}",
+	"action-uemoduledocx-export": "{{doc-action|uemoduledocx-export}}",
+	"right-uemoduledocx-export": "{{doc-right|uemoduledocx-export}}"
+}

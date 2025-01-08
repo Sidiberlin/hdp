@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gomoko",
+			"Wladek92"
+		]
+	},
+	"bs-uemodulepdfrecursive-extension-description": "Permet l’exportation récursive de pages au format PDF."
+}

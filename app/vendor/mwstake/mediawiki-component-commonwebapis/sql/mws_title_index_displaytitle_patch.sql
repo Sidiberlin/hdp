@@ -1,0 +1,1 @@
+ALTER TABLE /*$wgDBprefix*/mws_title_index ADD mti_displaytitle varchar(255) binary NOT NULL;

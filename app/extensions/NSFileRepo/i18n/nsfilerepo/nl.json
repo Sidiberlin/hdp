@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie",
+			"Romaine",
+			"Siebrand",
+			"Sjoerddebruin"
+		]
+	},
+	"nsfilerepo-desc": "Biedt op naamruimte gebaseerde mogelijkheden voor geüploade bestanden",
+	"nsfilerepo-upload-target": "Doelbestandsnaam in naamruimte",
+	"nsfilerepo-nsmain": "(Hoofdnaamruimte)",
+	"nsfilerepo-reupload-namespaceselector-disabled-helptext": "Dit veld kan niet worden gewijzigd bij het opnieuw uploaden van een bestand",
+	"nsfilerepo-move-file-namespace-action-label": "Bestandsnaamruimte instellen",
+	"nsfilerepo-move-file-namespace-dialog-title": "Bestandsnaamruimte instellen",
+	"nsfilerepo-move-file-namespace-dialog-button-done": "Klaar",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "Annuleren",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "Naamruimte",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "Naamruimte",
+	"nsfilerepo-enhanced-filelist-grid-namespace-title": "Naamruimte"
+}

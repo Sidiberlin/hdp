@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac"
+		]
+	},
+	"bs-privacy-consent-bool-true": "Да",
+	"bs-privacy-consent-bool-false": "Не"
+}

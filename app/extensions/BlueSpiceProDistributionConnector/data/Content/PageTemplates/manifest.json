@@ -1,0 +1,128 @@
+{
+	"Template:PT_Event_planning": {
+		"lang": "en",
+		"label": "Event",
+		"description": "Plan an event from beginning to end",
+		"target_title": "Template:PT_Event_planning",
+		"content_path": "/pages/Template/PT_Event_planning.wiki",
+		"sha1": "9bd979403aba39de94dff00e6a6ac8f2d133bca7",
+		"old_sha1": [
+			"5a0dcce47bb5829e8b317f4f2fc39fc27821f398"
+		]
+	},
+	"Template:SV_Veranstaltung": {
+		"lang": "de",
+		"label": "Veranstaltung",
+		"description": "Planungshilfe f\u00fcr Veranstaltungen anlegen",
+		"target_title": "Template:SV_Veranstaltung",
+		"content_path": "/pages/Template/SV_Veranstaltung.wiki",
+		"sha1": "023ff166a97d5b749b8990a4c3e70d88450df2a8",
+		"old_sha1": [
+			"c5d660f82025d9a6bdcf6483005e7f1bc1717350"
+		]
+	},
+	"Template:PT_Request_for_Comments": {
+		"lang": "en",
+		"label": "Request for Comments",
+		"description": "Ask for feedback about an important decision that needs to be made",
+		"target_title": "Template:PT_Request_for_Comments",
+		"content_path": "/pages/Template/PT_Request_for_Comments.wiki",
+		"sha1": "e7e7bad799de49e297b80eef916a3f918f96b759",
+		"old_sha1": [
+			"a40c6b57c0f41686c08ab2d99f26a90a00354a75"
+		]
+	},
+	"Template:SV_Aufforderung_zur_Stellungnahme": {
+		"lang": "de",
+		"label": "Aufforderung zur Stellungnahme",
+		"description": "Feedback f\u00fcr eine wichtige anstehende Entscheidung sammeln",
+		"target_title": "Template:SV_Aufforderung_zur_Stellungnahme",
+		"content_path": "/pages/Template/SV_Aufforderung_zur_Stellungnahme.wiki",
+		"sha1": "b8eaf292a0c5064075e63e6009d21febb0be4caf",
+		"old_sha1": [
+			"f6e327090e2b3fa804d5f0470072ac0fe0d4d539"
+		]
+	},
+	"Template:PT_Decision_matrix": {
+		"lang": "en",
+		"label": "Decision Matrix",
+		"description": "Make an informed decision by comparing your options",
+		"target_title": "Template:PT_Decision_matrix",
+		"content_path": "/pages/Template/PT_Decision_matrix.wiki",
+		"sha1": "c55ad4dd20e5ebb66d6d81ec10a4ecd1d50d2db3",
+		"old_sha1": [
+			"0e73b816dc1b32361dc5193371ae1f1e834ee547"
+		]
+	},
+	"Template:SV_Entscheidungsmatrix": {
+		"lang": "de",
+		"label": "Entscheidungsmatrix",
+		"description": "Entscheidungshilfe durch den Vergleich verschiedener Optionen erstellen",
+		"target_title": "Template:SV_Entscheidungsmatrix",
+		"content_path": "/pages/Template/SV_Entscheidungsmatrix.wiki",
+		"sha1": "39ffe199a3e26eeeccadd57784501f68697929b9",
+		"old_sha1": []
+	},
+	"Template:PT_Status_report": {
+		"lang": "en",
+		"label": "Status Report",
+		"description": "Inform stakeholders about the current status of a project or task",
+		"target_title": "Template:PT_Status_report",
+		"content_path": "/pages/Template/PT_Status_report.wiki",
+		"sha1": "ad892b207da38ed8a26c2464f37693cad4fc8b58",
+		"old_sha1": [
+			"dd7e0c2c1ab2ecacb44c0b0347d06d2e7853b556"
+		]
+	},
+	"Template:SV_Statusbericht": {
+		"lang": "de",
+		"label": "Statusbericht",
+		"description": "Stakeholder \u00fcber den derzeitigen Stand eines Projekts informieren",
+		"target_title": "Template:SV_Statusbericht",
+		"content_path": "/pages/Template/SV_Statusbericht.wiki",
+		"sha1": "c0a8f88da1c4424ab033780f99244abfc4dc63e5",
+		"old_sha1": [
+			"54e6a5fe1fdb4788b998beb92fa2af0489b7fff5"
+		]
+	},
+	"Template:PT_Guideline": {
+		"lang": "en",
+		"label": "Guideline",
+		"description": "Create a code of conduct or other guideline",
+		"target_title": "Template:PT_Guideline",
+		"content_path": "/pages/Template/PT_Guideline.wiki",
+		"sha1": "3311ad34752064be9bb1d255b0ad13dfbc155eb5",
+		"old_sha1": [
+			"53356ecd3009523e5864a970b1b6f0a25a28631e"
+		]
+	},
+	"Template:SV_Richtlinie": {
+		"lang": "de",
+		"label": "Richtlinie",
+		"description": "Allgemeine Verhaltensrichtlinie anlegen",
+		"target_title": "Template:SV_Richtlinie",
+		"content_path": "/pages/Template/SV_Richtlinie.wiki",
+		"sha1": "03d1c10bdf227daa5ac6fa5abfe863cfab97c5a5",
+		"old_sha1": [
+			"463143b237de2e79ff876ae0c795bd28ab35faef"
+		]
+	},
+	"Template:PT_Meeting_minutes_Management": {
+		"lang": "en",
+		"label": "Management Meeting Minutes",
+		"description": "Create minutes for a regular management meeting",
+		"target_title": "Template:PT_Meeting_minutes_Management",
+		"content_path": "/pages/Template/PT_Meeting_minutes_Management.wiki",
+		"sha1": "e8450017ea6f19f80b10f227f391cffdb58d863a",
+		"old_sha1": []
+	},
+	"Template:SV_Management_Protokoll": {
+		"lang": "de",
+		"label": "Management-Besprechung",
+		"description": "Besprechungsprotokoll f\u00fcr regelm\u00e4\u00dfige Management-Besprechungen erstellen",
+		"target_title": "Template:SV_Management_Protokoll",
+		"content_path": "/pages/Template/SV_Management_Protokoll.wiki",
+		"sha1": "0509fac551629f6c17ee756a4866126c219ce6cb",
+		"old_sha1": []
+	}
+}

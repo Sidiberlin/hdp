@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"沈澄心"
+		]
+	},
+	"pagecheckout-desc": "允许给用户在页面上的独占权限",
+	"pagecheckout-error-no-title": "无效标题",
+	"pagecheckout-error-no-user": "指定的用户无效"
+}

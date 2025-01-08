@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eduardoaddad"
+		]
+	},
+	"bs-player-extension-description": "Incorpore um reprodutor de mídia em uma página.",
+	"bs-player-pref-autostart": "Iniciar o vídeo automaticamente",
+	"bs-player-file-does-not-exist": "Arquivo não existe.",
+	"bs-player-tag-showtime-desc": "Esta etiqueta permite que você incorpore um vídeo.",
+	"bs-player-unsupported-type": "Este tipo de arquivo não é suportado.",
+	"bs-player-config-prefwidth": "Largura padrão de vídeos",
+	"bs-player-config-prefheight": "Altura padrão dos vídeos",
+	"prefs-videoplayer": "Reprodutor de vídeo"
+}

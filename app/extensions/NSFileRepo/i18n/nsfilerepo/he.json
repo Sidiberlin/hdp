@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Ex-Diktator",
+			"Rotemliss"
+		]
+	},
+	"nsfilerepo-desc": "הוספת תכונות מבוססות מרחב שם לקבצים שהועלו",
+	"nsfilerepo-upload-target": "שם קובץ היעד במרחב השמות",
+	"nsfilerepo-nsmain": "(ראשי)",
+	"nsfilerepo-reupload-namespaceselector-disabled-helptext": "לא ניתן לשנות שדה זה בעת העלאה חוזרת של קובץ",
+	"nsfilerepo-move-file-namespace-action-label": "הגדרת מרחב השם של הקובץ",
+	"nsfilerepo-move-file-namespace-dialog-title": "הגדרת מרחב השם של הקובץ",
+	"nsfilerepo-move-file-namespace-dialog-button-done": "בוצע",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "ביטול",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "מרחב שם",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "מרחב שם",
+	"nsfilerepo-enhanced-filelist-grid-namespace-title": "מרחב שם"
+}

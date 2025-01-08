@@ -1,0 +1,19 @@
+#menuEditor-container .bs-book-tree .oojsplus-data-tree-expander + div {
+	padding-left: 30px;
+}
+
+.oojs-ui-data-tree-item .oo-ui-iconWidget {
+	font-size: 0.8rem;
+	margin-left: 6px;
+	opacity: 0.2;
+	min-height: 40px;
+}
+.bs-book-tree-chapter-number {
+	margin-left: 6px;
+	min-height: 40px;
+}
+
+#menuEditor-container .bs-book-tree  .oojsplus-data-tree-label {
+	min-height: 40px;
+	margin-left: 2px;
+}

@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jeeputer"
+		]
+	},
+	"bs-player-pref-autostart": "آغاز خودکار پخش ویدئو",
+	"bs-player-file-does-not-exist": "پرونده موجود نیست.",
+	"bs-player-tag-showtime-desc": "این برچسب به شما امکان درج یک ویدئو را می‌دهد.",
+	"bs-player-unsupported-type": "نوع پرونده پشتیبانی نمی‌شود.",
+	"bs-player-config-prefwidth": "عرض پیش‌فرض ویدئوها",
+	"bs-player-config-prefheight": "ارتفاع پیش‌فرض ویدئوها",
+	"prefs-videoplayer": "پخش‌کنندهٔ ویدئو"
+}

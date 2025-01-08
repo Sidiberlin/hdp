@@ -1,0 +1,40 @@
+{
+	"@metadata": {
+		"authors": [
+			"Alifakoor",
+			"Alirezaaa",
+			"Amirsara",
+			"Armin1392",
+			"Beginneruser",
+			"Jeeputer",
+			"Mjbmr",
+			"Nbi",
+			"Ommmmid",
+			"Reza1615",
+			"ZxxZxxZ"
+		]
+	},
+	"sesp-desc": "افزودن بعضی ویژگی‌های ویژه اضافی به تمام صفحه‌ها",
+	"sesp-property-unknown-label": "برچسب یا نام مستعار ناشناخته",
+	"sesp-property-author": "نویسندهٔ صفحه",
+	"sesp-property-first-author": "ایجاد کنندهٔ صفحه",
+	"sesp-property-revision-id": "شناسهٔ بازبینی",
+	"sesp-property-page-id": "شناسهٔ صفحه",
+	"sesp-property-page-len": "طول صفحه",
+	"sesp-property-view-count": "تعداد مشاهده‌ٔ صفحه‌ها",
+	"sesp-property-subpages": "زیرصفحه",
+	"sesp-property-revisions": "تعداد نسخه‌ها",
+	"sesp-property-talk-revisions": "تعداد بازبینی‌های صفحهٔ گفتگو",
+	"sesp-property-shorturl": "نشانی کوتاه",
+	"sesp-property-approved-rev": "نسخهٔ تأییدشده",
+	"sesp-property-namespace-id": "شناسهٔ فضای نام",
+	"sesp-property-user-registration-date": "تاریخ ثبت‌نام کاربر",
+	"sesp-property-user-edit-count": "شمار ویرایش‌های کاربر",
+	"sesp-property-user-edit-count-ns": "فضای نام",
+	"sesp-property-user-right": "حق کاربر",
+	"sesp-property-user-group": "گروه‌ کاربر",
+	"sesp-property-exif-data": "اطلاعات اگزیف",
+	"sesp-exif-languagecode": "Exif:Language code",
+	"sesp-exif-label": "Exif:Label",
+	"sesp-exif-iimcategory": "Exif:Iim Category"
+}

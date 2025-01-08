@@ -1,0 +1,158 @@
+==Anwesende==
+Wer ist zur Besprechung erschienen?
+
+==Ankündigungen/ Fokuspunkte==
+Wer ist diese Woche nicht verfügbar/abwesend? Was sind die Wochenziele? Was sollten wir wissen?
+{| class="wikitable" style="width:100%;" 
+!'''Wer'''
+!'''Was'''
+!'''Wann'''
+! style="vertical-align:middle;text-align:center;" |'''Status'''
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="vertical-align:middle;text-align:left;width:20%;" class="list" |'''nicht gestarted''' / in Bearbeitung / fertig
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="vertical-align:middle;text-align:left;width:20%;" |
+|}
+
+==Cockpit==
+===Unternehmenssituation / KPIs / Berichte===
+{| class="wikitable" style="width:100%;"
+! style="width:0px;" |'''Bereich'''
+!'''Was'''
+!'''Beurteilung / Aktion'''
+|-
+| style="width:0px;" |Projektmanagment
+| style="width:60%;" |
+*Abrechenbare Zeit diese Woche:
+*Aktive Kunden diese Woche: 
+| style="width:20%;" |
+|-
+| style="width:0px;" |Vertrieb
+| style="width:60%;" |
+*Bestellungen: 
+*Angebote: 
+*Leads: 
+| style="width:20%;" |
+|-
+| style="width:0px;" |Rechnungsabteilung
+| style="width:60%;" |
+*geplanter Rechnungsbetrag(Mo):  EUR
+*in Rechnung gestellt (Fr):  EUR
+*Rechnungsbetrag aus Neubestellungen:  EUR
+| style="width:20%;" |
+|}
+
+==Abteilung==
+===Finanzen===
+{| class="wikitable" style="width:100%;"
+!'''Wer'''
+!'''Was'''
+!'''Wann'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |nicht gestarted / in Bearbeitung / fertig
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}
+
+===Marketing und Vertrieb===
+{| class="wikitable" style="width:100%;" 
+!'''Wer'''
+!'''Was'''
+!'''Wann'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |nicht gestarted / in Bearbeitung / fertig
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}
+
+===Projekte, Services und Support===
+{| class="wikitable" style="width:100%;" 
+!'''Wer'''
+!'''Was'''
+!'''Wann'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |nicht gestarted / in Bearbeitung / fertig
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}
+
+===Produktentwicklung===
+{| class="wikitable" style="width:100%;" 
+!'''Wer'''
+!'''Was'''
+!'''Wann'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |nicht gestarted / in Bearbeitung / fertig
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}
+
+===Technologie und Infrastruktur===
+{| class="wikitable" style="width:100%;" 
+!'''Wer'''
+!'''Was'''
+!'''Wann'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |nicht gestarted / in Bearbeitung / fertig
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}
+
+===Intere Organisation===
+{| class="wikitable" style="width:100%;" 
+!'''Wer'''
+!'''Was'''
+!'''Wann'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |nicht gestarted / in Bearbeitung / fertig
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}

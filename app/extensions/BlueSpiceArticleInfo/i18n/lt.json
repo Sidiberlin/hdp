@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eitvys200",
+			"Nokeoo"
+		]
+	},
+	"bs-articleinfo-desc": "Suteikia informaciją apie puslapį būsenos juostoje",
+	"prefs-articleinfo": "Puslapio informacija",
+	"bs-articleinfo-pref-CheckRevisionInterval": "Atnaujinimo intervalas sekundėmis:",
+	"bs-articleinfo-flyout-title": "Puslapio informacija",
+	"bs-articleinfo-flyout-intro": "Čia rasite su puslapiu susijusią informaciją. Galite patikrinti jo kokybę, ar jis aktualus bei pamatyti, kaip jis susijęs su kitais viki puslapiais.",
+	"bs-articleinfo-nav-link-title": "Puslapio informacija",
+	"bs-articleinfo-flyout-categorylinks-title": "Kategorijos",
+	"bs-articleinfo-flyout-templatelinks-title": "Puslapyje naudojami šablonai",
+	"bs-articleinfo-flyout-categorylinks-emptytext": "Nėra priskirtų kategorijų",
+	"bs-articleinfo-flyout-templatelinks-emptytext": "Nenaudojami jokie šablonai",
+	"bs-articleinfo-flyout-lasteditedtime-text": "Paskutinis pakeitimas",
+	"bs-articleinfo-flyout-lastediteduser-text": "Paskutinis redaktorius",
+	"bs-articleinfo-newrevision-info-text": "Yra nauja šio puslapio versija. Norėdami peržiūrėti dabartinį turinį, įkelkite puslapį iš naujo.",
+	"bs-articleinfo-newrevision-info-text-reload": "Yra nauja šio puslapio versija. Prašome [[:$1|iš naujo įkelti]] puslapį, kad peržiūrėtumėte dabartinį turinį.",
+	"bs-articleinfo-flyout-subpages-title": "Polapiai",
+	"bs-articleinfo-pagetool-subpages-tooltip": "Polapiai",
+	"bs-articleinfo-dialog-subpages-title": "Polapiai"
+}

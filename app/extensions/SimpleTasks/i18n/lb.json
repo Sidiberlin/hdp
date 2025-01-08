@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Volvox"
+		]
+	},
+	"simple-tasks-task-duedate": "Fällegkeetsdatum: $1",
+	"simple-tasks-taskreport-header-task": "Aufgab",
+	"simple-tasks-taskreport-header-due-to": "Fällegkeetsdatum",
+	"simple-tasks-taskreport-header-state": "Status",
+	"simple-tasks-droplet-taskreport-name": "Aufgaberapport",
+	"simple-tasks-taskreport-inspector-title": "Aufgaberapport",
+	"simple-tasks-taskreport-inspector-state-done": "fäerdeg",
+	"simple-tasks-taskreport-inspector-label-namespaces": "Nummraim",
+	"simple-tasks-taskreport-inspector-label-due-date": "Fälleg bis",
+	"simple-tasks-taskreport-inspector-label-state": "Status",
+	"simple-tasks-taskreport-state-title-done": "Aufgab ass fäerdeg",
+	"simple-tasks-taskreport-state-filter-done": "Fäerdeg",
+	"echo-category-title-simple-tasks-notification-cat": "Aufgaben"
+}

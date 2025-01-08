@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:svg="http://www.w3.org/2000/svg" xmlns="http://www.w3.org/2000/svg" xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd" xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape" id="svg821" version="1.1" viewBox="0 0 20 20" height="20" width="20" sodipodi:docname="atmentions.svg" inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <sodipodi:namedview pagecolor="#ffffff" bordercolor="#666666" borderopacity="1" objecttolerance="10" gridtolerance="10" guidetolerance="10" inkscape:pageopacity="0" inkscape:pageshadow="2" inkscape:window-width="1920" inkscape:window-height="1009" id="namedview10" showgrid="false" inkscape:zoom="23.6" inkscape:cx="1.6612491" inkscape:cy="7.0604735" inkscape:window-x="0" inkscape:window-y="0" inkscape:window-maximized="1" inkscape:current-layer="g858" />
+  <defs id="defs815" />
+  <metadata id="metadata818">
+    <rdf:RDF>
+      <cc:Work rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g transform="matrix(4.6637313,0,0,4.6637313,-1.8384508,-1362.8972)" id="layer1" style="stroke-width:0.21442059">
+    <g transform="translate(-0.38173517,0.24269329)" id="g1396" style="stroke-width:0.21442059">
+      <g style="stroke-width:0.24708351" id="g4587-6-3" transform="matrix(0.86780614,0,0,0.86780614,-5.2834844,45.178392)" />
+      <g id="g858" transform="translate(0.01759257)">
+        <g id="g824" style="fill:black;fill-opacity:1;stroke-width:18.04816055" transform="matrix(0.044921,0,0,0.04488411,-1.6752011,287.13664)">
+          <ellipse ry="22.01775" rx="22.451504" cy="133.76511" cx="98.564278" id="path827" style="opacity:1;fill:black;fill-opacity:1;stroke:none;stroke-width:44.4887085;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:74.26771545;stroke-opacity:1;paint-order:fill markers stroke" />
+          <path inkscape:connector-curvature="0" id="path855" d="m 57.908306,192.85962 c 0,0 3.774778,-38.29063 40.999712,-38.45497 37.224932,-0.16433 40.018662,38.45497 40.018662,38.45497 z" style="fill:black;fill-opacity:1;stroke:none;stroke-width:4.77524233px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+        </g>
+        <circle cy="295.0033" cx="3.8403342" id="path850" style="opacity:1;fill:white;fill-opacity:1;stroke:none;stroke-width:0.38595712;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:fill markers stroke" r="1.3937339" />
+        <text transform="scale(1.0078786,0.99218299)" id="text831" y="297.9794" x="2.4168425" style="font-style:normal;font-weight:normal;font-size:2.70774412px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:black;fill-opacity:1;stroke:none;stroke-width:0.0459762" xml:space="preserve"><tspan style="stroke-width:0.0459762" y="297.9794" x="2.4168425" id="tspan829" sodipodi:role="line">@</tspan></text>
+      </g>
+    </g>
+  </g>
+</svg>

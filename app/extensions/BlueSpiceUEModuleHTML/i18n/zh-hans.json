@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"StarrySky",
+			"Viztor"
+		]
+	},
+	"bs-uemodulehtml-extension-description": "启用导出到HTML",
+	"bs-uemodulehtml-pref-DefaultTemplate": "标准模板",
+	"bs-uemodulehtml-pref-SuppressNS": "在HTML中隐藏命名空间前缀",
+	"bs-uemodulehtml-pref-Backend": "后端"
+}

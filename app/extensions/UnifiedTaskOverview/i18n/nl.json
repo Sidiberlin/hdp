@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"unifiedtaskoverview-desc": "Biedt een speciale pagina met een overzicht van de taken van de gebruiker",
+	"unifiedtaskoverview": "Mijn taken",
+	"unifiedtaskoverview-label-no-task": "Momenteel zijn er geen taken die moeten worden voltooid.",
+	"unifiedtaskoverview-personal-url-my-tasks": "Taken",
+	"unifiedtaskoverview-search-placeholder": "Zoeken"
+}

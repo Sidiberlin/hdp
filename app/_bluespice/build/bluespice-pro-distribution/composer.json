@@ -1,0 +1,71 @@
+{
+	"repositories": [{
+		"type": "composer",
+		"url": "https://packages.bluespice.com/"
+	}, {
+		"type": "package",
+		"package": [{
+			"name": "mediawiki/oauth-cve-2021-46743",
+			"version": "dev-REL1_39",
+			"type": "mediawiki-extension",
+			"license": "GPL-2.0-or-later",
+			"source": {
+				"type": "git",
+				"url": "https://github.com/wikimedia/mediawiki-extensions-OAuth.git",
+				"reference": "REL1_39"
+			},
+			"require": {
+				"composer/installers": "~1.0|~2.0",
+				"ext-openssl": "*",
+				"firebase/php-jwt": "^6.10.0",
+				"lcobucci/jwt": "4.1.5",
+				"league/oauth2-server": "9.0.0+wikimedia-fork"
+			},
+			"extra": {
+				"installer-name": "OAuth"
+			}
+		}]
+	} ],
+	"require": {
+		"bluespice/prodistributionconnector": "dev-REL1_39-4.5.x",
+		"mediawiki/pluggable-auth": "7.1.*",
+		"mediawiki/openidconnect": "8.0.*",
+		"mediawiki/simple-s-a-m-lphp": "7.0.*",
+		"mediawiki/header-footer": "dev-REL1_39",
+		"mediawiki/import-office-files": "dev-REL1_39-2.0.x",
+		"mediawiki/code-mirror": "dev-REL1_39",
+		"mediawiki/sub-page-list": "2.1.*",
+		"mediawiki/data-transfer": "1.6.*",
+		"mediawiki/revision-slider": "dev-REL1_39",
+		"mediawiki/drawio-editor": "dev-REL1_39",
+		"mediawiki/multimedia-viewer": "dev-REL1_39",
+		"mediawiki/widgets": "dev-REL1_39",
+		"mediawiki/popups": "dev-REL1_39",
+		"mediawiki/create-user-page": "3.0.*",
+		"mediawiki/web-authn": "dev-REL1_39",
+		"mediawiki/oauth-cve-2021-46743": "dev-REL1_39",
+		"mediawiki/event-bus": "dev-REL1_39",
+		"mediawiki/workflows": "dev-REL1_39-2.1.x",
+		"mediawiki/unified-task-overview": "dev-REL1_39-2.0.x",
+		"mediawiki/forms": "dev-REL1_39-2.0.x",
+		"mediawiki/cognitiveprocessdesigner": "dev-REL1_39-3.0.x",
+		"mediawiki/page-checkout": "dev-REL1_39-2.0.x",
+		"mediawiki/content-stabilization": "dev-REL1_39-2.1.x",
+		"mediawiki/pdfembed": "4.0.*",
+		"mediawiki/pre-to-clip": "dev-REL1_39-1.0.x",
+		"mediawiki/container-filter": "dev-REL1_39-1.0.x",
+		"mediawiki/section-anchors": "dev-REL1_39-1.0.x",
+		"mediawiki/atmentions": "dev-REL1_39-1.1.x",
+		"mediawiki/datetimetools": "dev-REL1_39-1.0.x",
+		"mediawiki/checklists": "dev-REL1_39-1.0.x",
+		"mediawiki/simpletasks": "dev-REL1_39-1.1.x",
+		"starcitizentools/tabber-neue": "2.1.*",
+		"mediawiki/enhanced-standard-uis": "dev-REL1_39-1.1.x",
+		"mediawiki/content-provisioning": "dev-REL1_39-1.0.x",
+		"mediawiki/ai-editing-assistant": "dev-REL1_39-1.0.x",
+		"mediawiki/collabpads": "dev-REL1_39-1.0.x",
+		"mediawiki/vuejs-plus": "dev-REL1_39-1.0.x",
+		"mediawiki/table-tools": "dev-REL1_39-1.0.x",
+		"mediawiki/number-headings": "dev-REL1_39-1.0.x"
+	}
+}

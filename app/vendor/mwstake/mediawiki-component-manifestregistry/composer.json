@@ -1,0 +1,40 @@
+{
+	"name": "mwstake/mediawiki-component-manifestregistry",
+	"description": "Provides classes and services to interact with registries in MediaWiki manifests",
+	"license": "GPL-3.0-only",
+	"authors": [
+		{
+			"name": "BlueSpice",
+			"email": "support@bluespice.com"
+		}
+	],
+	"require": {
+		"mwstake/mediawiki-componentloader": "~1"
+	},
+	"require-dev": {
+		"jakub-onderka/php-parallel-lint": "1.0.0",
+		"jakub-onderka/php-console-highlighter": "0.4.0",
+		"mediawiki/mediawiki-codesniffer": "29.0.0",
+		"mediawiki/minus-x": "1.0.0"
+	},
+	"autoload": {
+		"psr-4": {
+			"MWStake\\MediaWiki\\Component\\ManifestRegistry\\": "src/",
+			"MWStake\\MediaWiki\\Component\\ManifestRegistry\\Tests\\": "tests/"
+		},
+		"files": [
+			"bootstrap.php"
+		]
+	},
+	"scripts": {
+		"test": [
+			"parallel-lint . --exclude vendor --exclude node_modules",
+			"minus-x check .",
+			"phpcs -sp"
+		],
+		"fix": [
+			"minus-x fix .",
+			"phpcbf"
+		]
+	}
+}

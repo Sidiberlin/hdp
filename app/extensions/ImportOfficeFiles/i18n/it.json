@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beta16"
+		]
+	},
+	"importofficefiles-ui-action-import-msword-text": "Importa file Word",
+	"importofficefiles-ui-action-import-msword-title": "Crea pagine da file Microsoft Word",
+	"importofficefiles-api-storage-error-no-valid-module": "Nessun modulo disponibile per gestire questo file"
+}

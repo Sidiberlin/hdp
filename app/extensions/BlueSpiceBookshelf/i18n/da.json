@@ -1,0 +1,40 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saederup92",
+			"Zakawer2"
+		]
+	},
+	"bs-bookshelf-specialpage-title": "Bøger",
+	"bs-bookshelf-specialpage-allpages-ns-book-text": "Bibliotek",
+	"bs-bookshelf-tag-next": "Næste",
+	"bs-bookshelf-tag-prev": "Forrige",
+	"bs-bookshelf-tag-edit-book": "Rediger bog",
+	"bs-bookshelf-personal-books-page-prefix": "$1/Bøger/",
+	"bs-bookshelf-add-to-book-label": "Tilføj til en bog",
+	"bs-bookshelf-add-to-book-label-book": "Bog",
+	"bs-bookshelf-setting-path-feature": "Bog",
+	"bs-bookshelf-empty-selection": "Intet valgt",
+	"bs-bookshelf-grouping-template-type-local_storage": "Midlertidige bøger",
+	"bs-bookshelf-grouping-template-type-ns_book": "Generelle bøger",
+	"bs-bookshelf-grouping-template-type-user_book": "Egne bøger",
+	"bs-bookshelf-action-export-book": "Eksporter bog",
+	"bs-bookshelf-edit-title": "Redigerer $1",
+	"bs-bookshelf-book-grid-title": "Bøger",
+	"bookshelf": "Boghylde",
+	"bookshelf-summary": "Generelle bøger",
+	"bs-bookshelf-ga-manager-label": "Bøger",
+	"bs-bookshelf-prof-defaultview": "Standardvisning",
+	"bs-bookshelf-prof-defaultview-images": "Billeder",
+	"bs-bookshelf-actionmenuentry-addtobook": "Tilføj til bog",
+	"bs-bookshelf-ve-bookmeta-attr-title-label": "Titel",
+	"bs-bookshelf-ve-bookmeta-attr-subtitle-label": "Undertitel",
+	"bs-bookshelf-ve-bookmeta-attr-version-label": "Version",
+	"bs-bookshelf-ve-bookshelfinspector-title": "Boghylde",
+	"bs-bookshelf-ve-bookshelf-attr-book-label": "Bog",
+	"bs-bookshelf-action-editbook": "Rediger kilde",
+	"bs-bookshelf-action-editbook-create": "Rediger kilde",
+	"bs-bookshelf-ve-booklistinspector-title": "Bogliste",
+	"bs-bookshelf-mainlinks-label": "Bøger",
+	"bs-bookshelf-booknav-searchbox-placeholder": "Søg"
+}

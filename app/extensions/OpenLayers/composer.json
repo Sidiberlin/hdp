@@ -1,0 +1,32 @@
+{
+	"name": "mediawiki/open-layers",
+	"type": "mediawiki-extension",
+	"description": "",
+	"keywords": [
+		"OpenLayers",
+		"Wiki",
+		"MediaWiki"
+	],
+	"homepage": "https://www.mediawiki.org/wiki/Extension:OpenLayers",
+	"license": "GPL-2.0-or-later",
+	"authors": [
+		{
+			"name": "Yaron Koren",
+			"homepage": "http://yaronkoren.com/"
+		},
+		{
+			"name": "Paladox"
+		}
+	],
+	"require-dev": {
+		"mediawiki/minus-x": "1.1.1"
+	},
+	"scripts": {
+		"test": [
+			"minus-x check ."
+		],
+		"fix": [
+			"minus-x fix ."
+		]
+	}
+}

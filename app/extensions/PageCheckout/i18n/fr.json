@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf",
+			"Gomoko",
+			"SleaY",
+			"Verdy p"
+		]
+	},
+	"pagecheckout-desc": "Accorde des droits exclusifs sur une page pour un utilisateur",
+	"pagecheckout-error-no-title": "Titre non valide",
+	"pagecheckout-error-no-user": "Utilisateur fourni non valide",
+	"pagecheckout-error-has-checkout": "Page déjà réservée",
+	"pagecheckout-error-save-failed": "Échec de réservation de la page",
+	"pagecheckout-error-no-checkout": "Impossible d’enregistrer une page qui n’est pas actuellement réservée",
+	"pagecheckout-error-no-checkout-id": "Échec d’enregistrement ! Aucun identifiant de réservation défini",
+	"pagecheckout-error-db-insert": "Échec d’insertion de la réservation",
+	"pagecheckout-error-db-retrieve-inserted": "Échec de récupération d’une réservation préalablement insérée",
+	"pagecheckout-error-save-event": "Échec d’enregistrement de l’événement",
+	"pagecheckout-lockdown-reason": "L’action « $1 » n’est pas autorisée parce que la page est réservée par $2",
+	"pagecheckout-action-clear-label": "Effacer la réservation",
+	"apihelp-pagecheckout-clear-example": "Effacer la réservation pour Main_Page",
+	"apihelp-pagecheckout-clear-summary": "Effacer la réservation de la page active",
+	"apihelp-pagecheckout-clear-param-page_title": "Titre de la page pour laquelle effacer les réservations",
+	"pagecheckout-ui-clear-confirm": "Confirmer l’effacement de la réservation active sur cette page ? Cela rendra la page modifiable pour tous les utilisateurs normalement éligibles",
+	"log-name-pagecheckout": "Réservations de page",
+	"log-description-pagecheckout": "Trace l’état des réservations et enregistrements de page",
+	"logentry-pagecheckout-checkin": "$1{{GENDER:$2|}} a enregistré la page $3 qui a été réservée pour l’utilisateur $4",
+	"logentry-pagecheckout-checkout": "$1{{GENDER:$2|}} a réservé la page $3 pour l’utilisateur $4",
+	"pagecheckout-alertbanner-checkout": "Cette page est actuellement réservée pour {{GENDER:$1|}}$2",
+	"action-page-checkout-clear": "effacer la réservation de la page",
+	"right-page-checkout-clear": "Effacer la réservation de la page",
+	"pagecheckout-alertbanner-checkout-with-comment": "Cette page est actuellement réservée pour {{GENDER:$1|}}$2. Commentaire : $3",
+	"page-checkout-workflow-activity-checkout-reason": "Cette page est actuellement réservée du fait d’un processus de travail en cours",
+	"page-checkout-workflow-activity-checkout-non-generic-reason": "Réservé durant l’exécution d’un processus de travail",
+	"page-checkout-workflow-clear-checkout": "Réservation supprimée du fait de l’annulation d’un processus de travail",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "Utilisateur",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "Utilisateur",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename": "Nom de la page",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Nom de la page"
+}

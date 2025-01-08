@@ -1,0 +1,38 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf"
+		]
+	},
+	"workflows-ui-starter-action-choose": "Scegghi",
+	"workflows-ui-starter-action-done": "Fattu",
+	"workflows-ui-starter-action-back": "Scegghi n'àutru",
+	"workflows-ui-starter-action-cancel": "Annulla",
+	"workflows-ui-task-completion-action-complete": "Manna",
+	"workflows-ui-task-completion-action-cancel": "Annulla",
+	"workflows-form-placeholder-comment": "Cummentu",
+	"workflows-ui-alert-activity-edit-request-complete-button": "Talìa li dittagghî",
+	"workflows-ui-workflow-overview-action-cancel": "Chiudi",
+	"workflows-ui-overview-details-state-label": "Statu:",
+	"workflows-ui-overview-details-state-column": "Statu",
+	"workflows-ui-overview-details-state-running": "Attivu",
+	"workflows-ui-overview-details-state-aborted": "Annullatu",
+	"workflows-ui-overview-details-action-reason": "Mutivu",
+	"workflows-ui-overview-details-page-context-page": "Pàggina",
+	"workflows-ui-overview-details-workflow-type-label": "Tipu",
+	"workflows-ui-overview-grid-filter-state-all": "Tutti",
+	"workflows-ui-overview-grid-filter-state-active": "Attivu",
+	"workflows-form-instructions-comment": "Cumminta",
+	"workflows-ui-overview-details-action-details-column": "talìa dittagghî",
+	"workflows-property-validator-valid-user-error": "L'utenti \"$1\" nun è n'utenti vàlidu",
+	"workflows-property-validator-valid-title-error": "Lu tìtulu \"$1\" nun è vàlidu",
+	"workflows-collect-data-form-groupname": "Gruppu",
+	"workflows-collect-data-form-username": "Utenti",
+	"workflows-ui-overview-details-raw-data-popup-prop": "Prupità",
+	"workflows-ui-overview-details-raw-data-popup-value": "Valuri",
+	"workflows-ui-overview-details-raw-data-popup-label": "Valuri dâ prupità",
+	"workflows-ui-action-cancel": "Annulla",
+	"workflows-ui-trigger-action-create": "Sarva",
+	"workflows-ui-trigger-field-name": "Nomu",
+	"workflows-action-edit-label": "Cancia"
+}

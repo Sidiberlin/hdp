@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Abijeet Patro"
+		]
+	},
+	"simple-tasks-taskreport-header-task": "कार्य",
+	"simple-tasks-taskreport-header-state": "स्थिति",
+	"simple-tasks-taskreport-inspector-state-done": "हो गया",
+	"simple-tasks-taskreport-inspector-state-open": "खोलें",
+	"simple-tasks-taskreport-inspector-label-namespaces": "नामस्थान",
+	"simple-tasks-taskreport-inspector-label-state": "स्थिति",
+	"simple-tasks-taskreport-state-filter-done": "पूर्ण हुआ",
+	"simple-tasks-taskreport-state-filter-open": "खोलें",
+	"echo-category-title-simple-tasks-notification-cat": "कार्य"
+}

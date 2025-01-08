@@ -1,0 +1,40 @@
+{
+	"@metadata": {
+		"authors": [
+			"ಮಲ್ನಾಡಾಚ್ ಕೊಂಕ್ಣೊ"
+		]
+	},
+	"bs-statistics-from": "ಇಂದ",
+	"bs-statistics-to": "ಗೆ",
+	"bs-statistics-year": "ವರ್ಷ",
+	"bs-statistics-month": "ತಿಂಗಳು",
+	"bs-statistics-day": "ದಿನ",
+	"bs-statistics-list": "ಪಟ್ಟಿ",
+	"bs-statistics-label-name": "ಹೆಸರು",
+	"bs-statistics-label-registration": "ನೋಂದಾವಣೆ",
+	"bs-statistics-diag-number-of-pages": "ರಚಿಸಿರುವ ಪುಟಗಳ ಸಂಖ್ಯೆ",
+	"bs-statistics-label-page": "ಪುಟ",
+	"bs-statistics-label-creator": "ಸೃಷ್ಟಿಕರ್ತ",
+	"bs-statistics-diag-number-of-edits": "ಸಂಪಾದನೆಗಳ ಸಂಖ್ಯೆ",
+	"bs-statistics-label-maxhits": "ಗರಿಷ್ಠ ಫಲಿತಾಂಶಗಳು",
+	"bs-statistics-label-time": "ಸಮಯ",
+	"bs-statistics-filter-category": "ವರ್ಗ",
+	"bs-statistics-portlet-numberofedits": "ಸಂಪಾದನೆಗಳ ಸಂಖ್ಯೆ",
+	"bs-statistics-portlet-numberofpages": "ಪುಟಗಳ ಸಂಖ್ಯೆ",
+	"bs-statistics-portletconfig-periodday": "ನಿನ್ನೆ",
+	"bs-statistics-panel-title-result": "ಫಲಿತಾಂಶ",
+	"bs-statistics-paging-page-size": "ಪುಟದ ಗಾತ್ರ",
+	"bs-statistics-aggregated-report-filter-category-multi": "ವರ್ಗಗಳು",
+	"bs-statistics-aggregated-report-filter-date-start": "ಆರಂಭದ ದಿನಾಂಕ",
+	"bs-statistics-aggregated-report-filter-date-end": "ಮುಕ್ತಾಯದ ದಿನಾಂಕ",
+	"bs-statistics-aggregated-report-filter-interval-day": "ದಿನ",
+	"bs-statistics-aggregated-report-filter-interval-week": "ವಾರ",
+	"bs-statistics-aggregated-report-filter-interval-month": "ತಿಂಗಳು",
+	"bs-statistics-aggregated-report-filter-interval-year": "ವರ್ಷ",
+	"bs-statistics-aggregated-report-filter-namespace": "ನಾಮವರ್ಗ",
+	"bs-statistics-aggregated-report-filter-namespaces": "ನಾಮವರ್ಗಗಳು",
+	"bs-statistics-aggregated-report-filter-page": "ಪುಟ",
+	"bs-statistics-aggregated-report-filter-user": "ಬಳಕೆದಾರ",
+	"bs-statistics-aggregated-report-filter-user-multi": "ಬಳಕೆದಾರರು",
+	"bs-statistics-aggregated-report-error": "ಒಂದು ದೋಷ ಸಂಭವಿಸಿದೆ!"
+}

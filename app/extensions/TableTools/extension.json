@@ -1,0 +1,84 @@
+{
+	"name": "TableTools",
+	"version": "1.0.1",
+	"author": [
+		"mw:User:TheDJ",
+		"HalloWelt! GmbH <support@hallowelt.com>"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:TableTools",
+	"descriptionmsg": "tabletools-desc",
+	"license-name": "GPL-3.0-or-later",
+	"type": "other",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"VisualEditor": "*",
+			"VueJsPlus": "*"
+		}
+	},
+	"attributes": {
+		"VisualEditor": {
+			"PluginModules": [
+				"ext.tabletools.visualEditor"
+			]
+		},
+		"BlueSpiceVisualEditorConnector": {
+			"PluginModules": [
+				"ext.tabletools.visualEditor.tableStyles"
+			]
+		}
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\TableTools\\": "src/",
+		"MediaWiki\\Extension\\TableTools\\Tests\\": "tests/phpunit/"
+	},
+	"MessagesDirs": {
+		"TableTools": [
+			"i18n"
+		]
+	},
+	"HookHandlers": {
+		"stickyheader": {
+			"class": "MediaWiki\\Extension\\TableTools\\HookHandler\\StickyHeader"
+		},
+		"add-resources": {
+			"class": "MediaWiki\\Extension\\TableTools\\HookHandler\\AddResources"
+		}
+	},
+	"Hooks": {
+		"OutputPageBeforeHTML": "stickyheader",
+		"BeforePageDisplay": [ "add-resources" ]
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "TableTools/resources"
+	},
+	"ResourceModules": {
+		"ext.tableTools.stickyHeader": {
+			"scripts": [
+				"ext.tableTools.stickyHeader.js"
+			],
+			"styles": [
+				"ext.tableTools.stickyHeader.css"
+			]
+		},
+		"ext.tabletools.visualEditor.tableStyles": {
+			"scripts": [
+				"ext.tableTools.visualEditor.tableStyles.js"
+			],
+			"messages": [
+				"tabletools-ve-plugin-table-style-sticky"
+			]
+		},
+		"ext.tabletools.dataTable": {
+			"scripts": [
+				"ext.tableTools.dataTable.js"
+			],
+			"dependencies": [
+				"mediawiki.api",
+				"ext.vuejsplus-data-grid.vue"
+			]
+		}
+	},
+	"manifest_version": 2
+}

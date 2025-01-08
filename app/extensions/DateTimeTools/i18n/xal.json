@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ukhant Erdemt",
+			"Алия"
+		]
+	},
+	"datetimetools-desc": "VisualEditor-т цаг-өдрин кергсләр хаңһадг",
+	"datetimetools-ve-inspector-title": "Цаг, өдр ясх",
+	"datetimetools-ve-inspector-date-picker-label": "Цаг, өдр суңһх",
+	"datetimetools-droplet-date-name": "Цаг, өдр",
+	"datetimetools-droplet-date-description": "Цаг-өдриг орулдг"
+}

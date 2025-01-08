@@ -1,0 +1,66 @@
+<div class="databox">
+<div class="tbl">
+{|
+|-
+!Owner:
+|username1
+|-
+!Stakeholders:
+|who is affected by or influences this decision?
+|-
+!Decision:
+|list the final decision here
+|}
+</div>
+<div class="tbl">
+{| 
+|-
+!Contributors:
+| username1, username2
+|-
+!Status:
+|'''not started''' / in progress / decided
+|-
+!Due on:
+|mm/dd/yyyy
+|}
+</div>
+</div>
+==Current status==
+Provide some brief context for the decision at hand.
+
+==Decision matrix==
+List and evaluate only reasonable options. Don't include options that you have already ruled out (list them under [[#Exluded options|exluded options]]).
+{| class="wikitable pagetemplate" style="width:100%;"
+!
+!<span class="bi bi-plus-circle-dotted">&nbsp;</span> Benefits
+!<span class="bi bi-dash-circle-dotted">&nbsp;</span> Risks
+!<span class="bi bi-chat-right-text">&nbsp;</span> Comments
+|-
+!Option 1
+|
+|
+|
+|-
+!Option 2
+|
+|
+|
+|-
+!Option 3
+|
+|
+|
+|}
+
+===Excluded options===
+*excluded option 1
+*excluded option 2
+
+==Next steps==
+After a decision has been made, document the next steps that are necessary to implement the decision.
+==Supporting documents==
+Link to pages or files that are related to this decision-making process 
+
+*Document 1
+*Document 2

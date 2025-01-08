@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joquliina",
+			"Nike",
+			"Pyscowicz",
+			"SMAUG",
+			"Stryn"
+		]
+	},
+	"prefs-articleinfo": "Sivun tiedot",
+	"bs-articleinfo-pref-CheckRevisionInterval": "Päivitysväli sekunteina:",
+	"bs-articleinfo-flyout-title": "Sivun tiedot",
+	"bs-articleinfo-flyout-intro": "Täältä voit löytää sivuun liittyviä tietoja. Voit katsoa sen laadun ja ajantasaisuuden ja nähdä, kuinka se liittyy toisiin sivuihin wikissä.",
+	"bs-articleinfo-nav-link-title": "Sivun tiedot",
+	"bs-articleinfo-flyout-categorylinks-title": "Luokat",
+	"bs-articleinfo-flyout-templatelinks-title": "Sivulla käytettävät mallineet",
+	"bs-articleinfo-flyout-templatelinks-emptytext": "Ei mallineita käytössä",
+	"bs-articleinfo-flyout-lasteditedtime-text": "Viimeisin muokkaus",
+	"bs-articleinfo-flyout-lastediteduser-text": "Viimeisin muokkaaja",
+	"bs-articleinfo-newrevision-info-text": "Tästä sivusta on uusi versio saatavilla. Päivitä sivu nähdäksesi nykyisen sisällön.",
+	"bs-articleinfo-newrevision-info-text-reload": "Tästä sivusta on uusi versio saatavilla. [[:$1|Päivitä]] sivu nähdäksesi nykyisen sisällön.",
+	"bs-articleinfo-flyout-subpages-title": "Alasivut",
+	"bs-articleinfo-pagetool-subpages-tooltip": "Alasivut",
+	"bs-articleinfo-dialog-subpages-title": "Alasivut"
+}

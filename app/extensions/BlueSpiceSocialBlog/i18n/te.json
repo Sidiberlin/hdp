@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Veeven"
+		]
+	},
+	"bs-socialblog-type": "బ్లాగు",
+	"blog": "బ్లాగు",
+	"bs-socialblog-entityblog-header-create": "కొత్త బ్లాగు",
+	"bs-socialblog-var-blogtitle": "శీర్షిక",
+	"bs-socialblog-entityblog-content-more-btn-more": "మరిన్ని",
+	"bs-socialblog-special-blog-heading": "బ్లాగు"
+}

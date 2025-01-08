@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joquliina",
+			"Nike",
+			"Silvonen"
+		]
+	},
+	"bs-player-pref-autostart": "Aloita video automaattisesti",
+	"bs-player-file-does-not-exist": "Tiedostoa ei ole olemassa.",
+	"bs-player-unsupported-type": "Tätä tiedostotyyppiä ei tueta.",
+	"bs-player-config-prefwidth": "Videoiden oletusleveys",
+	"bs-player-config-prefheight": "Videoiden oletuskorkeus",
+	"prefs-videoplayer": "Videosoitin"
+}

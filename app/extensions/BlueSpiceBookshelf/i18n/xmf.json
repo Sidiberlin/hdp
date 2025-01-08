@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Narazeni"
+		]
+	},
+	"bs-bookshelf-action-editbook-create": "წყუშ რედაქტირაფა",
+	"bs-bookshelf-specialpage-title": "წინგეფი",
+	"bs-bookshelf-specialpage-allpages-ns-book-text": "ბიბლიოთეკა",
+	"bs-bookshelf-actionmenuentry-create-new-book": "ახალი კჷრიბიშ გოჭყაფა",
+	"bs-bookshelf-newbook-dlg-title": "ახალი კჷრიბიშ გოჭყაფა",
+	"bs-bookshelf-newbook-dlg-input-title-placeholder": "გაჭყით კჷრიბიშ დუდჯოხო",
+	"bs-bookshelf-newbook-dlg-input-title-label": "კჷრბიშ დუდჯოხო",
+	"bs-bookshelf-newbook-dlg-input-subtitle-placeholder": "Create subtitle",
+	"bs-bookshelf-newbook-dlg-input-image-label": "კაბრაშ სურათი",
+	"bs-bookshelf-newbook-dlg-input-image-select-placeholder": "რინელი სურათიშ გიშაგორუა",
+	"bs-bookshelf-newbook-dlg-book-save-summary": "გოჭყაფილი კჷრიბი"
+}

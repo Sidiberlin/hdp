@@ -1,0 +1,140 @@
+{
+	"name": "BlueSpiceCategoryManager",
+	"author": [
+		"Leonid Verhovskij",
+		"Dejan Savuljesku"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceCategoryManager",
+	"descriptionmsg": "bluespicecategorymanager-desc",
+	"version": "4.5.2",
+	"license-name": "GPL-3.0-only",
+	"type": "bluespice",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 4.3"
+		}
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceCategoryManager": {
+					"className": "\\BlueSpice\\CategoryManager\\Extension",
+					"extPath": "/BlueSpiceCategoryManager"
+				}
+			},
+			"PermissionRegistry": {
+				"categorymanager-viewspecialpage": {
+					"type": "global",
+					"roles": [
+						"admin",
+						"editor",
+						"maintenanceadmin",
+						"structuremanager"
+					]
+				}
+			},
+			"AdminToolRegistry": {
+				"bs-category-manager": "BlueSpice\\CategoryManager\\AdminTool"
+			}
+		},
+		"BlueSpiceExtendedStatistics": {
+			"SnapshotProviders": {
+				"cm-categories": {
+					"class": "\\BlueSpice\\CategoryManager\\Statistics\\SnapshotProvider\\Categories",
+					"services": [ "DBLoadBalancer" ]
+				}
+			},
+			"Reports": {
+				"cm-categorypages": {
+					"class": "\\BlueSpice\\CategoryManager\\Statistics\\Report\\CategoryPages"
+				}
+			}
+		}
+	},
+	"GroupPermissions": {
+		"*": {
+			"categorymanager-viewspecialpage": false
+		},
+		"user": {
+			"categorymanager-viewspecialpage": false
+		},
+		"sysop": {
+			"categorymanager-viewspecialpage": true
+		}
+	},
+	"AvailableRights": [
+		"categorymanager-viewspecialpage"
+	],
+	"SpecialPages": {
+		"BlueSpiceCategoryManager": "SpecialBlueSpiceCategoryManager"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\CategoryManager\\": "src/"
+	},
+	"AutoloadClasses": {
+		"SpecialBlueSpiceCategoryManager": "includes/specials/SpecialBlueSpiceCategoryManager.php"
+	},
+	"ExtensionMessagesFiles": {
+		"BlueSpiceCategoryManagerAlias": "includes/specials/SpecialBlueSpiceCategoryManager.alias.php"
+	},
+	"MessagesDirs": {
+		"BlueSpiceCategoryManager": [
+			"i18n"
+		]
+	},
+	"ResourceModules": {
+		"ext.bluespice.categorymanager": {
+			"scripts": [
+				"bluespice.categorymanager.js"
+			],
+			"styles": [
+				"bluespice.categorymanager.css"
+			],
+			"dependencies": [
+				"ext.bluespice.extjs",
+				"ext.bluespice.extjs.BS.deferred",
+				"mediawiki.api",
+				"mediawiki.Title"
+			],
+			"messages": [
+				"bs-categorymanager-draganddrop-text",
+				"bs-categorymanager-dlg-new-prompt",
+				"bs-categorymanager-dlg-new-title",
+				"bs-categorymanager-removecategoryconfirm-text",
+				"bs-categorymanager-removecategoryconfirm-title",
+				"bs-categorymanager-addcategory-dialog-error-title",
+				"bs-categorymanager-addcategory-dialog-error-duplicate-title",
+				"bs-categorymanager-addcategory-dialog-error-duplicate-text",
+				"bs-categorymanager-action-show-category",
+				"bs-categorymanager-rename-category",
+				"bs-categorymanager-rename-category-new-name",
+				"bs-categorymanager-move-new-name",
+				"bs-categorymanager-replace-in-pages",
+				"bs-categorymanager-category-column-name"
+			]
+		},
+		"ext.bluespice.categorymanager.statistics": {
+			"scripts": [
+				"statistics/CategoryPagesReport.js"
+			],
+			"messages": [
+				"bs-categorymanager-statistics-report-category-pages",
+				"bs-categorymanager-statistics-report-category-pages-axis-value"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceCategoryManager/resources"
+	},
+	"HookHandlers": {
+		"common-user-interface": {
+			"class": "\\BlueSpice\\CategoryManager\\HookHandler\\CommonUserInterface"
+		}
+	},
+	"Hooks": {
+		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface"
+	},
+	"manifest_version": 2
+}

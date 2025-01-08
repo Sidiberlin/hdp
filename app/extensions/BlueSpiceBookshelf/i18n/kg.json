@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bergerdias"
+		]
+	},
+	"bs-bookshelf-chapter-plain-text-label": "Ntu-diambu ya kapu",
+	"bs-bookshelf-chapter-plain-text-label-edit": "Yika ntu-diambu ya kapu ya mpa",
+	"bs-bookshelf-chapter-plain-text-input-label": "Masonama",
+	"bs-bookshelf-chapter-wikilink-with-alias-label": "Kapu ya Wiki",
+	"bs-bookshelf-chapter-wikilink-with-alias-label-edit": "Yika kapu ya mpa ya wiki",
+	"bs-bookshelf-chapter-wikilink-with-alias-target-input-label": "Lukanu na bo",
+	"bs-bookshelf-chapter-wikilink-with-alias-text-input-label": "Masonama",
+	"bs-bookshelf-toolbar-tool-metadata-title": "Yidika metadata",
+	"bs-bookshelf-toolbar-tool-metadata-label": "Yidika metadata"
+}

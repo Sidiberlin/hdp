@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jeeputer"
+		]
+	},
+	"bs-pro-distribution-droplet-decision-name": "تصمیم",
+	"droplets-modal-dialog-btn-label": "متن برای دکمه",
+	"droplets-modal-dialog-title-label": "عنوان پنجره",
+	"droplets-modal-dialog-body-label": "محتوای پنجره",
+	"droplets-modal-dialog-footer-label": "پاورقی برای پنجره",
+	"droplets-decision-label": "تصمیم",
+	"droplets-modal-dialog-bg-color-label": "رنگ پس‌زمینهٔ دکمه",
+	"droplets-modal-dialog-bg-color-blue": "آبی",
+	"droplets-modal-dialog-bg-color-red": "قرمز",
+	"droplets-modal-dialog-bg-color-neutral": "سفید"
+}

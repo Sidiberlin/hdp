@@ -1,0 +1,96 @@
+{
+	"Help:Startpage_Intranet": {
+		"lang": "en",
+		"label": "Startpage Intranet",
+		"description": "The root of the startpage structure",
+		"target_title": "Help:Startpage Intranet",
+		"content_path": "/pages/Help/Startpage_Intranet.wiki",
+		"sha1": "d5e5757705505ea964826a44a4c57b152ee90599",
+		"old_sha1": []
+	},
+	"Help:Startpage_Intranet/Bannerbox": {
+		"lang": "en",
+		"label": "Startpage Intranet - Banner",
+		"description": "The Banner section of the startpage structure",
+		"target_title": "Help:Startpage Intranet/Bannerbox",
+		"content_path": "/pages/Help/Startpage_IntranetBannerbox.wiki",
+		"sha1": "bc48258999f811e0b553cc26a802b8d6a8efc35c",
+		"old_sha1": [
+			"87b2a586faf1c296dff524217e16781f85c41d61"
+		]
+	},
+	"Help:Startpage_Intranet/Image_cards": {
+		"lang": "en",
+		"label": "Startpage Intranet - Image cards",
+		"description": "The Image cards section of the startpage structure",
+		"target_title": "Help:Startpage Intranet/Image cards",
+		"content_path": "/pages/Help/Startpage_IntranetImage_cards.wiki",
+		"sha1": "39d86c512cdeb9a2e4d48349e05430914d17baeb",
+		"old_sha1": [
+			"b52bee6bd69e216f7f7e163a5f225e84f6c4a52a"
+		]
+	},
+	"Help:Startpage_Intranet/News": {
+		"lang": "en",
+		"label": "Startpage Intranet - News",
+		"description": "The News section of the startpage structure",
+		"target_title": "Help:Startpage Intranet/News",
+		"content_path": "/pages/Help/Startpage_IntranetNews.wiki",
+		"sha1": "ff34d7d38bafb0e2089733fb5bcf12045e8f1dec",
+		"old_sha1": []
+	},
+	"Help:Startpage_Intranet/Events": {
+		"lang": "en",
+		"label": "Startpage Intranet - Events",
+		"description": "The Events section of the startpage structure",
+		"target_title": "Help:Startpage Intranet/Events",
+		"content_path": "/pages/Help/Startpage_IntranetEvents.wiki",
+		"sha1": "870af1bf49314d5300c484dcc1fdcfc9ac30a9aa",
+		"old_sha1": []
+	},
+	"Help:Startpage_Intranet/Sales": {
+		"lang": "en",
+		"label": "Startpage Intranet - Sales",
+		"description": "The sales section of the startpage structure",
+		"target_title": "Help:Startpage Intranet/Sales",
+		"content_path": "/pages/Help/Startpage_IntranetSales.wiki",
+		"sha1": "e70d88ecc1a33c06216a05ddf34bef7c01a03020",
+		"old_sha1": []
+	},
+	"Help:Startpage_Intranet/Production": {
+		"lang": "en",
+		"label": "Startpage Intranet - Production",
+		"description": "The production section of the startpage structure",
+		"target_title": "Help:Startpage Intranet/Production",
+		"content_path": "/pages/Help/Startpage_IntranetProduction.wiki",
+		"sha1": "7ec9b19c50fb8634aa301301161ea168917b6d93",
+		"old_sha1": []
+	},
+	"Help:Startpage_Intranet/HR": {
+		"lang": "en",
+		"label": "Startpage Intranet - Banner",
+		"description": "The HR section of the startpage structure",
+		"target_title": "Help:Startpage Intranet/HR",
+		"content_path": "/pages/Help/Startpage_IntranetHR.wiki",
+		"sha1": "5d13161b7e8c97da47fbedbb1167a28b5d976154",
+		"old_sha1": []
+	},
+	"Help:Startpage_Intranet/Minutes": {
+		"lang": "en",
+		"label": "Startpage Intranet - Minutes",
+		"description": "The Minutes section of the startpage structure",
+		"target_title": "Help:Startpage Intranet/Minutes",
+		"content_path": "/pages/Help/Startpage_IntranetMinutes.wiki",
+		"sha1": "5a99352d399cd774892604a65d5789f9413d911a",
+		"old_sha1": []
+	},
+	"Help:Startpage_Intranet/Contact": {
+		"lang": "en",
+		"label": "Startpage Intranet - Contact",
+		"description": "The Contact section of the startpage structure",
+		"target_title": "Help:Startpage Intranet/Contact",
+		"content_path": "/pages/Help/Startpage_IntranetContact.wiki",
+		"sha1": "967dd660a9c61b0a199d12ce887faab9977d42b3",
+		"old_sha1": []
+	}
+}

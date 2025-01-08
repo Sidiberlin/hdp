@@ -1,0 +1,16 @@
+==Bookshelf.class==
+
+'BSUEModulePDFFindFiles':
+$oSender:
+$oFileAnchorElement:
+$sAbsoluteFileSystemPath:
+$sHrefFilename:
+'attachments'
+
+==SpecialBookshelfBookUI.class==
+
+'BSBookshelfBookUI':
+$this:
+$wgOut:
+$oData:
+&$aPlugins:

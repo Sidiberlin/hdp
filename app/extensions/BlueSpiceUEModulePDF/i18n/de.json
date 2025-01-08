@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Brettchenweber",
+			"Metalhead64",
+			"Mglaser",
+			"Stephan Muggli <muggli@hallowelt.biz>"
+		]
+	},
+	"bs-uemodulepdf-desc": "Aktiviert MediaWiki zum Exportieren von Seiten in das PDF-Format",
+	"prefs-uemodulepdf": "Universal Export PDF Modul",
+	"uemodulepdf": "Universal Export PDF Modul",
+	"bs-uemodulepdf-pref-suppressns": "Namensraum im PDF ausblenden",
+	"bs-uemodulepdf-widgetlink-single-no-attachments-text": "PDF Einzelseite",
+	"bs-uemodulepdf-widgetlink-single-no-attachments-title": "Diese Seite im PDF Format ausgeben.",
+	"bs-uemodulepdf-overview-title": "Portable Document Format (PDF)",
+	"bs-uemodulepdf-overview-desc": "Exportiert Wikiseiten (Spezialseiten und Inhaltsseiten) nach Adobe PDF.",
+	"bs-uemodulepdf-overview-webservice-state": "Status des Backends",
+	"bs-uemodulepdf-overview-webservice-state-ok": "erreichbar",
+	"bs-uemodulepdf-overview-webservice-state-not-ok": "nicht erreichbar",
+	"soap-service-url-not-valid": "Die URL des Webservices für die PDF-Erzeugung ist nicht korrekt. Bitte überprüfe die Wiki-Einstellungen.",
+	"soap-service-url-not-set": "Die URL des Webservices für die PDF-Erzeugung ist nicht gesetzt. Bitte überprüfe die Wiki-Einstellungen.",
+	"bs-uemodulepdf-overview-webservice-webadmin": "Backend Webinterface",
+	"action-uemodulepdf-export": "eine Seiten in PDF zu exportieren",
+	"right-uemodulepdf-export": "Export einer Seite in PDF",
+	"bs-uemodulepdf-widgetlink-subpages-text": "PDF Seite mit Unterseiten",
+	"bs-uemodulepdf-widgetlink-subpages-title": "Diese und alle Unterseiten im PDF Format ausgeben.",
+	"action-uemodulepdfsubpages-export": "eine Seite inklusive aller Unterseiten nach PDF zu exportieren",
+	"right-uemodulepdfsubpages-export": "Eine Seite inklusive aller Unterseiten nach PDF exportieren",
+	"bs-uemodulepdf-widgetlink-recursive-text": "PDF Seite mit Verlinkungen",
+	"bs-uemodulepdf-widgetlink-recursive-title": "Diese und alle verlinkten Seiten im PDF Format ausgeben.",
+	"right-uemodulepdfrecursive-export": "Exportieren einer Seite einschließlich aller verlinkten Seiten als PDF-Datei",
+	"action-uemodulepdfrecursive-export": "eine Seite einschließlich aller verlinkten Seiten als PDF-Datei zu exportieren",
+	"bs-uemodulepdf-pref-suppressns-help": "Der Namensraum der Seite wird in der PDF-Titelzeile unterdrückt.",
+	"bs-uemodulepdf-export-dialog-label-module-name": "PDF Einzelseite",
+	"bs-uemodulepdf-export-dialog-label-select-submodule": "Umfang",
+	"bs-uemodulepdf-export-dialog-label-select-template": "Layout",
+	"bs-uemodulepdf-export-dialog-label-submodule-default": "Nur diese Seite",
+	"bs-uemodulepdf-export-dialog-label-submodule-recursive": "Seite mit verlinkten Seiten",
+	"bs-uemodulepdf-export-dialog-label-submodule-subpages": "Seite mit Unterseiten"
+}

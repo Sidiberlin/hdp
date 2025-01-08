@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jeeputer"
+		]
+	},
+	"bs-socialcomments-type": "نظر",
+	"bs-socialcomments-commenttext": "{{PLURAL:$1|نظر|نظرات}} ($1)",
+	"bs-socialcomments-header-create": "پاسخ در اینجا..."
+}

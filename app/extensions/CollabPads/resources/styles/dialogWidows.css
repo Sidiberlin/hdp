@@ -1,0 +1,47 @@
+/*!
+ * VisualEditor MediaWiki Initialization CollabTarget styles.
+ *
+ * @copyright 2011-2020 VisualEditor Team and others; see AUTHORS.txt
+ * @license The MIT License (MIT); see LICENSE.txt
+ */
+
+/*  StartSessionDialog */
+#collabPads-startSessionDialog-panel {
+	text-align: center;
+	padding-left: 20px;
+	padding-right: 20px;
+}
+
+.collabPads-startSessionDialog-heading {
+	font-size: 1.8em;
+}
+
+.collabPads-startSessionDialog-icon {
+	padding: 15px;
+}
+
+.collabPads-startSessionDialog-text {
+	text-align: left;
+	padding: 15px;
+}
+
+/*  ExportWikitextDialog */
+#collabPads-exportWikitextDialog-checkboxes {
+	background-color: #f8f9fa;
+	border: 1px solid #c8ccd1;
+	padding: 0.7857em;
+}
+
+.horizontal-layout-disabled {
+	background-color: #c4c7ca;
+	border-color: #c6c9cb;
+	pointer-events: none;
+}
+
+.popups-layout {
+	float: right;
+}
+
+.popups-layout .oo-ui-fieldsetLayout-group > .oo-ui-fieldLayout {
+	margin-top: -5px;
+}

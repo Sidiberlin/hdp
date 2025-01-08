@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Borhan",
+			"ZeetBaral",
+			"আফতাবুজ্জামান"
+		]
+	},
+	"at-mentions-inspector-title": "একজন ব্যবহারকারীকে উল্লেখ করুন",
+	"at-mentions-inspector-title-add": "একটি উল্লেখ যোগ করুন",
+	"at-mentions-inspector-title-edit": "ব্যবহারকারী উল্লেখ সম্পাদনা করুন",
+	"at-mentions-ci-title": "ব্যবহারকারী উল্লেখন",
+	"at-mentions-mentionslist-header-mine-all": "এই পাতায় আপনাকে উল্লেখ করা হয়েছে",
+	"at-mentions-mention-notification-message": "$2 পাতায় আপনাকে {{GENDER:$1|উল্লেখ করা হয়েছে}}",
+	"at-mentions-mention-notification-key": "আপনাকে উল্লেখ করা হয়েছে",
+	"at-mentions-mention-in-entity-notification-key": "আপনাকে একটি মন্তব্য বা পোস্টে উল্লেখ করা হয়েছে",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|[[User:$1|$1]] দ্বারা}}"
+}

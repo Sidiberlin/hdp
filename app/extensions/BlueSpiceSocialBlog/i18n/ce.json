@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"bs-socialblog-type": "Блог",
+	"blog": "Блог",
+	"bs-socialblog-entityblog-header-create": "Кхоьллина керла блог...",
+	"bs-socialblog-var-blogtitle": "ЦӀе",
+	"bs-socialblog-entityblog-content-more-btn-more": "Кхин а",
+	"bs-socialblog-entityblog-content-more-btn-less": "КӀезиг",
+	"bs-socialblog-special-blog-heading": "Блог",
+	"bs-socialblog-special-blog-heading-entry": "Блог/$1",
+	"bs-social-notifications-blog-create": "Декъашхочо {{GENDER:$1|$2 кхоьллина}} керла блог «$3»",
+	"bs-social-notifications-email-blog-create-subject": "Декъашхочо {{GENDER:$1|$2 кхоьллина}} керла блог «$3»",
+	"bs-social-notifications-email-blog-create-body": "Декъашхочо {{GENDER:$1|$2 кхоьллина}} керла блог «$3» рогӀера йоза долуш:\n\n$4",
+	"bs-social-notifications-web-blog-create-body": "{{GENDER:$1|$2 кхоьллина}} керла блог «$3»",
+	"bs-social-notifications-blog-edit": "Декъашхочо {{GENDER:$1|$2 тайина}} блог «$3»",
+	"bs-social-notifications-email-blog-edit-subject": "Декъашхочо {{GENDER:$1|$2 тайина}} блог «$3»",
+	"bs-social-notifications-email-blog-edit-body": "Декъашхочо {{GENDER:$1|$2 тайина}} блог «$3». Цуьнан йоза:\n\n$4",
+	"bs-social-notifications-web-blog-edit-body": "{{GENDER:$1|$2 тайина}} блог «$3»",
+	"bs-social-notifications-blog-delete": "Декъашхочо {{GENDER:$1|$2 дӀайаьккхина}} блог «$3»",
+	"bs-social-notifications-email-blog-delete-subject": "Декъашхочо {{GENDER:$1|$2 дӀайаьккхина}} блог «$3»",
+	"bs-social-notifications-email-blog-delete-body": "Декъашхочо {{GENDER:$1|$2 дӀайаьккхина}} блог «$3»",
+	"bs-social-notifications-web-blog-delete-body": "{{GENDER:$1|$2 дӀайаьккхина}} блог «$3»",
+	"bs-social-notification-blog-primary-link-label": "Хьажа блог"
+}

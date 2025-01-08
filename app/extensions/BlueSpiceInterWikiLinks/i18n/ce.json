@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"bs-interwikilinks-link-deleted": "Йукъаравикин хьажорг дӀайаьккхина.",
+	"bs-interwikilinks-headerprefix": "ТӀетоьхна элпаш",
+	"bs-interwikilinks-insertlink-tabtitle": "Кхечу вики тӀе хьажорг",
+	"bs-interwikilinks-labelprefix": "Префикс",
+	"bs-interwikilinks-titledeleteinterwikilink": "ДӀайаккха интервики-хьажорг",
+	"bs-interwikilinks-confirmdeleteinterwikilink": "Бакъалла лаьий, хьуна хӀара интервики-хьажог дӀаййкха?",
+	"bs-interwikilinks-insertlink-labelprefix": "Префикс",
+	"bs-interwikilink-select-a-prefix": "Харжа префикс",
+	"interwikilinks": "Интервики-хьажоргаш"
+}

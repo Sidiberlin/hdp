@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Tofeiku"
+		]
+	},
+	"bs-socialblog-type-groupblog": "Blog kumpulan",
+	"bs-socialblog-groupblog-permission-error": "Pengguna tidak dibenarkan menjalankan tindakan"
+}

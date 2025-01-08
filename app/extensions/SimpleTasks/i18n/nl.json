@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie",
+			"Vistaus"
+		]
+	},
+	"simple-tasks-desc": "Taken aanmaken voor gebruikers",
+	"simple-tasks-task-duedate": "Opleverdatum: $1",
+	"simple-tasks-task-desc": "Taak gemaakt in pagina-inhoud",
+	"simple-tasks-notif-key": "Taaktoewijzing",
+	"simple-tasks-notif-message": "{{GENDER:$1|heeft}} u een taak toegewezen: “$1”",
+	"simple-tasks-taskreport-no-results": "Er zijn geen taken gevonden op basis van de gekozen filters",
+	"simple-tasks-taskreport-header-task": "Taak",
+	"simple-tasks-taskreport-header-assignee": "Toegewezen aan",
+	"simple-tasks-taskreport-header-page": "Verschijnt op pagina",
+	"simple-tasks-taskreport-header-due-to": "Opleverdatum",
+	"simple-tasks-taskreport-header-state": "Status",
+	"simple-tasks-droplet-taskreport-name": "Taakverslag",
+	"simple-tasks-droplet-taskreport-description": "Stel een taakoverzicht op",
+	"simple-tasks-taskreport-inspector-title": "Taakverslag",
+	"simple-tasks-taskreport-inspector-state-done": "afgerond",
+	"simple-tasks-taskreport-inspector-state-open": "open",
+	"simple-tasks-taskreport-inspector-label-user": "Toegewezen aan",
+	"simple-tasks-taskreport-inspector-label-namespaces": "Naamruimten",
+	"simple-tasks-taskreport-inspector-label-due-date": "Opleveren op",
+	"simple-tasks-taskreport-inspector-label-state": "Status",
+	"simple-tasks-taskreport-state-title-open": "Taak is geopend",
+	"simple-tasks-taskreport-state-title-done": "Taak is afgerond",
+	"simple-tasks-taskreport-state-filter-done": "Afgerond",
+	"simple-tasks-taskreport-state-filter-open": "Open"
+}

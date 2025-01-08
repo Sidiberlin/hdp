@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Xosecalvo"
+		]
+	},
+	"bs-bookshelf-tag-next": "Seguinte",
+	"bs-bookshelf-tag-prev": "Anterior",
+	"bs-bookshelf-tag-edit-book": "Editar libro",
+	"bs-bookshelf-personal-books-page-prefix": "$1/Libros/",
+	"bs-bookshelf-add-to-book-label": "Engadir a un libro",
+	"bs-bookshelf-add-to-book-label-book": "Libro",
+	"bs-bookshelf-setting-path-feature": "Libro"
+}

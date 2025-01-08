@@ -1,0 +1,7 @@
+.vuejsplus-data-tree-cnt > ul.vuejsplus-data-tree {
+	margin-left: 0 !important;
+}
+.vuejsplus-data-tree-cnt > ul.vuejsplus-data-tree > li:first-child::before,
+.vuejsplus-data-tree-cnt > ul.vuejsplus-data-tree > li:first-child::after {
+	display: none;
+}

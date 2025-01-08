@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beta16",
+			"GpieroMW",
+			"Stefano"
+		]
+	},
+	"bs-uemodulepdf-widgetlink-single-no-attachments-text": "PDF di una sola pagina",
+	"bs-uemodulepdf-widgetlink-single-no-attachments-title": "Permette l'esportazione in PDF",
+	"bs-uemodulepdf-overview-title": "Portable Document Format (PDF)",
+	"bs-uemodulepdf-overview-desc": "Esporta le pagine (pagine speciali e pagine di contenuto) in PDF.",
+	"bs-uemodulepdf-overview-webservice-state-ok": "disponibile",
+	"bs-uemodulepdf-overview-webservice-state-not-ok": "non disponibile",
+	"action-uemodulepdf-export": "esportare una pagina in PDF",
+	"right-uemodulepdf-export": "Esporta le pagine in PDF",
+	"bs-uemodulepdf-widgetlink-subpages-title": "Esporta questa pagine e tutte le sue sottopagine come PDF.",
+	"action-uemodulepdfsubpages-export": "esportare una pagina, comprese tutte le sue sottopagine, come PDF",
+	"right-uemodulepdfsubpages-export": "Esporta una pagina, comprese tutte le sue sottopagine, come PDF",
+	"bs-uemodulepdf-pref-suppressns-help": "Il namespace della pagina viene omesso dal titolo del PDF.",
+	"bs-uemodulepdf-export-dialog-label-module-name": "Pagina PDF",
+	"bs-uemodulepdf-export-dialog-label-select-submodule": "Scopo",
+	"bs-uemodulepdf-export-dialog-label-submodule-default": "Solo questa pagina",
+	"bs-uemodulepdf-export-dialog-label-submodule-recursive": "Includi link ricorsivi",
+	"bs-uemodulepdf-export-dialog-label-submodule-subpages": "Includi sottopagine"
+}

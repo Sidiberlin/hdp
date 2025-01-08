@@ -1,0 +1,39 @@
+{
+	"@metadata": {
+		"authors": [
+			"Druesenfieber",
+			"Jakub Fabijan"
+		]
+	},
+	"bookshelfbookui": "Libra Redaktilo",
+	"bookshelfbookmanager": "Libra Mastrumilo",
+	"bs-bookshelfui-widget-editor-link-text": "Redakti ĉi tiun libron",
+	"bs-bookshelfui-new-book-title": "Krei novan libron",
+	"bs-bookshelfui-new-book-text": "Libra titolo",
+	"bs-bookshelfui-delete-book-title": "Forigi libron",
+	"bs-bookshelfui-bookui-savingprogress-title": "Konservado de libro",
+	"bs-bookshelfui-manager-title": "Titolo",
+	"bs-bookshelfui-manager-deletingprogress-title": "Forigado...",
+	"bs-bookshelfui-dlg-choosewikipage-title": "Vikipaĝo",
+	"bs-bookshelfui-dlg-choosewikipage-cbxArticleLabel": "Vikipaĝo",
+	"bs-bookshelfui-dlg-choosewikipage-tfDisplayName": "Montri titolon",
+	"bs-bookshelfui-ctxmnu-open": "Malferm vikipaĝon en nova fenestro",
+	"bs-bookshelfui-ctxmnu-tag-edit": "Redakti agordojn",
+	"bs-bookshelfui-dlg-copy-name-addition": "(kopio)",
+	"bs-bookshelfui-dlg-copy-target-name-label": "Cela nomo",
+	"bs-bookshelfui-confirm-delete-title": "Forigi ĉapitron",
+	"bs-bookshelfui-nothingtoexport-text": "Via elekto estas malplena",
+	"bs-bookshelfui-grouping-template-books": "({{PLURAL:$1|Unu libro|$1 libroj}})",
+	"bs-bookshelfui-book-type": "Tipo de la libro",
+	"bs-bookshelfui-empty-selection": "Neniu elektita",
+	"bs-bookshelfui-dlg-choosecategory-label": "Kategorio",
+	"bs-bookshelfui-dlg-type-label": "Fonto",
+	"bs-bookshelfui-nav-link-title-all-books": "Ĝeneralaj Libroj",
+	"bs-bookshelfui-flyout-title": "Listo de libroj",
+	"bs-bookshelfui-book-title-link-edit": "Redakti libron",
+	"bs-bookshelfui-book-title-link-edit-text": "Redakti libron",
+	"bs-bookshelfui-bookmetatag-title": "Titolo",
+	"bs-bookshelfui-bookmetatag-subtitle": "Subtitolo",
+	"bs-bookshelfui-bookmetatag-version": "Versio",
+	"bs-bookshelfui-extjs-tooltip-copy": "Kopii"
+}

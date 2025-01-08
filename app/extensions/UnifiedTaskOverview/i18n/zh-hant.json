@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"unifiedtaskoverview-desc": "提供具有使用者任務預覽的特殊頁面",
+	"unifiedtaskoverview": "我的任務",
+	"unifiedtaskoverview-label-no-task": "目前沒有要完成的任務。",
+	"unifiedtaskoverview-personal-url-my-tasks": "任務",
+	"unifiedtaskoverview-search-placeholder": "搜尋"
+}

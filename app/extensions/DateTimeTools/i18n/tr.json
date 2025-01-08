@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hedda"
+		]
+	},
+	"datetimetools-desc": "Görsel Düzenleyici'de tarih araçları sağlar",
+	"datetimetools-ve-inspector-title": "Tarihi Düzenle",
+	"datetimetools-ve-inspector-date-picker-label": "Tarihi seç",
+	"datetimetools-droplet-date-name": "Tarih",
+	"datetimetools-droplet-date-description": "Tarih ekler"
+}

@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Esketti",
+			"Mainframe98",
+			"McDutchie",
+			"SPQRobin",
+			"Siebrand",
+			"Sjoerddebruin"
+		]
+	},
+	"bs-saferedit-desc": "Laat een waarschuwing zien als andere gebruikers de pagina aan het bewerken zijn",
+	"bs-saferedit-user-editing": "$1 {{PLURAL:$2|is|zijn}} de pagina {{GENDER:$1|aan het bewerken}}",
+	"bs-saferedit-someone-editing": "De pagina wordt momenteel bewerkt",
+	"bs-saferedit-pref-interval": "Interval voor opzoeken van gelijktijdige bewerkingen:",
+	"bs-saferedit-pref-shownameofeditinguser": "Naam van de huidige bewerker weergeven",
+	"bs-saferedit-pref-interval-help": "Stelt de tijd in seconden in om te controleren of iemand anders de pagina aan het bewerken is.",
+	"bs-saferedit-pref-shownameofeditinguser-help": "Toont de gebruikers die momenteel de pagina aan het bewerken zijn als hint bovenaan de pagina."
+}

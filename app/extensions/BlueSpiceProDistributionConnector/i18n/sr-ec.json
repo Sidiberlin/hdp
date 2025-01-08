@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Milicevic01"
+		]
+	},
+	"bs-pro-distribution-droplet-math-name": "Математичка формула",
+	"bs-pro-distribution-droplet-chem-name": "Хемијска формула",
+	"droplets-pro-con-advantages-label": "Предности",
+	"droplets-pro-con-disadvantages-label": "Мане",
+	"droplets-modal-dialog-btn-label": "Текст за дугме",
+	"droplets-modal-dialog-title-label": "Наслов за дијагол",
+	"droplets-modal-dialog-bg-color-blue": "плаво",
+	"droplets-modal-dialog-bg-color-red": "црвено",
+	"droplets-modal-dialog-bg-color-neutral": "бело",
+	"bs-pro-distribution-pdfembed-inspector-input-label": "PDF датотека",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "Ширина",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "Висина",
+	"bs-pro-distribution-pdfembed-inspector-title": "Угради PDF"
+}

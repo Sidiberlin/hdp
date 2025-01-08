@@ -1,0 +1,36 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"simple-tasks-desc": "Создавајте задачи за корисници",
+	"simple-tasks-task-duedate": "Рок: $1",
+	"simple-tasks-task-desc": "Создадена задача во содржина на страница",
+	"simple-tasks-notif-key": "Задавање на задача",
+	"simple-tasks-notif-message": "ви {{GENDER:$1|зададе}} задача: „$1“",
+	"simple-tasks-taskreport-no-results": "Не пронајдов задачи со избраните филтри",
+	"simple-tasks-taskreport-header-task": "Задача",
+	"simple-tasks-taskreport-header-assignee": "Зададено на",
+	"simple-tasks-taskreport-header-page": "Се прикажува на страницата",
+	"simple-tasks-taskreport-header-due-to": "Рок",
+	"simple-tasks-taskreport-header-state": "Состојба",
+	"simple-tasks-droplet-taskreport-name": "Извештај за задача",
+	"simple-tasks-droplet-taskreport-description": "Создава преглед на задачи",
+	"simple-tasks-taskreport-inspector-title": "Извештај за задача",
+	"simple-tasks-taskreport-inspector-state-done": "готова",
+	"simple-tasks-taskreport-inspector-state-open": "отворена",
+	"simple-tasks-taskreport-inspector-label-user": "Зададено на",
+	"simple-tasks-taskreport-inspector-label-namespaces": "Именски простори",
+	"simple-tasks-taskreport-inspector-label-due-date": "Рок до",
+	"simple-tasks-taskreport-inspector-label-state": "Состојба",
+	"simple-tasks-taskreport-state-title-open": "Задачата е отворена",
+	"simple-tasks-taskreport-state-title-done": "Задачата е завршена",
+	"simple-tasks-taskreport-state-filter-done": "Готово",
+	"simple-tasks-taskreport-state-filter-open": "Отворена",
+	"echo-category-title-simple-tasks-notification-cat": "Задачи",
+	"simple-tasks-notification-cat-tooltip": "Известете ме кога ќе ми бидат доделени задачи",
+	"simple-tasks-echo-notification-task-subject": "Задачи доделени вам на страницата $1",
+	"simple-tasks-echo-notification-task-email-body": "{{GENDER:$2|$3 ви додели}} задача на страницата $1.\n\n$4",
+	"simple-tasks-echo-notification-task-web-body": "{{GENDER:$1|$2 ви додели}} задача: $3"
+}

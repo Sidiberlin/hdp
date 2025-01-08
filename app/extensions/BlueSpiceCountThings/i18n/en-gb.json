@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Piano1forte2"
+		]
+	},
+	"bs-countthings-error-invalid-mode": "The mode '$1' is invalid. Please use 'chars', 'words', or 'pages'.",
+	"bs-countthings-error-not-exist": "The page '$1' does not exist.",
+	"bs-countthings-tag-countcharacters-desc": "Generates metadata on the content of the indicated article. The output is an infobox that can be integrated into an article. With the parameter 'mode' different kind of information can be displayed."
+}

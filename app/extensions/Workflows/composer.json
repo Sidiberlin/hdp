@@ -1,0 +1,53 @@
+{
+	"name": "mediawiki/workflows",
+	"type": "mediawiki-extension",
+	"keywords": [
+		"mediawiki",
+		"wiki"
+	],
+	"license": "GPL-3.0-only",
+	"authors": [
+		{
+			"name": "Hallo Welt! GmbH",
+			"email": "info@hallowelt.com",
+			"homepage": "http://www.hallowelt.com"
+		}
+	],
+	"extra": {
+		"installer-name": "Workflows"
+	},
+	"require": {
+		"composer/installers": "~1.0|~2",
+		"eventsauce/eventsauce": "0.8.*",
+		"mwstake/mediawiki-component-formengine": "~2",
+		"mwstake/mediawiki-component-runjobstrigger": "~2",
+		"mwstake/mediawiki-component-alertbanners": "~2",
+		"mwstake/mediawiki-component-events": "~3",
+		"mwstake/mediawiki-component-wikitext": "~6",
+		"mwstake/mediawiki-component-datastore": "~1",
+		"mwstake/mediawiki-component-commonwebapis": "~2"
+	},
+	"require-dev": {
+		"mediawiki/mediawiki-codesniffer": "39.0.0",
+		"mediawiki/minus-x": "1.1.1",
+		"php-parallel-lint/php-console-highlighter": "1.0.0",
+		"php-parallel-lint/php-parallel-lint": "1.3.2"
+	},
+	"scripts": {
+		"test": [
+			"parallel-lint . --exclude vendor --exclude node_modules",
+			"minus-x check .",
+			"@phpcs"
+		],
+		"fix": [
+			"minus-x fix .",
+			"phpcbf"
+		],
+		"phpcs": "phpcs -sp"
+	},
+	"config": {
+		"allow-plugins": {
+			"composer/installers": true
+		}
+	}
+}

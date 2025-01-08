@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Les Meloures",
+			"Volvox"
+		]
+	},
+	"apihelp-categorytree-description": "Interne Modul fir d'Erweiderung \"CategoryTree\".",
+	"apierror-categorytree-invalidjson": "D'Optioune mussen e gëltege JSON-Objet sinn"
+}

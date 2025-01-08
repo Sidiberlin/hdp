@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Aefgh39622"
+		]
+	},
+	"bs-player-pref-autostart": "เริ่มเล่นวิดีโอโดยอัตโนมัติ",
+	"bs-player-file-does-not-exist": "ไม่มีไฟล์อยู่",
+	"bs-player-unsupported-type": "ไม่รองรับชนิดไฟล์นี้",
+	"bs-player-config-prefwidth": "ความกว้างปริยายของวิดีโอ",
+	"bs-player-config-prefheight": "ความสูงปริยายของวิดีโอ",
+	"prefs-videoplayer": "ตัวเล่นวิดีโอ"
+}

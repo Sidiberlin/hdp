@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"unifiedtaskoverview-desc": "Forni un pagina special con un vision general del cargas del usator",
+	"unifiedtaskoverview": "Mi cargas",
+	"unifiedtaskoverview-label-no-task": "Actualmente il non ha cargas a complir.",
+	"unifiedtaskoverview-personal-url-my-tasks": "Cargas",
+	"unifiedtaskoverview-search-placeholder": "Cercar"
+}

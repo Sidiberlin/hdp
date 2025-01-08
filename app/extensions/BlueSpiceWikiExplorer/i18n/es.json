@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"DiegoAmbrocio",
+			"Fitoschido"
+		]
+	},
+	"bs-wikiexplorer-extension-description": "Ordenar artículos por criterios",
+	"bs-wikiexplorer-page-title": "Título",
+	"bs-wikiexplorer-page-namespace": "Espacio de nombres",
+	"bs-wikiexplorer-creation-date": "Fecha de creación",
+	"bs-wikiexplorer-is-redirect": "Es redirección",
+	"bs-wikiexplorer-last-comment": "Último comentario",
+	"bs-wikiexplorer-last-edit-time": "Fecha de la última edición",
+	"bs-wikiexplorer-page-size": "Tamaño",
+	"bs-wikiexplorer-last-author": "Último editor",
+	"bs-wikiexplorer-categories": "Categorías",
+	"bs-wikiexplorer-linked-files": "Archivos enlazados",
+	"bs-wikiexplorer-linked-pages": "Páginas enlazadas",
+	"apihelp-bs-wikiexplorer-store-description": "Proporciona todos los datos de la extensión WikiExplorer"
+}

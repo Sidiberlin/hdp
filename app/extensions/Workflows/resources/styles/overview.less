@@ -1,0 +1,141 @@
+.overview-booklet {
+	.overview-state-layout {
+		float: right;
+		font-weight: bold;
+
+		.workflow-state-active {
+			color: #47A65D;
+		}
+		.workflow-state-finished {
+			color: #747474;
+		}
+		.workflow-state-inactive {
+			color: #A62E39;
+		}
+		.oo-ui-popupWidget-popup {
+			span {
+				font-size: 14px;
+			}
+		}
+	}
+	.details-panel {
+		background-color: #f7f6f6;
+		> .oo-ui-labelWidget {
+			display: block;
+		}
+	}
+	table {
+		width: 100%;
+		font-size: 15px;
+		td {
+			height: 36px;
+			vertical-align: middle;
+		}
+		.oo-ui-horizontalLayout > .oo-ui-widget {
+			margin-bottom: 0;
+		}
+		tr > th {
+			font-weight: normal;
+		}
+	}
+	.overview-section-label {
+		padding: 10px 0;
+		font-weight: bold;
+		text-decoration: underline;
+	}
+	.overview-activity-layout {
+		background-color: #f7f6f6;
+		position: relative;
+
+		table td {
+			vertical-align: text-top;
+		}
+
+		.oo-ui-buttonWidget {
+			margin-right: 0;
+		}
+	}
+	.proximity-layout {
+		float: right;
+		.proximity {
+			color: #47A65D;
+		}
+		.proximity-close {
+			color: orangered;
+		}
+		.proximity-overdue {
+			color: #A62E39;
+		}
+	}
+	.workflow-details-history {
+		.history-value {
+			font-weight: bold;
+			margin-left: 20px;
+		}
+	}
+	.activity-data-raw-popup {
+		float: right;
+	}
+	.initial-data-raw-popup {
+		float: right;
+	}
+}
+
+.activity-data-table {
+	/* This is shown in a popup, cannot be much wider */
+	max-width: 370px;
+	width: auto;
+	.popup-table-header th {
+		font-weight: bold;
+		padding-left: 10px;
+	}
+	tr > th, tr > td {
+		font-weight: normal;
+		padding-left: 10px;
+	}
+	tr:nth-child(1) {
+		background-color: transparent;
+		border-bottom: 1px solid #c2c2c2;
+	}
+
+}
+
+.workflow-data-popup .oo-ui-popupWidget-body-padded > :first-child {
+	margin: 10px;
+}
+
+.workflow-data-popup .oo-ui-popupWidget-body-padded {
+	overflow: auto;
+	margin: 0;
+	width: auto !important;
+}
+
+.oojsplus-data-gridWidget-cell[data-column="state"] {
+	>label {
+		width: 100%;
+	}
+}
+
+.workflow-state {
+	width: 16px;
+	height: 16px;
+	display: block;
+	background-size: contain;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-color: #747474;
+	border-radius: 50%;
+	margin: auto;
+	color: transparent;
+}
+
+.workflow-state-icon-aborted {
+	background-color: #A62E39;
+}
+
+.workflow-state-icon-running {
+	background-color: #47A65D;
+}
+.workflow-details-user-widget {
+	display: block;
+}

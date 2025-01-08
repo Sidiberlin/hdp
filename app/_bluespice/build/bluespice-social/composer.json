@@ -1,0 +1,29 @@
+{
+	"repositories": [{
+			"type": "composer",
+			"url": "https://packages.bluespice.com/"
+		}],
+	"require": {
+		"bluespice/socialwikipage": "dev-REL1_39-4.5.x",
+		"bluespice/social": "dev-REL1_39-4.5.x",
+		"bluespice/socialblog": "dev-REL1_39-4.5.x",
+		"bluespice/socialcomments": "dev-REL1_39-4.5.x",
+		"bluespice/socialmicroblog": "dev-REL1_39-4.5.x",
+		"bluespice/socialprofile": "dev-REL1_39-4.5.x",
+		"bluespice/socialrating": "dev-REL1_39-4.5.x",
+		"bluespice/socialtags": "dev-REL1_39-4.5.x",
+		"bluespice/socialtimelineupdate": "dev-REL1_39-4.5.x",
+		"bluespice/socialtopics": "dev-REL1_39-4.5.x",
+		"bluespice/socialwatch": "dev-REL1_39-4.5.x",
+		"bluespice/userinfo": "dev-REL1_39-4.5.x",
+		"bluespice/socialresolve": "dev-REL1_39-4.5.x",
+		"bluespice/rating": "dev-REL1_39-4.5.x"
+	},
+	"extra": {
+		"merge-plugin": {
+			"include": [
+				"extensions/BlueSpiceSocial/*/composer.json"
+			]
+		}
+	}
+}

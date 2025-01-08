@@ -1,0 +1,47 @@
+{
+	"name": "mwstake/mediawiki-component-wikitext",
+	"description": "Provides wikitext handling and tree parsing",
+	"license": "GPL-3.0-only",
+	"authors": [
+		{
+			"name": "HalloWelt! GmbH",
+			"email": "info@hallowelt.com",
+			"homepage": "http://www.hallowelt.com"
+		}
+	],
+	"require": {
+		"mwstake/mediawiki-componentloader": "~1",
+		"mwstake/mediawiki-component-manifestregistry": "~2.0",
+		"mwstake/mediawiki-lib-nodes": "~1.0"
+	},
+	"require-dev": {
+		"jakub-onderka/php-parallel-lint": "1.0.0",
+		"jakub-onderka/php-console-highlighter": "0.4.0",
+		"mediawiki/mediawiki-codesniffer": "29.0.0",
+		"mediawiki/minus-x": "1.0.0",
+		"phpunit/phpunit": "^8.5"
+	},
+	"autoload": {
+		"psr-4": {
+			"MWStake\\MediaWiki\\Component\\Wikitext\\": "src/",
+			"MWStake\\MediaWiki\\Component\\Wikitext\\Tests\\": "tests/phpunit/"
+		},
+		"files": [
+			"bootstrap.php"
+		]
+	},
+	"scripts": {
+		"phpunit": [
+			"../../../tests/phpunit/phpunit.php -c .phpunit.xml"
+		],
+		"test": [
+			"parallel-lint . --exclude vendor --exclude node_modules",
+			"minus-x check .",
+			"phpcs -sp"
+		],
+		"fix": [
+			"minus-x fix .",
+			"phpcbf"
+		]
+	}
+}

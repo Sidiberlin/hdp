@@ -1,0 +1,101 @@
+{
+	"name": "BlueSpiceUEModuleDOCX",
+	"version": "4.5.2",
+	"license-name": "GPL-3.0-only",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:UEModuleDOCX",
+	"author": [
+		"Robert Vogel"
+	],
+	"descriptionmsg": "bs-uemoduledocx-extension-description",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 4.3",
+			"BlueSpiceUniversalExport": ">= 4.3"
+		}
+	},
+	"type": "bluespice",
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceUEModuleDOCX": {
+					"className": "\\BlueSpice\\UEModuleDOCX\\Extension",
+					"extPath": "/BlueSpiceUEModuleDOCX",
+					"package": "BlueSpice Pro",
+					"status": "stable"
+				}
+			},
+			"ConfigDefinitionRegistry": {
+				"UEModuleDOCXSuppressNS": "\\BlueSpice\\UEModuleDOCX\\ConfigDefinition\\SuppressNS::getInstance"
+			},
+			"PermissionRegistry": {
+				"uemoduledocx-export": {
+					"type": "namespace",
+					"roles": [
+						"reader"
+					]
+				},
+				"uemoduledocxsubpages-export": {
+					"type": "namespace",
+					"roles": [
+						"reader"
+					]
+				}
+			}
+		},
+		"BlueSpiceUniversalExport": {
+			"ModuleRegistry": {
+				"docx": "\\ExportModuleDOCX::factory"
+			}
+		}
+	},
+	"MessagesDirs": {
+		"UEModuleDOCX": [
+			"i18n"
+		]
+	},
+	"GroupPermissions": {
+		"*": {
+			"uemoduledocx-export": true,
+			"uemoduledocxsubpages-export": true
+		}
+	},
+	"AvailableRights": [
+		"uemoduledocx-export",
+		"uemoduledocxsubpages-export"
+	],
+	"AutoloadClasses": {
+		"ExportModuleDOCX": "includes/ExportModuleDOCX.php",
+		"DOCXServlet": "includes/DOCXServlet.php",
+		"DOCXPageProvider": "includes/DOCXPageProvider.php",
+		"DOCXTemplateProvider": "includes/DOCXTemplateProvider.php"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\UEModuleDOCX\\": "src/"
+	},
+	"config_prefix": "bsg",
+	"config": {
+		"UEModuleDOCXSuppressNS": {
+			"value": false,
+			"descriptionmsg": "bs-uemoduledocx-pref-SuppressNS",
+			"public": true
+		},
+		"UEModuleDOCXDOCXServiceURL": {
+			"value": "http://localhost/BShtml2DOCX"
+		},
+		"UEModuleDOCXDOCXServiceSecret": {
+			"value": "$1$DP0.QV2.$BPGuGZOMuWwuc5DlGI1lK/"
+		},
+		"UEModuleDOCXDefaultTemplate": {
+			"value": "BlueSpice.docx"
+		},
+		"UEModuleDOCXTemplatePath": {
+			"value": "extensions/BlueSpiceUEModuleDOCX/data/templates"
+		}
+	},
+	"Hooks": {
+		"BSMigrateSettingsFromDeviatingNames": "\\BlueSpice\\UEModuleDOCX\\Hook\\BSMigrateSettingsFromDeviatingNames\\SkipServiceSettings::callback"
+	},
+	"load_composer_autoloader": true,
+	"manifest_version": 2
+}

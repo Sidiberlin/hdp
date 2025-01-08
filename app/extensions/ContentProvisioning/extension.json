@@ -1,0 +1,139 @@
+{
+	"name": "ContentProvisioning",
+	"version": "1.0.6",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "http://www.hallowelt.com",
+	"descriptionmsg": "contentprovisioning-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"MessagesDirs": {
+		"ContentProvisioner": "i18n"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\ContentProvisioning\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"MediaWiki\\Extension\\ContentProvisioning\\Tests\\": "tests/phpunit"
+	},
+	"attributes": {
+		"PermissionRegistry": {
+			"contentprovisioning-viewspecialpage": {
+				"type": "global",
+				"roles": [
+					"admin",
+					"maintenanceadmin",
+					"structuremanager"
+				]
+			}
+		}
+	},
+	"GroupPermissions": {
+		"*": {
+			"contentprovisioning-viewspecialpage": false
+		},
+		"sysop": {
+			"contentprovisioning-viewspecialpage": true
+		}
+	},
+	"AvailableRights": [
+		"contentprovisioning-viewspecialpage"
+	],
+	"ResourceModules": {
+		"ext.contentProvisioning.bootstrap": {
+			"scripts": "bootstrap.js"
+		},
+		"ext.contentProvisioning.api": {
+			"scripts": "api/Api.js"
+		},
+		"ext.contentProvisioning.special.overview": {
+			"scripts": [
+				"special.overview.js"
+			],
+			"dependencies": [
+				"ext.contentProvisioning.panel.overview",
+				"oojs-ui"
+			]
+		},
+		"ext.contentProvisioning.panel.overview": {
+			"scripts": [
+				"ui/panel/ContentProvisioningOverview.js",
+				"store/ContentProvisioning.js",
+				"ui/dialog/ContentDiff.js"
+			],
+			"styles": [
+				"styles/ContentDiff.less",
+				"styles/ContentProvisioningOverview.less"
+			],
+			"messages": [
+				"contentprovisioning-ui-overview-grid-section-page",
+				"contentprovisioning-ui-overview-grid-section-in-sync",
+				"contentprovisioning-ui-overview-grid-action-force-sync",
+				"contentprovisioning-ui-overview-grid-action-show-diff",
+				"contentprovisioning-ui-content-diff-title",
+				"contentprovisioning-ui-content-diff-headline-wiki-content",
+				"contentprovisioning-ui-content-diff-headline-provisioner-content"
+			],
+			"dependencies": [
+				"ext.oOJSPlus.data",
+				"mediawiki.diff.styles"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "ContentProvisioning/resources"
+	},
+	"HookHandlers": {
+		"add-modules": {
+			"class": "\\MediaWiki\\Extension\\ContentProvisioning\\Hook\\BeforePageDisplay\\AddModules"
+		}
+	},
+	"Hooks": {
+		"BeforePageDisplay": "add-modules"
+	},
+	"RestRoutes": [
+		{
+			"path": "/content_provisioning/list",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\ContentProvisioning\\Rest\\ListHandler",
+			"services": [
+				"HookContainer",
+				"WikiPageFactory",
+				"TitleFactory",
+				"ContentLanguage",
+				"LanguageFallback"
+			]
+		},
+		{
+			"path": "/content_provisioning/diff/{pagePrefixedText}",
+			"method": "GET",
+			"class": "MediaWiki\\Extension\\ContentProvisioning\\Rest\\DiffHandler",
+			"services": [
+				"TitleFactory",
+				"WikiPageFactory"
+			]
+		},
+		{
+			"path": "/content_provisioning/sync/{pagePrefixedText}",
+			"method": "POST",
+			"class": "MediaWiki\\Extension\\ContentProvisioning\\Rest\\SyncHandler",
+			"services": [
+				"ContentProvisionerWikiPageSync"
+			]
+		}
+	],
+	"SpecialPages": {
+		"ContentProvisioning": {
+			"class": "\\MediaWiki\\Extension\\ContentProvisioning\\Special\\ContentProvisioning"
+		}
+	},
+	"ExtensionMessagesFiles": {
+		"ContentProvisioningAlias": "languages/SpecialContentProvisioning.alias.php"
+	},
+	"manifest_version": 2,
+	"load_composer_autoloader": true
+}

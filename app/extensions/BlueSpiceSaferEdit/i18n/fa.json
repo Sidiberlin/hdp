@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Alirezaaa",
+			"Ebraminio",
+			"Huji",
+			"Jeeputer"
+		]
+	},
+	"bs-saferedit-desc": "در صورتی که کاربران دیگر در حال ویرایش صفحه باشند، یک هشدار ارائه می‌کند",
+	"bs-saferedit-user-editing": "$1 {{GENDER:$1|در حال ویرایش}} صفحه است",
+	"bs-saferedit-someone-editing": "این صفحه در حال ویرایش‌شدن است",
+	"bs-saferedit-pref-interval": "فاصلهٔ جستجو برای ویرایش‌های همزمان:",
+	"bs-saferedit-pref-shownameofeditinguser": "نمایش نام ویراستار کنونی"
+}

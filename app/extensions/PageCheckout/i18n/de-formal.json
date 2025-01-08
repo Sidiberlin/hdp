@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mschlindwein"
+		]
+	},
+	"pagecheckout-ui-clear-confirm": "Bestätigen Sie die Aufhebung des aktiven Checkouts auf dieser Seite? Dadurch wird die Seite für alle normalerweise berechtigten Benutzer bearbeitbar"
+}

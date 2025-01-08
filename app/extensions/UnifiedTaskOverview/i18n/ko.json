@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong"
+		]
+	},
+	"unifiedtaskoverview": "내 작업",
+	"unifiedtaskoverview-label-no-task": "현재 완료할 작업이 없습니다.",
+	"unifiedtaskoverview-search-placeholder": "검색"
+}

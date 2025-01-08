@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Abijeet Patro"
+		]
+	},
+	"droplets-pro-con-disadvantages-label": "नुकसान",
+	"droplets-modal-dialog-bg-color-blue": "नीला",
+	"droplets-modal-dialog-bg-color-red": "लाल",
+	"droplets-modal-dialog-bg-color-neutral": "सफ़ेद",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "चौड़ाई",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "ऊँचाई"
+}

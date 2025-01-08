@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Krisztina"
+		]
+	},
+	"bs-uemodulehtml-extension-description": "Lehetővé teszi a HTML-be történő exportálást",
+	"bs-uemodulehtml-pref-DefaultTemplate": "Standard sablon",
+	"bs-uemodulehtml-pref-SuppressNS": "Névtér előtag elrejtése HTML-ben",
+	"bs-uemodulehtml-pref-Backend": "Backend",
+	"bs-uemodulehtml-widgetlink-single-text": "HTML lap (archivált)",
+	"bs-uemodulehtml-widgetlink-single-title": "Exportálja ezt a lapot HTML formátumban az erőforrásokkal együtt archívumként",
+	"bs-uemodulehtml-overview-title": "HTML dokumentum (archivált)",
+	"bs-uemodulehtml-overview-description": "Lapok exportálása HTML-be (speciális és tartalmi lapok.",
+	"bs-uemodulehtml-pref-suppressns-help": "A laphoz tartozó névtér kimarad a HTML címből"
+}

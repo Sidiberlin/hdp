@@ -1,0 +1,22 @@
+.cd-decision {
+	padding: 14px;
+	margin: 2em 0 1em 0;
+	display: block;
+	position:relative;
+	clear:both;
+	background-color: #e9e9ee;
+}
+.cd-decision:before {
+	position: absolute;
+	font-size: 1.8em;
+	font-family: "fontawesome";
+	left: 8px;
+}
+.cd-decision::before {
+	content: "\f058";
+	color: #94c11f;
+}
+.cd-decision p {
+	margin-left: 2em;
+	font-weight: bold;
+}

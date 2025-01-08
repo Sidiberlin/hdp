@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Salvemm el lombard"
+		]
+	},
+	"pagecheckout-alertbanner-checkout-with-comment": "Questa pagina chì l'è 'dree a {{GENDER:$1|vesser vardad}} per $2. Coment: $3",
+	"page-checkout-workflow-activity-checkout-reason": "Per intanta questa pagina chì la gh'ha de specià per via de l'esecuzzion d'on fluss de lavorà.",
+	"page-checkout-workflow-activity-checkout-non-generic-reason": "Controllad in de l'eseguì el fluss de lavorà."
+}

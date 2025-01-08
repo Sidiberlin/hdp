@@ -1,0 +1,30 @@
+{
+	"Property:Task/Desc": {
+		"lang": "en",
+		"target_title": "Property:Task/Desc",
+		"content_path": "/pages/Property/Desc.wiki",
+		"sha1": "bbacff28d3aecbde783579d1e45f7e1ca87973dd",
+		"old_sha1": []
+	},
+	"Property:Task/Due date": {
+		"lang": "en",
+		"target_title": "Property:Task/Due date",
+		"content_path": "/pages/Property/Due date.wiki",
+		"sha1": "3a5d690f18acd8b623e8744ec5251b6120393917",
+		"old_sha1": []
+	},
+	"Property:Task/Status": {
+		"lang": "en",
+		"target_title": "Property:Task/Status",
+		"content_path": "/pages/Property/Status.wiki",
+		"sha1": "bbacff28d3aecbde783579d1e45f7e1ca87973dd",
+		"old_sha1": []
+	},
+	"Property:Task/User": {
+		"lang": "en",
+		"target_title": "Property:Task/User",
+		"content_path": "/pages/Property/User.wiki",
+		"sha1": "11f9b44f15939260752458298da10d2ec87c60a7",
+		"old_sha1": []
+	}
+}

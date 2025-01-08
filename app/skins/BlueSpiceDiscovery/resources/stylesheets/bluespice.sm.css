@@ -1,0 +1,40 @@
+.row > .col-east-spacer,
+.row > .col-west-spacer {
+	display: none;
+}
+.row > .col-east,
+.row > .col-west {
+	min-width: 100vw;
+	min-height: calc(100vh - 2 * var(--navbar-primary-height));
+	position: fixed;
+	top: calc(2 * var(--navbar-primary-height));
+}
+.row > .col-west {
+	z-index: 3;
+}
+.row > .col-east {
+	z-index: 2;
+}
+
+
+/* VisualEditor */
+.ve-init-target-visual > .ve-ui-toolbar-floating > .oo-ui-toolbar-bar,
+.ve-init-target-source > .ve-ui-toolbar-floating > .oo-ui-toolbar-bar{
+	top: calc( 2 * var( --navbar-primary-height ) );
+}
+
+#aftercontent > .inner {
+	max-width: var(--content-max-width);
+	margin: auto;
+	padding: 0;
+}
+#tools-after-content {
+	padding-left: 1rem;
+	padding-right: 1rem;
+}
+#data-after-content {
+	margin: 0;
+	width: 100%;
+	padding-left: 1rem;
+	padding-right: 1rem;
+}

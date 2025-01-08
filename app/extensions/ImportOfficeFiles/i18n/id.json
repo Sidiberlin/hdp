@@ -1,0 +1,30 @@
+{
+	"@metadata": {
+		"authors": [
+			"Farras"
+		]
+	},
+	"importofficefiles-ui-import-dialog-title": "Impor berkas",
+	"importofficefiles-ui-import-completed": "Impor selesai!",
+	"importofficefiles-ui-import-in-progress": "Sedang mengimpor ...",
+	"importofficefiles-ui-dialog-action-cancel": "Batal",
+	"importofficefiles-ui-dialog-action-import": "Impor",
+	"importofficefiles-ui-dialog-action-next": "Selanjutnya",
+	"importofficefiles-ui-dialog-action-back": "Kembali",
+	"importofficefiles-ui-dialog-action-done": "Selesai",
+	"importofficefiles-ui-dialog-label-select-file": "Pilih berkas",
+	"importofficefiles-ui-dialog-configuration-settings-title": "Ubah setelan impor",
+	"importofficefiles-ui-dialog-settings-page-title": "Judul",
+	"importofficefiles-ui-dialog-settings-pagetitle-label": "Pilih judul halaman baru",
+	"importofficefiles-ui-dialog-settings-structure-label": "Struktur isi",
+	"importofficefiles-ui-dialog-settings-conflicts-rename": "Ubah nama",
+	"importofficefiles-ui-dialog-settings-split-level-1": "Judul Tingkat 1",
+	"importofficefiles-ui-dialog-settings-split-level-2": "Judul Tingkat 2",
+	"importofficefiles-ui-dialog-settings-split-level-3": "Judul Tingkat 3",
+	"importofficefiles-ui-dialog-preview-title": "Pratayang",
+	"importofficefiles-ui-dialog-preview-label": "Halaman berikut ini akan diimpor",
+	"importofficefiles-ui-dialog-link-import-files-text": "Daftar berkas impor yang diekspor ke $1",
+	"importofficefiles-ui-progress-import-images-step": "Mengimpor gambar...",
+	"importofficefiles-ui-progress-import-pages-step": "Mengimpor halaman...",
+	"importofficefiles-ui-progress-remove-files-step": "Menghapus berkas sementara..."
+}

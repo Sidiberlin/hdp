@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Duke of Wikipädia",
+			"Eduardo Addad de Oliveira",
+			"Eduardoaddad",
+			"Felipe L. Ewald",
+			"Juan90264"
+		]
+	},
+	"bs-socialblog-desc": "Entidade de blog para BlueSpiceSocial",
+	"bs-socialblog-type": "Blog",
+	"blog": "Blog",
+	"bs-socialblog-entityblog-header-create": "Criar um novo blog...",
+	"bs-socialblog-var-blogtitle": "Título",
+	"bs-socialblog-entityblog-content-more-btn-more": "Mais",
+	"bs-socialblog-entityblog-content-more-btn-less": "Menos",
+	"bs-socialblog-toc-useblogteaser": "Use texto promocional para entradas de blog na linha do tempo",
+	"bs-socialblog-special-blog-heading": "Blog",
+	"bs-socialblog-special-blog-heading-entry": "Blog/$1",
+	"bs-social-notifications-blog-create": "Usuário {{GENDER:$1|$2 criou}} um novo blog \"$3\"",
+	"bs-social-notifications-email-blog-create-subject": "Usuário {{GENDER:$1|$2 criou}} um blog \"$3",
+	"bs-social-notifications-email-blog-create-body": "Usuário {{GENDER:$1|$2 criou}} um novo blog \"$3\" com o seguinte texto: \n\n$4",
+	"bs-social-notifications-web-blog-create-body": "{{GENDER:$1|$2 criou }} um novo blog \"$3\"",
+	"bs-social-notifications-blog-edit": "Usuário {{GENDER:$1|$2 editou}} o blog \"$3\"",
+	"bs-social-notifications-email-blog-edit-subject": "Usuário {{GENDER:$1|$2 editou}} o blog \"$3\"",
+	"bs-social-notifications-email-blog-edit-body": "Usuário {{GENDER:$1|$2 editou}} o blog \"$3\". Novo texto é:\n\n$4",
+	"bs-social-notifications-web-blog-edit-body": "{{GENDER:$1|$2 editou}} o blog \"$3\"",
+	"bs-social-notifications-blog-delete": "Usuário {{GENDER:$1|$2 excluiu}} um blog \"$3\"",
+	"bs-social-notifications-email-blog-delete-subject": "Usuário {{GENDER:$1|$2 excluiu}} o blog \"$3\"",
+	"bs-social-notifications-email-blog-delete-body": "Usuário {{GENDER:$1|$2 excluiu}} o blog \"$3\"",
+	"bs-social-notifications-web-blog-delete-body": "{{GENDER:$1|$2 excluiu }} um blog \"$3\"",
+	"bs-social-notification-blog-primary-link-label": "Ver blog",
+	"bs-socialblog-toc-useblogteaser-help": "No formulário do blog, os usuários podem inserir um texto clicando no símbolo da roda dentada. Se ativado, este texto é mostrado na página Special:Timeline em vez da primeira parte da entrada do blog em si.",
+	"action-social-blog": "create and edit blogs",
+	"action-social-blog-comment": "Comentário em blogs",
+	"right-social-blog": "Criar e editar blogs",
+	"right-social-blog-comment": "Comentário em blogs",
+	"bs-socialblog-config-mainlinks-blog-label": "Mostrar o ponto de entrada \"Blog\"",
+	"bs-socialblog-config-mainlinks-blog-help": "Mostrar hiperligação do ponto de entrada \"Blog\" na navegação à esquerda",
+	"bs-socialblog-type-groupblog": "Blog de grupo",
+	"bs-socialblog-groupblog-permission-error": "O usuário não tem permissão para executar a operação"
+}

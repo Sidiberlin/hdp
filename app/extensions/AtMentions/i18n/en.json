@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"at-mentions-desc": "Add a user mention",
+	"at-mentions-inspector-title": "Mention a user",
+	"at-mentions-inspector-title-add": "Add a mention",
+	"at-mentions-inspector-title-edit": "Edit user mention",
+	"at-mentions-ci-title": "User mention",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|by [[User:$1|$1]]}}",
+	"at-mentions-tag-item-time": "at $1",
+	"at-mentions-mentionslist-header-mine-all": "You have been mentioned on this page",
+	"at-mentions-mentionslist-header-mine": "Within the last {{PLURAL:$1|day|$1 days}}, you have been mentioned on these pages:",
+	"at-mentions-mentionslist-header-all": "User {{GENDER:$2|[[User:$2|$2]] has been mentioned on these pages}}:",
+	"at-mentions-mentionslist-header": "Within the last {{PLURAL:$1|day|$1 days}}, {{GENDER:$2|[[User:$2|$2]] has been mentioned on these pages}}:",
+	"at-mentions-mention-notification-message": "{{GENDER:$1|mentioned}} you on page $2",
+	"at-mentions-mention-notification-key": "You have been mentioned",
+	"at-mentions-mention-in-entity-notification-key": "You have been mentioned in a comment or a post",
+	"at-mentions-mention-in-entity-notification-message": "{{GENDER:$1|mentioned}} you in a comment or a post \"$3\" on page $2",
+	"at-mentions-toolbar-tool-title": "Add mention"
+}

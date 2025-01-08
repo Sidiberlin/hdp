@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"bs-pro-distribution-droplet-math-name": "Matematička formula",
+	"bs-pro-distribution-droplet-chem-name": "Hemijska formula",
+	"droplets-pro-con-advantages-label": "Prednosti",
+	"droplets-pro-con-disadvantages-label": "Mane",
+	"droplets-modal-dialog-btn-label": "Tekst za dugme",
+	"droplets-modal-dialog-title-label": "Naslov za dijagol",
+	"droplets-modal-dialog-bg-color-blue": "plavo",
+	"droplets-modal-dialog-bg-color-red": "crveno",
+	"droplets-modal-dialog-bg-color-neutral": "belo",
+	"bs-pro-distribution-pdfembed-inspector-input-label": "PDF datoteka",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "Širina",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "Visina",
+	"bs-pro-distribution-pdfembed-inspector-title": "Ugradi PDF"
+}

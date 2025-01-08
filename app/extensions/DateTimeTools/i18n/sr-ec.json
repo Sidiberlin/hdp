@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kizule",
+			"Milicevic01"
+		]
+	},
+	"datetimetools-ve-inspector-title": "Уреди датум",
+	"datetimetools-ve-inspector-date-picker-label": "Изаберите датум",
+	"datetimetools-droplet-date-name": "Датум",
+	"datetimetools-desc": "Пружа алатке за датуме у Визуелном уређивачу",
+	"datetimetools-droplet-date-description": "Уношење датума"
+}

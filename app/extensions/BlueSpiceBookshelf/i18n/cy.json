@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"Afalau",
+			"Ceirios",
+			"Robin Owain"
+		]
+	},
+	"bs-bookshelf-grouping-template-type-local_storage": "Llyfrau dros dro",
+	"bs-bookshelf-action-editbook": "Golygu ffynhonnell",
+	"bs-bookshelf-action-editbook-create": "Golygu ffynhonnell",
+	"bs-bookshelf-action-export-book": "Allforio'r llyfr",
+	"bs-bookshelf-edit-title": "Wrthi'n golygu $1",
+	"bs-bookshelf-error-invalid-type": "Mae'r math o lyfr yn annilys",
+	"bs-bookshelf-error-type-title-mismatch": "Nid yw'r teitl a roddwyd yn gweddu i'r math yma o lyfr",
+	"bs-bookshelf-editor-no-title-provided": "Ni chafwyd teitl llyfr dilys",
+	"bs-bookshelf-book-grid-title": "Llyfrau",
+	"prefs-bookshelf": "Tudalen arbennig y silff lyfrau",
+	"bs-bookshelf-prof-defaultview": "Y golwg diofyn",
+	"bs-bookshelf-prof-defaultview-grid": "Grid",
+	"bs-bookshelf-prof-defaultview-images": "Delweddau",
+	"bs-bookshelf-action-save-to-local-storage": "Wrthi'n cadw ar storfa leol",
+	"bs-bookshelf-pref-SupressBookNS": "Cuddio rhagddodiad parth erthyglau llyfr mewn allbwn",
+	"bs-bookshelf-search-center-filter-books-label": "Llyfr",
+	"bs-bookshelf-newbook-dlg-input-subtitle-label": "Isdeitl",
+	"bs-books-overview-page-edit-book-anchor-aria-label": "Golygu llyfr $1",
+	"bs-books-overview-page-book-action-metadata-text": "Golygu metadata",
+	"bs-bookshelf-massadd-dlg-save-action-label": "Ychwanegu",
+	"bs-bookshelf-droplet-search-description": "Chwilio am dudalennau mewn llyfr",
+	"bs-bookshelf-droplet-search-book": "Llyfr"
+}

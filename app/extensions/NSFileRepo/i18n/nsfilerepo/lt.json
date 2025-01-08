@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nokeoo"
+		]
+	},
+	"nsfilerepo-desc": "Suteikite vardų sritimi paremtas funkcijas įkeltiems failams",
+	"nsfilerepo-upload-target": "Tikslo failo pavadinimas vardų srityje",
+	"nsfilerepo-nsmain": "(Pagrindinė)",
+	"nsfilerepo-reupload-namespaceselector-disabled-helptext": "Iš naujo įkeliant failą šio lauko keisti negalima",
+	"nsfilerepo-move-file-namespace-action-label": "Nustatyti failo vardų sritį",
+	"nsfilerepo-move-file-namespace-dialog-title": "Nustatyti failo vardų sritį",
+	"nsfilerepo-move-file-namespace-dialog-button-done": "Atlikta",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "Atšaukti",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "Vardų sritis",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "Vardų sritis"
+}

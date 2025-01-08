@@ -1,0 +1,33 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bluespicecategorymanager": "Gestor de categorias",
+	"bluespicecategorymanager-desc": "Instrumento visual pro gerer categorias",
+	"action-categorymanager-viewspecialpage": "vider le gestor de categorias",
+	"bs-categorymanager-text": "Categorias",
+	"bs-categorymanager-draganddrop-text": "Trahe e depone pro reorganisar",
+	"bs-categorymanager-label": "Gestor de categorias",
+	"bs-categorymanager-dlg-new-title": "Crear categoria",
+	"bs-categorymanager-dlg-new-prompt": "Per favor entra le nomine:",
+	"bs-categorymanager-removecategoryconfirm-text": "Es tu secur de voler deler iste categoria?",
+	"bs-categorymanager-removecategoryconfirm-title": "Remover categoria",
+	"bs-categorymanager-addcategory-dialog-error-title": "Le creation del categoria ha fallite",
+	"bs-categorymanager-action-show-category": "Monstrar categoria",
+	"right-categorymanager-viewspecialpage": "Acceder al pagina special [[Special:BlueSpiceCategoryManager]]",
+	"bs-categorymanager-collection-type-categorizedpages": "Allocation de categorias",
+	"bs-categorymanager-collection-var-namespacename": "Spatio de nomines",
+	"bs-categorymanager-collection-var-categorizedpages": "Paginas con categorias",
+	"bs-categorymanager-collection-var-uncategorizedpages": "Paginas sin categorias",
+	"bs-categorymanager-rename-category": "Renominar categoria",
+	"bs-categorymanager-rename-category-new-name": "Nove nomine del categoria:",
+	"bs-categorymanager-move-new-name": "Defini le nomine del nove categoria. Nove nomine:",
+	"bs-categorymanager-replace-in-pages": "Renominar in pagina:",
+	"bs-categorymanager-statistics-report-category-pages": "Paginas in categorias",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-title": "Le categoria ja existe",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Tenta usar un altere nomine de categoria",
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "Numero de paginas",
+	"bs-categorymanager-category-column-name": "Nomine de categoria"
+}

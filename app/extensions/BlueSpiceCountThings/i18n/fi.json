@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joquliina",
+			"Pyscowicz",
+			"Silvonen"
+		]
+	},
+	"bs-countthings-ve-countcharacters-mode-all": "kaikki",
+	"bs-countthings-error-no-input": "Ei annettua sivua.",
+	"bs-countthings-tag-countcharacters-example-1": "Sanojen määrä",
+	"bs-countthings-tag-countcharacters-example-2": "Merkkien määrä",
+	"bs-countthings-ve-countcharacters-mode-charsonly": "merkit",
+	"bs-countthings-ve-countcharacters-mode-wordsonly": "sanat",
+	"bs-countthings-ve-countcharacters-mode-wordsandchars": "merkit ja sanat",
+	"bs-countthings-ve-countcharacters-mode-pagesonly": "sivut",
+	"bs-countthings-droplet-articles-name": "Sivujen määrä"
+}

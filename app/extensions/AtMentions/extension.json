@@ -1,0 +1,119 @@
+{
+	"name": "AtMentions",
+	"version": "1.1.2",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[https://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:AtMentions",
+	"descriptionmsg": "at-mentions-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"OOJSPlus": ">= 2.0.0"
+		}
+	},
+	"attributes": {
+		"VisualEditor": {
+			"PluginModules": [
+				"ext.mentions.ve"
+			],
+			"StandalonePluginModules": [
+				"ext.mentions.ve"
+			]
+		},
+		"NotifyMe": {
+			"Events": {
+				"at-mentions-mention": {
+					"spec": {
+						"class": "AtMentions\\Event\\UserMention"
+					},
+					"buckets": [ "personal" ]
+				},
+				"at-mentions-mention-in-entity": {
+					"buckets": [ "personal" ]
+				}
+			}
+		}
+	},
+	"callback": "mwsInitComponents",
+	"MessagesDirs": {
+		"AtMentions": "i18n"
+	},
+	"AutoloadNamespaces": {
+		"AtMentions\\": "src/",
+		"AtMentions\\Tests\\": "tests/phpunit"
+	},
+	"ResourceModules": {
+		"ext.mentions.ve": {
+			"scripts": [
+				"bootstrap.js",
+				"action/MentionAction.js",
+				"ce/Mention.js",
+				"dm/MentionNode.js",
+				"contextitem/MentionContextItem.js",
+				"inspector/MentionInspector.js",
+				"tool/MentionTool.js"
+			],
+			"styles": [
+				"mention.less"
+			],
+			"dependencies": [
+				"ext.visualEditor.mwcore",
+				"ext.visualEditor.mwlink",
+				"ext.oOJSPlus.widgets"
+			],
+			"messages": [
+				"at-mentions-inspector-title",
+				"at-mentions-inspector-title-add",
+				"at-mentions-inspector-title-edit",
+				"at-mentions-ci-title",
+				"at-mentions-toolbar-tool-title"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "AtMentions/resources"
+	},
+	"Hooks": {
+		"ParserBeforeInternalParse": "processMentions",
+		"HtmlPageLinkRendererEnd": "processMentions",
+		"PageSaveComplete": "processMentions",
+		"LoadExtensionSchemaUpdates": "runDatabaseUpdates",
+		"ParserFirstCallInit": "processTags",
+		"PageMoveComplete": "processMentions",
+		"PageDeleteComplete": "processMentions",
+		"ArticleUndelete": "processMentions",
+		"BSEntitySaveComplete": "processMentionsInEntities",
+		"BSEntityDelete": "processMentionsInEntities"
+	},
+	"HookHandlers": {
+		"processMentions": {
+			"class": "AtMentions\\Hook\\ProcessMentions",
+			"services": [
+				"AtMentionsParser", "AtMentionsStore", "RevisionStore",
+				"MWStake.Notifier", "TitleFactory", "UserFactory"
+			]
+		},
+		"processMentionsInEntities": {
+			"class": "AtMentions\\Hook\\ProcessMentionsInEntities",
+			"services": [
+				"AtMentionsParser", "AtMentionsStore", "RevisionStore",
+				"MWStake.Notifier", "TitleFactory", "NamespaceInfo", "UserFactory"
+			]
+		},
+		"runDatabaseUpdates": {
+			"class": "AtMentions\\Hook\\RunDatabaseUpdates"
+		},
+		"processTags": {
+			"class": "AtMentions\\Hook\\ProcessTags",
+			"services": [ "UserFactory", "AtMentionsStore", "LinkRenderer" ]
+		}
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"manifest_version": 2,
+	"load_composer_autoloader": true
+}

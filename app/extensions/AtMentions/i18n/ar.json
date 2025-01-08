@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"محمد أحمد عبد الفتاح"
+		]
+	},
+	"at-mentions-desc": "أضف إشارة لمستخدم",
+	"at-mentions-inspector-title": "أشر إلى مستخدم",
+	"at-mentions-ci-title": "إشارة لمستخدم",
+	"at-mentions-mentionslist-header-mine-all": "أشير إليك في هذه الصفحة",
+	"at-mentions-echo-mention-notification-summary": "أشير إليك في صفحة $1"
+}

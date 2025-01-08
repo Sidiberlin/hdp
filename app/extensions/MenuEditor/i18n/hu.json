@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hanna Tardos"
+		]
+	},
+	"menueditor-ui-mediawiki-sidebar-keyword-label-edit": "Kulcsszó szerkesztése",
+	"menueditor-ui-mediawiki-sidebar-keyword-label": "Kulcsszó",
+	"menueditor-toolbar-submit": "Változtatások mentése",
+	"menueditor-toolbar-cancel": "Szerkesztések visszavonása",
+	"menueditor-toolbar-add": "Új elem hozzáadása"
+}

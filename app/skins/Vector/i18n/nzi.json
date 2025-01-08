@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Valentine Badu",
+			"Elliot one",
+			"ANNAN JEREMIAH SELBY",
+			"Cyprex",
+			"Mis delay",
+			"Ruth Alhassan"
+		]
+	},
+	"vector-languages": "Aneɛ",
+	"vector-language-button-label": "aneɛ-aneɛ aneɛ $1",
+	"vector-no-language-button-label": "Fa aneɛ ngakyile boka nwolɛ",
+	"vector-action-addsection": "Fa tidwɛkɛ boka nwo",
+	"vector-action-delete": "Twikyi",
+	"vector-action-move": "Fa kɔ",
+	"vector-action-protect": "Gyima",
+	"vector-view-create": "Buke",
+	"vector-view-edit": "Sa nu",
+	"vector-view-history": "Nea tete dwɛkɛ ne",
+	"vector-more-actions": "Kpondɛ dɔɔnwo",
+	"vector-searchsuggest-containing": "Kpondɛ mɛ wɔ peegi ne anu la",
+	"vector-toc-beginning": "Mɔlebɛbo"
+}

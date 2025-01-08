@@ -1,0 +1,101 @@
+{
+	"name": "BlueSpiceWikiExplorer",
+	"version": "4.5.2",
+	"license-name": "GPL-3.0-only",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceWikiExplorer",
+	"author": [
+		"Sebastian Ulbricht",
+		"Patric Wirth"
+	],
+	"descriptionmsg": "bs-wikiexplorer-extension-description",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 4.3"
+		}
+	},
+	"type": "bluespice",
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceWikiExplorer": {
+					"className": "\\BlueSpice\\WikiExplorer\\Extension",
+					"extPath": "/BlueSpiceWikiExplorer",
+					"package": "BlueSpice Pro"
+				}
+			}
+		},
+		"BlueSpiceWikiExplorer": {
+			"PluginModules": []
+		}
+	},
+	"APIModules": {
+		"bs-wikiexplorer-store": "BSApiWikiExplorerStore"
+	},
+	"SpecialPages": {
+		"WikiExplorer": "SpecialWikiExplorer"
+	},
+	"MessagesDirs": {
+		"BlueSpiceWikiExplorer": [
+			"i18n"
+		]
+	},
+	"ExtensionMessagesFiles": {
+		"WikiExplorerAlias": "languages/SpecialWikiExplorer.alias.php"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\WikiExplorer\\": "src/"
+	},
+	"AutoloadClasses": {
+		"BSApiWikiExplorerStore": "includes/api/BSApiWikiExplorerStore.php",
+		"SpecialWikiExplorer": "includes/specials/SpecialWikiExplorer.php"
+	},
+	"ResourceModules": {
+		"ext.bluespice.wikiExplorer.special": {
+			"packageFiles": [
+				{ "name": "bootstrap.js", "main": true },
+				"special.wikiExplorer.js",
+				"store/WikiExplorer.js",
+				"ui/Panel.js",
+				{
+					"name": "pluginModules.json",
+					"callback": "\\BlueSpice\\WikiExplorer\\WikiExplorerPluginModules::getPluginModules"
+				}
+			],
+			"styles": [
+				"bluespice.wikiExplorer.less"
+			],
+			"messages": [
+				"bs-wikiexplorer-page-title",
+				"bs-wikiexplorer-page-namespace",
+				"bs-wikiexplorer-creation-date",
+				"bs-wikiexplorer-is-redirect",
+				"bs-wikiexplorer-last-comment",
+				"bs-wikiexplorer-last-edit-time",
+				"bs-wikiexplorer-page-size",
+				"bs-wikiexplorer-last-author",
+				"bs-wikiexplorer-categories",
+				"bs-wikiexplorer-linked-files",
+				"bs-wikiexplorer-linked-pages"
+			],
+			"dependencies": [
+				"ext.oOJSPlus.data",
+				"oojs-ui"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceWikiExplorer/resources"
+	},
+	"HookHandlers": {
+		"common-user-interface": {
+			"class": "\\BlueSpice\\WikiExplorer\\HookHandler\\CommonUserInterface"
+		}
+	},
+	"Hooks": {
+		"BSUserSidebarGlobalActionsWidgetGlobalActions": "WikiExplorer::onBSUserSidebarGlobalActionsWidgetGlobalActions",
+		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface"
+	},
+	"manifest_version": 2
+}

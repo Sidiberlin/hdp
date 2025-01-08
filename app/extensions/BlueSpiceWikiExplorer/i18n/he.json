@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80"
+		]
+	},
+	"bs-wikiexplorer-extension-description": "מיון מאמרים לפי תאנים מוגדרים",
+	"bs-wikiexplorer-page-title": "כותרת",
+	"bs-wikiexplorer-page-namespace": "מרחב שם",
+	"bs-wikiexplorer-creation-date": "תאריך היצירה",
+	"bs-wikiexplorer-is-redirect": "האם זאת הפניה",
+	"bs-wikiexplorer-last-comment": "תגובה אחרונה",
+	"bs-wikiexplorer-last-edit-time": "תאריך עריכה אחרון",
+	"bs-wikiexplorer-page-size": "גודל",
+	"bs-wikiexplorer-last-author": "העורך האחרון",
+	"bs-wikiexplorer-categories": "קטגוריות",
+	"bs-wikiexplorer-linked-files": "קבצים מקושרים",
+	"bs-wikiexplorer-linked-pages": "דפים מקושרים",
+	"apihelp-bs-wikiexplorer-store-description": "אספקת כל הנתונים עבור ההרחבה WikiExplorer",
+	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "פרמטר API כדי לציין אם המטא־נתונים כבר נטענו.",
+	"apihelp-bs-wikiexplorer-store-summary": "אספקת כל הנתונים עבור ההרחבה WikiExplorer",
+	"bs-wikiexplorer-icon-bool-true-aria-label": "מסומן",
+	"bs-wikiexplorer-icon-bool-false-aria-label": "לא מסומן"
+}

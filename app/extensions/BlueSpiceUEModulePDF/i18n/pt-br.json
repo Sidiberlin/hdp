@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"Duke of Wikipädia",
+			"Eduardo Addad de Oliveira",
+			"Eduardoaddad",
+			"Felipe L. Ewald",
+			"Juan90264"
+		]
+	},
+	"bs-uemodulepdf-desc": "Permite que o MediaWiki exporte páginas em formato PDF",
+	"prefs-uemodulepdf": "Módulo PDF de exportação universal",
+	"uemodulepdf": "Módulo PDF de exportação universal",
+	"bs-uemodulepdf-pref-suppressns": "Ocultar prefixos do espaço nominal no PDF",
+	"bs-uemodulepdf-widgetlink-single-no-attachments-text": "Página única em PDF",
+	"bs-uemodulepdf-widgetlink-single-no-attachments-title": "Exportar esta página como PDF.",
+	"bs-uemodulepdf-overview-title": "Formato Portátil de Documento (PDF)",
+	"bs-uemodulepdf-overview-desc": "Exporta páginas (páginas especiais e de conteúdo) para PDF.",
+	"bs-uemodulepdf-overview-webservice-state": "Estado do backend",
+	"bs-uemodulepdf-overview-webservice-state-ok": "disponível",
+	"bs-uemodulepdf-overview-webservice-state-not-ok": "não disponível",
+	"soap-service-url-not-valid": "O URL para o <i>web service</i> de geração de PDF não é válido. Verifique a configuração da wiki, por favor.",
+	"soap-service-url-not-set": "O URL para o <i>web service</i> de geração de PDF não está definido. Verifique a configuração da wiki, por favor.",
+	"bs-uemodulepdf-overview-webservice-webadmin": "Interface web Backend",
+	"action-uemodulepdf-export": "exportando uma página para PDF",
+	"right-uemodulepdf-export": "Exportar uma página para PDF",
+	"bs-uemodulepdf-widgetlink-subpages-text": "Página e sub-páginas para PDF",
+	"bs-uemodulepdf-widgetlink-subpages-title": "Exportar esta página e todas as subpáginas como PDF.",
+	"action-uemodulepdfsubpages-export": "exportar uma página, incluindo todas as subpáginas, para PDF",
+	"right-uemodulepdfsubpages-export": "Exportar uma página, incluindo todas as subpáginas, para PDF",
+	"bs-uemodulepdf-widgetlink-recursive-text": "Página PDF com páginas vinculadas",
+	"bs-uemodulepdf-widgetlink-recursive-title": "Exporte esta página e todas as páginas vinculadas como PDF.",
+	"right-uemodulepdfrecursive-export": "Exportar uma página, incluindo todas as páginas vinculadas, para PDF",
+	"action-uemodulepdfrecursive-export": "exportar uma página, incluindo todas as páginas vinculadas, para PDF",
+	"bs-uemodulepdf-pref-suppressns-help": "O namespace da página é omitido do título HTML.",
+	"bs-uemodulepdf-export-dialog-label-module-name": "Página PDF",
+	"bs-uemodulepdf-export-dialog-label-select-submodule": "Alcance",
+	"bs-uemodulepdf-export-dialog-label-select-template": "Estilo",
+	"bs-uemodulepdf-export-dialog-label-submodule-default": "Apenas nesta página",
+	"bs-uemodulepdf-export-dialog-label-submodule-recursive": "Incluir ligações recursivas",
+	"bs-uemodulepdf-export-dialog-label-submodule-subpages": "Incluir subpáginas"
+}

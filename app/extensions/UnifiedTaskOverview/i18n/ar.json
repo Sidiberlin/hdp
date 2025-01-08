@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Meno25"
+		]
+	},
+	"unifiedtaskoverview-desc": "يوفر صفحة خاصة بنظرة عامة على مهام المستخدمين",
+	"unifiedtaskoverview": "مهامي",
+	"unifiedtaskoverview-label-no-task": "حاليا لا توجد مهام لإكمالها.",
+	"unifiedtaskoverview-personal-url-my-tasks": "مهام",
+	"unifiedtaskoverview-search-placeholder": "يبحث"
+}

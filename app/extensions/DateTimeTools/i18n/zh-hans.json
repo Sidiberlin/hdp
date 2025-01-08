@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"GuoPC"
+		]
+	},
+	"datetimetools-desc": "在可视化编辑器中提供日期工具",
+	"datetimetools-ve-inspector-title": "编辑日期",
+	"datetimetools-ve-inspector-date-picker-label": "选择日期",
+	"datetimetools-droplet-date-name": "日期",
+	"datetimetools-droplet-date-description": "插入日期"
+}

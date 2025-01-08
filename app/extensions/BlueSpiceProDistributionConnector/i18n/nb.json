@@ -1,0 +1,36 @@
+{
+	"@metadata": {
+		"authors": [
+			"EdoAug",
+			"Jon Harald Søby"
+		]
+	},
+	"bs-prodistributionconnector-desc": "Kobler BlueSpice med diverse MediaWiki-utvidelser",
+	"bs-pro-distribution-droplet-pro-con-list-name": "Fordeler og ulemper",
+	"bs-pro-distribution-droplet-pro-con-list-desc": "Tabell til sammenligning av fordeler og ulemper",
+	"bs-pro-distribution-droplet-math-name": "Matematisk formel",
+	"bs-pro-distribution-droplet-math-desc": "Visning av matematiske formler",
+	"bs-pro-distribution-droplet-chem-name": "Kjemisk formel",
+	"bs-pro-distribution-droplet-chem-desc": "Visning av kjemiske formler",
+	"bs-pro-distribution-droplet-decision-name": "Valg",
+	"bs-pro-distribution-instance-status-number-of-users-unknown": "Det er '''$1''' {{PLURAL:$1|registrert aktiv bruker|registrerte aktive brukere}}. Ingen kjent grense er satt.",
+	"bs-pro-distribution-instance-status-number-of-users-unlimited": "Det er '''$1''' {{PLURAL:$1|registrert aktiv bruker|registrerte aktive brukere}}. Antall brukere er ubegrenset.",
+	"bs-pro-distribution-instance-status-number-of-users-limited": "Det er '''$1''' {{PLURAL:$1|registrert aktiv bruker|registrerte aktive brukere}} ($3 %). Antall brukere er begrenset til $2.",
+	"bs-pro-distribution-instance-status-user-quota-label": "Brukerkvote",
+	"bs-pro-distribution-instance-status-number-of-users-limited-full": "Det er '''$1''' {{PLURAL:$1|registrert aktiv bruker|registrerte aktive brukere}}. Maksimalt antall brukere er nådd! Kontakt BlueSpice-teamet for å øke antall tillatte brukere, eller deaktiver noen eksisterende brukere for å kunne opprette nye kontoer",
+	"bs-pro-distribution-createaccount-fail-max-accounts-exceed": "Maksimalt antall kontoer er overskredet",
+	"droplets-modal-dialog-bg-color-blue": "blå",
+	"droplets-modal-dialog-bg-color-red": "rød",
+	"droplets-modal-dialog-bg-color-neutral": "hvit",
+	"bs-pro-distribution-pdfembed-inspector-input-label": "PDF-fil",
+	"bs-pro-distribution-pdfembed-inspector-input-help": "Velg PDF-filen fra wikien for å inkludere den på wikisiden",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "Bredde",
+	"bs-pro-distribution-pdfembed-inspector-width-help": "Sett bredden til forhåndsvisningen av PDF-fila. La denne være tom for å bruke standardstørrelsen (800px)",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "Høyde",
+	"bs-pro-distribution-pdfembed-inspector-height-help": "Sett høyden for PDF-forhåndsvisningen. La denne være tom for å bruke standardstørrelsen (1090px)",
+	"bs-pro-distribution-pdfembed-inspector-page-label": "Begynn med side",
+	"bs-pro-distribution-pdfembed-inspector-page-help": "Antall sider som skal vises etter at forhåndsvisningen har blitt gjengitt",
+	"bs-pro-distribution-pdfembed-inspector-title": "Bygg inn PDF",
+	"bs-pro-distribution-pdfembed-droplet-name": "PDF-forhåndsvisning",
+	"bs-pro-distribution-pdfembed-droplet-description": "Bygg inn forhåndsvisning av PDF-fil på en wikiside"
+}

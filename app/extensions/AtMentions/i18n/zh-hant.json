@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"at-mentions-desc": "新增使用者提及",
+	"at-mentions-inspector-title": "提及一位使用者",
+	"at-mentions-inspector-title-add": "新增提及",
+	"at-mentions-inspector-title-edit": "編輯使用者提及",
+	"at-mentions-ci-title": "使用者提及",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|由[[User:$1]]}}",
+	"at-mentions-tag-item-time": "於 $1",
+	"at-mentions-mentionslist-header-mine-all": "此頁面上已提及您",
+	"at-mentions-mentionslist-header-mine": "在過去 {{PLURAL:$1|1|$1}} 天裡，這些頁面上有提及您：",
+	"at-mentions-mentionslist-header-all": "使用者{{GENDER:$2|[[User:$2]]已在這些頁面上提及}}：",
+	"at-mentions-mentionslist-header": "在過去 {{PLURAL:$1|1|$1}} 天裡，{{GENDER:$2|[[User:$2]]已在這些頁面上提及}}：",
+	"at-mentions-mention-notification-message": "在頁面$2{{GENDER:$1|提及}}您",
+	"at-mentions-mention-notification-key": "您已被提及",
+	"at-mentions-mention-in-entity-notification-key": "您有在評論或貼文中被提及",
+	"at-mentions-mention-in-entity-notification-message": "在頁面$2的評論或貼文「$3」中{{GENDER:$1|提及了}}您",
+	"at-mentions-mention-in-entity-notification-post-link": "直接前往貼文",
+	"at-mentions-toolbar-tool-title": "新增提及",
+	"at-mentions-echo-mention-notification-summary": "您已在頁面$1上被提及",
+	"at-mentions-echo-mention-notification-web-body": "{{GENDER:$2|$3提及}}您",
+	"at-mentions-echo-mention-notification-subject": "{{GENDER:$2|$3}}在頁面$1上提及您",
+	"at-mentions-echo-mention-notification-email-body": "您已在頁面$1上被提及",
+	"at-mentions-echo-mention-entity-notification-summary": "您有在$1的評論或貼文中被提及",
+	"at-mentions-echo-mention-entity-notification-subject": "{{GENDER:$2|$3}}在頁面$1的評論或貼文中提及您",
+	"at-mentions-echo-mention-entity-notification-email-body": "您有在頁面$1的貼文評論中被提及"
+}

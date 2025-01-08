@@ -1,0 +1,21 @@
+{
+	"@metadata": {},
+	"drawioeditor-desc": "draw.io flow chart creation and inline editing",
+	"drawioeditor-approved-editwarning": "Please note that you are now editing the latest revision of this diagram, which is not the approved one shown by default.",
+	"drawioeditor-approved-displaywarning": "This is the approved revision of the diagram and not the latest revision.",
+	"drawioeditor-noapproved": "The diagram $1 has no approved revision.",
+	"drawioeditor-approve-link": "Click here to approve a revision",
+	"drawioeditor-changeapprove-link": "Click here to change the approved revision for this diagram",
+	"drawio-tag-title": "draw.io",
+	"drawio-usage": "Used with draw.io tag",
+	"drawio-not-used": "There are no pages with this draw.io image",
+	"drawioconnector-tag-drawio-title": "draw.io",
+	"drawioconnector-ve-drawio-title": "draw.io diagram",
+	"drawioconnector-ve-drawio-tag-name": "Name",
+	"drawioconnector-ve-drawio-tag-name-help": "Name of the diagram as stored in the wiki",
+	"drawioconnector-ve-drawio-tag-name-placeholder": "Diagram-1",
+	"drawio-droplet-name": "Diagram",
+	"drawio-droplet-description": "Editable draw.io diagram",
+	"drawioconnector-ve-drawio-alt-label": "Image description",
+	"drawioconnector-ve-drawio-alt-help": "Text displayed when image doesn't load or for assistive devices"
+}

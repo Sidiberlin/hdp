@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robert Vogel <vogel@hallowelt.biz>",
+			"Tobias Weichart <weichart@hallowelt.biz>"
+		]
+	},
+	"bs-uemodulepdfsubpages-extension-description": "Ermöglicht die Ausgabe von Artikeln und Unterartikeln im PDF Format."
+}

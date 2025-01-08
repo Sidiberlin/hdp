@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Stevannus rua"
+		]
+	},
+	"at-mentions-desc": "Tambahkan sebutan pengguna",
+	"at-mentions-inspector-title": "Sebut seorang pengguna",
+	"at-mentions-inspector-title-add": "Tambahkan sebutan",
+	"at-mentions-inspector-title-edit": "Sunting sebutan pengguna",
+	"at-mentions-ci-title": "Sebutan pengguna",
+	"at-mentions-mentionslist-header-mine-all": "Anda telah disebutkan di halaman ini",
+	"at-mentions-mentionslist-header-mine": "Dalam {{PLURAL:$1|hari|$1 hari}}, Anda telah disebutkan di halaman berikut:",
+	"at-mentions-mentionslist-header-all": "Pengguna {{GENDER:$2|[[User:$2]] telah disebutkan di halaman ini}}:",
+	"at-mentions-mentionslist-header": "Dalam {{PLURAL:$1|hari|$1 hari}}, {{GENDER:$2|[[User:$2]] telah disebutkan di halaman berikut}}:",
+	"at-mentions-mention-notification-message": "menyebut Anda di halaman $1",
+	"at-mentions-mention-notification-key": "Anda telah disebutkan",
+	"at-mentions-mention-in-entity-notification-key": "Anda telah disebutkan dalam komentar atau kiriman",
+	"at-mentions-mention-in-entity-notification-message": "menyebut Anda dalam komentar atau kiriman \"$2\" di halaman $1",
+	"at-mentions-toolbar-tool-title": "Tambahkan sebutan",
+	"at-mentions-echo-mention-notification-summary": "Anda telah disebutkan di halaman $1",
+	"at-mentions-echo-mention-notification-web-body": "{{GENDER:$2|$3 menyebutkan}} Anda",
+	"at-mentions-echo-mention-notification-subject": "{{GENDER:$2|$3 menyebutkan}} Anda di halaman $1",
+	"at-mentions-echo-mention-notification-email-body": "Anda telah disebutkan di halaman $1",
+	"at-mentions-echo-mention-entity-notification-summary": "Anda telah disebutkan dalam komentar atau kiriman di $1"
+}

@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"bs-socialcomments-desc": "BlueSpiceSocial комментийн функционалалла",
+	"bs-socialcomments-type": "Коммент",
+	"bs-socialcomments-commenttext": "{{PLURAL:$1|Коммент}} ($1)",
+	"bs-socialcomments-header-create": "Жоп ло кхузахь…",
+	"bs-socialcomments-header": "[[User:$1|$2]] коммент йазйина «[[$6|$7]]»"
+}

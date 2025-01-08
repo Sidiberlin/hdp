@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"datetimetools-desc": "在視覺化編輯器中提供日期工具",
+	"datetimetools-ve-inspector-title": "編輯日期",
+	"datetimetools-ve-inspector-date-picker-label": "選擇日期",
+	"datetimetools-droplet-date-name": "日期",
+	"datetimetools-droplet-date-description": "插入日期"
+}

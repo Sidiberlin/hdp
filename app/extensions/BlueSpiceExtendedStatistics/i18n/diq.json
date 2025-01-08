@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Archaeodontosaurus",
+			"Mirzali"
+		]
+	},
+	"bs-statistics-diagram": "Pers",
+	"bs-statistics-from": "Rıştoğ",
+	"bs-statistics-to": "Gırewtoğ",
+	"bs-statistics-mode": "Mod",
+	"bs-statistics-year": "Serre",
+	"bs-statistics-month": "Aşme",
+	"bs-statistics-week": "Hefteyê serrnameyi",
+	"bs-statistics-day": "Roce",
+	"bs-statistics-list": "Liste",
+	"bs-statistics-filters": "Parzûni",
+	"bs-statistics-label-name": "Name",
+	"bs-statistics-label-registration": "Qeydbiyayış",
+	"bs-statistics-diag-number-of-pages": "Amarê pelanê ke aferniyayiyê",
+	"bs-statistics-label-page": "Pele",
+	"bs-statistics-label-creator": "Vıraştoğ",
+	"bs-statistics-label-count": "Amar",
+	"bs-statistics-label-time": "Zeman",
+	"bs-statistics-filter-category": "Kategoriye",
+	"bs-statistics-portlet-numberofpages": "Amarê pelan",
+	"bs-statistics-portletconfig-periodday": "Vızêr",
+	"bs-statistics-panel-title-result": "Netice",
+	"extendedstatisticssnapshots": "Fotrafo enstantane",
+	"bs-statistics-datasource-label": "Çımeyê melumati",
+	"bs-statistics-aggregationfield-label": "Cayê arêbiyayışi",
+	"bs-statistics-targets-label": "Hedefi",
+	"bs-statistics-aggregated-report-filter-category-multi": "Kategoriyi",
+	"bs-statistics-aggregated-report-filter-interval-day": "Roce",
+	"bs-statistics-aggregated-report-filter-interval-week": "Hefte",
+	"bs-statistics-aggregated-report-filter-interval-month": "Aşme",
+	"bs-statistics-aggregated-report-filter-interval-year": "Serre",
+	"bs-statistics-aggregated-report-filter-namespace": "Heruna nameyan",
+	"bs-statistics-aggregated-report-filter-namespaces": "Heruna nameyan",
+	"bs-statistics-aggregated-report-filter-page": "Pele",
+	"bs-statistics-aggregated-report-filter-user": "Karber",
+	"bs-statistics-aggregated-report-filter-user-multi": "Karberi"
+}

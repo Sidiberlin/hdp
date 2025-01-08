@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beta16",
+			"Gianfranco"
+		]
+	},
+	"sesp-desc": "Aggiunge alcune proprietà speciali extra a tutte le pagine",
+	"sesp-property-author": "Autore della pagina",
+	"sesp-property-first-author": "Creatore della pagina",
+	"sesp-property-revision-id": "ID versione",
+	"sesp-property-page-id": "ID della pagina",
+	"sesp-property-page-id-desc": "\"$1\" registra l'ID di una pagina. È fornito dall'estensione [https://www.semantic-mediawiki.org/wiki/Extension:Semantic_Extra_Special_Properties SESP] (Semantic Extra Special Properties).",
+	"sesp-property-page-len": "Lunghezza della pagina",
+	"sesp-property-page-len-desc": "\"$1\" registra la lunghezza di una pagina in byte. È fornito dall'estensione [https://www.semantic-mediawiki.org/wiki/Extension:Semantic_Extra_Special_Properties SESP] (Semantic Extra Special Properties).",
+	"sesp-property-view-count": "Numero di visite alla pagina",
+	"sesp-property-subpages": "Sottopagine",
+	"sesp-property-revisions": "Numero di versioni",
+	"sesp-property-talk-revisions": "Numero di versioni della pagina di discussione",
+	"sesp-property-shorturl": "URL breve",
+	"sesp-property-approved-rev": "Versione approvata",
+	"sesp-property-namespace-id": "ID Namespace",
+	"sesp-property-approved-by": "Approvato da",
+	"sesp-property-approved-date": "Data approvazione",
+	"sesp-property-approved-status": "Stato approvazione",
+	"sesp-property-user-registration-date": "Data di registrazione dell'utente",
+	"sesp-property-user-edit-count": "Numero modifiche utente",
+	"sesp-property-exif-data": "Dati Exif",
+	"sesp-exif-gpslatitude": "Exif:Latitudine",
+	"sesp-exif-gpslongitude": "Exif:Longitudine",
+	"sesp-exif-gpsaltitude": "Exif:Altitudine"
+}

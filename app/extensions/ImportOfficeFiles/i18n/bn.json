@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"আজিজ"
+		]
+	},
+	"importofficefiles-ui-action-import-msword-text": "ওয়ার্ড ফাইল আমদানি করুন",
+	"importofficefiles-ui-action-import-msword-title": "মাইক্রোসফট ওয়ার্ড ফাইল দিয়ে পাতা তৈরি করুন",
+	"importofficefiles-api-storage-error-no-valid-module": "এই ফাইলটি পরিচালনা করার জন্য কোন মডিউল উপলব্ধ নেই৷"
+}

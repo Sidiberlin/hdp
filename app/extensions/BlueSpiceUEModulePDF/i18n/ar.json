@@ -1,0 +1,40 @@
+{
+	"@metadata": {
+		"authors": [
+			"Asma",
+			"Meno25",
+			"ديفيد"
+		]
+	},
+	"bs-uemodulepdf-desc": "يمكن ميدياويكي من تصدير الصفحات إلى صيغة PDF",
+	"prefs-uemodulepdf": "وحدة تصدير PDF العالمية",
+	"uemodulepdf": "وحدة تصدير PDF العالمية",
+	"bs-uemodulepdf-pref-suppressns": "إخفاء بادئة النطاق في PDF",
+	"bs-uemodulepdf-widgetlink-single-no-attachments-text": "صفحة PDF واحدة",
+	"bs-uemodulepdf-widgetlink-single-no-attachments-title": "تصدير هذه الصفحة كملف PDF.",
+	"bs-uemodulepdf-overview-title": "نسق المستندات المنقولة (PDF)",
+	"bs-uemodulepdf-overview-desc": "تصدير الصفحات (الصفحات الخاصة وصفحات المحتوى) إلى PDF.",
+	"bs-uemodulepdf-overview-webservice-state": "حالة النهاية الخلفية",
+	"bs-uemodulepdf-overview-webservice-state-ok": "متاح",
+	"bs-uemodulepdf-overview-webservice-state-not-ok": "غير متاح",
+	"soap-service-url-not-valid": "مسار خدمة إنشاء PDF على الويب غير صالح; يُرجَى التحقق من تكوين الويكي.",
+	"soap-service-url-not-set": "لم يتم تعيين مسار خدمة إنشاء PDF على الويب; يُرجَى التحقق من تكوين الويكي.",
+	"bs-uemodulepdf-overview-webservice-webadmin": "الواجهة الخلفية للويب",
+	"action-uemodulepdf-export": "تصدير صفحة إلى PDF",
+	"right-uemodulepdf-export": "تصدير صفحة إلى PDF",
+	"bs-uemodulepdf-widgetlink-subpages-text": "صفحة PDF مع صفحات فرعية",
+	"bs-uemodulepdf-widgetlink-subpages-title": "تصدير هذه الصفحة وجميع الصفحات الفرعية كملف PDF.",
+	"action-uemodulepdfsubpages-export": "تصدير صفحة، بما في ذلك جميع الصفحات الفرعية، إلى PDF",
+	"right-uemodulepdfsubpages-export": "تصدير صفحة، بما في ذلك جميع الصفحات الفرعية، إلى PDF",
+	"bs-uemodulepdf-widgetlink-recursive-text": "صفحة PDF مع صفحات مرتبطة",
+	"bs-uemodulepdf-widgetlink-recursive-title": "تصدير هذه الصفحة وجميع الصفحات المرتبطة بتنسيق PDF.",
+	"right-uemodulepdfrecursive-export": "قم بتصدير صفحة ، بما في ذلك كل الصفحات المرتبطة ، إلى PDF",
+	"action-uemodulepdfrecursive-export": "تصدير صفحة ، بما في ذلك كل الصفحات المرتبطة ، إلى PDF",
+	"bs-uemodulepdf-pref-suppressns-help": "تم حذف مساحة اسم الصفحة من عنوان PDF.",
+	"bs-uemodulepdf-export-dialog-label-module-name": "صفحة PDF",
+	"bs-uemodulepdf-export-dialog-label-select-submodule": "نِطَاق",
+	"bs-uemodulepdf-export-dialog-label-select-template": "تَخطِيط",
+	"bs-uemodulepdf-export-dialog-label-submodule-default": "فقط هذه الصفحة",
+	"bs-uemodulepdf-export-dialog-label-submodule-recursive": "تضمين متكرر مرتبط",
+	"bs-uemodulepdf-export-dialog-label-submodule-subpages": "تضمين الصفحات الفرعية"
+}

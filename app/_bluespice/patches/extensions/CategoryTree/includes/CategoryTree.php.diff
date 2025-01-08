@@ -1,0 +1,13 @@
+diff --git a/includes/CategoryTree.php b/includes/CategoryTree.php
+index c70ac2d..b570bec 100644
+--- a/includes/CategoryTree.php
++++ b/includes/CategoryTree.php
+@@ -653,7 +653,7 @@ class CategoryTree {
+ 					$linkattr['data-ct-loaded'] = true;
+ 					$linkattr['data-ct-state'] = 'expanded';
+ 				}
+-
++				$linkattr['tabindex'] = '0';
+ 				$bullet = Html::element( 'span', $linkattr ) . ' ';
+ 			}
+ 		} else {

@@ -1,0 +1,21 @@
+.bs-metadata-outline-select-widget .bs-metadata-outline-widget {
+	overflow: hidden;
+	padding-bottom: 8px;
+	padding-left: 30px;
+	padding-top: 8px;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.bs-metadata-outline-select-widget .bs-metadata-outline-widget:hover,
+.bs-metadata-outline-select-widget .bs-metadata-outline-widget:hover * {
+	cursor: pointer;
+}
+
+.bs-metadata-outline-select-widget .oo-ui-optionWidget.bs-metadata-outline-widget label {
+	display: inline;
+}
+
+.oo-ui-menuLayout-showMenu.bookshelf-metadata-layout .oo-ui-menuLayout-menu {
+	border-right: 1px solid #c8ccd1;
+}

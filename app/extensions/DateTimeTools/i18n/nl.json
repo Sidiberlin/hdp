@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"datetimetools-desc": "Biedt datumhulpmiddelen in VisualEditor",
+	"datetimetools-ve-inspector-title": "Datum aanpassen",
+	"datetimetools-ve-inspector-date-picker-label": "Selecteer datum",
+	"datetimetools-droplet-date-name": "Datum",
+	"datetimetools-droplet-date-description": "Voegt een datum in"
+}

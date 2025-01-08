@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Gomoko",
+			"Thibaut120094",
+			"Urhixidur",
+			"Verdy p",
+			"Wladek92"
+		]
+	},
+	"bs-insertcategory-desc": "Boîte de dialogue pour entrer un lien de catégorie",
+	"bs-insertcategory-insertcat": "Insérer une catégorie",
+	"prefs-insertcategory": "Insérer une catégorie",
+	"bs-insertcategory-pref-withparents": "Insérer une catégorie avec ses parents",
+	"bs-insertcategory-pref-uploadpanelintegration": "Définir les catégories de pages par défaut dans le dialogue de téléversement",
+	"bs-insertcategory-title": "Insérer une catégorie",
+	"bs-insertcategory-cat-label": "Affecté :",
+	"bs-insertcategory-success": "La catégorie a été ajoutée",
+	"bs-insertcategory-failure": "Erreur",
+	"bs-insertcategory-hint": "Note : pour ajouter une catégorie, vous devez appuyer sur Entrée.",
+	"bs-insertcategory-panel-title": "Catégories",
+	"bs-insertcategory-category-editor-title": "Catégories",
+	"bs-insertcategory-category-editor-implicit-categories-title": "Catégories implicites",
+	"bs-insertcategory-category-editor-implicit-categories-help": "Ces catégories ne sont pas définies dans le contenu en wikicode de la page. Très vraisemblablement, elles sont définies depuis un modèle.",
+	"bs-insertcategory-category-editor-button-label-clear-all": "Supprimer tout",
+	"bs-insertcategory-category-editor-explicit-categories-edit-label": "modifier",
+	"bs-insertcategory-category-editor-explicit-categories-edit-tooltip": "Modifier les catégories de cette page",
+	"bs-insertcategory-page-header-categories-edit-tooltip": "Modifier les catégories de cette page",
+	"bs-insertcategory-edit-dialog-button-tooltip": "Modifier les catégories de cette page",
+	"bs-insertcategory-edit-dialog-button-aria-label": "Ouvrir le dialogue pour modifier les catégories de cette page",
+	"bs-insertcategory-edit-dialog-button-label": "Modifier",
+	"bs-insertcategory-edit-dialog-title": "Modifier les catégories",
+	"bs-insertcategory-edit-dialog-button-submit": "Fait",
+	"bs-insertcategory-edit-dialog-button-cancel": "Annuler",
+	"bs-insertcategory-edit-dialog-input-label": "Catégories attribuées",
+	"bs-insertcategory-edit-dialog-implicit-categories-label": "Catégories implicites",
+	"bs-insertcategory-edit-dialog-implicit-categories-help": "Ces catégories ne sont pas définies dans le contenu en wikicode de la page. Très vraisemblablement, elles sont définies depuis un modèle.",
+	"bs-insertcategory-edit-dialog-page-categories-get-error-message": "Impossible de récupérer les catégories de page",
+	"bs-insertcategory-no-categories": "Aucune catégorie affectée",
+	"bs-insertcategory-edit-dialog-tree-view": "Afficher toutes les catégories"
+}

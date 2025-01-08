@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Cgboeree",
+			"Chabi",
+			"Katxis",
+			"Elefentiste"
+		]
+	},
+	"vector-languages": "Linguas",
+	"vector-language-button-label": "{{PLURAL:$1|$1 lingua|$1 linguas}}",
+	"vector-no-language-button-label": "Ajunta linguas",
+	"vector-action-addsection": "Ajunta un tema",
+	"vector-action-delete": "Sutrae",
+	"vector-action-move": "Move",
+	"vector-action-protect": "Proteje",
+	"vector-view-create": "Crea",
+	"vector-view-edit": "Edita",
+	"vector-view-history": "Mostra istoria",
+	"vector-view-view": "Leje",
+	"vector-more-actions": "Plu",
+	"vector-toc-beginning": "Comensa"
+}

@@ -1,0 +1,129 @@
+{
+	"name": "BlueSpiceAvatars",
+	"license-name": "GPL-3.0-only",
+	"version": "4.5.2",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceAvatars",
+	"author": [
+		"Marc Reymann",
+		"Patric Wirth"
+	],
+	"descriptionmsg": "bs-avatars-desc",
+	"type": "bluespice",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 4.3"
+		}
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceAvatars": {
+					"className": "\\BlueSpice\\Avatars\\Extension",
+					"extPath": "/BlueSpiceAvatars"
+				}
+			},
+			"ConfigDefinitionRegistry": {
+				"AvatarsGenerator": "\\BlueSpice\\Avatars\\ConfigDefinition\\AvatarsGenerator::getInstance"
+			},
+			"DynamicFileRegistry": {
+				"userprofileimage": "\\BlueSpice\\Avatars\\DynamicFileDispatcher\\UserProfileImage"
+			},
+			"TagRegistry": {
+				"profileimage": "\\BlueSpice\\Avatars\\Tag\\ProfileImage"
+			}
+		},
+		"BlueSpicePrivacy": {
+			"Handlers": [
+				"\\BlueSpice\\Avatars\\Privacy\\Handler"
+			]
+		},
+		"BlueSpiceAvatars": {
+			"AvatarGeneratorRegistry": {
+				"Identicon": "\\BlueSpice\\Avatars\\AvatarGenerator\\Identicon::factory",
+				"InstantAvatar": "\\BlueSpice\\Avatars\\AvatarGenerator\\InstantAvatar::factory"
+			}
+		}
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"APIModules": {
+		"bs-avatars-tasks": "BSApiAvatarsTasks"
+	},
+	"MessagesDirs": {
+		"BlueSpiceAvatars": [
+			"i18n"
+		]
+	},
+	"AutoloadClasses": {
+		"BSApiAvatarsTasks": "includes/api/BSApiAvatarsTasks.php"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\Avatars\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"BlueSpice\\Avatars\\Test\\": "tests/phpunit/"
+	},
+	"ResourceModules": {
+		"ext.bluespice.avatars.js": {
+			"scripts": [
+				"bluespice.avatars.js"
+			],
+			"dependencies": [
+				"mediawiki.util"
+			],
+			"messages": [
+				"bs-avatars-upload-title",
+				"bs-avatars-upload-label",
+				"bs-avatars-generate-new-label",
+				"bs-avatars-warning-title",
+				"bs-avatars-warning-text",
+				"bs-avatars-userimage-title",
+				"bs-avatars-set-userimage-failed",
+				"bs-avatars-set-userimage-saved",
+				"bs-avatars-userimage-help",
+				"bs-avatars-file-upload-fieldset-title",
+				"bs-avatars-userimage-title",
+				"bs-avatars-auto-generate-fieldset-title"
+			]
+		},
+		"ext.bluespice.avatars.history.styles": {
+			"styles": "ext.bluespice.avatars.history.css"
+		},
+		"ext.bluespice.avatars.preferences.styles": {
+			"styles": "ext.bluespice.avatars.preferences.css"
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceAvatars/resources"
+	},
+	"config_prefix": "bsg",
+	"config": {
+		"AvatarsGenerator": {
+			"value": "InstantAvatar"
+		}
+	},
+	"DefaultUserOptions": {
+		"bs-avatars-profileimage": ""
+	},
+	"HookHandlers": {
+		"export": {
+			"class": "\\BlueSpice\\Avatars\\Hook\\BSUEModulePDFFindFiles\\AddProfileImage",
+			"services": [ "UrlUtils", "UserFactory", "UserOptionsLookup", "BSAvatarsAvatarGenerator", "RepoGroup" ]
+		}
+	},
+	"Hooks": {
+		"BeforePageDisplay": "\\BlueSpice\\Avatars\\Hook\\BeforePageDisplay\\AddModules::callback",
+		"GetPreferences": "\\BlueSpice\\Avatars\\Hook\\GetPreferences\\AddProfileImage::callback",
+		"PageHistoryLineEnding": "\\BlueSpice\\Avatars\\Hook\\PageHistoryLineEnding\\AddProfileImage::callback",
+		"BSMigrateUserPropertiesFromDeviatingNames": "\\BlueSpice\\Avatars\\Hook\\BSMigrateUserPropertiesFromDeviatingNames\\MigrateUserImage::callback",
+		"UploadVerifyFile": "\\BlueSpice\\Avatars\\Hook\\UploadVerifyFile\\PreventUserImageOverwrite::callback",
+		"SetupAfterCache": "\\BlueSpice\\Avatars\\Hook\\SetupAfterCache\\AddForeignFileRepo::callback",
+		"BSUEModulePDFFindFiles": [
+			"export"
+		]
+	},
+	"manifest_version": 2
+}

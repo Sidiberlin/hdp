@@ -1,0 +1,79 @@
+<svg
+   id="Minimieren"
+   width="18.285999"
+   height="16"
+   viewBox="0 0 18.285999 16"
+   version="1.1"
+   sodipodi:docname="Icon_ChatbotMinimieren.svg"
+   inkscape:version="1.3.2 (1:1.3.2+202311252150+091e20ef0f)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:zoom="22.333333"
+     inkscape:cx="9.1119403"
+     inkscape:cy="8.0149254"
+     inkscape:window-width="1920"
+     inkscape:window-height="1008"
+     inkscape:window-x="1920"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="Minimieren" />
+  <defs
+     id="defs1">
+    <style
+       id="style1">
+      .cls-1 {
+        fill: rgba(252,252,252,0);
+      }
+
+      .cls-2 {
+        fill: #fcfcfc;
+        opacity: 0;
+      }
+
+      .cls-3 {
+        fill: none;
+        stroke: #3e5389;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        stroke-width: 2.286px;
+      }
+    </style>
+  </defs>
+  <g
+     id="Icon"
+     transform="translate(1.143)">
+    <rect
+       id="Area-2"
+       data-name="Area"
+       class="cls-2"
+       width="16"
+       height="16"
+       x="0"
+       y="0" />
+    <g
+       id="Icon-2"
+       data-name="Icon"
+       transform="translate(1.29,2.499)">
+      <line
+         id="_79350b0c-e749-42ae-b702-ad22c9ff254f"
+         data-name="79350b0c-e749-42ae-b702-ad22c9ff254f"
+         class="cls-3"
+         x2="16"
+         transform="translate(-1.29,5.501)"
+         x1="0"
+         y1="0"
+         y2="0" />
+    </g>
+  </g>
+</svg>

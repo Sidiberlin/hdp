@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Crt",
+			"Pyscowicz"
+		]
+	},
+	"nsfilerepo-desc": "Tarjoaa nimiavaruuden, joka perustuu lähetetyn tiedoston ominaisuuksiin.",
+	"nsfilerepo-upload-target": "Kohdetiedoston nimi nimiavaruudessa",
+	"nsfilerepo-nsmain": "(Päänimiavaruus)",
+	"nsfilerepo-reupload-namespaceselector-disabled-helptext": "Tätä kenttää ei voi muokata, kun tiedostoa ladataan uudelleen",
+	"nsfilerepo-move-file-namespace-action-label": "Aseta tiedoston nimiavaruus",
+	"nsfilerepo-move-file-namespace-dialog-title": "Aseta tiedoston nimiavaruus",
+	"nsfilerepo-move-file-namespace-dialog-button-done": "Valmis",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "Peruuta",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "Nimiavaruus",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "Nimiavaruus"
+}

@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beta16",
+			"GpieroMW"
+		]
+	},
+	"bs-prodistributionconnector-desc": "Connette BlueSpice a diverse estensioni MediaWiki",
+	"droplets-modal-dialog-btn-label": "Testo per pulsante",
+	"droplets-modal-dialog-title-label": "Titolo per dialogo",
+	"droplets-modal-dialog-footer-label": "Piè di pagina per la finestra di dialogo",
+	"droplets-decision-label": "Decisione",
+	"droplets-modal-dialog-bg-color-label": "Colore di sfondo del pulsante",
+	"droplets-modal-dialog-bg-color-blue": "blu",
+	"droplets-modal-dialog-bg-color-red": "rosso",
+	"droplets-modal-dialog-bg-color-neutral": "bianco",
+	"bs-pro-distribution-pdfembed-inspector-input-label": "File PDF",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "Larghezza",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "Altezza",
+	"bs-pro-distribution-pdfembed-inspector-page-label": "Inizia con la pagina",
+	"bs-pro-distribution-pdfembed-inspector-title": "Incorpora PDF",
+	"bs-pro-distribution-pdfembed-droplet-name": "Anteprima PDF",
+	"bs-pro-distribution-pdfembed-droplet-description": "Incorpora l'anteprima del file PDF nella pagina wiki"
+}

@@ -1,0 +1,55 @@
+{
+	"name": "NumberHeadings",
+	"version": "1.0.2",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:NumberHeadings",
+	"descriptionmsg": "numberheadings-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"MessagesDirs": {
+		"NumberHeadings": "i18n"
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"ConfigDefinitionRegistry": {
+				"NumberHeadingsEnable": "MediaWiki\\Extension\\NumberHeadings\\ConfigDefinition\\EnableNumberHeadings::getInstance"
+			}
+		}
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\NumberHeadings\\": "src/",
+		"MediaWiki\\Extension\\NumberHeadings\\Tests\\": "tests/phpunit/"
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "NumberHeadings/resources"
+	},
+	"Hooks": {
+		"OutputPageBeforeHTML": "number-headings"
+	},
+	"HookHandlers": {
+		"number-headings": {
+			"class": "\\MediaWiki\\Extension\\NumberHeadings\\HookHandler\\AddHeadingNumbering",
+			"services": [ "MainConfig", "HookContainer", "NamespaceInfo" ]
+		}
+	},
+	"config_prefix": "wg",
+	"config": {
+		"NumberHeadingsExcludeNamespaces": {
+			"value": [],
+			"descriptionmsg": "numberheadings-conf-exlude-namespaces",
+			"public": true
+		},
+		"NumberHeadingsEnable": {
+			"value": false,
+			"descriptionmsg": "numberheadings-conf-enable",
+			"public": true
+		}
+	},
+	"load_composer_autoloader": true,
+	"manifest_version": 2
+}

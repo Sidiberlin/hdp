@@ -1,0 +1,78 @@
+<div class="databox">
+<div class="tbl">
+{|
+|-
+!Eigner:
+|Rolle oder (Benutzer-)Name
+|-
+!Geltungsbereich:
+|Geschäftsbereiche, für die diese Richtlinie Geltung hat
+|-
+!Genehmigt durch:
+|(Benutzer-)Name
+|-
+!
+|
+|}
+</div>
+<div class="tbl">
+{| 
+|-
+!Status:
+|'''in Bearbeitung''' / gültig / veraltet
+|-
+!Gültig von - bis:
+|TT.MM.YYYY - TT.MM.YYYY
+|-
+!
+|
+|}
+</div>
+</div>
+==Zielsetzung==
+Warum ist diese Richtlinie notwendig? Wer profitiert davon?  
+
+Richtlinien sollen dazu beitragen, dass Mitarbeitern ihre Entscheidungen entsprechend der Unternehmenswerte treffen.  
+
+==Bestimmungen==
+Beschreiben Sie allgemeinverständlich  in Unterabschnitten (beachten Sie Ihre Zielgruppen), welche Regeln durch diese Richtlinie aufgestellt werden. Verhaltensregeln sind wichtig, damit alle, die in einem Unternehmen agieren, ihre Rechte und Pflichte kennen und umsetzen.
+
+Achten Sie darauf, dass Ihre Aussagen prägnant und eindeutig sind. Richtlinien sollten durch Verfahren unterstützt werden, die in verschiedenen Dokumenten, wie z. B. Arbeitsanweisungen, definiert werden.
+
+Eine Richtlinie ist nur dann effizient, wenn klar definiert wird, was die Konsequenzen der Nichteinhaltung einzelner Regeln sind. 
+
+===Regel 1===
+Erläutern Sie mit konkreten Beispielen, was die Regel festlegt und wie sie umgesetzt werden soll. 
+
+=== Regel 2 ===
+Erläutern Sie mit konkreten Beispielen, was die Regel festlegt und wie sie umgesetzt werden soll.
+
+==Rollen und Verantwortlichkeiten==
+Geben Sie alle Rollen an, die sich auf diese Richtlinie beziehen, und verlinken Sie auf unterstützende Dokumente wie Verfahren, Arbeitsanweisungen oder Checklisten.
+{| class="wikitable" style="width:100%;"
+!Rolle
+!Eigner
+!Verantwortlichkeit
+!Unterstützende Dokumente
+|-
+|Titel der Rolle
+|Derzeit verantwortliche Person
+|Beschreibung der Rechte und Pflichten
+|<nowiki>- Link zum Dokument</nowiki>
+|-
+|...
+|
+|
+|
+|-
+|...
+|
+|
+|
+|}
+
+==Definitionen==
+Definieren Sie Begriffe, die möglicherweise mehrdeutig, technisch oder spezialisiert sind.
+
+*'''Term 1:''' Definition
+*'''Term 2:''' Definition

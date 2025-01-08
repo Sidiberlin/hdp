@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fraxinus.cs"
+		]
+	},
+	"bs-whoisonline-statistics-report-login-duration": "Trvání přihlášení",
+	"bs-whoisonline-pref-maxidletime-help": "Po uplynutí tohoto času v sekundách bez aktivity bude uživatel považován za odhlášeného."
+}

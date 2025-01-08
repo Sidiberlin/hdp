@@ -1,0 +1,60 @@
+/*!
+ * VisualEditor MediaWiki Initialization CollabTarget styles.
+ *
+ * @copyright 2011-2020 VisualEditor Team and others; see AUTHORS.txt
+ * @license The MIT License (MIT); see LICENSE.txt
+ */
+
+.ve-init-mw-collabTarget-loading.oo-ui-progressBarWidget,
+.ve-init-mw-collabTarget-form {
+	margin: 0 auto;
+	max-width: 40em;
+	margin-top: 2em !important; /* stylelint-disable-line declaration-no-important */
+}
+
+/* MW theme hack */
+.ve-init-mw-collabTarget .ve-ui-authorListWidget-author.oo-ui-iconElement .oo-ui-iconElement-icon {
+	left: 0;
+}
+
+/* stylelint-disable-next-line selector-max-id */
+#ca-pad > span > a {
+	max-width: 15em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+/* Mobile */
+/* stylelint-disable-next-line selector-class-pattern */
+.mw-body .heading-holder {
+	display: none;
+}
+
+/* ERM35645 Prevent section fade */
+.mw-body-content .ve-ce-sectionNode {
+	opacity: 1;
+}
+
+/* Hide cursor label user name */
+.ve-ce-surface-highlights-user-cursor-label {
+	pointer-events: auto;
+	width: 12px;
+	height: auto;
+	color: transparent;
+	text-shadow: none;
+}
+
+/* Show cursor label user name on hover */
+.ve-ce-surface-highlights-user-cursor-inactive:hover {
+	opacity: 1;
+}
+
+/* Show cursor label user name on hover */
+.ve-ce-surface-highlights-user-cursor-label:hover {
+	width: unset;
+	color: black !important;
+	background-color: #f1f3f9 !important;
+	font-family: 'Lato';
+	font-size: 14;
+	text-shadow: unset;
+}

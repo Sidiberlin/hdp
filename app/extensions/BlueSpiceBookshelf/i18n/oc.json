@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Lhanars",
+			"Nicolas Eynaud"
+		]
+	},
+	"bs-bookshelf-specialpage-title": "Libres",
+	"bs-bookshelf-specialpage-allpages-ns-book-text": "Bibliotèca",
+	"bs-bookshelf-tag-next": "Seguent",
+	"bs-bookshelf-tag-prev": "Precedent",
+	"bs-bookshelf-tag-edit-book": "Modificar lo libre",
+	"bs-bookshelf-add-to-book-label-book": "Libre",
+	"bs-bookshelf-setting-path-feature": "Libre",
+	"bs-bookshelf-grouping-template-type-ns_book": "Libres generaus",
+	"bs-bookshelf-book-grid-title": "Libres",
+	"bookshelf-summary": "Libres generaus",
+	"bs-bookshelf-ga-manager-label": "Libres",
+	"bs-bookshelf-prof-defaultview-images": "Imatges",
+	"bs-bookshelf-ve-bookmeta-attr-title-label": "Títol",
+	"bs-bookshelf-ve-bookmeta-attr-author-label": "Autor",
+	"bs-bookshelf-ve-bookmeta-attr-version-label": "Version",
+	"bs-bookshelf-ve-bookshelf-attr-book-label": "Libre",
+	"bs-bookshelf-mainlinks-label": "Libres",
+	"bs-bookshelf-add-to-book-label": "Apondre a un libre",
+	"bs-bookshelf-ve-booklist-attr-filter-label": "Filtre",
+	"bs-bookshelf-booknav-book-label": "Libre",
+	"bs-bookshelf-booknav-book-help": "Selecionnar un libre d'utilizar",
+	"bs-bookshelf-booknav-chapter-label": "Capítol",
+	"bs-bookshelf-booknav-searchbox-placeholder": "Cercar",
+	"bs-bookshelf-droplet-pdf-name": "Ligam del PDF"
+}

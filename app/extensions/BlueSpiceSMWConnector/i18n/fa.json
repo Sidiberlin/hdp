@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amir1arch",
+			"Ebrahim",
+			"Ebraminio",
+			"Jeeputer"
+		]
+	},
+	"bs-dlg-choosesmwprop-label": "ویژگی",
+	"bs-dlg-choosesmwprop-type-smwprop": "ویژگی معنایی",
+	"bs-extendedsearch-add-filter-group-smwproperty-label": "ویژگی‌های معنایی",
+	"bs-extendedsearch-search-center-result-smwproperty-label": "ویژگی‌های معنایی:",
+	"bs-smwconnector-extendedsearch-boolean-property-true": "بله",
+	"bs-smwconnector-extendedsearch-boolean-property-false": "خیر",
+	"bs-swm-connector-ask-store-page-label": "صفحه",
+	"bs-smwconnector-extendedsearch-anon-user-label": "کاربر ناشناس",
+	"bs-smwconnector-dataquery-category-label": "رده",
+	"bs-smwconnector-dataquery-namespace-label": "فضای نام",
+	"bs-smwconnector-dataquery-modified-operator-all": "همه",
+	"bs-smwconnector-dataquery-modified-operator-since": "از",
+	"bs-smwconnector-dataquery-modified-operator-before": "قبل از",
+	"bs-smwconnector-dataquery-count-label": "شماره"
+}

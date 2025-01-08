@@ -1,0 +1,53 @@
+[
+	{
+		"name": "simple_tasks",
+		"columns": [
+			{
+				"name": "st_check_id",
+				"type": "binary",
+				"options": {
+					"length": 255,
+					"notnull": true
+				}
+			},
+			{
+				"name": "st_user",
+				"type": "integer",
+				"options": {
+					"unsigned": true,
+					"notnull": true
+				}
+			},
+			{
+				"name": "st_duedate",
+				"type": "mwtimestamp",
+				"options": {
+					"notnull": false
+				}
+			},
+			{
+				"name": "st_text",
+				"type": "text",
+				"options": {
+					"notnull": true
+				}
+			},
+			{
+				"name": "st_completed",
+				"type": "integer",
+				"options": {
+					"unsigned": true,
+					"notnull": true
+				}
+			}
+		],
+		"indexes": [
+			{
+				"name": "st_check_id",
+				"columns": [ "st_check_id" ],
+				"unique": true
+			}
+		],
+		"pk": []
+	}
+]

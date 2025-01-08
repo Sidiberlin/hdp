@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saraiki"
+		]
+	},
+	"bs-pro-distribution-droplet-pro-con-list-name": "خوبیاں تے خامیاں",
+	"bs-pro-distribution-droplet-chem-name": "کیمیائی کلیہ",
+	"bs-pro-distribution-droplet-decision-name": "فیصلہ",
+	"droplets-pro-con-advantages-label": "خوبیاں",
+	"droplets-pro-con-disadvantages-title-label": "خامیاں کیتے عنوان",
+	"droplets-pro-con-disadvantages-label": "خامیاں",
+	"droplets-decision-label": "فیصلہ",
+	"droplets-modal-dialog-bg-color-blue": "نیلا",
+	"droplets-modal-dialog-bg-color-red": "رتا",
+	"droplets-modal-dialog-bg-color-neutral": "بگّا",
+	"bs-pro-distribution-pdfembed-inspector-input-label": "پی ڈی ایف فائل",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "چوڑائی",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "اُچائی",
+	"bs-pro-distribution-pdfembed-inspector-page-label": "ورقے نال شروع کرو",
+	"bs-pro-distribution-pdfembed-inspector-title": "ایمبیڈ پی ڈی ایف"
+}

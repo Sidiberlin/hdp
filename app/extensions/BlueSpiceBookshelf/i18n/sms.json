@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yupik"
+		]
+	},
+	"bs-bookshelf-add-to-book-label": "Lââʹzzet ǩerjja",
+	"bs-bookshelf-add-to-book-label-book": "Ǩeʹrjj",
+	"bs-bookshelf-setting-path-feature": "Ǩeʹrjj",
+	"bs-bookshelf-grouping-template-type-local_storage": "Kõskkpoddsaž ǩeeʹrj",
+	"bs-bookshelf-action-editbook": "Muuʹtt wikiteeʹkst",
+	"bs-bookshelf-action-editbook-create": "Muuʹtt wikiteeʹkst",
+	"bs-bookshelf-book-grid-title": "Ǩeeʹrj",
+	"bs-bookshelf-actionmenuentry-addtobook": "Lââʹzzet ǩerjja",
+	"bs-bookshelf-ve-booklist-attr-filter-label": "Siʹllʼjeei",
+	"bs-bookshelf-ve-bookmeta-attr-version-label": "Versio",
+	"bs-bookshelf-prof-defaultview-images": "Kaart da snimldõõǥǥ",
+	"bs-bookshelf-specialpage-allpages-ns-book-text": "Ǩeʹrjjpõrtt",
+	"bs-bookshelf-tag-edit-book": "Muuʹtt ǩeeʹrj",
+	"bs-bookshelf-search-center-filter-books-label": "Ǩeʹrjj",
+	"bs-books-overview-page-book-action-metadata-text": "Muuʹtt metateâđaid",
+	"bs-books-overview-page-book-action-metadata-title": "Muuʹtt ǩeeʹrj $1 metateâđaid",
+	"bs-bookshelf-massadd-dlg-save-action-label": "Lââʹzzet",
+	"bs-bookshelf-droplet-search-name": "Ooʒʒ ǩeeʹrjest",
+	"bs-bookshelf-droplet-search-book": "Ǩeʹrjj",
+	"bs-bookshelf-notification-subscription-set-book-title": "Ǩeʹrjj",
+	"bs-bookshelf-metadata-dlg-action-save-label": "Ruõkk"
+}

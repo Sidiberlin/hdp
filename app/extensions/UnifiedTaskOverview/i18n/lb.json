@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robby"
+		]
+	},
+	"unifiedtaskoverview-desc": "Stellt eng Spezialsäit zur Verfügung  mat enger Iwwersiicht vun de Benotzer-Aufgaben",
+	"unifiedtaskoverview": "Meng Aufgaben",
+	"unifiedtaskoverview-label-no-task": "Et gëtt elo keng Aufgaben déi erleedegt gi mussen.",
+	"unifiedtaskoverview-personal-url-my-tasks": "Aufgaben",
+	"unifiedtaskoverview-search-placeholder": "Sichen"
+}

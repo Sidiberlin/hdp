@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hanna Tardos",
+			"Tacsipacsi"
+		]
+	},
+	"bs-player-extension-description": "Médialejátszó beágyazása.",
+	"bs-player-pref-autostart": "Videó automatikus lejátszása",
+	"bs-player-file-does-not-exist": "A fájl nem létezik.",
+	"bs-player-unsupported-type": "Ez a fájltípus nem támogatott.",
+	"bs-player-config-prefheight": "Videók alapértelmezett magassága",
+	"prefs-videoplayer": "Videolejátszó"
+}

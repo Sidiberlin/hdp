@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dr Lotus Black"
+		]
+	},
+	"bs-expiry-header-pagename": "စာမျက်နှာ",
+	"bs-expiry-article-label": "စာမျက်နှာ",
+	"bs-expiry-comment-label": "မှတ်ချက်",
+	"bs-expiry-edit-grid-header-username": "အသုံးပြုသူ",
+	"bs-expiry-edit-grid-header-date": "နေ့စွဲ",
+	"bs-expiry-edit-grid-header-comment": "မှတ်ချက်"
+}

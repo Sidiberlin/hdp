@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bs-readconfirmation-confirm-read-checkbox-label": "Ja, ik heb deze pagina helemaal gelezen.",
+	"notification-bs-readconfirmation-remind-summary": "$1 herinnert je eraan om $3 te lezen",
+	"notification-bs-readconfirmation-remind-body": "$1 wil je eraan herinneren om te bevestigen dat je $2 hebt gelezen.",
+	"bs-readconfirmation-privacy-transparency-working-rc": "BlueSpiceReadConfirmation: Je hebt bevestigd dat je op $3 de pagina $1 (versie $2) hebt gelezen"
+}

@@ -1,0 +1,39 @@
+diff --git a/resources/mmv/provider/mmv.provider.ThumbnailInfo.js b/resources/mmv/provider/mmv.provider.ThumbnailInfo.js
+index 45b6cdef..e14abfa7 100644
+--- a/resources/mmv/provider/mmv.provider.ThumbnailInfo.js
++++ b/resources/mmv/provider/mmv.provider.ThumbnailInfo.js
+@@ -49,17 +49,25 @@
+ 	 */
+ 	ThumbnailInfo.prototype.get = function ( file, width, height ) {
+ 		var provider = this,
+-			cacheKey = file.getPrefixedDb() + '|' + ( width || '' ) + '|' + ( height || '' );
++			cacheKey = file.getPrefixedDb() + '|' + ( width || '' ) + '|' + ( height || '' ) + '|' + ( file.timestamp | '' );
++
++		var params = {
++			action: 'query',
++			prop: 'imageinfo',
++			titles: file.getPrefixedDb(),
++			iiprop: 'url',
++			iiurlwidth: width, // mw.Api will omit null/undefined parameters
++			iiurlheight: height
++		};
++
++		if ( file.timestamp ) {
++			params.iistart = file.timestamp -1;
++		}
+ 
+ 		return this.getCachedPromise( cacheKey, function () {
+-			return provider.apiGetWithMaxAge( {
+-				action: 'query',
+-				prop: 'imageinfo',
+-				titles: file.getPrefixedDb(),
+-				iiprop: 'url',
+-				iiurlwidth: width, // mw.Api will omit null/undefined parameters
+-				iiurlheight: height
+-			} ).then( function ( data ) {
++			return provider.apiGetWithMaxAge(
++				params
++			).then( function ( data ) {
+ 				return provider.getQueryPage( file, data );
+ 			} ).then( function ( page ) {
+ 				var imageInfo;

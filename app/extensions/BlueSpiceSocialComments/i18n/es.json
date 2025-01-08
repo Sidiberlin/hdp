@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"DiegoAmbrocio",
+			"Eulalio",
+			"Fitoschido",
+			"MarcoAurelio",
+			"McDutchie",
+			"No se"
+		]
+	},
+	"bs-socialcomments-desc": "Funcionalidad de comentarios para BlueSpiceSocial",
+	"bs-socialcomments-type": "Comentario",
+	"bs-socialcomments-commenttext": "{{PLURAL:$1|Comentario|Comentarios}} ($1)",
+	"bs-socialcomments-header-create": "Respuesta aquí...",
+	"bs-socialcomments-var-commentcount": "Recuento de comentarios",
+	"echo-category-title-bs-social-comment-cat": "Comentarios sobre las entidades vigiladas",
+	"bs-social-notification-comment-primary-link-label": "Ver comentario",
+	"bs-social-notification-comment-parententity-label": "Ver publicación",
+	"bs-social-comment-event-create": "{{GENDER:$1|dejó un comentario}} en una página que está viendo",
+	"bs-social-comment-event-create-desc": "Nuevo comentario",
+	"bs-social-comment-event-own-create": "{{GENDER:$1|dejó un comentario}} en su publicación",
+	"bs-social-comment-event-own-create-desc": "Nueva respuesta a tu publicación.",
+	"bs-social-comment-event-edit": "{{GENDER:$1|editaste un comentario}} en una página que estás viendo",
+	"bs-social-comment-event-own-edit": "{{GENDER:$1|editaste un comentario}} en tu publicación",
+	"bs-social-comment-event-own-edit-desc": "Comentario en tu publicación editado",
+	"bs-social-comment-event-delete": "{{GENDER:$1| eliminó un comentario}} en una página que estás viendo",
+	"bs-social-comment-event-delete-desc": "Comentario eliminado",
+	"bs-social-comment-event-own-delete": "{{GENDER:$1|dejó un comentario}} en su publicación",
+	"bs-social-comment-event-own-delete-desc": "Comentario en tu publicación eliminado",
+	"bs-social-comment-event-edit-desc": "Comentario editado"
+}

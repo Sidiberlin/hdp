@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mainframe98",
+			"McDutchie",
+			"Niknetniko",
+			"Ribert",
+			"SPQRobin",
+			"Siebrand",
+			"Sjoerddebruin"
+		]
+	},
+	"bs-articleinfo-desc": "Geeft informatie over een pagina in een statusbalk",
+	"prefs-articleinfo": "Paginagegevens",
+	"bs-articleinfo-pref-CheckRevisionInterval": "Interval voor bijwerken, in seconden:",
+	"bs-articleinfo-flyout-title": "Paginagegevens",
+	"bs-articleinfo-flyout-intro": "Hier vindt u informatie over de pagina. U kunt de kwaliteit en actualiteit controleren en zien hoe deze zich verhouden tot andere pagina's op de wiki.",
+	"bs-articleinfo-nav-link-title": "Paginagegevens",
+	"bs-articleinfo-flyout-categorylinks-title": "Categorieën",
+	"bs-articleinfo-flyout-templatelinks-title": "Sjablonen gebruikt op de pagina",
+	"bs-articleinfo-flyout-categorylinks-emptytext": "Geen categorieën toegewezen",
+	"bs-articleinfo-flyout-templatelinks-emptytext": "Er worden geen sjablonen gebruikt",
+	"bs-articleinfo-flyout-lasteditedtime-text": "Laatste bewerking",
+	"bs-articleinfo-flyout-lastediteduser-text": "Laatste bewerker",
+	"bs-articleinfo-newrevision-info-text": "Er is een nieuwe versie van deze pagina beschikbaar. Laad de pagina opnieuw om de huidige inhoud te bekijken.",
+	"bs-articleinfo-newrevision-info-text-reload": "Er is een nieuwe versie van deze pagina beschikbaar. [[:$1|Laad de pagina opnieuw]] om de huidige inhoud te bekijken.",
+	"bs-articleinfo-flyout-subpages-title": "Subpagina's",
+	"bs-articleinfo-pagetool-subpages-tooltip": "Subpagina's",
+	"bs-articleinfo-dialog-subpages-title": "Subpagina's",
+	"bs-articleinfo-pref-checkrevisioninterval-help": "Stelt de vernieuwingsfrequentie in voor de waarde \"Laatste bewerking\". Deze waarde wordt weergegeven bij de pagina-informatie onder de hulpmiddelen voor kwaliteitsbeheer."
+}

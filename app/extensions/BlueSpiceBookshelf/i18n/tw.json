@@ -1,0 +1,31 @@
+{
+	"@metadata": {
+		"authors": [
+			"AC Krah",
+			"Afia360",
+			"Amire80",
+			"Robertjamal12",
+			"Valentine Badu",
+			"Warmglow"
+		]
+	},
+	"bs-bookshelf-action-editbook": "Edit source",
+	"bs-bookshelf-actionmenuentry-addtobook": "Fakɔ nwuma mu.",
+	"bs-bookshelf-ve-booklistinspector-title": "booklist",
+	"bs-bookshelf-ve-booklist-attr-filter-label": "sɔn",
+	"bs-bookshelf-ve-booklist-attr-filter-help": "metadata a sɔn so sei: value, e.g. title:handbook",
+	"bs-bookshelf-ve-bookmetainspector-title": "Nwomameta",
+	"bs-bookshelf-ve-bookmeta-attr-title-label": "Atifi asɛm",
+	"bs-bookshelf-ve-bookmeta-attr-title-help": "Hyehyɛ nwoma no din",
+	"bs-bookshelf-ve-bookmeta-attr-subtitle-label": "Asemti a ediso",
+	"bs-bookshelf-ve-bookmeta-attr-subtitle-help": "Ɛkyerɛ nsɛmti a edidi so",
+	"bs-bookshelf-ve-bookmeta-attr-author-label": "Nwoma twerɛfoɔ",
+	"bs-bookshelf-ve-bookmeta-attr-author-help": "Kyere onipa a ɔtwereɛ nwoma no",
+	"bs-bookshelf-ve-bookmeta-attr-version-label": "Kasafakoɔ",
+	"bs-bookshelf-ve-bookmeta-attr-version-help": "Ɛkyerɛ nwoma no version",
+	"bs-bookshelf-tag-bookshelf-box-desc": "Fa nwoma no ti no hyehyɛ krataafa a ɛnka nwoma no ho.Nnumre noara bɛ  hyehyɛ ne ho sɛ nea nsɛmfua no pono no teɛ.",
+	"bs-bookshelf-ve-bookshelfinspector-title": "Nwoma korabea",
+	"bs-bookshelf-ve-bookshelf-attr-book-label": "Nwoma",
+	"bs-bookshelf-ve-bookshelf-attr-book-help": "Kyerɛ nwoma korɔ a krataafa yi yɛ no dea anaa ɛfiri mu",
+	"bs-bookshelf-pref-prepend-tocnumber-help": "Fa nwoma no ti hyɛ bia emu nsɛm no wɔ ne nsemti a ɛwɔ kratafa no mu"
+}

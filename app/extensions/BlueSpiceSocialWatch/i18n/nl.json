@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Elroy",
+			"McDutchie"
+		]
+	},
+	"bs-socialwatch-desc": "Volgfunctionaliteit voor BlueSpiceSocial-entiteiten",
+	"bs-socialwatch-watchtext": "Kijken",
+	"bs-socialwatch-unwatchtext": "Niet meer kijken",
+	"bs-socialwatch-var-watch": "Kijken",
+	"apihelp-bs-socialwatch-tasks-summary": "Biedt taken voor het bewerken van de volgstatus van entiteiten"
+}

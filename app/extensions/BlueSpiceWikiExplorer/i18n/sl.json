@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eleassar"
+		]
+	},
+	"bs-wikiexplorer-extension-description": "Razvrščanje člankov po merilih",
+	"bs-wikiexplorer-page-title": "Naslov",
+	"bs-wikiexplorer-page-namespace": "Imenski prostor",
+	"bs-wikiexplorer-creation-date": "Datum ustvaritve",
+	"bs-wikiexplorer-is-redirect": "Je preusmeritev",
+	"bs-wikiexplorer-last-comment": "Zadnji komentar",
+	"bs-wikiexplorer-last-edit-time": "Datum zadnjega urejanja",
+	"bs-wikiexplorer-page-size": "Velikost",
+	"bs-wikiexplorer-last-author": "Zadnji urejevalec",
+	"bs-wikiexplorer-categories": "Kategorije",
+	"bs-wikiexplorer-linked-files": "Povezane datoteke",
+	"bs-wikiexplorer-linked-pages": "Povezane strani",
+	"apihelp-bs-wikiexplorer-store-description": "Zagotavlja vse podatke za razširitev WikiExplorer",
+	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "API-parameter, ki označuje, ali so metapodatki že naloženi.",
+	"apihelp-bs-wikiexplorer-store-summary": "Zagotavlja vse podatke za razširitev WikiExplorer",
+	"bs-wikiexplorer-icon-bool-true-aria-label": "obkljukano",
+	"bs-wikiexplorer-icon-bool-false-aria-label": "neobkljukano"
+}

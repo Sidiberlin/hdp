@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saederup92"
+		]
+	},
+	"bs-player-file-does-not-exist": "Filen findes ikke.",
+	"bs-player-unsupported-type": "Denne filtype understøttes ikke.",
+	"bs-player-config-prefwidth": "Standard bredde for videoer",
+	"bs-player-config-prefheight": "Standard højde for videoer",
+	"prefs-videoplayer": "Videoafspiller"
+}

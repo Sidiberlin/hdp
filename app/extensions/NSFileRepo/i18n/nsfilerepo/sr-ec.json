@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"BadDog",
+			"Kizule",
+			"Milicevic01"
+		]
+	},
+	"nsfilerepo-nsmain": "(главни)",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "Откажи",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "Именски простор",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "Именски простор",
+	"nsfilerepo-enhanced-filelist-grid-namespace-title": "Именски простор"
+}

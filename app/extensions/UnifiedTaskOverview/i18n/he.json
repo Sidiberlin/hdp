@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80"
+		]
+	},
+	"unifiedtaskoverview-desc": "אספקת דף מיוחד עם סקירה כללית של משימות המשתמשים",
+	"unifiedtaskoverview": "המשימות שלי",
+	"unifiedtaskoverview-label-no-task": "נכון לעכשיו אין משימות שצריך להשלים.",
+	"unifiedtaskoverview-personal-url-my-tasks": "משימות",
+	"unifiedtaskoverview-search-placeholder": "חיפוש"
+}

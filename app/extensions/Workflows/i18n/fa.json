@@ -1,0 +1,40 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jeeputer",
+			"LordProfo",
+			"Mohammad ebz"
+		]
+	},
+	"workflows-uto-activity-user_feedback": "بازخورد کاربر",
+	"workflows-collect-data-form-instructions": "دستورالعمل",
+	"workflows-activity-history-vote-result-yes": "تأییدشده",
+	"workflows-activity-history-vote-result-no": "برگشت‌خورده",
+	"workflows-ui-overview-details-raw-data-popup-prop": "ویژگی",
+	"workflows-ui-overview-details-raw-data-popup-value": "مقدار",
+	"workflows-ui-overview-details-raw-data-popup-label": "مقدارهای ویژگی",
+	"workflows-activity-property-instructions": "دستورالعمل",
+	"workflows-activity-property-username": "نام کاربری",
+	"workflows-activity-property-due_date": "موعد مقرر",
+	"workflows-activity-property-groupname": "نام گروه",
+	"workflows-activity-property-usernameEditor": "ویرایشگر",
+	"workflows-activity-property-instructionsEditor": "دستورالعمل ویرایشگر",
+	"workflows-activity-property-usernameReviewer": "بازبینی‌کننده",
+	"workflows-activity-property-instructionsReviewer": "دستورالعمل بازبینی‌کننده",
+	"workflows-activity-property-usernameApprover": "تأییدکننده",
+	"workflows-activity-property-instructionsApprover": "دستورالعمل تأییدکننده",
+	"workflows-activity-property-vote": "رأی",
+	"workflows-activity-property-comment": "نظر",
+	"workflows-activity-property-delegate_to": "تفویض به",
+	"workflows-activity-property-delegate_comment": "تفویض نظر",
+	"workflows-activity-property-assigned_user": "کار اختصاص‌یافته",
+	"workflows-activity-property-action": "عمل",
+	"workflows-editor-title": "در حال ویرایش $1",
+	"workflows-workflow-file-definition-group-feedback-title": "بازخورد گروهی",
+	"workflows-workflow-file-definition-group-feedback-desc": "از گروهی از کاربران بخواهید تا هنگام بازبینی یک صفحه، بازخورد دهند. هرگاه رأی‌گیری تمام شود، از طریق دریافت یک ایمیل پیرامون نتایج رأی‌گیری آگاه خواهید شد.",
+	"workflows-workflow-file-definition-user-approval-title": "تأیید تک کاربر",
+	"workflows-workflow-file-definition-user-approval-desc": "از یک کاربر بخواهید تا یک صفحه را بازبینی و تأیید کند. به محض انجام این کار، اعلانی از طریق ایمیل برای گیرندهٔ مشخص‌شده ارسال خواهد شد.",
+	"workflows-workflow-file-definition-user-feedback-title": "بازخورد تک کاربر",
+	"workflows-workflow-file-definition-user-feedback-desc": "از یک کاربر بخواهید تا هنگام بازبینی یک صفحه، بازخورد دهد. هرگاه رأی‌گیری تمام شود، از طریق دریافت یک ایمیل پیرامون نتیجهٔ رأی‌گیری آگاه خواهید شد.",
+	"workflows-ui-overview-details-has-notice-label": "دارای اعلان است؟"
+}

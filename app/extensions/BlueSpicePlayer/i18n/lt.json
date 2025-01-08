@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nokeoo"
+		]
+	},
+	"bs-player-extension-description": "Įterpkite medijos leistuvą į puslapį.",
+	"bs-player-pref-autostart": "Automatiškai paleisti vaizdo įrašą",
+	"bs-player-file-does-not-exist": "Failas neegzistuoja.",
+	"bs-player-tag-showtime-desc": "Ši žyma leidžia įterpti vaizdo įrašą.",
+	"bs-player-unsupported-type": "Šis failo tipas nepalaikomas.",
+	"bs-player-config-prefwidth": "Numatytasis vaizdo įrašų plotis",
+	"bs-player-config-prefheight": "Numatytasis vaizdo įrašų aukštis",
+	"prefs-videoplayer": "Vaizdo grotuvas"
+}

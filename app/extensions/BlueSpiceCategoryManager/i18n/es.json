@@ -1,0 +1,37 @@
+{
+	"@metadata": {
+		"authors": [
+			"DannyS712",
+			"Fitoschido",
+			"Macofe",
+			"Rodney Araujo",
+			"SpikeShroom",
+			"TehFrog"
+		]
+	},
+	"bluespicecategorymanager": "Gestor de categorías",
+	"bluespicecategorymanager-desc": "Herramienta visual para gestionar categorías",
+	"action-categorymanager-viewspecialpage": "ver el gestor de categorías",
+	"bs-categorymanager-text": "Categorías",
+	"bs-categorymanager-draganddrop-text": "Arrastra y suelta para reorganizar",
+	"bs-categorymanager-label": "Gestor de categorías",
+	"bs-categorymanager-dlg-new-title": "Crear categoría",
+	"bs-categorymanager-dlg-new-prompt": "Escribe el nombre:",
+	"bs-categorymanager-removecategoryconfirm-text": "¿Estás seguro de que quieres eliminar esta categoría?",
+	"bs-categorymanager-removecategoryconfirm-title": "Eliminar categoría",
+	"bs-categorymanager-addcategory-dialog-error-title": "Falló la creación de la categoría",
+	"bs-categorymanager-action-show-category": "Mostrar categoría",
+	"right-categorymanager-viewspecialpage": "Acceso a la página especial [[Special:BlueSpiceCategoryManager]]",
+	"bs-categorymanager-collection-type-categorizedpages": "Asignación de la categoría",
+	"bs-categorymanager-collection-var-namespacename": "Espacio de nombres",
+	"bs-categorymanager-collection-var-categorizedpages": "Páginas con categorías",
+	"bs-categorymanager-collection-var-uncategorizedpages": "Páginas sin categorías",
+	"bs-categorymanager-rename-category": "Renombrar categoría:",
+	"bs-categorymanager-rename-category-new-name": "Nuevo nombre de categoría:",
+	"bs-categorymanager-move-new-name": "Elige el nuevo nombre de categoría. Nuevo nombre:",
+	"bs-categorymanager-replace-in-pages": "Renombrar en la página:",
+	"bs-categorymanager-statistics-report-category-pages": "Páginas en categorías",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-title": "La categoría ya existe",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Intente con un nombre de categoría diferente",
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "Número de páginas"
+}

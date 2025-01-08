@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Olugold"
+		]
+	},
+	"notification-bs-readconfirmation-remind-daily-summary": "Ihe nchetara iji kweta, na ị gụọla $1.",
+	"notification-bs-readconfirmation-remind-daily-subject": "Ncheta ka ị kweta, na ị gụọla $1.",
+	"notification-bs-readconfirmation-remind-daily-body": "Biko kweta, na ị gụọla $1"
+}

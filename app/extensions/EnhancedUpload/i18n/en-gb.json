@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Piano1forte2"
+		]
+	},
+	"enhancedupload-attachments-confirm-remove": "Remove file '$1' from list?",
+	"enhancedupload-updated-dialog-label": "The file '$1' has been updated"
+}

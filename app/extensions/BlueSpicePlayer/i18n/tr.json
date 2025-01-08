@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Joseph",
+			"SaldırganSincap"
+		]
+	},
+	"bs-player-extension-description": "Bir sayfaya ortam oynatıcı ekleyin.",
+	"bs-player-pref-autostart": "Videoyu otomatik oynat",
+	"bs-player-file-does-not-exist": "Dosya mevcut değil.",
+	"bs-player-tag-showtime-desc": "Bu etiket bir videoyu eklemenize sağlar.",
+	"bs-player-unsupported-type": "Bu dosya türü desteklenmiyor.",
+	"bs-player-config-prefwidth": "Videoların varsayılan genişliği",
+	"bs-player-config-prefheight": "Videoların varsayılan yüksekliği",
+	"prefs-videoplayer": "Video oynatıcı"
+}

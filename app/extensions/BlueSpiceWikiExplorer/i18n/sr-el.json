@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"bs-wikiexplorer-extension-description": "Sortiranjee članaka prema kriterijumima",
+	"wikiexplorer": "Istraživač vikija",
+	"bs-wikiexplorer-page-title": "Naslov",
+	"bs-wikiexplorer-page-namespace": "Imenski prostor",
+	"bs-wikiexplorer-creation-date": "Datum pravljenja",
+	"bs-wikiexplorer-is-redirect": "je preusmerenje",
+	"bs-wikiexplorer-last-comment": "Poslednji komentar",
+	"bs-wikiexplorer-last-edit-time": "Datum poslednjeg uređivanja",
+	"bs-wikiexplorer-page-size": "Veličina",
+	"bs-wikiexplorer-last-author": "Poslednji urednik/ca",
+	"bs-wikiexplorer-categories": "Kategorije",
+	"bs-wikiexplorer-linked-files": "Povezane datoteke",
+	"bs-wikiexplorer-linked-pages": "Povezane stranice",
+	"bs-wikiexplorer-icon-bool-true-aria-label": "provereno",
+	"bs-wikiexplorer-icon-bool-false-aria-label": "neprovereno"
+}

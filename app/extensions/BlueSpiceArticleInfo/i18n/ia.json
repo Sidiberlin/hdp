@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bs-articleinfo-desc": "Forni information sur un pagina in le barra de stato",
+	"prefs-articleinfo": "Information sur le pagina",
+	"bs-articleinfo-pref-CheckRevisionInterval": "Intervallo de actualisation in secundas:",
+	"bs-articleinfo-flyout-title": "Information sur le pagina",
+	"bs-articleinfo-flyout-intro": "Hic se trova information relative al pagina. Tu pote verificar su qualitate e actualitate e vider su relation con altere paginas in le wiki.",
+	"bs-articleinfo-nav-link-title": "Information sur le pagina",
+	"bs-articleinfo-flyout-categorylinks-title": "Categorias",
+	"bs-articleinfo-flyout-templatelinks-title": "Patronos usate sur le pagina",
+	"bs-articleinfo-flyout-categorylinks-emptytext": "Nulle categoria assignate",
+	"bs-articleinfo-flyout-templatelinks-emptytext": "Nulle patrono usate",
+	"bs-articleinfo-flyout-lasteditedtime-text": "Ultime modification",
+	"bs-articleinfo-flyout-lastediteduser-text": "Ultime contributor",
+	"bs-articleinfo-newrevision-info-text": "Il ha un nove version de iste pagina. Per favor, recarga le pagina pro vider le contento actual.",
+	"bs-articleinfo-newrevision-info-text-reload": "Il ha un nove version de iste pagina disponibile. Per favor [[:$1|recarga]] le pagina pro vider le contento actual.",
+	"bs-articleinfo-flyout-subpages-title": "Subpaginas",
+	"bs-articleinfo-pagetool-subpages-tooltip": "Subpaginas",
+	"bs-articleinfo-dialog-subpages-title": "Subpaginas",
+	"bs-articleinfo-pref-checkrevisioninterval-help": "Defini le frequentia de refrescamento pro le valor \"Ultime modification\". Iste valor appare in le information sur le pagina sub le instrumentos de gestion de qualitate."
+}

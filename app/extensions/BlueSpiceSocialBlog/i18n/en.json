@@ -1,0 +1,36 @@
+{
+	"@metadata": {
+		"authors": [
+			"Patric Wirth",
+			"Dejan Savuljesku"
+		]
+	},
+	"bs-socialblog-desc": "Blog entity for BlueSpiceSocial",
+	"bs-socialblog-type": "Blog",
+	"blog": "Blog",
+	"bs-socialblog-entityblog-header-create": "Create a new blog...",
+	"bs-socialblog-entityblog-header": "[[Special:Blog/$3|$6]]",
+	"bs-socialblog-var-blogtitle": "Title",
+	"bs-socialblog-entityblog-content-more-btn-more": "More",
+	"bs-socialblog-entityblog-content-more-btn-less": "Less",
+	"bs-socialblog-toc-useblogteaser": "Use teaser text for blog entries in the timeline",
+	"bs-socialblog-special-blog-heading": "Blog",
+	"bs-socialblog-special-blog-heading-entry": "Blog/$1",
+	"bs-socialblog-toc-useblogteaser-help": "In the blog form, users can enter a teaser text by clicking on the cogwheel symbol. If activated, this teaser text is shown on the page Special:Timeline instead of the first part of the blog entry itself.",
+	"action-social-blog": "create and edit blogs",
+	"action-social-blog-comment": "comment on blogs",
+	"right-social-blog": "Create and edit blogs",
+	"right-social-blog-comment": "Comment on blogs",
+	"bs-socialblog-config-mainlinks-blog-label": "Show entrypoint \"Blog\"",
+	"bs-socialblog-config-mainlinks-blog-help": "Show entrypoint \"Blog\" link in the left navigation",
+	"bs-socialblog-type-groupblog": "Group blog",
+	"bs-socialblog-groupblog-permission-error": "User is not allowed to perform action",
+	"bs-social-blog-mainlinks-label": "Blog",
+	"bs-social-event-blog-create-desc": "New blog post created",
+	"bs-social-event-blog-edit-desc": "Blog post edited",
+	"bs-social-event-blog-delete-desc": "Blog post deleted",
+	"bs-social-event-blog-create": "{{GENDER:$1|created}} a new blog post \"$2\"",
+	"bs-social-event-blog-edit": "{{GENDER:$1|edited}} blog post \"$2\"",
+	"bs-social-event-blog-delete": "{{GENDER:$1|deleted}} blog post \"$2\"",
+	"bs-social-notification-blog-primary-link-label": "View blog"
+}

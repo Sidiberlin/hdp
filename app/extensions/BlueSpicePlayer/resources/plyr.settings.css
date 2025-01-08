@@ -1,0 +1,11 @@
+.plyr {
+    min-width: 320px;
+}
+
+.plyr:fullscreen {
+    height: 100% !important;
+}
+
+.plyr:fullscreen video {
+    height: 100% !important;
+}

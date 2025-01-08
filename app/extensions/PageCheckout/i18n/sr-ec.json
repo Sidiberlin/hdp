@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Milicevic01"
+		]
+	},
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "Корисник",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "Корисник",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Име странице"
+}

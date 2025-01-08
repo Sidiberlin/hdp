@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"HalloWelt! GmbH <support@hallowelt.com>"
+		]
+	},
+	"tabletools-desc": "Adds additional functionality for content tables",
+	"tabletools-ve-plugin-table-style-sticky": "Sticky header"
+}

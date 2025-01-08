@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bs-exporttables-extension-description": "Permitte le exportation de tabellas in Excel e CSV",
+	"bs-exporttables-menu": "Exportar tabella",
+	"bs-exporttables-menu-csv": "Valores separate per commas (CSV)",
+	"bs-exporttables-ve-exportable-option": "Exportabile",
+	"bs-exporttables-loading-text": "Un momento, le datos de exportation se genera…",
+	"bs-exporttables-loading-title": "Exportation de tabella",
+	"bs-exporttables-statistics-btn-text": "Exportar",
+	"bs-exporttables-oojs-btn-aria-label": "Exportar"
+}

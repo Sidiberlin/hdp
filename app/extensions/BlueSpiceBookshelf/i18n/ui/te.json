@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Chaduvari",
+			"Veeven"
+		]
+	},
+	"bs-bookshelfui-manager-title": "శీర్షిక",
+	"bs-bookshelfui-dlg-choosewikipage-tfDisplayName": "కనబడాల్సిన శీర్షిక పేరు",
+	"bs-bookshelfui-dlg-tagsettings-title": "ట్యాగు అమరికలు",
+	"bs-bookshelfui-dlg-copy-target-name-label": "లక్ష్యిత పేరు",
+	"bs-bookshelfui-grouping-template-books": "({{PLURAL:$1|ఒక పుస్తకం|$1 పుస్తకాలు}})",
+	"bs-bookshelfui-book-type": "పుస్తకపు రకం",
+	"bs-bookshelfui-dlg-choosecategory-label": "వర్గం",
+	"bs-bookshelfui-type-category": "వర్గం లోని అన్ని పేజీలు",
+	"bs-bookshelfui-nav-link-title-all-books": "సాధారణ పుస్తకాలు",
+	"bs-bookshelfui-flyout-title": "పుస్తకాల జాబితా",
+	"bs-bookshelfui-bookmetatag-title": "శీర్షిక",
+	"bs-bookshelfui-bookmetatag-department": "విభాగం",
+	"bs-bookshelfui-prof-defaultview-images": "బొమ్మలు",
+	"bs-bookshelfui-chapterpager-previous": "మునుపటి",
+	"bs-bookshelfui-chapterpager-next": "తదుపరి"
+}

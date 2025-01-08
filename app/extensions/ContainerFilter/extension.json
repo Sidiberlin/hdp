@@ -1,0 +1,81 @@
+{
+	"name": "ContainerFilter",
+	"version": "1.0.10",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://m.mediawiki.org/wiki/Extension:ContainerFilter",
+	"descriptionmsg": "containerfilter-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0"
+	},
+	"attributes": {
+		"VisualEditor": {
+			"PluginModules": [
+				"ext.containerFilter.ve.nodes"
+			]
+		},
+		"ContentDroplets": {
+			"Droplets": {
+				"container-filter": {
+					"class": "\\MediaWiki\\Extension\\ContainerFilter\\ContentDroplets\\ContainerFilter"
+				}
+			}
+		}
+	},
+	"MessagesDirs": {
+		"ContainerFilter": "i18n"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\ContainerFilter\\": "src/"
+	},
+	"ResourceModules": {
+		"ext.containerFilter.tag": {
+			"scripts": [
+				"ext.containerFilter.tag.js"
+			],
+			"messages": [
+				"containerfilter-input-aria-label",
+				"containerfilter-filter-results-label"
+			],
+			"dependencies": [
+				"oojs-ui-core"
+			]
+		},
+		"ext.containerFilter.ve.nodes": {
+			"scripts": [
+				"nodes/ext.containerfilter.ce.ContainerFilterNode.js",
+				"nodes/ext.containerfilter.dm.ContainerFilterNode.js",
+				"nodes/ext.containerfilter.ui.ContainerFilterInspector.js",
+				"nodes/ext.containerfilter.ui.ContainerFilterInspectorTool.js"
+			],
+			"styles": [
+				"stylesheets/ext.containerFilter.droplet.css"
+			],
+			"messages": [
+				"containerfilter-inspector-title",
+				"containerfilter-inspector-input-selector",
+				"containerfilter-inspector-input-selector-placeholder"
+			],
+			"dependencies": [
+				"ext.visualEditor.mwcore"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "ContainerFilter/resources"
+	},
+	"HookHandlers": {
+		"main": {
+			"class": "MediaWiki\\Extension\\ContainerFilter\\HookHandler\\Main"
+		}
+	},
+	"Hooks": {
+		"ParserFirstCallInit": [
+			"main"
+		]
+	},
+	"manifest_version": 2
+}

@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"F Samaritani"
+		]
+	},
+	"importofficefiles-ui-dialog-action-cancel": "Annudda",
+	"importofficefiles-ui-dialog-action-next": "Sighi",
+	"importofficefiles-ui-dialog-action-back": "Acoa"
+}

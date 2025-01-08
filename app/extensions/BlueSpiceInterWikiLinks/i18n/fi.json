@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Pyscowicz",
+			"Silvonen"
+		]
+	},
+	"bs-interwikilinks-headerprefix": "Etuliite",
+	"bs-interwikilinks-labelprefix": "Etuliite",
+	"bs-interwikilinks-insertlink-labelprefix": "Etuliite",
+	"bs-interwikilink-select-a-prefix": "Valitse etuliite",
+	"bs-interwikilinks-link-created": "Interwiki-linkki on luotu."
+}

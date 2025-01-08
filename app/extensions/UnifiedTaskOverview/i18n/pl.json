@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Rail"
+		]
+	},
+	"unifiedtaskoverview-desc": "Udostępnia stronę specjalną z podglądem zadań użytkowników",
+	"unifiedtaskoverview": "Moje zadania",
+	"unifiedtaskoverview-label-no-task": "Obecnie nie ma zadań do wykonania",
+	"unifiedtaskoverview-personal-url-my-tasks": "Zadania"
+}

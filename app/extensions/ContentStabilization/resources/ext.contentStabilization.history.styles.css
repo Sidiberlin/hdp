@@ -1,0 +1,18 @@
+.content-stabilization-not-stable,
+.content-stabilization-stable {
+	margin-bottom: 5px;
+	border: none !important;
+	padding-left: 10px !important;
+}
+
+.content-stabilization-not-stable {
+	border-left: 3px solid #f28c00 !important;
+}
+.content-stabilization-stable {
+	border-left: 3px solid #94c11f !important;
+	background-color: #eff6dd !important;
+}
+
+.content-stabilization-hidden {
+	display: none !important;
+}

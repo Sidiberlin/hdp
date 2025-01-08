@@ -1,0 +1,211 @@
+{
+	"name": "BlueSpiceProDistributionConnector",
+	"version": "4.5.2",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[https://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceProDistributionConnector",
+	"descriptionmsg": "bs-prodistributionconnector-desc",
+	"type": "bluespice",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 4.3"
+		}
+	},
+	"attributes": {
+		"MWStakeContentProvisioner": {
+			"ContentManifests": {
+				"DefaultContentProvisioner": [
+					"extensions/BlueSpiceProDistributionConnector/data/Content/PageTemplates/manifest.json",
+					"extensions/BlueSpiceProDistributionConnector/data/Content/ContentDropletsTemplates/manifest.json"
+				],
+				"DefaultPageTemplates": [
+					"extensions/BlueSpiceProDistributionConnector/data/Content/PageTemplates/manifest.json"
+				]
+			}
+		},
+		"ContentDroplets": {
+			"Droplets": {
+				"pro-con-list": {
+					"class": "\\BlueSpice\\ProDistributionConnector\\ContentDroplets\\ProConListDroplet"
+				},
+				"modal-dialog": {
+					"class": "\\BlueSpice\\ProDistributionConnector\\ContentDroplets\\ModalDialogDroplet"
+				},
+				"decision": {
+					"class": "\\BlueSpice\\ProDistributionConnector\\ContentDroplets\\DecisionDroplet"
+				}
+			}
+		},
+		"BlueSpiceInstanceStatus": {
+			"InstanceStatusProvider": {
+				"numberofusers": {
+					"class": "BlueSpice\\ProDistributionConnector\\InstanceStatusProvider\\NumberOfUsers",
+					"services": [ "BlueSpiceUserCounter" ]
+				}
+			}
+		},
+		"BlueSpiceFoundation": {
+			"JSConfigVars": {
+				"BlueSpiceUserLimit": "\\BlueSpice\\ProDistributionConnector\\JSConfigVariable\\UserLimit::factory"
+			},
+			"ConfigDefinitionRegistry": {
+				"LicenseKey": "BlueSpice\\ProDistributionConnector\\ConfigDefinition\\LicenseKey::getInstance",
+				"OAuth2PublicKey": "BlueSpice\\ProDistributionConnector\\ConfigDefinition\\OAuth2PublicKey::getInstance",
+				"OAuth2PrivateKey": "BlueSpice\\ProDistributionConnector\\ConfigDefinition\\OAuth2PrivateKey::getInstance"
+			}
+		},
+		"VisualEditor": {
+			"PluginModules": [
+				"ext.prodistributionconnector.droplet.pdfembed"
+			]
+		}
+	},
+	"callback": "\\BlueSpice\\ProDistributionConnector\\Extension::onRegistration",
+	"MessagesDirs": {
+		"BlueSpiceProDistributionConnector": "i18n"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\ProDistributionConnector\\": "src/",
+		"BlueSpice\\ProDistributionConnector\\Tests\\": "tests/phpunit"
+	},
+	"ResourceModules": {
+		"ext.prodistributionconnector.droplet.math": {
+			"styles": "stylesheets/droplet.math.css"
+		},
+		"ext.prodistributionconnector.droplet.chem": {
+			"styles": "stylesheets/droplet.chem.css"
+		},
+		"ext.prodistributionconnector.droplet.proConList": {
+			"scripts": [
+				"objects/ProConListDroplet.js"
+			],
+			"styles": [
+				"stylesheets/bluespice.contentdroplets.proconlist.css"
+			],
+			"messages": [
+				"droplets-pro-con-advantages-title-label",
+				"droplets-pro-con-advantages-label",
+				"droplets-pro-con-disadvantages-title-label",
+				"droplets-pro-con-disadvantages-label"
+			]
+		},
+		"ext.prodistributionconnector.droplet.modalDialog.execution.script": {
+			"scripts": [
+				"droplets/ModalDialogDroplet.js"
+			]
+		},
+		"ext.prodistributionconnector.droplet.modalDialog": {
+			"scripts": [
+				"objects/ModalDialogDroplet.js"
+			],
+			"styles": "stylesheets/droplet.modaldialog.css",
+			"messages": [
+				"droplets-modal-dialog-btn-label",
+				"droplets-modal-dialog-title-label",
+				"droplets-modal-dialog-body-label",
+				"droplets-modal-dialog-footer-label",
+				"droplets-modal-dialog-bg-color-label",
+				"droplets-modal-dialog-bg-color-blue",
+				"droplets-modal-dialog-bg-color-red",
+				"droplets-modal-dialog-bg-color-neutral"
+			]
+		},
+		"ext.prodistributionconnector.droplet.decision": {
+			"scripts": [
+				"objects/DecisionDroplet.js"
+			],
+			"styles": "stylesheets/droplet.decision.css",
+			"messages": [
+				"droplets-decision-label"
+			]
+		},
+		"ext.prodistributionconnector.usermanager.quota": {
+			"scripts": "ext.prodistributionconnector.usermanager.quota.js",
+			"dependencies": [
+				"ext.bluespice",
+				"oojs-ui"
+			]
+		},
+		"ext.prodistributionconnector.droplet.pdfembed": {
+			"scripts": [
+				"nodes/ext.prodistributionconnector.ce.PDFEmbedNode.js",
+				"nodes/ext.prodistributionconnector.dm.PDFEmbedNode.js",
+				"nodes/ext.prodistributionconnector.ui.PDFEmbedInspectorTool.js",
+				"nodes/ext.prodistributionconnector.ui.PDFEmbedInspector.js"
+			],
+			"styles": [
+				"stylesheets/bluespice.contentdroplets.pdfembed.css"
+			],
+			"messages": [
+				"bs-pro-distribution-pdfembed-inspector-input-label",
+				"bs-pro-distribution-pdfembed-inspector-input-help",
+				"bs-pro-distribution-pdfembed-inspector-width-label",
+				"bs-pro-distribution-pdfembed-inspector-width-help",
+				"bs-pro-distribution-pdfembed-inspector-height-label",
+				"bs-pro-distribution-pdfembed-inspector-height-help",
+				"bs-pro-distribution-pdfembed-inspector-page-label",
+				"bs-pro-distribution-pdfembed-inspector-page-help",
+				"bs-pro-distribution-pdfembed-inspector-title"
+			],
+			"dependencies": [
+				"ext.visualEditor.mwcore",
+				"ext.oOJSPlus.widgets"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceProDistributionConnector/resources"
+	},
+	"HookHandlers": {
+		"pdfexport-convert-math-svg-to-png": {
+			"factory": "BlueSpice\\ProDistributionConnector\\HookHandler\\PdfExportConvertMathSVGtoPNG::factory",
+			"services": [ "MediaHandlerFactory" ]
+		},
+		"applyUserQuota": {
+			"class": "\\BlueSpice\\ProDistributionConnector\\HookHandler\\ApplyUserQuota",
+			"services": [ "BlueSpiceUserCounter" ]
+		},
+		"addResources": {
+			"class": "\\BlueSpice\\ProDistributionConnector\\HookHandler\\AddResources"
+		}
+	},
+	"AuthManagerAutoConfig": {
+		"preauth": {
+			"UserLimitedAuthenticationProvider": {
+				"class": "BlueSpice\\ProDistributionConnector\\UserLimitedAuthenticationProvider",
+				"sort": 25
+			}
+		}
+	},
+	"Hooks": {
+		"BSUEModulePDFFindFiles": "pdfexport-convert-math-svg-to-png",
+		"BSUsageTrackerRegisterCollectors": "BlueSpice\\ProDistributionConnector\\Hook\\BSUsageTrackerRegisterCollectors\\NumberOfNamespaces::callback",
+		"BeforePageDisplay": [
+			"applyUserQuota",
+			"addResources"
+		],
+		"UnblockUser":  "applyUserQuota"
+	},
+	"config_prefix": "bsg",
+	"config": {
+		"UserLimitWhitelist": {
+			"value": [
+				"BSMaintenance", "WikiSysop", "MediaWiki default", "DynamicPageList3 extension",
+				"Mediawiki default", "Maintenance script", "BlueSpice default"
+			],
+			"description": "Contains user names that do not count towards the user limit"
+		},
+		"LicenseKey": {
+			"value": null,
+			"description": "License key for BlueSpice edition"
+		}
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"manifest_version": 2
+}

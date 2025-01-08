@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"!Silent",
+			"Eduardo Addad de Oliveira",
+			"Eduardoaddad",
+			"Isabelle Belato",
+			"Re demz",
+			"VasbXBR"
+		]
+	},
+	"bs-bssmwconnector-desc": "Integra o SemanticMediaWiki no BlueSpice",
+	"bs-bssmwconnector-srf-printername-bsgrid": "Grade BlueSpice",
+	"bs-bssmwconnector-nmmngr-label-smw": "Semantic MediaWiki",
+	"bs-dlg-choosesmwprop-label": "Propriedade",
+	"bs-dlg-choosesmwprop-type-smwprop": "Propriedade semântica",
+	"bs-extendedsearch-add-filter-group-smwproperty-label": "Propriedades semânticas",
+	"bs-extendedsearch-search-center-result-smwproperty-label": "Propriedades semânticas:",
+	"bs-smwconnector-extendedsearch-boolean-property-true": "Sim",
+	"bs-smwconnector-extendedsearch-boolean-property-false": "Não",
+	"bs-smwconnector-propertyvalueprovider-usermentions-alias": "Conteúdo/Menções do usuário",
+	"bs-smwconnector-propertyvalueprovider-usermentions-desc": "Páginas de usuários mencionadas nesta página",
+	"apihelp-bs-smw-connector-ask-store-summary": "Armazenamento compatível com ExtJS para executar consultas semânticas",
+	"apihelp-bs-smw-connector-ask-store-props-param": "Propriedades a serem recuperadas. Essas propriedades corresponderão ao esquema e aos dados retornados. Pares de valor-chave, chave é o nome real da propriedade, valor é o rótulo desejado (JSON)",
+	"bs-swm-connector-ask-store-page-label": "Página",
+	"bs-smw-connector-async-ask-unknown-handler": "O manipulador para o formato \"$1\" não está registrado ou não é válido",
+	"apihelp-bs-smw-connector-ask-tree-store-node-param": "Valor do nó que irá substituir o marcador <nowiki>{{{node}}}</nowiki> de posição na consulta",
+	"bs-smwconnector-extendedsearch-anon-user-label": "Usuário anônimo",
+	"bs-smw-connector-async-error": "Não foi possível buscar dados",
+	"bs-smwconnector-dataquery-modified-date-label": "Data",
+	"bs-smwconnector-dataquery-count-label": "Número"
+}

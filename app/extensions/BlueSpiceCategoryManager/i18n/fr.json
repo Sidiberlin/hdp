@@ -1,0 +1,38 @@
+{
+	"@metadata": {
+		"authors": [
+			"DreZhsh",
+			"Gomoko",
+			"Goombiis",
+			"Thibaut120094",
+			"Verdy p",
+			"Wladek92"
+		]
+	},
+	"bluespicecategorymanager": "Gestionnaire de catégories",
+	"bluespicecategorymanager-desc": "Outil visuel pour gérer les catégories",
+	"action-categorymanager-viewspecialpage": "afficher le gestionnaire de catégories",
+	"bs-categorymanager-text": "Catégories",
+	"bs-categorymanager-draganddrop-text": "Glisser et déposer pour réorganiser",
+	"bs-categorymanager-label": "Gestionnaire de catégories",
+	"bs-categorymanager-dlg-new-title": "Créer une catégorie",
+	"bs-categorymanager-dlg-new-prompt": "Veuillez saisir le nom :",
+	"bs-categorymanager-removecategoryconfirm-text": "Voulez-vous vraiment supprimer cette catégorie ?",
+	"bs-categorymanager-removecategoryconfirm-title": "Supprimer la catégorie",
+	"bs-categorymanager-addcategory-dialog-error-title": "Échec dans la création de catégorie",
+	"bs-categorymanager-action-show-category": "Afficher la catégorie",
+	"right-categorymanager-viewspecialpage": "Accéder à la page spéciale [[Special:BlueSpiceCategoryManager]]",
+	"bs-categorymanager-collection-type-categorizedpages": "Allocation de catégorie",
+	"bs-categorymanager-collection-var-namespacename": "Espace de noms",
+	"bs-categorymanager-collection-var-categorizedpages": "Pages catégorisées",
+	"bs-categorymanager-collection-var-uncategorizedpages": "Pages non catégorisées",
+	"bs-categorymanager-rename-category": "Renommer la catégorie",
+	"bs-categorymanager-rename-category-new-name": "Nouveau nom de la catégorie :",
+	"bs-categorymanager-move-new-name": "Définit le nouveau nom de la catégorie. Nouveau nom :",
+	"bs-categorymanager-replace-in-pages": "Renommer dans la page :",
+	"bs-categorymanager-statistics-report-category-pages": "Pages dans les catégories",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-title": "La catégorie existe déjà",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Veuillez essayer un autre nom de catégorie",
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "Nombre de pages",
+	"bs-categorymanager-category-column-name": "Nom de la catégorie"
+}

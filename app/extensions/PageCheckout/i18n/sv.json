@@ -1,0 +1,30 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sabelöga"
+		]
+	},
+	"pagecheckout-desc": "Möjliggör exklusiva rättigheter på en sida för en användare",
+	"pagecheckout-error-no-title": "Ogiltig titel",
+	"pagecheckout-error-no-user": "Ogiltig användare angiven",
+	"pagecheckout-error-has-checkout": "Sidan har redan checkats ut",
+	"pagecheckout-error-save-failed": "Kunde inte checka ut sidan",
+	"pagecheckout-error-no-checkout": "Kan inte checka in sida som inte för närvarande har checkats ut",
+	"pagecheckout-error-no-checkout-id": "Kunde inte checka in! Ingen angiven utchecknings-ID",
+	"pagecheckout-error-db-insert": "Kunde inte spara utcheckning",
+	"pagecheckout-error-db-retrieve-inserted": "Kunde inte hämta tidigare sparad utcheckning",
+	"pagecheckout-error-save-event": "Kunde inte spara händelse",
+	"pagecheckout-lockdown-reason": "Åtgärden \"$1\" tillåts inte på grund av att sidan checkas ut av $2",
+	"pagecheckout-action-clear-label": "Rensa utcheckning",
+	"apihelp-pagecheckout-clear-example": "Rensa utcheckning för Main_Page",
+	"apihelp-pagecheckout-clear-summary": "Rensa aktiv sidoutcheckning",
+	"apihelp-pagecheckout-clear-param-page_title": "Titel på sidan vars utcheckning ska rensas",
+	"pagecheckout-ui-clear-confirm": "Bekräfta rensning av aktiv utcheckning på denna sida? Detta kommer göra sidan redigerbar för alla normalt berättigade användare",
+	"log-name-pagecheckout": "Sidoutcheckning",
+	"log-description-pagecheckout": "Spårar status hos sidornas utcheckning och incheckning",
+	"logentry-pagecheckout-checkin": "$1 {{GENDER:$2|checkade in}} sidan $3 som checkades ut för användare $4",
+	"logentry-pagecheckout-checkout": "$1 {{GENDER:$2|checkade ut}} sidan $3 för användare $4",
+	"pagecheckout-alertbanner-checkout": "Denna sida är för nuvarande {{GENDER:$1|utcheckad}} för $2",
+	"action-page-checkout-clear": "rensa sidans utcheckning",
+	"right-page-checkout-clear": "Rensa sidans utcheckning"
+}

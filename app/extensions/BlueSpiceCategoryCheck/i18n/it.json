@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dansita",
+			"GpieroMW"
+		]
+	},
+	"bs-categorycheck-extension-description": "Verifica la categoria assegnata prima che un articolo venga salvato",
+	"bs-categorycheck-insertcategory-no-category": "Per favore, assegna una categoria all'articolo",
+	"bs-categorycheck-insertcategory-ignore-no-category": "Ignora",
+	"bs-categorycheck-insertcategory-category-list": "Le seguenti categorie sono impostate",
+	"bs-categorycheck-insertcategory-confirm-categories": "Le categorie sono corrette"
+}

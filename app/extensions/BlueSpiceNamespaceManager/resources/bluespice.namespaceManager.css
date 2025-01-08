@@ -1,0 +1,64 @@
+.ns-manager-option-column .x-column-header-inner {
+	height: 85px;
+	padding: 0;
+}
+
+.bs-extjs-action-column .x-column-header-inner {
+	padding: 5px;
+}
+
+.ns-manager-option-column .x-column-header-text {
+	-webkit-transform: rotate(270deg);
+	-moz-transform: rotate(270deg);
+	-o-transform: rotate(270deg);
+	-ms-transform: rotate(270deg);
+	transform: rotate(270deg);
+	position: absolute;
+	top: 22px;
+	right: -20px;
+	height: 40px;
+}
+
+.ns-manager-option-column .x-column-header-text span {
+	display:block;
+	width: 80px;
+	text-align: center;
+	word-wrap: break-word;
+	white-space: normal ;
+	vertical-align: middle;
+	display: block;
+}
+
+.ns-manager-option-column .x-column-header-text-wrapper {
+	display: relative;
+	height: 80px;
+}
+
+.ns-manager-icon {
+	padding: 10px;
+}
+
+.x-grid-td.ns-manager-icon .x-grid-cell-inner {
+	padding: 0;
+	text-overflow: unset;
+}
+
+.x-action-col-icon.x-hide-display {
+	display: none;
+}
+
+.bs-namespacemanager-column-tristate-true,
+.bs-namespacemanager-column-tristate-false {
+	background-repeat: no-repeat;
+	width: 18px;
+	height: 18px;
+	display: inline-block;
+}
+
+.bs-namespacemanager-column-tristate-true {
+	background-image: url('../../BlueSpiceFoundation/resources/bluespice/images/bs-tick.png');
+}
+
+.bs-namespacemanager-column-tristate-false {
+	background-image: url('../../BlueSpiceFoundation/resources/bluespice/images/bs-cross.png');
+}

@@ -1,0 +1,178 @@
+{
+	"name": "SimpleTasks",
+	"version": "1.1.2",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"[https://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://www.mediawiki.org/wiki/Extension:SimpleTasks",
+	"descriptionmsg": "simple-tasks-desc",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"Checklists": ">= 1.0.0",
+			"AtMentions": ">= 1.0.0",
+			"DateTimeTools": ">= 1.0.0"
+		}
+	},
+	"attributes": {
+		"NotifyMe": {
+			"Events": {
+				"simple-tasks-task": {
+					"buckets": [ "personal" ]
+				}
+			}
+		},
+		"BlueSpiceDiscovery": {
+			"AttentionIndicatorRegistry": {
+				"tasks": "\\SimpleTasks\\AttentionIndicator\\Tasks::factory"
+			}
+		},
+		"UnifiedTaskOverview": {
+			"AttentionIndicatorCollectionRegistry": [
+				"tasks"
+			]
+		},
+		"VisualEditor": {
+			"PluginModules": [
+				"ext.simpletasks.taskreport.nodes"
+			]
+		},
+		"ContentDroplets": {
+			"Droplets": {
+				"taskreport": {
+					"class": "SimpleTasks\\ContentDroplets\\TaskReportDroplet"
+				}
+			}
+		},
+		"MWStakeContentProvisioner": {
+			"ContentManifests": {
+				"DefaultContentProvisioner": [
+					"extensions/SimpleTasks/data/Content/SemanticProperties/manifest.json"
+				]
+			}
+		}
+	},
+	"callback": "mwsInitComponents",
+	"MessagesDirs": {
+		"SimpleTasks": "i18n"
+	},
+	"AutoloadNamespaces": {
+		"SimpleTasks\\": "src/",
+		"SimpleTasks\\Tests\\": "tests/phpunit/"
+	},
+	"ResourceModules": {
+		"ext.simpletasks.taskreport.styles": {
+			"styles": [
+				"stylesheets/taskreport.css"
+			]
+		},
+		"ext.simpletasks.taskreport": {
+			"packageFiles": [
+				"ext.simpletasks.taskreport.bootstrap.js"
+			],
+			"messages": [
+				"simple-tasks-taskreport-no-results",
+				"simple-tasks-taskreport-header-task",
+				"simple-tasks-taskreport-header-assignee",
+				"simple-tasks-taskreport-header-page",
+				"simple-tasks-taskreport-header-due-to",
+				"simple-tasks-taskreport-header-state",
+				"simple-tasks-taskreport-state-title-open",
+				"simple-tasks-taskreport-state-title-done",
+				"simple-tasks-taskreport-state-filter-done",
+				"simple-tasks-taskreport-state-filter-open"
+			],
+			"dependencies": [
+				"ext.oOJSPlus.data"
+			]
+		},
+		"ext.simpletasks.taskreport.nodes": {
+			"scripts": [
+				"bootstrap.js",
+				"nodes/ext.simpletasks.ce.TaskReportNode.js",
+				"nodes/ext.simpletasks.dm.TaskReportNode.js",
+				"nodes/ext.simpletasks.ui.TaskReportInspector.js",
+				"nodes/ext.simpletasks.ui.TaskReportInspectorTool.js"
+			],
+			"messages": [
+				"simple-tasks-taskreport-inspector-title",
+				"simple-tasks-taskreport-inspector-state-done",
+				"simple-tasks-taskreport-inspector-state-open",
+				"simple-tasks-taskreport-inspector-label-user",
+				"simple-tasks-taskreport-inspector-label-namespaces",
+				"simple-tasks-taskreport-inspector-label-due-date",
+				"simple-tasks-taskreport-inspector-label-state"
+			],
+			"dependencies": [
+				"ext.visualEditor.mwcore",
+				"oojs-ui",
+				"mediawiki.widgets.UsersMultiselectWidget",
+				"mediawiki.widgets.NamespacesMultiselectWidget"
+			]
+		},
+		"ext.simpletasks.api": {
+			"scripts": [
+				"api/Api.js"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "SimpleTasks/resources"
+	},
+	"Hooks": {
+		"ChecklistsItemsCreated": "processTasks",
+		"ChecklistsItemsUpdated": "processTasks",
+		"ChecklistsItemsDeleted": "processTasks",
+		"LoadExtensionSchemaUpdates": "runDatabaseUpdates",
+		"UnifiedTaskOverviewGetTaskDescriptors": "integrateIntoUnifiedTaskOverview",
+		"ParserFirstCallInit": "taskReport",
+		"SMW::Store::BeforeDataUpdateComplete": "SimpleTasks\\Hook\\AddSemanticSubobject::onBeforeDataUpdateComplete"
+	},
+	"HookHandlers": {
+		"processTasks": {
+			"class": "SimpleTasks\\Hook\\ProcessTasks",
+			"services": [ "SimpleTaskManager" ]
+		},
+		"runDatabaseUpdates": {
+			"class": "SimpleTasks\\Hook\\RunDatabaseUpdates"
+		},
+		"integrateIntoUnifiedTaskOverview": {
+			"class": "SimpleTasks\\Hook\\IntegrateIntoUnifiedTaskOverview",
+			"services": [ "SimpleTaskManager", "ContentLanguage" ]
+		},
+		"taskReport": {
+			"class": "SimpleTasks\\Hook\\TaskReport"
+		}
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"RestRoutes": [
+		{
+			"path": "/simple_tasks",
+			"class": "SimpleTasks\\Rest\\RetrieveTasks",
+			"services": [ "SimpleTaskManager" ]
+		},
+		{
+			"path": "/simple_tasks/{id}",
+			"class": "SimpleTasks\\Rest\\RetrieveTask",
+			"services": [ "SimpleTaskManager" ]
+		},
+		{
+			"method": "POST",
+			"path": "/simple_tasks/{id}/set_status",
+			"class": "SimpleTasks\\Rest\\UpdateStatus",
+			"services": [ "SimpleTaskManager", "ChecklistManager" ]
+		},
+		{
+			"method": "GET",
+			"path": "/simple_tasks/report/{count}",
+			"class": "SimpleTasks\\Rest\\RetrieveTasksFromFilter",
+			"services": [ "SimpleTaskManager", "UserFactory", "ContentLanguage", "TitleFactory", "PermissionManager" ]
+		}
+	],
+	"manifest_version": 2,
+	"load_composer_autoloader": true
+}

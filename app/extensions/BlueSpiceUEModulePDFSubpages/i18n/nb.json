@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jon Harald Søby"
+		]
+	},
+	"bs-uemodulepdfsubpages-extension-description": "Slår på rekursiv eksport av sider til PDF-format med undersider."
+}

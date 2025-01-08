@@ -1,0 +1,29 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf"
+		]
+	},
+	"bs-socialblog-type": "Blog",
+	"blog": "Blog",
+	"bs-socialblog-entityblog-header-create": "Crea nu blog novu...",
+	"bs-socialblog-var-blogtitle": "Tìtulu",
+	"bs-socialblog-entityblog-content-more-btn-more": "Àutru",
+	"bs-socialblog-special-blog-heading": "Blog",
+	"bs-socialblog-special-blog-heading-entry": "Blog/$1",
+	"bs-social-notifications-blog-create": "L'utenti {{GENDER:$1|$2 criau}} lu novu blog \"$3\"",
+	"bs-social-notifications-email-blog-create-subject": "L'utenti {{GENDER:$1|$2 criau}} lu novu blog \"$3\"",
+	"bs-social-notifications-web-blog-create-body": "{{GENDER:$1|$2 criau}} lu novu blog \"$3\"",
+	"bs-social-notifications-blog-edit": "L'utenti {{GENDER:$1|$2 canciau}} lu blog \"$3\"",
+	"bs-social-notifications-email-blog-edit-subject": "L'utenti {{GENDER:$1|$2 canciau}} lu blog \"$3\"",
+	"bs-social-notifications-email-blog-edit-body": "L'utenti {{GENDER:$1|$2 canciau}} lu blog \"$3\". Lu novu testu è:\n\n$4",
+	"bs-social-notifications-web-blog-edit-body": "{{GENDER:$1|$2 canciau}} lu blog \"$3\"",
+	"bs-social-notifications-blog-delete": "L'utenti {{GENDER:$1|$2 cancillau}} lu blog \"$3\"",
+	"bs-social-notifications-email-blog-delete-subject": "L'utenti {{GENDER:$1|$2 cancillau}} lu blog \"$3\"",
+	"bs-social-notifications-email-blog-delete-body": "L'utenti {{GENDER:$1|$2 cancillau}} lu blog \"$3\"",
+	"bs-social-notifications-web-blog-delete-body": "{{GENDER:$1|$2 cancillau}} lu blog \"$3\"",
+	"bs-social-notification-blog-primary-link-label": "Talìa lu blog",
+	"action-social-blog": "criari e canciari blog",
+	"action-social-blog-comment": "cummentari ntî blog",
+	"right-social-blog-comment": "Cummenta ntî blog"
+}

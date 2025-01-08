@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"BadDog",
+			"Kizule",
+			"Вукан Ц"
+		]
+	},
+	"bs-wikiexplorer-extension-description": "Сортирањее чланака према критеријумима",
+	"wikiexplorer": "Истраживач викија",
+	"bs-wikiexplorer-page-title": "Наслов",
+	"bs-wikiexplorer-page-namespace": "Именски простор",
+	"bs-wikiexplorer-creation-date": "Датум прављења",
+	"bs-wikiexplorer-is-redirect": "је преусмерење",
+	"bs-wikiexplorer-last-comment": "Последњи коментар",
+	"bs-wikiexplorer-last-edit-time": "Датум последњег уређивања",
+	"bs-wikiexplorer-page-size": "Величина",
+	"bs-wikiexplorer-last-author": "Последњи уредник/ца",
+	"bs-wikiexplorer-categories": "Категорије",
+	"bs-wikiexplorer-linked-files": "Повезане датотеке",
+	"bs-wikiexplorer-linked-pages": "Повезане странице",
+	"bs-wikiexplorer-icon-bool-true-aria-label": "проверено",
+	"bs-wikiexplorer-icon-bool-false-aria-label": "непроверено"
+}

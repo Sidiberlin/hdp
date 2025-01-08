@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eukarióta"
+		]
+	},
+	"bs-social-notifications-email-comment-owner-edit-body": "{{GENDER:$1|$2 írt}} egy megjegyzést a bejegyzésekhez. Az általa beírt megjegyzés: „$3”"
+}

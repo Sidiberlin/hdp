@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Rebeccayoga",
+			"Syman51",
+			"Veracious"
+		]
+	},
+	"bs-bookshelf-prof-defaultview-images": "Gambar",
+	"bs-bookshelf-tag-booklist-description": "Ciptakan daftar halaman dari ruang nama \"buku\" dan supaya bisa disaring. Indikasi saringan wajib",
+	"bs-bookshelf-ve-booklistinspector-title": "Daftar buku",
+	"bs-bookshelf-ve-booklist-attr-filter-label": "Saring",
+	"bs-bookshelf-ve-booklist-attr-filter-help": "Saring dengan metadata didalam format key:value, contoh judul:handbook",
+	"bs-bookshelf-tag-bookmeta-description": "Tag digunakan untuk menyimpan variasi meta data di halaman buku. Itu ada di dalam buku. Atribusi tag ini harus korelasi dengan meta data halaman buku",
+	"bs-bookshelf-ve-bookmetainspector-title": "Metabuku",
+	"bs-bookshelf-ve-bookmeta-attr-title-label": "Judul",
+	"bs-bookshelf-ve-bookmeta-attr-subtitle-label": "Subjudul",
+	"bs-bookshelf-ve-bookmeta-attr-subtitle-help": "Atur subtitle buku",
+	"bs-bookshelf-ve-bookmeta-attr-author-label": "Pemilik",
+	"bs-bookshelf-ve-bookmeta-attr-author-help": "Atur pemilik buku",
+	"bs-bookshelf-ve-bookmeta-attr-version-label": "Versi",
+	"bs-bookshelf-ve-bookmeta-attr-version-help": "Atur versi buku",
+	"bs-bookshelf-ve-bookshelf-attr-book-label": "Buku",
+	"bs-bookshelf-ve-bookshelf-attr-book-help": "Pertahankan buku kepada",
+	"bs-bookshelf-actionmenuentry-new-book": "Buku baru"
+}

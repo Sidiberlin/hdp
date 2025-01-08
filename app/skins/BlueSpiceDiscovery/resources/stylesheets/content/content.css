@@ -1,0 +1,99 @@
+#content {
+	font-size: var( --content-font-size );
+	color: var( --content-fg-primary );
+	font-weight: var(--content-font-weight);
+	margin: 0 auto;
+	height: 100%;
+}
+p {
+	font-weight: var(--content-font-weight);
+	line-height: 150%;
+	margin-top: 0.5rem;
+	margin-bottom: 0.5rem;
+}
+.p-sm {
+	font-size: 0.8rem;
+	/* 0.8 * 16px = 12.8 */
+	font-size: calc(0.8534 * var(--content-font-size));
+}
+
+.mw-body-content a:not( [class*="oo-ui-"] ),
+[class^="mw-content-"] a:not( [class*="oo-ui-"] ) {
+	color: var(--link-fg);
+	font-size: inherit;
+	font-weight: inherit;
+	text-decoration: none;
+}
+.mw-body-content a.new:not( [class*="oo-ui-"] ),
+[class^="mw-content-"] a.new:not( [class*="oo-ui-"] ) {
+	color: var(--new-link-fg);
+}
+.mw-body-content a:visited.new:not( [class*="oo-ui-"] ),
+[class^="mw-content-"] a:visited.new:not( [class*="oo-ui-"] ) {
+	color: var(--new-link-fg);
+}
+.mw-body-content a.stub,
+[class^="mw-content-"] a.stub {
+	color: var(--stub-link-fg);
+}
+.mw-body-content a:hover:not( [class*="oo-ui-"] ),
+[class^="mw-content-"] a:hover:not( [class*="oo-ui-"] ) {
+	text-decoration: underline;
+}
+.mw-body-content a:visited:not( [class*="oo-ui-"] ),
+[class^="mw-content-"] a:visited:not( [class*="oo-ui-"] ) {
+	color: var(--link-fg);
+}
+.mw-body-content a:focus {
+	text-decoration: underline;
+}
+/* external links in content.externallinks.less due to backgroundimage settings */
+
+pre {
+	font-family: monospace, Courier;
+	/* 0.8 * 16px = 12.8 */
+	font-size: calc(0.8534 * var(--content-font-size));
+	margin: 2rem 0;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+pre, .mw-code {
+	background-color: var( --content-box-color );
+	padding: 1rem;
+}
+code {
+	font-family: monospace, Courier;
+	color: var( --content-fg-primary );
+	background-color: var( --content-box-color );
+	border-radius: 5px;
+	padding: 2px 4px;
+}
+dd {
+	margin-left: 1.5rem;
+}
+.floatleft {
+	float: left;
+	clear: left;
+	margin: 0 1rem 1rem 0;
+}
+.center {
+	text-align: center;
+}
+.floatright {
+	float: right;
+	clear: right;
+	margin: 0 0 1rem 1rem;
+}
+.floatleft + ul, .floatright + ul {
+	display: inline-block;
+}
+
+.floatleft + ol, .floatright + ol {
+	display: inline-block;
+}
+blockquote {
+	border-left: 2px solid var( --primary-bg );
+	border-radius: 2px;
+	padding: 0.5rem 1rem;
+	background-color: #F5F5F7;
+}

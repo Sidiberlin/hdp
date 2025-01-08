@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"DDPAT",
+			"Ice bulldog",
+			"Pacha Tchernof",
+			"Yurina Tatiana"
+		]
+	},
+	"bs-socialcomments-desc": "Функциональность комментариев для BlueSpiceSocial",
+	"bs-socialcomments-type": "Комментарий",
+	"bs-socialcomments-commenttext": "{{PLURAL:$1|Комментарий|Комментариев}} ($1)",
+	"bs-socialcomments-header-create": "Ответ здесь…",
+	"bs-socialcomments-header": "[[User:$1|$2]] прокомментировал «[[$6|$7]]»",
+	"bs-social-notification-comment-primary-link-label": "Посмотреть комментарий",
+	"bs-social-notification-comment-parentowner-label": "Автор сообщения: $1",
+	"bs-social-notification-comment-parententity-label": "Посмотреть сообщение",
+	"bs-social-comment-event-create-desc": "Новый комментарий",
+	"bs-social-comment-event-edit-desc": "Комментарий изменён",
+	"bs-social-comment-event-delete-desc": "Комментарий удалён",
+	"bs-social-comment-event-own-delete-desc": "Комментарий к вашей записи удалён"
+}

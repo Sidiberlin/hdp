@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Cwlin0416",
+			"Kly",
+			"列维劳德",
+			"捍粵者"
+		]
+	},
+	"bs-saferedit-desc": "若其他使用者在編輯頁面時提供警告",
+	"bs-saferedit-user-editing": "$1 {{PLURAL:$2|正在}}{{GENDER:$1|編輯}}頁面",
+	"bs-saferedit-someone-editing": "有人在編輯頁面",
+	"bs-saferedit-pref-interval": "查看同時編輯的間隔：",
+	"bs-saferedit-pref-shownameofeditinguser": "顯示目前編輯者的名稱",
+	"bs-saferedit-pref-interval-help": "設定以秒數為單位，檢查是否有其他人在編輯頁面的時間。",
+	"bs-saferedit-pref-shownameofeditinguser-help": "將目前正在編輯頁面的使用者顯示成在頁面頂端的提示訊息。"
+}

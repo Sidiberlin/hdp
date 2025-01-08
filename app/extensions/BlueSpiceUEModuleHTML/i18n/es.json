@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"DiegoAmbrocio",
+			"Fitoschido"
+		]
+	},
+	"bs-uemodulehtml-extension-description": "Permite exportar a HTML",
+	"bs-uemodulehtml-pref-DefaultTemplate": "Plantilla estándar",
+	"bs-uemodulehtml-pref-SuppressNS": "Ocultar el prefijo del espacio de nombres en HTML",
+	"bs-uemodulehtml-pref-Backend": "Motor",
+	"bs-uemodulehtml-widgetlink-single-text": "Página única HTML (archivador)",
+	"bs-uemodulehtml-overview-title": "Documento HTML (archivador)",
+	"bs-uemodulehtml-overview-description": "Exporta páginas (especiales y de contenido) como HTML.",
+	"bs-uemodulehtml-pref-suppressns-help": "El espacio de nombres de la página se omite en el título HTML."
+}

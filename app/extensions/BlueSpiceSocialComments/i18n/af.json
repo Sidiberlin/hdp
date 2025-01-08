@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Rooiratel"
+		]
+	},
+	"bs-socialcomments-commenttext": "{{PLURAL:$1|Opmerking|Opmerkings}} ($1)",
+	"bs-socialcomments-header": "[[User:$1|$2]] het opmerkings \"[[$6|$7]]\" gemaak"
+}

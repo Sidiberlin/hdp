@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"Lizalizaufa",
+			"Азат Хәлилов",
+			"Аҡҡашҡа",
+			"З. ӘЙЛЕ"
+		]
+	},
+	"bs-universalexport-desc": "MediaWiki-ға биттәрҙе төрлө форматтарға күсерергә ярҙам итә",
+	"prefs-universalexport": "Универсаль сығарыу",
+	"universalexport": "Универсаль сығарыу",
+	"bs-universalexport-pref-metadatadefaults": "Метамәғлүмәт (стандарт, JSON):",
+	"bs-universalexport-pref-metadataoverrides": "Метамәғлүмәттәр (яңынан билдәләнгән, JSON):",
+	"bs-universalexport-page-title-without-param": "Универсаль сығарыу: Модулдәр",
+	"bs-universalexport-page-title-on-error": "Универсаль сығарыу: Хата",
+	"bs-universalexport-page-text-without-param": "Был бит универсаль экспорттың  рөхсәт ителгән модулдәре тураһындағы мәғлүмәтен сағылдыра.",
+	"bs-universalexport-page-text-without-param-no-modules-registered": "Теркәлгән модулдәр юҡ.",
+	"bs-universalexport-widget-title": "Сығарырға",
+	"bs-universalexport-widget-tooltip": "Ағымдағы биттәрҙе сығарыу",
+	"bs-universalexport-tag-pagebreak-text": "Бит өҙөлгән",
+	"bs-universalexport-tag-exclude-text": "Был текст сығарылмаясаҡ.",
+	"bs-universalexport-tag-hidetitle-text": "Был биттең исеме сығарыуҙа күренмәйәсәк",
+	"bs-universalexport-tag-excludearticle-text": "Был бит сығарылак алмай.",
+	"bs-universalexport-tag-pagebreak-desc": "Һайланған сығарыу модулен ҡабул иткәндә, был тамға сығарыу документында битте өҙөүгә килтерә.",
+	"bs-universalexport-tag-noexport-desc": "Был тамға эсендә булған нимә сығарылмай.",
+	"bs-universalexport-tag-meta-desc": "Экспортланыусы документҡа ирекле мета-мәғлүмәттәрҙе өҫтәү мөмкинлеге бирә.",
+	"bs-universalexport-tag-params-desc": "Сығарыу өсөн махсус параметрҙар күрһәтергә мөмкинлек бирә. Параметрҙың анализланыуы һайланған сығарыу модуленә бәйле.",
+	"bs-universalexport-error-requested-export-module-not-found": "Һоралған формат файҙаланыласаҡ.",
+	"bs-universalexport-error-permission": "Битте экспортлау өсөн хоҡуҡтарығыҙ етерлек түгел.",
+	"bs-universalexport-error-requested-title-in-category-blacklist": "Һоралған бит экспортланмаясаҡ, сөнки \"ҡара исемлек\"кә индерелгән.",
+	"action-universalexport-export": "сығарыу файлын булдырыу",
+	"right-universalexport-export": "Сығарыу файлын булдырыу"
+}

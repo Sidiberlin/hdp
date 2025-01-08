@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"SolidBlock",
+			"YulouCN",
+			"孟天皓"
+		]
+	},
+	"vector-skin-desc": "给杂清新的样子再加上好多吧多可用性的新MonoBook",
+	"vector-languages": "言语",
+	"vector-language-button-label": "{{PLURAL:$1|$1}} 種語言",
+	"vector-no-language-button-label": "新增語言",
+	"vector-action-addsection": "搞杂话题",
+	"vector-action-delete": "消嘎",
+	"vector-action-move": "移走",
+	"vector-action-protect": "免修",
+	"vector-action-undelete": "还原",
+	"vector-action-unprotect": "换杂保护",
+	"vector-view-create": "弄噶",
+	"vector-view-edit": "增改",
+	"vector-view-history": "履歷",
+	"vector-view-view": "讀",
+	"vector-view-viewsource": "望下代碼",
+	"vector-more-actions": "更多",
+	"vector-searchsuggest-containing": "搜尋包含 <strong class=\"cdx-typeahead-search__search-footer__query\">$1</strong> 亇頁面",
+	"vector-toc-beginning": "序言"
+}

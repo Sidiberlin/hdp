@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong"
+		]
+	},
+	"importofficefiles-ui-action-import-msword-text": "워드 파일 가져오기",
+	"importofficefiles-ui-action-import-msword-title": "마이크로소프트 워드 파일로부터 문서 만들기",
+	"importofficefiles-api-storage-error-no-valid-module": "이 파일을 처리하기 위해 사용할 수 있는 모듈이 없습니다"
+}

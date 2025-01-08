@@ -1,0 +1,37 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Guycn2",
+			"Steeve815",
+			"YaronSh",
+			"שוקו מוקה"
+		]
+	},
+	"bluespicecategorymanager": "ניהול קטגוריות",
+	"bluespicecategorymanager-desc": "כלי חזותי לניהול קטגוריות",
+	"action-categorymanager-viewspecialpage": "לצפות בדף ניהול הקטגוריות",
+	"bs-categorymanager-text": "קטגוריות",
+	"bs-categorymanager-draganddrop-text": "יש לגרור ולשחרר כדי לארגן מחדש",
+	"bs-categorymanager-label": "ניהול קטגוריות",
+	"bs-categorymanager-dlg-new-title": "יצירת קטגוריה",
+	"bs-categorymanager-dlg-new-prompt": "נא להזין את השם:",
+	"bs-categorymanager-removecategoryconfirm-text": "האם ברצונך למחוק קטגוריה זו?",
+	"bs-categorymanager-removecategoryconfirm-title": "הסרת קטגוריה",
+	"bs-categorymanager-addcategory-dialog-error-title": "יצירת הקטגוריה נכשלה",
+	"bs-categorymanager-action-show-category": "הצגת הקטגוריה",
+	"bs-categorymanager-collection-type-categorizedpages": "הקצאת קטגוריות",
+	"bs-categorymanager-collection-var-namespacename": "מרחב שם",
+	"bs-categorymanager-collection-var-categorizedpages": "דפים עם קטגוריות",
+	"bs-categorymanager-collection-var-uncategorizedpages": "דפים ללא קטגוריות",
+	"bs-categorymanager-rename-category-new-name": "שם לקטגוריה החדשה:",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-title": "הקטגוריה כבר קיימת",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "נא לנסות שם קטגוריה אחר",
+	"right-categorymanager-viewspecialpage": "גישה לדף המיוחד [[Special:BlueSpiceCategoryManager]]",
+	"bs-categorymanager-rename-category": "שינוי שם הקטגוריה",
+	"bs-categorymanager-move-new-name": "הגדרת שם הקטגוריה החדש. שם חדש:",
+	"bs-categorymanager-replace-in-pages": "לשנות את השם בדף:",
+	"bs-categorymanager-statistics-report-category-pages": "דפים בקטגוריות",
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "מספר הדפים",
+	"bs-categorymanager-category-column-name": "שם הקטגוריה"
+}

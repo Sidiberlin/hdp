@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"drawioeditor-desc": "Создавање на тековен диаграм со draw.io и негово уредување во редови",
+	"drawioeditor-approved-editwarning": "Имајте предвид дека сега ја уредувате најновата преработка на овој дијаграм, која не е одобрената што се прикажува по основно.",
+	"drawioeditor-approved-displaywarning": "Ова е одобрената преработка на дијаграмот, а не последната преработка.",
+	"drawioeditor-noapproved": "Дијаграмот $1 нема одобрена преработка.",
+	"drawioeditor-approve-link": "Стиснете тука за да одобрите преработка",
+	"drawioeditor-changeapprove-link": "Стискете тука за да ја смените одобрената преработка за дијаграмов",
+	"drawio-usage": "Се користи со ознаката draw.io",
+	"drawio-not-used": "Нема страници со оваа слика од draw.io",
+	"drawioconnector-ve-drawio-title": "Дијаграм од draw.io",
+	"drawioconnector-ve-drawio-tag-name": "Име",
+	"drawioconnector-ve-drawio-tag-name-help": "Име на дијаграмот како што е складиран на викито",
+	"drawioconnector-ve-drawio-tag-name-placeholder": "Дијаграм-1",
+	"drawio-droplet-name": "Дијаграм",
+	"drawio-droplet-description": "Уредлив draw.io-дијаграм",
+	"drawioconnector-ve-drawio-alt-label": "Опис на сликата",
+	"drawioconnector-ve-drawio-alt-help": "Текстот што се прикажува кога сликата не се вчитува или за помошни уреди"
+}

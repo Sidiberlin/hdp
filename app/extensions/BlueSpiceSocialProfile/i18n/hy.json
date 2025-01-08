@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac",
+			"Սերգեյ Սաֆարյան"
+		]
+	},
+	"bs-social-profile-field-phone": "Հեռախոսահամար",
+	"bs-socialprofile-ve-socialentityprofile-attr-username-label": "Օգտանուն",
+	"bs-socialprofile-tag-socialentityprofile-attr-rendertype-option-list": "Ցանկ",
+	"bs-socialprofile-tag-socialentityprofile-attr-rendertype-option-page": "Էջ"
+}

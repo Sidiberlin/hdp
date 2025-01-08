@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kimmie023"
+		]
+	},
+	"bs-bookshelf-pref-SupressBookNS": "ກະລຸນາຢ່າຈົ່ງຊ່ອງວ່າງ ຄໍານໍາຫນ້າຂອງບົດຄວາມຫນັງສືໃນຜົນທີ່ໄດ້ຮັບ",
+	"bs-bookshelf-pref-PrependPageTOCNumbers": "ຕື່ມໃສ່ຕາຕະລາງເນື້ອໃນຂອງບົດຄວາມ ແລະຫົວເລື່ອງດ້ວຍຕົວເລກປຶ້ມ",
+	"apihelp-bs-bookshelf-store-param-tempBooks": "ບັນຊີລາຍຊື່ຂອງຫນັງສືຢູ່ໃນຮ້ານທ້ອງຖິ່ນຂອງລູກຄ້າທີ່ຄວນຈະຖືກລວມເຂົ້າໃນຄໍາຕອບຂອງຮ້ານຄ້າ"
+}

@@ -1,0 +1,34 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Dejan Savuljesku",
+			"Patric Wirth"
+		]
+	},
+	"bs-socialcomments-desc": "{{desc|name=BlueSpiceSocialComments}}",
+	"bs-socialcomments-type": "Label for option \"comment\" in entry field \"type\"\n{{Identical|Comment}}",
+	"bs-socialcomments-commenttext": "Comments text. Use PLURAL.\n$1 is the number of comments",
+	"bs-socialcomments-header-create": "Header for a comment entry, that is not yet existing{{Identical|Comment}}",
+	"bs-socialcomments-header": "Headline for a \"comment\" entry. should link to the owners user page [[User:$1|User:$1]] and the source page of the entry [[$6|$6]] this comment was made on\n* $1 - Username of the owner of this entry\n* $2 - Real name of the owner of this entry\n* $3 - Main part of title of the source page, this entry is saved in as json data\n* $4 - Namespace number of the page, this entry is saved in as json data\n* $5 - Namespace name of the page, this entry is saved in as json data\n* $6 - Full text of the entries source page, the comment was made on.\n* $7 - Header of the entry, the comment was made on",
+	"bs-socialcomments-var-commentcount": "Label for entry field \"commentcount\".\n{{Identical|Comment count}}",
+	"bs-social-comment-event-create": "Notification message when somebody makes a comment",
+	"bs-social-comment-event-create-desc": "Event type label",
+	"bs-social-comment-event-own-create": "Notification message when somebody makes a comment on a post created by the user receiving the notification\n$1 - agent,\n$2 - page anchor",
+	"bs-social-comment-event-own-create-desc": "Event type label",
+	"bs-social-comment-event-edit": "Notification message when somebody edits a comment\n$1 - agent,\n$2 - page anchor",
+	"bs-social-comment-event-edit-desc": "Event type label",
+	"bs-social-comment-event-own-edit": "Notification message when somebody edits a comment on a post created by the user receiving the notification\n$1 - agent,\n$2 - page anchor",
+	"bs-social-comment-event-own-edit-desc": "Event type label",
+	"bs-social-comment-event-delete": "Notification message when somebody deletes a comment\n$1 - agent,\n$2 - page anchor",
+	"bs-social-comment-event-delete-desc": "Event type label",
+	"bs-social-comment-event-own-delete": "Notification message when somebody deletes a comment on a post created by the user receiving the notification\n$1 - agent,\n$2 - page anchor",
+	"bs-social-comment-event-own-delete-desc": "Event type label",
+	"bs-social-notification-comment-primary-link-label": "Label for the email primary link button",
+	"bs-social-comment-for-user-event-create": "Notification message when somebody creates a comment on user's page\n$1 - agent,\n$2 - page anchor",
+	"bs-social-comment-for-user-event-create-desc": "Event type label",
+	"bs-social-comment-for-user-event-edit": "Notification message when somebody edits a comment on user's page\n$1 - agent,\n$2 - page anchor",
+	"bs-social-comment-for-user-event-edit-desc": "Event type label",
+	"bs-social-comment-for-user-event-delete": "Notification message when somebody deletes a comment on user's page\n$1 - agent,\n$2 - page anchor",
+	"bs-social-comment-for-user-event-delete-desc": "Event type label"
+}

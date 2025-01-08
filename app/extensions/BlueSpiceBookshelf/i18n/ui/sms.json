@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yupik"
+		]
+	},
+	"bs-bookshelfui-widget-editor-link-text": "Muuʹtt tän ǩeeʹrj",
+	"bs-bookshelfui-new-book-title": "Raaj ođđ ǩeeʹrj",
+	"bs-bookshelfui-delete-book-title": "Jaukkâd ǩeeʹrj",
+	"bs-bookshelfui-edit-source": "Muuʹtt seeid wikiteeʹkst",
+	"bs-bookshelfui-open-source": "Muuʹtt seeid wikiteeʹkst",
+	"bs-bookshelfui-ctxmnu-open": "Ääʹved seeid jeeʹres ikknest",
+	"bs-bookshelfui-ctxmnu-tag-edit": "Muuʹtt asetõõzzid",
+	"bs-bookshelfui-dlg-tagsettings-title": "Ǩeâlggal asetõõzz",
+	"bs-bookshelfui-dlg-copy-title": "Kopiââʹst \"$1\"",
+	"bs-bookshelfui-dlg-choosecategory-label": "Kategoria",
+	"bs-bookshelfui-dlg-type-label": "Teâttkäivv",
+	"bs-bookshelfui-type-category": "Kategoria puk seeid",
+	"bs-bookshelfui-type-subpages": "Puk seeid vueʹllseeid",
+	"bs-bookshelfui-dlg-choosepc-label": "Seiddnorldõk",
+	"bs-bookshelfui-type-pagecollection": "Seiddnorldõk",
+	"bs-bookshelfui-book-title-link-edit": "Muuʹtt ǩeeʹrj",
+	"bs-bookshelfui-book-title-link-edit-text": "Muuʹtt ǩeeʹrj",
+	"bs-bookshelfui-bookmetatag-version": "Versio",
+	"bs-bookshelfui-extjs-tooltip-copy": "Kopiââʹst",
+	"bs-bookshelfui-prof-defaultview-images": "Kaart da snimldõõǥǥ",
+	"bs-bookshelfui-dlg-copy-name-addition": "(kopio)"
+}

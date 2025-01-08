@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Winston Sung"
+		]
+	},
+	"nsfilerepo-desc": "Daje osobine za rad s postavljenim datotekama zvisno od imenskog prostora",
+	"nsfilerepo-upload-target": "Odredišno ime datoteke u imen. prostoru",
+	"nsfilerepo-nsmain": "(Glavno)",
+	"nsfilerepo-reupload-namespaceselector-disabled-helptext": "Ovo se polje ne može mijenjati prilikom ponovnog otpremanja datoteke",
+	"nsfilerepo-move-file-namespace-dialog-button-done": "Gotovo",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "Otkaži",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "Imenski prostor",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "Imenski prostor"
+}

@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Esketti",
+			"Mainframe98",
+			"McDutchie",
+			"Sjoerddebruin",
+			"Vistaus",
+			"Xbaked potatox"
+		]
+	},
+	"bs-uemodulepdf-desc": "Hiermee kan MediaWiki pagina's exporteren naar PDF-indeling",
+	"prefs-uemodulepdf": "Universele exporteren van PDF-module",
+	"uemodulepdf": "Universele exporteren van PDF-module",
+	"bs-uemodulepdf-pref-suppressns": "Naamruimtevoorvoegsel in de PDF verbergen",
+	"bs-uemodulepdf-widgetlink-single-no-attachments-text": "PDF van één pagina",
+	"bs-uemodulepdf-widgetlink-single-no-attachments-title": "Exporteer deze pagina als PDF.",
+	"bs-uemodulepdf-overview-title": "Overdraagbaar documentformaat (PDF)",
+	"bs-uemodulepdf-overview-desc": "Exporteert de pagina's (speciale pagina's en inhoudspagina's) naar PDF.",
+	"bs-uemodulepdf-overview-webservice-state": "Backend-status",
+	"bs-uemodulepdf-overview-webservice-state-ok": "beschikbaar",
+	"bs-uemodulepdf-overview-webservice-state-not-ok": "niet beschikbaar",
+	"soap-service-url-not-valid": "De URL van de webdienst voor het genereren van PDF is niet geldig. Controleer de wiki-configuratie.",
+	"soap-service-url-not-set": "De URL van de webdienst voor het genereren van PDF is niet ingesteld. Controleer de wiki-configuratie.",
+	"bs-uemodulepdf-overview-webservice-webadmin": "Backend-webinterface",
+	"action-uemodulepdf-export": "een pagina naar PDF te exporteren",
+	"right-uemodulepdf-export": "Pagina's naar PDF exporteren",
+	"bs-uemodulepdf-widgetlink-subpages-text": "PDF-pagina met subpagina's",
+	"bs-uemodulepdf-widgetlink-subpages-title": "Deze pagina en alle subpagina's exporteren in PDF.",
+	"action-uemodulepdfsubpages-export": "een pagina met alle subpagina's in PDF te exporteren",
+	"right-uemodulepdfsubpages-export": "Een pagina met alle subpagina's in PDF exporteren",
+	"bs-uemodulepdf-widgetlink-recursive-text": "PDF-pagina met gekoppelde pagina's",
+	"bs-uemodulepdf-widgetlink-recursive-title": "Deze pagina en alle gekoppelde pagina's exporteren in PDF.",
+	"right-uemodulepdfrecursive-export": "Een pagina met alle gekoppelde pagina's in PDF exporteren",
+	"action-uemodulepdfrecursive-export": "een pagina met alle gekoppelde pagina's in PDF te exporteren",
+	"bs-uemodulepdf-pref-suppressns-help": "De naamruimte van de pagina wordt weggelaten uit de PDF-titel.",
+	"bs-uemodulepdf-export-dialog-label-module-name": "Pdf-pagina",
+	"bs-uemodulepdf-export-dialog-label-select-submodule": "Bereik",
+	"bs-uemodulepdf-export-dialog-label-select-template": "Indeling",
+	"bs-uemodulepdf-export-dialog-label-submodule-default": "Alleen deze pagina",
+	"bs-uemodulepdf-export-dialog-label-submodule-recursive": "Recursief gekoppelde pagina's opnemen",
+	"bs-uemodulepdf-export-dialog-label-submodule-subpages": "Onderliggende pagina's opnemen"
+}

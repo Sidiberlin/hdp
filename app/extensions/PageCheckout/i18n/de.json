@@ -1,0 +1,35 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mschlindwein",
+			"TMg"
+		]
+	},
+	"pagecheckout-desc": "Erlaubt exklusive Rechte auf einer Seite für einen Benutzer",
+	"pagecheckout-error-no-title": "Ungültiger Titel",
+	"pagecheckout-error-no-user": "Ungültiger Benutzer angegeben",
+	"pagecheckout-error-has-checkout": "Seite bereits ausgecheckt",
+	"pagecheckout-error-save-failed": "Diese Seite konnte nicht ausgecheckt werden",
+	"pagecheckout-error-no-checkout": "Eine Seite, die derzeit nicht ausgecheckt ist, kann nicht eingecheckt werden",
+	"pagecheckout-error-no-checkout-id": "Check-in fehlgeschlagen! Keine Checkout-ID gesetzt",
+	"pagecheckout-error-db-insert": "Einfügen des Checkouts fehlgeschlagen",
+	"pagecheckout-error-db-retrieve-inserted": "Der zuvor eingefügte Checkout kann nicht abgerufen werden",
+	"pagecheckout-error-save-event": "Ereignis speichern fehlgeschlagen",
+	"pagecheckout-lockdown-reason": "Aktion \"$1\" ist nicht erlaubt, da die Seite durch $2 ausgecheckt ist",
+	"pagecheckout-action-clear-label": "Checkout aufheben",
+	"apihelp-pagecheckout-clear-example": "Checkout für Hauptseite aufheben",
+	"apihelp-pagecheckout-clear-summary": "Aktiven Seiten-Checkout aufheben",
+	"apihelp-pagecheckout-clear-param-page_title": "Titel der Seite auf der Checkouts aufgehoben werden sollen",
+	"pagecheckout-ui-clear-confirm": "Bestätigst du die Aufhebung des aktiven Checkouts auf dieser Seite? Dadurch wird die Seite für alle normalerweise berechtigten Benutzer bearbeitbar",
+	"log-name-pagecheckout": "Seiten-Checkouts",
+	"log-description-pagecheckout": "Erfasst den Status der Seiten-Checkouts und Checkins",
+	"logentry-pagecheckout-checkin": "$1 {{GENDER:$2| hat }} die Seite $3, die für den Benutzer $4 ausgecheckt war, eingecheckt",
+	"logentry-pagecheckout-checkout": "$1 {{GENDER:$2| hat }} die Seite $3 für den Benutzer $4 ausgecheckt",
+	"pagecheckout-alertbanner-checkout": "Diese Seite ist derzeit für $2 {{GENDER:$1|ausgecheckt}}",
+	"action-page-checkout-clear": "den Checkout der Seite aufzuheben",
+	"right-page-checkout-clear": "Checkout der Seite aufheben",
+	"pagecheckout-alertbanner-checkout-with-comment": "Die Seite ist aktuell für $2 {{GENDER:$1|ausgecheckt}}. Kommentar: $3",
+	"page-checkout-workflow-activity-checkout-reason": "Diese Seite ist derzeit aufgrund eines laufenden Workflows ausgecheckt",
+	"page-checkout-workflow-activity-checkout-non-generic-reason": "Während der Workflow-Ausführung ausgecheckt",
+	"page-checkout-workflow-clear-checkout": "Checkout aufgrund Abbruch des Workflows aufgehoben"
+}

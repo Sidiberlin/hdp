@@ -1,0 +1,33 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nokeoo"
+		]
+	},
+	"bs-prodistributionconnector-desc": "Sujungia BlueSpice su įvairiais MediaWiki plėtiniais",
+	"bs-pro-distribution-droplet-pro-con-list-name": "Pliusai ir minusai",
+	"bs-pro-distribution-droplet-pro-con-list-desc": "Lentelė, skirta palyginti pliusus ir minusus",
+	"bs-pro-distribution-droplet-math-name": "Matematinė formulė",
+	"bs-pro-distribution-droplet-math-desc": "Matematinių formulių rodymas",
+	"bs-pro-distribution-droplet-chem-name": "Cheminė formulė",
+	"bs-pro-distribution-droplet-chem-desc": "Cheminių formulių rodymas",
+	"bs-pro-distribution-droplet-modal-dialog-name": "Modalinis mygtukas",
+	"bs-pro-distribution-droplet-modal-dialog-desc": "Konfigūruojamas mygtukas, kuris atidaro pritaikomą modalinį dialogą",
+	"bs-pro-distribution-droplet-decision-name": "Sprendimas",
+	"bs-pro-distribution-droplet-decision-desc": "Paryškina sprendimą kaip puslapio savybę",
+	"bs-pro-distribution-droplet-smw-report-name": "Duomenų užklausa",
+	"bs-pro-distribution-droplet-smw-report-desc": "Įgalina užklausas dėl viki turinio",
+	"droplets-smw-report-count-label": "Skaičius",
+	"droplets-smw-report-ns-label": "Vardų sritis",
+	"droplets-smw-report-cat-label": "Kategorija",
+	"droplets-smw-report-modified-label": "Modifikacija",
+	"droplets-pro-con-advantages-title-label": "Privalumų pavadinimas",
+	"droplets-pro-con-advantages-label": "Privalumai",
+	"droplets-pro-con-disadvantages-title-label": "Trūkumų pavadinimas",
+	"droplets-pro-con-disadvantages-label": "Trūkumai",
+	"droplets-modal-dialog-btn-label": "Mygtuko tekstas",
+	"droplets-modal-dialog-title-label": "Dialogo pavadinimas",
+	"droplets-modal-dialog-body-label": "Turinys dialogui",
+	"droplets-modal-dialog-footer-label": "Dialogo poraštė",
+	"droplets-decision-label": "Sprendimas"
+}

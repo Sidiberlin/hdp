@@ -1,0 +1,40 @@
+[
+	{
+		"name": "collabpad_session",
+		"comment": "Collabpads - Stores collabpad sessions ",
+		"columns": [
+			{
+				"name": "s_id",
+				"type": "integer",
+				"options": { "length": 6, "unsigned": true, "notnull": true, "autoincrement": true }
+			},
+			{
+				"name": "s_page_title",
+				"comment": "foreign key to page.page_title",
+				"type": "binary",
+				"options": { "length": 255, "notnull": false, "default": "null" }
+			},
+			{
+				"name": "s_page_namespace",
+				"comment": "foreign key to page.page_namespace",
+				"type": "integer",
+				"options": { "length": 11, "notnull": false, "default": 0 }
+			},
+			{
+				"name": "s_owner",
+				"comment": "foreign key to collabpad_author.author_id",
+				"type": "binary",
+				"options": { "length": 255, "notnull": false, "default": "null" }
+			},
+			{
+				"name": "s_participants",
+				"type": "blob",
+				"options": { "length": 65535, "notnull": true }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"s_id"
+		]
+	}
+]

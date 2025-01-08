@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eduardo Addad de Oliveira",
+			"Eduardoaddad",
+			"McDutchie"
+		]
+	},
+	"bs-socialresolve-desc": "Funcionalidade de resolução para entidades BlueSpiceSocial",
+	"bs-socialresolve-status-resolved": "Resolvido",
+	"bs-socialresolve-status-notresolved": "Não resolvido",
+	"bs-socialresolve-var-resolved": "Resolver status",
+	"apihelp-bs-socialresolve-tasks-summary": "Fornece tarefas para editar o status de resolução de entidades",
+	"action-social-resolve": "alterar o status de resolução das entradas",
+	"right-social-resolve": "Alterar o status de resolução das entradas"
+}

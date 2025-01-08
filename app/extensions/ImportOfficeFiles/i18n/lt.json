@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nokeoo"
+		]
+	},
+	"importofficefiles-desc": "Leidžia importuoti „Office“ failus kaip viki puslapius",
+	"importofficefiles-ui-action-import-msword-text": "Importuoti Word failą",
+	"importofficefiles-ui-action-import-msword-title": "Sukurkite puslapius iš „Microsoft Word“ failo",
+	"importofficefiles-ui-import-dialog-title": "Importuoti failą",
+	"importofficefiles-ui-import-completed": "Importavimas baigtas!",
+	"importofficefiles-ui-import-in-progress": "Importuojama ...",
+	"importofficefiles-ui-dialog-action-cancel": "Atšaukti",
+	"importofficefiles-ui-dialog-action-import": "Importuoti",
+	"importofficefiles-ui-dialog-action-next": "Kitas",
+	"importofficefiles-ui-dialog-action-back": "Atgal",
+	"importofficefiles-ui-dialog-action-done": "Atlikta",
+	"importofficefiles-ui-dialog-label-select-file": "Pasirinkti failą",
+	"importofficefiles-ui-dialog-configuration-settings-title": "Konfigūruoti importavimo nustatymus",
+	"importofficefiles-ui-dialog-settings-page-title": "Pavadinimas",
+	"importofficefiles-ui-dialog-settings-pagetitle-label": "Pasirinkite naujo puslapio pavadinimą",
+	"importofficefiles-ui-dialog-settings-structure-label": "Turinio struktūra",
+	"importofficefiles-ui-dialog-settings-structure-label-checkbox": "Padalinti turinį puslapiuose",
+	"importofficefiles-ui-dialog-settings-conflicts-title": "Nesuderinama su puslapio pavadinimu",
+	"importofficefiles-ui-dialog-settings-conflicts-behavior-label": "Elgsena, jei puslapio pavadinimas jau yra",
+	"importofficefiles-ui-dialog-settings-conflicts-rename": "Pervadinti",
+	"importofficefiles-ui-dialog-settings-conflicts-override": "Perrašyti",
+	"importofficefiles-ui-dialog-settings-choose-split-level-label": "Pasirinkite lygį, kuriuo puslapiai turėtų būti padalinti",
+	"importofficefiles-ui-dialog-settings-split-level-1": "1 lygio antraštės",
+	"importofficefiles-ui-dialog-settings-split-level-2": "2 lygio antraštės",
+	"importofficefiles-ui-dialog-settings-split-level-3": "3 lygio antraštės",
+	"importofficefiles-ui-dialog-preview-title": "Peržiūra",
+	"importofficefiles-ui-dialog-preview-label": "Bus importuoti šie puslapiai",
+	"importofficefiles-ui-dialog-link-import-files-text": "Importuotų failų, eksportuotų į $1 sąrašas",
+	"importofficefiles-api-storage-error-no-available-file": "Nėra prieinamų įkeltų failų",
+	"importofficefiles-api-storage-error-save-temp": "Neįmanoma laikinai išsaugoti",
+	"importofficefiles-api-storage-error-no-valid-module": "Nėra modulio šiam failui tvarkyti",
+	"importofficefiles-ui-progress-import-images-step": "Importuojami paveikslėliai...",
+	"importofficefiles-ui-progress-import-pages-step": "Importuojami puslapiai...",
+	"importofficefiles-ui-progress-remove-files-step": "Šalinami laikini failai...",
+	"importofficefiles-ui-import-error": "Importuojant įvyko klaida.",
+	"importofficefiles-ui-analyze-error": "Dėl kažkokios priežasties analizės procesas nepavyko."
+}

@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			")8",
+			"A Chinese Wikipedian",
+			"Wzl19371"
+		]
+	},
+	"bs-socialwikipage-type": "Wiki頁面",
+	"bs-socialwikipage-entitystash-header-create": "新附件",
+	"bs-socialwikipage-aftercontent-heading": "附件",
+	"wikipagestash": "附件",
+	"bs-socialwikipage-stash-insertfiledialog-title": "添加文件",
+	"bs-socialwikipage-stash-insertfiledialog-btn-save-label": "添加",
+	"bs-socialwikipage-stash-editor-attachedfile-delete": "删除",
+	"bs-socialwikipage-stash-editor-attachedfile-add": "加入"
+}

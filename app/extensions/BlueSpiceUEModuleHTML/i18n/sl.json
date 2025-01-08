@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eleassar"
+		]
+	},
+	"bs-uemodulehtml-extension-description": "Omogoča izvoz v HTML",
+	"bs-uemodulehtml-pref-DefaultTemplate": "Standardna predloga",
+	"bs-uemodulehtml-pref-SuppressNS": "Skrij predpono imenskega prostora v HTML",
+	"bs-uemodulehtml-pref-Backend": "Zaledje",
+	"bs-uemodulehtml-widgetlink-single-text": "Ena stran HTML (arhivirana)",
+	"bs-uemodulehtml-widgetlink-single-title": "Izvozite to stran kot HTML skupaj z njenimi viri kot arhiv",
+	"bs-uemodulehtml-overview-title": "HTML-dokument (arhiviran)",
+	"bs-uemodulehtml-overview-description": "Izvozi strani (posebne strani in strani z vsebino) v HTML.",
+	"bs-uemodulehtml-pref-suppressns-help": "Imenski prostor strani je izpuščen iz naslova HTML-ja.",
+	"bs-uemodulehtml-export-dialog-label-module-name": "Ena HTML-stran (arhivirana)"
+}

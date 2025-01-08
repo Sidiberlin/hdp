@@ -1,0 +1,158 @@
+==Attendees==
+Who attended this meeting?
+
+==Announcements / focus points==
+Who is absent this week? What are our goals for this week? What is important for meeting participants to know?
+{| class="wikitable" style="width:100%;" 
+!'''Who'''
+!'''What'''
+!'''When'''
+! style="vertical-align:middle;text-align:center;" |'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="vertical-align:middle;text-align:left;width:20%;" class="list" | not started / in progress / done
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="vertical-align:middle;text-align:left;width:20%;" |
+|}
+
+==Cockpit==
+===Company situation / KPIs /Reports===
+{| class="wikitable" style="width:100%;"
+!'''Area'''
+!'''What'''
+!'''Evaluation / Action'''
+|-
+| style="width:20%;" |Project management
+| style="width:60%;" |
+*Billable time this week: 
+*Active customers this week:
+| style="width:20%;" |
+|-
+| style="width:20%;" |Sales
+| style="width:60%;" |
+*Orders: 
+*Offers: 
+*Leads: 
+| style="width:20%;" |
+|-
+| style="width:20%;" |Billing
+| style="width:60%;" |
+*planned billing amount (Mon):  EUR
+*invoiced billing amount (Fri):  EUR
+*Invoice amount from new orders:  EUR
+| style="width:20%;" |
+|}
+
+==Department==
+===Finance and Billing===
+{| class="wikitable" style="width:100%;"
+!'''Who'''
+!'''What'''
+!'''When'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |not started / in progress / done
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}
+
+===Marketing and Sales===
+{| class="wikitable" style="width:100%;" 
+!'''Who'''
+!'''What'''
+!'''When'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |not started / in progress / done
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}
+
+===Projects, Service and Support===
+{| class="wikitable" style="width:100%;" 
+!'''Who'''
+!'''What'''
+!'''When'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |not started / in progress / done
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}
+
+===Product Development===
+{| class="wikitable" style="width:100%;" 
+!'''Who'''
+!'''What'''
+!'''When'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |not started / in progress / done
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}
+
+===Technology and Infrastructure===
+{| class="wikitable" style="width:100%;" 
+!'''Who'''
+!'''What'''
+!'''When'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |not started / in progress / done
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}
+
+===Internal organization===
+{| class="wikitable" style="width:100%;" 
+!'''Who'''
+!'''What'''
+!'''When'''
+!'''Status'''
+|-
+| style="width:10%;" |
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |not started / in progress / done
+|-
+| style="width:10%;" |..
+| style="width:50%;" |
+| style="width:10%;" |
+| style="width:20%;" |
+|}

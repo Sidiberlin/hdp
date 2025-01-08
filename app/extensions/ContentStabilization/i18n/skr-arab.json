@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saraiki"
+		]
+	},
+	"right-contentstabilization-stabilize": "ورقے منظور کرو",
+	"action-contentstabilization-stabilize": "ورقہ منظور کرو",
+	"contentstabilization-pageinfoelement-versionswitch-show-diff-label": "فرق ݙکھاؤ",
+	"contentstabilization-pageinfoelement-versionswitch-show-diff-tooltip": "فرق ݙکھاؤ",
+	"contentstabilization-pageinfoelement-pagestatus-accept": "ورقے منظور کرو",
+	"contentstabilization-pageinfoelement-pagestatus-is-unstable-text": "ڈرافٹ",
+	"contentstabilization-pageinfoelement-pagestatus-is-unstable-title": "ڈرافٹ ورژن",
+	"contentstabilization-pageinfoelement-pagestatus-is-first-unstable-title": "پہلا ڈرافٹ ورژن",
+	"contentstabilization-pageinfoelement-pagestatus-is-stable-text": "منظور تھی ڳیا",
+	"contentstabilization-ui-approve-title": "ورقہ منظور کرو",
+	"contentstabilization-ui-approve-approve": "منظور",
+	"contentstabilization-ui-approve-cancel": "منسوخ",
+	"contentstabilization-ui-approve-comment": "تبصرہ",
+	"contentstabilization-label-stabilize-ns": "منظوری",
+	"contentstabilization-export-no-stable-date": "منظور کائنی تھیا",
+	"contentstabilization-export-laststable-tag-text": "منظور تھی ڳیا:",
+	"contentstabilization-export-stablerevisiondate-tag-text": "دہرائی: $1",
+	"contentstabilization-status-stable": "منظور تھی ڳیا",
+	"contentstabilization-status-unstable": "ڈرافٹ",
+	"contentstabilization-status-first-unstable": "پہلا ڈرافٹ",
+	"contentstabilization-overview-header-title": "ورقہ",
+	"contentstabilization-overview-header-status": "حالت",
+	"contentstabilization-column-last-stable": "منظور تھی ڳیا",
+	"contentstabilization-no-stable": "منظور کائنی تھیا",
+	"contentstabilization-stabilizationhistory-stabledate": "منظوری دی تریخ",
+	"contentstabilization-stabilizationhistory-title": "ورقہ",
+	"contentstabilization-stabilizationhistory-comment": "تبصرہ",
+	"contentstabilization-stabilizationhistory-stableversionstabletitle": "منظور تھئے ورقے",
+	"contentstabilization-overview-header-page-id": "ورقے دی آئی ڈی",
+	"contentstabilization-versionhistory-grid-header-state": "حالت",
+	"contentstabilization-versionhistory-grid-header-approver": "ولوں منظور تھیا",
+	"contentstabilization-versionhistory-grid-header-approval-date": "منظوری دی تریخ",
+	"contentstabilization-versionhistory-grid-header-approval-comment": "منظوری تبصرہ",
+	"contentstabilization-stablepoint-added-links-view-changes": "تبدیلیاں ݙکھاؤ"
+}

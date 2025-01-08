@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hwboehm",
+			"Metalhead64",
+			"Stephan Muggli <muggli@hallowelt.biz>"
+		]
+	},
+	"bs-saferedit-desc": "Stellt Warnungen bereit, falls andere Benutzer die Seite bearbeiten.",
+	"bs-saferedit-user-editing": "$1 {{PLURAL:$2|bearbeitet|bearbeiten}} die Seite gerade",
+	"bs-saferedit-someone-editing": "Die Seite wird gerade bearbeitet",
+	"bs-saferedit-pref-interval": "Intervall zur Suche nach konkurrierenden Bearbeitungen:",
+	"bs-saferedit-pref-shownameofeditinguser": "Name des aktuellen Bearbeiters anzeigen",
+	"bs-saferedit-pref-interval-help": "Zeit in Sekunden, in der die gleichzeitige Seitenbearbeitung überprüft wird.",
+	"bs-saferedit-pref-shownameofeditinguser-help": "Zeigt die aktuellen Bearbeiter als Hinweis am Beginn der Seite an."
+}

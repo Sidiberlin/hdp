@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Milicevic01"
+		]
+	},
+	"checklists-checkbox-dlg-action-done": "Урађено",
+	"checklists-checkbox-dlg-action-cancel": "Откажи",
+	"checklists-checkbox-dlg-hide-revision-label": "Не приказуј поново ову поруку"
+}

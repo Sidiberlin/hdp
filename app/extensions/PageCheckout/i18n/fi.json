@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"MITO",
+			"Nike"
+		]
+	},
+	"pagecheckout-error-no-title": "Virheellinen otsikko",
+	"pagecheckout-error-save-event": "Tapahtuman tallennus epäonnistui"
+}

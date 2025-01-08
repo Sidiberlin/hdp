@@ -1,0 +1,30 @@
+{
+	"Template:ChatbotMeta": {
+		"lang": "en",
+		"target_title": "Template:ChatbotMeta",
+		"content_path": "/pages/Template/ChatbotMeta.wiki",
+		"sha1": "eacbd8409f0cf5b887283a43621b95ff23fa2279",
+		"old_sha1": []
+	},
+	"Vorlage:ChatbotMeta": {
+		"lang": "de",
+		"target_title": "Vorlage:ChatbotMeta",
+		"content_path": "/pages/Template/ChatbotMeta.wiki",
+		"sha1": "eacbd8409f0cf5b887283a43621b95ff23fa2279",
+		"old_sha1": []
+	},
+	"Property:Chatbotmeta": {
+		"lang": "en",
+		"target_title": "Property:Chatbotmeta",
+		"content_path": "/pages/Property/Chatbotmeta.wiki",
+		"sha1": "bbacff28d3aecbde783579d1e45f7e1ca87973dd",
+		"old_sha1": []
+	},
+	"Attribut:Chatbotmeta": {
+		"lang": "de",
+		"target_title": "Attribut:Chatbotmeta",
+		"content_path": "/pages/Property/Chatbotmeta.wiki",
+		"sha1": "bbacff28d3aecbde783579d1e45f7e1ca87973dd",
+		"old_sha1": []
+	}
+}

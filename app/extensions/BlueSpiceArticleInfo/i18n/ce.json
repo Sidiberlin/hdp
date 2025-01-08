@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"prefs-articleinfo": "АгӀонан хаам",
+	"bs-articleinfo-pref-CheckRevisionInterval": "Карлайаккхаран йукъ (секундашкахь):",
+	"bs-articleinfo-flyout-title": "АгӀонан хаам",
+	"bs-articleinfo-nav-link-title": "АгӀонан хаам",
+	"bs-articleinfo-flyout-categorylinks-title": "Категореш",
+	"bs-articleinfo-flyout-templatelinks-title": "АгӀонгахь лелош йолу кепаш",
+	"bs-articleinfo-flyout-lasteditedtime-text": "ТӀаьххьара нисдар",
+	"bs-articleinfo-flyout-lastediteduser-text": "ТӀаьххьара редактор",
+	"bs-articleinfo-flyout-subpages-title": "Бухара агӀонаш",
+	"bs-articleinfo-pagetool-subpages-tooltip": "Бухара агӀонаш",
+	"bs-articleinfo-dialog-subpages-title": "Бухара агӀонаш"
+}

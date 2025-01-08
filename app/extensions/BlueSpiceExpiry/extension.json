@@ -1,0 +1,278 @@
+{
+	"name": "BlueSpiceExpiry",
+	"version": "4.5.2",
+	"license-name": "GPL-3.0-only",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceExpiry",
+	"author": [ "Sebastian Ulbricht", "Markus Glaser" ],
+	"descriptionmsg": "bs-expiry-extension-description",
+	"requires": {
+		"MediaWiki": ">= 1.39.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 4.3",
+			"BlueSpiceReminder": ">= 4.3"
+		}
+	},
+	"type": "bluespice",
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceExpiry": {
+					"className": "\\BlueSpice\\Expiry\\Extension",
+					"extPath": "/BlueSpiceExpiry",
+					"package": "BlueSpice Pro"
+				}
+			},
+			"ConfigDefinitionRegistry": {
+				"ExpiryEnablePDFWatermark": "\\BlueSpice\\Expiry\\ConfigDefinition\\EnablePDFWatermark::getInstance",
+				"ExpiryEnablePageWatermark": "\\BlueSpice\\Expiry\\ConfigDefinition\\EnablePageWatermark::getInstance",
+				"ExpiryEnablePrintWatermark": "\\BlueSpice\\Expiry\\ConfigDefinition\\EnablePrintWatermark::getInstance"
+			},
+			"PermissionRegistry": {
+				"expirearticle": {
+					"type": "namespace",
+					"roles": [
+						"admin",
+						"editor",
+						"maintenanceadmin"
+					]
+				},
+				"expiry-delete": {
+					"type": "namespace",
+					"roles": [
+						"admin",
+						"editor",
+						"maintenanceadmin"
+					]
+				}
+			},
+			"@AlertProviderRegistry": {
+				"bs-expiry-expired": "\\BlueSpice\\Expiry\\AlertProvider\\ExpiryState::factory"
+			},
+			"PageInfoElementRegistry": {
+				"bs-expiry-expired": "\\BlueSpice\\Expiry\\PageInfoElement\\Expired::factory"
+			},
+			"RunJobsTriggerHandlerRegistry": {
+				"bs-expiry-send-daily": "\\BlueSpice\\Expiry\\RunJobsTriggerHandler\\SendNotification\\Daily::factory",
+				"bs-expiry-send-weekly": "\\BlueSpice\\Expiry\\RunJobsTriggerHandler\\SendNotification\\Weekly::factory",
+				"bs-expiry-log-expirations": "\\BlueSpice\\Expiry\\RunJobsTriggerHandler\\LogExpirations::factory"
+			}
+		},
+		"BlueSpiceEchoConnector": {
+			"NotificationIcons": {
+				"expiry": {
+					"path": "BlueSpiceExpiry/resources/images/bs-infobar-expired.png"
+				}
+			}
+		},
+		"BlueSpiceReminder": {
+			"Registry": {
+				"expiry": "\\BlueSpice\\Expiry\\Reminder\\Expiry::factory"
+			}
+		},
+		"BlueSpiceSMWConnector": {
+			"ExtraPropertyRegistry": {
+				"expirationdate": "BlueSpice\\Expiry\\SMWConnector\\PropertyValueProvider\\ExpirationDate::factory",
+				"isexpired": "BlueSpice\\Expiry\\SMWConnector\\PropertyValueProvider\\IsExpired::factory"
+			}
+		},
+		"NotifyMe": {
+			"Events": {
+				"bs-expiry-today": {
+					"spec": {
+						"class": "\\BlueSpice\\Expiry\\Event\\ExpiryToday"
+					},
+					"buckets": [ "qm" ]
+				},
+				"bs-expiry-one-week": {
+					"spec": {
+						"class": "\\BlueSpice\\Expiry\\Event\\ExpiryInOneWeek"
+					},
+					"buckets": [ "qm" ]
+				}
+			}
+		}
+
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"GroupPermissions": {
+		"*": {
+			"expirearticle": false,
+			"expiry-delete": false
+		},
+		"user": {
+			"expirearticle": true,
+			"expiry-delete": true
+		},
+		"sysop": {
+			"expirearticle": true,
+			"expiry-delete": true
+		}
+	},
+	"AvailableRights": [
+		"expirearticle",
+		"expiry-delete"
+	],
+	"SpecialPages": {
+		"Expiry": "SpecialExpiry"
+	},
+	"APIModules": {
+		"bs-expiry-tasks": "ApiExpiryTasks",
+		"bs-expiry-store": "ApiExpiryStore"
+	},
+	"MessagesDirs": {
+		"BlueSpiceExpiry": [
+			"i18n"
+		]
+	},
+	"ExtensionMessagesFiles": {
+		"ExpiryAlias": "languages/SpecialExpiry.alias.php"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\Expiry\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"BlueSpice\\Expiry\\Tests\\": "tests/phpunit"
+	},
+	"AutoloadClasses": {
+		"SpecialExpiry": "includes/specials/SpecialExpiry.php",
+		"ApiExpiryTasks": "includes/api/ApiExpiryTasks.php",
+		"ApiExpiryStore": "includes/api/ApiExpiryStore.php",
+		"ExpiryHooks": "includes/ExpiryHooks.php"
+	},
+	"ResourceModules": {
+		"ext.bluespice.expiry.special": {
+			"scripts": [
+				"bluespice.expiry.special.js"
+			],
+			"messages": [
+				"bs-expiry-header-pagename",
+				"bs-expiry-header-date",
+				"bs-expiry-text-delete",
+				"bs-expiry-title-delete",
+				"bs-expiry-header-comment"
+			],
+			"dependencies": [
+				"ext.bluespice.expiry.dialog.pages",
+				"ext.bluespice.extjs",
+				"ext.bluespice.Expiry"
+			]
+		},
+		"ext.bluespice.Expiry": {
+			"scripts": "bluespice.expiry.js",
+			"dependencies": "ext.bluespice"
+		},
+		"ext.bluespice.expiry.watermark.styles": {
+			"styles": "bluespice.expiry.watermark.css"
+		},
+		"ext.bluespice.expiry.dialoginfo.pages": {
+			"scripts": [
+				"bluespice.expiry.ExpiryInformationPage.js"
+			],
+			"messages": [
+				"bs-expiry-info-dialog",
+				"bs-expiry-info-dialog-button-label",
+				"bs-expiry-info-dialog-expired",
+				"bs-expiry-info-dialog-current",
+				"bs-expiry-info-dialog-expiry-not-set",
+				"bs-expiry-info-dialog-comment"
+			],
+			"dependencies": [
+				"ext.bluespice"
+			]
+		},
+		"ext.bluespice.expiry.dialog.pages": {
+			"scripts": [
+				"ui/page/CreateReminderPromptPage.js",
+				"ui/page/ChangeDatePage.js",
+				"ui/page/ExpiryPage.js",
+				"ui/page/DeleteExpiryPage.js"
+			],
+			"messages": [
+				"bs-expiry-dialog-title",
+				"bs-expiry-date-label",
+				"bs-expiry-delete-error-unknown",
+				"bs-expiry-comment-label",
+				"bs-expiry-article-label",
+				"bs-expiry-create-reminder-label",
+				"bs-expiry-dialog-delete-prompt",
+				"bs-expiry-dialog-create-reminder-prompt",
+				"bs-expiry-dialog-create-reminder-title",
+				"bs-expiry-dialog-action-no"
+			],
+			"dependencies": [
+				"ext.oOJSPlus.dialogs",
+				"mediawiki.widgets.DateInputWidget",
+				"mediawiki.widgets",
+				"ext.oOJSPlus.widgets"
+			]
+		},
+		"ext.bluespice.expiry.liveRegionStatusUpdater": {
+			"scripts": "bluespice.expiry.liveRegionStatusUpdater.js",
+			"messages": [
+				"bs-expiry-pageinfoelement-expired-tooltip"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceExpiry/resources"
+	},
+	"config_prefix": "bsg",
+	"config": {
+		"ExpiryEnablePDFWatermark": {
+			"value": true,
+			"descriptionmsg": "bs-expiry-pref-enablepdfwatermark",
+			"public": true
+		},
+		"ExpiryEnablePageWatermark": {
+			"value": true,
+			"descriptionmsg": "bs-expiry-pref-enablepagewatermark",
+			"public": true
+		},
+		"ExpiryEnablePrintWatermark": {
+			"value": true,
+			"descriptionmsg": "bs-expiry-pref-enableprintwatermark",
+			"public": true
+		}
+	},
+	"HookHandlers": {
+		"common-user-interface": {
+			"class": "\\BlueSpice\\Expiry\\HookHandler\\CommonUserInterface"
+		},
+		"discovery-skin": {
+			"class": "\\BlueSpice\\Expiry\\HookHandler\\DiscoverySkin"
+		},
+		"standard-dialogs": {
+			"class": "\\BlueSpice\\Expiry\\HookHandler\\StandardDialogs"
+		},
+		"addExpiryCreateEntry": {
+			"class": "\\BlueSpice\\Expiry\\HookHandler\\AddExpiryCreateEntry"
+		},
+		"liveRegionStatusUpdater": {
+			"class": "\\BlueSpice\\Expiry\\HookHandler\\LiveRegionStatusUpdater"
+		}
+	},
+	"Hooks": {
+		"SkinTemplateNavigation::Universal": "addExpiryCreateEntry",
+		"BeforePageDisplay": [
+			"\\BlueSpice\\Expiry\\Hook\\BeforePageDisplay\\AddResources::callback",
+			"\\BlueSpice\\Expiry\\Hook\\BeforePageDisplay\\AddPageWatermark::callback",
+			"\\BlueSpice\\Expiry\\Hook\\BeforePageDisplay\\AddPrintWatermark::callback",
+			"liveRegionStatusUpdater"
+		],
+		"BSUEModulePDFgetPage": "\\BlueSpice\\Expiry\\Hook\\BSUEModulePDFgetPage\\AddPDFWatermarkClass::callback",
+		"BSUEModulePDFBeforeAddingStyleBlocks": "\\BlueSpice\\Expiry\\Hook\\BSUEModulePDFBeforeAddingStyleBlocks\\AddPDFWatermarkStyles::callback",
+		"wgQueryPages": "ExpiryHooks::onQueryPages",
+		"LoadExtensionSchemaUpdates": "\\BlueSpice\\Expiry\\Hook\\LoadExtensionSchemaUpdates\\AddExpiryTable::callback",
+		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface",
+		"BlueSpiceDiscoveryTemplateDataProviderAfterInit": "discovery-skin",
+		"StandardDialogsRegisterPageInfoPanelModules": "standard-dialogs"
+	},
+	"LogTypes": [ "bs-expiry" ],
+	"LogActionsHandlers": {
+		"bs-expiry/*": "LogFormatter"
+	},
+	"manifest_version": 2
+}

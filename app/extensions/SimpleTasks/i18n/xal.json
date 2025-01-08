@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ukhant Erdemt",
+			"Алия"
+		]
+	},
+	"simple-tasks-desc": "Кергләчнрт зөрүлсн даалһвр үүскх",
+	"simple-tasks-task-duedate": "Эцсин хуһцан: $1",
+	"simple-tasks-task-desc": "Халхин аһулһд үүсксн даллһвр",
+	"simple-tasks-notif-key": "Даалһвр даалһх",
+	"simple-tasks-notif-message": "танд даалһвр өгсн: \"$1\"",
+	"simple-tasks-taskreport-no-results": "Суңһсн шүүртә даалһвр олдсн уга",
+	"simple-tasks-taskreport-header-task": "Даалһвр",
+	"simple-tasks-taskreport-header-assignee": "Төмлгдсн",
+	"simple-tasks-taskreport-header-page": "Халх деер һарч ирнә",
+	"simple-tasks-taskreport-header-due-to": "Эцсин хуһцан",
+	"simple-tasks-taskreport-header-state": "Бәәдл",
+	"simple-tasks-droplet-taskreport-name": "Даалһврин тәәлвр",
+	"simple-tasks-droplet-taskreport-description": "Даалһврин төөмиг үүскнә",
+	"simple-tasks-taskreport-inspector-title": "Даалһврин тәәлвр",
+	"simple-tasks-taskreport-inspector-state-done": "кегдв",
+	"simple-tasks-taskreport-inspector-state-open": "неех",
+	"simple-tasks-taskreport-inspector-label-user": "Төмлгдсн",
+	"simple-tasks-taskreport-inspector-label-namespaces": "Нердин орн-зә",
+	"simple-tasks-taskreport-inspector-label-due-date": "Күртл",
+	"simple-tasks-taskreport-inspector-label-state": "Бәәдл",
+	"simple-tasks-taskreport-state-title-open": "Даалһвр неелттә",
+	"simple-tasks-taskreport-state-title-done": "Даалһвр кегдв",
+	"simple-tasks-taskreport-state-filter-done": "Кегдв",
+	"simple-tasks-taskreport-state-filter-open": "Неех"
+}

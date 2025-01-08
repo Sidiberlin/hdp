@@ -1,0 +1,35 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robby",
+			"Volvox"
+		]
+	},
+	"oojsplus-color-picker-color-blue": "Blo",
+	"oojsplus-color-picker-color-red": "Rout",
+	"oojsplus-color-picker-color-green": "Gréng",
+	"oojsplus-color-picker-color-yellow": "Giel",
+	"oojsplus-color-picker-color-orangered": "Orangerout",
+	"oojsplus-color-picker-color-olive": "Olivgréng",
+	"oojsplus-color-picker-color-pink": "Rosa",
+	"oojsplus-data-delete-row-prompt": "Sidd Dir sécher, datt Dir dës Zeil läsche wëllt?",
+	"oojsplus-data-paginator-page-total-count-label": "{{PLURAL:$1|$1 Rei|$1 Reien}}",
+	"oojsplus-data-tree-item-remove-label": "Ewechhuelen",
+	"oojsplus-stepprogressbar-default-final-label": "Fäerdeg",
+	"oojsplus-dialog-action-done": "Fäerdeg",
+	"oojsplus-dialog-action-delete": "Läschen",
+	"oojsplus-dialog-action-add": "Derbäisetzen",
+	"oojsplus-dialog-action-cancel": "Ofbriechen",
+	"oojsplus-data-grid-filter-label": "Filteren",
+	"oojsplus-data-grid-filter-clear": "Eidel maachen",
+	"oojsplus-data-grid-filter-number-value": "Wäert",
+	"oojsplus-data-grid-grouper-no-group": "(keng Grupp)",
+	"oojsplus-data-grid-selection-column-label": "Eraussichen",
+	"oojsplus-data-grid-filter-update-results": "$1 {{PLURAL:$1|Resultat|Resultater}} fonnt",
+	"oojsplus-data-grid-toolbar-settings-aria-label": "Astellungen",
+	"oojsplus-data-grid-filter-title": "Filter $1",
+	"oojsplus-data-grid-filter-list-with-value": "Filter $1 mam Wäert $2",
+	"oojsplus-data-paginator-last": "Lescht Säit",
+	"oojsplus-data-grid-filter-boolean-true": "Jo",
+	"oojsplus-data-grid-filter-boolean-false": "Neen"
+}

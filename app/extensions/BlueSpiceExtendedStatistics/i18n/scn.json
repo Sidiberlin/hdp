@@ -1,0 +1,40 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf"
+		]
+	},
+	"bs-statistics-year": "Annu",
+	"bs-statistics-month": "Misi",
+	"bs-statistics-day": "Jornu",
+	"bs-statistics-list": "Elencu",
+	"bs-statistics-filters": "Filtri",
+	"bs-statistics-diag-number-of-users": "Nùmmiri di utenti criati",
+	"bs-statistics-label-name": "Nomu",
+	"bs-statistics-diag-number-of-pages": "Nùmmiru di pàggini criati",
+	"bs-statistics-label-page": "Pàggina",
+	"bs-statistics-label-creator": "Criaturi",
+	"bs-statistics-diag-number-of-edits": "Nùmmiru di canciamenti",
+	"bs-statistics-diag-edits-per-user": "Canciamenti pi utenti",
+	"bs-statistics-filter-category": "Catigurìa",
+	"bs-statistics-portlet-numberofusers": "Nùmmiru di utenti",
+	"bs-statistics-portlet-numberofedits": "Nùmmiru di canciamenti",
+	"bs-statistics-portlet-numberofpages": "Nùmmiru di pàggini",
+	"bs-statistics-portlet-numberofarticles": "Nùmmir di pàggini di cuntinutu",
+	"bs-statistics-portlet-numberofusersdesc": "Statistìca dû nùmmiru di utenti.",
+	"bs-statistics-portlet-numberofeditsdesc": "Statistìca dû nùmmiru di canciamentii.",
+	"bs-statistics-portlet-numberofpagesdesc": "Statistìca dû nùmmiru di pàggini.",
+	"bs-statistics-portlet-numberofarticlesdesc": "Statistìca dû nùmmiru di pàggini di cuntinutu.",
+	"bs-statistics-portletconfig-periodday": "Aieri",
+	"bs-statistics-panel-title-result": "Risurtatu",
+	"bs-statistics-aggregated-report-filter-category-multi": "Catigurìi",
+	"bs-statistics-aggregated-report-filter-interval-day": "Jornu",
+	"bs-statistics-aggregated-report-filter-interval-week": "Simana",
+	"bs-statistics-aggregated-report-filter-interval-month": "Misi",
+	"bs-statistics-aggregated-report-filter-interval-year": "Annu",
+	"bs-statistics-aggregated-report-filter-namespace": "Namespace",
+	"bs-statistics-aggregated-report-filter-namespaces": "Namespace",
+	"bs-statistics-aggregated-report-filter-page": "Pàggina",
+	"bs-statistics-aggregated-report-filter-user": "Utenti",
+	"bs-statistics-aggregated-report-filter-user-multi": "Utenti"
+}

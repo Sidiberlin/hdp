@@ -1,0 +1,33 @@
+{
+	"@metadata": {
+		"authors": [
+			"DiegoAmbrocio",
+			"Eulalio",
+			"Fitoschido",
+			"Macofe"
+		]
+	},
+	"bs-socialblog-type": "Blog",
+	"blog": "Blog",
+	"bs-socialblog-entityblog-header-create": "Crear un nuevo blog...",
+	"bs-socialblog-var-blogtitle": "Título",
+	"bs-socialblog-entityblog-content-more-btn-more": "Más",
+	"bs-socialblog-entityblog-content-more-btn-less": "Menos",
+	"bs-socialblog-special-blog-heading": "Blog",
+	"bs-socialblog-special-blog-heading-entry": "Blog/$1",
+	"bs-social-notification-blog-primary-link-label": "Ver blog",
+	"action-social-blog": "crear y editar blogs",
+	"action-social-blog-comment": "comentar en los blogs",
+	"right-social-blog": "Crear y editar blogs",
+	"right-social-blog-comment": "Comentarios en los blogs",
+	"bs-socialblog-config-mainlinks-blog-label": "Mostrar punto de entrada \"Blog\"",
+	"bs-socialblog-config-mainlinks-blog-help": "Mostrar el enlace \"Blog\" en la navegación izquierda",
+	"bs-socialblog-type-groupblog": "Blog del grupo",
+	"bs-socialblog-groupblog-permission-error": "El usuario no puede realizar la acción",
+	"bs-social-event-blog-create-desc": "Creó una nueva entrada de blog.",
+	"bs-social-event-blog-edit-desc": "Publicación de blog editada",
+	"bs-social-event-blog-delete-desc": "Se borró la publicación del blog",
+	"bs-social-event-blog-create": "{{GENDER:$1|creado}} una nueva publicación de blog \"$2\"",
+	"bs-social-event-blog-edit": "{{GENDER:$1|editado}} publicación de blog \"$2\"",
+	"bs-social-event-blog-delete": "{{GENDER:$1|eliminado}} publicación de blog \"$2\""
+}

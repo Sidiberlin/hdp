@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Sabelöga"
+		]
+	},
+	"bs-player-extension-description": "Bäddar in en mediespelare på en sida.",
+	"bs-player-pref-autostart": "Starta automatiskt video",
+	"bs-player-file-does-not-exist": "Filen finns inte.",
+	"bs-player-tag-showtime-desc": "Taggen låter dig bädda in en video.",
+	"bs-player-unsupported-type": "Den här filtypen stöds inte.",
+	"bs-player-config-prefwidth": "Standardbredd för videor",
+	"bs-player-config-prefheight": "Standardhöjd för videor"
+}

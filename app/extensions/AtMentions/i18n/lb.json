@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Volvox"
+		]
+	},
+	"at-mentions-inspector-title": "E Benotzer ernimmen",
+	"at-mentions-echo-mention-notification-summary": "Dir sidd op der Säit $1 ernimmt ginn",
+	"at-mentions-echo-mention-notification-email-body": "Dir sidd op der Säit $1 ernimmt ginn",
+	"at-mentions-echo-mention-entity-notification-summary": "Dir sidd an engem Kommentar oder engem Post op $1 ernimmt ginn",
+	"at-mentions-echo-mention-entity-notification-email-body": "Dir sidd an engem Kommentar vun engem Post op der Säit $1 ernimmt ginn",
+	"at-mentions-mentionslist-header-all": "{{GENDER:$2|De Benotzer|D'Benotzerin}} [[User:$2|$2]] gouf op dëse Säiten ernimmt:"
+}

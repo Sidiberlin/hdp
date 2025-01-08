@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"WaldiSt"
+		]
+	},
+	"bs-pro-distribution-droplet-pro-con-list-name": "Plusy i minusy",
+	"bs-pro-distribution-droplet-chem-name": "Wzór chemiczny",
+	"bs-pro-distribution-droplet-chem-desc": "Wyświetlanie wzorów chemicznych",
+	"droplets-smw-report-cat-label": "Kategoria",
+	"droplets-modal-dialog-title-label": "Tytuł dialogu",
+	"droplets-modal-dialog-footer-label": "Stopka dialogu"
+}

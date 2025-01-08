@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yurina Tatiana"
+		]
+	},
+	"bs-uemodulehtml-extension-description": "Позволяет экспортировать в HTML",
+	"bs-uemodulehtml-pref-DefaultTemplate": "Стандартный шаблон",
+	"bs-uemodulehtml-pref-SuppressNS": "Скрыть префикс пространства имён в HTML"
+}

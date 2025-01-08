@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fraxinus.cs"
+		]
+	},
+	"bs-expiry-menu-entry-create": "Nastavení platnosti",
+	"bs-expiry-menu-entry-manage": "Upravit platnost",
+	"bs-expiry-info-dialog": "Platnost článku",
+	"bs-expiry-info-dialog-button-label": "Správa platnosti",
+	"bs-expiry-dialog-delete-prompt": "Opravdu chcete vymazat platnost pro tento článek?",
+	"bs-expiry-error-invalid-date": "Neplatné datum",
+	"bs-expiry-dialog-create-reminder-prompt": "Přejete si vytvořit upozornění pro tento článek?",
+	"bs-expiry-dialog-create-reminder-title": "Vytvořit upozornění",
+	"bs-expiry-dialog-action-no": "Ne"
+}

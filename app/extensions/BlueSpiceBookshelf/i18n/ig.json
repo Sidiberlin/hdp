@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Meritkosy"
+		]
+	},
+	"bs-bookshelf-action-editbook-create": "Dezie ebeosi",
+	"apihelp-bs-books-overview-store-summary": "Na-edepụta akwụkwọ niile gụnyere nchekwa akwụkwọ, njikọ isiakwụkwọ nke mbụ na omume.",
+	"books": "Akwụkwọ",
+	"bs-books-overview-page-bookshelf-various-books": "Akwụkwọ dị iche iche",
+	"bs-books-overview-page-book-actions-dropdown-menu-aria-label": "Omume ndị ọzọ maka akwụkwọ a",
+	"bs-books-overview-page-book-actions-dropdown-menu-title": "Omume ndị ọzọ maka akwụkwọ a",
+	"bs-books-overview-page-book-anchor-title": "Mepee peeji mbụ nke akwụkwọ $1",
+	"bs-books-overview-page-book-anchor-aria-label": "Mepee peeji mbụ nke akwụkwọ $1",
+	"bs-books-overview-page-book-action-edit-text": "Dezie",
+	"bs-books-overview-page-book-action-edit-title": "Dezie akwụkwọ $1",
+	"bs-books-overview-page-book-action-delete-text": "Hichapu",
+	"bs-books-overview-page-book-action-delete-title": "Hichapụ akwụkwọ $1"
+}

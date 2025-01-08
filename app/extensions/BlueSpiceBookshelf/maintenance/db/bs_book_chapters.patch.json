@@ -1,0 +1,146 @@
+{
+	"before": {
+		"name": "bs_book_chapters",
+		"columns": [
+			{
+				"name": "chapter_id",
+				"type": "integer",
+				"options": {
+					"unsigned": true,
+					"notnull": true,
+					"autoincrement": true
+				}
+			},
+			{
+				"name": "chapter_book_namespace",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			},
+			{
+				"name": "chapter_book_title",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			},
+			{
+				"name": "chapter_page_namespace",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			},
+			{
+				"name": "chapter_page_title",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			},
+			{
+				"name": "chapter_title",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			},
+			{
+				"name": "chapter_number",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			},
+			{
+				"name": "chapter_type",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			}
+		],
+		"indexes": [
+			{
+				"name": "chapter_id_idx",
+				"columns": [
+					"chapter_id"
+				],
+				"unique": false
+			}
+		],
+		"pk": [
+			"chapter_id"
+		]
+	},
+	"after": {
+		"name": "bs_book_chapters",
+		"columns": [
+			{
+				"name": "chapter_id",
+				"type": "integer",
+				"options": {
+					"unsigned": true,
+					"notnull": true,
+					"autoincrement": true
+				}
+			},
+			{
+				"name": "chapter_book_id",
+				"type": "integer",
+				"options": {
+					"unsigned": true,
+					"notnull": true
+				}
+			},
+			{
+				"name": "chapter_namespace",
+				"type": "binary",
+				"options": {
+					"length": 255,
+					"notnull": false
+				}
+			},
+			{
+				"name": "chapter_title",
+				"type": "binary",
+				"options": {
+					"length": 255,
+					"notnull": false
+				}
+			},
+			{
+				"name": "chapter_name",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			},
+			{
+				"name": "chapter_number",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			},
+			{
+				"name": "chapter_type",
+				"type": "binary",
+				"options": {
+					"length": 255
+				}
+			}
+		],
+		"indexes": [ {
+			"name": "chapter_id_idx",
+			"columns": [
+				"chapter_id"
+			],
+			"unique": false
+		} ],
+		"pk": [
+			"chapter_id"
+		]
+	}
+}

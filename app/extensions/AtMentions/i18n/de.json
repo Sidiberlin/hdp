@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Brettchenweber",
+			"Justman10000",
+			"McDutchie",
+			"SehrGuterCode",
+			"TomatoCake",
+			"Wdwd translator"
+		]
+	},
+	"at-mentions-desc": "Eine Benutzererwähnung hinzufügen",
+	"at-mentions-inspector-title": "Einen Benutzer erwähnen",
+	"at-mentions-inspector-title-add": "Eine Erwähnung hinzufügen",
+	"at-mentions-inspector-title-edit": "Erwähnung bearbeiten",
+	"at-mentions-ci-title": "Benutzererwähnung",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|von [[User:$1|$1]]}}",
+	"at-mentions-tag-item-time": "um $1",
+	"at-mentions-mentionslist-header-mine-all": "Du wurdest auf dieser Seite erwähnt",
+	"at-mentions-mentionslist-header-mine": "Innerhalb {{PLURAL:$1|des letzten Tages|der letzten $1 Tage}}, wurdest du auf diesen Seiten erwähnt:",
+	"at-mentions-mentionslist-header-all": "Benutzer {{GENDER:$2|[[User:$2|$2]] wurde auf diesen Seiten erwähnt}}:",
+	"at-mentions-mentionslist-header": "Innerhalb {{PLURAL:$1|des letzten Tages|der letzten $1 Tage}} wurde {{GENDER:$2|[[User:$2|$2]] auf diesen Seiten erwähnt}}:",
+	"at-mentions-mention-notification-message": "{{GENDER:$1|erwähnte}} dich auf Seite $2",
+	"at-mentions-mention-notification-key": "Du wurdest erwähnt",
+	"at-mentions-mention-in-entity-notification-key": "Du wurdest in einem Kommentar oder Beitrag erwähnt",
+	"at-mentions-mention-in-entity-notification-message": "{{GENDER:$1|erwähnte}} dich in einem Kommentar oder einem Beitrag \"$3\" auf Seite $2",
+	"at-mentions-toolbar-tool-title": "Erwähnung hinzufügen"
+}

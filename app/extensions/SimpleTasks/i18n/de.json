@@ -1,0 +1,33 @@
+{
+	"@metadata": {
+		"authors": [
+			"Cupkake4Yoshi",
+			"Miriam Schlindwein",
+			"TomatoCake"
+		]
+	},
+	"simple-tasks-desc": "Erstelle Aufgaben für Benutzer",
+	"simple-tasks-task-duedate": "Fälligkeitsdatum: $1",
+	"simple-tasks-task-desc": "Aufgabe in Seiteninhalt erstellt",
+	"simple-tasks-notif-key": "Aufgabenzuweisung",
+	"simple-tasks-notif-message": "{{GENDER:$1|hat}} dir eine Aufgabe {{GENDER:$1|zugewiesen}}: \"$1\"",
+	"simple-tasks-taskreport-no-results": "Keine Aufgaben mit den ausgewählten Filtern gefunden",
+	"simple-tasks-taskreport-header-task": "Aufgabe",
+	"simple-tasks-taskreport-header-assignee": "Beauftragter",
+	"simple-tasks-taskreport-header-page": "Erscheint auf Seite",
+	"simple-tasks-taskreport-header-due-to": "Fälligkeitsdatum",
+	"simple-tasks-taskreport-header-state": "Status",
+	"simple-tasks-droplet-taskreport-name": "Aufgabenbericht",
+	"simple-tasks-droplet-taskreport-description": "Erzeugt eine Übersicht von Aufgaben",
+	"simple-tasks-taskreport-inspector-title": "Aufgabenbericht",
+	"simple-tasks-taskreport-inspector-state-done": "erledigt",
+	"simple-tasks-taskreport-inspector-state-open": "offen",
+	"simple-tasks-taskreport-inspector-label-user": "Beauftragte",
+	"simple-tasks-taskreport-inspector-label-namespaces": "Namensräume",
+	"simple-tasks-taskreport-inspector-label-due-date": "Fällig bis",
+	"simple-tasks-taskreport-inspector-label-state": "Status",
+	"simple-tasks-taskreport-state-title-open": "Aufgabe ist offen",
+	"simple-tasks-taskreport-state-title-done": "Aufgabe ist erledigt",
+	"simple-tasks-taskreport-state-filter-done": "Erledigt",
+	"simple-tasks-taskreport-state-filter-open": "Offen"
+}

@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jeeputer"
+		]
+	},
+	"bs-exporttables-menu": "برون‌بری حدول",
+	"bs-exporttables-menu-csv": "مقدارهای جداشده با ویرگول (CSV)",
+	"bs-exporttables-ve-exportable-option": "قابل برون‌بری",
+	"bs-exporttables-loading-title": "برون‌بری جدول",
+	"bs-exporttables-statistics-btn-text": "برون‌بری",
+	"bs-exporttables-oojs-btn-aria-label": "برون‌بری"
+}

@@ -1,0 +1,7 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"logentry-bs-readconfirmation-remind": "$1 je {{GENDER:$2|pitao|pitala}} $4 da pročita stranicu $3",
+	"bs-readconfirmation-page-info-read-confirmations": "Pročitaj potvrde"
+}

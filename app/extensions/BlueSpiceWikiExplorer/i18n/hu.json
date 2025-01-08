@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Krisztina"
+		]
+	},
+	"bs-wikiexplorer-extension-description": "Rendezze a cikkeket kritériumok szerint",
+	"bs-wikiexplorer-page-title": "Cím",
+	"bs-wikiexplorer-page-namespace": "Névtér",
+	"bs-wikiexplorer-creation-date": "Létrehozás dátuma",
+	"bs-wikiexplorer-is-redirect": "Átirányítva",
+	"bs-wikiexplorer-last-comment": "Legutóbbi hozzászólás:",
+	"bs-wikiexplorer-last-edit-time": "Legutóbbi szerkesztés ideje",
+	"bs-wikiexplorer-page-size": "Méret",
+	"bs-wikiexplorer-last-author": "Legutóbbi szerkesztő",
+	"bs-wikiexplorer-categories": "Kategóriák",
+	"bs-wikiexplorer-linked-files": "Kapcsolt fájlok",
+	"bs-wikiexplorer-linked-pages": "Kapcsolt oldalak",
+	"apihelp-bs-wikiexplorer-store-description": "Minden adatot megad a WikiExplorer kiterjesztéshez",
+	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "API paraméter, amely jelzi, hogy a MetaData már betöltődött-e.",
+	"apihelp-bs-wikiexplorer-store-summary": "Minden adatot megad a WikiExplorer kiterjesztéshez",
+	"bs-wikiexplorer-icon-bool-true-aria-label": "bejelölt",
+	"bs-wikiexplorer-icon-bool-false-aria-label": "nem bejelölt"
+}

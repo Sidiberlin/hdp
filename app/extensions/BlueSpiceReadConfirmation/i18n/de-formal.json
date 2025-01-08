@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Leonid Verhovskij",
+			"Mglaser",
+			"Robert Vogel",
+			"Vhoesl"
+		]
+	},
+	"notification-bs-readconfirmation-remind-summary": "$1 erinnert Sie daran, $3 zu lesen",
+	"notification-bs-readconfirmation-remind-body": "$1 möchte Sie daran erinnern, für $2 eine Lesebestätigung abzugeben.",
+	"bs-readconfirmation-privacy-transparency-working-rc": "BlueSpiceReadConfirmation: Sie haben bestätigt, die Seite $1 (Version $2) am $3 gelesen zu haben",
+	"bs-readconfirmation-uto-task-body-diff": "Betrachten Sie die Änderungen seit der letzten Lesebestätigung",
+	"readconfirmation-event-confirmation-request-bot": "Sie wurden aufgefordert zu bestätigen, dass Sie die Seite $1 gelesen haben",
+	"readconfirmation-event-confirmation-remind-bot": "Erinnerung zur Bestätigung, dass Sie die Seite $1 gelesen haben",
+	"readconfirmation-event-confirmation-links-intro": "Bitte besuchen Sie die Seite unter dem folgenden Link, um zu bestätigen, dass Sie die Seite gelesen haben"
+}

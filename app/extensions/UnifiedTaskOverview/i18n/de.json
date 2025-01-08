@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mschlindwein"
+		]
+	},
+	"unifiedtaskoverview-desc": "Stellt eine Übersicht mit allen Aufgaben eines Benutzers auf einer Spezialseite bereit",
+	"unifiedtaskoverview": "Meine Aufgaben",
+	"unifiedtaskoverview-label-no-task": "Aktuell sind keine Aufgaben zu erledigen.",
+	"unifiedtaskoverview-personal-url-my-tasks": "Aufgaben",
+	"unifiedtaskoverview-search-placeholder": "Suche"
+}

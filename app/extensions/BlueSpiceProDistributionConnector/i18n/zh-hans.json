@@ -1,0 +1,33 @@
+{
+	"@metadata": {
+		"authors": [
+			"850710247liu",
+			"GuoPC",
+			"Kishinsagi",
+			"StarrySky",
+			"Vikarna",
+			"Xyb"
+		]
+	},
+	"bs-prodistributionconnector-desc": "将BlueSpice连接到各种MediaWiki的扩展",
+	"bs-pro-distribution-droplet-pro-con-list-name": "优点和缺点",
+	"bs-pro-distribution-droplet-math-name": "数学公式",
+	"bs-pro-distribution-droplet-chem-name": "化学式",
+	"bs-pro-distribution-droplet-chem-desc": "化学式显示",
+	"bs-pro-distribution-droplet-modal-dialog-name": "模态按钮",
+	"bs-pro-distribution-instance-status-number-of-users-unknown": "{{PLURAL:$1|已注册的活跃用户有'''$1'''个}}。未设置已知的限制。",
+	"bs-pro-distribution-instance-status-user-quota-label": "用户配额",
+	"droplets-modal-dialog-bg-color-label": "按钮背景颜色",
+	"droplets-modal-dialog-bg-color-blue": "蓝色",
+	"droplets-modal-dialog-bg-color-red": "红色",
+	"droplets-modal-dialog-bg-color-neutral": "白色",
+	"bs-pro-distribution-pdfembed-inspector-input-label": "PDF文件",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "宽度",
+	"bs-pro-distribution-pdfembed-inspector-width-help": "设置PDF预览的宽度。留空以使用默认大小800px",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "高度",
+	"bs-pro-distribution-pdfembed-inspector-height-help": "设置PDF预览的高度。留空以使用默认大小1090px",
+	"bs-pro-distribution-pdfembed-inspector-page-help": "渲染预览后将显示的页数",
+	"bs-pro-distribution-pdfembed-inspector-title": "嵌入PDF",
+	"bs-pro-distribution-pdfembed-droplet-name": "PDF预览",
+	"bs-pro-distribution-pdfembed-droplet-description": "在wiki页面中嵌入PDF文件的预览"
+}

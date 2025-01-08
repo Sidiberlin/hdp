@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fryed-peach",
+			"MathXplore",
+			"Otokoume"
+		]
+	},
+	"nsfilerepo-desc": "アップロードされたファイルに対する名前空間ベースの機能を提供する",
+	"nsfilerepo-nsmain": "(標準)",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "名前空間"
+}

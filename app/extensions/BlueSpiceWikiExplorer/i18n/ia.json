@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bs-wikiexplorer-extension-description": "Ordinar articulos per criterios",
+	"bs-wikiexplorer-page-title": "Titulo",
+	"bs-wikiexplorer-page-namespace": "Spatio de nomines",
+	"bs-wikiexplorer-creation-date": "Data de creation",
+	"bs-wikiexplorer-is-redirect": "Es redirection",
+	"bs-wikiexplorer-last-comment": "Ultime commento",
+	"bs-wikiexplorer-last-edit-time": "Data del ultime modification",
+	"bs-wikiexplorer-page-size": "Dimension",
+	"bs-wikiexplorer-last-author": "Ultime contributor",
+	"bs-wikiexplorer-categories": "Categorias",
+	"bs-wikiexplorer-linked-files": "Files ligate",
+	"bs-wikiexplorer-linked-pages": "Paginas ligate",
+	"apihelp-bs-wikiexplorer-store-description": "Forni tote le datos pro le extension WikiExplorer",
+	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "Parametro API pro indicar si le metadatos ha jam essite cargate.",
+	"apihelp-bs-wikiexplorer-store-summary": "Forni tote le datos pro le extension WikiExplorer",
+	"bs-wikiexplorer-icon-bool-true-aria-label": "marcate",
+	"bs-wikiexplorer-icon-bool-false-aria-label": "non marcate"
+}

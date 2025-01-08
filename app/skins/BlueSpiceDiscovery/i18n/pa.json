@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Cabal",
+			"Kuldeepburjbhalaike"
+		]
+	},
+	"bs-discovery-navbar-user-login-text": "ਦਾਖ਼ਲ ਹੋਵੋ",
+	"bs-discovery-navbar-user-login-title": "ਦਾਖ਼ਲ ਹੋਵੋ",
+	"bs-discovery-navbar-user-login-aria-label": "ਦਾਖ਼ਲ ਹੋਵੋ",
+	"bs-discovery-breadcrumb-nav-node-portal-page": "ਮੁੱਖ ਸਫ਼ਾ",
+	"bs-discovery-dialog-detailssectionheading-toolbox": "ਸੰਦੂਕੜੀ",
+	"bs-discovery-namespace-mainpage-links-pnl-header-text": "ਨਾਮ-ਸਥਾਨ ਮੁੱਢਲੇ ਵਰਕੇ",
+	"bs-discovery-enhanced-mediawiki-sidebar-pnl-header-text": "ਮੁੱਖ ਮੀਨੂ",
+	"bs-discovery-globalactionentry-templates-text": "ਫਰਮੇ",
+	"menueditor-ui-enhanced-sidebar-internal-link-label-edit": "ਅੰਦਰੂਨੀ ਕੜੀ",
+	"bs-discovery-navbar-user-button-requires-attention-aria-label": "ਵਰਤੋਂਕਾਰ ਮੇਨੂ (ਧਿਆਨ ਦੇਣ ਦੀ ਲੋੜ ਹੈ)",
+	"bs-discovery-requires-attention": "(ਧਿਆਨ ਦੇਣ ਦੀ ਲੋੜ ਹੈ)"
+}

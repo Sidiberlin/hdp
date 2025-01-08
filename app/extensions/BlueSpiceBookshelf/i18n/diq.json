@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mirzali"
+		]
+	},
+	"bs-bookshelf-specialpage-title": "Kıtabi",
+	"bs-bookshelf-specialpage-allpages-ns-book-text": "Kıtıbxane",
+	"bs-bookshelf-tag-next": "Bahdoyên",
+	"bs-bookshelf-tag-prev": "Verên",
+	"bs-bookshelf-personal-books-page-prefix": "$1/Kıtabi/",
+	"bs-bookshelf-add-to-book-label-book": "Kıtab",
+	"bs-bookshelf-setting-path-feature": "Kıtab",
+	"bs-bookshelf-action-editbook": "Çımeyi bıvurne",
+	"bs-bookshelf-action-editbook-create": "Çımeyi bıvurne",
+	"bs-bookshelf-prof-defaultview-images": "Resımi",
+	"bs-bookshelf-ve-bookmeta-attr-title-label": "Sername",
+	"bs-bookshelf-ve-bookmeta-attr-author-label": "Nuştekar",
+	"bs-bookshelf-ve-bookmeta-attr-version-label": "Versiyon"
+}

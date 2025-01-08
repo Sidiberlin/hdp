@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robby"
+		]
+	},
+	"importofficefiles-desc": "Erlaabt et fir Office-Fichieren als Wiki-Säiten z'importéieren",
+	"importofficefiles-ui-import-dialog-title": "Fichier importéieren",
+	"importofficefiles-ui-import-completed": "Import fäerdeg!",
+	"importofficefiles-ui-import-in-progress": "Import ass am gaangen ...",
+	"importofficefiles-ui-dialog-action-cancel": "Ofbriechen",
+	"importofficefiles-ui-dialog-action-import": "Importéieren",
+	"importofficefiles-ui-dialog-action-next": "Weider",
+	"importofficefiles-ui-dialog-action-back": "Zréck",
+	"importofficefiles-ui-dialog-action-done": "Fäerdeg",
+	"importofficefiles-ui-dialog-label-select-file": "Fichier eraussichen",
+	"importofficefiles-ui-dialog-configuration-settings-title": "Astellunge fir den Import festleeën",
+	"importofficefiles-ui-dialog-settings-page-title": "Titel",
+	"importofficefiles-ui-dialog-settings-pagetitle-label": "Sicht en Titel fir déi nei Säit",
+	"importofficefiles-ui-dialog-settings-structure-label": "Struktur vum Inhalt",
+	"importofficefiles-ui-dialog-settings-structure-label-checkbox": "Den Inhalt op Säiten opdeelen",
+	"importofficefiles-ui-dialog-settings-conflicts-title": "Konflikter mam Säitentitel",
+	"importofficefiles-ui-dialog-settings-conflicts-behavior-label": "Verhale wann et den Numm vun der Säit scho gëtt",
+	"importofficefiles-ui-dialog-settings-conflicts-rename": "Ëmbenennen",
+	"importofficefiles-ui-dialog-settings-conflicts-override": "Iwwerschreiwen",
+	"importofficefiles-ui-dialog-preview-title": "Kucken ouni ofzespäicheren",
+	"importofficefiles-ui-dialog-preview-label": "Dës Säite ginn importéiert"
+}

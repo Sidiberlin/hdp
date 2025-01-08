@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fitoschido"
+		]
+	},
+	"webdavmanager": "Gestor del WebDAV",
+	"webdav-ns-main": "(Pàgines)",
+	"webdav-statictoken-prefs": "URL estàtic del WebDAV"
+}

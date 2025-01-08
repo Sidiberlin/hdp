@@ -1,0 +1,5 @@
+<templatestyles src="Decision/styles.css" />
+<div class="cd-decision">
+{{{decision}}}
+</div>
+{{#set:Decision={{{decision}}}}}

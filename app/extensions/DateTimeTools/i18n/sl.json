@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eleassar"
+		]
+	},
+	"datetimetools-desc": "Zagotavlja orodja za datume v Vizualnem urejevalniku",
+	"datetimetools-ve-inspector-title": "Uredi datum",
+	"datetimetools-ve-inspector-date-picker-label": "Izberite datum",
+	"datetimetools-droplet-date-name": "Datum",
+	"datetimetools-droplet-date-description": "Vstavi datum"
+}

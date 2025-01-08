@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"MITO"
+		]
+	},
+	"importofficefiles-ui-import-dialog-title": "Tuo tiedosto",
+	"importofficefiles-ui-import-completed": "Tuonti suoritettu!",
+	"importofficefiles-ui-dialog-action-cancel": "Peruuta",
+	"importofficefiles-ui-dialog-action-import": "Tuo",
+	"importofficefiles-ui-dialog-action-next": "Seuraava",
+	"importofficefiles-ui-dialog-action-back": "Takaisin",
+	"importofficefiles-ui-dialog-action-done": "Valmis",
+	"importofficefiles-ui-dialog-label-select-file": "Valitse tiedosto",
+	"importofficefiles-ui-dialog-settings-page-title": "Otsikko",
+	"importofficefiles-ui-dialog-settings-conflicts-rename": "Nimeä uudelleen",
+	"importofficefiles-ui-dialog-preview-title": "Esikatsele",
+	"importofficefiles-ui-progress-import-images-step": "Tuodaan kuvia...",
+	"importofficefiles-ui-progress-import-pages-step": "Tuodaan sivuja..."
+}
