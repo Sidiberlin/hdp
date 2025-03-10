@@ -1,0 +1,93 @@
+# This repository adheres to the publiccode.yml standard by including this 
+# metadata file that makes public software easily discoverable.
+# More info at https://github.com/italia/publiccode.yml
+
+publiccodeYmlVersion: '0.2'
+name: BlueSpice Wiki mit Chatbot
+applicationSuite: BlueSpice Pro
+url: 'https://gitlab.opencode.de/bmbf/teamdigital/hdp'
+landingURL: 'https://bluespice.com/de/'
+logo: .opencode/BlueSpice_Logo.svg
+releaseDate: '2025-01-08'
+softwareVersion: 4.5.4
+developmentStatus: stable
+platforms:
+  - windows
+  - linux
+softwareType: addon
+usedBy:
+  - Bundesministerium für Bildung und Forschung
+  - 'GovTech Campus'
+  - Fraunhofer Institut
+categories:
+  - blog
+  - collaboration
+  - content-management
+  - document-management
+  - knowledge-management
+  - translation
+  - workflow-management
+maintenance:
+  type: internal
+  contacts:
+    - name: Robert Vogel
+      affiliation: BlueSpice
+    - name: Richard Heigl
+      affiliation: BlueSpice
+legal:
+  license: AGPL-3.0-or-later
+  mainCopyrightOwner: Hallo Welt! GmbH
+  repoOwner: Hallo Welt! GmbH
+intendedAudience:
+  countries:
+    - de
+    - us
+    - fr
+    - it
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - de
+    - en
+    - fr
+    - it
+description:
+  de:
+    genericName: BlueSpice Wiki mit Chatbot
+    localisedName: BlueSpice Wiki mit Chatbot
+    screenshots:
+      - .opencode/screenshots/sshot1.png
+    shortDescription: >-
+      Die BlueSpice HDP Edition liefert einen KI-Chatbot für Online
+      Wissensdatenbanken.
+    longDescription: >
+      # **Künstliche Intelligenz revolutioniert die Arbeit mit Wikis!**
+
+      ## Die BlueSpice HDP Edition entspringt einem Projekt zur Entwicklung
+      eines KI Chatbots für Online Wissensdatenbanken
+
+      In Zusammenarbeit zwischen BlueSpice, dem Bundesministerium für Bildung
+      und Forschung, GovTech Campus und dem Fraunhofer Institut für die
+      BlueSpice Pro Version entwickelt.
+
+          - Schnelle Antworten auf Fragestellungen des Arbeitsalltages
+          - Erleichterung der Arbeitsaufgaben durch Generierung von Zusammenfassungen, Checklisten oder E-Mailtexten
+          - Überblick auf Inhalte aller relevanten Seiten und Dokumente im Wiki
+
+      Mit der Anbindung eines LLMs werden Inhalte im Wiki
+      benutzerfreundlicher, aktueller und inklusiver
+
+      ### Chatverlauf exportieren
+
+      Die Unterhaltung ist exportierbar
+
+      ### Antwortoptionen
+      Kopieren und Bewerten von Antworten
+
+      ### Schnellauswahl
+      Beschleunigte Auswahl von Nachfragen
+
+      ### Referenzen
+      Kurzreferenz, Quelle, Verzeichnis, Links
+
+      Mehr Informationen: www.bluespice.de
