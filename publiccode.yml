@@ -4,7 +4,7 @@
 
 publiccodeYmlVersion: '0.2'
 name: BlueSpice Wiki mit Chatbot
-applicationSuite: BlueSpice Pro
+applicationSuite: BlueSpice pro
 url: 'https://gitlab.opencode.de/bmbf/teamdigital/hdp'
 landingURL: 'https://bluespice.com/de/'
 logo: BlueSpice_Logo.svg
@@ -84,7 +84,7 @@ description:
 
       - Generierung von Antworten, Zusammenfassungen, Checklisten oder E-Mailtexten
 
-      - Ausgabe mit Referenzen Kurzreferenz, Quelle, Verzeichnis undzu weiterführenden Informationen
+      - Ausgabe mit Kurzreferenz, Quelle, Verzeichnis und weiterführenden Informationen
 
       - Export von Chatverläufen
 
@@ -92,4 +92,4 @@ description:
 
       - Beschleunigte Auswahl von Nachfragen
 
-      Mehr Informationen: www.bluespice.de
+      - Mehr Informationen: www.bluespice.de
