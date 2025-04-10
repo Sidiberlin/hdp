@@ -1,6 +1,6 @@
 # Chatbot für Handbuch der Projektförderung
 
-The folder `/app` contains the latest build of "BlueSpice HDP edition"
+Der Ordner `/app` enthält den neuesten Stand der „BlueSpice HDP edition“.
 
 Entwickelt in Zusammenarbeit zwischen Bundesministerium für Bildung und Forschung, deepset GmbH, GovTech Campus Deutschland e.V., Hallo Welt! GmbH und dem Fraunhofer IVV.
 
@@ -10,4 +10,4 @@ Die Hallo Welt! GmbH bzw. GovTech Campus Deutschland e.V. unterstützt Sie gerne
 
 Kontaktieren Sie uns! https://bluespice.com/de/kontakt/
 
-To learn more about what BlueSpice is, please visit the [official website](https://bluespice.com).
+Um mehr über BlueSpice zu erfahren, besuchen Sie bitte die [offizielle Website] (https://bluespice.com).
