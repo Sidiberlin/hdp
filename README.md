@@ -1,6 +1,6 @@
 # Chatbot für Handbuch der Projektförderung
 
-Dieser Ordner `/app` enthält ein erweitertes Open-Source-Enterprise-Wiki BlueSpice (BlueSpice HDP Edition) sowie eine KI-Pipeline.
+Der Ordner `/app` enthält ein erweitertes Open-Source-Enterprise-Wiki BlueSpice (BlueSpice HDP Edition), die zugehörige KI-Pipeline findet sich im Ordner `/pipeline`.
 
 Die Edition besteht aus BlueSpice pro, der BlueSpice-Vollversion zum Betrieb von Einzelwikis. BlueSpice pro bündelt die wichtigsten Funktionen für ein Produktivsystem, das den Ansprüchen eines professionell geführten Unternehmens gerecht wird.
 
