@@ -70,7 +70,7 @@ description:
 
       ### Anwendung:
 
-      Mit der Anbindung eines Large Language Model (z.B. deepset) wird der Zugriff auf Inhalte eines Wikis personenunabhängiger, benutzerfreundlicher und inklusiver:
+      Durch die Einbindung eines Large Language Models über Haystack (D-Stack Standard für KI) wird der Zugriff auf Inhalte eines Wikis personenunabhängiger, benutzerfreundlicher und inklusiver:
 
       - Alle Antworten beruhen auf definierten Inhalten einer redaktionell pflegbaren, immer aktuellen Wissensdatenbank
 
@@ -92,4 +92,4 @@ description:
 
       - Beschleunigte Auswahl von Nachfragen
 
-      - Mehr Informationen: www.bluespice.de
+      - Mehr Informationen: www.bluespice.de - haystack.deepset.ai
