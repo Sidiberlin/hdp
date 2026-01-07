@@ -9,7 +9,7 @@ url: 'https://gitlab.opencode.de/bmbf/teamdigital/hdp'
 landingURL: 'https://bluespice.com/de/'
 logo: BlueSpice_Logo.svg
 releaseDate: '2025-01-08'
-softwareVersion: 4.5.4
+softwareVersion: 5.1.3
 developmentStatus: stable
 platforms:
   - linux
