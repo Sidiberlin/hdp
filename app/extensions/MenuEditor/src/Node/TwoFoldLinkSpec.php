@@ -3,9 +3,11 @@
 namespace MediaWiki\Extension\MenuEditor\Node;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 
 class TwoFoldLinkSpec extends MenuNode {
-	/** @var \TitleFactory */
+	/** @var TitleFactory */
 	private $titleFactory;
 	/** @var string */
 	private $label;
@@ -16,10 +18,10 @@ class TwoFoldLinkSpec extends MenuNode {
 	 * @param string $target
 	 * @param string $label
 	 * @param string $originalWikitext
-	 * @param \TitleFactory $titleFactory
+	 * @param TitleFactory $titleFactory
 	 * @param int|null $level
 	 */
-	public function __construct( $target, $label, $originalWikitext, \TitleFactory $titleFactory, ?int $level = 2 ) {
+	public function __construct( $target, $label, $originalWikitext, TitleFactory $titleFactory, ?int $level = 2 ) {
 		parent::__construct( $level, $originalWikitext );
 		$this->titleFactory = $titleFactory;
 		$this->target = $target;
@@ -95,7 +97,7 @@ class TwoFoldLinkSpec extends MenuNode {
 	 */
 	protected function isValidPageName( $target ) {
 		$title = $this->titleFactory->newFromText( $target );
-		return $title instanceof \Title;
+		return $title instanceof Title;
 	}
 
 	/**

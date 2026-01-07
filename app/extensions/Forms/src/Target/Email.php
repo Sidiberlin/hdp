@@ -3,14 +3,14 @@
 namespace MediaWiki\Extension\Forms\Target;
 
 use DataPreprocessor;
-use HashConfig;
 use MailAddress;
+use MediaWiki\Config\HashConfig;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\Forms\ITarget;
 use MediaWiki\MediaWikiServices;
-use Message;
-use RequestContext;
-use Status;
-use User;
+use MediaWiki\Message\Message;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 use UserMailer;
 
 class Email implements ITarget {

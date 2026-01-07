@@ -3,8 +3,8 @@
 namespace MediaWiki\Extension\CollabPads\BreadcrumbDataProvider;
 
 use BlueSpice\Discovery\BreadcrumbDataProvider\BaseBreadcrumbDataProvider;
-use RequestContext;
-use Title;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Title\Title;
 
 class CollabEditProvider extends BaseBreadcrumbDataProvider {
 

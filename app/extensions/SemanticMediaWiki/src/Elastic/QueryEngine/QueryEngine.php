@@ -2,21 +2,22 @@
 
 namespace SMW\Elastic\QueryEngine;
 
+use MediaWiki\Html\Html;
 use Psr\Log\LoggerAwareTrait;
-use SMW\Services\ServicesFactory as ApplicationFactory;
-use SMW\Exception\PredefinedPropertyLabelMismatchException;
+use SMW\DIProperty;
 use SMW\Elastic\Connection\Client as ElasticClient;
+use SMW\Exception\PredefinedPropertyLabelMismatchException;
 use SMW\Options;
 use SMW\Query\Language\ThingDescription;
+use SMW\Query\QueryResult;
 use SMW\Query\ScoreSet;
 use SMW\QueryEngine as IQueryEngine;
+use SMW\Services\ServicesFactory as ApplicationFactory;
 use SMW\Store;
-use SMW\DIProperty;
 use SMWQuery as Query;
-use SMWQueryResult as QueryResult;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.0
  *
  * @author mwjames
@@ -72,7 +73,7 @@ class QueryEngine implements IQueryEngine {
 	 * @param ConditionBuilder $conditionBuilder
 	 * @param Options|null $options
 	 */
-	public function __construct( Store $store, ConditionBuilder $conditionBuilder, Options $options = null ) {
+	public function __construct( Store $store, ConditionBuilder $conditionBuilder, ?Options $options = null ) {
 		$this->store = $store;
 		$this->options = $options;
 
@@ -108,8 +109,7 @@ class QueryEngine implements IQueryEngine {
 	 * @return QueryResult
 	 */
 	public function getQueryResult( Query $query ) {
-
-//		if ( ( !$this->engineOptions->get( 'smwgIgnoreQueryErrors' ) || $query->getDescription() instanceof ThingDescription ) &&
+// if ( ( !$this->engineOptions->get( 'smwgIgnoreQueryErrors' ) || $query->getDescription() instanceof ThingDescription ) &&
 
 		if ( ( $query->getDescription() instanceof ThingDescription ) &&
 				$query->querymode != Query::MODE_DEBUG &&
@@ -130,7 +130,7 @@ class QueryEngine implements IQueryEngine {
 			'info' => []
 		];
 
-		list( $sort, $sortFields, $isRandom, $isConstantScore ) = $this->sortBuilder->makeSortField(
+		[ $sort, $sortFields, $isRandom, $isConstantScore ] = $this->sortBuilder->makeSortField(
 			$query
 		);
 
@@ -202,20 +202,19 @@ class QueryEngine implements IQueryEngine {
 		switch ( $query->querymode ) {
 			case Query::MODE_DEBUG:
 				$result = $this->newDebugQueryResult( $params );
-			break;
+				break;
 			case Query::MODE_COUNT:
 				$result = $this->newCountQueryResult( $query, $params );
-			break;
+				break;
 			default:
 				$result = $this->newInstanceQueryResult( $query, $params );
-			break;
+				break;
 		}
 
 		return $result;
 	}
 
 	private function newDebugQueryResult( $params ) {
-
 		$params['explain'] = $this->options->dotGet( 'query.debug.explain', false );
 
 		$connection = $this->store->getConnection( 'elastic' );
@@ -235,12 +234,12 @@ class QueryEngine implements IQueryEngine {
 			json_encode( $this->queryInfo, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE )
 		);
 
-		$html = \Html::rawElement(
+		$html = Html::rawElement(
 			'pre',
 			[
 				'class' => 'smwpre smwpre-no-margin smw-debug-box'
 			],
-			\Html::rawElement(
+			Html::rawElement(
 				'div',
 				[
 					'class' => 'smw-debug-box-header'
@@ -253,7 +252,6 @@ class QueryEngine implements IQueryEngine {
 	}
 
 	private function newCountQueryResult( $query, $params ) {
-
 		$connection = $this->store->getConnection( 'elastic' );
 		$result = $connection->count( $params );
 
@@ -273,12 +271,11 @@ class QueryEngine implements IQueryEngine {
 	}
 
 	private function newInstanceQueryResult( $query, array $params ) {
-
 		$connection = $this->store->getConnection( 'elastic' );
 		$scoreSet = new ScoreSet();
 		$excerpts = new Excerpts();
 
-		list( $res, $errors ) = $connection->search( $params );
+		[ $res, $errors ] = $connection->search( $params );
 
 		$searchResult = new SearchResult( $res );
 
@@ -363,7 +360,6 @@ class QueryEngine implements IQueryEngine {
 	}
 
 	private function addHighlight( &$body ) {
-
 		if ( ( $type = $this->options->dotGet( 'query.highlight.fragment.type', false ) ) === false ) {
 			return;
 		}

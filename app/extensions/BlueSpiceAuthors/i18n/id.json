@@ -11,7 +11,5 @@
 	"bs-authors-title": "{{PLURAL:$1|{{GENDER:$2|Penulis}}|Penulis}}",
 	"bs-authors-profileimage": "Foto profil",
 	"bs-authors-profileimage-change": "Ubah foto profil",
-	"bs-authors-show-all-authors": "Penulis lain tersedia",
-	"bs-authors-pref-show": "Tampilkan penulis",
-	"bs-authors-switch-description": "Sembunyikan penulis di halaman ini."
+	"bs-authors-show-all-authors": "Penulis lain tersedia"
 }

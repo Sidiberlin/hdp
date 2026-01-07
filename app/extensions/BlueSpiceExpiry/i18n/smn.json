@@ -6,10 +6,9 @@
 		]
 	},
 	"bs-expiry-header-pagename": "Sijđo",
-	"bs-expiry-article-label": "Sijđo",
-	"bs-expiry-edit-grid-header-username": "Kevttee",
 	"bs-expiry-header-comment": "Komment",
+	"bs-expiry-article-label": "Sijđo",
 	"bs-expiry-comment-label": "Komment",
-	"bs-expiry-flyout-next-comment": "Komment: $1",
-	"bs-expiry-info-dialog-comment": "Komment: $1"
+	"bs-expiry-info-dialog-comment": "Komment: $1",
+	"bs-expiry-edit-grid-header-username": "Kevttee"
 }

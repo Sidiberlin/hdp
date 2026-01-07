@@ -34,9 +34,13 @@ use BlueSpice\Context;
 use BlueSpice\Rating\Data\RatingSet;
 use BlueSpice\Rating\Data\Record;
 use BlueSpice\Rating\Data\Store;
-use Html;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 
@@ -78,7 +82,7 @@ class RatingItem implements \JsonSerializable {
 		// TODO: There is currently no way to filter by context!
 		$ratings = $this->getRatingSet()->getRatings();
 		$userRatings = $this->getRatingSet()->getUserRatings(
-			\RequestContext::getMain()->getUser(),
+			RequestContext::getMain()->getUser(),
 			$ratings
 		);
 
@@ -112,52 +116,52 @@ class RatingItem implements \JsonSerializable {
 	/**
 	 * @param mixed $value
 	 * @param int $context
-	 * @return \Status
+	 * @return Status
 	 */
 	public function checkValue( $value = false, $context = 0 ) {
 		if ( $this->getConfig()->get( 'MultiValue' ) && empty( $context ) ) {
-			return \Status::newFatal(
+			return Status::newFatal(
 				'Context cannot be empty when multivalue!'
 			);
 		}
 		if ( $value === false ) {
 			// stands for a delete
-			return \Status::newGood( $value );
+			return Status::newGood( $value );
 		}
 		if ( !$this->isAllowedValue( $value ) ) {
-			return \Status::newFatal( 'Value not allowed' );
+			return Status::newFatal( 'Value not allowed' );
 		}
-		return \Status::newGood( $value );
+		return Status::newGood( $value );
 	}
 
 	/**
 	 * @param mixed $value
-	 * @return \Status
+	 * @return Status
 	 */
 	public function isAllowedValue( $value = false ) {
 		if ( $value === false ) {
-			return \Status::newGood( $value );
+			return Status::newGood( $value );
 		}
 		$allowedValues = $this->getConfig()->get( 'AllowedValues' );
 		return in_array( $value, $allowedValues )
-			? \Status::newGood( $value )
-			: \Status::newFatal( 'Value not allowed' );
+			? Status::newGood( $value )
+			: Status::newFatal( 'Value not allowed' );
 	}
 
 	/**
 	 *
 	 * @param string $action
-	 * @param \User $user
-	 * @param \Title|null $title
+	 * @param User $user
+	 * @param Title|null $title
 	 * @return bool
 	 */
-	protected function checkPermission( $action, \User $user, \Title $title = null ) {
+	protected function checkPermission( $action, User $user, ?Title $title = null ) {
 		$action = ucfirst( $action );
 		$permission = $this->getConfig()->get( "{$action}Permission" );
 		if ( !$permission ) {
 			return false;
 		}
-		if ( $title instanceof \Title ) {
+		if ( $title instanceof Title ) {
 			return MediaWikiServices::getInstance()
 				->getPermissionManager()
 				->userCan( $permission, $user, $title );
@@ -169,20 +173,20 @@ class RatingItem implements \JsonSerializable {
 	}
 
 	/**
-	 * @param \User $user
+	 * @param User $user
 	 * @param string $action
-	 * @param \Title|null $title
-	 * @return \Status
+	 * @param Title|null $title
+	 * @return Status
 	 */
-	public function userCan( \User $user, $action = 'read', \Title $title = null ) {
+	public function userCan( User $user, $action = 'read', ?Title $title = null ) {
 		$bTitleRequired = $this->getConfig()->get( 'PermissionTitleRequired' );
-		if ( $bTitleRequired && !$title instanceof \Title ) {
-			return \Status::newFatal( "Title Required" );
+		if ( $bTitleRequired && !$title instanceof Title ) {
+			return Status::newFatal( "Title Required" );
 		}
 		if ( !$this->checkPermission( $action, $user, $title ) ) {
-			return \Status::newFatal( "User is not Allowed $action" );
+			return Status::newFatal( "User is not Allowed $action" );
 		}
-		return \Status::newGood( $user );
+		return Status::newGood( $user );
 	}
 
 	/**
@@ -207,10 +211,10 @@ class RatingItem implements \JsonSerializable {
 	protected function getStore() {
 		$storeClass = $this->getConfig()->get( 'StoreClass' );
 		if ( !class_exists( $storeClass ) ) {
-			return \Status::newFatal( "Store class '$storeClass' not found" );
+			return Status::newFatal( "Store class '$storeClass' not found" );
 		}
 		return new $storeClass(
-			new Context( \RequestContext::getMain(), $this->getConfig() ),
+			new Context( RequestContext::getMain(), $this->getConfig() ),
 			MediaWikiServices::getInstance()->getDBLoadBalancer()
 		);
 	}
@@ -258,16 +262,16 @@ class RatingItem implements \JsonSerializable {
 
 	/**
 	 * CRUD votes from the rating item. Use $value = false to delete
-	 * @param \User $user User, that initiated this action
+	 * @param User $user User, that initiated this action
 	 * @param mixed $value use false to delete
-	 * @param \User|null $owner User, that the vote is related to
+	 * @param User|null $owner User, that the vote is related to
 	 * @param int $context context for multi value
-	 * @param \Title|null $title for permission check!
-	 * @return \Status
+	 * @param Title|null $title for permission check!
+	 * @return Status
 	 */
-	public function vote( \User $user, $value, \User $owner = null, $context = 0,
-		\Title $title = null ) {
-		if ( !$owner instanceof \User ) {
+	public function vote( User $user, $value, ?User $owner = null, $context = 0,
+		?Title $title = null ) {
+		if ( !$owner instanceof User ) {
 			$owner = $user;
 		}
 		$status = $this->checkValue( $value, $context );
@@ -287,7 +291,7 @@ class RatingItem implements \JsonSerializable {
 				}
 			}
 			if ( empty( $ratings ) ) {
-				return \Status::newFatal( 'Nothing to delete!' );
+				return Status::newFatal( 'Nothing to delete!' );
 			}
 			return $this->deleteRating( $owner, $context );
 		}
@@ -326,13 +330,13 @@ class RatingItem implements \JsonSerializable {
 
 	/**
 	 *
-	 * @param \User $owner
+	 * @param User $owner
 	 * @param mixed $value
 	 * @param int $context
-	 * @return \Status
+	 * @return Status
 	 */
-	protected function insertRating( \User $owner, $value, $context = 0 ) {
-		$status = \Status::newGood( $this );
+	protected function insertRating( User $owner, $value, $context = 0 ) {
+		$status = Status::newGood( $this );
 		$id = 0;
 		MediaWikiServices::getInstance()->getHookContainer()->run(
 			'BlueSpiceRatingItemVoteSave',
@@ -368,21 +372,21 @@ class RatingItem implements \JsonSerializable {
 			if ( $record->getStatus()->isOK() ) {
 				continue;
 			}
-			return \Status::newFatal( 'insert database error' );
+			return Status::newFatal( 'insert database error' );
 		}
-		return \Status::newGood( $this->invalidateCache() );
+		return Status::newGood( $this->invalidateCache() );
 	}
 
 	/**
 	 *
-	 * @param \User $owner
+	 * @param User $owner
 	 * @param mixed $value
 	 * @param Record[] $ratings
 	 * @param int $context
-	 * @return \Status
+	 * @return Status
 	 */
-	protected function updateRating( \User $owner, $value, $ratings, $context = 0 ) {
-		$status = \Status::newGood( $this );
+	protected function updateRating( User $owner, $value, $ratings, $context = 0 ) {
+		$status = Status::newGood( $this );
 		MediaWikiServices::getInstance()->getHookContainer()->run(
 			'BlueSpiceRatingItemVoteSave',
 			[
@@ -408,32 +412,32 @@ class RatingItem implements \JsonSerializable {
 			if ( $record->getStatus()->isOK() ) {
 				continue;
 			}
-			return \Status::newFatal( 'update database error' );
+			return Status::newFatal( 'update database error' );
 		}
-		return \Status::newGood( $this->invalidateCache() );
+		return Status::newGood( $this->invalidateCache() );
 	}
 
 	/**
 	 * Deletes all user ratings for this RatingItem
-	 * @return \Status
+	 * @return Status
 	 */
 	public function deleteRatingItem() {
 		return $this->deleteRating();
 	}
 
 	/**
-	 * Deletes given \User rating or all ratings when no \User given
-	 * @param \User|null $user
+	 * Deletes given User rating or all ratings when no User given
+	 * @param User|null $user
 	 * @param int $context
 	 * @return bool
 	 */
-	protected function deleteRating( \User $user = null, $context = 0 ) {
+	protected function deleteRating( ?User $user = null, $context = 0 ) {
 		$ratings = $this->getRatingSet()->getRatings( $context );
 		if ( $user ) {
 			$ratings = $this->getRatingSet()->getUserRatings( $user, $ratings );
 		}
 		if ( empty( $ratings ) ) {
-			return \Status::newGood( $this->invalidateCache() );
+			return Status::newGood( $this->invalidateCache() );
 		}
 
 		$writer = $this->getStore()->getWriter();
@@ -443,9 +447,9 @@ class RatingItem implements \JsonSerializable {
 			if ( $record->getStatus()->isOK() ) {
 				continue;
 			}
-			return \Status::newFatal( 'delete from database error' );
+			return Status::newFatal( 'delete from database error' );
 		}
-		return \Status::newGood( $this->invalidateCache() );
+		return Status::newGood( $this->invalidateCache() );
 	}
 
 	/**

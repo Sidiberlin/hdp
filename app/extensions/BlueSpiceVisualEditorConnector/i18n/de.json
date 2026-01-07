@@ -6,8 +6,10 @@
 			"Metalhead64",
 			"Mglaser",
 			"Mirzali",
+			"Mschlindwein",
 			"Sushi",
-			"TMg"
+			"TMg",
+			"Vhoesl"
 		]
 	},
 	"bs-visualeditorconnector-desc": "Verbindet BlueSpice mit dem VisualEditor",
@@ -15,7 +17,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Original",
 	"bs-visualeditorconnector-upload-type-simple": "Einfach",
 	"bs-visualeditorconnector-upload-type-one-click": "Ein Klick",
-	"bs-visualeditorconnector-upload-type": "Hochladetyp",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Bearbeitung abbrechen",
 	"bs-visualeditorconnector-cancel-edit": "Bearbeitung abbrechen. Ungespeicherte Änderungen werden verworfen",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Willst du die Bearbeitung wirklich abbrechen? Deine ungespeicherten Änderungen werden damit verworfen.",
@@ -84,10 +85,18 @@
 	"bs-vec-table-border-dotted": "Gepunktet",
 	"bs-vec-table-border-double": "Doppelt",
 	"bs-vec-insert-softhyphen-title": "Bedingter Trennstrich",
-	"bs-visualeditorconnector-upload-type-help": "Original: Hochlade-Recht wird geprüft. Dateiname, Namensraum und Kategorie sind editierbar. Die Beschreibung ist erforderlich.\nEinfach: Hochlade-Recht wird nicht geprüft. Dateiname, Namensraum und Kategorie sind editierbar. Beschreibung ist optional.\nEin Klick: Hochlade-Recht wird nicht geprüft. Dateiname und Kategorie sind nicht editierbar. Der Namensraum ist editierbar.",
 	"bs-vec-insert-line-break-title": "Zeilenumbruch (<br /> )",
 	"bs-visualeditorconnector-text-style-tool-align-center-label": "Mittig ausrichten",
 	"bs-visualeditorconnector-align-center-annotation-desc": "Zentriert ausgewählten Text",
 	"bs-visualeditorconnector-text-style-indent-label": "Einrücken",
-	"bs-visualeditorconnector-indent-annotation-desc": "Ausgewählten Text einrücken"
+	"bs-visualeditorconnector-indent-annotation-desc": "Ausgewählten Text einrücken",
+	"bs-visualeditor-save-label": "Speichern",
+	"bs-visualeditorconnector-upload-dlg-type": "Optionen für den Upload-Dialog",
+	"bs-visualeditorconnector-upload-dlg-type-help": "Original: Die Eigentümerschaft der hochgeladenen Datei wird mit einem Kontrollkästchen überprüft. Dateiname, Namespace und Kategorie können bearbeitet werden. Eine Beschreibung ist erforderlich. Einfach: Die Eigentümerschaft der hochgeladenen Datei wird nicht überprüft. Dateiname, Namensraum und Kategorie können bearbeitet werden. Eine Beschreibung ist optional. Ein Klick: Die Eigentümerschaft der hochgeladenen Datei wird nicht überprüft. Dateiname und Kategorie können nicht bearbeitet werden. Der Namensraum kann bearbeitet werden",
+	"bs-visualeditorconnector-upload-type": "Hochladetyp",
+	"bs-visualeditorconnector-upload-type-help": "Original: Hochlade-Recht wird geprüft. Dateiname, Namensraum und Kategorie sind editierbar. Die Beschreibung ist erforderlich.\nEinfach: Hochlade-Recht wird nicht geprüft. Dateiname, Namensraum und Kategorie sind editierbar. Beschreibung ist optional.\nEin Klick: Hochlade-Recht wird nicht geprüft. Dateiname und Kategorie sind nicht editierbar. Der Namensraum ist editierbar.",
+	"bs-visualeditorconnector-tab-file": "Link auf Datei",
+	"bs-visualeditorconnector-dialog-table-title": "Tabelle",
+	"bs-visualeditorconnector-dialog-action-insert": "Einfügen",
+	"bs-visualeditor-request-entity-too-large": "Die Datei ist zu groß, um hochgeladen zu werden."
 }

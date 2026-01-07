@@ -3,9 +3,9 @@
 namespace BlueSpice\Discovery\Component;
 
 use BlueSpice\Discovery\Renderer\DefaultSearchFormRenderer;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
-use SpecialPage;
 
 class DefaultSearchForm extends Literal {
 
@@ -46,7 +46,7 @@ class DefaultSearchForm extends Literal {
 		$params = [
 			'form-id' => 'searchform',
 			'form-class' => 'form-inline input-group',
-			'form-action' => $specialSearch->getFullUrl(),
+			'form-action' => $specialSearch->getFullURL(),
 			'button-id' => 'mw-searchButton',
 			'button-class' => 'input-group-text bi bi-search',
 			'button-title' => Message::newFromKey( 'bs-discovery-searchform-button-title' )->text(),

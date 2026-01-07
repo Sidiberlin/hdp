@@ -4,10 +4,10 @@ namespace BlueSpice\Bookshelf\Notifications\SubscriptionSet;
 
 use BlueSpice\Bookshelf\BookLookup;
 use MediaWiki\Extension\NotifyMe\SubscriberProvider\ManualProvider\ISubscriptionSet;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\UserIdentity;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
 use MWStake\MediaWiki\Component\Events\TitleEvent;
-use TitleFactory;
 
 class Book implements ISubscriptionSet {
 	/** @var BookLookup */

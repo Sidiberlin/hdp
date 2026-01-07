@@ -1,22 +1,21 @@
 .cd-decision {
 	padding: 14px;
 	margin: 2em 0 1em 0;
-	display: block;
-	position:relative;
-	clear:both;
+	display: inline-block;
 	background-color: #e9e9ee;
+	width: 100%;
 }
 .cd-decision:before {
-	position: absolute;
 	font-size: 1.8em;
 	font-family: "fontawesome";
-	left: 8px;
 }
 .cd-decision::before {
 	content: "\f058";
 	color: #94c11f;
 }
 .cd-decision p {
-	margin-left: 2em;
+	display:inline;
 	font-weight: bold;
+	vertical-align: super;
+	padding-left: 5px;
 }

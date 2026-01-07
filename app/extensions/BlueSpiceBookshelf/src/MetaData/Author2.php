@@ -3,7 +3,7 @@
 namespace BlueSpice\Bookshelf\MetaData;
 
 use BlueSpice\Bookshelf\IMetaDataDescription;
-use Message;
+use MediaWiki\Message\Message;
 
 class Author2 implements IMetaDataDescription {
 

@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Milicevic01"
+		]
+	},
+	"contenttransfer-dialog-push-action-cancel-label": "Откажи",
+	"contenttransfer-dialog-push-action-done-label": "Готово",
+	"contenttransfer-progress-user-action-skip": "Прескочи",
+	"contenttransfer-filter-toggle-btn-hide": "Сакриј",
+	"contenttransfer-filter-toggle-btn-show": "Прикажи"
+}

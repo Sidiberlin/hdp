@@ -2,22 +2,14 @@
 
 declare(strict_types=1);
 
-/*
- * The MIT License (MIT)
- *
- * Copyright (c) 2018-2020 Spomky-Labs
- *
- * This software may be modified and distributed under the terms
- * of the MIT license.  See the LICENSE file for details.
- */
-
 namespace CBOR\OtherObject;
 
 use Brick\Math\BigInteger;
 use CBOR\OtherObject as Base;
 use CBOR\Utils;
-use const INF;
 use InvalidArgumentException;
+use function strlen;
+use const INF;
 use const NAN;
 
 final class SinglePrecisionFloatObject extends Base
@@ -27,6 +19,21 @@ final class SinglePrecisionFloatObject extends Base
         return [self::OBJECT_SINGLE_PRECISION_FLOAT];
     }
 
+    public static function createFromFloat(float $number): self
+    {
+        $value = match (true) {
+            is_nan($number) => hex2bin('7FC00000'),
+            is_infinite($number) && $number > 0 => hex2bin('7F800000'),
+            is_infinite($number) && $number < 0 => hex2bin('FF800000'),
+            default => (fn (): string => unpack('S', "\x01\x00")[1] === 1 ? strrev(pack('f', $number)) : pack(
+                'f',
+                $number
+            ))(),
+        };
+
+        return new self(self::OBJECT_SINGLE_PRECISION_FLOAT, $value);
+    }
+
     public static function createFromLoadedData(int $additionalInformation, ?string $data): Base
     {
         return new self($additionalInformation, $data);
@@ -34,25 +41,14 @@ final class SinglePrecisionFloatObject extends Base
 
     public static function create(string $value): self
     {
-        if (mb_strlen($value, '8bit') !== 4) {
+        if (strlen($value) !== 4) {
             throw new InvalidArgumentException('The value is not a valid single precision floating point');
         }
 
         return new self(self::OBJECT_SINGLE_PRECISION_FLOAT, $value);
     }
 
-    /**
-     * @deprecated The method will be removed on v3.0. Please rely on the CBOR\Normalizable interface
-     */
-    public function getNormalizedData(bool $ignoreTags = false)
-    {
-        return $this->normalize();
-    }
-
-    /**
-     * @return float|int
-     */
-    public function normalize()
+    public function normalize(): float|int
     {
         $exponent = $this->getExponent();
         $mantissa = $this->getMantissa();

@@ -2,35 +2,38 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs\Data\FileQueryStore;
 
-use MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore\SecondaryDataProvider
-	as TitleSecondaryDataProvider;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Language\Language;
+use MediaWiki\Page\PageProps;
+use MediaWiki\Title\TitleFactory;
+use MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore\SecondaryDataProvider as TitleSecondaryDataProvider;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore\TitleRecord;
 
 class SecondaryDataProvider extends TitleSecondaryDataProvider {
 
-	/** @var \TitleFactory */
+	/** @var TitleFactory */
 	protected $titleFactory;
-	/** @var \Language */
+	/** @var Language */
 	protected $language;
-	/** @var \PageProps */
+	/** @var PageProps */
 	protected $pageProps;
 	/** @var \RepoGroup */
 	protected $repoGroup;
-	/** @var \RequestContext|null */
+	/** @var RequestContext|null */
 	protected $context;
 
 	/**
-	 * @param \TitleFactory $titleFactory
-	 * @param \Language $language
-	 * @param \PageProps $pageProp
+	 * @param TitleFactory $titleFactory
+	 * @param Language $language
+	 * @param PageProps $pageProps
 	 * @param \RepoGroup $repoGroup
 	 */
-	public function __construct( $titleFactory, \Language $language, \PageProps $pageProps, \RepoGroup $repoGroup ) {
+	public function __construct( $titleFactory, Language $language, PageProps $pageProps, \RepoGroup $repoGroup ) {
 		$this->titleFactory = $titleFactory;
 		$this->language = $language;
 		$this->pageProps = $pageProps;
 		$this->repoGroup = $repoGroup;
-		$this->context = \RequestContext::getMain();
+		$this->context = RequestContext::getMain();
 	}
 
 	/**
@@ -42,6 +45,7 @@ class SecondaryDataProvider extends TitleSecondaryDataProvider {
 		$dataSets = parent::extend( $dataSets );
 		foreach ( $dataSets as $dataSet ) {
 			$title = $this->titleFromRecord( $dataSet );
+			// Note: PAGE_PREFIXED in File context omits 'File:'
 			$dataSet->set( TitleRecord::PAGE_PREFIXED, $title->getText() );
 			$file = $this->repoGroup->getLocalRepo()->newFile( $title );
 
@@ -60,6 +64,18 @@ class SecondaryDataProvider extends TitleSecondaryDataProvider {
 			$dataSet->set(
 				FileRecord::FILE_THUMBNAIL_URL_PREVIEW,
 				$file->createThumb( 120 )
+			);
+			$dataSet->set(
+				FileRecord::FILE_MEDIATYPE,
+				$file->getMediaType()
+			);
+			$dataSet->set(
+				FileRecord::FILE_WIDTH,
+				$file->getWidth()
+			);
+			$dataSet->set(
+				FileRecord::FILE_HEIGHT,
+				$file->getHeight()
 			);
 		}
 

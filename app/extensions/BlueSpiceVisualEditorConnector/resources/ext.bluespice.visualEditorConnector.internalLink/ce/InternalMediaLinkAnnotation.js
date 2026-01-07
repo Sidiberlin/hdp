@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.ce' );
 
-bs.vec.ce.InternalMediaLinkAnnotation = function() {
+bs.vec.ce.InternalMediaLinkAnnotation = function () {
 	// Parent InternalMediaLinkAnnotation
 	bs.vec.ce.InternalMediaLinkAnnotation.super.apply( this, arguments );
 };

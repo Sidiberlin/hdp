@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\NotifyMe;
 
+use MediaWiki\Message\Message;
 use MediaWiki\User\UserIdentity;
-use Message;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
 use MWStake\MediaWiki\Component\Events\Notification;

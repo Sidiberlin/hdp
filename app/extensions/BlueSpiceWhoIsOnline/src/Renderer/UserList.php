@@ -6,10 +6,10 @@ use BlueSpice\Renderer;
 use BlueSpice\Renderer\Params;
 use BlueSpice\UtilityFactory;
 use BlueSpice\WhoIsOnline\Data\Record;
-use Config;
-use Html;
-use HtmlArmor;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\MediaWikiServices;
 use MWException;
@@ -44,9 +44,10 @@ class UserList extends \BlueSpice\Renderer {
 	 * @param string $name | ''
 	 * @param UtilityFactory|null $util
 	 */
-	protected function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
-		$name = '', UtilityFactory $util = null ) {
+	protected function __construct(
+		Config $config, Params $params, ?LinkRenderer $linkRenderer = null,
+		?IContextSource $context = null, $name = '', ?UtilityFactory $util = null
+	) {
 		parent::__construct( $config, $params, $linkRenderer, $context, $name );
 
 		$this->util = $util;
@@ -79,16 +80,17 @@ class UserList extends \BlueSpice\Renderer {
 	 * @param UtilityFactory|null $util
 	 * @return Renderer
 	 */
-	public static function factory( $name, MediaWikiServices $services, Config $config,
-		Params $params, IContextSource $context = null, LinkRenderer $linkRenderer = null,
-		UtilityFactory $util = null ) {
+	public static function factory(
+		$name, MediaWikiServices $services, Config $config, Params $params,
+		?IContextSource $context = null, ?LinkRenderer $linkRenderer = null, ?UtilityFactory $util = null
+	) {
 		if ( !$context ) {
 			$context = $params->get(
 				static::PARAM_CONTEXT,
 				false
 			);
 			if ( !$context instanceof IContextSource ) {
-				$context = \RequestContext::getMain();
+				$context = RequestContext::getMain();
 			}
 		}
 		if ( !$linkRenderer ) {
@@ -125,7 +127,7 @@ class UserList extends \BlueSpice\Renderer {
 			$out .= Html::openElement( 'li' );
 			$out .= $this->linkRenderer->makeLink(
 				$user->getUserPage(),
-				new HtmlArmor( $displayName )
+				$displayName
 			);
 			$out .= Html::closeElement( 'li' );
 		}

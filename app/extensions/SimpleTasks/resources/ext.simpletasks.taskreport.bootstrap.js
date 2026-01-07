@@ -1,7 +1,7 @@
 ( function ( mw, $ ) {
 
 	function getGridConfig() {
-		var gridCfg = {
+		const gridCfg = {
 			pageSize: 10,
 			columns: {
 				taskdescription: {
@@ -53,7 +53,7 @@
 					headerText: mw.message( 'simple-tasks-taskreport-header-state' ).text(),
 					/* eslint-disable-next-line no-unused-vars */
 					valueParser: function ( value, row ) {
-						var state = 'open',
+						let state = 'open',
 							iconName = 'color-cross';
 						if ( value === 'done' ) {
 							state = 'done';
@@ -83,13 +83,13 @@
 	}
 
 	function getReport( counter, $taskreport ) {
-		var api = new ext.simpletasks.api.Api();
+		const api = new ext.simpletasks.api.Api();
 		api.getTasksFromFilter( counter, $taskreport.data( 'filter' ) )
-			.done( function ( response ) {
-				var reports = response.tasks;
+			.done( ( response ) => {
+				const reports = response.tasks;
 
 				if ( reports.length < 1 ) {
-					var labelWidget = new OO.ui.LabelWidget( {
+					const labelWidget = new OO.ui.LabelWidget( {
 						classes: [ 'taskreport-no-result' ],
 						label: mw.message( 'simple-tasks-taskreport-no-results' ).text()
 					} );
@@ -98,9 +98,9 @@
 					return;
 				}
 
-				var gridCfg = getGridConfig();
-				var tasks = [];
-				reports.forEach( function ( task ) {
+				const gridCfg = getGridConfig();
+				const tasks = [];
+				reports.forEach( ( task ) => {
 					tasks.push( {
 						taskdescription: task.text,
 						assignee: task.assignee,
@@ -112,24 +112,24 @@
 				} );
 
 				gridCfg.data = tasks;
-				var grid = new OOJSPlus.ui.data.GridWidget( gridCfg );
+				const grid = new OOJSPlus.ui.data.GridWidget( gridCfg );
 				$taskreport.append( grid.$element );
 				$( $taskreport ).removeClass( 'load' );
 			} );
 	}
 
-	$( function () {
+	$( () => {
 		/* eslint-disable-next-line no-jquery/no-global-selector */
 		if ( $( '.ve-activated' ).length > 0 ) {
 			return;
 		}
 		/* eslint-disable-next-line no-jquery/no-global-selector */
-		var $taskreports = $(
+		const $taskreports = $(
 			'div.task-report[data-filter]'
 		);
 
-		mw.loader.using( [ 'ext.simpletasks.api' ] ).done( function () {
-			for ( var counter = 0; counter < $taskreports.length; counter++ ) {
+		mw.loader.using( [ 'ext.simpletasks.api' ] ).done( () => {
+			for ( let counter = 0; counter < $taskreports.length; counter++ ) {
 				getReport( counter, $( $taskreports[ counter ] ) );
 			}
 		} );

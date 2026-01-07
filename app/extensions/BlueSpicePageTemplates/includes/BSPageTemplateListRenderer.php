@@ -1,5 +1,10 @@
 <?php
 
+use MediaWiki\Html\Html;
+use MediaWiki\Html\TemplateParser;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Title\Title;
 use OOUI\ButtonGroupWidget;
 use OOUI\SearchInputWidget;
 
@@ -58,7 +63,7 @@ class BSPageTemplateListRenderer {
 				'id' => 'bs-template-search-input',
 				'infusable' => true,
 				'classes' => [ 'template-search-field' ],
-				'placeholder' => wfMessage( 'bs-pagetemplates-search-template-placeholder' )->plain(),
+				'placeholder' => wfMessage( 'bs-pagetemplates-search-template-placeholder' )->text(),
 			] ) .
 			new ButtonGroupWidget( [
 				'id' => 'bs-template-search-namespace-tag-buttongroup',
@@ -110,7 +115,7 @@ class BSPageTemplateListRenderer {
 
 			$nsName = BsNamespaceHelper::getNamespaceName( $namespaceId, true );
 			if ( !$nsName ) {
-				$nsName = Message::newFromKey( 'bs-pagetemplates-ns-undefined' )->plain();
+				$nsName = Message::newFromKey( 'bs-pagetemplates-ns-undefined' )->text();
 			}
 
 			$messageKey = "bs-pagetemplates-namespace-$namespaceId";

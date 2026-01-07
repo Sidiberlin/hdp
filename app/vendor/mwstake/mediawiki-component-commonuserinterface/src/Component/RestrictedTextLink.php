@@ -2,10 +2,10 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface\Component;
 
-use Message;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\IRestrictedComponent;
 use MWStake\MediaWiki\Component\CommonUserInterface\ITextLink;
-use RawMessage;
 
 class RestrictedTextLink extends ComponentBase implements ITextLink, IRestrictedComponent {
 

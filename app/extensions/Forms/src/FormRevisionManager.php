@@ -4,8 +4,8 @@ namespace MediaWiki\Extension\Forms;
 
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionStore;
-use Status;
-use Title;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\IDatabase;
 
 class FormRevisionManager {
@@ -119,7 +119,8 @@ class FormRevisionManager {
 
 		$res = $this->db->delete(
 			static::TABLE,
-			$conds
+			$conds,
+			__METHOD__
 		);
 		if ( $res ) {
 			return Status::newGood();
@@ -159,24 +160,24 @@ class FormRevisionManager {
 		$row = $this->db->selectRow(
 			static::TABLE,
 			'*',
-			[ static::FIELD_REV_ID => $revId ]
+			[ static::FIELD_REV_ID => $revId ],
+			__METHOD__
 		);
 		return (bool)$row;
 	}
 
 	/**
 	 * @param int $revId
-	 * @param stinrg $ts
+	 * @param string $ts
 	 * @return bool
 	 */
 	private function doUpdate( $revId, $ts ) {
-		$res = $this->db->update(
+		return $this->db->update(
 			static::TABLE,
 			[ static::FIELD_APPLIES_FROM => $ts ],
-			[ static::FIELD_REV_ID => $revId ]
+			[ static::FIELD_REV_ID => $revId ],
+			__METHOD__
 		);
-
-		return $res;
 	}
 
 	/**
@@ -186,16 +187,15 @@ class FormRevisionManager {
 	 * @return bool
 	 */
 	private function doInsert( $pageId, $revId, $ts ) {
-		$res = $this->db->insert(
+		return $this->db->insert(
 			static::TABLE,
 			[
 				static::FIELD_REV_ID => $revId,
 				static::FIELD_PAGE_ID => $pageId,
 				static::FIELD_APPLIES_FROM => $ts
-			]
+			],
+			__METHOD__
 		);
-
-		return $res;
 	}
 
 }

@@ -5,6 +5,8 @@ namespace BlueSpice\TagCloud\Data\TagCloud\Category;
 use BlueSpice\TagCloud\Context;
 use BlueSpice\TagCloud\Data\TagCloud\Record;
 use BlueSpice\TagCloud\Data\TagCloud\Schema;
+use MediaWiki\Category\TrackingCategories;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\Filter\ListValue;
 use MWStake\MediaWiki\Component\DataStore\Filter\Numeric;
@@ -12,7 +14,6 @@ use MWStake\MediaWiki\Component\DataStore\Filter\StringValue;
 use MWStake\MediaWiki\Component\DataStore\FilterFinder;
 use MWStake\MediaWiki\Component\DataStore\IPrimaryDataProvider;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
-use TrackingCategories;
 
 class PrimaryDataProvider implements IPrimaryDataProvider {
 
@@ -168,7 +169,7 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 	 * @param \stdClass $row
 	 */
 	protected function appendRowToData( $row ) {
-		$title = \Title::newFromText( $row->{Record::NAME}, NS_CATEGORY );
+		$title = Title::newFromText( $row->{Record::NAME}, NS_CATEGORY );
 		$pm = \MediaWiki\MediaWikiServices::getInstance()->getPermissionManager();
 		if ( !$title || !$pm->userCan( 'read', $this->context->getUser(), $title ) ) {
 			return;
@@ -182,7 +183,7 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 
 	/**
 	 * cause of mysql alias resons -.-
-	 * @param type $alias
+	 * @param string $alias
 	 * @return string
 	 */
 	protected function aliasToFieldName( $alias ) {

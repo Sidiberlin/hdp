@@ -2,10 +2,10 @@
 
 namespace BlueSpice\Rating\Special;
 
-use Html;
-use SpecialPage;
+use MediaWiki\Html\Html;
+use OOJSPlus\Special\OOJSGridSpecialPage;
 
-class Rating extends SpecialPage {
+class Rating extends OOJSGridSpecialPage {
 
 	public function __construct() {
 		parent::__construct( 'Rating', 'rating-viewspecialpage', true );
@@ -14,9 +14,7 @@ class Rating extends SpecialPage {
 	/**
 	 * @inheritDoc
 	 */
-	public function execute( $subPage ) {
-		parent::execute( $subPage );
-
+	public function doExecute( $subPage ) {
 		$out = $this->getOutput();
 		$out->setPageTitle( $this->msg( 'bs-rating-special-rating-heading' )->plain() );
 		$out->addModules( [

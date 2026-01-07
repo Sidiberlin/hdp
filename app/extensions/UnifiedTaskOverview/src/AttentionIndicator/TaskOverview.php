@@ -5,10 +5,10 @@ namespace MediaWiki\Extension\UnifiedTaskOverview\AttentionIndicator;
 use BlueSpice\Discovery\AttentionIndicator\Collection;
 use BlueSpice\Discovery\AttentionIndicatorFactory;
 use BlueSpice\Discovery\IAttentionIndicator;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\ManifestRegistry\IRegistry;
-use User;
 
 class TaskOverview extends Collection {
 
@@ -40,8 +40,8 @@ class TaskOverview extends Collection {
 	 * @return IAttentionIndicator
 	 */
 	public static function factory( string $key, Config $config, User $user,
-		MediaWikiServices $services, AttentionIndicatorFactory $attentionIndicatorFactory = null,
-		IRegistry $registry = null ) {
+		MediaWikiServices $services, ?AttentionIndicatorFactory $attentionIndicatorFactory = null,
+		?IRegistry $registry = null ) {
 		if ( !$attentionIndicatorFactory ) {
 			$attentionIndicatorFactory = $services->getService( 'BSAttentionIndicatorFactory' );
 		}

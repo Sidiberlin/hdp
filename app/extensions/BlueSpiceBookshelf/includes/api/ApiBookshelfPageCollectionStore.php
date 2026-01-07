@@ -11,7 +11,7 @@ class ApiBookshelfPageCollectionStore extends BSApiExtJSStoreBase {
 		$aPages = [];
 		$dbr = $this->getDB();
 
-		$pageCollectionPrefix = wfMessage( 'bs-pagecollection-prefix' )->inContentLanguage()->plain();
+		$pageCollectionPrefix = wfMessage( 'bs-pagecollection-prefix' )->inContentLanguage()->text();
 		$pageCollectionPrefix = str_replace( ' ', '_', $pageCollectionPrefix );
 		$pageCollectionPrefix .= "/";
 
@@ -21,7 +21,8 @@ class ApiBookshelfPageCollectionStore extends BSApiExtJSStoreBase {
 			[
 				"page_namespace" => NS_MEDIAWIKI,
 				"page_title" . $dbr->buildLike( $pageCollectionPrefix . $sQuery, $dbr->anyString() )
-			]
+			],
+			__METHOD__
 		);
 
 		foreach ( $res as $row ) {

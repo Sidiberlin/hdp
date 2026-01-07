@@ -4,8 +4,8 @@ namespace BlueSpice\ProDistributionConnector\ConfigDefinition;
 
 use BlueSpice\ConfigDefinition;
 use BlueSpice\ProDistributionConnector\EditionProvider;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
 
 class LicenseKey extends ConfigDefinition\StringSetting {
@@ -37,7 +37,7 @@ class LicenseKey extends ConfigDefinition\StringSetting {
 	public function getPaths() {
 		return [
 				static::MAIN_PATH_FEATURE . '/' . static::FEATURE_SYSTEM . '/BlueSpiceProDistributionConnector',
-				static::MAIN_PATH_EXTENSION . '/BlueSpiceProDistributionConnector/' . static::FEATURE_SYSTEM ,
+				static::MAIN_PATH_EXTENSION . '/BlueSpiceProDistributionConnector/' . static::FEATURE_SYSTEM,
 				static::MAIN_PATH_PACKAGE . '/' . static::PACKAGE_PRO . '/BlueSpiceProDistributionConnector',
 			];
 	}

@@ -11,7 +11,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Original",
 	"bs-visualeditorconnector-upload-type-simple": "Enkel",
 	"bs-visualeditorconnector-upload-type-one-click": "Ett klick",
-	"bs-visualeditorconnector-upload-type": "Uppladdningstyp",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Avbryt redigering",
 	"bs-visualeditorconnector-cancel-edit": "Avbryt redigering. Ändringar som inte sparats kommer slängas",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Vill du verkligen avbryta redigeringen? Dina osparade ändringar kommer slängas.",
@@ -80,5 +79,6 @@
 	"bs-vec-insert-line-break-title": "Radbrytning (<br />)",
 	"bs-visualeditorconnector-align-center-annotation-desc": "Centrerar markerad text",
 	"bs-visualeditorconnector-text-style-indent-label": "Indrag",
-	"bs-visualeditorconnector-indent-annotation-desc": "Indrag för markerad text"
+	"bs-visualeditorconnector-indent-annotation-desc": "Indrag för markerad text",
+	"bs-visualeditorconnector-upload-type": "Uppladdningstyp"
 }

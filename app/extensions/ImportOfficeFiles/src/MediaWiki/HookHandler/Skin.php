@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\ImportOfficeFiles\MediaWiki\HookHandler;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\ImportOfficeFiles\ModuleFactory;
 use MediaWiki\Permissions\PermissionManager;
 
@@ -39,7 +39,7 @@ class Skin {
 
 		$links['actions']['import-office-file'] = [
 			'text' => $skinTemplate->getContext()
-				->msg( "importofficefiles-ui-action-import-msword-text" )->text(),
+				->msg( "importofficefiles-ui-action-import-msword-label" )->text(),
 			'title' => $skinTemplate
 				->getContext()->msg( "importofficefiles-ui-action-import-msword-title" )->text(),
 			'href' => '',

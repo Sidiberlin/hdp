@@ -8,6 +8,11 @@
  * @ingroup PF
  */
 
+use MediaWiki\EditPage\EditPage;
+use MediaWiki\Extension\ConfirmEdit\Hooks;
+use MediaWiki\Html\Html;
+use MediaWiki\Title\Title;
+
 /**
  * @ingroup PFSpecialPages
  */
@@ -94,12 +99,13 @@ class PFFormEdit extends UnlistedSpecialPage {
 		$module = new PFAutoeditAPI( new ApiMain(), 'pfautoedit' );
 		$module->setOption( 'form', $form_name );
 		$module->setOption( 'target', $targetName );
+		$targetTitle = Title::newFromText( $targetName );
 
 		if ( $req->getCheck( 'wpSave' ) || $req->getCheck( 'wpPreview' ) || $req->getCheck( 'wpDiff' ) ) {
 			// If the page was submitted, form data should be
 			// complete => do not preload
 			$module->setOption( 'preload', false );
-		} elseif ( !empty( $targetName ) && Title::newFromText( $targetName )->exists() ) {
+		} elseif ( !empty( $targetName ) && $targetTitle && $targetTitle->exists() ) {
 			// If target page exists, do not overwrite it with
 			// preload data; just preload the page's data.
 			$module->setOption( 'preload', true );
@@ -214,7 +220,7 @@ class PFFormEdit extends UnlistedSpecialPage {
 	 * @param Title $targetTitle
 	 */
 	protected function showCaptcha( $targetTitle ) {
-		if ( !method_exists( 'ConfirmEditHooks', 'getInstance' ) ) {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'ConfirmEdit' ) ) {
 			// ConfirmEdit extension is not installed.
 			return;
 		}
@@ -227,7 +233,7 @@ class PFFormEdit extends UnlistedSpecialPage {
 		$article = new Article( $targetTitle );
 		$fakeEditPage = new EditPage( $article );
 
-		$captcha = ConfirmEditHooks::getInstance();
+		$captcha = Hooks::getInstance();
 		$captcha->editShowCaptcha( $fakeEditPage );
 	}
 

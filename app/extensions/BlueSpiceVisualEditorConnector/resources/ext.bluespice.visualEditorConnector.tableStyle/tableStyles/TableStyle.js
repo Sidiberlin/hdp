@@ -1,7 +1,7 @@
 bs.util.registerNamespace( 'bs.vec.ui' );
 bs.util.registerNamespace( 'bs.vec.util' );
 
-bs.vec.ui.TableStyle = function() {
+bs.vec.ui.TableStyle = function () {
 	this.section = '';
 	this.applyTo = '';
 };
@@ -34,87 +34,88 @@ bs.vec.ui.TableStyle.prototype.decorate = function ( $element ) {
 	$element.css( this.getAttribute(), this.getValue() );
 };
 
-bs.vec.ui.TableStyle.prototype.getValue = function() {
+bs.vec.ui.TableStyle.prototype.getValue = function () {
 	return this.value + this.getUnit();
 };
 
-bs.vec.ui.TableStyle.prototype.getSection = function() {
+bs.vec.ui.TableStyle.prototype.getSection = function () {
 	return this.section || null;
 };
 
-bs.vec.ui.TableStyle.prototype.splitValue = function( value ) {
+bs.vec.ui.TableStyle.prototype.splitValue = function ( value ) {
 	return value.replace( this.getUnit(), '' );
 };
 
 /**
  * Name of CSS attribute as it will be applied to the element
  */
-bs.vec.ui.TableStyle.prototype.getAttribute = function() {
+bs.vec.ui.TableStyle.prototype.getAttribute = function () {
 	// STUB
 };
 
 /**
  * Unit for style attribute value (px, %...)
- * @returns string
+ *
+ * @return {string}
  */
-bs.vec.ui.TableStyle.prototype.getUnit = function() {
+bs.vec.ui.TableStyle.prototype.getUnit = function () {
 	return '';
 };
 
-bs.vec.ui.TableStyle.prototype.setValue = function( value ) {
+bs.vec.ui.TableStyle.prototype.setValue = function ( value ) {
 	this.value = value;
 };
 
 /**
  * Does this style tool applies to current section
  *
- * @param string section
- * @returns boolean
+ * @param {string} section
+ * @return {boolean}
  */
-bs.vec.ui.TableStyle.prototype.applies = function( section ) {
+bs.vec.ui.TableStyle.prototype.applies = function ( section ) {
 	if ( section !== this.section ) {
 		return false;
 	}
 	return true;
 };
 
-bs.vec.ui.TableStyle.prototype.getTool = function() {
+bs.vec.ui.TableStyle.prototype.getTool = function () {
 	return {};
 };
 
-bs.vec.ui.TableStyle.prototype.getModelProperty = function() {
+bs.vec.ui.TableStyle.prototype.getModelProperty = function () {
 	// STUB
 };
 
-bs.vec.ui.TableStyle.prototype.toDataElement = function( section, domElement, result ) {
-	var style, styleParser, modelProperty, externalStyle = {}, parsed;
-	modelProperty = this.getModelProperty();
+bs.vec.ui.TableStyle.prototype.toDataElement = function ( section, domElement, result ) {
+	const externalStyle = {};
+	const modelProperty = this.getModelProperty();
 
 	if ( section !== this.applyTo ) {
 		return;
 	}
-	style = domElement.getAttribute( 'style' );
+	const style = domElement.getAttribute( 'style' );
 
 	if ( !style ) {
 		return;
 	}
-	var applied = [];
-	styleParser = new bs.vec.util.StyleAttributeParser( style );
+	const applied = [];
+	const styleParser = new bs.vec.util.StyleAttributeParser( style );
 	if ( styleParser.getValueForAttr( this.getAttribute() ) ) {
-		result[modelProperty] = this.splitValue(
+		result[ modelProperty ] = this.splitValue(
 			styleParser.getValueForAttr( this.getAttribute() )
 		);
 		applied.push( this.getAttribute() );
 	}
-	parsed = styleParser.getParsed();
-	for ( var key in parsed ) {
+	const parsed = styleParser.getParsed();
+	for ( const key in parsed ) {
 		if ( !parsed.hasOwnProperty( key ) ) {
 			continue;
 		}
 		if ( applied.indexOf( key ) !== -1 ) {
 			continue;
 		}
-		externalStyle[key] = parsed[key];
+		externalStyle[ key ] = parsed[ key ];
 	}
 
 	if ( Object.keys( externalStyle ).length > 0 ) {
@@ -122,9 +123,7 @@ bs.vec.ui.TableStyle.prototype.toDataElement = function( section, domElement, re
 	}
 };
 
-bs.vec.ui.TableStyle.prototype.toDomElements = function( section, dataElement, domElement, attributes ) {
-	var value, style, styleParser;
-
+bs.vec.ui.TableStyle.prototype.toDomElements = function ( section, dataElement, domElement, attributes ) { // eslint-disable-line no-unused-vars
 	if ( section !== this.applyTo ) {
 		return;
 	}
@@ -136,18 +135,18 @@ bs.vec.ui.TableStyle.prototype.toDomElements = function( section, dataElement, d
 		return;
 	}
 
-	value = dataElement.attributes[this.getModelProperty()];
+	const value = dataElement.attributes[ this.getModelProperty() ];
 	this.setValue( value );
 
-	style = domElement.getAttribute( 'style' );
+	let style = domElement.getAttribute( 'style' );
 	if ( !style ) {
 		style = '';
 	}
-	styleParser = new bs.vec.util.StyleAttributeParser( style );
+	const styleParser = new bs.vec.util.StyleAttributeParser( style );
 	styleParser.addToStyle( this.getAttribute(), this.getValue() );
 	domElement.setAttribute( 'style', styleParser.toString() );
 };
 
-bs.vec.ui.TableStyle.prototype.shouldOverrideAction = function() {
+bs.vec.ui.TableStyle.prototype.shouldOverrideAction = function () {
 	return true;
 };

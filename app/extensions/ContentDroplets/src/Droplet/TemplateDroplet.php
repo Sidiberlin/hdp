@@ -4,8 +4,8 @@ declare( strict_types = 1 );
 
 namespace MediaWiki\Extension\ContentDroplets\Droplet;
 
-use FormatJson;
 use MediaWiki\Extension\ContentDroplets\IDropletDescription;
+use MediaWiki\Json\FormatJson;
 
 /**
  * One can question how useful this is...

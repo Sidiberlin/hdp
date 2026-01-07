@@ -1,15 +1,19 @@
-$(document).on( 'click', '#ca-bookshelf-add-to-book', function( e ) {
+$( document ).on( 'click', '#ca-bookshelf-add-to-book', ( e ) => {
 	e.preventDefault();
-	require( './BS.Bookshelf/dialog/AddToBook.js' );
+	require( './ui/dialog/AddToBook.js' );
 
-	var dialog = new bs.bookshelf.dialog.AddToBook( {
+	const dialog = new bs.bookshelf.ui.dialog.AddToBook( {
 		pagename: mw.config.get( 'wgPageName' )
 	} );
-	dialog.show().closed.then( function( data ) {
-		if ( data.needsReload ) {
-			window.location.reload();
+	dialog.show().closed.then( ( actions ) => {
+		if ( actions.action === 'cancel' ) {
+			return;
 		}
-	}.bind( this ) );
+		const bookTitle = actions.book;
+		const url = new URL( window.location.href );
+		url.searchParams.set( 'book', bookTitle );
+		window.location.href = url.toString();
+	} );
 
 	return false;
 } );

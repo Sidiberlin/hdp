@@ -3,11 +3,11 @@ window.officeimport = {
 	api: {}
 };
 
-$( function () {
-	$( document ).on( 'click', '#ca-import-office-file', function ( e ) {
+$( () => {
+	$( document ).on( 'click', '#ca-import-office-file', ( e ) => {
 		e.preventDefault();
 
-		mw.loader.using( [ 'ext.importofficefiles.ui.form' ], function () {
+		mw.loader.using( [ 'ext.importofficefiles.ui.form' ], () => {
 			const windowManager = new OO.ui.WindowManager();
 			$( document.body ).append( windowManager.$element );
 

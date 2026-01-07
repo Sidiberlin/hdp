@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac"
+		]
+	},
+	"mergearticles-target-new-label": "Նոր էջ",
+	"mergearticles-type-file": "Նիշք",
+	"mergearticles-type-article": "Էջ",
+	"mergearticles-type-template": "Կաղապար",
+	"mergearticles-type-category": "Կատեգորիա",
+	"mergearticles-file-layout-label": "Նիշք",
+	"mergearticles-diff-action-accept": "Հաստատել",
+	"mergearticles-diff-action-refuse": "Մերժել",
+	"mergearticles-diff-accepted": "Հաստատվել է",
+	"mergearticles-file-diff-header": "Նիշք"
+}

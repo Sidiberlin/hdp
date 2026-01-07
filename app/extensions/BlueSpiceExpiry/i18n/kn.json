@@ -9,10 +9,9 @@
 	"bs-expiry-article-label": "ಪುಟ",
 	"bs-expiry-comment-label": "ಟಿಪ್ಪಣಿ",
 	"bs-expiry-unknown-page-msg": "ಪುಟವು ಅಸ್ತಿತ್ವದಲ್ಲಿಲ್ಲ.",
-	"bs-expiry-flyout-next-comment": "ಟಿಪ್ಪಣಿ: $1",
+	"bs-expiry-info-dialog-comment": "ಟಿಪ್ಪಣಿ: $1",
 	"bs-expiry-edit-grid-header-username": "ಬಳಕೆದಾರ",
 	"bs-expiry-edit-grid-header-date": "ದಿನಾಂಕ",
 	"bs-expiry-edit-grid-header-comment": "ಟಿಪ್ಪಣಿ",
-	"bs-expiry-dialog-action-no": "ಇಲ್ಲ",
-	"bs-expiry-info-dialog-comment": "ಟಿಪ್ಪಣಿ: $1"
+	"bs-expiry-dialog-action-no": "ಇಲ್ಲ"
 }

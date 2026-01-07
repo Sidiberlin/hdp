@@ -1,4 +1,4 @@
-bs.expiry.ui.ExpiryPage = function( cfg ) {
+bs.expiry.ui.ExpiryPage = function ( cfg ) {
 	cfg = cfg || {};
 	this.reminderEnabled = cfg.reminderEnabled || false;
 	this.page = '';
@@ -8,7 +8,7 @@ bs.expiry.ui.ExpiryPage = function( cfg ) {
 
 OO.inheritClass( bs.expiry.ui.ExpiryPage, OOJSPlus.ui.booklet.DialogBookletPage );
 
-bs.expiry.ui.ExpiryPage.prototype.getItems = function() {
+bs.expiry.ui.ExpiryPage.prototype.getItems = function () {
 	this.datePicker = new mw.widgets.DateInputWidget( {
 		$overlay: this.dialog.$overlay,
 		required: true
@@ -17,19 +17,19 @@ bs.expiry.ui.ExpiryPage.prototype.getItems = function() {
 	this.comment = new OO.ui.MultilineTextInputWidget();
 	this.pagePicker = new OOJSPlus.ui.widget.TitleInputWidget( { required: true, mustExist: true } );
 
-	var layouts = [
+	const layouts = [
 		new OO.ui.FieldLayout( this.datePicker, {
-			label: mw.message( 'bs-expiry-date-label' ).plain(),
+			label: mw.message( 'bs-expiry-date-label' ).text(),
 			align: 'top'
 		} ),
 		new OO.ui.FieldLayout( this.comment, {
-			label: mw.message( 'bs-expiry-comment-label' ).plain(),
+			label: mw.message( 'bs-expiry-comment-label' ).text(),
 			align: 'top'
 		} )
 	];
 	if ( !this.forcePage ) {
 		layouts.unshift( new OO.ui.FieldLayout( this.pagePicker, {
-			label: mw.message( 'bs-expiry-article-label' ).plain(),
+			label: mw.message( 'bs-expiry-article-label' ).text(),
 			align: 'top'
 		} ) );
 	}
@@ -37,15 +37,15 @@ bs.expiry.ui.ExpiryPage.prototype.getItems = function() {
 	return layouts;
 };
 
-bs.expiry.ui.ExpiryPage.prototype.getTitle = function() {
-	return mw.message( 'bs-expiry-dialog-title' ).plain();
+bs.expiry.ui.ExpiryPage.prototype.getTitle = function () {
+	return mw.message( 'bs-expiry-dialog-title' ).text();
 };
 
-bs.expiry.ui.ExpiryPage.prototype.getSize = function() {
+bs.expiry.ui.ExpiryPage.prototype.getSize = function () {
 	return 'medium';
 };
 
-bs.expiry.ui.ExpiryPage.prototype.setData = function( value ) {
+bs.expiry.ui.ExpiryPage.prototype.setData = function ( value ) {
 	value = value || {};
 	if ( value.hasOwnProperty( 'date' ) ) {
 		this.datePicker.setValue( this.formatDateForInput( this.dateFromValue( value.date ) ) );
@@ -64,8 +64,8 @@ bs.expiry.ui.ExpiryPage.prototype.setData = function( value ) {
 	this.updateDialogSize();
 };
 
-bs.expiry.ui.ExpiryPage.prototype.getActionKeys = function() {
-	var actions = [ 'cancel', 'done' ];
+bs.expiry.ui.ExpiryPage.prototype.getActionKeys = function () {
+	const actions = [ 'cancel', 'done' ];
 	if ( this.id ) {
 		actions.push( 'delete' );
 	}
@@ -73,32 +73,32 @@ bs.expiry.ui.ExpiryPage.prototype.getActionKeys = function() {
 	return actions;
 };
 
-bs.expiry.ui.ExpiryPage.prototype.getAbilities = function() {
+bs.expiry.ui.ExpiryPage.prototype.getAbilities = function () {
 	return { cancel: true, done: true, delete: true };
 };
 
-bs.expiry.ui.ExpiryPage.prototype.onAction = function( action ) {
-	var dfd = $.Deferred();
+bs.expiry.ui.ExpiryPage.prototype.onAction = function ( action ) {
+	const dfd = $.Deferred();
 
 	if ( action === 'done' ) {
 		this.checkValidity( [
 			this.pagePicker,
 			this.datePicker
-		] ).done( function() {
-			this.saveExpiry().done( function() {
+		] ).done( () => {
+			this.saveExpiry().done( () => {
 				if ( this.reminderEnabled && !this.id ) {
 					// Only on setting expiry
 					dfd.resolve( {
 						action: 'switchPanel', page: 'create-reminder-prompt',
-						data: $.extend( { type: 'expiry', user: mw.user.getName() }, this.getValue() )
+						data: Object.assign( { type: 'expiry', user: mw.user.getName() }, this.getValue() )
 					} );
 				} else {
 					dfd.resolve( { action: 'close', data: { success: true } } );
 				}
-			}.bind( this ) ).fail( function( error ) {
+			} ).fail( ( error ) => {
 				dfd.reject( error );
 			} );
-		}.bind( this ) ).fail( function() {
+		} ).fail( () => {
 			// Do nothing
 			dfd.resolve( {} );
 		} );
@@ -107,24 +107,24 @@ bs.expiry.ui.ExpiryPage.prototype.onAction = function( action ) {
 			action: 'switchPanel', page: 'delete-expiry',
 			data: { id: this.id, page: this.page, reminderEnabled: this.reminderEnabled }
 		} );
-	}  else {
+	} else {
 		return bs.expiry.ui.ExpiryPage.parent.prototype.onAction.call( this, action );
 	}
 
 	return dfd.promise();
 };
 
-bs.expiry.ui.ExpiryPage.prototype.saveExpiry = function() {
-	var dfd = $.Deferred();
+bs.expiry.ui.ExpiryPage.prototype.saveExpiry = function () {
+	const dfd = $.Deferred();
 
 	blueSpice.api.tasks.exec(
 		'expiry',
 		'saveExpiry',
 		this.getValue(), {
-			success: function() {
+			success: function () {
 				dfd.resolve();
 			},
-			failure: function( response ) {
+			failure: function ( response ) {
 				dfd.reject( response.message );
 			}
 		}
@@ -133,7 +133,7 @@ bs.expiry.ui.ExpiryPage.prototype.saveExpiry = function() {
 	return dfd.promise();
 };
 
-bs.expiry.ui.ExpiryPage.prototype.formatDateForInput = function( date ) {
+bs.expiry.ui.ExpiryPage.prototype.formatDateForInput = function ( date ) {
 	if ( !date ) {
 		return '';
 	}
@@ -142,14 +142,14 @@ bs.expiry.ui.ExpiryPage.prototype.formatDateForInput = function( date ) {
 	const month = String( date.getMonth() + 1 ).padStart( 2, '0' );
 	const day = String( date.getDate() ).padStart( 2, '0' );
 
-	return `${year}-${month}-${day}`;
+	return `${ year }-${ month }-${ day }`;
 };
 
-bs.expiry.ui.ExpiryPage.prototype.dateFromValue = function( value ) {
+bs.expiry.ui.ExpiryPage.prototype.dateFromValue = function ( value ) {
 	return new Date( Date.parse( value ) );
 };
 
-bs.expiry.ui.ExpiryPage.prototype.getValue = function() {
+bs.expiry.ui.ExpiryPage.prototype.getValue = function () {
 	return {
 		comment: this.comment.getValue(),
 		page: this.pagePicker.getValue(),

@@ -3,16 +3,19 @@
 namespace BlueSpice\ConfigManager\Api\Task;
 
 use BlueSpice\Api\Response\Standard;
+use BlueSpice\ConfigDefinition\SecretSetting;
+use BlueSpice\ConfigManager\Data\ConfigManager\CMReaderParams;
 use BlueSpice\ConfigManager\Data\ConfigManager\Record;
 use BlueSpice\ConfigManager\Data\ConfigManager\Store as ConfigManagerStore;
 use BlueSpice\Context;
 use BlueSpice\Data\Settings\Store;
-use FormatJson;
 use ManualLogEntry;
+use MediaWiki\Html\Html;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\SpecialPage\SpecialPage;
 use MWStake\MediaWiki\Component\DataStore\Filter\StringValue;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use MWStake\MediaWiki\Component\DataStore\RecordSet;
-use SpecialPage;
 
 class ConfigManager extends \BSApiTasksBase {
 
@@ -27,7 +30,7 @@ class ConfigManager extends \BSApiTasksBase {
 	/**
 	 * Returns an array of tasks and their required permissions
 	 * array('taskname' => array('read', 'edit'))
-	 * @return type
+	 * @return array
 	 */
 	protected function getRequiredTaskPermissions() {
 		return [
@@ -41,15 +44,21 @@ class ConfigManager extends \BSApiTasksBase {
 	 * @param array $aParams
 	 * @return Standard
 	 */
-	public function task_save( $taskData, $aParams ) {
+	public function task_save( $taskData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$result = $this->makeStandardReturn();
-
 		$records = [];
 		$factory = $this->services->getService( 'BSConfigDefinitionFactory' );
 		foreach ( (array)$taskData as $cfgName => $value ) {
 			$field = $factory->factory( $cfgName );
 			if ( !$field ) {
 				continue;
+			}
+
+			if ( $field instanceof SecretSetting ) {
+				if ( str_starts_with( $value, SecretSetting::SECRET_VALUE ) ) {
+					$value = $this->getCurrentValue( $field->getName(), '' );
+				}
+
 			}
 			$record = new Record( (object)[
 				Record::NAME => $field->getName(),
@@ -75,7 +84,7 @@ class ConfigManager extends \BSApiTasksBase {
 			}
 			$result->message .= $record->get( Record::NAME ) . ': ';
 			$result->message .= $record->getStatus()->getHTML( false, false );
-			$result->message .= \Html::element( 'br' );
+			$result->message .= Html::element( 'br' );
 		}
 		if ( empty( $result->message ) ) {
 			$result->success = true;
@@ -117,22 +126,11 @@ class ConfigManager extends \BSApiTasksBase {
 		$changes = [];
 		foreach ( $records as $record ) {
 			$recordName = $record->get( Record::NAME );
-			$originalRecordSet = $this->getCMStore()->getReader()->read(
-				new ReaderParams( [
-					ReaderParams::PARAM_FILTER => [
-						[
-							'type' => 'string',
-							'field' => Record::NAME,
-							'value' => $recordName,
-							'comparison' => StringValue::COMPARISON_EQUALS
-						]
-					]
-				] )
-			);
-			$originalRecords = $originalRecordSet->getRecords();
+			$originalValue = $this->getCurrentValue( $recordName );
 			$recordValue = $record->get( Record::VALUE );
-			$originalValue = !empty( $originalRecords ) ?
-				$originalRecords[0]->get( Record::VALUE ) : null;
+			if ( is_string( $recordValue ) && str_starts_with( $recordValue, SecretSetting::SECRET_VALUE ) ) {
+				continue;
+			}
 			if ( $originalValue !== $recordValue ) {
 				$changes[$recordName] = [
 					'configName' => $recordName,
@@ -206,5 +204,29 @@ class ConfigManager extends \BSApiTasksBase {
 	 */
 	private function logExcludeList(): array {
 		return $this->getContext()->getConfig()->get( 'ConfigManagerLogExcludeList' );
+	}
+
+	/**
+	 * @param string $name
+	 * @param mixed $default
+	 * @return mixed|null
+	 */
+	private function getCurrentValue( string $name, $default = null ) {
+		$originalRecordSet = $this->getCMStore()->getReader()->read(
+			new CMReaderParams( [
+				'forPublic' => false,
+				ReaderParams::PARAM_FILTER => [
+					[
+						'type' => 'string',
+						'field' => Record::NAME,
+						'value' => $name,
+						'comparison' => StringValue::COMPARISON_EQUALS
+					]
+				]
+			] )
+		);
+		$originalRecords = $originalRecordSet->getRecords();
+		return !empty( $originalRecords ) ?
+			$originalRecords[0]->get( Record::VALUE ) : $default;
 	}
 }

@@ -1,4 +1,4 @@
-<span style="margin-bottom: 10px">{{int:ext-notifyme-mail-greeting}} {{#target_user}}{{display_name}}{{/target_user}},</span>
+<span style="margin-bottom: 10px">{{int:notifyme-mail-greeting}} {{#target_user}}{{display_name}}{{/target_user}},</span>
 {{#agent_is_bot}}
     <p>{{{message}}}</p>
 {{/agent_is_bot}}
@@ -15,7 +15,7 @@
 </div>
 
 <div style="margin-top: 60px;padding: 20px;background-color:@notifications-mail-color-background;font-size: 0.8rem;">
-    <span>{{int:ext-notifyme-mail-reception-reason}}</span>
+    <span>{{int:notifyme-mail-reception-reason}}</span>
     <ul>
         {{#source_providers}}
             <li><a href="{{link}}">{{description}}</a></li>

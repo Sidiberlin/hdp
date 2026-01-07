@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Amire80",
+			"Neriah",
 			"Shoko"
 		]
 	},
@@ -48,5 +49,15 @@
 	"bs-pro-distribution-pdfembed-droplet-name": "תצוגה מקדימה של PDF",
 	"bs-pro-distribution-pdfembed-droplet-description": "הטבעת תצוגה מקדימה של קובץ PDF בדף ויקי",
 	"bs-pro-distribution-config-outh-public-key": "מפתח OAuth2 ציבורי",
-	"bs-pro-distribution-config-outh-private-key": "מפתח OAuth2 פרטי"
+	"bs-pro-distribution-config-outh-private-key": "מפתח OAuth2 פרטי",
+	"bs-pro-distribution-config-comment-streams-enabled": "תגובות",
+	"bs-pro-distribution-config-link-titles-parse-on-edit": "לפענח את הקישורים בעת עריכה",
+	"bs-pro-distribution-config-link-titles-parse-on-edit-help": "בעת שמירה, לפענח את תוכן הדף ולקשר לדפים המוזכרים בתוכן",
+	"bs-pro-distribution-config-link-titles-parse-on-render": "הוספת קישורים בעת תיצוג הדף",
+	"bs-pro-distribution-config-link-titles-parse-on-render-help": "בעת תיצוג דף, לפענח את התוכן ולקשר לדפים המוזכרים בתוכן. זה לא ישנה את תוכן הדף",
+	"bs-pro-distribution-config-link-titles-source-ns": "מרחבי השם של המקור",
+	"bs-pro-distribution-config-link-titles-source-ns-help": "לנתח רק דפים במרחבי השם האלה.",
+	"bs-pro-distribution-config-link-titles-target-ns": "מרחב השם של היעד",
+	"bs-pro-distribution-config-link-titles-target-ns-help": "לקשר רק לדפים במרחבי השם האלה",
+	"bs-pro-distribution-config-link-titles-same-ns": "לקשר רק לדפים באותם מרחבי השם כמו דף המקור"
 }

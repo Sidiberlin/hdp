@@ -16,7 +16,6 @@
 	"bs-wikiexplorer-categories": "קטגוריות",
 	"bs-wikiexplorer-linked-files": "קבצים מקושרים",
 	"bs-wikiexplorer-linked-pages": "דפים מקושרים",
-	"apihelp-bs-wikiexplorer-store-description": "אספקת כל הנתונים עבור ההרחבה WikiExplorer",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "פרמטר API כדי לציין אם המטא־נתונים כבר נטענו.",
 	"apihelp-bs-wikiexplorer-store-summary": "אספקת כל הנתונים עבור ההרחבה WikiExplorer",
 	"bs-wikiexplorer-icon-bool-true-aria-label": "מסומן",

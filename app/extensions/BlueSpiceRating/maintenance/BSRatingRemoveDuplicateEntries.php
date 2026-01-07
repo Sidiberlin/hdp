@@ -1,5 +1,7 @@
 <?php
 
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
+
 $IP = dirname( dirname( dirname( __DIR__ ) ) );
 require_once "$IP/maintenance/Maintenance.php";
 
@@ -41,7 +43,8 @@ class BSRatingRemoveDuplicateEntries extends LoggedUpdateMaintenance {
 		}
 		$b = $this->getDB( DB_PRIMARY )->delete(
 			'bs_rating',
-			[ 'rat_id' => $deleteEntries ]
+			[ 'rat_id' => $deleteEntries ],
+			__METHOD__
 		);
 		return true;
 	}

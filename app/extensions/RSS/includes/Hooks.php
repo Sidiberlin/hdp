@@ -2,22 +2,21 @@
 
 namespace MediaWiki\Extension\RSS;
 
+use MediaWiki\Hook\ParserFirstCallInitHook;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Status\Status;
 use MWHttpRequest;
-use Parser;
-use PPFrame;
-use Status;
 
-class Hooks {
+class Hooks implements ParserFirstCallInitHook {
 
 	/**
 	 * Tell the parser how to handle <rss> elements
 	 * @param Parser $parser Parser Object
-	 * @return bool
 	 */
-	public static function onParserFirstCallInit( $parser ) {
+	public function onParserFirstCallInit( $parser ) {
 		// Install parser hook for <rss> tags
 		$parser->setHook( 'rss', [ __CLASS__, 'renderRss' ] );
-		return true;
 	}
 
 	/**
@@ -31,7 +30,7 @@ class Hooks {
 	 */
 	public static function renderRss( $input, array $args, Parser $parser, PPFrame $frame ) {
 		global $wgRSSCacheAge, $wgRSSCacheCompare, $wgRSSNamespaces,
-			$wgRSSUrlWhitelist,$wgRSSAllowedFeeds;
+			$wgRSSUrlWhitelist, $wgRSSAllowedFeeds;
 
 		if ( is_array( $wgRSSNamespaces ) && count( $wgRSSNamespaces ) ) {
 			$nsUsed = $parser->getTitle()->getNamespace();
@@ -63,8 +62,8 @@ class Hooks {
 
 		if ( !( in_array( $input, $wgRSSUrlWhitelist ) )
 			&& !( in_array( "*", $wgRSSUrlWhitelist ) ) ) {
-			$listOfAllowed = $parser->getFunctionLang()->listToText( $wgRSSUrlWhitelist );
-			$numberAllowed = $parser->getFunctionLang()->formatNum( count( $wgRSSUrlWhitelist ) );
+			$listOfAllowed = $parser->getTargetLanguage()->listToText( $wgRSSUrlWhitelist );
+			$numberAllowed = $parser->getTargetLanguage()->formatNum( count( $wgRSSUrlWhitelist ) );
 
 			return Utils::getErrorHtml( 'rss-url-is-not-allowed',
 				[ $input, $listOfAllowed, $numberAllowed ]

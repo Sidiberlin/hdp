@@ -33,5 +33,8 @@
 	"contentstabilization-wikiexplorer-filter-approved": "Approvato",
 	"contentstabilization-wikiexplorer-filter-not-approved": "Non approvato",
 	"contentstabilization-wikiexplorer-filter-has-draft": "Ha una versione bozza",
-	"contentstabilization-wikiexplorer-filter-no-draft": "Non ha una versione bozza"
+	"contentstabilization-wikiexplorer-filter-no-draft": "Non ha una versione bozza",
+	"contentstabilization-event-stable-point-added-desc": "Una pagina è stata approvata",
+	"contentstabilization-ui-workflows-inspector-activity-approve-page-title": "Attività \"Approva pagina\"",
+	"contentstabilization-preview-links-empty-preview-label": "Nessun contenuto disponibile per l'anteprima"
 }

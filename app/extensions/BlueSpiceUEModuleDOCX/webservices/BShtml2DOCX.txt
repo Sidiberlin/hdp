@@ -1,1 +1,0 @@
-git clone git@gitlab.hallowelt.com:BlueSpice/misc-bshtml2docx.git

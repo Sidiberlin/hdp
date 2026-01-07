@@ -2,12 +2,13 @@
 
 namespace SMW\DataValues\ValueParsers;
 
-use SMW\Localizer;
+use MediaWiki\Language\LanguageCode;
+use SMW\Localizer\Localizer;
 
 /**
  * @private
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.4
  *
  * @author mwjames
@@ -37,7 +38,6 @@ class MonolingualTextValueParser implements ValueParser {
 	 * @return array
 	 */
 	public function parse( $userValue ) {
-
 		// Allow things like [ "en" => "Foo ..." ] when retrieved from a JSON string
 		if ( is_array( $userValue ) ) {
 			foreach ( $userValue as $key => $value ) {
@@ -55,7 +55,7 @@ class MonolingualTextValueParser implements ValueParser {
 		}
 
 		$languageCode = Localizer::asBCP47FormattedLanguageCode( $languageCode );
-		$nonstandardLanguageCodeMapping = \LanguageCode::getNonstandardLanguageCodeMapping();
+		$nonstandardLanguageCodeMapping = LanguageCode::getNonstandardLanguageCodeMapping();
 
 		$mappedLanguageCode = array_search( $languageCode, $nonstandardLanguageCodeMapping ) ?: $languageCode;
 

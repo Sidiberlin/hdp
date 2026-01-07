@@ -4,8 +4,9 @@ namespace BlueSpice\Discovery\TemplateDataProvider;
 
 use BaseTemplate;
 use BlueSpice\Discovery\ITemplateDataProvider;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\HookContainer\HookContainer;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\PageProps;
 
 class TemplateDataProvider implements ITemplateDataProvider {
 
@@ -35,15 +36,16 @@ class TemplateDataProvider implements ITemplateDataProvider {
 	 */
 	private $personal_urls;
 
+	/** @var PageProps */
+	private $pageProps;
+
 	/**
-	 *
 	 * @param HookContainer $hookContainer
+	 * @param PageProps $pageProps
 	 */
-	public function __construct( $hookContainer ) {
-		if ( $hookContainer instanceof HookContainer === false ) {
-			$hookContainer = MediaWikiServices::getInstance()->getHookContainer();
-		}
+	public function __construct( HookContainer $hookContainer, PageProps $pageProps ) {
 		$this->hookContainer = $hookContainer;
+		$this->pageProps = $pageProps;
 	}
 
 	/**
@@ -346,7 +348,15 @@ class TemplateDataProvider implements ITemplateDataProvider {
 	 * @return void
 	 */
 	private function makePanelEdit(): void {
-		$idList = [ 'ca-edit', 'ca-ve-edit', 'ca-new-section' ];
+		$idList = [ 'ca-edit', 'ca-ve-edit' ];
+		$title = RequestContext::getMain()->getTitle();
+		if ( $title && $title->isContentPage() ) {
+			$newSectionProps = $this->pageProps->getProperties( $title, 'newsectionlink' );
+			if ( isset( $newSectionProps[$title->getId()] ) ) {
+				$idList[] = 'ca-new-section';
+			}
+		}
+
 		$this->registerLinks( 'panel/edit', $idList );
 	}
 

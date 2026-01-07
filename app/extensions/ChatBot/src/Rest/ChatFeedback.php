@@ -5,7 +5,6 @@ namespace ChatBot\Rest;
 use ChatBot\DeepsetApi\FeedbackApi;
 use Exception;
 use MediaWiki\Rest\SimpleHandler;
-use MediaWiki\Rest\Validator\JsonBodyValidator;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ChatFeedback extends SimpleHandler {
@@ -29,8 +28,8 @@ class ChatFeedback extends SimpleHandler {
 		$body = $this->getValidatedBody();
 		$validated = $this->getValidatedParams();
 		$feedbackId = '';
-		if ( isset( $validated['id' ] ) ) {
-			$feedbackId = $validated[ 'id' ];
+		if ( isset( $validated['id'] ) ) {
+			$feedbackId = $validated['id'];
 		}
 
 		try {
@@ -56,12 +55,10 @@ class ChatFeedback extends SimpleHandler {
 	}
 
 	/**
-	 * @param string $contentType
-	 *
-	 * @return JsonBodyValidator
+	 * @inheritDoc
 	 */
-	public function getBodyValidator( $contentType ): JsonBodyValidator {
-		return new JsonBodyValidator( [
+	public function getBodyParamSettings(): array {
+		return [
 			'sessionId' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => true
@@ -71,6 +68,6 @@ class ChatFeedback extends SimpleHandler {
 				ParamValidator::PARAM_REQUIRED => true,
 				ParamValidator::PARAM_DEFAULT => -1
 			],
-		] );
+		];
 	}
 }

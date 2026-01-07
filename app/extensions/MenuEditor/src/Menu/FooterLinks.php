@@ -6,7 +6,7 @@ use MediaWiki\Extension\MenuEditor\EditPermissionProvider;
 use MediaWiki\Extension\MenuEditor\Parser\IMenuParser;
 use MediaWiki\Extension\MenuEditor\Parser\WikitextMenuParser;
 use MediaWiki\Revision\RevisionRecord;
-use Title;
+use MediaWiki\Title\Title;
 
 class FooterLinks extends GenericMenu implements EditPermissionProvider {
 

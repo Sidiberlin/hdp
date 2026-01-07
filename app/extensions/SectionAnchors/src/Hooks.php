@@ -19,8 +19,8 @@
 
 namespace MediaWiki\Extension\SectionAnchors;
 
-use MediaWiki\Hook\BeforePageDisplayHook;
-use OutputPage;
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
+use MediaWiki\Output\OutputPage;
 use Skin;
 
 class Hooks implements BeforePageDisplayHook {

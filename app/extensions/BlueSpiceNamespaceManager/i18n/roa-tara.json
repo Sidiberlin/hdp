@@ -46,17 +46,14 @@
 	"logentry-bs-namespace-manager-rename": "$1 {{GENDER:$2|ave renomenate}} 'u namespace $4 jndr'à $5",
 	"logentry-bs-namespace-manager-remove": "$1 {{GENDER:$2|ave luate}} 'u namespace $4",
 	"bs-namespacemanager-ns-config-saved": "'A configurazione d'u namespace ha state reggistrate.",
-	"bs-namespacemanager-error-ns-config-not-saved": "'A configurazione d'u namespace non ge pò essere reggistrate jndr'à $1.",
-	"apihelp-bs-namespace-store-description": "Elenghe tutte le namespace e 'a configurazione arbitrarie. Face fà l'ordinamende, 'u filtre e l'imbagginazzione. 'Mblemende parametre ExtJS Store.",
 	"apihelp-bs-namespace-store-summary": "Elenghe tutte le namespace e 'a configurazione arbitrarie. Face fà l'ordinamende, 'u filtre e l'imbagginazzione. 'Mblemende parametre ExtJS Store.",
-	"apihelp-bs-namespace-tasks-description": "Conzende le cangiaminde sus 'a configurazione d'u namespace.",
 	"apihelp-bs-namespace-tasks-summary": "Conzende le cangiaminde sus 'a configurazione d'u namespace.",
 	"action-namespacemanager-viewspecialpage": "'ndruche 'a pàgena speciale d'u gestore de namespace",
 	"namespacemanager": "Gestore de namespace",
 	"bs-namespacemanager-nodeletetalk": "'U namespace de 'ngazzamende non ge pò essere scangellate",
 	"bs-namespacemanager-label-istalk": "'Ngazzamende",
 	"right-namespacemanager-viewspecialpage": "Tràse jndr'à pàgena speciale [[Special:NamespaceManager]]",
-	"bs-namespacemanager-hide-talk-label": "Scunne le namespace de le 'ngazzaminde",
 	"bs-namespacemanager-labelnsalias": "Alias",
-	"bs-namespacemanager-invalid-namespace": "'U namespace ca ste cange non g'è valide"
+	"bs-namespacemanager-invalid-namespace": "'U namespace ca ste cange non g'è valide",
+	"bs-namespacemanager-hide-talk-label": "Scunne le namespace de le 'ngazzaminde"
 }

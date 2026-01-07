@@ -4,7 +4,7 @@ namespace BlueSpice\Bookshelf\Rest;
 
 use BlueSpice\Bookshelf\BookMetaLookup;
 use MediaWiki\Rest\SimpleHandler;
-use TitleFactory;
+use MediaWiki\Title\TitleFactory;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class GetBookMetadata extends SimpleHandler {

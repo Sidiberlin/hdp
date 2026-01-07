@@ -33,14 +33,12 @@
 	"bs-countthings-tag-countfiles-desc": "يعرض عدد الملفات في الويكي.",
 	"bs-countthings-tag-countcharacters-desc": "يولد بيانات وصفية عن محتوى المقالة المشار إليها، الإخراج هو صندوق معلومات يمكن دمجه في مقالة، مع الوسيط \"mode\" يمكن عرض نوع مختلف من المعلومات.",
 	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: ما يجب أن يُحسَب <code>chars</code> (characters) أو <code>words</code> (كلمات) أو <code>pages</code> (صفحات).",
-	"bs-countthings-tag-countcharacters-example-1": "عدد الكلمات",
-	"bs-countthings-tag-countcharacters-example-2": "عدد الحروف",
 	"bs-countthings-droplet-articles-name": "عدد الصفحات",
-	"bs-countthings-droplet-user-name": "عدد المستخدمين",
-	"bs-countthings-droplet-user-description": "اعرض عدد كل المستخدمين",
 	"bs-countthings-droplet-articles-description": "يظهر عدد الصفحات",
+	"bs-countthings-droplet-characters-name": "عدد الحروف",
 	"bs-countthings-droplet-characters-description": "يظهر عدد الأحرف أو الكلمات في صفحة wiki",
 	"bs-countthings-droplet-files-name": "عدد الملفات",
 	"bs-countthings-droplet-files-description": "يظهر عدد جميع الملفات التي تم تحميلها",
-	"bs-countthings-droplet-characters-name": "عدد الحروف"
+	"bs-countthings-droplet-user-name": "عدد المستخدمين",
+	"bs-countthings-droplet-user-description": "اعرض عدد كل المستخدمين"
 }

@@ -5,21 +5,23 @@ namespace MWStake\MediaWiki\Component\CommonWebAPIs;
 use ManualLogEntry;
 use MediaWiki\Hook\AfterImportPageHook;
 use MediaWiki\Hook\PageMoveCompleteHook;
-use MediaWiki\Page\Hook\ArticleUndeleteHook;
 use MediaWiki\Page\Hook\PageDeleteCompleteHook;
+use MediaWiki\Page\Hook\PageUndeleteCompleteHook;
 use MediaWiki\Page\PageIdentity;
+use MediaWiki\Page\PageProps;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\Hook\PageSaveCompleteHook;
-use PageProps;
+use MediaWiki\Title\Title;
+use Wikimedia\Rdbms\DBConnRef;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class TitleIndexUpdater implements
 	PageSaveCompleteHook,
 	PageMoveCompleteHook,
 	PageDeleteCompleteHook,
-	ArticleUndeleteHook,
+	PageUndeleteCompleteHook,
 	AfterImportPageHook
 {
 
@@ -57,6 +59,9 @@ class TitleIndexUpdater implements
 	public function onPageMoveComplete( $old, $new, $user, $pageid, $redirid, $reason, $revision ) {
 		$this->delete( $old->getNamespace(), $old->getDBkey() );
 		$this->insert( $new );
+		if ( $redirid ) {
+			$this->insert( $old );
+		}
 	}
 
 	/**
@@ -72,8 +77,18 @@ class TitleIndexUpdater implements
 	/**
 	 * @inheritDoc
 	 */
-	public function onArticleUndelete( $title, $create, $comment, $oldPageId, $restoredPages ) {
-		$this->insert( $title, $oldPageId );
+	public function onPageUndeleteComplete(
+		ProperPageIdentity $page,
+		Authority $restorer,
+		string $reason,
+		RevisionRecord $restoredRev,
+		ManualLogEntry $logEntry,
+		int $restoredRevisionCount,
+		bool $created,
+		array $restoredPageIds
+	): void {
+		$page = Title::newFromPageIdentity( $page );
+		$this->insert( $page, $page->getId() );
 	}
 
 	/**
@@ -84,14 +99,15 @@ class TitleIndexUpdater implements
 	}
 
 	/**
-	 * @param PageIdentity $page
+	 * @param Title $page
 	 * @param int|null $forceId (optional)
 	 *
 	 * @return bool
 	 */
-	private function insert( PageIdentity $page, $forceId = null ) {
+	private function insert( Title $page, $forceId = null ) {
+		/** @var DBConnRef $db */
 		$db = $this->lb->getConnection( DB_PRIMARY );
-		if ( !$db->tableExists( 'mws_title_index' ) ) {
+		if ( !$db->tableExists( 'mws_title_index', __METHOD__ ) ) {
 			return false;
 		}
 		if ( !$page->exists() ) {
@@ -106,6 +122,12 @@ class TitleIndexUpdater implements
 			__METHOD__
 		);
 
+		$leaf = '';
+		if ( strpos( $page->getDBkey(), '/' ) !== false ) {
+			$bits = explode( '/', $page->getDBkey() );
+			$leaf = array_pop( $bits );
+		}
+
 		return $db->insert(
 			'mws_title_index',
 			[
@@ -113,6 +135,7 @@ class TitleIndexUpdater implements
 				'mti_namespace' => $page->getNamespace(),
 				'mti_title' => mb_strtolower( str_replace( '_', ' ', $page->getDBkey() ) ),
 				'mti_displaytitle' => $this->getDisplayTitle( $page ),
+				'mti_leaf_title' => mb_strtolower( str_replace( '_', ' ', $leaf ) ),
 			],
 			__METHOD__,
 			[ 'OVERWRITE' ]
@@ -126,9 +149,9 @@ class TitleIndexUpdater implements
 	 * @return bool
 	 */
 	private function delete( int $namespace, string $title ) {
+		/** @var DBConnRef $db */
 		$db = $this->lb->getConnection( DB_PRIMARY );
-		$db = $this->lb->getConnection( DB_PRIMARY );
-		if ( !$db->tableExists( 'mws_title_index' ) ) {
+		if ( !$db->tableExists( 'mws_title_index', __METHOD__ ) ) {
 			return false;
 		}
 		return $db->delete(

@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Умар"
+		]
+	},
+	"bs-wikiexplorer-page-title": "Корта",
+	"bs-wikiexplorer-page-namespace": "ЦӀерийн меттиг",
+	"bs-wikiexplorer-creation-date": "Кхоьллина терахь",
+	"bs-wikiexplorer-is-redirect": "ДIасахьажоргаш",
+	"bs-wikiexplorer-last-comment": "ТӀаьххьара комментари",
+	"bs-wikiexplorer-last-edit-time": "ТӀаьххьара хийцам бина хан",
+	"bs-wikiexplorer-page-size": "Барам",
+	"bs-wikiexplorer-last-author": "ТӀаьххьара редактор",
+	"bs-wikiexplorer-categories": "Категореш",
+	"bs-wikiexplorer-linked-files": "Йихкина файлаш",
+	"bs-wikiexplorer-linked-pages": "Йихкина агӀонаш",
+	"bs-wikiexplorer-icon-bool-true-aria-label": "билгалйина",
+	"bs-wikiexplorer-icon-bool-false-aria-label": "билгалйаьккхина йац"
+}

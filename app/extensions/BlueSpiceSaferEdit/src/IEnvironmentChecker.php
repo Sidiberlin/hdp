@@ -2,8 +2,8 @@
 
 namespace BlueSpice\SaferEdit;
 
-use IContextSource;
-use Title;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\Title;
 
 interface IEnvironmentChecker {
 	/**

@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\NumberHeadings\Hook;
 
-use Title;
+use MediaWiki\Title\Title;
 
 interface NumberHeadingsBeforeApply {
 

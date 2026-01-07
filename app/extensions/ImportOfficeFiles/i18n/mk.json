@@ -5,7 +5,6 @@
 		]
 	},
 	"importofficefiles-desc": "Овозможува увоз на податотеки од Office како викистраници",
-	"importofficefiles-ui-action-import-msword-text": "Увезете Word-податотека",
 	"importofficefiles-ui-action-import-msword-title": "Создајте страници од Microsoft Word-податотека",
 	"importofficefiles-ui-import-dialog-title": "Увези податотека",
 	"importofficefiles-ui-import-completed": "Увозот е готов!",
@@ -32,6 +31,8 @@
 	"importofficefiles-ui-dialog-preview-title": "Преглед",
 	"importofficefiles-ui-dialog-preview-label": "Ќе се увезат следниве страници:",
 	"importofficefiles-ui-dialog-link-import-files-text": "Список на увезени податотеки извезени во $1",
+	"importofficefiles-ui-dialog-link-imported-page-text": "Податотеката е увезена во $1",
+	"importofficefiles-ui-dialog-page-collection-protected-namespace": "Напомена: страницата „збирка на страници“ не е доздадена бидејќи именскиот простор „$1“ е заштитен",
 	"importofficefiles-api-storage-error-no-available-file": "Нема подигнати податотеки",
 	"importofficefiles-api-storage-error-save-temp": "Привременото зачувување не е возможно",
 	"importofficefiles-api-storage-error-no-valid-module": "Нема модул што може да работи со оваа податотека",
@@ -40,6 +41,9 @@
 	"importofficefiles-ui-progress-remove-files-step": "Отстранувам привремени податотеки...",
 	"importofficefiles-ui-import-error": "Се случи некаква грешка при увозот.",
 	"importofficefiles-ui-analyze-error": "Процесот на анализа не успеа.",
-	"importofficefiles-ui-dialog-link-imported-page-text": "Податотеката е увезена во $1",
-	"importofficefiles-ui-dialog-page-collection-protected-namespace": "Напомена: страницата „збирка на страници“ не е доздадена бидејќи именскиот простор „$1“ е заштитен"
+	"importofficefiles-ui-action-import-msword-label": "Увоз на нова Word-податотека",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-characters": "Не може да се користи овој наслов. Содржи знак („$1“) што не допуштен.",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-fallback": "Овој наслов не може да се користи.",
+	"importofficefiles-ui-dialog-preview-action-close": "Затвори",
+	"importofficefiles-ui-dialog-preview-btn-title": "Преглед"
 }

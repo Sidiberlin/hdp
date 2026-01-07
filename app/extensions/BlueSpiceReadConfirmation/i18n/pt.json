@@ -15,9 +15,6 @@
 	"bs-readconfirmation-confirm-read-heading": "Confirmação de leitura",
 	"bs-readconfirmation-confirm-read-checkbox-label": "Sim, li completamente esta página.",
 	"bs-readconfirmation-confirm-read-button-label": "Confirmar",
-	"bs-readconfirmation-action-apiread-check-description": "verificar a confirmação de leitura de $1",
-	"bs-readconfirmation-action-apiread-confirm-description": "Marcar $1 como lido",
-	"bs-readconfirmation-action-apiread-remind-description": "Pedir a confirmação de leitura de $1",
 	"bs-readconfirmation-api-error-cant-confirm": "Não é possível processar a confirmação de leitura desta página",
 	"bs-readconfirmation-api-error-no-page": "Não foi indicada nenhuma página",
 	"bs-readconfirmation-api-error-no-non-minor-revision": "Não foi encontrada nenhuma revisão",
@@ -49,5 +46,7 @@
 	"bs-readconfirmation-logentry-confirm-suffix-as-of": "(em $1)",
 	"bs-readconfirmation-uto-task-header": "Confirmação de leitura obrigatória",
 	"bs-readconfirmation-uto-task-body-diff": "Ver mudanças desde a última confirmação de leitura",
-	"bs-readconfirmation-confirm-read-aria-description": "Confirmação de leitura pedida"
+	"bs-readconfirmation-confirm-read-aria-description": "Confirmação de leitura pedida",
+	"bs-readconfirmation-page-info-user": "Utilizador",
+	"bs-readconfirmation-page-info-confirmation": "Confirmação"
 }

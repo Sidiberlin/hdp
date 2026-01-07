@@ -16,7 +16,6 @@
 	"menueditor-ui-menu-keyword-label": "საკვანძო სიტყვა",
 	"menueditor-ui-menu-keyword-label-edit": "საკვანძო სიტყვის რედაქტირება",
 	"menueditor-ui-menu-keyword-help": "ერთ-ერთი ხელმისაწვდომი '''საკვანძო სიტყვა''', რომელიც აჩვენებს შესაბამის ვიჯეტს",
-	"menueditor-ui-edit-node-label": "კვანძის რედაქტირება",
 	"menueditor-ui-form-field-keyword": "საკვანძო სიტყვა",
 	"menueditor-ui-form-field-text": "ტექსტი ან შეტყობინების გასაღები",
 	"menueditor-ui-form-field-target": "ბმულის სამიზნე",
@@ -32,7 +31,5 @@
 	"menueditor-ui-dialog-title": "ელემენტის რედაქტირება",
 	"menueditor-ui-mediawiki-sidebar-keyword-label-edit": "საკვანძო სიტყვის რედაქტირება",
 	"menueditor-ui-mediawiki-sidebar-keyword-label": "საკვანძო სიტყვა",
-	"menueditor-toolbar-submit": "ცვლილებების შენახვა",
-	"menueditor-toolbar-cancel": "რედაქტირების გაუქმება",
-	"menueditor-toolbar-add": "ახალი ელემენტის დამატება"
+	"menueditor-toolbar-cancel": "რედაქტირების გაუქმება"
 }

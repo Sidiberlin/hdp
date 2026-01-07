@@ -16,7 +16,6 @@
 	"bs-wikiexplorer-categories": "Kategóriák",
 	"bs-wikiexplorer-linked-files": "Kapcsolt fájlok",
 	"bs-wikiexplorer-linked-pages": "Kapcsolt oldalak",
-	"apihelp-bs-wikiexplorer-store-description": "Minden adatot megad a WikiExplorer kiterjesztéshez",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "API paraméter, amely jelzi, hogy a MetaData már betöltődött-e.",
 	"apihelp-bs-wikiexplorer-store-summary": "Minden adatot megad a WikiExplorer kiterjesztéshez",
 	"bs-wikiexplorer-icon-bool-true-aria-label": "bejelölt",

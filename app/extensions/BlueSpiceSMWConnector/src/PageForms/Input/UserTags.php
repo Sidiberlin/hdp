@@ -2,13 +2,16 @@
 
 namespace BlueSpice\SMWConnector\PageForms\Input;
 
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\User\User;
 
 class UserTags extends \PFFormInput {
 
 	/**
 	 *
-	 * @var \User[]
+	 * @var User[]
 	 */
 	protected $users = [];
 
@@ -54,7 +57,7 @@ class UserTags extends \PFFormInput {
 	 * @return string
 	 */
 	public function getHtmlText() {
-		$html = \Html::openElement(
+		$html = Html::openElement(
 			'span',
 			[
 				'id' => 'input_' . $this->mInputNumber . '_cnt',
@@ -63,7 +66,7 @@ class UserTags extends \PFFormInput {
 			]
 		);
 		$users = implode( ',', $this->users );
-		$html .= \Html::input(
+		$html .= Html::input(
 			$this->mInputName,
 			"$users",
 			'hidden',
@@ -71,7 +74,7 @@ class UserTags extends \PFFormInput {
 				'id' => 'input_' . $this->mInputNumber
 			]
 		);
-		$html .= \Html::closeElement( 'span' );
+		$html .= Html::closeElement( 'span' );
 
 		return $html;
 	}
@@ -122,7 +125,13 @@ class UserTags extends \PFFormInput {
 	protected function getInitParams() {
 		$params = [
 			'input_name' => $this->mInputName,
-			'current_value' => $this->mCurrentValue
+			'current_value' => $this->mCurrentValue,
+			'users' => array_map( static function ( $user ) {
+				return $user->getName();
+			}, $this->users ),
+			'placeholder' =>
+				$this->mOtherArgs['placeholder'] ??
+				Message::newFromKey( 'bs-smwconnector-user-input-placeholder' )->text(),
 		];
 
 		if ( !empty( $this->groups ) ) {

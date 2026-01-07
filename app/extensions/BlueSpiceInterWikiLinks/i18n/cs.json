@@ -24,11 +24,7 @@
 	"bs-interwikilinks-labelprefix": "Prefix",
 	"bs-interwikilinks-titledeleteinterwikilink": "Smazat interwiki odkaz",
 	"bs-interwikilinks-confirmdeleteinterwikilink": "Opravdu chcete smazat tento interwiki odkaz?",
-	"bs-interwikilinks-insertlink-tabtitle": "Odkaz do jiné wiki",
-	"bs-interwikilinks-insertlink-labelprefix": "Prefix",
-	"bs-interwikilink-select-a-prefix": "Vybrat prefix",
 	"bs-interwikilinks-link-edited": "Odkaz na interwiki byl upraven",
-	"apihelp-bs-interwikilinks-tasks-description": "Poskytuje úlohy pro rozšíření rozhraní InterWiki.",
 	"apihelp-bs-interwikilinks-tasks-summary": "Poskytuje úlohy pro rozšíření rozhraní InterWiki.",
 	"action-interwikilinks-viewspecialpage": "prohlížet si speciální stránku „{{int:bs-interwikilinks-label}}“",
 	"interwikilinks": "Interwiki odkazy"

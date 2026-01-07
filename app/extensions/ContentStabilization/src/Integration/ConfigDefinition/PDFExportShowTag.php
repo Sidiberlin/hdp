@@ -4,7 +4,7 @@ namespace MediaWiki\Extension\ContentStabilization\Integration\ConfigDefinition;
 
 use BlueSpice\ConfigDefinition\BooleanSetting;
 use BlueSpice\ConfigDefinition\IOverwriteGlobal;
-use ExtensionRegistry;
+use MediaWiki\Registration\ExtensionRegistry;
 
 class PDFExportShowTag extends BooleanSetting implements IOverwriteGlobal {
 
@@ -29,17 +29,24 @@ class PDFExportShowTag extends BooleanSetting implements IOverwriteGlobal {
 	}
 
 	/**
+	 * @return string
+	 */
+	public function getHelpMessageKey() {
+		return 'contentstabilization-pref-pdf-show-tag-help';
+	}
+
+	/**
 	 *
 	 * @return string
 	 */
 	public function getGlobalName() {
-		return "wgBlueSpiceUEModulePDFShowStabilizationTag";
+		return "wgContentStabilizationPDFCreatorShowStabilizationTag";
 	}
 
 	/**
 	 * @return bool
 	 */
 	public function isHidden() {
-		return !ExtensionRegistry::getInstance()->isLoaded( 'BlueSpiceUEModulePDF' );
+		return !ExtensionRegistry::getInstance()->isLoaded( 'PDFCreator' );
 	}
 }

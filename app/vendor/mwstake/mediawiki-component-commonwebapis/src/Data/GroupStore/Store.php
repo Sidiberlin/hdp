@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs\Data\GroupStore;
 
-use GlobalVarConfig;
+use MediaWiki\Config\GlobalVarConfig;
 use MWStake\MediaWiki\Component\DataStore\IStore;
 use MWStake\MediaWiki\Component\Utils\UtilityFactory;
 

@@ -14,7 +14,7 @@ bs.vec.ce.TableCellNode = function VeCeTableCellNode( options ) {
 
 OO.inheritClass( bs.vec.ce.TableCellNode, ve.ce.TableCellNode );
 
-bs.vec.ce.TableCellNode.prototype.onAttributeChange = function( key, val, to ) {
+bs.vec.ce.TableCellNode.prototype.onAttributeChange = function ( key, val, to ) {
 	this.applicator.apply( this.model.element );
 	bs.vec.ce.TableCellNode.parent.prototype.onAttributeChange.call( this, key, val, to );
 };

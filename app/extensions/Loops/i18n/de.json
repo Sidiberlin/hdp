@@ -2,10 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Daniel Werner",
+			"Justman10000",
 			"Kghbln",
 			"MGChecker",
-			"Metalhead64",
-			"Justman10000"
+			"Metalhead64"
 		]
 	},
 	"loops-desc": "Ergänzt den Parser um Funktionen zur Ausführung von Schleifen",

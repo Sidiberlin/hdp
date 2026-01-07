@@ -1,4 +1,4 @@
-( function( mw, $, bs ) {
+( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.aggregatedStatistics.filter' );
 
 	bs.aggregatedStatistics.filter.UserMultiFilter = function ( cfg ) {
@@ -11,7 +11,7 @@
 	bs.aggregatedStatistics.filter.UserMultiFilter.prototype.init = function () {
 		this.userPicker = new mw.widgets.UsersMultiselectWidget( {
 			classes: [ 'aggregatedStatistics-filter-field' ],
-			indicator: this.required ? 'required': null
+			indicator: this.required ? 'required' : null
 		} );
 
 		this.userPicker.on( 'change', this.onFilter.bind( this ) );
@@ -19,7 +19,7 @@
 		this.$element.append(
 			new OO.ui.FieldLayout( this.userPicker, {
 				align: 'top',
-				label: mw.message( "bs-statistics-aggregated-report-filter-user-multi" ).text()
+				label: mw.message( 'bs-statistics-aggregated-report-filter-user-multi' ).text()
 			} ).$element
 		);
 	};
@@ -34,4 +34,4 @@
 		};
 	};
 
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

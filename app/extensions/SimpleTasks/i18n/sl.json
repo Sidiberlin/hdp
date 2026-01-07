@@ -27,10 +27,5 @@
 	"simple-tasks-taskreport-state-title-open": "Naloga je odprta",
 	"simple-tasks-taskreport-state-title-done": "Naloga je opravljena.",
 	"simple-tasks-taskreport-state-filter-done": "Opravljeno",
-	"simple-tasks-taskreport-state-filter-open": "Odprto",
-	"echo-category-title-simple-tasks-notification-cat": "Naloge",
-	"simple-tasks-notification-cat-tooltip": "Obvesti me, ko so mi dodeljene naloge",
-	"simple-tasks-echo-notification-task-subject": "Na strani $1 vam je dodeljena naloga",
-	"simple-tasks-echo-notification-task-email-body": "{{GENDER:$2|$3 vam je}} na strani $1 {{GENDER:$2|dodelil|dodelila|dodelil_a}} nalogo.\n\n$4",
-	"simple-tasks-echo-notification-task-web-body": "{{GENDER:$1|$2 vam je dodelil|$2 vam je dodelila|$2 vam je dodelil_a}} nalogo: $3"
+	"simple-tasks-taskreport-state-filter-open": "Odprto"
 }

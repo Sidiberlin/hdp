@@ -20,7 +20,13 @@
  * @file
  */
 
+namespace HitCounters;
+
+use DeferrableUpdate;
 use MediaWiki\MediaWikiServices;
+use MWExceptionHandler;
+use TransactionRoundAwareUpdate;
+use Wikimedia\Rdbms\DBError;
 
 /**
  * Update for the 'page_counter' field, when $wgDisableCounters is false.
@@ -42,6 +48,9 @@ class ViewCountUpdate implements DeferrableUpdate, TransactionRoundAwareUpdate {
 		$this->pageId = intval( $pageId );
 	}
 
+	/**
+	 * @return int
+	 */
 	public function getTransactionRoundRequirement() {
 		return self::TRX_ROUND_ABSENT;
 	}
@@ -53,7 +62,7 @@ class ViewCountUpdate implements DeferrableUpdate, TransactionRoundAwareUpdate {
 		$services = MediaWikiServices::getInstance();
 		$updateFreq = $services->getMainConfig()->get( "HitcounterUpdateFreq" );
 
-		$dbw = wfGetDB( DB_PRIMARY );
+		$dbw = $services->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$pageId = $this->pageId;
 		$fname = __METHOD__;
 
@@ -75,7 +84,7 @@ class ViewCountUpdate implements DeferrableUpdate, TransactionRoundAwareUpdate {
 					wfDebugLog( "HitCounter", "Got an exception: " . $e->getMessage() );
 					MWExceptionHandler::logException( $e );
 				}
-			} );
+			}, $fname );
 		} else {
 			$dbw->onTransactionCommitOrIdle(
 				function () use ( $dbw, $pageId, $fname, $updateFreq ) {
@@ -94,7 +103,8 @@ class ViewCountUpdate implements DeferrableUpdate, TransactionRoundAwareUpdate {
 						error_log( "exception during insert update: " . $e->getMessage() );
 						MWExceptionHandler::logException( $e );
 					}
-				}
+				},
+				$fname
 			);
 		}
 	}
@@ -102,9 +112,8 @@ class ViewCountUpdate implements DeferrableUpdate, TransactionRoundAwareUpdate {
 	protected function collect() {
 		$services = MediaWikiServices::getInstance();
 		$updateFreq = $services->getMainConfig()->get( "HitcounterUpdateFreq" );
-		$lb = $services->getDBLoadBalancer();
 
-		$dbw = $lb->getConnection( DB_PRIMARY, [], false );
+		$dbw = $services->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 		$count = $dbw->selectRowCount(
 			'hit_counter_extension',
 			'*',

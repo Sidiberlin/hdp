@@ -3,8 +3,9 @@
 namespace MediaWiki\Extension\Workflows\PropertyValidator;
 
 use MediaWiki\Extension\Workflows\IActivity;
-use Message;
-use TitleFactory;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 
 class ExistingTitle implements IPropertyValidator {
 	/** @var TitleFactory */
@@ -22,7 +23,7 @@ class ExistingTitle implements IPropertyValidator {
 	 */
 	public function validate( $value, IActivity $activity ) {
 		$title = $this->titleFactory->newFromText( $value );
-		return $title instanceof \Title && $title->exists();
+		return $title instanceof Title && $title->exists();
 	}
 
 	/**

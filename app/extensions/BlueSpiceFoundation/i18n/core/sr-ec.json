@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Aca",
 			"BadDog",
 			"Kizule",
 			"Milicevic01",
@@ -38,7 +39,6 @@
 	"bs-exception-view-admin-hint": "Обратите се администратору система.",
 	"bs-exception-view-stacktrace-toggle-show-text": "Прикажи детаље грешке",
 	"bs-exception-view-stacktrace-toggle-hide-text": "Сакриј детаље грешке",
-	"bs-viewtagerrorlist-legend": "$1 — Грешка",
 	"bs-readonly": "База података је тренутно закључана на нове уносе и друге модификације, вероватно због рутинског одржавања базе података, након чијег завршетка ће се она вратити у нормалу. Администратор који ју је закључао је навео ово објашњење: $1",
 	"bs-imageofotheruser": "Није вам дозвољено да опремате слику за другог корисника.",
 	"bs-permissionerror": "Грешка у дозволи.",
@@ -63,7 +63,6 @@
 	"bs-navigation-instructions": "Упутства",
 	"bs-navigation-support": "Подршка",
 	"bs-navigation-contact": "Контакт",
-	"bs-imagepage-download-text": "Преузми",
 	"bs-ns": "Именски простор",
 	"bs-from-something": "(од $1)",
 	"bs-pref-fileextensions": "Дозвољена проширења датотека:",
@@ -97,5 +96,8 @@
 	"right-wikiadmin": "коришћење потенцијално опасних административних радњи као што је управљање корисницима, дозволама, глобалним подешавањима (BlueSpice проширење)",
 	"bs-notifications-agent-anon": "анониман корисник",
 	"protect-level-editor": "Дозвољено само уредницима и администраторима",
-	"bs-ping-on-init-desc": "Требало би да пошаље пинг захтев одмах након учитавања странице"
+	"bs-ping-on-init-desc": "Требало би да пошаље пинг захтев одмах након учитавања странице",
+	"bs-permission-role-admin": "Администратор",
+	"bs-title-warning": "Упозорење",
+	"bs-title-success": "Успешно"
 }

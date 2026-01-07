@@ -3,7 +3,7 @@
 namespace BS\ExtendedSearch\Source\Formatter;
 
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 
 class RepoFileFormatter extends FileFormatter {
 
@@ -28,7 +28,7 @@ class RepoFileFormatter extends FileFormatter {
 			Title::makeTitle( NS_FILE, $result['filename'] )
 		);
 		if ( !$file ) {
-			return '';
+			return parent::getActualImageUrl( $result );
 		}
 
 		$hookContainer = $services->getHookContainer();
@@ -39,7 +39,7 @@ class RepoFileFormatter extends FileFormatter {
 			return $file->getCanonicalUrl();
 		}
 
-		return '';
+		return parent::getActualImageUrl( $result );
 	}
 
 	/**
@@ -53,7 +53,8 @@ class RepoFileFormatter extends FileFormatter {
 				continue;
 			}
 			$result['basename'] = $result['filename'];
-			$result['image_uri'] = $this->getActualImageUrl( $result );
+			$result['image_uri'] = $this->getImage( $result );
+			$result['namespace_text'] = '';
 		}
 	}
 }

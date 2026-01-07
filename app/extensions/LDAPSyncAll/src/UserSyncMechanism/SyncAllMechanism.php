@@ -2,14 +2,14 @@
 
 namespace LDAPSyncAll\UserSyncMechanism;
 
-use CommentStoreComment;
-use Config;
-use ContentHandler;
 use Exception;
-use IContextSource;
 use LDAPSyncAll\UsersSyncDAO;
 use LDAPSyncAll\UsersSyncMechanism;
 use LDAPSyncAll\UsersSyncUtils;
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Config\Config;
+use MediaWiki\Content\ContentHandler;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\LDAPAuthorization\Config as LDAPAuthorizationConfig;
 use MediaWiki\Extension\LDAPAuthorization\RequirementsChecker;
 use MediaWiki\Extension\LDAPGroups\Config as LDAPGroupsConfig;
@@ -22,11 +22,11 @@ use MediaWiki\Extension\LDAPUserInfo\UserInfoSyncProcess;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 use MWException;
 use Psr\Log\LoggerInterface;
 use RuntimeException;
-use Status;
-use User;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class SyncAllMechanism extends UsersSyncMechanism {
@@ -387,7 +387,8 @@ class SyncAllMechanism extends UsersSyncMechanism {
 		try {
 			$block = $user->getBlock();
 			if ( $block ) {
-				$result = $block->delete();
+				$result = MediaWikiServices::getInstance()->getDatabaseBlockStore()
+					->deleteBlock( $block );
 				$this->logger->debug( 'Enabling `{username}`: {result}',
 					[
 						'username' => $user->getName(),

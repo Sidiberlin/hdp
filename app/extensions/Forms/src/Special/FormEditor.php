@@ -2,16 +2,16 @@
 
 namespace MediaWiki\Extension\Forms\Special;
 
-use Config;
-use Html;
+use MediaWiki\Config\Config;
+use MediaWiki\Content\TextContent;
 use MediaWiki\Extension\Forms\DefinitionManager;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use OOUI\ActionFieldLayout;
 use OOUI\ButtonInputWidget;
 use OOUI\FormLayout;
 use OOUI\TextInputWidget;
-use TextContent;
-use Title;
 
 class FormEditor extends FormSpecial {
 	/**
@@ -57,6 +57,9 @@ class FormEditor extends FormSpecial {
 		}
 
 		$cancelReturnTo = $successReturnTo = $this->getPageTitle()->getLocalURL();
+		if ( str_ends_with( $subPage, '.form' ) ) {
+			$subPage = substr( $subPage, 0, -5 );
+		}
 		$formTitle = $this->getFormTitle( $subPage );
 		if ( $formTitle instanceof Title && $formTitle->exists() ) {
 			$successReturnTo = $formTitle->getLocalURL();
@@ -110,7 +113,8 @@ class FormEditor extends FormSpecial {
 		$this->getOutput()->addJsConfigVars(
 			'formsEmailTargets',
 			array_keys( $this->config->get( 'FormsTargetEMailRecipients' )
-			) );
+			)
+		);
 	}
 
 	/**

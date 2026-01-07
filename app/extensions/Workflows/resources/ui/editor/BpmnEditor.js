@@ -1,4 +1,4 @@
-workflows.ui.widget.BpmnEditor = function( config ) {
+workflows.ui.widget.BpmnEditor = function ( config ) {
 	config.items = this.initItems( config );
 	config.action = mw.util.getUrl( mw.config.get( 'wgPageName' ), { action: 'submit' } );
 	config.enctype = 'multipart/form-data';
@@ -15,14 +15,19 @@ workflows.ui.widget.BpmnEditor = function( config ) {
 
 OO.inheritClass( workflows.ui.widget.BpmnEditor, OO.ui.FormLayout );
 
-workflows.ui.widget.BpmnEditor.prototype.initItems = function( config ) {
+workflows.ui.widget.BpmnEditor.prototype.initItems = function ( config ) {
 	this.text = new OO.ui.HiddenInputWidget( { name: 'wpTextbox1', id: 'wpTextbox1' } );
-	this.summary = new OO.ui.HiddenInputWidget( { name: 'wpSummary', id: 'wpSummary'} );
+	this.summary = new OO.ui.HiddenInputWidget( { name: 'wpSummary', id: 'wpSummary' } );
 	this.toolbar = new OO.ui.Toolbar( workflows.editor.toolFactory, workflows.editor.toolGroupFactory );
 	this.toolbar.setup( [
 		{
-			type: 'list',
+			type: 'bar',
+			align: 'before',
+			include: [ 'cancel' ]
+		},
+		{
 			align: 'after',
+			type: 'list',
 			icon: 'menu',
 			indicator: null,
 			include: [ 'inspectProcess' ]
@@ -30,9 +35,8 @@ workflows.ui.widget.BpmnEditor.prototype.initItems = function( config ) {
 		{
 			align: 'after',
 			type: 'bar',
-			include: [ 'cancel', 'save' ]
-		},
-
+			include: [ 'save' ]
+		}
 	] );
 	this.toolbar.connect( this, {
 		editProcessContext: 'inspectProcess',
@@ -48,24 +52,24 @@ workflows.ui.widget.BpmnEditor.prototype.initItems = function( config ) {
 			// whatever...
 			new OO.ui.HiddenInputWidget( { name: 'wpUltimateParam', value: 1 } ),
 			this.text,
-			this.summary,
+			this.summary
 		]
 	} );
 
 	return [ this.toolbar, this.fieldset ];
 };
 
-workflows.ui.widget.BpmnEditor.prototype.initDiagram = async function( config ) {
+workflows.ui.widget.BpmnEditor.prototype.initDiagram = async function ( config ) {
 	config = $.extend( config, this.makeConfig() );
 	this.editor = new BpmnJS( config );
 	workflows.editor.modeler = this.editor;
-	this.editor.get( 'eventBus' ).on( 'element.dblclick', function ( event ) {
+	this.editor.get( 'eventBus' ).on( 'element.dblclick', ( event ) => {
 		if ( event.element.type === 'bpmn:Process' ) {
 			// Dedicated button for Process inspector
 			return;
 		}
 		this.openInspector( event.element );
-	}.bind( this ) );
+	} );
 
 	try {
 		await this.editor.importXML( config.xml );
@@ -75,12 +79,12 @@ workflows.ui.widget.BpmnEditor.prototype.initDiagram = async function( config ) 
 };
 
 workflows.ui.widget.BpmnEditor.prototype.prepForSubmit = function () {
-	var dfd = $.Deferred();
-	this.editor.saveXML( { format: true }, function ( err, xml ) {
+	const dfd = $.Deferred();
+	this.editor.saveXML( { format: true }, ( err, xml ) => {
 		this.text.$element.val( xml );
 		workflows.ui.widget.BpmnEditor.parent.prototype.onFormSubmit.call( this );
 		dfd.resolve();
-	}.bind( this ) );
+	} );
 
 	return dfd.promise();
 
@@ -97,19 +101,15 @@ workflows.ui.widget.BpmnEditor.prototype.makeConfig = function () {
 };
 
 workflows.ui.widget.BpmnEditor.prototype.openInspector = function ( element ) {
-	var inspector = workflows.editor.inspector.Registry.getInspectorForElement( element, this );
+	const inspector = workflows.editor.inspector.Registry.getInspectorForElement( element, this );
 	if ( !inspector ) {
 		return;
 	}
-	this.openDialog( new workflows.editor.inspector.InspectorDialog( element, { inspector: inspector } ) ).then(
-		function( data ) {
-			windowManager.destroy();
-		}
-	);
+	this.openDialog( new workflows.editor.inspector.InspectorDialog( element, { inspector: inspector } ) );
 };
 
-workflows.ui.widget.BpmnEditor.prototype.openDialog = function ( dialog, then ) {
-	var windowManager = new OO.ui.WindowManager();
+workflows.ui.widget.BpmnEditor.prototype.openDialog = function ( dialog ) { // eslint-disable-line no-unused-vars
+	const windowManager = OO.ui.getWindowManager();
 	$( document.body ).append( windowManager.$element );
 	windowManager.addWindows( [ dialog ] );
 	return windowManager.openWindow( dialog ).closed;
@@ -121,13 +121,13 @@ workflows.ui.widget.BpmnEditor.prototype.inspectProcess = function () {
 
 workflows.ui.widget.BpmnEditor.prototype.openSaveDialog = function () {
 	this.openDialog( new workflows.editor.dialog.SaveDialog( {} ) ).then(
-		function( data ) {
+		( data ) => {
 			if ( data.action === 'save' ) {
 				this.summary.$element.val( data.summary );
-				this.prepForSubmit().done( function () {
-					this.$element.submit();
-				}.bind( this ) );
+				this.prepForSubmit().done( () => {
+					this.$element.trigger( 'submit' );
+				} );
 			}
-		}.bind( this )
+		}
 	);
 };

@@ -10,11 +10,8 @@ use MWStake\MediaWiki\Component\Utils\Utility\GroupHelper;
  */
 class UtilityFactory {
 
-	/**
-	 *
-	 * @var MediaWikiServices
-	 */
-	protected $services = null;
+	/** @var MediaWikiServices */
+	protected $services;
 
 	/**
 	 * @param MediaWikiServices $services
@@ -33,6 +30,8 @@ class UtilityFactory {
 		$groupTypes = $config->get( 'GroupTypes' );
 		$dbr = $this->services->getDBLoadBalancer()->getConnection( DB_REPLICA );
 
-		return new GroupHelper( $groupManager, $additionalGroups, $groupTypes, $dbr );
+		return new GroupHelper(
+			$groupManager, $additionalGroups, $groupTypes, $dbr, $this->services->getUserFactory()
+		);
 	}
 }

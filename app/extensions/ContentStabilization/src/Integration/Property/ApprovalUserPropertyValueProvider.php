@@ -6,8 +6,8 @@ use BlueSpice\SMWConnector\PropertyValueProvider;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\ContentStabilization\StablePoint;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\TitleFactory;
 use SMW\DIWikiPage;
-use TitleFactory;
 
 class ApprovalUserPropertyValueProvider extends PropertyValueProvider {
 
@@ -77,7 +77,7 @@ class ApprovalUserPropertyValueProvider extends PropertyValueProvider {
 	 * @param \SMW\SemanticData $semanticData
 	 */
 	public function addAnnotation( $appFactory, $property, $semanticData ) {
-		$sp = $this->lookup->getLastStablePoint( $semanticData->getSubject()->getTitle()->toPageIdentity() );
+		$sp = $this->lookup->getLastRawStablePoint( $semanticData->getSubject()->getTitle()->toPageIdentity() );
 		if ( $sp instanceof StablePoint ) {
 			$title = $this->titleFactory->makeTitle( NS_USER, $sp->getApprover()->getUser()->getName() );
 			$semanticData->addPropertyObjectValue( $property, DIWikiPage::newFromTitle( $title ) );

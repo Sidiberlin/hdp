@@ -2,7 +2,9 @@
 
 namespace BlueSpice\Hook;
 
-use User;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\User\User;
 
 abstract class LocalUserCreated extends \BlueSpice\Hook {
 	/**
@@ -37,8 +39,8 @@ abstract class LocalUserCreated extends \BlueSpice\Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param User $user
 	 * @param bool $autocreated
 	 */

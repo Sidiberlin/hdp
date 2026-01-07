@@ -1,57 +1,57 @@
 ( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.distributionConnector.object' );
 
-	bs.distributionConnector.object.ButtonLinkDroplet = function( cfg ) {
+	bs.distributionConnector.object.ButtonLinkDroplet = function ( cfg ) {
 		bs.distributionConnector.object.ButtonLinkDroplet.parent.call( this, cfg );
 	};
 
 	OO.inheritClass( bs.distributionConnector.object.ButtonLinkDroplet, ext.contentdroplets.object.TransclusionDroplet );
 
-	bs.distributionConnector.object.ButtonLinkDroplet.prototype.templateMatches = function( templateData ) {
+	bs.distributionConnector.object.ButtonLinkDroplet.prototype.templateMatches = function ( templateData ) {
 		if ( !templateData ) {
 			return false;
 		}
-		var target = templateData.target.wt;
-		return target.trim( '\n' ) === 'ButtonLink' && 'buttonlink' === this.getKey();
+		const target = templateData.target.wt;
+		return target.trim( '\n' ) === 'ButtonLink' && this.getKey() === 'buttonlink';
 	};
 
-	bs.distributionConnector.object.ButtonLinkDroplet.prototype.toDataElement = function( domElements, converter  ) {
+	bs.distributionConnector.object.ButtonLinkDroplet.prototype.toDataElement = function ( domElements, converter ) { // eslint-disable-line no-unused-vars
 		return false;
 	};
 
-	bs.distributionConnector.object.ButtonLinkDroplet.prototype.getFormItems = function() {
+	bs.distributionConnector.object.ButtonLinkDroplet.prototype.getFormItems = function () {
 		return [
 			{
 				name: 'external',
-				label: mw.message( 'droplets-buttonlink-external-label' ).plain(),
+				label: mw.message( 'droplets-buttonlink-external-label' ).text(),
 				type: 'checkbox'
 			},
 			{
 				name: 'target',
-				label: mw.message( 'droplets-buttonlink-target-label' ).plain(),
+				label: mw.message( 'droplets-buttonlink-target-label' ).text(),
 				type: 'text'
 			},
 			{
 				name: 'label',
-				label: mw.message( 'droplets-buttonlink-label-label' ).plain(),
+				label: mw.message( 'droplets-buttonlink-label-label' ).text(),
 				type: 'text'
 			},
 			{
 				name: 'format',
-				label: mw.message( 'droplets-buttonlink-format-label' ).plain(),
+				label: mw.message( 'droplets-buttonlink-format-label' ).text(),
 				type: 'dropdown',
 				options: [
 					{
 						data: 'blue',
-						label: mw.message( 'droplets-buttonlink-format-blue' ).plain()
+						label: mw.message( 'droplets-buttonlink-format-blue' ).text()
 					},
 					{
 						data: 'neutral',
-						label: mw.message( 'droplets-buttonlink-format-neutral' ).plain()
+						label: mw.message( 'droplets-buttonlink-format-neutral' ).text()
 					},
 					{
 						data: 'red',
-						label: mw.message( 'droplets-buttonlink-format-red' ).plain()
+						label: mw.message( 'droplets-buttonlink-format-red' ).text()
 					}
 				]
 			}
@@ -61,8 +61,8 @@
 	bs.distributionConnector.object.ButtonLinkDroplet.prototype.modifyFormDataBeforeSubmission =
 	function ( dataPromise ) {
 		// Convert true/false from checkbox control, to yes/no expected by the ButtonLink template
-		var dfd = $.Deferred();
-		dataPromise.done( function ( data ) {
+		const dfd = $.Deferred();
+		dataPromise.done( ( data ) => {
 			data.external = data.external ? 'yes' : 'no';
 			dfd.resolve( data );
 		} ).fail( function () {
@@ -84,4 +84,4 @@
 
 	ext.contentdroplets.registry.register( 'buttonlink', bs.distributionConnector.object.ButtonLinkDroplet );
 
-} )( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

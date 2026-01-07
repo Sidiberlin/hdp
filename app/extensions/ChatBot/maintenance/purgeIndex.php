@@ -1,6 +1,7 @@
 <?php
 
 use ChatBot\DeepsetApi\IndexApi;
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
 
 $IP = dirname( dirname( dirname( __DIR__ ) ) );

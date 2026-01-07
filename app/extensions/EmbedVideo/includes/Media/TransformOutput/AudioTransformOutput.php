@@ -13,9 +13,9 @@ declare( strict_types=1 );
 
 namespace MediaWiki\Extension\EmbedVideo\Media\TransformOutput;
 
-use File;
-use Html;
 use MediaTransformOutput;
+use MediaWiki\FileRepo\File\File;
+use MediaWiki\Html\Html;
 
 class AudioTransformOutput extends MediaTransformOutput {
 	/**
@@ -37,41 +37,37 @@ class AudioTransformOutput extends MediaTransformOutput {
 		$this->height = $parameters['height'] ?? null;
 		$this->path = null;
 		$this->lang = false;
-		$this->page = $parameters['page'];
+		$this->page = $parameters['page'] ?? null;
 		$this->url = $file->getFullUrl();
 	}
 
 	/**
 	 * Fetch HTML for this transform output
 	 *
-	 * @param array $options Associative array of options. Boolean options
-	 *                        should be indicated with a value of true for
-	 *                        true, and false or absent for false. alt
-	 *                        Alternate text or caption desc-link
-	 *                        Boolean, show a description link file-link
-	 *                        Boolean, show a file download link
-	 *                        custom-url-link    Custom URL to link to
-	 *                        custom-title-link  Custom Title object to
-	 *                        link to valign       vertical-align property,
-	 *                        if the output is an inline element img-class
-	 *                        Class applied to the "<img>" tag, if there
-	 *                        is such a tag For images, desc-link and
-	 *                        file-link are implemented as a click-through.
-	 *                        For sounds and videos, they may be displayed
-	 *                        in other ways.
+	 * @param array $options Associative array of options.
 	 *
 	 * @return string HTML
 	 */
 	public function toHtml( $options = [] ): string {
-		return Html::rawElement( 'audio', [
+		$attrs = [
 			'src' => $this->getSrc(),
 			'width' => $this->getWidth(),
-			'class' => $options['img-class'] ?? false,
+			'class' => $options['img-class'] ?? $this->parameters['img-class'] ?? false,
 			'style' => $this->getStyle( $options ),
 			'controls' => !isset( $this->parameters['nocontrols'] ),
 			'autoplay' => isset( $this->parameters['autoplay'] ),
 			'loop' => isset( $this->parameters['loop'] ),
-		], $this->getDescription() );
+		];
+
+		if (
+			!empty( $options['no-dimensions'] ) ||
+			isset( $options['override-width'] ) ||
+			isset( $options['override-height'] )
+		) {
+			unset( $attrs['width'] );
+		}
+
+		return Html::rawElement( 'audio', $attrs, $this->getDescription() );
 	}
 
 	/**
@@ -106,7 +102,10 @@ class AudioTransformOutput extends MediaTransformOutput {
 
 		$style[] = "max-width: 100%;";
 
-		if ( empty( $options['no-dimensions'] ) ) {
+		if (
+			empty( $options['no-dimensions'] ) &&
+			!isset( $options['override-width'] ) && !isset( $options['override-height'] )
+		) {
 			$style[] = "width: {$this->getWidth()}px;";
 		}
 

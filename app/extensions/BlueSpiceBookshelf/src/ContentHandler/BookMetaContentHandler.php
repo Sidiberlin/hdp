@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Bookshelf\ContentHandler;
 
-use JsonContentHandler;
+use MediaWiki\Content\JsonContentHandler;
 
 class BookMetaContentHandler extends JsonContentHandler {
 

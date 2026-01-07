@@ -2,11 +2,11 @@
 
 namespace SimpleTasks\Hook;
 
-use FormatJson;
-use Html;
 use MediaWiki\Hook\ParserFirstCallInitHook;
-use Parser;
-use PPFrame;
+use MediaWiki\Html\Html;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class TaskReport implements ParserFirstCallInitHook {
 

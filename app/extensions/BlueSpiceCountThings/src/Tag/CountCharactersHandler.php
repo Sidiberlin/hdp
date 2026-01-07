@@ -7,6 +7,9 @@ use BlueSpice\Renderer\Params;
 use BlueSpice\RendererFactory;
 use BlueSpice\Tag\Handler;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Title\Title;
 
 class CountCharactersHandler extends Handler {
 
@@ -20,11 +23,11 @@ class CountCharactersHandler extends Handler {
 	 *
 	 * @param string $processedInput
 	 * @param array $processedArgs
-	 * @param \Parser $parser
-	 * @param \PPFrame $frame
+	 * @param Parser $parser
+	 * @param PPFrame $frame
 	 */
-	public function __construct( $processedInput, array $processedArgs, \Parser $parser,
-		\PPFrame $frame ) {
+	public function __construct( $processedInput, array $processedArgs, Parser $parser,
+		PPFrame $frame ) {
 		$this->tagInput = explode( ' ', trim( $processedInput ) );
 		$this->tagArgs = $processedArgs;
 		parent::__construct( $processedInput, $processedArgs, $parser, $frame );
@@ -49,7 +52,7 @@ class CountCharactersHandler extends Handler {
 		}
 		$titles = [];
 		foreach ( $this->tagInput as $title ) {
-			$titleInstance = \Title::newFromText( $title );
+			$titleInstance = Title::newFromText( $title );
 			if ( $titleInstance ) {
 				$titles[$title] = $titleInstance;
 			}
@@ -99,7 +102,7 @@ class CountCharactersHandler extends Handler {
 
 			$params = new Params( [
 				'title' => $title,
-				'titlelink' => $lr->makeLink( \Title::newFromText( $title ) ),
+				'titlelink' => $lr->makeLink( Title::newFromText( $title ) ),
 				Renderer::PARAM_CONTENT => $content
 				] );
 			$return .= $rendererFactory->get( 'countthings-countcharacters', $params )->render();

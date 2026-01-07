@@ -3,12 +3,13 @@
 namespace MediaWiki\Extension\NotifyMe\Event;
 
 use DateTime;
+use MediaWiki\Language\RawMessage;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
-use Message;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
-use User;
 
 class NullEvent implements INotificationEvent {
 
@@ -23,7 +24,7 @@ class NullEvent implements INotificationEvent {
 	 * @return Message
 	 */
 	public function getKeyMessage(): Message {
-		return new \RawMessage( 'null-event' );
+		return new RawMessage( 'null-event' );
 	}
 
 	/**
@@ -31,7 +32,7 @@ class NullEvent implements INotificationEvent {
 	 * @return Message
 	 */
 	public function getMessage( IChannel $forChannel ): Message {
-		return new \RawMessage( 'null-event' );
+		return new RawMessage( 'null-event' );
 	}
 
 	/**

@@ -1,6 +1,4 @@
-ext = ext || {};
-ext.prodistributionconnector = ext.prodistributionconnector || {};
-ext.prodistributionconnector.dm = ext.prodistributionconnector.dm || {};
+bs.util.registerNamespace( 'ext.prodistributionconnector.dm' );
 
 ext.prodistributionconnector.dm.PDFEmbedNode = function () {
 	// Parent constructor

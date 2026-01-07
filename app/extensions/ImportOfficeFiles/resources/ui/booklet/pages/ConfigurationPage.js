@@ -8,9 +8,7 @@ officeimport.ui.ConfigurationPage = function ( name, cfg ) {
 
 	const formElements = this.getElements();
 	this.layout.$element.append(
-		formElements.map( function ( item ) {
-			return item.$element;
-		} )
+		formElements.map( ( item ) => item.$element )
 	);
 
 	this.$element.append( this.layout.$element );
@@ -24,9 +22,16 @@ officeimport.ui.ConfigurationPage.prototype.getElements = function () {
 		required: true
 	} );
 	this.titleInput.connect( this, {
-		change: function ( value ) {
+		change: ( value ) => {
 			this.emit( 'configSet', value );
+			this.onTitleInputChange();
 		}
+	} );
+
+	this.titleInputFieldLayout = new OO.ui.FieldLayout( this.titleInput, {
+		label: mw.message( 'importofficefiles-ui-dialog-settings-pagetitle-label' ).text(),
+		align: 'top',
+		required: true
 	} );
 
 	this.fileStructureCheckbox = new OO.ui.CheckboxInputWidget();
@@ -92,10 +97,7 @@ officeimport.ui.ConfigurationPage.prototype.getElements = function () {
 					label: mw.message( 'importofficefiles-ui-dialog-settings-page-title' ).text(),
 					classes: [ 'label-bold' ]
 				} ),
-				new OO.ui.FieldLayout( this.titleInput, {
-					label: mw.message( 'importofficefiles-ui-dialog-settings-pagetitle-label' ).text(),
-					align: 'top'
-				} )
+				this.titleInputFieldLayout
 			]
 		} ),
 		new OO.ui.FieldsetLayout( {
@@ -149,30 +151,30 @@ officeimport.ui.ConfigurationPage.prototype.getData = function () {
 officeimport.ui.ConfigurationPage.prototype.analyzeFile = function ( uploadId, fileName, data ) {
 	const dfd = $.Deferred();
 
-	mw.loader.using( [ 'ext.importofficefiles.api' ], function () {
+	mw.loader.using( [ 'ext.importofficefiles.api' ], () => {
 		const api = new officeimport.api.Api();
-		api.startAnalyze( uploadId, fileName, data ).done( function ( response ) {
+		api.startAnalyze( uploadId, fileName, data ).done( ( response ) => {
 			if ( response.processId ) {
-				const timer = setInterval( function () {
+				const timer = setInterval( () => {
 					this.checkAnalyzeStatus( response.processId, timer, dfd );
-				}.bind( this ), 1000 );
+				}, 1000 );
 			} else {
 				dfd.reject( 'Analyze process did not start correctly' );
 			}
-		}.bind( this ) ).fail( function ( error ) {
+		} ).fail( ( error ) => {
 			this.emit( 'analyzeFailed', error );
 			dfd.reject( error );
-		}.bind( this ) );
-	}.bind( this ) );
+		} );
+	} );
 
 	return dfd.promise();
 };
 
 officeimport.ui.ConfigurationPage.prototype.checkAnalyzeStatus =
 	function ( processId, timer, dfd ) {
-		mw.loader.using( [ 'ext.importofficefiles.api' ], function () {
+		mw.loader.using( [ 'ext.importofficefiles.api' ], () => {
 			const api = new officeimport.api.Api();
-			api.getAnalyzeStatus( processId ).done( function ( response ) {
+			api.getAnalyzeStatus( processId ).done( ( response ) => {
 				if ( response.state === 'terminated' ) {
 					if ( response.exitCode === 0 ) {
 						this.emit( 'analyzeDone', response.pid, timer );
@@ -183,15 +185,68 @@ officeimport.ui.ConfigurationPage.prototype.checkAnalyzeStatus =
 						dfd.reject( response.exitStatus );
 					}
 				}
-			}.bind( this ) ).fail( function ( error ) {
+			} ).fail( ( error ) => {
 				clearInterval( timer );
 				dfd.reject( error );
 			} );
-		}.bind( this ) );
+		} );
 	};
 
 officeimport.ui.ConfigurationPage.prototype.setDefaultValue = function ( filename ) {
 	filename = filename.replace( /\..*/, '' );
 	this.title = this.title || filename;
 	this.titleInput.setValue( this.title );
+};
+
+officeimport.ui.ConfigurationPage.prototype.onTitleInputChange = function () {
+	// Client-side check for common invalid characters <>[]|{}#
+	const invalidCharMatch = this.titleInput.getValue().match( /[<>[\]|{}#]/ );
+	if ( invalidCharMatch ) {
+		const error = mw.message(
+			'importofficefiles-ui-dialog-configuration-settings-title-invalid-characters'
+		).params( invalidCharMatch[ 0 ] ).text();
+		this.emit( 'titleValidityChanged', false );
+		this.showErrorMessage( error );
+	} else {
+		this.titleInput.getValidity().then( () => {
+			this.emit( 'titleValidityChanged', true );
+			this.clearErrorMessage();
+		}, () => {
+			this.emit( 'titleValidityChanged', false );
+			this.showErrorMessage();
+		} );
+	}
+};
+
+officeimport.ui.ConfigurationPage.prototype.showErrorMessage = async function ( error = null ) {
+	if ( error ) {
+		this.titleInputFieldLayout.setErrors( [ error ] );
+		return;
+	}
+
+	const title = this.titleInput.getValue();
+
+	// API-based check for invalidity
+	try {
+		const data = await new mw.Api().get( {
+			action: 'query',
+			prop: 'pageprops',
+			titles: title
+		} );
+
+		const pages = data?.query?.pages;
+		if ( pages && pages[ -1 ]?.invalidreason ) {
+			error = pages[ -1 ].invalidreason;
+		}
+	} catch ( e ) {}
+
+	if ( !error ) {
+		error = mw.message( 'importofficefiles-ui-dialog-configuration-settings-title-invalid-fallback' ).text();
+	}
+
+	this.titleInputFieldLayout.setErrors( [ error ] );
+};
+
+officeimport.ui.ConfigurationPage.prototype.clearErrorMessage = function () {
+	this.titleInputFieldLayout.setErrors( [] );
 };

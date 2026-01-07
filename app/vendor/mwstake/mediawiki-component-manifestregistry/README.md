@@ -5,9 +5,22 @@ Provides a combined registry over all in the `attribute` section registered thin
 
 **This code is meant to be executed within the MediaWiki application context. No standalone usage is intended.**
 
+## Compatibility
+- `3.0.x` -> MediaWiki 1.43
+- `2.0.x` -> MediaWiki 1.39
+- `2.0.x` -> MediaWiki 1.35
+
 ## Use in a MediaWiki extension
 
-Add `"mwstake/mediawiki-component-manifestregistry": "~2.0"` to the `require` section of your `composer.json` file.
+Require this component in the `composer.json` of your extension:
+
+```json
+{
+	"require": {
+		"mwstake/mediawiki-component-manifestregistry": "~3"
+	}
+}
+```
 
 Since 2.0 explicit initialization is required. This can be achieved by
 - either adding `"callback": "mwsInitComponents"` to your `extension.json`/`skin.json`

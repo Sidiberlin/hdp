@@ -1,7 +1,7 @@
 {
 	"name": "BlueSpicePagesVisited",
 	"license-name": "GPL-3.0-only",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpicePagesVisited",
 	"author": [
 		"Robert Vogel",
@@ -11,10 +11,10 @@
 	"descriptionmsg": "bs-pagesvisited-desc",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3",
-			"BlueSpiceWhoIsOnline": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0",
+			"BlueSpiceWhoIsOnline": ">= 5.0.0"
 		}
 	},
 	"attributes": {
@@ -38,12 +38,6 @@
 			]
 		},
 		"BlueSpiceUserSidebar": {
-			"Widgets": {
-				"PAGESVISITED": {
-					"callback": "\\BlueSpice\\PagesVisited\\Panel\\PagesVisited::factory",
-					"default": true
-				}
-			},
 			"WidgetRegistry": {
 				"PAGESVISITED": "\\BlueSpice\\PagesVisited\\UserSidebar\\Widget\\PagesVisited::factory"
 			}

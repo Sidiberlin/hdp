@@ -9,13 +9,15 @@ use ChatBot\Interval\EveryFiveMinutes;
 use Exception;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Page\WikiPageFactory;
+use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Parser\ParserOutputLinkTypes;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleValue;
 use MWStake\MediaWiki\Component\RunJobsTrigger\IHandler;
 use MWStake\MediaWiki\Component\RunJobsTrigger\Interval;
-use ParserOutput;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
 use Status;
-use Title;
 use TitleFactory;
 use Wikimedia\Rdbms\LoadBalancer;
 
@@ -135,10 +137,19 @@ class IndexDeepset implements IHandler, LoggerAwareInterface {
 		// Files are being deleted in one request
 		$toDelete = [];
 
+		$this->logger->info( 'Indexing ' . $indexData->numRows() . ' pages' );
+
 		foreach ( $indexData as $row ) {
 			$dbKey = $row->{self::BMBF_INDEX_PAGE_FIELD};
 			$action = $row->{self::BMBF_INDEX_ACTION_FIELD};
 			$mappedFields = unserialize( $row->{self::BMBF_INDEX_DATA_FIELD} );
+
+			$this->logger->info(
+				'Processing ' . json_encode( [
+					'dbKey' => $dbKey,
+					'action' => $action
+				] )
+			);
 
 			try {
 				$this->validate( $mappedFields, $action );
@@ -173,6 +184,7 @@ class IndexDeepset implements IHandler, LoggerAwareInterface {
 			}
 		}
 
+		$this->logger->info( 'Deleting ' . count( $toDelete ) . ' pages from index' );
 		$status = $this->indexApi->batchDelete( $toDelete );
 		if ( !$status->isGood() ) {
 			$this->logger->error(
@@ -185,6 +197,7 @@ class IndexDeepset implements IHandler, LoggerAwareInterface {
 		}
 
 		// Clear the table
+		$this->logger->info( "Clearing index table" );
 		$db->delete( self::BMBF_INDEX_TABLE, '*' );
 
 		return Status::newGood();
@@ -218,10 +231,18 @@ class IndexDeepset implements IHandler, LoggerAwareInterface {
 				return Status::newFatal( 'No output' );
 			}
 
-			$sections = $this->getRawPageContentBySections(
-				$output,
-				$mappedFields['sections']
+			$htmlText = $output->getText(
+				[
+					'allowTOC' => false,
+					'injectTOC' => '',
+					'enableSectionEditLinks' => false,
+					'unwrap' => true
+				]
 			);
+
+			if ( empty( $htmlText ) ) {
+				throw new Exception( 'Empty content' );
+			}
 
 			$metadata = $this->createPageMetaData( $title, $output, $mappedFields );
 
@@ -232,18 +253,19 @@ class IndexDeepset implements IHandler, LoggerAwareInterface {
 				return $status;
 			}
 
-			if ( count( $sections ) === 1 ) {
-				$content = $sections[0];
-				if ( empty( $content ) ) {
-					throw new Exception( 'Empty content' );
-				}
-
+			// No sections defined, index the whole page as one document
+			if ( empty( $mappedFields['sections'] ) ) {
 				return $this->indexApi->pushPage(
 					$this->getWikiPageIndexName( $dbKey ),
-					$content,
+					trim( strip_tags( $htmlText ) ),
 					$metadata
 				);
 			}
+
+			$sections = $this->getRawPageContentBySections(
+				$htmlText,
+				$mappedFields['sections']
+			);
 
 			foreach ( $sections as $sectionName => $content ) {
 				if ( empty( $content ) ) {
@@ -289,27 +311,14 @@ class IndexDeepset implements IHandler, LoggerAwareInterface {
 	 * Splits the page content by sections
 	 * Converts the Wikitext content to plain text
 	 *
-	 * @param ParserOutput $output
+	 * @param string $htmlText
 	 * @param array $sections
 	 *
 	 * @return array
 	 * @throws Exception
 	 */
-	private function getRawPageContentBySections( ParserOutput $output, array $sections ): array {
+	private function getRawPageContentBySections( string $htmlText, array $sections ): array {
 		$contents = [];
-
-		$htmlText = $output->getText(
-			[
-				'allowTOC' => false,
-				'injectTOC' => '',
-				'enableSectionEditLinks' => false,
-				'unwrap' => true
-			]
-		);
-
-		if ( empty( $sections ) ) {
-			return [ trim( strip_tags( $htmlText ) ) ];
-		}
 
 		// Get the text before the first heading (if any)
 		if ( preg_match( '/^(.*?)\s*(?=<h[1-6]>)/si', $htmlText, $matches ) ) {
@@ -395,15 +404,24 @@ class IndexDeepset implements IHandler, LoggerAwareInterface {
 	 */
 	private function createLinkList( ParserOutput $output ): array {
 		$internalLinks = [];
-		$externalLinks = array_flip( $output->getExternalLinks() );
+		$externalLinks = array_keys($output->getExternalLinks());
 
-		$flattenedLinks = [];
-		foreach ( $output->getLinks() as $nestedArray ) {
-			$flattenedLinks = array_merge( $flattenedLinks, $nestedArray );
+		foreach ( $output->getLinkList(ParserOutputLinkTypes::LOCAL) as $linkListItem ) {
+			/** @var TitleValue $linkTarget */
+			$linkTarget = $linkListItem['link'];
+			$title = Title::castFromLinkTarget($linkTarget);
+
+			if ( !$title ) {
+				continue;
+			}
+
+			$internalLinks[] = $title->getFullURL();
 		}
 
-		foreach ( $flattenedLinks as $pageId ) {
-			$title = Title::newFromID( $pageId );
+		foreach ( $output->getLinkList(ParserOutputLinkTypes::MEDIA) as $linkListItem ) {
+			/** @var TitleValue $linkTarget */
+			$linkTarget = $linkListItem['link'];
+			$title = Title::castFromLinkTarget($linkTarget);
 
 			if ( !$title ) {
 				continue;

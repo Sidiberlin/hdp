@@ -1,7 +1,7 @@
 {
 	"name": "BlueSpiceHideTitle",
 	"license-name": "GPL-3.0-only",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceHideTitle",
 	"author": [
 		"Markus Glaser",
@@ -10,9 +10,9 @@
 	"descriptionmsg": "bs-hidetitle-desc",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"attributes": {

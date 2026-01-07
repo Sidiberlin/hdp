@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Исмаил Садуев",
 			"Умар"
 		]
 	},
@@ -8,7 +9,7 @@
 	"bs-ns_all": "(массо)",
 	"bs-tab_navigation": "Навигаци",
 	"bs-userbar_loginswitch_logout": "Болх дӀаберзор",
-	"bs-userbar_loginswitch_login": "ЧугӀо",
+	"bs-userbar_loginswitch_login": "Чувала",
 	"bs-extended-search-tooltip-fulltext": "Дуьззина йозанца лахар",
 	"bs-extended-search-textfield-defaultvalue": "Лахар…",
 	"bs-extended-search-textfield-tooltip": "Википедин чохь лахар",
@@ -26,23 +27,21 @@
 	"bs-email-greeting-receiver": "Маршалла ду хьоьга, {{GENDER:$1|лараме $1|$1}}.",
 	"bs-email-footer": "ХӀара хаам кхоьллина автоматически. Дехар до, цуна жоп мало.",
 	"bs-userpagesettings-legend": "Декъашхочун гӀирс нисбар",
+	"bs-userpreferences-link-text": "Декъашхочун кхин тӀе нисдаран гӀирсаш",
 	"bs-exception-view-heading": "ГӀалат даьлла",
 	"bs-exception-view-stacktrace-toggle-show-text": "Гайта гӀалатах лаьцна",
 	"bs-exception-view-stacktrace-toggle-hide-text": "Къайладаккха гӀалатах лаьцнарг",
-	"bs-viewtagerrorlist-legend": "$1 — ГӀалат",
 	"bs-permissionerror": "ТӀекхачаре бакъона гӀалат!",
+	"bs-filesystemhelper-no-directory": "<code>$1</code> — нийса йоцу каталог.",
 	"bs-filesystemhelper-file-copy-error": "Файлан <code>$1</code> копийан цатарло.",
 	"bs-filesystemhelper-upload-err-code": "Файл чуйаккха йиш йац: $1",
 	"bs-filesystemhelper-upload-base64-error": "Файл чуйаккха йиш йац.",
 	"bs-filesystemhelper-upload-local-error-create": "Википедин чохь файл кхолла йиш йац.",
 	"bs-navigation-instructions": "Инструкци",
-	"bs-navigation-support": "ГӀo дан",
+	"bs-navigation-support": "ГӀо",
 	"bs-navigation-contact": "Йуханехьа зӀе",
-	"bs-imagepage-download-text": "Чуйаккха",
 	"bs-ns": "ЦӀерийн меттиг",
 	"bs-from-something": "($1 чуьра)",
-	"bs-userpreferences-link-text": "Декъашхочун кхин тӀе нисдаран гӀирсаш",
-	"bs-filesystemhelper-no-directory": "<code>$1</code> — нийса йоцу каталог.",
 	"bs-pref-fileextensions": "Файлийн магийна шораллаш:",
 	"bs-pref-imageextensions": "Суьртийн магийна шораллаш:",
 	"bs-pref-logopath": "Логотип тӀе некъ:",
@@ -63,5 +62,11 @@
 	"bs-bluespice-mediawiki": "BlueSpice MediaWiki",
 	"bs-bluespice": "BlueSpice",
 	"bs-notifications-agent-anon": "Аноним декъашхой",
-	"protect-level-editor": "Редакторшна а, администраторшна бен магийна дац"
+	"protect-level-editor": "Редакторшна а, администраторшна бен магийна дац",
+	"bs-permission-role-reader": "Корта",
+	"bs-permission-role-editor": "Редактор",
+	"bs-permission-role-reviewer": "Рецензент",
+	"bs-permission-role-admin": "Администратор",
+	"bs-title-warning": "ДӀахьедар",
+	"bs-title-success": "Кхиамца"
 }

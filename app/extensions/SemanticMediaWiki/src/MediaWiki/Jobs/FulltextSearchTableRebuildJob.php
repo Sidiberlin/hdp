@@ -2,13 +2,13 @@
 
 namespace SMW\MediaWiki\Jobs;
 
+use MediaWiki\Title\Title;
 use SMW\MediaWiki\Job;
 use SMW\Services\ServicesFactory as ApplicationFactory;
 use SMW\SQLStore\QueryEngine\FulltextSearchTableFactory;
-use Title;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.5
  *
  * @author mwjames
@@ -31,7 +31,6 @@ class FulltextSearchTableRebuildJob extends Job {
 	 * @since  2.5
 	 */
 	public function run() {
-
 		if ( $this->waitOnCommandLineMode() ) {
 			return true;
 		}
@@ -56,7 +55,6 @@ class FulltextSearchTableRebuildJob extends Job {
 	}
 
 	private function createJobsFromTableList( $tableList ) {
-
 		if ( $tableList === [] ) {
 			return;
 		}

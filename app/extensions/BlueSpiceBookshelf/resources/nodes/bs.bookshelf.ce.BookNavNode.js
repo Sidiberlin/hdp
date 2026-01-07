@@ -1,4 +1,4 @@
-( function( mw, $, d, bs ) {
+( function ( mw, $, d, bs ) {
 	bs.util.registerNamespace( 'bs.bookshelf.ce' );
 
 	bs.bookshelf.ce.BookNavNode = function BsBookshelfCeBookNavNode() {
@@ -32,4 +32,4 @@
 	/* Registration */
 	ve.ce.nodeFactory.register( bs.bookshelf.ce.BookNavNode );
 
-})( mediaWiki, jQuery, document, blueSpice );
+}( mediaWiki, jQuery, document, blueSpice ) );

@@ -9,8 +9,8 @@ use BlueSpice\RunJobsTriggerHandler\Interval\OnceAWeek;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\Events\Notifier;
-use Title;
 
 class Weekly extends SendNotification {
 

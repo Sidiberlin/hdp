@@ -2,10 +2,12 @@
 
 namespace MediaWiki\Extension\Forms;
 
+use MediaWiki\Content\TextContent;
 use MediaWiki\Extension\Forms\Content\FormDefinitionContent;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
-use TextContent;
-use Title;
+use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\Title\Title;
 
 class DefinitionManager {
 	public const TYPE_ABSTRACT = 'abstract';
@@ -102,7 +104,7 @@ class DefinitionManager {
 			return 0;
 		}
 		$defTitle = $this->getTitleFromDefinitionName( $definitionName );
-		if ( !$defTitle instanceof \Title || !$defTitle->exists() ) {
+		if ( !$defTitle instanceof Title || !$defTitle->exists() ) {
 			return 0;
 		}
 		return $defTitle->getLatestRevID();
@@ -203,7 +205,7 @@ class DefinitionManager {
 			}
 			return static::TYPE_CONCRETE;
 		} elseif ( $lang === static::LANG_JSON ) {
-			$decoded = \FormatJson::decode( $definition, 1 );
+			$decoded = FormatJson::decode( $definition, 1 );
 			if ( isset( $decoded[static::TYPE_ABSTRACT] ) && $decoded[static::TYPE_ABSTRACT] ) {
 				return static::TYPE_ABSTRACT;
 			}
@@ -238,7 +240,7 @@ class DefinitionManager {
 	}
 
 	protected function loadFromAttribute() {
-		$attribute = \ExtensionRegistry::getInstance()->getAttribute(
+		$attribute = ExtensionRegistry::getInstance()->getAttribute(
 			"FormsDefinitions"
 		);
 
@@ -263,7 +265,7 @@ class DefinitionManager {
 		$pages = $this->getPages();
 		$wikiPageFactory = $this->services->getWikiPageFactory();
 		foreach ( $pages as $pageRow ) {
-			$page = \Title::newFromRow( $pageRow );
+			$page = Title::newFromRow( $pageRow );
 			$wikipage = $wikiPageFactory->newFromTitle( $page );
 			$content = $wikipage->getContent();
 
@@ -287,7 +289,8 @@ class DefinitionManager {
 		$res = $db->select(
 			'page',
 			'*',
-			[ 'page_content_model' => 'FormDefinition' ]
+			[ 'page_content_model' => 'FormDefinition' ],
+			__METHOD__
 		);
 
 		return $res;

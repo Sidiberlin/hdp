@@ -60,7 +60,7 @@ your event must implement `MWStake\MediaWiki\Component\Events\ForcedEvent` inter
 he is not subscribed to the event bucket.
 
 ### Notifying agent
-If your event should also be delivered to the agent, implement `MediaWiki\Extension\NotifyMe\NotifyAgentEvent` interface.
+If your event should also be delivered to the agent, implement `MWStake\MediaWiki\Component\Events\NotifyAgentEvent` interface.
 
 ### Event messages
 Whenever an event is being serialized to be pushed out over a channel, Event class will be called to provide the message

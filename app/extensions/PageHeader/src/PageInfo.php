@@ -2,8 +2,8 @@
 
 namespace PageHeader;
 
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 abstract class PageInfo implements IPageInfo {
 

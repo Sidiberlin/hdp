@@ -2,17 +2,17 @@
 
 namespace MediaWiki\Extension\FlexiSkin\HookHandler;
 
-use Config;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\MultiConfig;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\FlexiSkin\FlexiSkinConfig;
 use MediaWiki\Extension\FlexiSkin\IFlexiSkin;
 use MediaWiki\Extension\FlexiSkin\IFlexiSkinManager;
-use MediaWiki\Hook\BeforePageDisplayHook;
 use MediaWiki\Hook\MediaWikiServicesHook;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
 use MediaWiki\User\Hook\UserLoadAfterLoadFromSessionHook;
-use MultiConfig;
-use RequestContext;
 
 class Main implements MediaWikiServicesHook, BeforePageDisplayHook, UserLoadAfterLoadFromSessionHook {
 
@@ -51,6 +51,10 @@ class Main implements MediaWikiServicesHook, BeforePageDisplayHook, UserLoadAfte
 	 * @inheritDoc
 	 */
 	public function onMediaWikiServices( $container ) {
+		if ( defined( 'MW_QUIBBLE_CI' ) ) {
+			return;
+		}
+
 		$container->addServiceManipulator(
 			'MainConfig',
 			static function ( Config $mainConfig ): Config {

@@ -37,11 +37,12 @@ abstract class Backend {
 	private $mMessageLog;
 	/** @var LingoParser|null */
 	private $mLingoParser;
+	private array $searchTerms = [];
 
 	/**
 	 * @param MessageLog|null &$messages
 	 */
-	public function __construct( MessageLog &$messages = null ) {
+	public function __construct( ?MessageLog &$messages = null ) {
 		$this->mMessageLog = $messages;
 	}
 
@@ -72,6 +73,26 @@ abstract class Backend {
 	 */
 	public function setLingoParser( LingoParser $mLingoParser ) {
 		$this->mLingoParser = $mLingoParser;
+	}
+
+	/**
+	 * Set the search terms to be used by the backend. This should be used
+	 * to only search for specific terms, instead of the full tree.
+	 *
+	 * @param array $searchTerms
+	 * @return void
+	 */
+	public function setSearchTerms( array $searchTerms ) {
+		$this->searchTerms = $searchTerms;
+	}
+
+	/**
+	 * Get the search terms to be used by the backend.
+	 *
+	 * @return array
+	 */
+	public function getSearchTerms(): array {
+		return $this->searchTerms;
 	}
 
 	/**

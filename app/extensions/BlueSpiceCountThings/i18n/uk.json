@@ -31,8 +31,6 @@
 	"bs-countthings-tag-countfiles-desc": "Показує кількість файлів у вікі.",
 	"bs-countthings-tag-countcharacters-desc": "Генерує метадані вмісту вказаної статті. Вихідні дані є карткою, яку можна інтегрувати в статтю. Завдяки параметру «mode» може відображатися інший вид інформації.",
 	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: Що слід рахувати <code>chars</code> (символи), <code>words</code> (слова) чи <code>pages</code> (сторінки).",
-	"bs-countthings-tag-countcharacters-example-1": "Кількість слів",
-	"bs-countthings-tag-countcharacters-example-2": "Кількість символів",
 	"bs-countthings-droplet-articles-name": "Кількість сторінок",
 	"bs-countthings-droplet-articles-description": "Показує кількість сторінок",
 	"bs-countthings-droplet-characters-name": "Кількість символів",

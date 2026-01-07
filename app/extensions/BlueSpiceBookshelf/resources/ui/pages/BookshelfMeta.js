@@ -2,9 +2,10 @@
 
 	bs.util.registerNamespace( 'bs.bookshelf.ui.pages' );
 
-	bs.bookshelf.ui.pages.BookshelfMeta = function( name, config ) {
+	bs.bookshelf.ui.pages.BookshelfMeta = function ( name, config ) {
 		config = config || {};
 		bs.bookshelf.ui.pages.BookshelfMeta.super.call( this, name, config );
+		this.$overlay = config.$overlay || true;
 	};
 
 	OO.inheritClass( bs.bookshelf.ui.pages.BookshelfMeta, bs.bookshelf.ui.pages.MetaDataPage );
@@ -14,10 +15,10 @@
 	};
 
 	bs.bookshelf.ui.pages.BookshelfMeta.prototype.setup = function () {
-		var values = require( './bookshelfdata.json' );
-		var options = [];
+		const values = require( './bookshelfdata.json' );
+		const options = [];
 		if ( values.length > 0 ) {
-			values.forEach( function ( val ) {
+			values.forEach( ( val ) => {
 				options.push( {
 					data: val
 				} );
@@ -25,11 +26,11 @@
 		}
 		this.inputWidget = new OO.ui.ComboBoxInputWidget( {
 			options: options,
-			$overlay: true,
+			$overlay: this.$overlay,
 			value: this.value
 		} );
 
-		var fieldLayout = new OO.ui.FieldLayout( this.inputWidget, {
+		const fieldLayout = new OO.ui.FieldLayout( this.inputWidget, {
 			align: 'top',
 			label: mw.message( 'bs-bookshelfui-bookmetatag-bookshelf' ).text()
 		} );
@@ -45,4 +46,4 @@
 		this.inputWidget.setValue( value );
 	};
 
-} )( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

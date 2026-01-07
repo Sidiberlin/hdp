@@ -1,9 +1,12 @@
-/**
- * @module gateway/mediawiki
- */
-
 import { createModel } from '../preview/model';
 import * as formatter from '../formatter';
+import { abortablePromise } from './index.js';
+
+/**
+ * @module gateway/mediawiki
+ * @private
+ * @ignore
+ */
 
 // Public and private cache lifetime (5 minutes)
 //
@@ -19,6 +22,7 @@ const CACHE_LIFETIME = 300;
 /**
  * Creates an instance of the MediaWiki API gateway.
  *
+ * @ignore
  * @param {mw.Api} api
  * @param {Object} config Configuration that affects the major behavior of the
  *  gateway.
@@ -68,15 +72,11 @@ export default function createMediaWikiApiGateway( api, config ) {
 	 */
 	function fetchPreviewForTitle( title ) {
 		const xhr = fetch( title.getPrefixedDb() );
-		return xhr.then( ( data ) => {
+		return abortablePromise( xhr.then( ( data ) => {
 			const page = extractPageFromResponse( data );
 			const plainTextExtract = formatPlainTextExtract( page );
 			return convertPageToModel( plainTextExtract );
-		} ).promise( {
-			abort() {
-				xhr.abort();
-			}
-		} );
+		} ), () => xhr.abort() );
 	}
 
 	return {
@@ -119,7 +119,7 @@ function extractPageFromResponse( data ) {
  * @return {Object}
  */
 function formatPlainTextExtract( data ) {
-	const result = $.extend( {}, data );
+	const result = Object.assign( {}, data );
 	result.extract = formatter.formatPlainTextExtract( data.extract, data.title );
 	return result;
 }

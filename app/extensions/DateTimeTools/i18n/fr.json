@@ -5,9 +5,9 @@
 			"Wladek92"
 		]
 	},
+	"datetimetools-desc": "Fournit les outils de date dans VisualEditor",
 	"datetimetools-ve-inspector-title": "Modifier la date",
 	"datetimetools-ve-inspector-date-picker-label": "Sélectionner une date",
 	"datetimetools-droplet-date-name": "Date",
-	"datetimetools-droplet-date-description": "Insère une date",
-	"datetimetools-desc": "Fournit les outils de date dans VisualEditor"
+	"datetimetools-droplet-date-description": "Insère une date"
 }

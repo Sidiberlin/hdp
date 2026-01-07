@@ -13,14 +13,8 @@
 	"bs-authors-profileimage": "프로필 사진",
 	"bs-authors-profileimage-change": "프로필 사진 바꾸기",
 	"bs-authors-show-all-authors": "더 많은 작성자들이 있습니다",
-	"bs-authors-pref-show": "작성자 표시",
-	"bs-authors-switch-description": "이 문서의 작성자를 숨깁니다.",
 	"bs-authors-navigation-link-title": "이 문서의 작성자",
 	"bs-authors-navigation-link-text": "작성자",
-	"bs-authors-flyout-title": "이 문서의 작성자",
-	"bs-authors-author-type-originator": "원저자",
-	"bs-authors-author-type-editor": "편집자",
-	"bs-authors-pref-show-help": "품질 관리 도구로 문서 정보를 이용 중인 문서 편집자를 표시합니다.",
 	"bs-authors-info-dialog": "이 문서의 작성자",
 	"bs-authors-info-dialog-grid-column-author": "저자"
 }

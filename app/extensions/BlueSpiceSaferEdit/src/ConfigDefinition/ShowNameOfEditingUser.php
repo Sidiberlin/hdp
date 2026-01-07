@@ -21,7 +21,7 @@ class ShowNameOfEditingUser extends BooleanSetting {
 	 * @inheritDoc
 	 */
 	public function getLabelMessageKey() {
-		return 'bs-saferedit-pref-shownameofeditinguser';
+		return 'bs-saferedit-pref-show-editinguser';
 	}
 
 	/**
@@ -35,6 +35,6 @@ class ShowNameOfEditingUser extends BooleanSetting {
 	 * @inheritDoc
 	 */
 	public function getHelpMessageKey() {
-		return 'bs-saferedit-pref-shownameofeditinguser-help';
+		return 'bs-saferedit-pref-show-editinguser-help';
 	}
 }

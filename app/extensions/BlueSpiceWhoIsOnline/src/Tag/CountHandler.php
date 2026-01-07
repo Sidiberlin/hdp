@@ -4,11 +4,11 @@ namespace BlueSpice\WhoIsOnline\Tag;
 
 use BlueSpice\Tag\Handler;
 use BlueSpice\WhoIsOnline\Tracer;
-use Config;
-use Html;
+use MediaWiki\Config\Config;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use Parser;
-use PPFrame;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class CountHandler extends Handler {
 
@@ -19,8 +19,9 @@ class CountHandler extends Handler {
 	 * @param PPFrame $frame
 	 * @param Tracer|null $tracer
 	 */
-	public function __construct( $processedInput, array $processedArgs,
-		Parser $parser, PPFrame $frame, Tracer $tracer = null ) {
+	public function __construct(
+		$processedInput, array $processedArgs, Parser $parser, PPFrame $frame, ?Tracer $tracer = null
+	) {
 		parent::__construct( $processedInput, $processedArgs, $parser, $frame );
 		if ( !$tracer ) {
 			$tracer = MediaWikiServices::getInstance()->getService( 'BSWhoIsOnlineTracer' );

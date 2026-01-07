@@ -27,6 +27,8 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 abstract class BSApiExtJSStoreBaseBeforePostProcessData extends Hook {
 	/**
@@ -60,8 +62,8 @@ abstract class BSApiExtJSStoreBaseBeforePostProcessData extends Hook {
 	}
 
 	/**
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param \BSApiExtJSStoreBase $store
 	 * @param array &$dataItems
 	 */

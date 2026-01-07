@@ -21,7 +21,7 @@ class Interval extends IntSetting {
 	 * @inheritDoc
 	 */
 	public function getLabelMessageKey() {
-		return 'bs-saferedit-pref-interval';
+		return 'bs-saferedit-pref-edit-interval';
 	}
 
 	/**
@@ -35,6 +35,6 @@ class Interval extends IntSetting {
 	 * @inheritDoc
 	 */
 	public function getHelpMessageKey() {
-		return 'bs-saferedit-pref-interval-help';
+		return 'bs-saferedit-pref-edit-interval-help';
 	}
 }

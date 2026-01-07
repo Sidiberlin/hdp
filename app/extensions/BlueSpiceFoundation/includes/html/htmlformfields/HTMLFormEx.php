@@ -1,4 +1,10 @@
 <?php
+
+use MediaWiki\Html\Html;
+use MediaWiki\HTMLForm\HTMLForm;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Xml\Xml;
+
 /**
  * Description of HTMLFormEx
  *
@@ -22,7 +28,7 @@ class HTMLFormEx extends HTMLForm {
 		$map = [];
 		foreach ( $fields as $key => $value ) {
 			$sKey = $this->mMessagePrefix . '-' . strtolower( $key );
-			$map[$key] = $this->msg( $sKey )->plain();
+			$map[$key] = $this->msg( $sKey )->text();
 		}
 
 		asort( $map );

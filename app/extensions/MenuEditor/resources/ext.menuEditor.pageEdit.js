@@ -1,12 +1,12 @@
 ( function ( mw, $ ) {
-	$( function () {
-		var $c = $( '#menuEditor-container' ); // eslint-disable-line no-jquery/no-global-selector
+	$( () => {
+		const $c = $( '#menuEditor-container' ); // eslint-disable-line no-jquery/no-global-selector
 		if ( !$c.length ) {
 			return;
 		}
 
-		var data = $c.data();
-		var revId = mw.config.get( 'wgRevisionId' );
+		const data = $c.data();
+		let revId = mw.config.get( 'wgRevisionId' );
 		if ( mw.util.getParamValue( 'oldid' ) ) {
 			revId = mw.util.getParamValue( 'oldid' );
 		}
@@ -26,22 +26,27 @@
 					window.location = mw.util.getUrl( mw.config.get( 'wgPageName' ) );
 				},
 				cancel: function () {
-					window.location = mw.util.getUrl( mw.config.get( 'wgPageName' ) );
+					OO.ui.confirm( mw.message( 'menueditor-ui-cancel-confirmation' ).text() )
+						.done( ( confirmed ) => {
+							if ( confirmed ) {
+								window.location = mw.util.getUrl( mw.config.get( 'wgPageName' ) );
+							}
+						} );
 				}
 			} );
 			$c.html( panel.$element );
-		} ).fail( function ( e ) {
+		} ).fail( ( e ) => {
 			console.error( e ); // eslint-disable-line no-console
 		} );
 	} );
 
-	var toolbarOffsetJson = require( './addToolbarOffset.json' );
-	var toolbarOffsetHeight = toolbarOffsetJson.MenuEditorToolbarOffset;
+	const toolbarOffsetJson = require( './addToolbarOffset.json' );
+	const toolbarOffsetHeight = toolbarOffsetJson.MenuEditorToolbarOffset;
 
 	$( window ).on( 'scroll', function () {
-		var windowTop = $( this ).scrollTop();
-		var $toolbar = $( '.menueditor-toolbar' ); // eslint-disable-line no-jquery/no-global-selector
-		var contentWidth = getContentWidth();
+		const windowTop = $( this ).scrollTop();
+		const $toolbar = $( '.menueditor-toolbar' ); // eslint-disable-line no-jquery/no-global-selector
+		const contentWidth = getContentWidth();
 		if ( windowTop > toolbarOffsetHeight ) {
 			$toolbar.addClass( 'floating' );
 			$toolbar.css( 'top', toolbarOffsetHeight );

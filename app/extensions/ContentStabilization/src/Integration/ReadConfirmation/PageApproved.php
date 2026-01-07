@@ -4,22 +4,24 @@ namespace MediaWiki\Extension\ContentStabilization\Integration\ReadConfirmation;
 
 use BlueSpice\PageAssignments\AssignmentFactory;
 use BlueSpice\ReadConfirmation\Event\ConfirmationRemindEvent;
+use BlueSpice\ReadConfirmation\Event\ConfirmationRequestEvent;
 use BlueSpice\ReadConfirmation\IMechanism;
-use Config;
 use DateInterval;
 use DateTime;
+use Exception;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\ContentStabilization\StablePoint;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Revision\RevisionRecord;
-use MWException;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
+use MediaWiki\User\UserFactory;
 use MWStake\MediaWiki\Component\Events\Notifier;
 use Psr\Log\LoggerInterface;
-use Title;
-use TitleFactory;
-use User;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 /**
@@ -73,7 +75,8 @@ class PageApproved implements IMechanism {
 			$services->getService( 'BSPageAssignmentsAssignmentFactory' ),
 			$services->getTitleFactory(),
 			$services->getService( 'ContentStabilization.Lookup' ),
-			$services->getService( 'MWStake.Notifier' )
+			$services->getService( 'MWStake.Notifier' ),
+			$services->getUserFactory()
 		);
 	}
 
@@ -97,7 +100,8 @@ class PageApproved implements IMechanism {
 		AssignmentFactory $assignmentFactory,
 		TitleFactory $titleFactory,
 		StabilizationLookup $stabilizationLookup,
-		Notifier $notifier
+		Notifier $notifier,
+		private readonly UserFactory $userFactory
 	) {
 		$this->dbLoadBalancer = $dbLoadBalancer;
 		$this->config = $config;
@@ -120,7 +124,7 @@ class PageApproved implements IMechanism {
 	 * @param User $userAgent
 	 *
 	 * @return bool
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	private function notifyDaily( Title $title, User $userAgent ) {
 		if ( !$title->exists() ) {
@@ -140,8 +144,8 @@ class PageApproved implements IMechanism {
 	 * @param Title $title
 	 * @param User $userAgent
 	 *
-	 * @return bool
-	 * @throws MWException
+	 * @return bool|array
+	 * @throws Exception
 	 */
 	public function notify( Title $title, User $userAgent ) {
 		if ( !$title->exists() ) {
@@ -152,14 +156,14 @@ class PageApproved implements IMechanism {
 			return false;
 		}
 		$notifyUsers = $this->getNotifyUsers( $title->getArticleID() );
-		$event = new ConfirmationRemindEvent( $title, $notifyUsers );
+		$event = new ConfirmationRequestEvent( $userAgent, $title, $notifyUsers );
 		$this->notifier->emit( $event );
-		return true;
+		return $notifyUsers;
 	}
 
 	/**
 	 * @return void
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	public function autoNotify() {
 		$delay = $this->config->get( 'BlueSpicePageApprovedReminderDelay' );
@@ -197,16 +201,27 @@ class PageApproved implements IMechanism {
 	 * @param int|null $revId
 	 *
 	 * @return bool
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	public function canConfirm( Title $title, User $user, $revId = null ) {
-		if ( !$revId ) {
+		if ( !$this->stabilizationLookup->isStabilizationEnabled( $title ) ) {
+			return false;
+		}
+		if ( !in_array( $user->getId(), $this->getAssignedUsers( $title->getArticleID() ) ) ) {
 			return false;
 		}
 
-		if ( !$this->isRevisionStable( $revId ) ) {
+		$stable = $this->stabilizationLookup->getLastStableRevision( $title );
+		if ( !( $stable instanceof RevisionRecord ) ) {
+			// first draft
 			return false;
 		}
+		if ( $revId && $revId < $stable->getId() ) {
+			// Cant confirm old stable
+			return false;
+		}
+		// Ignore passed $revId, as this mechanism always applies to latest stable revision only
+		$revId = $stable->getId();
 
 		if ( $this->isMinorRevision( $revId ) ) {
 			if ( $this->hasNoPreviousMajorRevisionDrafts( $revId ) ) {
@@ -221,10 +236,6 @@ class PageApproved implements IMechanism {
 			$revId = $this->getRecentMustReadRevision( $title->getArticleID() );
 		}
 
-		if ( !in_array( $user->getId(), $this->getAssignedUsers( $title->getArticleID() ) ) ) {
-			return false;
-		}
-
 		$arrayWithThisUsersIdIfAlreadyReadTheRevision =
 			$this->usersAlreadyReadRevision( $revId, [ $user->getId() ] );
 		if ( !empty( $arrayWithThisUsersIdIfAlreadyReadTheRevision ) ) {
@@ -232,7 +243,6 @@ class PageApproved implements IMechanism {
 		}
 
 		$this->revisionId = $revId;
-
 		return true;
 	}
 
@@ -242,6 +252,9 @@ class PageApproved implements IMechanism {
 	 * @return bool
 	 */
 	private function isMinorRevision( $revId ) {
+		if ( !$this->includeMinor() ) {
+			return false;
+		}
 		$revision = $this->revisionLookup->getRevisionById( $revId );
 		if ( $revision instanceof RevisionRecord ) {
 			return $revision->isMinor();
@@ -259,6 +272,9 @@ class PageApproved implements IMechanism {
 		$revision = $this->revisionLookup->getRevisionById( $revId );
 		if ( $revision instanceof RevisionRecord ) {
 			$previousRevision = $this->revisionLookup->getPreviousRevision( $revision );
+			if ( $this->stabilizationLookup->isStableRevision( $previousRevision ) ) {
+				return true;
+			}
 			while ( $previousRevision instanceof RevisionRecord ) {
 				if ( !$previousRevision->isMinor() ) {
 					return false;
@@ -299,7 +315,8 @@ class PageApproved implements IMechanism {
 			'bs_readconfirmation',
 			$row,
 			[ [ 'rc_rev_id', 'rc_user_id' ] ],
-			$row
+			$row,
+			__METHOD__
 		);
 
 		return true;
@@ -321,7 +338,8 @@ class PageApproved implements IMechanism {
 			return false;
 		}
 
-		if ( !$this->getRecentMustReadRevision( $title->getArticleID() ) ) {
+		$revPending = $this->getRecentMustReadRevision( $title->getArticleID() );
+		if ( !$revPending ) {
 			return false;
 		}
 
@@ -347,7 +365,7 @@ class PageApproved implements IMechanism {
 	 * @param int $pageId
 	 *
 	 * @return array
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	private function getNotifyUsers( $pageId ) {
 		$affectedUsers = $this->getAssignedUsers( $pageId );
@@ -358,17 +376,23 @@ class PageApproved implements IMechanism {
 		if ( !$revId ) {
 			return [];
 		}
-		return array_diff(
+		$ids = array_diff(
 			$affectedUsers,
 			$this->usersAlreadyReadRevision( $revId, $affectedUsers )
 		);
+
+		$notReadUsers = array_map( function ( $id ) {
+			return $this->userFactory->newFromId( $id );
+		}, $ids );
+
+		return array_filter( $notReadUsers );
 	}
 
 	/**
 	 * @param int $pageId
 	 *
 	 * @return array
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	private function getAssignedUsers( $pageId ) {
 		$title = $this->titleFactory->newFromID( $pageId );
@@ -412,11 +436,8 @@ class PageApproved implements IMechanism {
 	 * 	]
 	 */
 	private function getUserLatestReadRevisions( array $userIds ): array {
-		$conds = [];
-		if ( $userIds ) {
-			$conds = [
-				'rc_user_id' => $userIds
-			];
+		if ( !$userIds ) {
+			return [];
 		}
 
 		$res = $this->dbLoadBalancer->getConnection( DB_REPLICA )->select(
@@ -429,7 +450,7 @@ class PageApproved implements IMechanism {
 				'rev_page',
 				'rc_user_id'
 			],
-			$conds,
+			[ 'rc_user_id' => $userIds ],
 			__METHOD__,
 			[
 				'GROUP BY' => [
@@ -512,6 +533,21 @@ class PageApproved implements IMechanism {
 	}
 
 	/**
+	 * @param \MediaWiki\Title\Title $title
+	 * @param \MediaWiki\User\User $user
+	 * @return RevisionRecord|null
+	 */
+	public function getLatestRevisionToConfirm(
+		\MediaWiki\Title\Title $title, \MediaWiki\User\User $user
+	): ?RevisionRecord {
+		$latestStable = $this->stabilizationLookup->getLastStablePoint( $title );
+		if ( !$latestStable ) {
+			return null;
+		}
+		return $latestStable->getRevision();
+	}
+
+	/**
 	 * @param int $revisionId
 	 * @param array $userIds
 	 * @return array
@@ -543,16 +579,15 @@ class PageApproved implements IMechanism {
 	 * @return array
 	 */
 	private function getUserReadRevisions( $userIds = [] ) {
-		$conds = [];
-		if ( !empty( $userIds ) ) {
-			$conds['rc_user_id'] = $userIds;
+		if ( !$userIds ) {
+			return [];
 		}
 		$res = $this->dbLoadBalancer
 			->getConnection( DB_REPLICA )
 			->select(
 				'bs_readconfirmation',
 				'*',
-				$conds,
+				[ 'rc_user_id' => $userIds ],
 				__METHOD__
 			);
 
@@ -573,46 +608,45 @@ class PageApproved implements IMechanism {
 	 * @return array
 	 */
 	private function getMustReadRevisions( array $pageIds = [] ) {
+		if ( !$pageIds ) {
+			return [];
+		}
 		$recentData = [];
 
-		$conds = [];
-
-		if ( !empty( $pageIds ) ) {
-			$conds['rev_page'] = $pageIds;
+		$sqb = $this->dbLoadBalancer->getConnection( DB_REPLICA )->newSelectQueryBuilder();
+		$sqb
+			->from( 'revision', 'r' )
+			->select( [ 'MAX( r.rev_id ) as chosen_rev', 'r.rev_page' ] )
+			->join(
+				$sqb->newSubquery()->select( [ 'sp_page', 'MAX(sp_revision) AS last_stable' ] )
+					->from( 'stable_points' )
+					->groupBy( 'sp_page' ),
+				'sp',
+				'r.rev_page = sp.sp_page'
+			)
+			->where( 'r.rev_id <= sp.last_stable' )
+			->where( [ 'r.rev_page' => $pageIds ] )
+			->groupBy( 'r.rev_page' );
+		if ( !$this->includeMinor() ) {
+			$sqb->where( 'r.rev_minor_edit = 0' );
 		}
-
-		$lastStablesRes = $this->dbLoadBalancer->getConnection( DB_REPLICA )->select(
-			'stable_points',
-			[ 'sp_page', 'MAX(sp_revision) as last_stable' ],
-			[],
-			__METHOD__,
-			[ 'GROUP BY' => 'sp_page' ]
-		);
-
-		$lastStableRevisions = [];
-		foreach ( $lastStablesRes as $row ) {
-			$lastStableRevisions[$row->sp_page] = (int)$row->last_stable;
-		}
-
-		$res = $this->dbLoadBalancer->getConnection( DB_REPLICA )->select(
-			[ 'revision' ],
-			[ 'rev_id', 'rev_page', 'rev_minor_edit' ],
-			$conds,
-			__METHOD__,
-			[ 'ORDER BY' => 'rev_id DESC' ]
-		);
-
+		$res = $sqb->fetchResultSet();
 		foreach ( $res as $row ) {
 			if ( isset( $recentData[$row->rev_page] ) ) {
 				continue;
 			}
-			$lastStableForPage = $lastStableRevisions[$row->rev_page] ?? 0;
-			if ( (int)$row->rev_id <= $lastStableForPage && (int)$row->rev_minor_edit === 0 ) {
-				$recentData[$row->rev_page] = (int)$row->rev_id;
-			}
+			$recentData[$row->rev_page] = (int)$row->chosen_rev;
 		}
 
 		return $recentData;
+	}
+
+	/**
+	 * Should trigger RC on minor stable revisions
+	 * @return bool
+	 */
+	protected function includeMinor(): bool {
+		return true;
 	}
 
 }

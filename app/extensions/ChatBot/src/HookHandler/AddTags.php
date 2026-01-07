@@ -4,11 +4,12 @@ namespace ChatBot\HookHandler;
 
 use ChatBot\AdminModule\Stats;
 use ChatBot\AdminModuleFactory;
+use Exception;
 use MediaWiki\Hook\ParserFirstCallInitHook;
-use MWException;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 use OOUI\MessageWidget;
-use OutputPage;
-use Parser;
 
 class AddTags implements ParserFirstCallInitHook {
 
@@ -24,18 +25,26 @@ class AddTags implements ParserFirstCallInitHook {
 
 	/**
 	 * @param Parser $parser
+	 *
 	 * @return void
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	public function onParserFirstCallInit( $parser ) {
-		$parser->setHook( 'chatbotstats', [ $this, 'renderChatBotStats' ] );
+		$parser->setHook(
+			'chatbotstats',
+			[
+				$this,
+				'renderChatBotStats'
+			]
+		);
 	}
 
 	/**
 	 * @param string $input
 	 * @param array $args
 	 * @param Parser $parser
-	 * @param \PPFrame $frame
+	 * @param PPFrame $frame
+	 *
 	 * @return MessageWidget|string
 	 */
 	public function renderChatBotStats( $input, array $args, $parser, $frame ) {
@@ -50,6 +59,7 @@ class AddTags implements ParserFirstCallInitHook {
 		if ( $type === 'default' ) {
 			return $module->getHtml();
 		}
+
 		return $module->renderStatType( $type, false );
 	}
 }

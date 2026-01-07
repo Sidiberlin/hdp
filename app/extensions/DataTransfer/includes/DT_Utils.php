@@ -1,10 +1,12 @@
 <?php
-
 /**
  * Utility functions for the Data Transfer extension.
  *
  * @author Yaron Koren
  */
+
+use MediaWiki\Html\Html;
+
 class DTUtils {
 
 	static function printImportingMessage() {
@@ -30,7 +32,7 @@ class DTUtils {
 			$radioButtonAttrs['checked'] = true;
 		}
 		$text = "\t" . Html::input( 'pagesThatExist', $option, 'radio', $radioButtonAttrs ) .
-			"\t" . wfMessage( $optionMsg )->text() . "<br />" . "\n";
+			"\t" . wfMessage( $optionMsg )->escaped() . "<br />" . "\n";
 		$text = Html::rawElement( 'label', null, $text ) . "\n";
 		return $text;
 	}
@@ -58,8 +60,12 @@ class DTUtils {
 			]
 		) . "\n";
 		return "\t" . Html::rawElement( 'p', null,
-			wfMessage( 'dt_import_summarydesc' )->text() . "\n" .
+			wfMessage( 'dt_import_summarydesc' )->escaped() . "\n" .
 			$importSummaryText ) . "\n";
+	}
+ 
+	static function printEditTokenInput( $csrfTokenSet ) {
+		return Html::hidden( 'wpEditToken', $csrfTokenSet->getToken() );
 	}
 
 	static function printSubmitButton( $buttonMsg = null ) {

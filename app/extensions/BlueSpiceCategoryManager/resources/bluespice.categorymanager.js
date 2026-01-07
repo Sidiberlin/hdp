@@ -1,5 +1,10 @@
-Ext.onReady( function(){
-	Ext.create( 'BS.BlueSpiceCategoryManager.TreePanel', {
-		renderTo: 'bs-categorymanager-grid'
+( function ( $, bs ) {
+
+	$( () => {
+		require( './ui/CategoryManager.js' );
+
+		const manager = new bs.categoryManager.ui.CategoryManager();
+		$( '#bs-categorymanager-tree' ).append( manager.$element );
 	} );
-} );
+
+}( jQuery, blueSpice ) );

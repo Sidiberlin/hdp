@@ -5,7 +5,6 @@
 			"Bgo eiu"
 		]
 	},
-	"bs-visualeditorconnector-upload-type": "چڑھاوݨ دی قسم",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "تبدیلیاں مکاؤ",
 	"bs-visualeditor-nsm-label": "ویژوئل اڈیٹر",
 	"bs-visualeditorconnector-inspector-tab-advanced-name": "اضافی",
@@ -16,5 +15,6 @@
 	"bs-vec-table-border-none": "کوئی نئیں",
 	"bs-vec-table-border-left": "کھبے",
 	"bs-vec-table-border-right": "سجے",
-	"bs-vec-table-border-leftright": "سجے-کبھے"
+	"bs-vec-table-border-leftright": "سجے-کبھے",
+	"bs-visualeditorconnector-upload-type": "چڑھاوݨ دی قسم"
 }

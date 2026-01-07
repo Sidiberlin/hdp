@@ -4,6 +4,7 @@
 			"MITO",
 			"Pyscowicz",
 			"Rönttönen",
+			"Samoasambia",
 			"Yupik"
 		]
 	},
@@ -14,17 +15,12 @@
 	"workflows-ui-alert-action-complete": "Suorita tehtävä",
 	"workflows-ui-task-completion-action-complete": "Lähetä",
 	"workflows-ui-task-completion-action-cancel": "Peruuta",
-	"workflows-uto-activity-custom_form": "Mukautettu pyyntö",
+	"workflows-uto-activity-custom_form": "Mukautettu lomake",
 	"workflows-form-placeholder-comment": "Kommentti",
 	"workflows-form-label-vote-widget-approve": "Hyväksy",
 	"workflows-form-label-vote-widget-decline": "Hylätty",
 	"workflows-ui-alert-activity-edit-request-complete-button": "Näytä tiedot",
 	"workflows-activity-edit-request-name": "Muokkaa pyyntöä",
-	"workflows-notification-task-assign-web": "Uusi tehtävä: \"$1\" sivulle \"$2\"",
-	"workflows-notification-ended-email-body": "Työnkulku \"$2\" sivulla \"$1\" on valmis",
-	"workflows-notification-aborted-web-summary": "Työnkulku \"$2\" sivulla \"$1\" on keskeytetty",
-	"workflows-notification-aborted-email-sub": "Työnkulku \"$2\" on keskeytetty sivulla \"$1\"",
-	"workflows-notification-aborted-email-body": "Työnkulku \"$3\" sivulla \"$1\" on keskeytetty. Syy: $2",
 	"workflows-ui-workflow-overview-action-abort": "Keskeytä",
 	"workflows-ui-workflow-overview-action-restore": "Palauta",
 	"workflows-ui-workflow-overview-action-cancel": "Sulje",
@@ -55,12 +51,12 @@
 	"workflows-collect-data-form-instructions": "Ohjeet",
 	"workflows-collect-data-form-username": "Käyttäjä",
 	"workflows-collect-data-form-reportrecipient": "Lähetä raportti käyttäjälle (pätevä sähköposti tai käyttäjänimi)",
-	"workflows-notification-feedback-task-assign-web-body": "Luonut: \"$3\", ohjeet: \"$4\"",
 	"workflows-activity-history-vote-result-yes": "Hyväksytty",
 	"workflows-activity-history-vote-result-no": "Hylätty",
 	"workflows-ui-overview-details-raw-data-popup-prop": "Ominaisuus",
 	"workflows-ui-overview-details-raw-data-popup-value": "Arvo",
 	"workflows-ui-overview-details-raw-data-popup-label": "Ominaisuuden arvot",
 	"workflows-ui-action-cancel": "Peruuta",
-	"workflows-ui-trigger-field-description": "Kuvaus"
+	"workflows-ui-trigger-field-description": "Kuvaus",
+	"workflows-activity-property-username": "Käyttäjänimi"
 }

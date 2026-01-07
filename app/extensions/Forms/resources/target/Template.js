@@ -1,39 +1,36 @@
-( function ( mw, $, undefined ) {
-	mw.ext.forms.target.Template = function( form, items ) {
-		mw.ext.forms.target.Template.parent.call( this, form, items );
+( function ( mw ) {
+	mw.ext.forms.target.Template = function ( form, standalone ) {
+		mw.ext.forms.target.Template.parent.call( this, form, standalone );
 
 		this.fields = [];
 	};
 
-	OO.inheritClass( mw.ext.forms.target.Template, mw.ext.forms.target.FormTarget );
+	OO.inheritClass( mw.ext.forms.target.Template, mw.ext.forms.target.WikipageTarget );
 
-	mw.ext.forms.target.Template.prototype.init = function() {
-		this.items['target.template'].connect( this, {
+	mw.ext.forms.target.Template.prototype.init = function () {
+		this.items[ 'target.template' ].connect( this, {
 			change: 'onTemplateChange'
 		} );
-		this.onTemplateChange( this.items['target.template'].getValue() );
+		this.onTemplateChange( this.items[ 'target.template' ].getValue() );
 	};
 
-	mw.ext.forms.target.Template.prototype.getName = function() {
+	mw.ext.forms.target.Template.prototype.getName = function () {
 		return 'template';
 	};
 
-	mw.ext.forms.target.Template.prototype.getDisplayName = function() {
+	mw.ext.forms.target.Template.prototype.getDisplayName = function () {
 		return mw.message( 'forms-form-editor-prop-targettypetemplate' ).text();
 	};
 
-	mw.ext.forms.target.Template.prototype.getAdditionalFields = function() {
+	mw.ext.forms.target.Template.prototype.getAdditionalFields = function () {
+		const sa = this.standalone;
 		return [ {
-			type: 'text',
-			name: 'target.title',
-			required: true,
-			label: mw.message( 'forms-form-editor-prop-targettitle' ).text()
-		}, {
 			type: 'title',
 			name: 'target.template',
 			namespace: 10,
 			required: true,
-			label: mw.message( 'forms-form-editor-prop-targettemplate' ).text()
+			label: mw.message( 'forms-form-editor-prop-targettemplate' ).text(),
+			widget_$overlay: this.standalone.$overlay
 		}, {
 			type: 'button',
 			name: 'target.importfromtemplate',
@@ -42,43 +39,38 @@
 			classes: [ 'field-button' ],
 			widget_disabled: true,
 			listeners: {
-				click: function() {
-					if ( !this.selectedTarget instanceof mw.ext.forms.target.Template ) {
+				click: function () {
+					if ( !( this.selectedTarget instanceof mw.ext.forms.target.Template ) ) {
 						return;
 					}
-					OO.ui.confirm( mw.message( 'forms-form-editor-confirm-import-template').text() )
-						.done( function ( confirmed ) {
-							if ( confirmed ) {
-								this.selectedTarget.insertFromTemplate( this );
-							}
-						}.bind( this ) );
+					this.selectedTarget.insertFromTemplate( this, sa );
 				}
 			}
 		} ];
- 	};
+	};
 
-	mw.ext.forms.target.Template.prototype.getWidgetFields = function( config ) {
-		var values = this.form.getItem( 'items' ).getValue(),
-			filteredFields = [].concat( this.fields );
+	mw.ext.forms.target.Template.prototype.getWidgetFields = function ( config ) {
+		const filteredFields = [].concat( this.fields );
 
 		// TODO: Do not allow same field two times - hard to do
-		//filteredFields = this.filterOutUsedFields( values, filteredFields );
+		// const values = this.form.getItem( 'items' ).getValue()
+		// filteredFields = this.filterOutUsedFields( values, filteredFields );
 
 		if ( filteredFields.length === 0 ) {
 			return config;
 		}
 
-		var options = [ {
+		const options = [ {
 			data: '-',
 			label: mw.message( 'forms-form-editor-target-template-field-manual' ).text()
 		} ];
-		for ( var x = 0; x < filteredFields.length; x++ ) {
+		for ( let x = 0; x < filteredFields.length; x++ ) {
 			options.push( {
-				data: filteredFields[x]
+				data: filteredFields[ x ]
 			} );
 		}
-		for ( var i = 0; i < config.length; i++ ) {
-			if ( config[i].name === 'name' ) {
+		for ( let i = 0; i < config.length; i++ ) {
+			if ( config[ i ].name === 'name' ) {
 				config.splice( i + 1, 0, {
 					type: 'dropdown',
 					options: options,
@@ -92,12 +84,12 @@
 		return config;
 	};
 
-	mw.ext.forms.target.Template.prototype.setPropertiesInputValues = function( configs, values ) {
+	mw.ext.forms.target.Template.prototype.setPropertiesInputValues = function ( configs, values ) { // eslint-disable-line no-unused-vars
 		if ( !configs.hasOwnProperty( 'name' ) || !configs.hasOwnProperty( 'template_field' ) ) {
 			return;
 		}
 
-		configs.template_field.connect( this,  {
+		configs.template_field.connect( this, {
 			change: function ( value ) {
 				this.controlNameWidget( configs, value );
 			}
@@ -110,7 +102,7 @@
 		this.controlNameWidget( configs, configs.template_field.getValue() );
 	};
 
-	mw.ext.forms.target.Template.prototype.controlNameWidget = function( configs, value ) {
+	mw.ext.forms.target.Template.prototype.controlNameWidget = function ( configs, value ) {
 		if ( value === '-' ) {
 			configs.name.$element.parents( '.control-wrap' ).show();
 			return;
@@ -119,23 +111,23 @@
 		configs.name.setValue( value );
 	};
 
-	mw.ext.forms.target.Template.prototype.filterOutUsedFields = function( values, fields ) {
-		for ( var i = 0; i < values.length; i++ ) {
-			if ( Object.prototype.toString.call( values[i] ) !== '[object Object]' ) {
+	mw.ext.forms.target.Template.prototype.filterOutUsedFields = function ( values, fields ) {
+		for ( let i = 0; i < values.length; i++ ) {
+			if ( Object.prototype.toString.call( values[ i ] ) !== '[object Object]' ) {
 				// NOT OBJECT
 				continue;
 			}
-			for ( var key in values[i] ) {
-				if ( !values[i].hasOwnProperty( key ) ) {
+			for ( const key in values[ i ] ) {
+				if ( !values[ i ].hasOwnProperty( key ) ) {
 					continue;
 				}
 				if ( key === 'name' ) {
-					var index = fields.indexOf( values[i].name );
+					const index = fields.indexOf( values[ i ].name );
 					if ( index !== -1 ) {
 						fields.splice( index, 1 );
 					}
-				} else if ( Array.isArray( values[i][key] ) ) {
-					this.filterOutUsedFields( values[i][key], fields );
+				} else if ( Array.isArray( values[ i ][ key ] ) ) {
+					this.filterOutUsedFields( values[ i ][ key ], fields );
 				}
 			}
 		}
@@ -143,75 +135,90 @@
 		return fields;
 	};
 
-	mw.ext.forms.target.Template.prototype.getValue = function() {
+	mw.ext.forms.target.Template.prototype.getValue = function () {
 		return {
 			type: this.getName(),
-			title: this.items['target.title'].getValue(),
-			template:this. items['target.template'].getValue()
+			template: this.items[ 'target.template' ].getValue()
 		};
 	};
 
-	mw.ext.forms.target.Template.prototype.getFields = function() {
+	mw.ext.forms.target.Template.prototype.getFields = function () {
 		return this.fields;
 	};
 
-	mw.ext.forms.target.Template.prototype.setValue = function( value ) {
-		if ( value.hasOwnProperty( 'title' ) && this.items.hasOwnProperty( 'target.title' ) ) {
-			this.items['target.title'].setValue( value.title );
-		}
-
+	mw.ext.forms.target.Template.prototype.setValue = function ( value ) {
 		if ( value.hasOwnProperty( 'template' ) && this.items.hasOwnProperty( 'target.template' ) ) {
-			this.items['target.template'].setValue( value.template );
+			this.items[ 'target.template' ].setValue( value.template );
 			this.onTemplateChange( value.template );
 		}
 	};
 
-	mw.ext.forms.target.Template.prototype.onTemplateChange = function( value ) {
-		this.items['target.importfromtemplate'].setDisabled( true );
+	mw.ext.forms.target.Template.prototype.onTemplateChange = function ( value ) {
+		this.items[ 'target.importfromtemplate' ].setDisabled( true );
 		if ( !value ) {
 			return;
 		}
 		this.fields = [];
-		var title = mw.Title.makeTitle( 10, value );
+		const title = mw.Title.makeTitle( 10, value );
 		new mw.Api().get( {
 			action: 'query',
 			prop: 'revisions',
 			titles: title.getPrefixedText(),
 			rvprop: 'content',
 			formatversion: 2
-		} ).done( function( response ) {
+		} ).done( ( response ) => {
 			if ( !response.hasOwnProperty( 'query' ) ) {
 				return;
 			}
-			var page = response.query.pages[0];
+			const page = response.query.pages[ 0 ];
 			if ( !page.hasOwnProperty( 'revisions' ) || !Array.isArray( page.revisions ) ) {
 				return;
 			}
 
-			this.fields = this.parseTemplateText( page.revisions[0].content );
-			this.items['target.importfromtemplate'].setDisabled( false );
-		}.bind( this ) );
+			this.fields = this.parseTemplateText( page.revisions[ 0 ].content );
+			this.items[ 'target.importfromtemplate' ].setDisabled( false );
+		} );
 	};
 
-	mw.ext.forms.target.Template.prototype.parseTemplateText = function( text ) {
-		var regex = /{{{(.*?)(\|.*?|)}}}/gm,
-			matches = [],
-			fields = [];
-		while( matches = regex.exec( text ) ) {
-			fields.push( matches[1] );
+	mw.ext.forms.target.Template.prototype.parseTemplateText = function ( text ) {
+		const regex = /{{{(.*?)(\|.*?|)}}}/gm;
+		const fields = [];
+		let matches = [];
+		while ( matches = regex.exec( text ) ) { // eslint-disable-line no-cond-assign
+			fields.push( matches[ 1 ] );
 		}
 
 		return fields;
 	};
 
-	mw.ext.forms.target.Template.prototype.insertFromTemplate = function() {
-		var group = this.form.getItem( 'items' ),
-			value = [];
+	mw.ext.forms.target.Template.prototype.insertFromTemplate = function ( form, sa ) {
+		const group = sa.itemsForm.form.getItem( 'items' ),
+			value = [],
+			processed = [];
+		for ( const itemId in group.items ) {
+			const item = group.items[ itemId ];
+			const itemName = item.values.name || null;
+			if ( !itemName ) {
+				value.push( item.values );
+				continue;
+			}
+			if ( this.fields.indexOf( itemName ) === -1 ) {
+				// Field no longer exists in template
+				continue;
+			}
+			// Already exists
+			value.push( item.values );
+			processed.push( itemName );
+		}
 		group.clearElements();
-		for( var i = 0; i < this.fields.length; i++ ) {
+		for ( let i = 0; i < this.fields.length; i++ ) {
+			if ( processed.indexOf( this.fields[ i ] ) !== -1 ) {
+				// Field already exists
+				continue;
+			}
 			value.push( {
 				type: 'text',
-				name: this.fields[i]
+				name: this.fields[ i ]
 			} );
 		}
 
@@ -219,4 +226,4 @@
 	};
 
 	mw.ext.forms.registry.Target.register( 'template', mw.ext.forms.target.Template );
-} )( mediaWiki, jQuery );
+}( mediaWiki ) );

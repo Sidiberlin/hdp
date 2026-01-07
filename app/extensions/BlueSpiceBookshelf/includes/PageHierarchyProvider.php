@@ -2,7 +2,11 @@
 
 use BlueSpice\Bookshelf\ILineProcessor;
 use BlueSpice\ExtensionAttributeBasedRegistry;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use Wikimedia\ObjectCache\BagOStuff;
 
 /**
  * Provide book hierarchy for a page
@@ -41,7 +45,7 @@ class PageHierarchyProvider {
 			);
 		}
 
-		$this->cache = ObjectCache::getLocalClusterInstance();
+		$this->cache = MediaWikiServices::getInstance()->getObjectCacheFactory()->getLocalClusterInstance();
 		$cacheKey = $this->getCacheKey(
 			$this->oSourceArticleTitle,
 			__METHOD__,
@@ -324,7 +328,7 @@ class PageHierarchyProvider {
 	 */
 	public function getNumberFor( $sArticleTitle, $recurseFlag = false ) {
 		$cacheKey = $this->getCacheKey(
-			\Title::newFromText( $sArticleTitle ),
+			Title::newFromText( $sArticleTitle ),
 			__METHOD__
 		);
 		$number = $this->cache->get( $cacheKey );
@@ -494,10 +498,7 @@ class PageHierarchyProvider {
 				] );
 				$sLink = $linkHelper->getWikitext();
 
-				// Make sure that changes to the 'display-title' are shown on
-				// next page load. This should already be done by
-				// 'BsCore::addTemplateLinkDependencyByText'
-				// in 'Bookshelf:onBookshelfTag' but there it doesn't work :(
+				// Make sure that changes to the 'display-title' are shown on next page load.
 				$wikiPageFactory->newFromTitle( $oArticleTitle )->doPurge();
 			}
 
@@ -530,15 +531,16 @@ class PageHierarchyProvider {
 			do {
 				if ( isset( $sText[ $iDepth ] ) && $sText[ $iDepth ] == $this->sIndentChar ) {
 					$iDepth++;
-				} else { $bIsIndentCharacter = false;
+				} else {
+					$bIsIndentCharacter = false;
 				}
-			}
-			while ( $bIsIndentCharacter );
+			} while ( $bIsIndentCharacter );
 			$sText = substr( $sText, $iDepth );
 
 			// Skip line processing if empty
 			$sText = trim( $sText );
-			if ( empty( $sText ) ) { continue;
+			if ( empty( $sText ) ) {
+				continue;
 			}
 
 			if ( $iDepth > $iLevel ) {
@@ -581,7 +583,7 @@ class PageHierarchyProvider {
 
 	/**
 	 *
-	 * @param \Title $title
+	 * @param Title $title
 	 * @param string $method
 	 * @param array $aParams
 	 * @return string

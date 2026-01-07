@@ -2,15 +2,18 @@
 
 namespace BS\ExtendedSearch;
 
-use ExtensionRegistry;
-use HashConfig;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Config\HashConfig;
+use MediaWiki\Config\MultiConfig;
+use MediaWiki\Registration\ExtensionRegistry;
 use UnexpectedValueException;
 use Wikimedia\ObjectFactory\ObjectFactory;
 
 class SourceFactory {
 
 	/**
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $config;
 
@@ -42,10 +45,10 @@ class SourceFactory {
 	protected $objectFactory = null;
 
 	/**
-	 * @param \Config $config
+	 * @param Config $config
 	 * @param ObjectFactory $objectFactory
 	 */
-	public function __construct( \Config $config, ObjectFactory $objectFactory ) {
+	public function __construct( Config $config, ObjectFactory $objectFactory ) {
 		$this->config = $config;
 		$this->objectFactory = $objectFactory;
 	}
@@ -80,7 +83,7 @@ class SourceFactory {
 			throw new UnexpectedValueException( "Factory for $sourceKey returned invalid source object!" );
 		}
 		$source->setBackend( $backend );
-		$source->setSourceConfig( new \MultiConfig( [
+		$source->setSourceConfig( new MultiConfig( [
 			$this->config,
 			new HashConfig( $this->configs[$sourceKey] )
 		] ) );
@@ -124,7 +127,7 @@ class SourceFactory {
 
 	/**
 	 * @param string $sourceKey
-	 * @throws \ConfigException
+	 * @throws ConfigException
 	 */
 	protected function assertSourceConfig( $sourceKey ) {
 		if ( isset( $this->configs[$sourceKey] ) ) {

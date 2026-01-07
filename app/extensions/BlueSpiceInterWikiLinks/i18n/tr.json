@@ -30,7 +30,6 @@
 	"bs-interwikilinks-insertlink-labelprefix": "Önek",
 	"bs-interwikilink-select-a-prefix": "Önek seç",
 	"bs-interwikilinks-link-edited": "Vikiarası bağlantısı düzenlendi",
-	"apihelp-bs-interwikilinks-tasks-description": "InterWikiLinks uzantılar için görevler sağlar.",
 	"apihelp-bs-interwikilinks-tasks-summary": "InterWikiLinks uzantısı için görevler sağlar.",
 	"action-interwikilinks-viewspecialpage": "\"{{int:bs-interwikilinks-label}}\" özel sayfayı görüntüle",
 	"interwikilinks": "Vikiarası bağlantılar",

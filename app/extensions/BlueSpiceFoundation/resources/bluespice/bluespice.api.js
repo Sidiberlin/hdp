@@ -51,12 +51,12 @@
 			loadingIndicator: true
 		}, cfg );
 
-		var $dfd = $.Deferred();
+		const $dfd = $.Deferred();
 		if ( cfg.loadingIndicator ) {
 			bs.loadIndicator.pushPending();
 		}
 
-		var api = new mw.Api();
+		const api = new mw.Api();
 		api.postWithToken( cfg.token, {
 			action: cfg.useService ? 'bs-task' : 'bs-' + module + '-tasks',
 			task: task,
@@ -114,12 +114,12 @@
 			loadingIndicator: true
 		}, cfg );
 
-		var $dfd = $.Deferred();
+		const $dfd = $.Deferred();
 		if ( cfg.loadingIndicator ) {
 			bs.loadIndicator.pushPending();
 		}
 
-		var api = new mw.Api();
+		const api = new mw.Api();
 		api.postWithToken( cfg.token, {
 			action: 'bs-' + module + '-store',
 			context: JSON.stringify(
@@ -165,7 +165,7 @@
 	}
 
 	function _configRemote( value, func, context ) {
-		var api = new mw.Api(),
+		const api = new mw.Api(),
 			dfd = $.Deferred();
 
 		api.get( {
@@ -183,7 +183,7 @@
 				dfd.resolve( response.payload );
 				return;
 			}
-			var error = response.hasOwnProperty( 'error' ) ? response.error : '';
+			const error = response.hasOwnProperty( 'error' ) ? response.error : '';
 			dfd.reject( error );
 		} ).fail( function ( error ) {
 			dfd.reject( error );
@@ -197,7 +197,7 @@
 			// Delay notification to ensure it is properly announced by screen readers
 			// The confirmation dialog may prevent announcement, so a short delay resolves this
 			setTimeout( () => {
-				mw.notify( response.message, { title: mw.msg( 'bs-extjs-title-success' ) } );
+				mw.notify( response.message, { title: mw.msg( 'bs-title-success' ) } );
 			}, 500 );
 			$dfd.resolve( response );
 		} else {
@@ -206,9 +206,9 @@
 	}
 
 	function _msgFailure( response, module, task, $dfd, cfg ) {
-		var message = response.message || '';
+		let message = response.message || '';
 		if ( response.errors && response.errors.length > 0 ) {
-			for ( var i in response.errors ) {
+			for ( const i in response.errors ) {
 				if ( typeof ( response.errors[ i ].html ) === 'string' ) {
 					message = message + '<br />' + response.errors[ i ].html;
 					continue;
@@ -235,7 +235,7 @@
 			bs.util.alert(
 				module + '-' + task + '-fail',
 				{
-					titleMsg: 'bs-extjs-title-warning',
+					titleMsg: 'bs-title-warning',
 					text: message
 				},
 				{
@@ -251,7 +251,7 @@
 
 	function _makeTaskUrl( module, task, data, additionalParams ) {
 
-		var params = $.extend( {
+		const params = $.extend( {
 			task: task,
 			taskData: JSON.stringify( data ),
 			token: mw.user.tokens.get( 'csrfToken' )
@@ -265,7 +265,7 @@
 	}
 
 	function _makeUrl( action, params, sendContext ) {
-		var baseParams = {
+		const baseParams = {
 			action: action
 		};
 
@@ -273,7 +273,7 @@
 			baseParams.context = JSON.stringify( _getContext() );
 		}
 
-		var script = mw.util.wikiScript( 'api' ),
+		const script = mw.util.wikiScript( 'api' ),
 			callParams = params || {};
 
 		return script + '?' + $.param(

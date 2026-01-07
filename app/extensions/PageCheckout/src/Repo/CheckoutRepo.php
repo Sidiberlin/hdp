@@ -3,22 +3,28 @@
 namespace MediaWiki\Extension\PageCheckout\Repo;
 
 use MediaWiki\Extension\PageCheckout\Entity\CheckoutEntity;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWException;
-use Title;
-use User;
+use ObjectCacheFactory;
 use Wikimedia\Rdbms\DBError;
-use Wikimedia\Rdbms\ILoadBalancer;
+use Wikimedia\Rdbms\IConnectionProvider;
 
 class CheckoutRepo {
-	/** @var ILoadBalancer */
-	private $loadBalancer;
+
+	/** @var IConnectionProvider */
+	private $connectionProvider;
+
+	/** @var ObjectCacheFactory */
+	private $objectCacheFactory;
 
 	/**
-	 * @param ILoadBalancer $loadBalancer
-	 *
+	 * @param IConnectionProvider $connectionProvider
+	 * @param ObjectCacheFactory $objectCacheFactory
 	 */
-	public function __construct( ILoadBalancer $loadBalancer ) {
-		$this->loadBalancer = $loadBalancer;
+	public function __construct( IConnectionProvider $connectionProvider, ObjectCacheFactory $objectCacheFactory ) {
+		$this->connectionProvider = $connectionProvider;
+		$this->objectCacheFactory = $objectCacheFactory;
 	}
 
 	/**
@@ -29,15 +35,23 @@ class CheckoutRepo {
 		if ( !$title->exists() ) {
 			return null;
 		}
-		$entities = $this->get( [
-			'pcl_page_id' => $title->getArticleID()
-		] );
+		$oc = $this->objectCacheFactory->getLocalServerInstance();
+		$cacheKey = $oc->makeKey( 'pagecheckout-page', $title->getArticleID() );
+		return $oc->getWithSetCallback(
+			$cacheKey,
+			$oc::TTL_PROC_SHORT,
+			function () use ( $title ) {
+				$entities = $this->get( [
+					'pcl_page_id' => $title->getArticleID()
+				] );
 
-		if ( !empty( $entities ) ) {
-			return $entities[0];
-		}
+				if ( !empty( $entities ) ) {
+					return $entities[0];
+				}
 
-		return null;
+				return null;
+			}
+		);
 	}
 
 	/**
@@ -48,9 +62,16 @@ class CheckoutRepo {
 		if ( !$user->isRegistered() ) {
 			return [];
 		}
-		return $this->get( [
-			'pcl_user_id' => $user->getId()
-		] );
+		$oc = $this->objectCacheFactory->getLocalServerInstance();
+		return $oc->getWithSetCallback(
+			$oc->makeKey( 'pagecheckout-user-checkouts-', $user->getId() ),
+			$oc::TTL_PROC_SHORT,
+			function () use ( $user ) {
+				return $this->get( [
+					'pcl_user_id' => $user->getId()
+				] );
+			}
+		);
 	}
 
 	/**
@@ -58,7 +79,7 @@ class CheckoutRepo {
 	 * @return CheckoutEntity
 	 */
 	public function save( CheckoutEntity $entity ): CheckoutEntity {
-		$db = $this->loadBalancer->getConnection( DB_PRIMARY );
+		$dbw = $this->connectionProvider->getPrimaryDatabase();
 
 		$data = [
 			'pcl_page_id' => $entity->getTitle()->getArticleID(),
@@ -66,25 +87,29 @@ class CheckoutRepo {
 			'pcl_payload' => json_encode( $entity->getPayload() ),
 		];
 
-		$res = $db->insert(
+		$res = $dbw->insert(
 			'page_checkout_locks',
 			$data,
 			__METHOD__
 		);
 		if ( $res ) {
-			$id = $db->insertId();
+			$id = $dbw->insertId();
 		}
 
 		if ( !$res ) {
-			throw new DBError( $db, 'pagecheckout-error-db-insert' );
+			throw new DBError( $dbw, 'pagecheckout-error-db-insert' );
 		}
 
 		$inserted = $this->get( [ 'pcl_id' => $id ] );
 		if ( empty( $inserted ) ) {
-			throw new DBError( $db, 'pagecheckout-error-db-retrieve-inserted' );
+			throw new DBError( $dbw, 'pagecheckout-error-db-retrieve-inserted' );
 		}
 
-		return array_shift( $inserted );
+		$entityToReturn = array_shift( $inserted );
+		if ( $entityToReturn instanceof CheckoutEntity ) {
+			$this->invalidateCacheForEntity( $entityToReturn );
+		}
+		return $entityToReturn;
 	}
 
 	/**
@@ -96,9 +121,23 @@ class CheckoutRepo {
 		if ( !$entity->getId() ) {
 			throw new MWException( 'pagecheckout-error-no-checkout-id' );
 		}
+		$dbw = $this->connectionProvider->getPrimaryDatabase();
+		$res = $dbw->delete( 'page_checkout_locks', [ 'pcl_id' => $entity->getId() ], __METHOD__ );
+		$this->invalidateCacheForEntity( $entity );
 
-		$db = $this->loadBalancer->getConnection( DB_PRIMARY );
-		return $db->delete( 'page_checkout_locks', [ 'pcl_id' => $entity->getId() ], __METHOD__ );
+		return $res;
+	}
+
+	/**
+	 * @param CheckoutEntity $entity
+	 * @return void
+	 */
+	private function invalidateCacheForEntity( CheckoutEntity $entity ) {
+		$oc = $this->objectCacheFactory->getLocalServerInstance();
+		$userCC = $oc->makeKey( 'pagecheckout-user-checkouts-', $entity->getUser()->getId() );
+		$oc->delete( $userCC );
+		$pageCC = $oc->makeKey( 'pagecheckout-page', $entity->getTitle()->getArticleID() );
+		$oc->delete( $pageCC );
 	}
 
 	/**
@@ -106,18 +145,29 @@ class CheckoutRepo {
 	 * @return array
 	 */
 	private function get( $conds = [] ) {
-		$db = $this->loadBalancer->getConnection( DB_REPLICA );
 		$conds = array_merge( $conds, [
 			'pcl_page_id = page_id',
 			'pcl_user_id = user_id'
 		] );
 
-		$res = $db->select(
-			[ 'pcl' => 'page_checkout_locks', 'p' => 'page', 'u' => 'user' ],
-			[ 'pcl.*', 'p.page_id', 'p.page_title', 'p.page_namespace', 'u.*' ],
-			$conds,
-			__METHOD__
-		);
+		$dbr = $this->connectionProvider->getReplicaDatabase();
+
+		$res = $dbr->newSelectQueryBuilder()
+			->tables( [
+				'page_checkout_locks',
+				'page',
+				'user'
+			] )
+			->fields( [
+				'pcl_id',
+				'pcl_payload',
+				'page_namespace',
+				'page_title',
+				'user_id'
+			] )
+			->where( $conds )
+			->caller( __METHOD__ )
+			->fetchResultSet();
 
 		$entities = [];
 		foreach ( $res as $row ) {

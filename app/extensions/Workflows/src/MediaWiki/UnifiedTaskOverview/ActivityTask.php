@@ -6,11 +6,11 @@ use Exception;
 use MediaWiki\Extension\UnifiedTaskOverview\ITaskDescriptor;
 use MediaWiki\Extension\Workflows\UserInteractiveActivity;
 use MediaWiki\Extension\Workflows\Workflow;
+use MediaWiki\Language\RawMessage;
 use MediaWiki\MediaWikiServices;
-use Message;
-use PageProps;
-use RawMessage;
-use Title;
+use MediaWiki\Message\Message;
+use MediaWiki\Page\PageProps;
+use MediaWiki\Title\Title;
 
 class ActivityTask implements ITaskDescriptor {
 	/** @var UserInteractiveActivity */
@@ -89,7 +89,7 @@ class ActivityTask implements ITaskDescriptor {
 		// workflows-uto-activity-group_vote
 		// workflows-uto-activity-user_feedback
 		// workflows-uto-activity-group_feedback
-		return \Message::newFromKey(
+		return Message::newFromKey(
 			'workflows-uto-activity-' . $this->getActivityType()
 		);
 	}

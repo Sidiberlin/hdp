@@ -3,16 +3,16 @@
 namespace MediaWiki\Extension\ContentStabilization\Integration\AlertProvider;
 
 use BlueSpice\AlertProviderBase;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\ContentStabilization\StableView;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\TitleFactory;
 use OOUI\ButtonWidget;
 use OOUI\HorizontalLayout;
 use OOUI\LabelWidget;
 use OOUI\Layout;
 use SkinTemplate;
-use TitleFactory;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class RevisionState extends AlertProviderBase {

@@ -5,8 +5,19 @@ namespace BlueSpice\CategoryManager\Statistics\Report;
 use BlueSpice\ExtendedStatistics\ClientReportHandler;
 use BlueSpice\ExtendedStatistics\IReport;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\TitleFactory;
 
 class CategoryPages implements IReport {
+
+	/** @var TitleFactory */
+	private TitleFactory $titleFactory;
+
+	/**
+	 * @param TitleFactory $titleFactory
+	 */
+	public function __construct( TitleFactory $titleFactory ) {
+		$this->titleFactory = $titleFactory;
+	}
 
 	/**
 	 * @inheritDoc
@@ -20,13 +31,17 @@ class CategoryPages implements IReport {
 	 */
 	public function getClientData( $snapshots, array $filterData, $limit = 20 ): array {
 		$namespace = $this->getNamespace( $filterData );
-		$categories = $filterData['categories'] ?? [];
-		if ( empty( $categories ) ) {
+		if ( empty( $filterData['categories'] ) ) {
 			return [];
 		}
-		$categories = array_map( static function ( $cat ) {
-			return str_replace( ' ', '_', $cat );
-		}, $categories );
+
+		$categories = [];
+		foreach ( $filterData['categories'] as $category ) {
+			$title = $this->titleFactory->newFromDBkey( $category );
+			if ( $title ) {
+				$categories[] = $title->getDBkey();
+			}
+		}
 
 		$processed = [];
 		foreach ( $snapshots as $snapshot ) {

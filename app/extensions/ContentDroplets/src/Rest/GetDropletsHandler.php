@@ -7,9 +7,9 @@ namespace MediaWiki\Extension\ContentDroplets\Rest;
 use MediaWiki\Extension\ContentDroplets\DropletProvider;
 use MediaWiki\Extension\ContentDroplets\DropletSerializer;
 use MediaWiki\Extension\ContentDroplets\IDropletDescription;
+use MediaWiki\Message\Message;
 use MediaWiki\Rest\Response;
 use MediaWiki\Rest\SimpleHandler;
-use Message;
 
 class GetDropletsHandler extends SimpleHandler {
 

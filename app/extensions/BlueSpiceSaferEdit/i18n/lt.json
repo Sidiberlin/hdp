@@ -7,8 +7,5 @@
 	},
 	"bs-saferedit-desc": "Pateikia įspėjimus, jei kiti naudotojai redaguoja puslapį",
 	"bs-saferedit-user-editing": "$1 {{PLURAL:$2|naudotojas|naudotojai}} {{GENDER:$1|redaguoja}} puslapį",
-	"bs-saferedit-someone-editing": "Puslapis yra redaguojamas",
-	"bs-saferedit-pref-interval": "Atkūrimo versijos intervalas:",
-	"bs-saferedit-pref-shownameofeditinguser": "Rodyti dabartinio redaktoriaus vardą",
-	"bs-saferedit-pref-shownameofeditinguser-help": "Rodo naudotojus, kurie šiuo metu redaguoja puslapį, kaip užuominą puslapio viršuje."
+	"bs-saferedit-someone-editing": "Puslapis yra redaguojamas"
 }

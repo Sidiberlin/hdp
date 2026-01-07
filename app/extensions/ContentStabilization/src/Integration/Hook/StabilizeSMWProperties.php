@@ -4,13 +4,13 @@
 
 namespace MediaWiki\Extension\ContentStabilization\Integration\Hook;
 
-use Config;
 use File;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\ContentStabilization\StableFilePoint;
 use MediaWiki\Extension\ContentStabilization\StablePoint;
 use MediaWiki\Revision\RevisionRecord;
-use Title;
+use MediaWiki\Title\Title;
 
 class StabilizeSMWProperties {
 	/** @var StabilizationLookup */
@@ -108,7 +108,7 @@ class StabilizeSMWProperties {
 	 * @return void
 	 */
 	private function assertStable( Title $title, ?int $revId = null ) {
-		$stable = $this->lookup->getLastStablePoint( $title->toPageIdentity(), $revId );
+		$stable = $this->lookup->getLastRawStablePoint( $title->toPageIdentity(), $revId );
 		if ( !$stable ) {
 			$this->stable = null;
 			return;

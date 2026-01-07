@@ -3,10 +3,10 @@
 namespace MediaWiki\Extension\AIEditingAssistant\Provider;
 
 use MediaWiki\Http\HttpRequestFactory;
+use MediaWiki\Message\Message;
 use MediaWiki\Session\Session;
-use Message;
+use MediaWiki\Status\Status;
 use RuntimeException;
-use Status;
 
 class Ollama implements IProvider {
 
@@ -19,6 +19,15 @@ class Ollama implements IProvider {
 	 * @var string
 	 */
 	private $url;
+
+	/** @var string */
+	private string $model = 'llama3';
+
+	/** @var string|null */
+	private ?string $secret = null;
+
+	/** @var string */
+	private string $endpoint = 'api/chat';
 
 	/**
 	 * @var Session
@@ -36,7 +45,16 @@ class Ollama implements IProvider {
 	 * @inheritDoc
 	 */
 	public function setConnectionData( string $connection ) {
-		$this->url = $connection;
+		$connectionData = json_decode( $connection, true );
+		if ( isset( $connectionData['legacy'] ) ) {
+			$this->url = $connectionData['legacy'];
+			return;
+		}
+		$this->url = $connectionData['url'] ?? '';
+		$this->endpoint = $connectionData['endpoint'] ?? $this->endpoint;
+		$this->endpoint = ltrim( $this->endpoint, '/' );
+		$this->model = $connectionData['model'] ?? $this->model;
+		$this->secret = $connectionData['secret'] ?? null;
 	}
 
 	/**
@@ -75,16 +93,18 @@ class Ollama implements IProvider {
 	 * @return Status
 	 */
 	private function getResponse( array $messages ): Status {
-		error_log( $this->url . '/api/chat' );
 		$req = $this->httpRequestFactory->create(
-			$this->url . '/api/chat',
+			$this->url . '/' . $this->endpoint,
 			[ 'method' => 'POST', 'postData' => json_encode( [
-				'model' => 'llama3',
+				'model' => $this->model,
 				'messages' => $messages,
 				'stream' => false
 			] ) ]
 		);
 		$req->setHeader( 'Content-Type', 'application/json' );
+		if ( $this->secret ) {
+			$req->setHeader( 'Authorization', 'Bearer ' . $this->secret );
+		}
 		$res = $req->execute();
 		if ( !$res->isOK() ) {
 			return Status::newFatal( 'aieditingassistant-provider-failure', $res->getMessage() );
@@ -104,7 +124,7 @@ class Ollama implements IProvider {
 	 * @return array
 	 */
 	private function getInitializationMessage( string $text ): array {
-		$prompt = Message::newFromKey( 'aieditingassistant-initialization-command' )->params( $text )->plain();
+		$prompt = Message::newFromKey( 'aieditingassistant-initialization-command' )->params( $text )->text();
 		return [ 'role' => 'system', 'content' => $prompt ];
 	}
 

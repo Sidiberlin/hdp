@@ -4,7 +4,7 @@ declare( strict_types=1 );
 
 namespace MediaWiki\Extension\NotifyMe\Event;
 
-use Message;
+use MediaWiki\Message\Message;
 
 class UserGroupRemovedEvent extends UserGroupAddedEvent {
 	/**

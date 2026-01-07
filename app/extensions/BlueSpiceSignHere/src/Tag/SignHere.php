@@ -2,6 +2,10 @@
 
 namespace BlueSpice\SignHere\Tag;
 
+use MediaWiki\Html\Html;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+
 class SignHere {
 	/** @var array */
 	protected static $counters = [];
@@ -9,8 +13,8 @@ class SignHere {
 	/**
 	 * @param string $input
 	 * @param array $args
-	 * @param \Parser $parser
-	 * @param \PPFrame $frame
+	 * @param Parser $parser
+	 * @param PPFrame $frame
 	 * @return string
 	 */
 	public function render( $input, $args, $parser, $frame ) {
@@ -20,7 +24,7 @@ class SignHere {
 		$parser->getOutput()->addModuleStyles( [ 'ext.blueSpice.signHere.styles' ] );
 		$parser->getOutput()->addModules( [ 'ext.blueSpice.signHere' ] );
 
-		$html = \Html::rawElement(
+		$html = Html::rawElement(
 			'div',
 			[
 				'class' => 'bs-signhere',
@@ -30,13 +34,13 @@ class SignHere {
 				'role' => "button",
 				'aria-label' => wfMessage( 'bs-signhere-arialabel' )->plain()
 			],
-			\Html::element(
+			Html::element(
 				'i',
 				[
 					'class' => 'bs-signhere-icon'
 				]
 			) . wfMessage( 'bs-signhere-signatures' )->escaped() .
-			\Html::rawElement(
+			Html::rawElement(
 				'div',
 				[
 					'class' => 'signhere-alert-message',

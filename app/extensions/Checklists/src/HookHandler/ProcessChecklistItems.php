@@ -6,24 +6,25 @@ use ManualLogEntry;
 use MediaWiki\Extension\Checklists\ChecklistManager;
 use MediaWiki\Hook\ParserPreSaveTransformCompleteHook;
 use MediaWiki\HookContainer\HookContainer;
-use MediaWiki\Page\Hook\ArticleUndeleteHook;
+use MediaWiki\Html\Html;
 use MediaWiki\Page\Hook\PageDeleteCompleteHook;
 use MediaWiki\Page\Hook\PageDeleteHook;
+use MediaWiki\Page\Hook\PageUndeleteCompleteHook;
 use MediaWiki\Page\PageReference;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Storage\Hook\PageSaveCompleteHook;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 use StatusValue;
-use Title;
 
 class ProcessChecklistItems implements
 	ParserPreSaveTransformCompleteHook,
 	PageSaveCompleteHook,
 	PageDeleteCompleteHook,
-	ArticleUndeleteHook,
+	PageUndeleteCompleteHook,
 	PageDeleteHook
 {
 	private const UNSUPPORTED_NAMESPACES = [ NS_MEDIAWIKI, NS_FILE, NS_TEMPLATE ];
@@ -72,7 +73,7 @@ class ProcessChecklistItems implements
 	 */
 	private function getItemHtml( array $item ): string {
 		if ( $item['type'] === 'check' ) {
-			return \Html::element(
+			return Html::element(
 				'p',
 				[
 					'data-value' => $item['value'] ? '1' : '0',
@@ -149,7 +150,17 @@ class ProcessChecklistItems implements
 	/**
 	 * @inheritDoc
 	 */
-	public function onArticleUndelete( $title, $create, $comment, $oldPageId, $restoredPages ) {
+	public function onPageUndeleteComplete(
+		ProperPageIdentity $page,
+		Authority $restorer,
+		string $reason,
+		RevisionRecord $restoredRev,
+		ManualLogEntry $logEntry,
+		int $restoredRevisionCount,
+		bool $created,
+		array $restoredPageIds
+	): void {
+		$title = Title::newFromPageIdentity( $page );
 		if ( !$this->isPageSuitable( $title ) ) {
 			return;
 		}

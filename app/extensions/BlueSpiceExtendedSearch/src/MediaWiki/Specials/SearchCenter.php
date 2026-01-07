@@ -5,11 +5,13 @@ namespace BS\ExtendedSearch\MediaWiki\Specials;
 use BS\ExtendedSearch\Backend;
 use BS\ExtendedSearch\Lookup;
 use BS\ExtendedSearch\Plugin\IFormattingModifier;
+use BS\ExtendedSearch\PluginManager;
 use BS\ExtendedSearch\Source\GenericSource;
-use FormatJson;
+use MediaWiki\Html\Html;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
-use SpecialPage;
-use Title;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Title\Title;
 
 class SearchCenter extends SpecialPage {
 
@@ -62,6 +64,9 @@ class SearchCenter extends SpecialPage {
 		$localBackend = $services->getService( 'BSExtendedSearchBackend' );
 		$defaultResultStructure = $localBackend->getDefaultResultStructure();
 
+		/** @var PluginManager $pluginManager */
+		$pluginManager = $services->getService( 'BSExtendedSearch.PluginManager' );
+
 		$base = new GenericSource( $services->getObjectFactory() );
 		$sortableFields = $base->getMappingProvider()->getSortableFields();
 		// Add _score manually, as its not a real field
@@ -72,7 +77,7 @@ class SearchCenter extends SpecialPage {
 
 		foreach ( $localBackend->getSources() as $source ) {
 			$resultStructure = $source->getFormatter()->getResultStructure( $defaultResultStructure );
-			$plugins = $localBackend->getPluginsForInterface( IFormattingModifier::class );
+			$plugins = $pluginManager->getPluginsImplementing( IFormattingModifier::class );
 			/** @var IFormattingModifier $plugin */
 			foreach ( $plugins as $plugin ) {
 				$plugin->modifyResultStructure( $resultStructure, $source );
@@ -86,9 +91,9 @@ class SearchCenter extends SpecialPage {
 		}
 
 		$out->enableOOUI();
-		$out->addHTML( \Html::element( 'div', [ 'id' => 'bs-es-tools' ] ) );
-		$out->addHTML( \Html::element( 'div', [ 'id' => 'bs-es-alt-search' ] ) );
-		$out->addHTML( \Html::element( 'div', [ 'id' => 'bs-es-results' ] ) );
+		$out->addHTML( Html::element( 'div', [ 'id' => 'bs-es-tools' ] ) );
+		$out->addHTML( Html::element( 'div', [ 'id' => 'bs-es-alt-search' ] ) );
+		$out->addHTML( Html::element( 'div', [ 'id' => 'bs-es-results' ] ) );
 		$out->addJsConfigVars( 'bsgLookupConfig', FormatJson::encode( $lookup ) );
 
 		// Structure of the result displayed in UI, decorated by each source

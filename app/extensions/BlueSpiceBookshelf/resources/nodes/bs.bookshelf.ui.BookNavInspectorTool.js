@@ -1,4 +1,4 @@
-( function( mw, $, d, bs ) {
+( function ( mw, $, d, bs ) {
 	bs.util.registerNamespace( 'bs.bookshelf.ui' );
 
 	bs.bookshelf.ui.BookNavInspectorTool = function BsBookshelfUiBookNavInspectorTool( toolGroup, config ) {
@@ -21,4 +21,4 @@
 		)
 	);
 
-})( mediaWiki, jQuery, document, blueSpice );
+}( mediaWiki, jQuery, document, blueSpice ) );

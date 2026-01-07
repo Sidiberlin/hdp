@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface\Component;
 
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\IBreadCrumb;
 
 class SimpleBreadCrumb extends ComponentBase implements IBreadCrumb {

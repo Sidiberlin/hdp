@@ -21,12 +21,12 @@ ext.enhancedUI.data.PagesTree = function ( cfg ) {
 OO.inheritClass( ext.enhancedUI.data.PagesTree, OOJSPlus.ui.data.Tree );
 
 ext.enhancedUI.data.PagesTree.prototype.build = function ( data, lvl ) {
-	var nodes = {};
+	const nodes = {};
 	lvl = lvl || 0;
-	for ( var i = 0; i < data.length; i++ ) {
-		var item = data[ i ],
-			isLeaf = true,
-			expanded = false;
+	for ( let i = 0; i < data.length; i++ ) {
+		const item = data[ i ];
+		let isLeaf = true;
+		let expanded = false;
 
 		// eslint-disable-next-line no-prototype-builtins
 		if ( ( item.hasOwnProperty( 'leaf' ) && item.leaf === false ) &&
@@ -36,7 +36,7 @@ ext.enhancedUI.data.PagesTree.prototype.build = function ( data, lvl ) {
 			isLeaf = false;
 			expanded = true;
 		}
-		var widget = this.createItemWidget( item, lvl, isLeaf,
+		const widget = this.createItemWidget( item, lvl, isLeaf,
 			this.idGenerator.generate(), expanded );
 		widget.connect( this, {
 			selected: function ( element ) {
@@ -57,7 +57,7 @@ ext.enhancedUI.data.PagesTree.prototype.build = function ( data, lvl ) {
 
 ext.enhancedUI.data.PagesTree.prototype.createItemWidget = function (
 	item, lvl, isLeaf, labelledby, expanded ) {
-	return new ext.enhancedUI.data.PagesTreeItem( $.extend( {}, {
+	return new ext.enhancedUI.data.PagesTreeItem( Object.assign( {}, {
 		level: lvl,
 		leaf: isLeaf,
 		tree: this,
@@ -68,32 +68,32 @@ ext.enhancedUI.data.PagesTree.prototype.createItemWidget = function (
 };
 
 ext.enhancedUI.data.PagesTree.prototype.expandNode = function ( name ) {
-	var node = this.getItem( name );
+	const node = this.getItem( name );
 	if ( !node ) {
 		return;
 	}
 
-	var $element = node.$element.find( '> ul.tree-node-list' );
+	const $element = node.$element.find( '> ul.tree-node-list' );
 	if ( $( $element[ 0 ] ).children().length === 0 ) {
-		this.store.getSubpages( node.elementId ).done( function ( result ) {
-			var data = this.prepareData( result );
-			var nodes = this.build( data, node.level + 1 );
+		this.store.getSubpages( node.elementId ).done( ( result ) => {
+			const data = this.prepareData( result );
+			const nodes = this.build( data, node.level + 1 );
 
-			for ( var nodeElement in nodes ) {
+			for ( const nodeElement in nodes ) {
 				// eslint-disable-next-line no-prototype-builtins
 				if ( !nodes.hasOwnProperty( nodeElement ) ) {
 					continue;
 				}
-				var $li = nodes[ nodeElement ].widget.$element;
-				var $labelEl = $( $li ).find( '> div > .oojsplus-data-tree-label' );
-				var itemId = $labelEl.attr( 'id' );
+				const $li = nodes[ nodeElement ].widget.$element;
+				const $labelEl = $( $li ).find( '> div > .oojsplus-data-tree-label' );
+				const itemId = $labelEl.attr( 'id' );
 				$li.append( this.doDraw( nodes[ nodeElement ].children || {},
 					nodes[ nodeElement ].widget, itemId, this.expanded ) );
 				$( $element ).append( $li );
 				this.reEvaluateParent( nodeElement );
 				$( $element ).show();
 			}
-		}.bind( this ) );
+		} );
 	} else {
 		$( $element ).show();
 	}
@@ -104,11 +104,11 @@ ext.enhancedUI.data.PagesTree.prototype.setIncludeRedirect = function ( redirect
 };
 
 ext.enhancedUI.data.PagesTree.prototype.prepareData = function ( pages ) {
-	var data = [];
-	for ( var i in pages ) {
-		var title = pages[ i ].title.split( '/' );
-		var label = title[ title.length - 1 ];
-		var classes = [];
+	const data = [];
+	for ( const i in pages ) {
+		const title = pages[ i ].title.split( '/' );
+		let label = title[ title.length - 1 ];
+		const classes = [];
 		if ( !this.includeRedirect && pages[ i ].redirect === true ) {
 			continue;
 		}
@@ -122,7 +122,7 @@ ext.enhancedUI.data.PagesTree.prototype.prepareData = function ( pages ) {
 		}
 
 		// eslint-disable-next-line mediawiki/class-doc
-		var entry = {
+		const entry = {
 			id: pages[ i ].id,
 			title: pages[ i ].prefixed,
 			name: pages[ i ].id,

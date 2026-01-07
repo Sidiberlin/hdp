@@ -1,6 +1,6 @@
 {
 	"name": "Header Tabs",
-	"version": "2.2",
+	"version": "2.3",
 	"author": [
 		"[http://www.sergeychernyshev.com Sergey Chernyshev]",
 		"Yaron Koren",
@@ -41,15 +41,14 @@
 	"Hooks": {
 		"ParserFirstCallInit": "HeaderTabsHooks::registerParserFunctions",
 		"ParserAfterTidy": "HeaderTabsHooks::replaceFirstLevelHeaders",
-		"ResourceLoaderGetConfigVars": "HeaderTabsHooks::addConfigVarsToJS"
+		"ResourceLoaderGetConfigVars": "HeaderTabsHooks::addConfigVarsToJS",
+		"EditPageGetDiffContent": "HeaderTabsHooks::onEditPageGetDiffContent",
+		"EditPageGetPreviewContent": "HeaderTabsHooks::onEditPageGetPreviewContent"
 	},
 	"config": {
-		"HeaderTabsUseHistory": true,
 		"HeaderTabsRenderSingleTab": false,
 		"HeaderTabsAutomaticNamespaces": [],
 		"HeaderTabsDefaultFirstTab": false,
-		"HeaderTabsDisableDefaultToc": true,
-		"HeaderTabsGenerateTabTocs": false,
 		"HeaderTabsEditTabLink": true,
 		"HeaderTabsNoTabsInToc": false
 	},

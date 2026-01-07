@@ -1,27 +1,22 @@
 {
 	"name": "TableTools",
-	"version": "1.0.1",
+	"version": "2.0.5",
 	"author": [
 		"mw:User:TheDJ",
-		"HalloWelt! GmbH <support@hallowelt.com>"
+		"[http://www.hallowelt.com Hallo Welt! GmbH]"
 	],
 	"url": "https://www.mediawiki.org/wiki/Extension:TableTools",
 	"descriptionmsg": "tabletools-desc",
 	"license-name": "GPL-3.0-or-later",
 	"type": "other",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
 			"VisualEditor": "*",
 			"VueJsPlus": "*"
 		}
 	},
 	"attributes": {
-		"VisualEditor": {
-			"PluginModules": [
-				"ext.tabletools.visualEditor"
-			]
-		},
 		"BlueSpiceVisualEditorConnector": {
 			"PluginModules": [
 				"ext.tabletools.visualEditor.tableStyles"
@@ -29,7 +24,9 @@
 		}
 	},
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\TableTools\\": "src/",
+		"MediaWiki\\Extension\\TableTools\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
 		"MediaWiki\\Extension\\TableTools\\Tests\\": "tests/phpunit/"
 	},
 	"MessagesDirs": {
@@ -71,12 +68,17 @@
 			]
 		},
 		"ext.tabletools.dataTable": {
-			"scripts": [
-				"ext.tableTools.dataTable.js"
+			"class": "MediaWiki\\Extension\\VueJsPlus\\Module\\VueJsPlusModule",
+			"vueJsPlusComponents": [
+				"Grid"
+			],
+			"packageFiles": [
+				"ext.tableTools.dataTable.js",
+				"components/DataTable.vue"
 			],
 			"dependencies": [
-				"mediawiki.api",
-				"ext.vuejsplus-data-grid.vue"
+				"vue",
+				"mediawiki.api"
 			]
 		}
 	},

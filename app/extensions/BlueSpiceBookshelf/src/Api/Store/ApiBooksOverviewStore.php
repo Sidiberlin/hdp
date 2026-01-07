@@ -4,7 +4,7 @@ namespace BlueSpice\Bookshelf\Api\Store;
 
 use BlueSpice\Bookshelf\Data\BooksOverview\Store;
 use BlueSpice\Context;
-use RequestContext;
+use MediaWiki\Context\RequestContext;
 
 /**
  * Api class for

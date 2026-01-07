@@ -4,6 +4,9 @@ $wgAutoloadClasses['SRFCHistoricalDate'] = __DIR__
 	. '/SRFC_HistoricalDate.php';
 
 use MediaWiki\MediaWikiServices;
+use SMW\Query\PrintRequest;
+use SMW\Query\QueryResult;
+use SMW\Query\ResultPrinters\ResultPrinter;
 
 /**
  * Result printer that prints query results as a monthly calendar.
@@ -13,7 +16,7 @@ use MediaWiki\MediaWikiServices;
  *
  * @author Yaron Koren
  */
-class SRFCalendar extends SMWResultPrinter {
+class SRFCalendar extends ResultPrinter {
 
 	protected $mTemplate;
 	protected $mUserParam;
@@ -48,7 +51,7 @@ class SRFCalendar extends SMWResultPrinter {
 			// Store the actual user's language, so we can revert
 			// back to it after printing the calendar.
 			$this->mRealUserLang = clone $wgLang;
-			$wgLang = Language::factory( trim( $params['lang'] ) );
+			$wgLang = MediaWikiServices::getInstance()->getLanguageFactory()->getLanguage( trim( $params['lang'] ) );
 		}
 
 		$this->setColors( $params['colors'] );
@@ -59,15 +62,15 @@ class SRFCalendar extends SMWResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::buildResult
+	 * @see ResultPrinter::buildResult
 	 *
 	 * @since 1.8
 	 *
-	 * @param SMWQueryResult $results
+	 * @param QueryResult $results
 	 *
 	 * @return string
 	 */
-	protected function buildResult( SMWQueryResult $results ) {
+	protected function buildResult( QueryResult $results ) {
 		$this->isHTML = false;
 		$this->hasTemplates = false;
 
@@ -77,11 +80,11 @@ class SRFCalendar extends SMWResultPrinter {
 
 	/**
 	 * (non-PHPdoc)
-	 * @see SMWResultPrinter::getResultText()
+	 * @see ResultPrinter::getResultText()
 	 *
 	 * @todo Split up megamoth
 	 */
-	protected function getResultText( SMWQueryResult $res, $outputmode ) {
+	protected function getResultText( QueryResult $res, $outputmode ) {
 		$events = [];
 
 		// Print all result rows.
@@ -121,7 +124,7 @@ class SRFCalendar extends SMWResultPrinter {
 						}
 
 						if (
-							$pr->getMode() == SMWPrintRequest::PRINT_PROP &&
+							$pr->getMode() == PrintRequest::PRINT_PROP &&
 							$pr->getTypeID() == '_dat'
 						) {
 							$datePropLabel = $pr->getLabel();
@@ -194,7 +197,7 @@ class SRFCalendar extends SMWResultPrinter {
 								);
 						}
 						if (
-							$pr->getMode() == SMWPrintRequest::PRINT_PROP &&
+							$pr->getMode() == PrintRequest::PRINT_PROP &&
 							$pr->getTypeID() == '_dat'
 						) {
 							$datePropLabel = $pr->getLabel();
@@ -308,14 +311,14 @@ class SRFCalendar extends SMWResultPrinter {
 		)->inContentLanguage()->text();
 	}
 
-	function formatDateStr( $object ) {
+	public function formatDateStr( $object ) {
 		// For some reason, getMonth() and getDay() sometimes return a
 		// number with a leading zero - get rid of it using (int)
 		return $object->getYear()
 			. '-' . (int)$object->getMonth() . '-' . (int)$object->getDay();
 	}
 
-	function displayCalendar( $events ) {
+	public function displayCalendar( $events ) {
 		global $srfgFirstDayOfWeek;
 		global $srfgScriptPath;
 
@@ -390,7 +393,7 @@ class SRFCalendar extends SMWResultPrinter {
 			$lastDayOfWeek = 7;
 		} else {
 			$firstDayOfWeek =
-				array_search( $srfgFirstDayOfWeek, $weekDayNames );
+				array_search( wfMessage( $srfgFirstDayOfWeek )->text(), $weekDayNames );
 			if ( $firstDayOfWeek === false ) {
 				// Bad value for $srfgFirstDayOfWeek!
 				print 'Warning: Bad value for $srfgFirstDayOfWeek "' .
@@ -603,7 +606,7 @@ END;
 				$events = [];
 			}
 			foreach ( $events as $event ) {
-				list( $eventTitle, $otherText, $eventDate, $color ) = $event;
+				[ $eventTitle, $otherText, $eventDate, $color ] = $event;
 				if ( $eventDate == $dateStr ) {
 					if ( $this->mTemplate != '' ) {
 						$templatetext = '{{' . $this->mTemplate . $otherText .
@@ -645,7 +648,7 @@ END;
 	}
 
 	/**
-	 * @see SMWResultPrinter::getParamDefinitions
+	 * @see ResultPrinter::getParamDefinitions
 	 *
 	 * @since 1.8
 	 *

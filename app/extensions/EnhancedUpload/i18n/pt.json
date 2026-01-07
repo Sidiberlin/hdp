@@ -1,10 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hamilton Abreu"
+			"Hamilton Abreu",
+			"Mansil alfalb",
+			"Mbs262"
 		]
 	},
-	"enhancedupload": "Carregamento melhorado",
+	"enhancedupload": "Carregamento",
 	"enhancedupload-desc": "Fornece uma página especial com a opção de carregar um ou vários ficheiros na wiki",
 	"enhancedupload-text": "Carregar ficheiros",
 	"enhancedupload-details-header-label": "Detalhes",
@@ -57,7 +59,6 @@
 	"enhancedupload-ve-attachmentinspector-categories": "Categorias",
 	"enhancedupload-ve-attachmentinspector-desc": "Descrição",
 	"enhancedupload-ve-attachmentinspector-options": "Saltar opções de carregamento",
-	"enhancedupload-attachment-tag-desc": "Com esta etiqueta, podem ser adicionados ficheiros a esta página. Podem ser carregados ficheiros novos e adicionados à etiqueta ou podem ser adicionados à etiqueta ficheiros existentes na wiki. Pode ser fornecido um título de apresentação para a área de etiquetas, bem como opções de carregamento: um prefixo, categorias separadas por '|' e uma descrição, que serão adicionadas automaticamente durante o carregamento.",
 	"enhancedupload-attachments-tag-grid-editor-label": "Editor",
 	"enhancedupload-ve-attachmentinspector-grid-version": "Ocultar versão",
 	"enhancedupload-ve-attachmentinspector-grid-editor": "Ocultar editor",
@@ -68,5 +69,7 @@
 	"enhancedupload-attachments-confirm-remove": "Remover o ficheiro \"$1\" da lista?",
 	"enhancedupload-tab-updated-upload": "Ficheiros carregados",
 	"enhancedupload-updated-dialog-label": "O ficheiro \"$1\" foi atualizado",
-	"enhancedupload-finished-dialog-action-close": "Fechar"
+	"enhancedupload-finished-dialog-action-close": "Fechar",
+	"enhancedupload-ve-file-dialog-title": "Ficheiro",
+	"enhancedupload-ve-file-dialog-filename-label": "Nome do ficheiro"
 }

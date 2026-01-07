@@ -29,8 +29,6 @@
 	"bs-countthings-tag-countfiles-desc": "Apresenta o número de ficheiros na wiki.",
 	"bs-countthings-tag-countcharacters-desc": "Gera metadados sobre o conteúdo do artigo indicado. O resultado é uma caixa informativa que pode ser integrada num artigo. Usando o parâmetro \"mode\" pode mostrar-se vários tipos de informação.",
 	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>modo</code>: Devem ser contados <code>caracteres</code> (caracteres), <code>palavras</code> (palavras) ou <code>páginas</code> (páginas).",
-	"bs-countthings-tag-countcharacters-example-1": "Número de palavras",
-	"bs-countthings-tag-countcharacters-example-2": "Número de caracteres",
 	"bs-countthings-droplet-articles-name": "Número de páginas",
 	"bs-countthings-droplet-articles-description": "Mostra o número de páginas",
 	"bs-countthings-droplet-characters-name": "Número de caracteres",

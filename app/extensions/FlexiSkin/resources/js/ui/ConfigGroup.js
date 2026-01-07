@@ -9,7 +9,7 @@ flexiskin.ui.ConfigGroup = function ( name, cfg ) {
 	this.$itemContainer = $( '<div>' ).addClass( 'fs-group-item-container' );
 
 	this.items = cfg.items || [];
-	for ( var i = 0; i < this.items.length; i++ ) {
+	for ( let i = 0; i < this.items.length; i++ ) {
 		this.$itemContainer.append( this.items[ i ].$element );
 	}
 	this.$element.append( this.$itemContainer );
@@ -55,14 +55,14 @@ flexiskin.ui.ConfigGroup.prototype.getItems = function () {
 
 flexiskin.ui.ConfigGroup.prototype.onToggle = function () {
 	if ( this.expanded ) {
-		this.$itemContainer.slideUp( 300, function () {
+		this.$itemContainer.slideUp( 300, () => {
 			this.toggleButton.setIcon( 'expand' );
 			this.expanded = false;
-		}.bind( this ) );
+		} );
 	} else {
-		this.$itemContainer.slideDown( 300, function () {
+		this.$itemContainer.slideDown( 300, () => {
 			this.toggleButton.setIcon( 'collapse' );
 			this.expanded = true;
-		}.bind( this ) );
+		} );
 	}
 };

@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.ce' );
 
-bs.vec.ce.DeprecatedExplicitLineBreak = function() {
+bs.vec.ce.DeprecatedExplicitLineBreak = function () {
 	// Parent InternalFileLinkAnnotation
 	bs.vec.ce.DeprecatedExplicitLineBreak.super.apply( this, arguments );
 	this.$element.addClass( 'bs-vec-line-break' );

@@ -3,6 +3,7 @@
 namespace BlueSpice\Discovery\EnhancedSidebar;
 
 use BlueSpice\Discovery\EnhancedSidebar\Parser as EnhancedSidebarParser;
+use MediaWiki\Content\JsonContent;
 use MediaWiki\Extension\MenuEditor\EditPermissionProvider;
 use MediaWiki\Extension\MenuEditor\Menu\GenericMenu;
 use MediaWiki\Extension\MenuEditor\ParsableMenu;
@@ -10,21 +11,23 @@ use MediaWiki\Extension\MenuEditor\Parser\IMenuParser;
 use MediaWiki\Revision\MutableRevisionRecord;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
-use MWException;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\Wikitext\ParserFactory;
-use Title;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 class Menu extends GenericMenu implements ParsableMenu, EditPermissionProvider {
-	/** @var string */
-	private $pagename;
 
 	/**
 	 * @param ParserFactory $parserFactory
+	 * @param WANObjectCache $objectCache
 	 * @param string $pagename
 	 */
-	public function __construct( ParserFactory $parserFactory, string $pagename ) {
+	public function __construct(
+		ParserFactory $parserFactory,
+		private readonly WANObjectCache $objectCache,
+		private readonly string $pagename
+	) {
 		parent::__construct( $parserFactory );
-		$this->pagename = $pagename;
 	}
 
 	/**
@@ -69,11 +72,10 @@ class Menu extends GenericMenu implements ParsableMenu, EditPermissionProvider {
 	 * @param RevisionRecord|null $revisionRecord
 	 *
 	 * @return IMenuParser
-	 * @throws MWException
 	 */
 	public function getParser( Title $title, ?RevisionRecord $revisionRecord = null ): IMenuParser {
 		if ( !$revisionRecord ) {
-			$content = new \JsonContent( '[]' );
+			$content = new JsonContent( '[]' );
 			$revisionRecord = new MutableRevisionRecord( $title );
 			$revisionRecord->setSlot(
 				SlotRecord::newUnsaved(
@@ -84,7 +86,8 @@ class Menu extends GenericMenu implements ParsableMenu, EditPermissionProvider {
 		}
 		return new EnhancedSidebarParser(
 			$revisionRecord,
-			$this->parserFactory->getNodeProcessors()
+			$this->parserFactory->getNodeProcessors(),
+			$this->objectCache
 		);
 	}
 

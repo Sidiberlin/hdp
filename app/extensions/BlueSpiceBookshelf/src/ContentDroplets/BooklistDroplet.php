@@ -3,7 +3,7 @@
 namespace BlueSpice\Bookshelf\ContentDroplets;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\TagDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class BooklistDroplet extends TagDroplet {
 

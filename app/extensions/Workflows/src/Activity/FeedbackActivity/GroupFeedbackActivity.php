@@ -14,7 +14,7 @@ use MediaWiki\Extension\Workflows\UserInteractionModule;
 use MediaWiki\Extension\Workflows\Util\GroupDataProvider;
 use MediaWiki\Extension\Workflows\Util\ThresholdChecker;
 use MediaWiki\Extension\Workflows\WorkflowContext;
-use User;
+use MediaWiki\User\User;
 
 class GroupFeedbackActivity extends GenericFeedbackActivity {
 
@@ -162,8 +162,7 @@ class GroupFeedbackActivity extends GenericFeedbackActivity {
 				// No thresholds reached yet
 				return new ExecutionStatus( IActivity::STATUS_LOOP_COMPLETE, $data );
 			}
-		}
-		catch ( Exception $e ) {
+		} catch ( Exception $e ) {
 			throw new NonRecoverableWorkflowExecutionException( $e->getMessage(), $this->task );
 		}
 

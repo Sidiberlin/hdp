@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ykhwong"
+		]
+	},
+	"collabpadsessions-admin": "CollabPad 세션",
+	"action-collabpadsessions-admin": "모든 CollabPad 세션 관리",
+	"collabpads-content-action-text": "함께 편집",
+	"collabpads-start-label": "시작",
+	"collabpads-start-dialog-show-again": "이 메시지를 더 이상 보지 않기",
+	"collabpads-toolbar-save-button": "변경사항 저장…",
+	"collabpads-toolbar-save-button-label": "저장",
+	"collabpads-save-dialog-title": "변경사항 저장",
+	"collabpads-save-dialog-save-button-label": "저장",
+	"collabpads-save-dialog-summary": "요약:",
+	"collabpads-save-dialog-minor-edit": "사소한 편집입니다",
+	"collabpads-save-dialog-watch-page": "이 문서 주시하기",
+	"collabpads-leave-dialog-title": "떠나기 확인",
+	"collabpads-leave-dialog-leave-button": "떠나기",
+	"collabpads-dialog-cancel-button": "취소",
+	"collabpads-dialog-accept-button": "수락",
+	"collabpads-copylink-label": "초대 링크 복사",
+	"collabpads-leave-tooltip": "떠나기",
+	"collabpads-recentchangesflags-title": "CollabPads 편집",
+	"collabpads-recentchangesflags-legend": "CollabPads 편집입니다",
+	"collabpads-clipboard-copy-fail": "URL을 클립보드에 복사하는데 실패했습니다",
+	"collabpads-author-join": "$1{{GENDER:$2| 님이 참여했습니다}}",
+	"collabpads-author-leave": "$1{{GENDER:$2|님이 나갔습니다}}",
+	"collabpads-already-participating-title": "이미 참여했습니다",
+	"collabpads-already-participating-message": "이미 이 문서를 편집하고 있습니다",
+	"collabpads-namespace-label": "이름공간",
+	"collabpads-page-label": "문서",
+	"collabpads-owner-label": "소유자",
+	"collabpads-participants-label": "참가자",
+	"collabpads-bs-saferedit-editing-link-text": "참여할 수 있습니다",
+	"collabpads-save-complete-notif": "문서 저장됨",
+	"collabpads-invalid-change-dialog-delete-button": "삭제",
+	"collabpads-invalid-change-dialog-save-button": "저장",
+	"collabpads-session-ended-title": "세션이 종료되었습니다",
+	"collabpads-session-ended-message": "세션이 종료되었습니다.",
+	"collabpads-invalid-initialization-dialog-title": "초기화 실패"
+}

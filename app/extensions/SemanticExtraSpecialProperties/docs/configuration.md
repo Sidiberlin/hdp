@@ -37,6 +37,7 @@ Property labels differ according to the language the wiki was set up. An easy wa
 - `_USERRIGHT` adds a property called "User right" to user pages which records the user's assigned rights
 - `_USERGROUP` adds a property called "User group" to user pages which records the user's assigned groups
 - `_EXIFDATA` adds properties called "Exif data" to file pages which records image metadata (Exif data)
+- `_LINKSTO` adds a property called "Links to" which records a list of pages the current page links to
 
 #### Identifiers with further dependencies
 
@@ -72,6 +73,17 @@ Details about available properties can be found in the ["definitions.json"](/dat
 
 Setting `$sespgLabelCacheVersion` to "false" will cease to use the special property label cache at all. Otherwise this is
 used as an internal modifier to allow resetting the cache with an arbitrary version.
+
+### Links to property
+
+Setting `$sespgLinksToEnabledNamespaces` to a list of namespaces (in int) where the "Links to" property should be enabled.
+For example, enabling the "Links to" proerty only in the Template and Module namespace:
+```php
+$sespgLinksToEnabledNamespaces = [
+  10,
+  828
+];
+```
 
 ## Privacy
 

@@ -4,8 +4,8 @@ namespace BlueSpice\PageAssignments\Renderer;
 use BlueSpice\PageAssignments\IAssignment;
 use BlueSpice\Renderer\Params;
 use BlueSpice\Utility\CacheHelper;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Linker\LinkRenderer;
 
 class PageHeaderAssignmentBase extends Assignment {
@@ -27,8 +27,8 @@ class PageHeaderAssignmentBase extends Assignment {
 	 * @param CacheHelper|null $cacheHelper
 	 */
 	protected function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
-		$name = '', CacheHelper $cacheHelper = null ) {
+		?LinkRenderer $linkRenderer = null, ?IContextSource $context = null,
+		$name = '', ?CacheHelper $cacheHelper = null ) {
 		parent::__construct(
 			$config,
 			$params,

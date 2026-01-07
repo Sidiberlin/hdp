@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 window.ext = window.ext || {};
 window.ext.notifyme = {
 	retrieve: function ( params ) {
@@ -18,7 +19,7 @@ window.ext.notifyme = {
 		return ext.notifyme._api.get( 'web', { meta: 1, status: status } );
 	},
 	/**
-	 * @param data
+	 * @param {Object} data
 	 * "set as read": { notification_id: true }
 	 * "set as unread": { notification_id: false }
 	 * combined: { notification_id: true, other_notification_id: false }
@@ -26,7 +27,7 @@ window.ext.notifyme = {
 	 */
 	setReadStatus: function ( data ) {
 		if ( typeof data !== 'object' ) {
-			console.error( 'setReadStatus: data must be an object' );
+			console.error( 'setReadStatus: data must be an object' ); // eslint-disable-line no-console
 		}
 		return ext.notifyme._api.post( 'web/status', JSON.stringify( {
 			notifications: data

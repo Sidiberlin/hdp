@@ -7,6 +7,8 @@ require( '../widget/HistoryGrid.js' );
 
 ext.enhancedUI.panel.HistoryPanel = function ( cfg ) {
 	ext.enhancedUI.panel.HistoryPanel.super.apply( this, cfg );
+	const defaultModeConfig = require( './viewmode.json' );
+	this.defaultMode = defaultModeConfig.mode;
 	this.selectedElements = [];
 	this.rights = cfg.rights || [];
 	this.historyData = cfg.data || [];
@@ -27,16 +29,16 @@ ext.enhancedUI.panel.HistoryPanel.prototype.setupToolbar = function () {
 	this.historyToolbar = new ext.enhancedUI.widget.HistoryToolbar();
 	this.historyToolbar.connect( this, {
 		compare: function () {
-			var compareValues = this.getCompareValues();
+			const compareValues = this.getCompareValues();
 			if ( !compareValues ) {
 				return;
 			}
-			var url = mw.util.getUrl( mw.config.get( 'wgPageName' ),
+			const url = mw.util.getUrl( mw.config.get( 'wgPageName' ),
 				{
 					type: 'revision',
 					diff: compareValues.diff,
 					oldid: compareValues.oldid,
-					diffmode: 'source'
+					diffmode: this.defaultMode
 				}
 			);
 			window.location.href = url;
@@ -47,16 +49,16 @@ ext.enhancedUI.panel.HistoryPanel.prototype.setupToolbar = function () {
 };
 
 ext.enhancedUI.panel.HistoryPanel.prototype.getCompareValues = function () {
-	var selectedElements = this.grid.getSelectedRows();
-	var diffValue = parseInt( selectedElements[ 0 ].id );
-	var oldIdValue = parseInt( selectedElements[ 1 ].id );
+	const selectedElements = this.grid.getSelectedRows();
+	let diffValue = parseInt( selectedElements[ 0 ].id );
+	let oldIdValue = parseInt( selectedElements[ 1 ].id );
 
 	if ( isNaN( diffValue ) || isNaN( oldIdValue ) ) {
 		return null;
 	}
 
 	if ( diffValue < oldIdValue ) {
-		var switchValue = diffValue;
+		const switchValue = diffValue;
 		diffValue = oldIdValue;
 		oldIdValue = switchValue;
 	}
@@ -67,7 +69,7 @@ ext.enhancedUI.panel.HistoryPanel.prototype.getCompareValues = function () {
 };
 
 ext.enhancedUI.panel.HistoryPanel.prototype.setupGrid = function () {
-	var gridCfg = this.setupGridConfig();
+	const gridCfg = this.setupGridConfig();
 	this.grid = new ext.enhancedUI.widget.HistoryGrid( gridCfg );
 	this.grid.connect( this, {
 		action: 'doActionOnRow',
@@ -75,20 +77,20 @@ ext.enhancedUI.panel.HistoryPanel.prototype.setupGrid = function () {
 	} );
 
 	// ERM35472 - hide reload button on history panel
-	var reloadItem = this.grid.toolbar.staticControls.items[ 1 ];
+	const reloadItem = this.grid.toolbar.staticControls.items[ 1 ];
 	if ( reloadItem.icon === 'reload' ) {
 		this.grid.toolbar.staticControls.removeItems( [ reloadItem ] );
 	}
 
-	for ( var i = 1; i < $( this.grid.$table ).children().length; i++ ) {
-		var $row = $( this.grid.$table ).children()[ i ];
+	for ( let i = 1; i < $( this.grid.$table ).children().length; i++ ) {
+		const $row = $( this.grid.$table ).children()[ i ];
 		// First entry of grid is table header, so grid and data is not aligned with selector
-		var classSelector = i - 1;
+		const classSelector = i - 1;
 		/* eslint-disable-next-line no-jquery/no-class-state */
 		if ( $( $row ).hasClass( 'oojsplus-data-gridWidget-row' ) &&
 			this.historyData[ classSelector ].classes.length > 0 ) {
-			/* eslint-disable-next-line no-loop-func */
-			this.historyData[ classSelector ].classes.forEach( function ( rowClass ) {
+
+			this.historyData[ classSelector ].classes.forEach( ( rowClass ) => {
 				/* eslint-disable-next-line mediawiki/class-doc */
 				$( $row ).addClass( rowClass );
 			} );
@@ -100,15 +102,15 @@ ext.enhancedUI.panel.HistoryPanel.prototype.setupGrid = function () {
 
 ext.enhancedUI.panel.HistoryPanel.prototype.doActionOnRow = function ( action, row ) {
 	if ( action === 'undo' ) {
-		var undoAfterIndex = 0;
-		for ( var i = 0; i < this.historyData.length; i++ ) {
+		let undoAfterIndex = 0;
+		for ( let i = 0; i < this.historyData.length; i++ ) {
 			if ( this.historyData[ i ].id !== row.id ) {
 				continue;
 			}
 			undoAfterIndex = i + 1;
 			break;
 		}
-		var undoUrl = mw.util.getUrl( mw.config.get( 'wgPageName' ),
+		const undoUrl = mw.util.getUrl( mw.config.get( 'wgPageName' ),
 			{
 				action: 'edit',
 				undoafter: this.historyData[ undoAfterIndex ].id,
@@ -118,7 +120,7 @@ ext.enhancedUI.panel.HistoryPanel.prototype.doActionOnRow = function ( action, r
 		window.location.href = undoUrl;
 	}
 	if ( action === 'hide' ) {
-		var hideUrl = mw.util.getUrl( mw.config.get( 'wgPageName' ),
+		let hideUrl = mw.util.getUrl( mw.config.get( 'wgPageName' ),
 			{
 				action: 'revisiondelete',
 				type: 'revision'
@@ -127,15 +129,17 @@ ext.enhancedUI.panel.HistoryPanel.prototype.doActionOnRow = function ( action, r
 		hideUrl += '&ids[' + row.id + ']=1';
 		window.location.href = hideUrl;
 	}
+
+	mw.hook( 'enhanced.versionhistory.rowAction' ).fire( action, row );
 };
 
 ext.enhancedUI.panel.HistoryPanel.prototype.rowSelect = function () {
-	var limitReached = this.grid.selectionLimitReached();
+	const limitReached = this.grid.selectionLimitReached();
 	this.toggleCompareButton( !limitReached );
 };
 
 ext.enhancedUI.panel.HistoryPanel.prototype.setupGridConfig = function () {
-	var gridCfg = {
+	const gridCfg = {
 		style: 'differentiate-rows',
 		multiSelect: true,
 		exportable: false,
@@ -170,11 +174,10 @@ ext.enhancedUI.panel.HistoryPanel.prototype.setupGridConfig = function () {
 				headerText: mw.message( 'enhanced-standard-uis-history-grid-header-summary-label' ).text(),
 				type: 'text',
 				sortable: false,
+				maxLabelLength: 100,
 				hidden: !mw.user.options.get( 'history-show-summary' ),
 				width: 300,
-				valueParser: function ( val ) {
-					return new OO.ui.HtmlSnippet( val );
-				}
+				valueParser: ( value ) => new OO.ui.HtmlSnippet( value )
 			},
 			tags: {
 				headerText: mw.message( 'enhanced-standard-uis-history-grid-header-tags-label' ).text(),
@@ -210,6 +213,6 @@ ext.enhancedUI.panel.HistoryPanel.prototype.setupGridConfig = function () {
 };
 
 ext.enhancedUI.panel.HistoryPanel.prototype.toggleCompareButton = function ( disable ) {
-	var compareTool = this.historyToolbar.getToolGroupByName( 'compare-action' ).findItemFromData( 'compare' );
+	const compareTool = this.historyToolbar.getToolGroupByName( 'compare-action' ).findItemFromData( 'compare' );
 	compareTool.setDisabled( disable );
 };

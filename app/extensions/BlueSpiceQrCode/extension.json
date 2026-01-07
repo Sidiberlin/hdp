@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceQrCode",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"Josef Konrad"
@@ -9,9 +9,9 @@
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceQrCode",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"attributes": {
@@ -25,9 +25,6 @@
 			},
 			"TagRegistry": {
 				"qrcode": "\\BlueSpice\\QrCode\\Tag\\QrCode"
-			},
-			"DynamicFileRegistry": {
-				"qrcode": "\\BlueSpice\\QrCode\\DynamicFileDispatcher\\QrCode"
 			}
 		},
 		"BlueSpiceVisualEditorConnector": {
@@ -41,6 +38,14 @@
 					"class": "\\BlueSpice\\QrCode\\ContentDroplet\\QrCodeDroplet"
 				}
 			}
+		},
+		"PDFCreator": {
+			"PreProcessors": {
+				"BSQrCode": {
+					"class": "BlueSpice\\QrCode\\Integration\\PDFCreator\\PreProcessor\\ImageProcessor",
+					"services": [ "UrlUtils", "TitleFactory", "RepoGroup" ]
+				}
+			}
 		}
 	},
 	"MessagesDirs": {
@@ -50,6 +55,9 @@
 	},
 	"AutoloadNamespaces": {
 		"BlueSpice\\QrCode\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"BlueSpice\\QrCode\\Tests\\": "tests/phpunit/"
 	},
 	"ResourceModules": {
 		"ext.qrcode.dialog": {
@@ -103,9 +111,9 @@
 		"discovery-skin": {
 			"class": "\\BlueSpice\\QrCode\\HookHandler\\BlueSpiceDiscovery"
 		},
-		"export": {
-			"class": "\\BlueSpice\\QrCode\\Hook\\BSUEModulePDFFindFiles\\AddQrCode",
-			"services": [ "UrlUtils" ]
+		"registerDynamicFileModule": {
+			"class": "\\BlueSpice\\QrCode\\Hook\\RegisterDynamicFileModule",
+			"services": [ "TitleFactory" ]
 		}
 	},
 	"Hooks": {
@@ -119,9 +127,7 @@
 			"discovery-skin"
 		],
 		"SetupAfterCache": "\\BlueSpice\\QrCode\\Hook\\SetupAfterCache\\AddFileRepo::callback",
-		"BSUEModulePDFFindFiles": [
-			"export"
-		]
+		"MWStakeDynamicFileDispatcherRegisterModule": "registerDynamicFileModule"
 	},
 	"APIModules": {
 		"bs-qr-code": "\\BlueSpice\\QrCode\\Api\\QrCodeApi"

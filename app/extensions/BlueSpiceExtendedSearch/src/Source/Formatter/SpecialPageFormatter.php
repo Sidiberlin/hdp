@@ -4,6 +4,7 @@ namespace BS\ExtendedSearch\Source\Formatter;
 
 use BS\ExtendedSearch\SearchResult;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 class SpecialPageFormatter extends Base {
 
@@ -14,6 +15,7 @@ class SpecialPageFormatter extends Base {
 	 */
 	public function getResultStructure( $defaultResultStructure = [] ): array {
 		$defaultResultStructure['page_anchor'] = 'page_anchor';
+		$defaultResultStructure['namespace_text'] = 'namespace_text';
 
 		return $defaultResultStructure;
 	}
@@ -31,10 +33,9 @@ class SpecialPageFormatter extends Base {
 		$page = MediaWikiServices::getInstance()->getSpecialPageFactory()->getPage( $resultData['basename'] );
 		if ( $page ) {
 			$resultData['page_anchor'] = $this->getTraceablePageAnchor(
-				$page->getPageTitle(), $resultData['prefixed_title']
+				$page->getPageTitle(), $page->getLocalName()
 			);
 		}
-		$resultData['basename'] = $resultData['prefixed_title'];
 	}
 
 	/**
@@ -44,9 +45,9 @@ class SpecialPageFormatter extends Base {
 	 */
 	protected function isFeatured( $result ) {
 		$filters = $this->lookup->getFilters();
-		if ( isset( $filters['terms']['namespace_text'] ) ) {
-			foreach ( $filters['terms']['namespace_text'] as $namespaceName ) {
-				if ( \BsNamespaceHelper::getNamespaceIndex( $namespaceName ) == NS_SPECIAL ) {
+		if ( isset( $filters['terms']['namespace'] ) ) {
+			foreach ( $filters['terms']['namespace'] as $nsIndex ) {
+				if ( (int)$nsIndex == NS_SPECIAL ) {
 					return parent::isFeatured( $result );
 				}
 			}
@@ -73,9 +74,9 @@ class SpecialPageFormatter extends Base {
 				$result['basename'] = $result['prefixed_title'];
 			}
 
-			$title = \Title::makeTitle( NS_SPECIAL, $origBasename );
-			if ( $title instanceof \Title ) {
-				$result['page_anchor'] = $this->getTraceablePageAnchor( $title, $result['prefixed_title'] );
+			$title = Title::makeTitle( NS_SPECIAL, $origBasename );
+			if ( $title instanceof Title ) {
+				$result['page_anchor'] = $this->getTraceablePageAnchor( $title, $title->getText() );
 			}
 		}
 	}

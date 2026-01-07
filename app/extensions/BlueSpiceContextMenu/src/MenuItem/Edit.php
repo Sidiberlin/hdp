@@ -2,6 +2,9 @@
 
 namespace BlueSpice\ContextMenu\MenuItem;
 
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Message\Message;
+
 class Edit extends Base {
 
 	/**
@@ -9,12 +12,16 @@ class Edit extends Base {
 	 * @return string
 	 */
 	public function getIconClass() {
-		return 'icon-pencil';
+		return 'edit';
+	}
+
+	public function getFlags(): array {
+		return [ 'progressive' ];
 	}
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabelMessage() {
 		return wfMessage( 'bs-contextmenu-page-edit' );
@@ -45,8 +52,15 @@ class Edit extends Base {
 	}
 
 	/**
+	 * @return bool
+	 */
+	public function isPrimary(): bool {
+		return true;
+	}
+
+	/**
 	 *
-	 * @param \Context $context
+	 * @param IContextSource $context
 	 * @return bool
 	 */
 	public function shouldList( $context ) {

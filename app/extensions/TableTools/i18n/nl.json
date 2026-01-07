@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mainframe98",
+			"Siebrand"
+		]
+	},
+	"tabletools-desc": "Voegt extra functionaliteit toe aan inhoudstabellen",
+	"tabletools-ve-plugin-table-style-sticky": "Vaste koptekst"
+}

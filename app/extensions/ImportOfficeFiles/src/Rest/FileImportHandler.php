@@ -2,15 +2,15 @@
 
 namespace MediaWiki\Extension\ImportOfficeFiles\Rest;
 
-use Config;
 use Exception;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\ImportOfficeFiles\Process\ImportProcess\ImportImagesStep;
 use MediaWiki\Extension\ImportOfficeFiles\Process\ImportProcess\ImportPagesStep;
 use MediaWiki\Extension\ImportOfficeFiles\Process\ImportProcess\RemoveFilesStep;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Rest\SimpleHandler;
 use MWStake\MediaWiki\Component\ProcessManager\ManagedProcess;
-use RequestContext;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class FileImportHandler extends SimpleHandler {

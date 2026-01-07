@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"at-mentions-desc": "Pruža mogućnost spominjanja korisnika",
+	"at-mentions-inspector-title": "Spomeni korisnika",
+	"at-mentions-inspector-title-add": "Dodaj spominjanje",
+	"at-mentions-inspector-title-edit": "Izmeni pominjanje korisnika",
+	"at-mentions-ci-title": "Pominjanje korisnika",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|[[User:$1|$1]]}}",
+	"at-mentions-tag-item-time": "u $1",
+	"at-mentions-mentionslist-header-mine-all": "Spomenuti ste na ovoj stranici",
+	"at-mentions-mentionslist-header-all": "{{GENDER:$2|Korisnik [[User:$2|$2]] je spomenut|Korisnica [[User:$2|$2]] je spomenuta}} na sledećim stranicama:",
+	"at-mentions-mention-notification-message": "{{GENDER:$1|spomenuo|spomenula}} Vas je na stranici $2",
+	"at-mentions-mention-notification-key": "Spomenuti ste",
+	"at-mentions-mention-in-entity-notification-key": "Spomenuti ste u komentaru ili objavi",
+	"at-mentions-mention-in-entity-notification-message": "{{GENDER:$1|spomenuo|spomenula}} Vas je u komentaru ili objavi „$3” na stranici $2",
+	"at-mentions-toolbar-tool-title": "Dodaj spominjanje"
+}

@@ -1,27 +1,31 @@
 <?php
 
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Request\WebRequest;
+use MediaWiki\User\User;
 
 class RSSAuthenticator {
 	public const TOKEN_SALT = 'rss_salt';
 	/**
 	 *
-	 * @var \WebRequest
+	 * @var WebRequest
 	 */
 	protected $request;
 
 	/**
 	 *
-	 * @var \RequestContext
+	 * @var RequestContext
 	 */
 	protected $context;
 
 	/**
 	 *
-	 * @param \WebRequest $request
-	 * @param \IContextSource $context
+	 * @param WebRequest $request
+	 * @param IContextSource $context
 	 */
-	public function __construct( \WebRequest $request, \IContextSource $context ) {
+	public function __construct( WebRequest $request, IContextSource $context ) {
 		$this->request = $request;
 		$this->context = $context;
 	}
@@ -45,7 +49,7 @@ class RSSAuthenticator {
 
 		$user = MediaWikiServices::getInstance()->getUserFactory()
 			->newFromName( $userName );
-		if ( $user instanceof \User == false || $user->getId() == 0 ) {
+		if ( $user instanceof User == false || $user->getId() == 0 ) {
 			// User does not exist
 			return false;
 		}

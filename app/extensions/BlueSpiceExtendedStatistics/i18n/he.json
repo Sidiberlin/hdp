@@ -63,17 +63,13 @@
 	"bs-statistics-portlet-numberofpagesdesc": "סטטיסטיקה עבור מספר הדפים.",
 	"bs-statistics-portlet-numberofarticlesdesc": "סטטיסטיקה של מספר דפי התוכן.",
 	"bs-statistics-portletconfig-periodday": "אתמול",
-	"apihelp-bs-statistics-tasks-description": "אספקת משימות נפוצות עבור סטטיסטיקות",
 	"apihelp-bs-statistics-tasks-summary": "אספקת משימות נפוצות עבור סטטיסטיקות",
-	"apihelp-bs-statistics-available-diagrams-store-description": "אספקת מאגר של תרשימים זמינים",
 	"apihelp-bs-statistics-available-diagrams-store-summary": "אספקת מאגר של תרשימים זמינים",
-	"apihelp-bs-statistics-search-options-store-description": "אספקת מאגר של אפשרויות חיפוש זמינות",
 	"apihelp-bs-statistics-search-options-store-summary": "אספקת מאגר של אפשרויות חיפוש זמינות",
 	"action-statistic-viewspecialpage": "לגשת לסטטיסטיקה מורחבת",
 	"right-statistic-viewspecialpage": "גישה לסטטיסטיקה מורחבת",
 	"bs-statistics-button-label-export": "יצוא",
 	"bs-statistics-panel-title-result": "תוצאה",
-	"apihelp-bs-extendedstatistics-collection-store-description": "אספקת גישה לסטטיסטיקות שאפשר להריץ עליהן שאילתות, סינונים, ואגירה",
 	"apihelp-bs-extendedstatistics-collection-store-summary": "אספקת אחסון לסטטיסטיקות שאפשר להריץ עליהן שאילתות, סינונים, ואגירה",
 	"apihelp-bs-extendedstatistics-collection-store-param-aggregate": "מחרוזת מקודדת ב־JSON עם נתונים שרירותיים עבור האגירה",
 	"aggregatedstatistic": "סטטיסטיקות היטל בזק",
@@ -113,6 +109,7 @@
 	"bs-statistics-aggregated-report-loading": "טעינת נתונים...",
 	"bs-statistics-pref-excludeusers-help": "משתמשים מסוימים, למשל עם הרשאות מפעיל, יכולים לסלף את הסטטיסטיקות בדף Special:ExtendedStatistics. אפשר להדיר אותם מתוצאות הסטטיסטיקה.",
 	"bs-statistics-tag-progress-desc": "יצירת סרגל התקדמות. הערך תלוי בהופעה של טקסט נתון שנמצא בגוף ובמגבלה העליונה שמוגדרת על־ידי המשתמש.",
+	"bs-statistics-tag-progress-label-text": "<span class='visually-hidden'>סרגל התקדמות:</span> $1%",
 	"bs-statistics-ve-progressinspector-title": "התקדמות",
 	"bs-statistics-ve-progress-attr-basecount-label": "ספירת בסיס",
 	"bs-statistics-ve-progress-attr-basecount-help": "הגדרת מגבלה עליונהשל התדירות שבה רכיב התקדמות נתון צריך להתרחש בדף כדי שסרגל התקדמות יתמלא.",
@@ -124,5 +121,5 @@
 	"bs-statistics-ve-progress-attr-width-help": "רוחב סרגל ההתקדמות בפיקסלים",
 	"bs-statistics-droplet-progress-name": "התקדמות",
 	"bs-statistics-droplet-progress-description": "הצגה חזותית של התקדמות מול משתני מדידה נתונים",
-	"bs-statistics-tag-progress-label-text": "<span class='visually-hidden'>סרגל התקדמות:</span> $1%"
+	"apihelp-query+statistics-reports-param-aggregate": "האם לצבור את הסטטיסטיקות"
 }

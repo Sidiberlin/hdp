@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bisang",
+			"Ykhwong"
+		]
+	},
+	"contentprovisioning-ui-overview-grid-action-force-sync": "강제 동기화",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "차이 보기",
+	"contentprovisioning-ui-content-diff-title": "콘텐츠 차이점"
+}

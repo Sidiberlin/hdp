@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceWikiExplorer",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceWikiExplorer",
 	"author": [
@@ -9,9 +9,10 @@
 	],
 	"descriptionmsg": "bs-wikiexplorer-extension-description",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0",
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"type": "bluespice",
@@ -33,7 +34,9 @@
 		"bs-wikiexplorer-store": "BSApiWikiExplorerStore"
 	},
 	"SpecialPages": {
-		"WikiExplorer": "SpecialWikiExplorer"
+		"WikiExplorer": {
+			"class": "\\BlueSpice\\WikiExplorer\\Special\\SpecialWikiExplorer"
+		}
 	},
 	"MessagesDirs": {
 		"BlueSpiceWikiExplorer": [
@@ -47,8 +50,7 @@
 		"BlueSpice\\WikiExplorer\\": "src/"
 	},
 	"AutoloadClasses": {
-		"BSApiWikiExplorerStore": "includes/api/BSApiWikiExplorerStore.php",
-		"SpecialWikiExplorer": "includes/specials/SpecialWikiExplorer.php"
+		"BSApiWikiExplorerStore": "includes/api/BSApiWikiExplorerStore.php"
 	},
 	"ResourceModules": {
 		"ext.bluespice.wikiExplorer.special": {
@@ -94,7 +96,6 @@
 		}
 	},
 	"Hooks": {
-		"BSUserSidebarGlobalActionsWidgetGlobalActions": "WikiExplorer::onBSUserSidebarGlobalActionsWidgetGlobalActions",
 		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface"
 	},
 	"manifest_version": 2

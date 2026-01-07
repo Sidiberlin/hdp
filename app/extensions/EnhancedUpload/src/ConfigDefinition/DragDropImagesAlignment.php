@@ -4,7 +4,7 @@ namespace MediaWiki\Extension\EnhancedUpload\ConfigDefinition;
 
 use BlueSpice\ConfigDefinition\ArraySetting;
 use BlueSpice\ConfigDefinition\IOverwriteGlobal;
-use HTMLSelectField;
+use MediaWiki\HTMLForm\Field\HTMLSelectField;
 
 class DragDropImagesAlignment extends ArraySetting implements IOverwriteGlobal {
 	private const EXTENSION_ENHANCED_UPLOAD = 'EnhancedUpload';

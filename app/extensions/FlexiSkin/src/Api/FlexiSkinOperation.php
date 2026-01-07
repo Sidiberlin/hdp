@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\FlexiSkin\Api;
 
-use ApiUsageException;
+use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\FlexiSkin\FlexiSkin;
 use MediaWiki\Extension\FlexiSkin\IFlexiSkin;
 use Wikimedia\ParamValidator\ParamValidator;

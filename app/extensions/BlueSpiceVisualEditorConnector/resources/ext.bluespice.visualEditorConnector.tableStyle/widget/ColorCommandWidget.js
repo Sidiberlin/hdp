@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.ui.widget' );
 
-bs.vec.ui.widget.ColorCommandWidget = function( contextItem ) {
+bs.vec.ui.widget.ColorCommandWidget = function ( contextItem ) {
 	bs.vec.ui.widget.ColorCommandWidget.parent.call( this, contextItem );
 
 	this.icon = this.icon || 'highlight';
@@ -26,24 +26,24 @@ bs.vec.ui.widget.ColorCommandWidget = function( contextItem ) {
 
 OO.inheritClass( bs.vec.ui.widget.ColorCommandWidget, bs.vec.ui.widget.CommandWidget );
 
-bs.vec.ui.widget.ColorCommandWidget.prototype.executeAction = function() {
+bs.vec.ui.widget.ColorCommandWidget.prototype.executeAction = function () {
 	if ( !this.shouldExecute() ) {
 		return;
 	}
-	var val = this.colorWidget.getValue();
+	let val = this.colorWidget.getValue();
 	if ( Array.isArray( val ) ) {
-		val = val[0];
+		val = val[ 0 ];
 	}
 	this.contextItem.execCommand( this.command, { value: val } );
 
 };
 
-bs.vec.ui.widget.ColorCommandWidget.prototype.onPickerClear = function() {
+bs.vec.ui.widget.ColorCommandWidget.prototype.onPickerClear = function () {
 	this.executeAction();
 };
 
-bs.vec.ui.widget.ColorCommandWidget.prototype.onPickerToggle = function( visible ) {
-	var $mainPopup = this.$element.parents( '.oo-ui-popupWidget-popup' );
+bs.vec.ui.widget.ColorCommandWidget.prototype.onPickerToggle = function ( visible ) {
+	const $mainPopup = this.$element.parents( '.oo-ui-popupWidget-popup' );
 	if ( visible ) {
 		$mainPopup.css( 'overflow', 'visible' );
 	} else {

@@ -2,10 +2,10 @@
 
 namespace PageHeader\PageInfo;
 
-use IContextSource;
-use Message;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
 use PageHeader\PageInfo;
-use RawMessage;
 
 class NULLPageInfo extends PageInfo {
 	/**
@@ -37,7 +37,7 @@ class NULLPageInfo extends PageInfo {
 	 * @param IContextSource $context
 	 * @return bool
 	 */
-	public function shouldShow( $context ): boolean {
+	public function shouldShow( $context ): bool {
 		return false;
 	}
 

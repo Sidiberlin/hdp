@@ -15,9 +15,9 @@ StandardDialogs.ui.BasicInformationPage.prototype.setupOutlineItem = function ()
 StandardDialogs.ui.BasicInformationPage.prototype.setup = function () {
 	const me = this;
 	const dfdData = this.getData();
-	$.when( dfdData ).done( function () {
-		if ( me.pageInfo != undefined ) {
-			fieldLayout = new OO.ui.FieldsetLayout();
+	$.when( dfdData ).done( () => {
+		if ( me.pageInfo !== undefined ) {
+			const fieldLayout = new OO.ui.FieldsetLayout();
 			const contentTable = $( '<table>' );
 			contentTable.addClass( 'wikitable page-information' );
 
@@ -45,10 +45,12 @@ StandardDialogs.ui.BasicInformationPage.prototype.setup = function () {
 					$( '<tr>' ).append(
 						$( '<th>' ).text( mw.message( 'standarddialogs-page-info-page-model' ).plain() ),
 						$( '<td>' ).text( me.pageInfo[ p ].contentmodel ) ) );
-				contentTable.append(
-					$( '<tr>' ).append(
-						$( '<th>' ).text( mw.message( 'standarddialogs-page-info-page-watch' ).plain() ),
-						$( '<td>' ).text( me.pageInfo[ p ].watchers ) ) );
+				if ( me.pageInfo[ p ].watchers ) {
+					contentTable.append(
+						$( '<tr>' ).append(
+							$( '<th>' ).text( mw.message( 'standarddialogs-page-info-page-watch' ).plain() ),
+							$( '<td>' ).text( me.pageInfo[ p ].watchers ) ) );
+				}
 				const redirects = me.getRedirectLinks( p );
 				contentTable.append(
 					$( '<tr>' ).append(
@@ -104,4 +106,4 @@ StandardDialogs.ui.BasicInformationPage.prototype.getRedirectLinks = function ( 
 };
 
 // register
-registryPageInformation.register( 'basic_infos', StandardDialogs.ui.BasicInformationPage );
+registryPageInformation.register( 'basic_infos', StandardDialogs.ui.BasicInformationPage ); // eslint-disable-line no-undef

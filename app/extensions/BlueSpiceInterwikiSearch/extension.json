@@ -1,0 +1,100 @@
+{
+	"name": "BlueSpiceInterwikiSearch",
+	"version": "5.1.4",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"Dejan Savuljesku <savuljesku@hallowelt.com>"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceInterwikiSearch",
+	"descriptionmsg": "bs-interwikisearch-desc",
+	"type": "bluespice",
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceInterwikiSearch": {
+					"className": "\\BlueSpice\\InterwikiSearch\\Extension",
+					"extPath": "/BlueSpiceInterwikiSearch",
+					"status": "beta",
+					"package": "BlueSpice Pro",
+					"configDefinitions": {
+						"InterwikiSearchSearchInOtherWikis": "\\BlueSpice\\InterwikiSearch\\ConfigDefinition\\SearchInOtherWikis::getInstance",
+						"InterwikiSearchSilentOnError": "\\BlueSpice\\InterwikiSearch\\ConfigDefinition\\SilentOnError::getInstance"
+					}
+				}
+			}
+		}
+	},
+	"requires": {
+		"MediaWiki": ">= 1.43.0"
+	},
+	"MessagesDirs": {
+		"BlueSpiceInterwikiSearch": "i18n"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\InterwikiSearch\\": "src/",
+		"BlueSpice\\InterwikiSearch\\Tests\\": "tests/phpunit"
+	},
+	"ResourceModules": {
+		"ext.blueSpiceInterwikiSearch": {
+			"group": "es-search-center",
+			"scripts": [
+				"widget/Interwiki.js",
+				"widget/InterwikiItem.js",
+				"widget/ErrorInterwikiItem.js",
+				"dialog/InterwikiResults.js",
+				"dialog/Error.js",
+				"ext.blueSpiceInterwikiSearch.js"
+			],
+			"styles": [
+				"ext.blueSpiceInterwikiSearch.less"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"ext.bluespice",
+				"mediawiki.ForeignApi"
+			],
+			"messages": [
+				"bs-interwikisearch-label",
+				"bs-interwikisearch-item-button-label",
+				"bs-interwikisearch-results-dialog-title",
+				"bs-interwikisearch-results-dialog-button-go-full",
+				"bs-interwikisearch-results-dialog-button-close",
+				"bs-interwikisearch-results-desc-label",
+				"bs-interwikisearch-error-generic",
+				"bs-interwikisearch-error-generic-with-message",
+				"bs-interwikisearch-error-open-target-action",
+				"bs-interwikisearch-error-open-login-action",
+				"bs-interwikisearch-error-generic-dlg-title",
+				"bs-interwikisearch-error-login-dlg-title",
+				"bs-interwikisearch-login-suggestion-label",
+				"bs-interwikisearch-redirect-suggestion-label",
+				"cancel"
+			]
+		}
+	},
+	"config_prefix": "bsg",
+	"config": {
+		"InterwikiSearchSources": {
+			"value": {}
+		},
+		"InterwikiSearchSearchInOtherWikis": {
+			"value": true,
+			"descriptionmsg": "bs-interwikisearch-pref-searchinotherwikis",
+			"public": true
+		},
+		"InterwikiSearchSilentOnError": {
+			"value": false,
+			"descriptionmsg": "bs-interwikisearch-pref-silentonerror",
+			"public": true
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceInterwikiSearch/resources"
+	},
+	"Hooks": {
+		"BeforePageDisplay": "BlueSpice\\InterwikiSearch\\Hook\\BeforePageDisplay\\AddModules::callback"
+	},
+	"manifest_version": 2,
+	"load_composer_autoloader": true
+}

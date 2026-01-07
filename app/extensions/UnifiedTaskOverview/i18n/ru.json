@@ -1,9 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
+			"Cabadeck",
 			"Kareyac"
 		]
 	},
 	"unifiedtaskoverview": "Мои задачи",
-	"unifiedtaskoverview-personal-url-my-tasks": "Задачи"
+	"unifiedtaskoverview-personal-url-my-tasks": "Задачи",
+	"unifiedtaskoverview-no-login-text": "Пожалуйста, авторизуйтесь, чтобы увидеть ваши задачи"
 }

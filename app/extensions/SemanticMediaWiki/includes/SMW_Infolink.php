@@ -1,14 +1,16 @@
 <?php
 
-use SMW\Site;
+use MediaWiki\Linker\Linker;
+use MediaWiki\MediaWikiServices;
 use SMW\Localizer\Localizer;
+use SMW\Site;
 
 /**
  * This class mainly is a container to store URLs for the factbox in a
  * clean way. The class provides methods for creating source code for
  * realising them in wiki or html contexts.
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 1.0
  *
  * @author Markus Krötzsch
@@ -49,7 +51,7 @@ class SMWInfolink {
 	/**
 	 * Indicates whether $target is a page name (true) or URL (false).
 	 *
-	 * @var boolean
+	 * @var bool
 	 */
 	protected $mInternal;
 
@@ -61,19 +63,19 @@ class SMWInfolink {
 	protected $mParams;
 
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	private $isRestricted = false;
 
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	private $isCompactLink = false;
 
 	/**
 	 * Create a new link to some internal page or to some external URL.
 	 *
-	 * @param boolean $internal Indicates whether $target is a page name (true) or URL (false).
+	 * @param bool $internal Indicates whether $target is a page name (true) or URL (false).
 	 * @param string $caption The label for the link.
 	 * @param string $target The actual link target.
 	 * @param mixed $style CSS class of a span to embedd the link into, or false if no extra style is required.
@@ -91,7 +93,7 @@ class SMWInfolink {
 	/**
 	 * @since 3.0
 	 *
-	 * @param boolean $isRestricted
+	 * @param bool $isRestricted
 	 */
 	public function isRestricted( $isRestricted ) {
 		$this->isRestricted = (bool)$isRestricted;
@@ -100,7 +102,7 @@ class SMWInfolink {
 	/**
 	 * @since 3.0
 	 *
-	 * @param boolean $isCompactLink
+	 * @param bool $isCompactLink
 	 */
 	public function setCompactLink( $isCompactLink = true ) {
 		$this->isCompactLink = (bool)$isCompactLink;
@@ -146,7 +148,6 @@ class SMWInfolink {
 	 * @return SMWInfolink
 	 */
 	public static function newPropertySearchLink( $caption, $propertyName, $propertyValue, $style = 'smwsearch' ) {
-
 		$infolink = new SMWInfolink(
 			true,
 			$caption,
@@ -174,14 +175,13 @@ class SMWInfolink {
 	 *
 	 * @return SMWInfolink
 	 */
-	public static function newInversePropertySearchLink( $caption, $subject, $propertyname, $style = false ) {
-
+	public static function newInversePropertySearchLink( $caption, $subject, $propertyName, $style = false ) {
 		return new SMWInfolink(
 			true,
 			$caption,
 			Localizer::getInstance()->getNsText( NS_SPECIAL ) . ':PageProperty',
 			$style,
-			[ $subject . '::' . $propertyname ]
+			[ $subject . '::' . $propertyName ]
 		);
 	}
 
@@ -195,7 +195,6 @@ class SMWInfolink {
 	 * @return SMWInfolink
 	 */
 	public static function newBrowsingLink( $caption, $titleText, $style = 'smwbrowse' ) {
-
 		return new SMWInfolink(
 			true,
 			$caption,
@@ -265,13 +264,12 @@ class SMWInfolink {
 	 * if needed and not provided.
 	 */
 	public function getText( $outputformat, $linker = null ) {
-
 		if ( $this->isRestricted ) {
 			return '';
 		}
 
 		if ( $this->mStyle !== false ) {
-			SMWOutputs::requireResource( 'ext.smw.style' );
+			SMWOutputs::requireResource( 'ext.smw.styles' );
 			$start = "<span class=\"$this->mStyle\">";
 			$end = '</span>';
 		} else {
@@ -293,7 +291,8 @@ class SMWInfolink {
 				$titletext = $this->mTarget;
 			}
 
-			$title = Title::newFromText( $titletext );
+			$titleFactory = MediaWikiServices::getInstance()->getTitleFactory();
+			$title = $titleFactory->newFromText( $titletext );
 
 			if ( $title !== null ) {
 				if ( $outputformat == SMW_OUTPUT_WIKI ) {
@@ -308,7 +307,7 @@ class SMWInfolink {
 				// a direct URL link (only possible if offending target parts belong
 				// to some parameter that can be separated from title text, e.g.
 				// as in Special:Bla/il<leg>al -> Special:Bla&p=il&lt;leg&gt;al)
-				$title = Title::newFromText( $this->mTarget );
+				$title = $titleFactory->newFromText( $this->mTarget );
 
 				// Just give up due to the title being bad, normally this would
 				// indicate a software bug
@@ -324,7 +323,7 @@ class SMWInfolink {
 						$query = self::encodeCompactLink( $query, false );
 					}
 
-					$link = '[' . $title->getFullURL(  $query ) . " $this->mCaption]";
+					$link = '[' . $title->getFullURL( $query ) . " $this->mCaption]";
 				} else { // SMW_OUTPUT_HTML, SMW_OUTPUT_FILE
 
 					if ( $this->isCompactLink ) {
@@ -381,7 +380,6 @@ class SMWInfolink {
 	 * @return string
 	 */
 	public function getURL() {
-
 		$query = self::encodeParameters( $this->mParams, $this->isCompactLink );
 
 		if ( $this->isCompactLink && $query !== '' ) {
@@ -392,7 +390,7 @@ class SMWInfolink {
 			return $this->buildTarget( $query );
 		}
 
-		$title = Title::newFromText( $this->mTarget );
+		$title = MediaWikiServices::getInstance()->getTitleFactory()->newFromText( $this->mTarget );
 
 		if ( $title !== null ) {
 			return $title->getFullURL( $query );
@@ -408,7 +406,6 @@ class SMWInfolink {
 	 * @return string
 	 */
 	public function getLocalURL() {
-
 		$query = self::encodeParameters( $this->mParams, $this->isCompactLink );
 
 		if ( $this->isCompactLink && $query !== '' ) {
@@ -419,7 +416,7 @@ class SMWInfolink {
 			return $this->buildTarget( $query );
 		}
 
-		$title = Title::newFromText( $this->mTarget );
+		$title = MediaWikiServices::getInstance()->getTitleFactory()->newFromText( $this->mTarget );
 
 		if ( $title !== null ) {
 			return $title->getLocalURL( $query );
@@ -437,7 +434,7 @@ class SMWInfolink {
 	 * @return Linker
 	 */
 	protected function getLinker( &$linker = null ) {
-		if ( is_null( $linker ) ) {
+		if ( $linker === null ) {
 			$linker = new Linker;
 		}
 		return $linker;
@@ -458,9 +455,9 @@ class SMWInfolink {
 	 * respective encoding/decoding methods instead.
 	 *
 	 * @param array $params
-	 * @param boolean $forTitle
+	 * @param bool $forTitle
 	 */
-	static public function encodeParameters( array $params, $forTitle = true ) {
+	public static function encodeParameters( array $params, $forTitle = true ) {
 		$result = '';
 
 		if ( $forTitle ) {
@@ -503,7 +500,7 @@ class SMWInfolink {
 
 			foreach ( $params as $name => $value ) {
 				if ( is_string( $name ) && ( $name !== '' ) ) {
-					$value = rawurlencode( $name ) . '=' . rawurlencode( $value );
+					$value = rawurlencode( $name ?? '' ) . '=' . rawurlencode( $value ?? '' );
 
 					if ( $result !== '' ) {
 						$result .= '&';
@@ -546,11 +543,11 @@ class SMWInfolink {
 	 * the respective encoding/decoding methods instead.
 	 *
 	 * @param string $titleParam
-	 * @param boolean $allParams
+	 * @param bool $allParams
 	 *
 	 * @return array
 	 */
-	static public function decodeParameters( $titleParam = '', $allParams = false ) {
+	public static function decodeParameters( $titleParam = '', $allParams = false ) {
 		global $wgRequest;
 
 		$result = [];
@@ -569,7 +566,7 @@ class SMWInfolink {
 
 		if ( is_array( $titleParam ) ) {
 			return $titleParam;
-		} elseif ( $titleParam !== '' ) {
+		} elseif ( is_string( $titleParam ) && $titleParam !== '' ) {
 			// unescape $p; escaping scheme: all parameters rawurlencoded, "-" and "/" urlencoded, all "%" replaced by "-", parameters then joined with /
 			$ps = explode( '/', $titleParam ); // params separated by / here (compatible with wiki link syntax)
 
@@ -591,11 +588,10 @@ class SMWInfolink {
 	 * @return string|array
 	 */
 	public static function encodeCompactLink( $value, $compound = false ) {
-
 		// Expect to gain on larger strings and set an identifier to
 		// distinguish between compressed and non compressed
 		if ( mb_strlen( $value ) > 150 ) {
-			$value =  'c:' . gzdeflate( $value, 9 );
+			$value = 'c:' . gzdeflate( $value, 9 );
 		}
 
 		// https://en.wikipedia.org/wiki/Base64#URL_applications
@@ -618,24 +614,23 @@ class SMWInfolink {
 	 * @return string
 	 */
 	public static function decodeCompactLink( $value ) {
-
-		if ( !is_string( $value ) || mb_substr( $value, 0, 3 ) !== 'cl:' ) {
+		if ( !is_string( $value ) || substr( $value, 0, 3 ) !== 'cl:' ) {
 			return $value;
 		}
 
-		$value = mb_substr( $value, 3 );
+		$value = substr( $value, 3 );
 
 		$value = base64_decode(
 			str_pad( strtr( str_replace( '.', '__', $value ), '-_', '+/' ), strlen( $value ) % 4, '=', STR_PAD_RIGHT )
 		);
 
 		// Compressed?
-		if ( mb_substr( $value, 0, 2 ) === 'c:' ) {
-			$val = @gzinflate( mb_substr( $value, 2 ) );
+		if ( substr( $value, 0, 2 ) === 'c:' ) {
+			$val = @gzinflate( substr( $value, 2 ) );
 
 			// Guessing that MediaWiki swallowed the last `_`
 			if ( $val === false ) {
-				$val = @gzinflate( mb_substr( $value , 2 ) . '?' );
+				$val = @gzinflate( substr( $value, 2 ) . '?' );
 			}
 
 			$value = $val;
@@ -644,14 +639,13 @@ class SMWInfolink {
 		// Normalize if nceessary for those that are "encoded for use in a
 		// MediaWiki page title"
 		if ( mb_substr( $value, 0, 2 ) === 'x=' ) {
-			$value = str_replace( [ 'x=', '=-&' , '&', '%2F' ], [ '' , '=-2D&', '/', '/' ], $value );
+			$value = str_replace( [ 'x=', '=-&', '&', '%2F' ], [ '', '=-2D&', '/', '/' ], $value );
 		}
 
 		return $value;
 	}
 
 	private function buildTarget( $query ) {
-
 		$target = $this->mTarget;
 
 		if ( count( $this->mParams ) > 0 ) {

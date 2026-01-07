@@ -13,11 +13,15 @@
  */
 
 use MediaWiki\MediaWikiServices;
+use SMW\DataValueFactory;
+use SMW\Query\QueryResult;
+use SMW\Query\Result\ResultArray;
+use SMW\Query\ResultPrinters\ResultPrinter;
 
 /**
  * Array format
  */
-class SRFArray extends SMWResultPrinter {
+class SRFArray extends ResultPrinter {
 
 	protected static $mDefaultSeps = [];
 	protected $mSep;
@@ -53,19 +57,18 @@ class SRFArray extends SMWResultPrinter {
 		return wfMessage( 'srf_printername_' . $this->mFormat )->text();
 	}
 
-	/*
-	// By overwriting this function, we disable default searchlabel handling?
-	public function getResult( SMWQueryResult $results, array $params, $outputmode ) {
-		$this->handleParameters( $params, $outputmode );
-		return $this->getResultText( $results, $outputmode );
-	}
-	*/
-
-	protected function getResultText( SMWQueryResult $res, $outputmode ) {
+	/**
+	 * By overwriting this function, we disable default searchlabel handling?
+	 * public function getResult( QueryResult $results, array $params, $outputmode ) {
+	 * $this->handleParameters( $params, $outputmode );
+	 * return $this->getResultText( $results, $outputmode );
+	 * }
+	 */
+	protected function getResultText( QueryResult $res, $outputmode ) {
 		/*
 		 * @todo
 		 * labels of requested properties could define default values. Seems not possible at the moment because
-		 * SMWPrintRequest::getLable() always returns the property name even if no specific label is defined.
+		 * \SMW\Query\PrintRequest::getLable() always returns the property name even if no specific label is defined.
 		 */
 
 		$perPage_items = [];
@@ -83,7 +86,8 @@ class SRFArray extends SMWResultPrinter {
 			$isPageTitle = !$this->mMainLabelHack;
 
 			// for each property on that page:
-			foreach ( $row as $field ) { // $row is array(), $field of type SMWResultArray
+			// $row is array(), $field of type ResultArray
+			foreach ( $row as $field ) {
 				$manyValue_items = [];
 				$isMissingProperty = false;
 
@@ -94,8 +98,7 @@ class SRFArray extends SMWResultPrinter {
 					$delivery = $this->deliverMissingProperty( $field );
 					$manyValue_items = $this->fillDeliveryArray( $manyValue_items, $delivery );
 					$isMissingProperty = true;
-				} else // otherwise collect property value (potentially many values):
-				{
+				} else {
 					while ( $obj = $field->getNextDataValue() ) {
 
 						$value_items = [];
@@ -105,18 +108,17 @@ class SRFArray extends SMWResultPrinter {
 						if ( $isPageTitle ) {
 							if ( !$this->mShowPageTitles ) {
 								$isPageTitle = false;
-								continue 2; // next property
+								continue 2;
 							}
 							$value_items = $this->fillDeliveryArray(
 								$value_items,
 								$this->deliverPageTitle( $obj, $this->mLinkFirst )
 							);
-						} // handle record values:
- elseif ( $obj instanceof SMWRecordValue ) {
+						} elseif ( $obj instanceof SMWRecordValue ) {
 							$recordItems = $obj->getDataItems();
 							// walk all single values of the record set:
 							foreach ( $recordItems as $dataItem ) {
-								$recordField = $dataItem !== null ? SMWDataValueFactory::getInstance(
+								$recordField = $dataItem !== null ? DataValueFactory::getInstance(
 								)->newDataValueByItem( $dataItem, null ) : null;
 								$value_items = $this->fillDeliveryArray(
 									$value_items,
@@ -124,17 +126,16 @@ class SRFArray extends SMWResultPrinter {
 								);
 							}
 							$isRecord = true;
- } // handle normal data values:
- else {
-							$value_items = $this->fillDeliveryArray(
-								$value_items,
-								$this->deliverSingleValue( $obj, $this->mLinkOthers )
-							);
- }
+						} else {
+												$value_items = $this->fillDeliveryArray(
+												$value_items,
+												$this->deliverSingleValue( $obj, $this->mLinkOthers )
+													);
+						}
 						$delivery = $this->deliverSingleManyValuesData( $value_items, $isRecord, $isPageTitle );
 						$manyValue_items = $this->fillDeliveryArray( $manyValue_items, $delivery );
 					}
-				} // foreach...
+				}
 				$delivery = $this->deliverPropertiesManyValues(
 					$manyValue_items,
 					$isMissingProperty,
@@ -142,19 +143,25 @@ class SRFArray extends SMWResultPrinter {
 					$field
 				);
 				$perProperty_items = $this->fillDeliveryArray( $perProperty_items, $delivery );
-				$isPageTitle = false; // next one could be record or normal value
-			} // foreach...
+				// next one could be record or normal value
+				$isPageTitle = false;
+			}
 			$delivery = $this->deliverPageProperties( $perProperty_items );
 			$perPage_items = $this->fillDeliveryArray( $perPage_items, $delivery );
-		} // while...
+		}
 
 		$output = $this->deliverQueryResultPages( $perPage_items );
 
 		return $output;
 	}
 
+	/**
+	 * Method fillDeliveryArray
+	 *
+	 */
 	protected function fillDeliveryArray( $array = [], $value = null ) {
-		if ( $value !== null ) { // don't create any empty entries
+		// don't create any empty entries
+		if ( $value !== null ) {
 			$array[] = $value;
 		}
 		return $array;
@@ -169,30 +176,39 @@ class SRFArray extends SMWResultPrinter {
 			return $this->deliverSingleValue( $value, $link );
 		} elseif ( $this->mHideRecordGaps ) {
 			return null;
-		} // hide gap
- else {
+		} else {
 			return '';
- } // empty string will make sure that record value separators are generated
+		}
 	}
 
 	protected function deliverSingleValue( $value, $link = false ) {
 		// return trim( $value->getShortWikiText( $link ) );
 		return trim(
 			Sanitizer::decodeCharReferences( $value->getShortWikiText( $link ) )
-		); // decode: better for further processing with array extension
+		);
 	}
 
-	// Property not declared on a page:
-	protected function deliverMissingProperty( SMWResultArray $field ) {
+	/**
+	 * Method deliverMissingProperty
+	 *
+	 * @param ResultArray $field
+	 */
+	protected function deliverMissingProperty( ResultArray $field ) {
 		if ( $this->mHidePropertyGaps ) {
 			return null;
 		} else {
 			return '';
-		} // empty string will make sure that array separator will be generated
+		}
 		/** @ToDo: System for Default values?... * */
 	}
 
-	// represented by an array of record fields or just a single array value:
+	/**
+	 * Method deliverSingleManyValuesData
+	 *
+	 * @param $value_items
+	 * @param $containsRecord
+	 * @param $isPageTitle
+	 */
 	protected function deliverSingleManyValuesData( $value_items, $containsRecord, $isPageTitle ) {
 		if ( empty( $value_items ) ) {
 			return null;
@@ -200,7 +216,7 @@ class SRFArray extends SMWResultPrinter {
 		return implode( $this->mRecordSep, $value_items );
 	}
 
-	protected function deliverPropertiesManyValues( $manyValue_items, $isMissingProperty, $isPageTitle, SMWResultArray $data ) {
+	protected function deliverPropertiesManyValues( $manyValue_items, $isMissingProperty, $isPageTitle, ResultArray $data ) {
 		if ( empty( $manyValue_items ) ) {
 			return null;
 		}
@@ -224,7 +240,8 @@ class SRFArray extends SMWResultPrinter {
 
 	protected function deliverQueryResultPages( $perPage_items ) {
 		if ( $this->mArrayName !== null ) {
-			$this->createArray( $perPage_items ); // create Array
+			// create Array
+			$this->createArray( $perPage_items );
 			return '';
 		} else {
 			return implode( $this->mSep, $perPage_items );
@@ -271,14 +288,19 @@ class SRFArray extends SMWResultPrinter {
 	}
 
 	protected function initializeCfgValue( $dfltVal, $dfltCacheKey ) {
+		if ( !isset( self::$mDefaultSeps ) || !is_array( self::$mDefaultSeps ) ) {
+			self::$mDefaultSeps = [];
+		}
+
 		$cache = &self::$mDefaultSeps[$dfltCacheKey];
+
 		if ( !isset( $cache ) ) {
 			$cache = $this->getCfgSepText( $dfltVal );
 			if ( $cache === null ) {
-				// cache can't be initialized, propably function-reference in userconfig
+				// cache can't be initialized, probably function-reference in user config
 				// but format is not used in inline context, use fallback in this case:
-				global $srfgArraySepTextualFallbacks;
-				$cache = $srfgArraySepTextualFallbacks[$dfltCacheKey];
+				global $wgSrfgArraySepTextualFallbacks;
+				$cache = $wgSrfgArraySepTextualFallbacks[$dfltCacheKey] ?? ''; // Default to empty string
 			}
 		}
 		return $cache;
@@ -296,7 +318,7 @@ class SRFArray extends SMWResultPrinter {
 				$params = $obj['args'];
 			} else {
 				$params = [];
-			} // no arguments
+			}
 
 			// create title of page whose text should be used as separator:
 			$obj = Title::newFromText( $obj[0], ( array_key_exists( 1, $obj ) ? $obj[1] : NS_MAIN ) );
@@ -306,7 +328,7 @@ class SRFArray extends SMWResultPrinter {
 		} elseif ( $obj instanceof Article ) {
 			$article = $obj;
 		} else {
-			return $obj; // only text
+			return $obj;
 		}
 
 		/*
@@ -315,7 +337,7 @@ class SRFArray extends SMWResultPrinter {
 		 */
 		// can't use $this->mInline here since SMW 1.6.2 had a bug setting it to false in most cases!
 		$parser = MediaWikiServices::getInstance()->getParser();
-		if ( !isset( $parser->mOptions ) ) {
+		if ( $parser->getOptions() === null ) {
 			// if( ! $this->mInline ) {
 			return null;
 		}
@@ -349,7 +371,8 @@ class SRFArray extends SMWResultPrinter {
 			$this->mArrayName = trim( $params['name'] );
 			$this->createArray(
 				[]
-			); // create empty array in case we get no result so we won't have an undefined array in the end.
+			);
+			// create empty array in case we get no result so we won't have an undefined array in the end.
 		}
 
 		// if mainlabel set to '-', this will cause the titles not to appear, so make sure we catch this!
@@ -386,7 +409,7 @@ class SRFArray extends SMWResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::getParamDefinitions
+	 * @see ResultPrinter::getParamDefinitions
 	 *
 	 * @since 1.8
 	 *

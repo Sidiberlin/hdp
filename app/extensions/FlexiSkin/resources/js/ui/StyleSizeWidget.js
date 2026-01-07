@@ -13,9 +13,7 @@ flexiskin.ui.StyleSizeWidget = function ( cfg ) {
 		width: '150px'
 	} );
 	this.unitWidget = new OO.ui.DropdownInputWidget( {
-		options: this.allowedUnits.map( function ( unit ) {
-			return { data: unit, label: unit };
-		} )
+		options: this.allowedUnits.map( ( unit ) => ( { data: unit, label: unit } ) )
 	} );
 	this.unitWidget.$element.css( {
 		width: '70px'
@@ -33,8 +31,8 @@ flexiskin.ui.StyleSizeWidget = function ( cfg ) {
 OO.inheritClass( flexiskin.ui.StyleSizeWidget, OO.ui.InputWidget );
 
 flexiskin.ui.StyleSizeWidget.prototype.getValue = function () {
-	var value = this.valueWidget.getValue(),
-	 unit = this.unitWidget.getValue();
+	const value = this.valueWidget.getValue();
+	const unit = this.unitWidget.getValue();
 
 	if ( !value || ( this.requireUnit && !unit ) ) {
 		return '';
@@ -44,10 +42,10 @@ flexiskin.ui.StyleSizeWidget.prototype.getValue = function () {
 };
 
 flexiskin.ui.StyleSizeWidget.prototype.setValue = function ( value ) {
-	if ( $.type( value ) !== 'string' ) {
+	if ( typeof value !== 'string' ) {
 		return;
 	}
-	var regex = /^([\d\.]*)(.*)$/gm,
+	const regex = /^([\d.]*)(.*)$/gm,
 		matches = regex.exec( value );
 
 	if ( matches.length === 3 ) {

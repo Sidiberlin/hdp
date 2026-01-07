@@ -24,7 +24,7 @@ class EnableNumberHeadings extends BooleanSetting implements IOverwriteGlobal {
 	 * @return string
 	 */
 	public function getLabelMessageKey() {
-		return 'numberheadings-conf-enable';
+		return 'numberheadings-conf-enable-numbering';
 	}
 
 	/**
@@ -33,5 +33,13 @@ class EnableNumberHeadings extends BooleanSetting implements IOverwriteGlobal {
 	 */
 	public function getGlobalName() {
 		return "wgNumberHeadingsEnable";
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	public function getHelpMessageKey() {
+		return 'numberheadings-conf-enable-numbering-help';
 	}
 }

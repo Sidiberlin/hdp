@@ -1,0 +1,126 @@
+{
+	"name": "BlueSpiceMatomoConnector",
+	"version": "5.1.4",
+	"license-name": "GPL-3.0-only",
+	"author": [
+		"Josef Konrad",
+		"Patric Wirth",
+		"Hamish Slater",
+		"[https://www.hallowelt.com Hallo Welt! GmbH]"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceMatomoConnector",
+	"type": "bluespice",
+	"descriptionmsg": "bs-matomoconnector-extension-description",
+	"requires": {
+		"MediaWiki": ">= 1.43.0",
+		"extensions": {
+			"BlueSpiceFoundation": ">= 5.0.0"
+		}
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"Extensions": {
+				"BlueSpiceMatomoConnector": {
+					"className": "\\BlueSpice\\MatomoConnector\\Extension",
+					"extPath": "/BlueSpiceMatomoConnector",
+					"status": "stable",
+					"package": "BlueSpiceMatomoConnector",
+					"configDefinitions": {
+						"MatomoConnectorSiteID": "\\BlueSpice\\MatomoConnector\\ConfigDefinition\\SiteID::getInstance",
+						"MatomoConnectorBaseUrl": "\\BlueSpice\\MatomoConnector\\ConfigDefinition\\BaseUrl::getInstance",
+						"MatomoConnectorAuthToken": "\\BlueSpice\\MatomoConnector\\ConfigDefinition\\AuthToken::getInstance",
+						"MatomoConnectorOptOutFooter": "\\BlueSpice\\MatomoConnector\\ConfigDefinition\\OptOutFooter::getInstance",
+						"MatomoBlueSpicePrivacyIntegration": "\\BlueSpice\\MatomoConnector\\ConfigDefinition\\BSPrivacyIntegration::getInstance"
+					}
+				}
+			}
+		}
+	},
+	"SpecialPages": {
+		"OptOut": "\\BlueSpice\\MatomoConnector\\Special\\OptOut"
+	},
+	"MessagesDirs": {
+		"BlueSpiceMatomoConnector": [
+			"i18n"
+		]
+	},
+	"ExtensionMessagesFiles": {
+		"OptOut": "languages/SpecialOptOut.alias.php"
+	},
+	"AutoloadNamespaces": {
+		"BlueSpice\\MatomoConnector\\": "src/"
+	},
+	"ResourceModules": {
+		"ext.bluespice.matomoConnector": {
+			"scripts": [
+				"bluespice.matomoConnector.js"
+			],
+			"messages": [
+				"bs-matomoconnector-privacy-cookie-group",
+				"bs-matomoconnector-privacy-cookie-group-desc"
+			]
+		},
+		"ext.bluespice.matomoConnector.privacy": {
+			"scripts": [
+				"bluespice.matomoConnector.privacy.js"
+			],
+			"dependencies": [
+				"ext.bluespice.matomoConnector"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceMatomoConnector/resources"
+	},
+	"config_prefix": "bsg",
+	"config": {
+		"MatomoConnectorOptOutFooter": {
+			"value": true,
+			"descriptionmsg": "bs-matomoconnector-pref-optoutfooter",
+			"public": true
+		},
+		"MatomoConnectorBaseUrl": {
+			"value": null,
+			"descriptionmsg": "bs-matomoconnector-pref-baseurl",
+			"public": true
+		},
+		"MatomoConnectorSiteID": {
+			"value": 0,
+			"descriptionmsg": "bs-matomoconnector-pref-siteid",
+			"public": true
+		},
+		"MatomoConnectorAuthToken": {
+			"value": null,
+			"descriptionmsg": "bs-matomoconnector-pref-authtoken"
+		},
+		"MatomoBlueSpicePrivacyIntegration": {
+			"value": false,
+			"description": "If enabled, Matomo installation must have AjaxOptOut plugin enabled. See docs/PrivacyIntegration.md"
+		},
+		"MatomoConnectorCustomDimensionIDMap": {
+			"value": {
+				"page_namespace": 1
+			}
+		}
+	},
+	"Hooks": {
+		"BeforePageDisplay": "addResources",
+		"SkinAddFooterLinks": "addFooterLink",
+		"BlueSpicePrivacyCookieConsentProviderGetGroups": "\\BlueSpice\\MatomoConnector\\Hook\\BlueSpicePrivacyCookieConsentProviderGetGroups\\AddMatomoCookieGroup::callback"
+	},
+	"HookHandlers": {
+		"addFooterLink": {
+			"class": "\\BlueSpice\\MatomoConnector\\HookHandlers\\SkinAddFooterLinks\\AddFooterLink",
+			"services": [ "ConfigFactory", "LinkRenderer" ]
+		},
+		"addResources": {
+			"class": "\\BlueSpice\\MatomoConnector\\HookHandlers\\BeforePageDisplay\\AddResources",
+			"services": [ "ConfigFactory", "UrlUtils", "BlueSpiceMatomoConnectorDimensions" ]
+		}
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"manifest_version": 2
+}

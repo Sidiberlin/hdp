@@ -1,6 +1,4 @@
-ext = ext || {};
-ext.prodistributionconnector = ext.prodistributionconnector || {};
-ext.prodistributionconnector.ui = ext.prodistributionconnector.ui || {};
+bs.util.registerNamespace( 'ext.prodistributionconnector.ui' );
 
 ext.prodistributionconnector.ui.PDFEmbedInspector = function ( config ) {
 	// Parent constructor
@@ -59,15 +57,15 @@ ext.prodistributionconnector.ui.PDFEmbedInspector.prototype.initialize = functio
 
 ext.prodistributionconnector.ui.PDFEmbedInspector.prototype.createFields = function () {
 	this.inputPDF = new OOJSPlus.ui.widget.FileSearchWidget( {
-		extensions: ['pdf']
+		extensions: [ 'pdf' ]
 	} );
-	this.inputPDF.on( 'change', function () {
+	this.inputPDF.on( 'change', () => {
 		let value = this.inputPDF.getValue();
-		if ( value.indexOf( 'File:') === -1 ) {
+		if ( value.indexOf( 'File:' ) === -1 ) {
 			value = 'File:' + value;
 		}
 		this.input.setValue( value );
-	}.bind( this) );
+	} );
 
 	this.widthInput = new OO.ui.TextInputWidget( {
 		placeholder: '500'
@@ -82,23 +80,23 @@ ext.prodistributionconnector.ui.PDFEmbedInspector.prototype.createFields = funct
 
 ext.prodistributionconnector.ui.PDFEmbedInspector.prototype.setLayouts = function () {
 	this.inputLayout = new OO.ui.FieldLayout( this.inputPDF, {
-		label: mw.message( 'bs-pro-distribution-pdfembed-inspector-input-label' ).plain(),
-		help: mw.message( 'bs-pro-distribution-pdfembed-inspector-input-help' ).plain()
+		label: mw.message( 'bs-pro-distribution-pdfembed-inspector-input-label' ).text(),
+		help: mw.message( 'bs-pro-distribution-pdfembed-inspector-input-help' ).text()
 	} );
 
 	this.widthLayout = new OO.ui.FieldLayout( this.widthInput, {
-		label: mw.message( 'bs-pro-distribution-pdfembed-inspector-width-label' ).plain(),
-		help: mw.message( 'bs-pro-distribution-pdfembed-inspector-width-help' ).plain()
+		label: mw.message( 'bs-pro-distribution-pdfembed-inspector-width-label' ).text(),
+		help: mw.message( 'bs-pro-distribution-pdfembed-inspector-width-help' ).text()
 	} );
 
 	this.heightLayout = new OO.ui.FieldLayout( this.heightInput, {
-		label: mw.message( 'bs-pro-distribution-pdfembed-inspector-height-label' ).plain(),
-		help: mw.message( 'bs-pro-distribution-pdfembed-inspector-height-help' ).plain()
+		label: mw.message( 'bs-pro-distribution-pdfembed-inspector-height-label' ).text(),
+		help: mw.message( 'bs-pro-distribution-pdfembed-inspector-height-help' ).text()
 	} );
 
 	this.pageLayout = new OO.ui.FieldLayout( this.pageInput, {
-		label: mw.message( 'bs-pro-distribution-pdfembed-inspector-page-label' ).plain(),
-		help: mw.message( 'bs-pro-distribution-pdfembed-inspector-page-help' ).plain()
+		label: mw.message( 'bs-pro-distribution-pdfembed-inspector-page-label' ).text(),
+		help: mw.message( 'bs-pro-distribution-pdfembed-inspector-page-help' ).text()
 	} );
 
 };
@@ -110,7 +108,7 @@ ext.prodistributionconnector.ui.PDFEmbedInspector.prototype.getSetupProcess = fu
 	this.updateSize();
 	return ext.prodistributionconnector.ui.PDFEmbedInspector.super.prototype.getSetupProcess.call( this, data )
 		.next( function () {
-			var attributes = this.selectedNode.getAttribute( 'mw' ).attrs;
+			const attributes = this.selectedNode.getAttribute( 'mw' ).attrs;
 			if ( this.input.getValue() !== '' ) {
 				this.inputPDF.setValue( this.input.getValue() );
 			}

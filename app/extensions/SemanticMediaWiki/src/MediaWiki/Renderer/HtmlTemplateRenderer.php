@@ -2,10 +2,10 @@
 
 namespace SMW\MediaWiki\Renderer;
 
-use Parser;
+use MediaWiki\Parser\Parser;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.2
  *
  * @author mwjames
@@ -58,7 +58,6 @@ class HtmlTemplateRenderer {
 	 * @return string
 	 */
 	public function render() {
-
 		$wikiText = $this->wikitextTemplateRenderer->render();
 
 		if ( $wikiText === '' ) {

@@ -2,7 +2,7 @@
 
 namespace BlueSpice\DistributionConnector\Maintenance\PostDatabaseUpdate;
 
-use LoggedUpdateMaintenance;
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
 
 require_once dirname( __DIR__, 5 ) . "/maintenance/Maintenance.php";
@@ -65,7 +65,8 @@ class FixPluggableAuthGroupSync extends LoggedUpdateMaintenance {
 		$currentPluggableAuthConfig = $this->db->selectField(
 			$this->configTable,
 			's_value',
-			"s_name = '{$this->pluggableAuthConfigKey}'"
+			"s_name = '{$this->pluggableAuthConfigKey}'",
+			__METHOD__
 		);
 		if ( $currentPluggableAuthConfig ) {
 			$pluggableAuthConfig = json_decode( $currentPluggableAuthConfig, true );
@@ -84,10 +85,9 @@ class FixPluggableAuthGroupSync extends LoggedUpdateMaintenance {
 	private function updatePluggableAuthConfig( array $newConfigValue ): void {
 		$this->db->update(
 			$this->configTable,
-			[
-				's_value' => json_encode( $newConfigValue )
-			],
-			"s_name = '{$this->pluggableAuthConfigKey}'"
+			[ 's_value' => json_encode( $newConfigValue ) ],
+			"s_name = '{$this->pluggableAuthConfigKey}'",
+			__METHOD__
 		);
 
 		$this->output( "Config '{$this->pluggableAuthConfigKey}' updated.\n" );

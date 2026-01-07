@@ -3,22 +3,23 @@
 namespace BlueSpice\Discovery\Component;
 
 use BlueSpice\Discovery\HookRunner;
-use Html;
-use IContextSource;
+use Exception;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\MenuEditor\Node\TwoFoldLinkSpec;
 use MediaWiki\Extension\MenuEditor\Parser\WikitextMenuParser;
 use MediaWiki\HookContainer\HookContainer;
-use MediaWiki\Permissions\Authority;
+use MediaWiki\Html\Html;
+use MediaWiki\Message\Message;
 use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Skin\SkinComponentLink;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\Utils\UrlUtils;
-use Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
 use MWStake\MediaWiki\Component\CommonUserInterface\LinkFormatter;
 use MWStake\MediaWiki\Component\Wikitext\ParserFactory;
 use MWStake\MediaWiki\Lib\Nodes\INode;
 use Skin;
-use Title;
-use TitleFactory;
 
 class FooterLinksListItems extends Literal {
 
@@ -57,13 +58,12 @@ class FooterLinksListItems extends Literal {
 	 * v
 	 */
 	public function __construct(
-		Skin $skin, TitleFactory $titleFactory, RevisionStore $revisionStore,
-		UrlUtils $urlUtils, LinkFormatter $linkFormatter, ParserFactory $parserFactory, HookContainer $hookContainer
+		Skin $skin, TitleFactory $titleFactory, RevisionStore $revisionStore, UrlUtils $urlUtils,
+		LinkFormatter $linkFormatter, ParserFactory $parserFactory, HookContainer $hookContainer
 	) {
-		$this->skin = $skin;
 		parent::__construct( '', '' );
 
-		/** @var TitleFactory */
+		$this->skin = $skin;
 		$this->titleFactory = $titleFactory;
 		$this->revisionStore = $revisionStore;
 		$this->urlUtils = $urlUtils;
@@ -87,23 +87,21 @@ class FooterLinksListItems extends Literal {
 	public function getHtml(): string {
 		$footerLinks = [];
 
-		// The key has to be 'places' here to be mediawiki compatible!
-		$footerLinks['places'] = $this->getFooterLinks();
+		if ( $this->footerLinksSourceTitle->exists() ) {
+			// The key here is 'places' to be MediaWiki compatible.
+			$footerLinks['places'] = $this->getCustomFooterLinks();
+		} else {
+			$footerLinks['places'] = $this->getDefaultFooterLinks();
 
-		if ( $this->footerLinksSourceTitle instanceof Title === false
-			|| !$this->footerLinksSourceTitle->exists()
-		) {
-			$footerLinks['places'] = $this->skin->getSiteFooterLinks();
-
-			$footerLinks['places']['imprint'] = $this->skin->footerLink(
-				Message::newFromKey( 'bs-discovery-footerlinks-imprint-link-desc' )->inContentLanguage(),
-				Message::newFromKey( 'bs-discovery-footerlinks-imprint-link-page' )->inContentLanguage()
+			$footerLinks['places']['imprint'] = $this->buildFooterLink(
+				'imprint',
+				'bs-discovery-footerlinks-imprint-link-desc',
+				'bs-discovery-footerlinks-imprint-link-page'
 			);
-			$termsOfServiceKey = Message::newFromKey( 'bs-discovery-footerlinks-termsofservice-link-desc' )
-				->inContentLanguage()->text();
-			$footerLinks['places'][$termsOfServiceKey] = $this->skin->footerLink(
-				Message::newFromKey( 'bs-discovery-footerlinks-termsofservice-link-desc' )->inContentLanguage(),
-				Message::newFromKey( 'bs-discovery-footerlinks-termsofservice-link-page' )->inContentLanguage()
+			$footerLinks['places']['termsofservice'] = $this->buildFooterLink(
+				'termsofservice',
+				'bs-discovery-footerlinks-termsofservice-link-desc',
+				'bs-discovery-footerlinks-termsofservice-link-page'
 			);
 		}
 
@@ -117,35 +115,79 @@ class FooterLinksListItems extends Literal {
 
 		$items = [];
 		foreach ( $footerLinks['places'] as $link ) {
-			$item = Html::openElement( 'li' );
-			$item .= $link;
-			$item .= Html::closeElement( 'li' );
-
-			$items[] = $item;
+			$items[] = Html::rawElement( 'li', [], $link );
 		}
 
-		/** @var Authority */
 		$authority = $this->skin->getContext()->getAuthority();
 		if ( $authority->isAllowed( 'editinterface' ) ) {
-			$item = Html::openElement(
-				'li',
-				[
-					'class' => 'edit-footerlinks-link',
-				]
-			);
-			$item .= $this->getEditLink();
-			$item .= Html::closeElement( 'li' );
-
-			$items[] = $item;
+			$items[] = $this->buildEditLink();
 		}
 
 		return implode( '', $items );
 	}
 
 	/**
+	 * Gets the link to the wiki's privacy policy, about page, and disclaimer page.
+	 * Replaces old Skin::getSiteFooterLinks.
+	 *
+	 * @return string[] Map of (key => HTML) for 'privacy', 'about', 'disclaimer'
+	 */
+	private function getDefaultFooterLinks(): array {
+		$footerLinks = [];
+
+		$linkSpecs = [
+			'privacy' => [ 'desc' => 'privacy', 'page' => 'privacypage' ],
+			'about' => [ 'desc' => 'aboutsite', 'page' => 'aboutpage' ],
+			'disclaimer' => [ 'desc' => 'disclaimers', 'page' => 'disclaimerpage' ],
+		];
+
+		foreach ( $linkSpecs as $key => [ 'desc' => $descKey, 'page' => $pageKey ] ) {
+			$footerLinks[$key] = $this->buildFooterLink( $key, $descKey, $pageKey );
+		}
+
+		return $footerLinks;
+	}
+
+	/**
+	 * Build a SkinComponentLink based on two message keys (desc, page).
+	 * Replaces old Skin::footerLink.
+	 *
+	 * @param string $key Unique link key
+	 * @param string $descKey The i18n message key for the link text
+	 * @param string $pageKey The i18n message key for the page to link to
+	 * @return string HTML anchor
+	 */
+	private function buildFooterLink( string $key, string $descKey, string $pageKey ): string {
+		$descMsg = Message::newFromKey( $descKey )->inContentLanguage();
+		$pageMsg = Message::newFromKey( $pageKey )->inContentLanguage();
+
+		if ( !$descMsg->exists() || !$pageMsg->exists() ) {
+			return '';
+		}
+
+		$descText = $descMsg->text();
+		$pageText = $pageMsg->text();
+
+		$title = Title::newFromText( $pageText );
+		if ( !$title ) {
+			return '';
+		}
+
+		$item = [
+			'href' => $title->getLocalURL(),
+			'text' => $descText,
+			'title' => $title->getText(),
+		];
+
+		$link = new SkinComponentLink( $key, $item, $this->skin );
+
+		return $link->getTemplateData()['html'];
+	}
+
+	/**
 	 * @return array
 	 */
-	private function getFooterLinks(): array {
+	private function getCustomFooterLinks(): array {
 		$parserData = $this->getParserData();
 
 		$customFooterLinksData = $this->buildCustomFooterLinksData( $parserData );
@@ -172,22 +214,22 @@ class FooterLinksListItems extends Literal {
 	private function buildCustomFooterLinksData( array $parserData ): array {
 		$links = [];
 		foreach ( $parserData as $dataItem ) {
-			if ( !is_a( $dataItem, 'MWStake\MediaWiki\Lib\Nodes\INode', true ) ) {
+			if ( !( $dataItem instanceof TwoFoldLinkSpec ) ) {
 				continue;
 			}
 
-			/** @var TwoFoldLinkSpec $dataItem */
 			$url = $this->skin->makeInternalOrExternalUrl( $dataItem->getTarget() );
 			$data = [
-				'text' => $dataItem->getLabel(),
 				'href' => $url,
+				'text' => $dataItem->getLabel(),
+				'title' => $dataItem->getLabel(),
 				'role' => 'link'
 			];
 
 			$parsedURL = $this->urlUtils->parse( $dataItem->getTarget() );
 			if ( !$parsedURL ) {
 				$title = $this->titleFactory->newFromText( $dataItem->getTarget() );
-				if ( !$title->exists() ) {
+				if ( $title && !$title->exists() ) {
 					$data['class'] = 'new';
 				}
 			}
@@ -207,7 +249,14 @@ class FooterLinksListItems extends Literal {
 	/**
 	 * @return string
 	 */
-	private function getEditLink(): string {
+	private function buildEditLink(): string {
+		$link = Html::openElement(
+			'li',
+			[
+				'class' => 'edit-footerlinks-link',
+			]
+		);
+
 		$params = [
 			'role' => 'link',
 			'id' => 'edit-footerlinks-link',
@@ -218,23 +267,21 @@ class FooterLinksListItems extends Literal {
 			$params['class'] = 'new';
 		}
 
-		return Html::element(
+		$link .= Html::element(
 			'a',
 			$params,
 			Message::newFromKey( 'bs-discovery-edit-footerlinks-link-text' )
 		);
+
+		$link .= Html::closeElement( 'li' );
+
+		return $link;
 	}
 
 	/**
 	 * @return INode[]
 	 */
 	private function getParserData(): array {
-		if ( $this->footerLinksSourceTitle instanceof Title === false
-			|| !$this->footerLinksSourceTitle->exists()
-		) {
-			return [];
-		}
-
 		$parser = new WikitextMenuParser(
 			$this->revisionStore->getRevisionByTitle( $this->footerLinksSourceTitle ),
 			$this->parserFactory->getNodeProcessors()
@@ -246,7 +293,7 @@ class FooterLinksListItems extends Literal {
 
 		try {
 			return $parser->parse();
-		} catch ( \Exception $ex ) {
+		} catch ( Exception $ex ) {
 			return [];
 		}
 	}

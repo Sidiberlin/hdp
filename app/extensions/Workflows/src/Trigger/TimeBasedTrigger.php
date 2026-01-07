@@ -3,11 +3,17 @@
 namespace MediaWiki\Extension\Workflows\Trigger;
 
 use MediaWiki\Extension\Workflows\Exception\WorkflowExecutionException;
-use Title;
+use MediaWiki\Extension\Workflows\NoParallelTrigger;
+use MediaWiki\Extension\Workflows\Query\WorkflowStateStore;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
-class TimeBasedTrigger extends GenericTrigger {
+class TimeBasedTrigger extends GenericTrigger implements NoParallelTrigger {
 	/** @var array */
 	protected $matches = [];
+
+	/** @var WorkflowStateStore|null */
+	protected $workflowStore = null;
 
 	/**
 	 * @return bool
@@ -17,7 +23,7 @@ class TimeBasedTrigger extends GenericTrigger {
 		/** @var Title $title */
 		foreach ( $this->matches as $title ) {
 			try {
-				return $this->startWorkflow( $this->repo, $this->definition, [
+				$this->startWorkflow( $this->repo, $this->definition, [
 					'pageId' => $title->getArticleID(),
 					'revision' => $title->getLatestRevID(),
 				], $this->initData );
@@ -28,7 +34,6 @@ class TimeBasedTrigger extends GenericTrigger {
 					'contextData' => $this->getContextData(),
 					'initData' => $this->initData,
 				] );
-				return false;
 			}
 
 		}
@@ -48,6 +53,9 @@ class TimeBasedTrigger extends GenericTrigger {
 	 */
 	public function appliesToPage( Title $title, $qualifyingData = [] ): bool {
 		if ( !$title->isContentPage() ) {
+			return false;
+		}
+		if ( $this->checkIsAlreadyRunning( $title, $this->workflowStore ) ) {
 			return false;
 		}
 
@@ -79,5 +87,28 @@ class TimeBasedTrigger extends GenericTrigger {
 				$this->matches[] = $page;
 			}
 		}
+	}
+
+	/**
+	 * @return User|null
+	 */
+	protected function getActor(): ?User {
+		return User::newSystemUser( 'MediaWiki default', [ 'steal' => true ] );
+	}
+
+	/**
+	 * @param WorkflowStateStore $stateStore
+	 * @return void
+	 */
+	public function setWorkflowStore( WorkflowStateStore $stateStore ) {
+		$this->workflowStore = $stateStore;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function isAlreadyRunning(): bool {
+		// Not called in this trigger type
+		return false;
 	}
 }

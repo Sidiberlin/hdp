@@ -14,147 +14,67 @@ declare( strict_types=1 );
 
 namespace MediaWiki\Extension\TabberNeue;
 
-use JsonException;
-use MediaWiki\MediaWikiServices;
-use Parser;
-use PPFrame;
+use MediaWiki\Config\Config;
+use MediaWiki\Extension\TabberNeue\Components\TabberComponentTab;
+use MediaWiki\Extension\TabberNeue\Components\TabberComponentTabs;
+use MediaWiki\Extension\TabberNeue\Parsing\TabberWikitextProcessor;
+use MediaWiki\Extension\TabberNeue\Service\TabNameHelper;
+use MediaWiki\Html\TemplateParser;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class Tabber {
-	/**
-	 * Flag that checks if this is a nested tabber
-	 * @var bool
-	 */
-	private static $isNested = false;
 
-	private static $useCodex = false;
-
-	private static $parseTabName = false;
+	public function __construct(
+		private Config $config,
+		private TemplateParser $templateParser,
+		private readonly TabNameHelper $tabNameHelper
+	) {
+	}
 
 	/**
 	 * Parser callback for <tabber> tag
-	 *
-	 * @param string|null $input
-	 * @param array $args
-	 * @param Parser $parser Mediawiki Parser Object
-	 * @param PPFrame $frame Mediawiki PPFrame Object
-	 *
-	 * @return string HTML
 	 */
-	public static function parserHook( ?string $input, array $args, Parser $parser, PPFrame $frame ) {
-		$config = MediaWikiServices::getInstance()->getMainConfig();
-		self::$parseTabName = $config->get( 'TabberNeueParseTabName' );
-		self::$useCodex = $config->get( 'TabberNeueUseCodex' );
-
-		$html = self::render( $input ?? '', $parser, $frame );
-
+	public function parserHook( ?string $input, array $args, Parser $parser, PPFrame $frame ): string {
 		if ( $input === null ) {
 			return '';
 		}
 
-		if ( self::$useCodex === true ) {
-			$parser->getOutput()->addModules( [ 'ext.tabberNeue.codex' ] );
-		} else {
-			$parser->getOutput()->addModuleStyles( [ 'ext.tabberNeue.init.styles' ] );
-			$parser->getOutput()->addModules( [ 'ext.tabberNeue' ] );
-		}
-
+		$parserOutput = $parser->getOutput();
+		$parserOutput->addModuleStyles( [ 'ext.tabberNeue.init.styles' ] );
+		$parserOutput->addModules( [ 'ext.tabberNeue' ] );
 		$parser->addTrackingCategory( 'tabberneue-tabber-category' );
-		return $html;
+
+		return $this->render( $input, $args, $parser, $frame );
 	}
 
 	/**
 	 * Renders the necessary HTML for a <tabber> tag.
-	 *
-	 * @param string $input The input URL between the beginning and ending tags.
-	 * @param Parser $parser Mediawiki Parser Object
-	 * @param PPFrame $frame Mediawiki PPFrame Object
-	 *
-	 * @return string HTML
 	 */
-	public static function render( string $input, Parser $parser, PPFrame $frame ): string {
-		$arr = explode( '|-|', $input );
-		$htmlTabs = '';
-		foreach ( $arr as $tab ) {
-			$htmlTabs .= self::buildTab( $tab, $parser, $frame );
+	public function render( string $input, array $args, Parser $parser, PPFrame $frame ): string {
+		$processor = new TabberWikitextProcessor(
+			$parser,
+			$frame,
+			$this->config,
+			$this->tabNameHelper
+		);
+
+		$tabModels = $processor->process( $input );
+
+		$tabsData = [];
+		$addTabPrefixConfig = $this->config->get( 'TabberNeueAddTabPrefix' );
+		foreach ( $tabModels as $tabModel ) {
+			$tab = new TabberComponentTab(
+				$tabModel->name,
+				$tabModel->label,
+				$tabModel->content,
+				$addTabPrefixConfig
+			);
+			$tabsData[] = $tab->getTemplateData();
 		}
 
-		if ( self::$useCodex && self::$isNested ) {
-			$tab = rtrim( implode( '},', explode( '}', $htmlTabs ) ), ',' );
-			$tab = strip_tags( html_entity_decode( $tab ) );
-			$tab = str_replace( ',,', ',', $tab );
-			$tab = str_replace( ',]', ']', $tab );
+		$tabs = new TabberComponentTabs( $tabsData, $args );
 
-			return sprintf( '[%s]', $tab );
-		}
-		$htmlTabs = preg_replace( '/\\\n/', '', $htmlTabs );
-		$htmlTabs = preg_replace( '/\\\*/', '', $htmlTabs );
-		$htmlTabs = str_replace( [ '"[', ']"' ], [ '[', ']' ], $htmlTabs );
-
-		return '<div class="tabber">' .
-			'<header class="tabber__header"></header>' .
-			'<section class="tabber__section">' . $htmlTabs . '</section></div>';
-	}
-
-	/**
-	 * Build individual tab.
-	 *
-	 * @param string $tab Tab information
-	 * @param Parser $parser Mediawiki Parser Object
-	 * @param PPFrame $frame Mediawiki PPFrame Object
-	 *
-	 * @return string HTML
-	 * @throws JsonException
-	 */
-	private static function buildTab( string $tab, Parser $parser, PPFrame $frame ): string {
-		if ( empty( trim( $tab ) ) ) {
-			return '';
-		}
-		// Use array_pad to make sure at least 2 array values are always returned
-		[ $tabName, $tabBody ] = array_pad( explode( '=', $tab, 2 ), 2, '' );
-
-		$tabName = trim( $tabName );
-		$tabBody = trim( $tabBody );
-
-		// Codex mode
-		if ( self::$useCodex ) {
-			// Use language converter to get variant title and also escape html
-			$tabName = $parser->getTargetLanguageConverter()->convertHtml( $tabName );
-			// A nested tabber which should return json in codex
-			if ( strpos( $tabBody, '{{#tag:tabber' ) !== false ) {
-				self::$isNested = true;
-				$tabBody = $parser->recursiveTagParse( $tabBody, $frame );
-				self::$isNested = false;
-			// The outermost tabber that must be parsed fully in codex for correct json
-			} else {
-				$tabBody = $parser->recursiveTagParseFully( $tabBody, $frame );
-			}
-
-			if ( self::$isNested ) {
-				return json_encode( [
-					'label' => $tabName,
-					'content' => $tabBody
-				],
-					JSON_THROW_ON_ERROR
-				);
-			}
-		}
-
-		// Normal mode
-		if ( self::$parseTabName ) {
-			$tabName = $parser->recursiveTagParseFully( $tabName );
-			$tabName = $parser->stripOuterParagraph( $tabName );
-			$tabName = htmlentities( $tabName );
-		} else {
-			$tabName = $parser->getTargetLanguageConverter()->convertHtml( $tabName );
-		}
-		$tabBody = $parser->recursiveTagParse( $tabBody, $frame );
-
-		// If $tabBody does not have any HTML element (i.e. just a text node), wrap it in <p/>
-		if ( $tabBody && $tabBody[0] !== '<' ) {
-			$tabBody = '<p>' . $tabBody . '</p>';
-		}
-
-		return '<article class="tabber__panel" data-mw-tabber-title="' . $tabName .
-		'">' . $tabBody . '</article>';
+		return $this->templateParser->processTemplate( 'Tabs', $tabs->getTemplateData() );
 	}
 }

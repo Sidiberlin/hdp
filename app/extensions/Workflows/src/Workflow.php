@@ -5,6 +5,7 @@ namespace MediaWiki\Extension\Workflows;
 use DateTime;
 use EventSauce\EventSourcing\AggregateRoot;
 use Exception;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\Workflows\Activity\ExecutionStatus\IntermediateExecutionStatus;
 use MediaWiki\Extension\Workflows\Definition\Element\EndEvent;
 use MediaWiki\Extension\Workflows\Definition\Element\Gateway;
@@ -43,10 +44,11 @@ use MediaWiki\Extension\Workflows\Storage\Event\WorkflowUnAborted;
 use MediaWiki\Extension\Workflows\Storage\WorkflowEventRepository;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Permissions\PermissionManager;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
 use PermissionsError;
-use RequestContext;
-use TitleFactory;
-use User;
+use Psr\Container\ContainerExceptionInterface;
+use Psr\Container\NotFoundExceptionInterface;
 
 final class Workflow {
 	public const STATE_NOT_STARTED = 'not_started';
@@ -105,20 +107,14 @@ final class Workflow {
 	 * @param string $definitionId
 	 * @param IDefinitionRepository $definitionRepository
 	 * @return self
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
 	 */
 	public static function newEmpty( $definitionId, $definitionRepository ) {
+		$instance = self::create();
 		$services = MediaWikiServices::getInstance();
-
-		$activityManagerFactory = $services->get( 'WorkflowsActivityManagerFactory' );
-		$activityManager = $activityManagerFactory->newActivityManager();
-		$instance = new self (
-			$services->getService( 'WorkflowLogicObjectFactory' ),
-			$activityManager,
-			$services->getPermissionManager(),
-			$services->getTitleFactory()
-		);
 		$workflowNotifierFactory = $services->getService( 'WorkflowsNotifierFactory' );
-		$workflowNotifier = $workflowNotifierFactory->createNotifier( $instance, $activityManager );
+		$workflowNotifier = $workflowNotifierFactory->createNotifier( $instance, $instance->getActivityManager() );
 		/** @var WorkflowEventRepository $eventRepo */
 		$eventRepo = $services->getService( 'WorkflowEventRepository' );
 		$eventRepo->addConsumerToDispatcher( $workflowNotifier );
@@ -140,6 +136,26 @@ final class Workflow {
 	}
 
 	/**
+	 * To be called when instantiating workflows from a job or similar process
+	 * Forces the actor to a system user
+	 * @param WorkflowId $id
+	 * @param WorkflowEventRepository $repo
+	 * @param DefinitionRepositoryFactory $definitionRepositoryFactory
+	 * @return Workflow
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
+	 * @throws WorkflowExecutionException
+	 */
+	public static function newFromInstanceIDForBot(
+		WorkflowId $id, WorkflowEventRepository $repo,
+		DefinitionRepositoryFactory $definitionRepositoryFactory
+	) {
+		$instance = self::create();
+		$actor = User::newSystemUser( 'Mediawiki default', [ 'steal' => true ] );
+		return self::setup( $id, $repo, $definitionRepositoryFactory, $instance, $actor );
+	}
+
+	/**
 	 * Get engine from storage, use when loading an existing process
 	 * Resulting engine will already be at the point that was last saved
 	 *
@@ -147,23 +163,37 @@ final class Workflow {
 	 * @param WorkflowEventRepository $repo
 	 * @param DefinitionRepositoryFactory $definitionRepositoryFactory
 	 * @return self
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
 	 * @throws WorkflowExecutionException
 	 */
 	public static function newFromInstanceID(
 		WorkflowId $id, WorkflowEventRepository $repo,
 		DefinitionRepositoryFactory $definitionRepositoryFactory
 	) {
+		$instance = self::create();
+		return self::setup( $id, $repo, $definitionRepositoryFactory, $instance );
+	}
+
+	/**
+	 * @param WorkflowId $id
+	 * @param WorkflowEventRepository $repo
+	 * @param DefinitionRepositoryFactory $definitionRepositoryFactory
+	 * @param Workflow $instance
+	 * @param User|null $actor
+	 * @return Workflow
+	 * @throws WorkflowExecutionException
+	 */
+	private static function setup(
+		WorkflowId $id, WorkflowEventRepository $repo, DefinitionRepositoryFactory $definitionRepositoryFactory,
+		Workflow $instance, ?User $actor = null
+	): Workflow {
 		$services = MediaWikiServices::getInstance();
-		$activityManagerFactory = $services->get( 'WorkflowsActivityManagerFactory' );
-		$activityManager = $activityManagerFactory->newActivityManager();
-		$instance = new self(
-			$services->getService( 'WorkflowLogicObjectFactory' ),
-			$activityManager,
-			$services->getPermissionManager(),
-			$services->getTitleFactory()
-		);
+		if ( $actor ) {
+			$instance->setActor( $actor );
+		}
 		$workflowNotifierFactory = $services->getService( 'WorkflowsNotifierFactory' );
-		$workflowNotifier = $workflowNotifierFactory->createNotifier( $instance, $activityManager );
+		$workflowNotifier = $workflowNotifierFactory->createNotifier( $instance, $instance->getActivityManager() );
 		$repo->addConsumerToDispatcher( $workflowNotifier );
 
 		$repo->setWorkflowForReplay( $instance, $definitionRepositoryFactory );
@@ -178,7 +208,7 @@ final class Workflow {
 		// Check if current process should be continued
 		if ( $instance->actionFlags & self::_CONTINUE_EXECUTION_FLAG ) {
 			$first = null;
-			if ( $instance->current && !empty( $instance->current ) ) {
+			if ( !empty( $instance->current ) ) {
 				$first = $instance->current( array_keys( $instance->current )[0] );
 			}
 			$instance->continueExecution( $first );
@@ -187,6 +217,23 @@ final class Workflow {
 			$instance->persist( $repo );
 		}
 		return $instance;
+	}
+
+	/**
+	 * @return self
+	 * @throws ContainerExceptionInterface
+	 * @throws NotFoundExceptionInterface
+	 */
+	private static function create() {
+		$services = MediaWikiServices::getInstance();
+		$activityManagerFactory = $services->get( 'WorkflowsActivityManagerFactory' );
+		$activityManager = $activityManagerFactory->newActivityManager();
+		return new self(
+			$services->getService( 'WorkflowLogicObjectFactory' ),
+			$activityManager,
+			$services->getPermissionManager(),
+			$services->getTitleFactory()
+		);
 	}
 
 	/**
@@ -253,6 +300,16 @@ final class Workflow {
 		$this->getPrivateContext()->setStartDate( $startDate );
 		$this->getPrivateContext()->setWorkflowId( $this->getStorage()->aggregateRootId() );
 		$this->doStart( $contextData );
+		if ( !$this->runningDry ) {
+			$this->logicObjectFactory->getSpecialLogLogger()->addEntry(
+				'start',
+				$this->getPrivateContext()->getContextPage() ?
+					$this->getPrivateContext()->getContextPage() :
+					$this->titleFactory->newMainPage(),
+				$this->actor,
+				''
+			);
+		}
 	}
 
 	/**
@@ -270,8 +327,7 @@ final class Workflow {
 	 * @throws WorkflowExecutionException
 	 */
 	public function completeTask( $task, $data = [] ) {
-		$this->setActor( RequestContext::getMain()->getUser() );
-		$this->assertActorCan( 'execute' );
+		$this->setActor( $this->getActor() );
 		$this->assertWorkflowState( static::STATE_RUNNING );
 		$this->assertMembers( __METHOD__ );
 
@@ -289,7 +345,6 @@ final class Workflow {
 		}
 
 		$this->assertActorMatches( $activity );
-		$data = $this->getActivityManager()->getValidatedData( $activity, $data );
 		$status = $this->activityManager->completeActivity( $activity, $data, $this->getContext() );
 		if ( $status instanceof IntermediateExecutionStatus ) {
 			// Does not progress the workflow, just update data
@@ -345,6 +400,14 @@ final class Workflow {
 		$this->storage->recordEvent(
 			WorkflowAborted::newFromData( $this->getActor(), $endDate, $reason )
 		);
+		$this->logicObjectFactory->getSpecialLogLogger()->addEntry(
+			'abort',
+			$this->getPrivateContext()->getContextPage() ?
+				$this->getPrivateContext()->getContextPage() :
+				$this->titleFactory->newMainPage(),
+			$this->actor,
+			$reason ?? ''
+		);
 		$this->stateMessage = $reason;
 		$this->state = static::STATE_ABORTED;
 	}
@@ -374,6 +437,14 @@ final class Workflow {
 		$this->storage->recordEvent(
 			WorkflowAutoAborted::newFromData( $this->getActor(), $endDate, $stateMessage )
 		);
+		$this->logicObjectFactory->getSpecialLogLogger()->addEntry(
+			'auto-abort',
+			$this->getPrivateContext()->getContextPage() ?
+				$this->getPrivateContext()->getContextPage() :
+				$this->titleFactory->newMainPage(),
+			$this->actor,
+			$message
+		);
 		$this->stateMessage = $stateMessage;
 		$this->state = static::STATE_ABORTED;
 	}
@@ -392,6 +463,14 @@ final class Workflow {
 		$this->getPrivateContext()->setEndDate( null );
 		$this->state = static::STATE_RUNNING;
 		$this->stateMessage = $reason;
+		$this->logicObjectFactory->getSpecialLogLogger()->addEntry(
+			'unabort',
+			$this->getPrivateContext()->getContextPage() ?
+				$this->getPrivateContext()->getContextPage() :
+				$this->titleFactory->newMainPage(),
+			$this->actor,
+			$reason
+		);
 		$this->extendDueDateIfExpired();
 	}
 
@@ -462,7 +541,6 @@ final class Workflow {
 	 * @throws Exception
 	 */
 	public function persist( WorkflowEventRepository $repository ) {
-		$this->assertActorCan( 'execute' );
 		$this->assertMembers( __METHOD__ );
 		$repository->persist( $this->storage );
 	}
@@ -538,9 +616,7 @@ final class Workflow {
 		}
 		$this->definition->setContextData( $contextData );
 		$this->getPrivateContext()->setDefinitionContext( $this->definition->getContext() );
-		if ( !$this->actor instanceof User ) {
-			$this->setActor( RequestContext::getMain()->getUser() );
-		}
+		$this->setActor( $this->getActor() );
 		$this->getPrivateContext()->setInitiator( $this->getActor() );
 
 		$this->state = static::STATE_RUNNING;
@@ -746,6 +822,14 @@ final class Workflow {
 			$this->getPrivateContext()->setEndDate( $endDate );
 			$this->storage->recordEvent(
 				WorkflowEnded::newFromData( $end->getId(), $endDate )
+			);
+			$this->logicObjectFactory->getSpecialLogLogger()->addEntry(
+				'finish',
+				$this->getPrivateContext()->getContextPage() ?
+					$this->getPrivateContext()->getContextPage() :
+					$this->titleFactory->newMainPage(),
+				$this->actor,
+				''
 			);
 			return $this->markEnd( $end );
 		}
@@ -997,6 +1081,7 @@ final class Workflow {
 	 *
 	 * @param string $taskID
 	 * @return IActivity
+	 * @throws Exception
 	 */
 	public function establishCurrent( $taskID ) {
 		if ( is_array( $this->current ) ) {
@@ -1051,6 +1136,7 @@ final class Workflow {
 	 * Assert actor has permissions
 	 * @param string $action
 	 * @param ITask|null $task
+	 * @throws PermissionsError
 	 */
 	private function assertActorCan( $action, $task = null ) {
 		if ( $this->runsAsBotProcess() ) {
@@ -1060,6 +1146,9 @@ final class Workflow {
 		$actor = $this->operatingActor ?? RequestContext::getMain()->getUser();
 		if ( !( $actor instanceof User ) ) {
 			throw new PermissionsError( $right );
+		}
+		if ( $actor->isSystemUser() ) {
+			return;
 		}
 		if ( $this->state === self::STATE_RUNNING ) {
 			$initiator = $this->getContext()->getInitiator();
@@ -1085,7 +1174,11 @@ final class Workflow {
 	 * @return User
 	 */
 	private function getActor() {
-		return $this->actor ?? RequestContext::getMain()->getUser();
+		if ( !$this->actor || !$this->actor->isRegistered() ) {
+			// If actor is anon, try to set it from the context user
+			return RequestContext::getMain()->getUser();
+		}
+		return $this->actor;
 	}
 
 	/**
@@ -1112,6 +1205,7 @@ final class Workflow {
 	/**
 	 * @param IActivity $activity
 	 * @return int
+	 * @throws WorkflowExecutionException
 	 */
 	public function getActivityStatus( IActivity $activity ): int {
 		return $this->activityManager->getActivityStatus( $activity );

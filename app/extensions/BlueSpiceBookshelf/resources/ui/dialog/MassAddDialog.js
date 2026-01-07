@@ -6,7 +6,7 @@ ext.bookshelf.ui.dialog.MassAddDialog = function ( config ) {
 
 	this.type = '';
 	this.fields = [];
-}
+};
 OO.inheritClass( ext.bookshelf.ui.dialog.MassAddDialog, OO.ui.ProcessDialog );
 
 ext.bookshelf.ui.dialog.MassAddDialog.static.name = 'MassAddDialog';
@@ -20,8 +20,8 @@ ext.bookshelf.ui.dialog.MassAddDialog.static.actions = [
 		flags: [ 'primary', 'progressive' ]
 	},
 	{
-		label: mw.message( 'cancel' ).text(),
-		flags: 'safe'
+		title: mw.message( 'cancel' ).text(),
+		flags: [ 'safe', 'close' ]
 	}
 ];
 
@@ -33,7 +33,7 @@ ext.bookshelf.ui.dialog.MassAddDialog.prototype.initialize = function () {
 		expanded: false
 	} );
 
-	this.pageCollectionsData = require( './collections.json');
+	this.pageCollectionsData = require( './collections.json' );
 	this.pageCollections = this.pageCollectionsData.length > 0;
 
 	this.sourceInput = new OO.ui.DropdownWidget( {
@@ -42,15 +42,15 @@ ext.bookshelf.ui.dialog.MassAddDialog.prototype.initialize = function () {
 			items: [
 				new OO.ui.MenuOptionWidget( {
 					data: 'category',
-					label: mw.message( 'bs-bookshelfui-type-category' ).plain()
+					label: mw.message( 'bs-bookshelfui-type-category' ).text()
 				} ),
 				new OO.ui.MenuOptionWidget( {
 					data: 'subpages',
-					label: mw.message( 'bs-bookshelfui-type-subpages' ).plain()
+					label: mw.message( 'bs-bookshelfui-type-subpages' ).text()
 				} ),
 				new OO.ui.MenuOptionWidget( {
 					data: 'pagecollection',
-					label: mw.message( 'bs-bookshelfui-type-pagecollection' ).plain(),
+					label: mw.message( 'bs-bookshelfui-type-pagecollection' ).text(),
 					disabled: !this.pageCollections
 				} )
 			]
@@ -61,7 +61,7 @@ ext.bookshelf.ui.dialog.MassAddDialog.prototype.initialize = function () {
 		select: 'changeUI'
 	} );
 
-	var sourceField = new OO.ui.FieldLayout( this.sourceInput, {
+	const sourceField = new OO.ui.FieldLayout( this.sourceInput, {
 		label: mw.message( 'bs-bookshelfui-dlg-type-label' ).text(),
 		align: 'left'
 	} );
@@ -76,7 +76,7 @@ ext.bookshelf.ui.dialog.MassAddDialog.prototype.initialize = function () {
 	} );
 
 	this.subpageTitleField = new OO.ui.FieldLayout( this.subpageTitleInput, {
-		label: mw.message( 'bs-bookshelfui-dlg-choosewikipage-cbxArticleLabel' ).plain(),
+		label: mw.message( 'bs-bookshelfui-dlg-choosewikipage-cbxArticleLabel' ).text(),
 		align: 'left',
 		data: 'subpages'
 	} );
@@ -86,7 +86,7 @@ ext.bookshelf.ui.dialog.MassAddDialog.prototype.initialize = function () {
 
 	this.categoryInput = new OOJSPlus.ui.widget.CategoryInputWidget( {
 		$overlay: this.$overlay,
-		allowArbitrary: true,
+		allowArbitrary: true
 	} );
 
 	this.categoryInput.connect( this, {
@@ -94,7 +94,7 @@ ext.bookshelf.ui.dialog.MassAddDialog.prototype.initialize = function () {
 	} );
 
 	this.categoryTitleField = new OO.ui.FieldLayout( this.categoryInput, {
-		label: mw.message( 'bs-bookshelfui-dlg-choosecategory-label' ).plain(),
+		label: mw.message( 'bs-bookshelfui-dlg-choosecategory-label' ).text(),
 		align: 'left',
 		data: 'category'
 	} );
@@ -102,8 +102,8 @@ ext.bookshelf.ui.dialog.MassAddDialog.prototype.initialize = function () {
 	this.fields.push( this.categoryTitleField );
 	this.content.$element.append( this.categoryTitleField.$element );
 
-	var options = this.getOptions();
-	this.pageCollecionInput =  new OO.ui.DropdownInputWidget( {
+	const options = this.getOptions();
+	this.pageCollecionInput = new OO.ui.DropdownInputWidget( {
 		$overlay: this.$overlay
 	} );
 
@@ -113,7 +113,7 @@ ext.bookshelf.ui.dialog.MassAddDialog.prototype.initialize = function () {
 	this.pageCollecionInput.setOptions( options );
 
 	this.pageCollecionField = new OO.ui.FieldLayout( this.pageCollecionInput, {
-		label: mw.message( 'bs-bookshelfui-dlg-choosepc-label' ).plain(),
+		label: mw.message( 'bs-bookshelfui-dlg-choosepc-label' ).text(),
 		align: 'left',
 		data: 'pagecollection'
 	} );
@@ -127,20 +127,20 @@ ext.bookshelf.ui.dialog.MassAddDialog.prototype.initialize = function () {
 	this.updateSize();
 };
 
-ext.bookshelf.ui.dialog.MassAddDialog.prototype.getSetupProcess = function( data ) {
+ext.bookshelf.ui.dialog.MassAddDialog.prototype.getSetupProcess = function ( data ) {
 	return ext.bookshelf.ui.dialog.MassAddDialog.parent.prototype.getSetupProcess.call( this, data )
-	.next( function() {
-		this.saveAction = this.actions.getSpecial().primary;
-		this.saveAction.setDisabled( true );
-	}.bind( this ) );
+		.next( () => {
+			this.saveAction = this.actions.getSpecial().primary;
+			this.saveAction.setDisabled( true );
+		} );
 };
 
 ext.bookshelf.ui.dialog.MassAddDialog.prototype.changeUI = function ( item ) {
 	this.type = item.data;
 
-	this.fields.forEach( function ( field ) {
+	this.fields.forEach( ( field ) => {
 		field.toggle( this.type === field.data );
-	}.bind( this ) );
+	} );
 
 	this.updateSize();
 
@@ -148,11 +148,11 @@ ext.bookshelf.ui.dialog.MassAddDialog.prototype.changeUI = function ( item ) {
 };
 
 ext.bookshelf.ui.dialog.MassAddDialog.prototype.getOptions = function () {
-	var options = [];
-	this.pageCollectionsData.forEach( function ( page ) {
+	const options = [];
+	this.pageCollectionsData.forEach( ( page ) => {
 		options.push( {
 			data: page.pc_title,
-			label: page.pc_title,
+			label: page.pc_title
 		} );
 	} );
 	return options;
@@ -169,27 +169,27 @@ ext.bookshelf.ui.dialog.MassAddDialog.prototype.valueChanged = function ( value 
 };
 
 ext.bookshelf.ui.dialog.MassAddDialog.prototype.getActionProcess = function ( action ) {
-	var dialog = this;
+	const dialog = this;
 	if ( action ) {
-		return new OO.ui.Process( function () {
+		return new OO.ui.Process( () => {
 			dialog.pushPending();
-			var field = dialog.fields.filter( field => field.data === dialog.type )[0];
-			var value = field.getField().getValue();
+			const field = dialog.fields.filter( ( field ) => field.data === dialog.type )[ 0 ]; // eslint-disable-line no-shadow
+			let value = field.getField().getValue();
 			if ( dialog.type === 'category' ) {
 				value = field.getField().getMWTitle().getMain();
 			}
-			var api = new mw.Api();
+			const api = new mw.Api();
 			api.get( {
 				action: 'bs-bookshelf-mass-add-page-store',
-				'root': value,
-				'type': dialog.type
+				root: value,
+				type: dialog.type
 			} )
-			.done( function( response ){
-				var pages = response.results;
-				dialog.popPending();
-				dialog.close( { action: 'done' } );
-				dialog.emit( 'mass_add_pages', pages );
-			});
+				.done( ( response ) => {
+					const pages = response.results;
+					dialog.popPending();
+					dialog.close( { action: 'done' } );
+					dialog.emit( 'mass_add_pages', pages );
+				} );
 		} );
 	}
 	return ext.bookshelf.ui.dialog.MassAddDialog.super.prototype.getActionProcess.call( this, action );

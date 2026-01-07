@@ -7,8 +7,6 @@
 		]
 	},
 	"bs-qr-code-extension-description": "Affiche un code QR avec un lien vers la page actuelle dans la barre d’outils.",
-	"bs-qr-code-title": "Code QR",
-	"bs-qr-code-text": "Code QR à scanner pour ouvrir cette page sur un appareil mobile",
 	"bs-qr-code-action-qr-code-title": "Ouvrir une fenêtre de dialogue avec le code QR",
 	"bs-qr-code-action-qr-code-text": "Code QR",
 	"bs-qr-code-action-qr-code-dialog-title": "Code QR",

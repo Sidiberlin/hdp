@@ -1,35 +1,39 @@
-$( function() {
-	var $mainContainer = $( '#bs-extendedstatistics-special-aggregatedstatistics' );
-	var pluginModules = require( './pluginModules.json' );
+$( function () {
+	const $mainContainer = $( '#bs-extendedstatistics-special-aggregatedstatistics' );
+	const pluginModules = require( './pluginModules.json' );
 
-	var reportHandlers =  $mainContainer.attr( 'data-reports' ),
+	const reportHandlers = $mainContainer.attr( 'data-reports' ),
 		registry = new bs.aggregatedStatistics.ReportRegistry( JSON.parse( reportHandlers ) ),
 		defaultFilters = JSON.parse( $mainContainer.attr( 'data-default-filter' ) );
 
 	registry.connect( this, {
-		registrationComplete: function() {
-			var options = [];
-			for ( var key in registry.registry ) {
+		registrationComplete: function () {
+			const options = [];
+			for ( const key in registry.registry ) {
 				if ( !registry.registry.hasOwnProperty( key ) ) {
 					continue;
 				}
-				options.push( new OO.ui.MenuOptionWidget( { data: key, label: registry.registry[key].static.label } ) );
+				options.push( new bs.aggregatedStatistics.MenuOptionWidget( {
+					data: key,
+					label: registry.registry[ key ].static.label,
+					desc: registry.registry[ key ].static.desc
+				} ) );
 			}
-			dropdown.getMenu().addItems( options );
-			dropdown.setDisabled( false );
+			dropdown.getMenu().addItems( options ); // eslint-disable-line no-use-before-define
+			dropdown.setDisabled( false ); // eslint-disable-line no-use-before-define
 
-			dropdown.getMenu().selectItemByData( Object.keys( registry.registry )[0] );
+			dropdown.getMenu().selectItemByData( Object.keys( registry.registry )[ 0 ] ); // eslint-disable-line no-use-before-define
 		}
 	} );
 
-	var dropdown = new OO.ui.DropdownWidget( {
-		id: "statistic-selector",
-		disabled: true
-	} ),
-		panel = new OO.ui.PanelLayout( { expanded: false });
+	var dropdown = new OO.ui.DropdownWidget( { // eslint-disable-line no-var
+			id: 'statistic-selector',
+			disabled: true
+		} ),
+		panel = new OO.ui.PanelLayout( { expanded: false } );
 
-	var mainLayout = new OO.ui.FieldsetLayout( {
-		label: mw.message( "bs-statistics-aggregated-report-picker-label" ).text(),
+	const mainLayout = new OO.ui.FieldsetLayout( {
+		label: mw.message( 'bs-statistics-aggregated-report-picker-label' ).text(),
 		align: 'top',
 		items: [
 			dropdown,
@@ -40,10 +44,10 @@ $( function() {
 	$mainContainer.append( mainLayout.$element );
 
 	dropdown.getMenu().connect( this, {
-		select: function( selected ) {
+		select: function ( selected ) {
 			if ( selected instanceof OO.ui.MenuOptionWidget ) {
-				var cls = registry.lookup( selected.getData() );
-				var item = new cls( {
+				const cls = registry.lookup( selected.getData() );
+				const item = new cls( { // eslint-disable-line new-cap
 					defaultFilterValues: defaultFilters,
 					name: selected.getData()
 				} );
@@ -51,7 +55,7 @@ $( function() {
 				panel.$element.html( item.$element );
 				item.connect( this, {
 					dataset: function ( data ) {
-						mw.loader.using( pluginModules ).done( function () {
+						mw.loader.using( pluginModules ).done( () => {
 							mw.hook( 'aggregatedstatistics.addUI' ).fire( data );
 						} );
 					}
@@ -60,4 +64,4 @@ $( function() {
 		}
 	} );
 
-})
+} );

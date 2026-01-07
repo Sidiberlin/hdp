@@ -4,9 +4,9 @@ namespace BlueSpice\PermissionManager\Lockdown;
 
 use BlueSpice\Permission\Lockdown\Module;
 use BlueSpice\Permission\RoleManager;
-use Message;
-use Title;
-use User;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class SpecialPages extends Module {
 

@@ -1,8 +1,0 @@
-{
-	"@metadata": {
-		"authors": [
-			"Yurina Tatiana"
-		]
-	},
-	"bs-uemodulepdfsubpages-extension-description": "Позволяет рекурсивно экспортировать страницы в формат PDF с подстраницами."
-}

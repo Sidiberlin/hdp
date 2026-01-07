@@ -9,7 +9,7 @@
 	"at-mentions-inspector-title-add": "Додати згадку",
 	"at-mentions-inspector-title-edit": "Редагувати згадку користувача",
 	"at-mentions-ci-title": "Згадка користувача",
-	"at-mentions-tag-item-actor": "{{GENDER:$1|від [[User:$1]]}}",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|від [[User:$1|$1]]}}",
 	"at-mentions-tag-item-time": "о $1",
 	"at-mentions-mentionslist-header-mine-all": "Вас згадали на цій сторінці",
 	"at-mentions-mentionslist-header-mine": "Упродовж {{PLURAL:$1|минулого дня|минулих $1 днів}} вас згадували на цих сторінках:",

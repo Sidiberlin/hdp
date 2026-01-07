@@ -27,6 +27,9 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\Title;
 
 abstract class EditFormPreloadText extends Hook {
 
@@ -38,14 +41,14 @@ abstract class EditFormPreloadText extends Hook {
 
 	/**
 	 *
-	 * @var \Title
+	 * @var Title
 	 */
 	protected $title = null;
 
 	/**
 	 *
 	 * @param string &$text
-	 * @param \Title &$title
+	 * @param Title &$title
 	 * @return bool
 	 */
 	public static function callback( &$text, &$title ) {
@@ -61,10 +64,10 @@ abstract class EditFormPreloadText extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param string &$text
-	 * @param \Title &$title
+	 * @param Title &$title
 	 */
 	public function __construct( $context, $config, &$text, &$title ) {
 		parent::__construct( $context, $config );

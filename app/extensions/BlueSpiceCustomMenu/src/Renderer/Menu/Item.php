@@ -3,9 +3,9 @@
 namespace BlueSpice\CustomMenu\Renderer\Menu;
 
 use BlueSpice\Renderer\Params;
-use Config;
-use Html;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkRenderer;
 use MWStake\MediaWiki\Component\DataStore\RecordSet;
 
@@ -26,9 +26,10 @@ class Item extends \BlueSpice\CustomMenu\Renderer\Menu {
 	 * @param IContextSource|null $context
 	 * @param string $name | ''
 	 */
-	protected function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
-		$name = '' ) {
+	protected function __construct(
+		Config $config, Params $params, ?LinkRenderer $linkRenderer = null,
+		?IContextSource $context = null, $name = ''
+	) {
 		parent::__construct( $config, $params, $linkRenderer, $context, $name );
 		$this->args[static::PARAM_TAG] = 'li';
 		$this->args[static::PARAM_CLASS] = '';

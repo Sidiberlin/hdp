@@ -6,12 +6,14 @@
 			"Erdemaslancan",
 			"Kumkumuk",
 			"Marmase",
-			"Mirzali"
+			"Mirzali",
+			"GolyatGeri"
 		]
 	},
 	"usermerge": "Karbera pêtewr kerê ya zi bıesternê",
 	"usermerge-desc": "Viki database de [[Special:UserMerge|referansan yew karberi ra ê bini tewr kerış]] - Tewr kerdışi dıme karberanê verênan zi esterneno. Bağseyiya ''karberapêtewrkerdış'' lazıma",
 	"usermerge-badnewuser": "Nameyê kerberiyo neweyo nêvêrde.",
+	"usermerge-badolduser": "Nameyê karberiyo kehano nêvêrde.",
 	"usermerge-nonewuser": "Veng namey karberiyo newe.  Zey \"{{GENDER:$1|$1}}\" pêtewr kerdış hesabêno.<br />\nSeba qebul kerdışi buttona \"{{int:usermerge-submit}}\" bıploğnê .",
 	"usermerge-noolduser": "Nameyê karberiyo kehano veng.",
 	"usermerge-same-old-and-new-user": "Namey karberê verêni u neweyêni wa ca bo",
@@ -20,6 +22,8 @@
 	"usermerge-newuser": "Karbero newe (de biya pê):",
 	"usermerge-deleteolduser": "Karberê kehani bestere",
 	"usermerge-submit": "Karbera zewkerden",
+	"usermerge-merge-linkoncontribs": "{{GENDER:$1|karber}} apêarden",
+	"usermerge-delete-linkoncontribs": "{{GENDER:$1|karber}} esternen",
 	"usermerge-badtoken": "Ratnoğe xırab vırnayışi",
 	"usermerge-userdeleted": "$1 ($2) esteriya .",
 	"usermerge-success": "Karberê $1 ($2) ra hetê  $3 ($4) ra kerber biyo tewr.",

@@ -3,8 +3,8 @@
 namespace BlueSpice\ProDistributionConnector\ConfigDefinition;
 
 use BlueSpice\ConfigDefinition;
-use ExtensionRegistry;
-use HTMLTextAreaField;
+use MediaWiki\HTMLForm\Field\HTMLTextAreaField;
+use MediaWiki\Registration\ExtensionRegistry;
 
 class OAuth2PublicKey extends ConfigDefinition\StringSetting implements ConfigDefinition\IOverwriteGlobal {
 
@@ -22,7 +22,7 @@ class OAuth2PublicKey extends ConfigDefinition\StringSetting implements ConfigDe
 	public function getPaths() {
 		return [
 			static::MAIN_PATH_FEATURE . '/' . static::FEATURE_SYSTEM . '/BlueSpiceProDistributionConnector',
-			static::MAIN_PATH_EXTENSION . '/BlueSpiceProDistributionConnector/' . static::FEATURE_SYSTEM ,
+			static::MAIN_PATH_EXTENSION . '/BlueSpiceProDistributionConnector/' . static::FEATURE_SYSTEM,
 			static::MAIN_PATH_PACKAGE . '/' . static::PACKAGE_PRO . '/BlueSpiceProDistributionConnector',
 		];
 	}

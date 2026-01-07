@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Samoasambia"
+			"Samoasambia",
+			"Yupik"
 		]
 	},
 	"notifyme-desc": "Ilmoitukset",
@@ -11,5 +12,7 @@
 	"notifyme-event-page-create-key-desc": "Sivu luotu",
 	"notifyme-event-page-edit-key-desc": "Sivua muokattu",
 	"notifyme-event-page-move-key-desc": "Sivu siirretty",
-	"notifyme-event-page-delete-key-desc": "Sivu poistettu"
+	"notifyme-event-page-delete-key-desc": "Sivu poistettu",
+	"notifications-subscriptions": "Hallitse ilmoitustilauksia",
+	"notifyme-ui-dialog-set-editor-cancel": "Peruuta"
 }

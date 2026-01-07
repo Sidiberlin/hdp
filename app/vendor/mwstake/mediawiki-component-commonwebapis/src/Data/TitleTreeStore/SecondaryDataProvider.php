@@ -2,6 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleTreeStore;
 
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore\SecondaryDataProvider as TitleSecondaryDataProvider;
 use MWStake\MediaWiki\Component\DataStore\Record;
 
@@ -20,11 +21,11 @@ class SecondaryDataProvider extends TitleSecondaryDataProvider {
 
 	/**
 	 * @param Record $dataSet
-	 * @param \Title $title
+	 * @param Title $title
 	 *
 	 * @return void
 	 */
-	protected function extendWithTitle( Record $dataSet, \Title $title ) {
+	protected function extendWithTitle( Record $dataSet, Title $title ) {
 		parent::extendWithTitle( $dataSet, $title );
 		if ( $title->getNamespace() === NS_MAIN ) {
 			$dataSet->set( TitleTreeRecord::ID, ':' . $title->getDBkey() );

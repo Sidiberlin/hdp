@@ -3,7 +3,9 @@
 use BlueSpice\PageAssignments\Data\Page\PrimaryDataProvider;
 use BlueSpice\PageAssignments\Data\Page\Record;
 use BlueSpice\ReadConfirmation\IMechanism;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 class ReadConfirmationPageAssignmentHooks {
 	/**
@@ -18,7 +20,7 @@ class ReadConfirmationPageAssignmentHooks {
 		if ( !$dataProvider instanceof PrimaryDataProvider ) {
 			return true;
 		}
-		$dataSet->set( 'all_assignees_have_read', false );
+		$dataSet->set( 'all_assignees_have_read', 'disabled' );
 		if ( !self::getReadConfirmationMechanismInstance()->mustRead( $title ) ) {
 			return true;
 		}
@@ -81,7 +83,10 @@ class ReadConfirmationPageAssignmentHooks {
 			}
 		}
 
-		$iCurrentUserId = RequestContext::getMain()->getUser()->getId();
+		$context = RequestContext::getMain();
+		$language = $context->getLanguage();
+		$user = $context->getUser();
+		$iCurrentUserId = $user->getId();
 
 		$aCurrentPageReads = self::getReadConfirmationMechanismInstance()->getCurrentReadConfirmations(
 			[ $iCurrentUserId ],
@@ -91,13 +96,26 @@ class ReadConfirmationPageAssignmentHooks {
 		foreach ( $aData as $oDataSet ) {
 			if ( in_array( $oDataSet->page_id, $aDisabledIds ) ) {
 				$oDataSet->read_confirmation = 'disabled';
+				$oDataSet->read_confirmation_display = 'disabled';
 				continue;
 			}
+
 			$sTimestamp = null;
 			if ( isset( $aCurrentPageReads[$oDataSet->page_id][$iCurrentUserId] ) ) {
 				$sTimestamp = $aCurrentPageReads[$oDataSet->page_id][$iCurrentUserId];
 			}
 			$oDataSet->read_confirmation = $sTimestamp;
+			$oDataSet->read_confirmation_display = $sTimestamp;
+
+			if ( !$sTimestamp ) {
+				continue;
+			}
+
+			$formattedDate = $language->userDate(
+				$sTimestamp,
+				$user
+			);
+			$oDataSet->read_confirmation_display = $formattedDate;
 		}
 	}
 

@@ -1,28 +1,26 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ajeje Brazorf"
+			"Ajeje Brazorf",
+			"GianAntonucci",
+			"Gmelfi"
 		]
 	},
 	"bs-bookshelf-tagerror-attribute-float-not-valid": "Pi favuri, usa <i>left</i> o <i>right</i>.",
 	"bs-bookshelf-specialpage-title": "Libbra",
 	"bs-bookshelf-specialpage-allpages-ns-book-text": "Libbrarìa",
 	"bs-bookshelf-tag-edit-book": "Cancia libbru",
-	"bs-bookshelf-personal-books-page-prefix": "$1/Libbra/",
 	"bs-bookshelf-add-to-book-label": "Agghiunci ôn libbru",
 	"bs-bookshelf-add-to-book-label-book": "Libbru",
 	"bs-bookshelf-add-to-book-added": "La pàggina fu agghiunciuta ô libbru '$1'.",
 	"bs-bookshelf-setting-path-feature": "Libbru",
 	"bs-bookshelf-grouping-template-type-ns_book": "Libbra ginirali",
-	"bs-bookshelf-grouping-template-type-user_book": "Libbri pirsunali",
 	"bs-bookshelf-action-editbook": "Cancia surgenti",
 	"bs-bookshelf-action-editbook-create": "Cancia surgenti",
 	"bs-bookshelf-edit-title": "Canciamentu di $1",
 	"bs-bookshelf-book-grid-title": "Libbra",
 	"bookshelf-summary": "Libbra ginirali",
-	"bs-bookshelf-ga-manager-label": "Libbri",
-	"bs-bookshelf-prof-defaultview-grid": "Grigghia",
-	"bs-bookshelf-prof-defaultview-images": "Mmàggini",
+	"bs-bookshelf-mainlinks-label": "Libbri",
 	"bs-bookshelf-actionmenuentry-addtobook": "Agghiunci ô libbru",
 	"bs-bookshelf-ve-bookmeta-attr-title-label": "Tìtulu",
 	"bs-bookshelf-ve-bookmeta-attr-subtitle-label": "Suttatìtulu",
@@ -32,5 +30,10 @@
 	"bs-bookshelf-ve-bookmeta-attr-version-label": "Virsioni",
 	"bs-bookshelf-ve-bookmeta-attr-version-help": "Mposta la virsioni dû libbru",
 	"bs-bookshelf-ve-bookshelf-attr-book-label": "Libbru",
-	"bs-bookshelf-mainlinks-label": "Libbri"
+	"bs-bookshelf-books-overview-page-book-action-export-book-title": "Esporta libbru $1",
+	"bs-bookshelf-book-page-book-action-export-book": "Esporta",
+	"bs-bookshelf-config-default-book-pdf-template": "Mudellu di esportazzioni di basi pî libbra",
+	"bs-bookshelf-config-default-book-pdf-template-help": "Imposta lu mudellu di basi pi l'esportazzioni di libbra a menucchì nun è spicificatu n'autru mudellu ntê metadati dô libbru. Lu template havi a esistiri comu na suttapàggina di MediaWiki:PDFCreator",
+	"bs-bookshelf-droplet-bookpdf-desc": "Jiunci nu link pi espurtari nu libbru scigghiutu comu PDF",
+	"bs-bookshelf-formelement-book-input-return-value-label": "Prupità d'arritornu"
 }

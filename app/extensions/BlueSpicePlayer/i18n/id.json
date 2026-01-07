@@ -7,7 +7,6 @@
 	"bs-player-extension-description": "Sematkan pemutar media di halaman.",
 	"bs-player-pref-autostart": "Mulai video secara otomatis",
 	"bs-player-file-does-not-exist": "Berkas tidak ada",
-	"bs-player-tag-showtime-desc": "Tag ini memungkinkan Anda menyematkan video.",
 	"bs-player-unsupported-type": "Jenis berkas ini tidak didukung.",
 	"bs-player-config-prefwidth": "Lebar tetapan video",
 	"bs-player-config-prefheight": "Tinggi tetapan video",

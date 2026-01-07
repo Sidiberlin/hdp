@@ -3,7 +3,7 @@ StandardDialogs.ui = StandardDialogs.ui || {};
 
 StandardDialogs.ui.DuplicateDialog = function StandardDialogsUiDuplicateDialog( config ) {
 	StandardDialogs.ui.DuplicateDialog.super.call( this, config );
-	this.page = new mw.Title.newFromText( this.pageName );
+	this.page = new mw.Title.newFromText( this.pageName ); // eslint-disable-line new-cap
 	this.subpages = [];
 	this.talkpages = [];
 };
@@ -12,10 +12,14 @@ OO.inheritClass( StandardDialogs.ui.DuplicateDialog, StandardDialogs.ui.BaseDial
 StandardDialogs.ui.DuplicateDialog.static.name = 'ext-standard-dialogs-duplicate';
 
 StandardDialogs.ui.DuplicateDialog.prototype.makeSetupProcessData = function () {
-	data = StandardDialogs.ui.DuplicateDialog.super.prototype.makeSetupProcessData.call( this );
+	const data = StandardDialogs.ui.DuplicateDialog.super.prototype.makeSetupProcessData.call( this );
 	data.title = mw.message( 'standarddialogs-copy-title', this.getDialogTitlePageName() ).plain();
 
 	return data;
+};
+
+StandardDialogs.ui.DuplicateDialog.prototype.getPrimaryActionLabel = function () {
+	return mw.message( 'standarddialogs-copy-btn-label' ).plain();
 };
 
 StandardDialogs.ui.DuplicateDialog.prototype.getFormItems = function () {
@@ -25,6 +29,9 @@ StandardDialogs.ui.DuplicateDialog.prototype.getFormItems = function () {
 		$overlay: this.$overlay,
 		mustExist: false,
 		contentPagesOnly: false
+	} );
+	this.mainInput.connect( this, {
+		change: 'onTitleChange'
 	} );
 	this.checkDiscussion = new OO.ui.CheckboxInputWidget( {
 		id: this.elementId + '-cb-discussion',
@@ -36,13 +43,15 @@ StandardDialogs.ui.DuplicateDialog.prototype.getFormItems = function () {
 		value: 'subpages',
 		selected: false
 	} );
+
+	this.mainFieldset = new OO.ui.FieldLayout( this.mainInput, {
+		label: mw.message( 'standarddialogs-copy-page-new' ).plain(),
+		align: 'top'
+	} );
 	return [
 		new OO.ui.FieldsetLayout( {
 			items: [
-				new OO.ui.FieldLayout( this.targetTitle, {
-					label: mw.message( 'standarddialogs-copy-page-new' ).plain(),
-					align: 'top'
-				} ),
+				this.mainFieldset,
 				new OO.ui.FieldLayout( this.checkDiscussion, {
 					label: mw.message( 'standarddialogs-copy-discussion' ).plain(),
 					align: 'inline'
@@ -56,27 +65,37 @@ StandardDialogs.ui.DuplicateDialog.prototype.getFormItems = function () {
 	];
 };
 
+StandardDialogs.ui.DuplicateDialog.prototype.onTitleChange = function ( value ) {
+	if ( this.typeTimeout ) {
+		clearTimeout( this.typeTimeout );
+	}
+	this.typeTimeout = setTimeout( () => {
+		this.validateTitleNotExist( value );
+	}, 500 );
+};
+
 StandardDialogs.ui.DuplicateDialog.prototype.makeDoneActionProcess = function () {
 	const me = this;
 	this.newTitle = mw.Title.newFromText( me.targetTitle.getValue() );
 	const dfd = new $.Deferred();
-	mw.loader.using( 'mediawiki.api' ).done( function () {
+	mw.loader.using( 'mediawiki.api' ).done( () => {
 		const dfdCopy = me.doCopy( me.pageName, me.targetTitle.getValue() );
-		$.when( dfdCopy ).done( function () {
+		$.when( dfdCopy ).done( () => {
+			let dfdDiscussion, dfdSubpages;
 
 			if ( me.checkDiscussion.isSelected() ) {
-				var dfdDiscussion = me.getDiscussionPages( me.page.getName(), me.page.getNamespaceId() );
+				dfdDiscussion = me.getDiscussionPages( me.page.getName(), me.page.getNamespaceId() );
 			}
 
 			if ( me.checkSubpages.isSelected() ) {
-				var dfdSubpages = me.getSubPages( me.page.getName(), me.page.getNamespaceId() );
+				dfdSubpages = me.getSubPages( me.page.getName(), me.page.getNamespaceId() );
 			}
 
-			$.when( dfdDiscussion, dfdSubpages ).done( function () {
+			$.when( dfdDiscussion, dfdSubpages ).done( () => {
 				const copyDfds = [];
 				const mainTargetPageName = me.targetTitle.getValue().replace( / /g, '_' );
 				if ( me.subpages.length > 0 ) {
-					me.subpages.forEach( function ( subpage ) {
+					me.subpages.forEach( ( subpage ) => {
 						const sourceName = subpage.replace( / /g, '_' ),
 							targetName = sourceName.replace( me.pageName, mainTargetPageName ),
 							currentCopyDfd = me.doCopy( sourceName, targetName );
@@ -84,7 +103,7 @@ StandardDialogs.ui.DuplicateDialog.prototype.makeDoneActionProcess = function ()
 					} );
 				}
 				if ( me.talkpages.length > 0 ) {
-					me.talkpages.forEach( function ( talkpage ) {
+					me.talkpages.forEach( ( talkpage ) => {
 						const sourceName = talkpage.replace( / /g, '_' ),
 							targetName = sourceName.replace( me.pageName, mainTargetPageName ),
 							currentCopyDfd = me.doCopy( sourceName, targetName );
@@ -103,7 +122,7 @@ StandardDialogs.ui.DuplicateDialog.prototype.makeDoneActionProcess = function ()
 	return new OO.ui.Process( dfd.promise(), this );
 };
 
-StandardDialogs.ui.DuplicateDialog.prototype.getActionCompletedEventArgs = function ( action ) {
+StandardDialogs.ui.DuplicateDialog.prototype.getActionCompletedEventArgs = function () {
 	return [ this.newTitle ];
 };
 
@@ -116,10 +135,10 @@ StandardDialogs.ui.DuplicateDialog.prototype.getDiscussionPages = function ( src
 		list: 'allpages',
 		apprefix: srcPageName,
 		apnamespace: srcNamespace + 1
-	} ).done( function ( resp ) {
+	} ).done( ( resp ) => {
 		me.talkpages.push( resp.query.allpages[ 0 ].title );
 		dfd.resolve( resp );
-	} ).fail( function ( error ) {
+	} ).fail( ( error ) => {
 		dfd.reject( error );
 	} );
 	if ( me.checkSubpages.isSelected() ) {
@@ -128,12 +147,12 @@ StandardDialogs.ui.DuplicateDialog.prototype.getDiscussionPages = function ( src
 			list: 'allpages',
 			apprefix: srcPageName + '/',
 			apnamespace: srcNamespace + 1
-		} ).done( function ( resp ) {
-			resp.query.allpages.forEach( function ( page ) {
+		} ).done( ( resp ) => {
+			resp.query.allpages.forEach( ( page ) => {
 				me.talkpages.push( page.title );
 			} );
 			dfd.resolve( resp );
-		} ).fail( function ( error ) {
+		} ).fail( ( error ) => {
 			dfd.reject( error );
 		} );
 	}
@@ -162,19 +181,19 @@ StandardDialogs.ui.DuplicateDialog.prototype.doGetSubPages = function ( srcPageN
 	}
 
 	const mwApi = new mw.Api();
-	mwApi.postWithToken( 'csrf', params ).done( function ( resp ) {
-		resp.query.allpages.forEach( function ( page ) {
+	mwApi.postWithToken( 'csrf', params ).done( ( resp ) => {
+		resp.query.allpages.forEach( ( page ) => {
 			me.subpages.push( page.title );
 		} );
 		if ( resp.continue ) {
 			const recursiveCall = me.doGetSubPages( srcPageName, srcNamespace, resp.continue.apcontinue );
-			recursiveCall.done( function () {
+			recursiveCall.done( () => {
 				dfd.resolve( resp );
 			} );
 		} else {
 			dfd.resolve( resp );
 		}
-	} ).fail( function ( error ) {
+	} ).fail( ( error ) => {
 		dfd.reject( error );
 	} );
 
@@ -190,7 +209,7 @@ StandardDialogs.ui.DuplicateDialog.prototype.doCopy = function ( srcPageName, ta
 		prop: 'revisions',
 		rvprop: 'content',
 		indexpageids: ''
-	} ).done( function ( resp ) {
+	} ).done( ( resp ) => {
 		const pageId = resp.query.pageids[ 0 ];
 		const pageInfo = resp.query.pages[ pageId ];
 		if ( pageInfo.missing || !pageInfo.revisions || !pageInfo.revisions[ 0 ] ) {
@@ -204,13 +223,13 @@ StandardDialogs.ui.DuplicateDialog.prototype.doCopy = function ( srcPageName, ta
 		} ).fail( function () {
 			dfd.reject( [ new OO.ui.Error( arguments[ 0 ], { recoverable: false } ) ] );
 		} )
-			.done( function ( resp ) {
+			.done( function ( resp ) { // eslint-disable-line no-shadow
 				if ( !resp.edit.result || resp.edit.result.toLowerCase() !== 'success' ) {
-					dfd.reject( errResp );
+					dfd.reject( resp );
 				}
 
 				if ( resp.edit.title === undefined ) {
-					dfd.reject( errResp );
+					dfd.reject( resp );
 				}
 				dfd.resolve( arguments );
 			} );

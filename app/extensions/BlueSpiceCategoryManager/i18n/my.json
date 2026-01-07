@@ -1,11 +1,17 @@
 {
 	"@metadata": {
 		"authors": [
-			"Dr Lotus Black"
+			"Dr Lotus Black",
+			"Sithu015"
 		]
 	},
 	"bs-categorymanager-text": "ကဏ္ဍများ",
-	"bs-categorymanager-statistics-report-category-pages": "ဤကဏ္ဍများရှိ စာမျက်နှာများ",
 	"bs-categorymanager-collection-var-categorizedpages": "ကဏ္ဍများနှင့် စာမျက်နှာများ",
-	"bs-categorymanager-collection-var-uncategorizedpages": "ကဏ္ဍများမရှိသော စာမျက်နှာများ"
+	"bs-categorymanager-collection-var-uncategorizedpages": "ကဏ္ဍများမရှိသော စာမျက်နှာများ",
+	"bs-categorymanager-statistics-report-category-pages": "ဤကဏ္ဍများရှိ စာမျက်နှာများ",
+	"bs-categorymanager-dialog-action-add-label": "ထည့်ရန်",
+	"bs-categorymanager-add-category-label": "ကဏ္ဍအမည်",
+	"bs-categorymanager-category-item-rename-label": "အမည်ပြောင်းရန်",
+	"bs-categorymanager-dlg-add-title": "ကဏ္ဍတစ်ခု ထည့်ပေါင်းရန်",
+	"bs-categorymanager-dialog-action-rename-label": "အမည်ပြန်ပြောင်းရန်"
 }

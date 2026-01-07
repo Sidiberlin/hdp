@@ -3,8 +3,8 @@
 namespace BlueSpice\Bookshelf\BooksOverviewActions;
 
 use BlueSpice\Bookshelf\IBooksOverviewAction;
-use Message;
-use Title;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 
 class Edit implements IBooksOverviewAction {
 
@@ -52,7 +52,7 @@ class Edit implements IBooksOverviewAction {
 	 * @return array
 	 */
 	public function getIconClasses(): array {
-		return [ 'icon-edit' ];
+		return [ 'bi-pencil-fill' ];
 	}
 
 	/**

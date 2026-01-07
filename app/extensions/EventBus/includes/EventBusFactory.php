@@ -24,9 +24,10 @@ namespace MediaWiki\Extension\EventBus;
 
 use InvalidArgumentException;
 use MediaWiki\Config\ServiceOptions;
-use Mediawiki\Extension\EventStreamConfig\StreamConfigs;
-use MultiHttpClient;
+use MediaWiki\Extension\EventStreamConfig\StreamConfigs;
 use Psr\Log\LoggerInterface;
+use Wikimedia\Http\MultiHttpClient;
+use Wikimedia\Stats\StatsFactory;
 
 /**
  * Creates appropriate EventBus instance based on stream config.
@@ -44,38 +45,84 @@ class EventBusFactory {
 	];
 
 	/**
-	 * Key in wgEventStreams that specifies
+	 * Key in wgEventStreams['stream_name']['producers'] that contains settings
+	 * for this MediaWiki EventBus producer.
+	 */
+	public const EVENT_STREAM_CONFIG_PRODUCER_NAME = 'mediawiki_eventbus';
+
+	/**
+	 * Key in wgEventStreams['stream_name']['producers'][EVENT_STREAM_CONFIG_PRODUCER_NAME]
+	 * that specifies if the stream is enabled. A stream is 'disabled' only if
+	 * this setting is explicitly false, or if the stream name
+	 * does not have an entry in wgEventStreams
+	 * (and wgEventStreams is an array with other streams configured).
+	 */
+	public const EVENT_STREAM_CONFIG_ENABLED_SETTING = 'enabled';
+
+	/**
+	 * Key in wgEventStreams['stream_name']['producers'][EVENT_STREAM_CONFIG_PRODUCER_NAME] that specifies
 	 * the event service name that should be used for a specific stream.
+	 * This should be a key into $eventServiceConfig, which usually is configured
+	 * using the EventBus MW config wgEventServices.
 	 * If not found via StreamConfigs, EventServiceDefault will be used.
 	 */
-	private const EVENT_STREAM_CONFIG_SERVICE_SETTING = 'destination_event_service';
+	public const EVENT_STREAM_CONFIG_SERVICE_SETTING = 'event_service_name';
 
-	/** @var array */
-	private $eventServiceConfig;
+	/**
+	 * Internal name of an EventBus instance that never sends events.
+	 * This is used for streams that are disabled or undeclared.
+	 * This will also be used as the dummy 'url' of that instance.
+	 * (Public only for testing purposes.)
+	 */
+	public const EVENT_SERVICE_DISABLED_NAME = '_disabled_eventbus_';
 
-	/** @var string */
-	private $eventServiceDefault;
+	/**
+	 * @var array|mixed
+	 */
+	private array $eventServiceConfig;
 
-	/** @var StreamConfigs|null */
-	private $streamConfigs;
+	/**
+	 * @var string|mixed
+	 */
+	private string $eventServiceDefault;
 
-	/** @var string */
-	private $enableEventBus;
+	/**
+	 * @var StreamConfigs|null
+	 */
+	private ?StreamConfigs $streamConfigs;
 
-	/** @var int */
-	private $maxBatchByteSize;
+	/**
+	 * @var string|mixed
+	 */
+	private string $enableEventBus;
 
-	/** @var EventFactory */
-	private $eventFactory;
+	/**
+	 * @var int|mixed
+	 */
+	private int $maxBatchByteSize;
 
-	/** @var MultiHttpClient */
-	private $http;
+	/**
+	 * @var EventFactory
+	 */
+	private EventFactory $eventFactory;
 
-	/** @var LoggerInterface */
-	private $logger;
+	/**
+	 * @var MultiHttpClient
+	 */
+	private MultiHttpClient $http;
 
-	/** @var EventBus[] */
-	private $eventBusInstances = [];
+	/**
+	 * @var LoggerInterface
+	 */
+	private LoggerInterface $logger;
+
+	/** @var ?StatsFactory wf:Stats factory instance */
+	private ?StatsFactory $statsFactory;
+
+	/**
+	 * @var array
+	 */
+	private array $eventBusInstances = [];
 
 	/**
 	 * @param ServiceOptions $options
@@ -83,13 +130,15 @@ class EventBusFactory {
 	 * @param EventFactory $eventFactory
 	 * @param MultiHttpClient $http
 	 * @param LoggerInterface $logger
+	 * @param StatsFactory|null $statsFactory
 	 */
 	public function __construct(
 		ServiceOptions $options,
 		?StreamConfigs $streamConfigs,
 		EventFactory $eventFactory,
 		MultiHttpClient $http,
-		LoggerInterface $logger
+		LoggerInterface $logger,
+		?StatsFactory $statsFactory = null
 	) {
 		$options->assertRequiredOptions( self::CONSTRUCTOR_OPTIONS );
 
@@ -97,16 +146,34 @@ class EventBusFactory {
 		$this->eventServiceDefault = $options->get( 'EventServiceDefault' );
 		$this->enableEventBus = $options->get( 'EnableEventBus' );
 		$this->maxBatchByteSize = $options->get( 'EventBusMaxBatchByteSize' );
+
 		$this->streamConfigs = $streamConfigs;
 		$this->eventFactory = $eventFactory;
 		$this->http = $http;
 		$this->logger = $logger;
+		$this->statsFactory = $statsFactory;
+
+		// Save a 'disabled' non producing EventBus instance that sets
+		// the allowed event type to TYPE_NONE. No
+		// events sent through this instance will actually be sent to an event service.
+		// This is done to allow us to easily 'disable' streams.
+		$this->eventBusInstances[self::EVENT_SERVICE_DISABLED_NAME] = new EventBus(
+			$this->http,
+			EventBus::TYPE_NONE,
+			$this->eventFactory,
+			self::EVENT_SERVICE_DISABLED_NAME,
+			$this->maxBatchByteSize,
+			0,
+			false,
+			self::EVENT_SERVICE_DISABLED_NAME,
+			$this->statsFactory
+		);
 	}
 
 	/**
 	 * @param string $eventServiceName
 	 *   The name of a key in the EventServices config looked up via
-	 *   MediawikiServices::getInstance()->getMainConfig()->get('EventServices').
+	 *   MediaWikiServices::getInstance()->getMainConfig()->get('EventServices').
 	 *   The EventService config is keyed by service name, and should at least contain
 	 *   a 'url' entry pointing at the event service endpoint events should be
 	 *   POSTed to. They can also optionally contain a 'timeout' entry specifying
@@ -123,21 +190,20 @@ class EventBusFactory {
 	 * @return EventBus
 	 */
 	public function getInstance( string $eventServiceName ): EventBus {
-		if ( !array_key_exists( $eventServiceName, $this->eventServiceConfig ) ||
-			!array_key_exists( 'url', $this->eventServiceConfig[$eventServiceName] )
+		if ( array_key_exists( $eventServiceName, $this->eventBusInstances ) ) {
+			// If eventServiceName has already been instantiated, return it.
+			return $this->eventBusInstances[$eventServiceName];
+		} elseif (
+			array_key_exists( $eventServiceName, $this->eventServiceConfig ) &&
+			array_key_exists( 'url', $this->eventServiceConfig[$eventServiceName] )
 		) {
-			$error = "Could not get EventBus instance for event service '$eventServiceName'. " .
-				'This event service name must exist in EventServices config with a url setting.';
-			$this->logger->error( $error );
-			throw new InvalidArgumentException( $error );
-		}
+			// else, create eventServiceName instance from config
+			// and save it in eventBusInstances.
+			$eventServiceSettings = $this->eventServiceConfig[$eventServiceName];
+			$url = $eventServiceSettings['url'];
+			$timeout = $eventServiceSettings['timeout'] ?? null;
+			$forwardXClientIP = $eventServiceSettings['x_client_ip_forwarding_enabled'] ?? false;
 
-		$eventService = $this->eventServiceConfig[$eventServiceName];
-		$url = $eventService['url'];
-		$timeout = array_key_exists( 'timeout', $eventService ) ? $eventService['timeout'] : null;
-		$forwardXClientIP = $eventService['x_client_ip_forwarding_enabled'] ?? false;
-
-		if ( !array_key_exists( $eventServiceName, $this->eventBusInstances ) ) {
 			$this->eventBusInstances[$eventServiceName] = new EventBus(
 				$this->http,
 				$this->enableEventBus,
@@ -145,50 +211,117 @@ class EventBusFactory {
 				$url,
 				$this->maxBatchByteSize,
 				$timeout,
-				$forwardXClientIP
+				$forwardXClientIP,
+				$eventServiceName,
+				$this->statsFactory
 			);
+			return $this->eventBusInstances[$eventServiceName];
+		} else {
+			$error = "Could not get EventBus instance for event service '$eventServiceName'. " .
+				'This event service name must exist in EventServices config with a url setting.';
+			$this->logger->error( $error );
+			throw new InvalidArgumentException( $error );
 		}
-
-		return $this->eventBusInstances[$eventServiceName];
 	}
 
 	/**
 	 * Gets an EventBus instance for a $stream.
-	 * If none is configured specifically for $stream, EventServiceDefault will be used.
 	 *
-	 * @param string $stream the stream to send an event to
+	 * If EventStreamConfig is not configured, or if the stream is configured but
+	 * does not set ['producers']['mediawiki_eventbus'][EVENT_STREAM_CONFIG_SERVICE_SETTING],
+	 * EventServiceDefault will be used.
+	 *
+	 * If EventStreamConfig is configured, but the stream is not or the stream has
+	 * ['producers']['mediawiki_eventbus']['enabled'] = false, this will return
+	 * a non-producing EventBus instance.
+	 *
+	 * @param string $streamName the stream to send an event to
 	 * @return EventBus
 	 * @throws InvalidArgumentException
 	 */
-	public function getInstanceForStream( string $stream ): EventBus {
+	public function getInstanceForStream( string $streamName ): EventBus {
+		if ( $this->streamConfigs === null ) {
+			$eventServiceName = $this->eventServiceDefault;
+		} elseif ( !$this->isStreamEnabled( $streamName ) ) {
+			// Don't send event if $streamName is explicitly disabled.
+
+			$eventServiceName = self::EVENT_SERVICE_DISABLED_NAME;
+			$this->logger->debug(
+				"Using non-producing EventBus instance for stream $streamName. " .
+				'This stream is either undeclared, or is explicitly disabled.'
+			);
+		} else {
+			$eventServiceName = $this->getEventServiceNameForStream( $streamName ) ??
+				$this->eventServiceDefault;
+			$this->logger->debug(
+				"Using event intake service $eventServiceName for stream $streamName."
+			);
+		}
+
+		return self::getInstance( $eventServiceName );
+	}
+
+	/**
+	 * Uses StreamConfigs to determine if a stream is enabled.
+	 * By default, a stream is enabled.  It is disabled only if:
+	 *
+	 * - wgEventStreams[$streamName]['producers']['mediawiki_eventbus']['enabled'] === false
+	 * OR
+	 * - wgEventStreams != null, but, wgEventStreams[$streamName] is not declared
+	 *
+	 * @param string $streamName
+	 * @return bool
+	 */
+	private function isStreamEnabled( string $streamName ): bool {
+		// No streamConfigs means any stream is enabled
+		if ( $this->streamConfigs === null ) {
+			return true;
+		}
+
+		$streamConfigEntries = $this->streamConfigs->get( [ $streamName ] );
+
+		// If $streamName is not declared in EventStreamConfig, then it is not enabled.
+		if ( !array_key_exists( $streamName, $streamConfigEntries ) ) {
+			return false;
+		}
+
+		$streamSettings = $streamConfigEntries[$streamName];
+
+		return $streamSettings['producers'][
+			self::EVENT_STREAM_CONFIG_PRODUCER_NAME
+		][self::EVENT_STREAM_CONFIG_ENABLED_SETTING] ?? true;
+	}
+
+	/**
+	 * Looks up the wgEventStreams[$streamName]['producers']['mediawiki_eventbus'][EVENT_STREAM_CONFIG_SERVICE_SETTING]
+	 * setting for this stream.
+	 * If wgEventStreams is not configured, or if the stream is not configured in wgEventStreams,
+	 * or if the stream does not have EVENT_STREAM_CONFIG_SERVICE_SETTING set,
+	 * then this will return null.
+	 *
+	 * @param string $streamName
+	 * @return string|null
+	 */
+	private function getEventServiceNameForStream( string $streamName ): ?string {
 		// Use eventServiceDefault if no streamConfigs were provided.
 		if ( $this->streamConfigs === null ) {
-			$this->logger->debug(
-				'Using EventServiceDefault ' . $this->eventServiceDefault .
-				" for stream $stream. EventStreamConfig is not enabled."
-			);
-			return self::getInstance( $this->eventServiceDefault );
+			return null;
 		}
 
 		// Else attempt to lookup EVENT_STREAM_CONFIG_SERVICE_SETTING for this stream.
-		$streamConfigEntries = $this->streamConfigs->get( [ $stream ], true );
-		if ( array_key_exists( $stream, $streamConfigEntries ) &&
-			array_key_exists(
-				self::EVENT_STREAM_CONFIG_SERVICE_SETTING, $streamConfigEntries[$stream]
-			)
-		) {
-			$eventService = $streamConfigEntries[$stream][self::EVENT_STREAM_CONFIG_SERVICE_SETTING];
-			$this->logger->debug(
-				'Using ' . self::EVENT_STREAM_CONFIG_SERVICE_SETTING .
-				" $eventService for stream $stream."
-			);
-			return self::getInstance( $eventService );
-		} else {
-			$this->logger->debug(
-				'Using EventServiceDefault ' . $this->eventServiceDefault .
-				" for stream $stream. " . self::EVENT_STREAM_CONFIG_SERVICE_SETTING . ' is not configured.'
-			);
-			return self::getInstance( $this->eventServiceDefault );
-		}
+		$streamConfigEntries = $this->streamConfigs->get( [ $streamName ] );
+
+		$streamSettings = $streamConfigEntries[$streamName] ?? [];
+
+		$eventServiceName = $streamSettings['producers'][
+			self::EVENT_STREAM_CONFIG_PRODUCER_NAME
+		][self::EVENT_STREAM_CONFIG_SERVICE_SETTING] ?? null;
+
+		// For backwards compatibility, the event service name setting used to be a top level
+		// stream setting 'destination_event_service'. If EVENT_STREAM_CONFIG_SERVICE_SETTING, use it instead.
+		// This can be removed once all streams have been migrated to using the
+		// producers.mediawiki_eventbus specific setting.
+		// https://phabricator.wikimedia.org/T321557
+		return $eventServiceName ?: $streamSettings['destination_event_service'] ?? null;
 	}
 }

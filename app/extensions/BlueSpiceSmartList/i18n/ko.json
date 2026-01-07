@@ -20,8 +20,6 @@
 	"bs-smartlist-month": "월",
 	"bs-smartlist-time": "시간",
 	"bs-smartlist-title": "제목",
-	"bs-smartlist-tag-smartlist-example-rc": "모드: 최근 바뀜",
-	"bs-smartlist-tag-smartlist-example-whatlinkshere": "모드: 여기를 가리키는 문서",
 	"bs-smartlist-mostvisitedpages": "조회수가 가장 많은 문서",
 	"bs-smartlist-mosteditedpages": "가장 자주 편집한 문서",
 	"bs-smartlist-mostactiveusers": "가장 활동적인 사용자 (편집별)",
@@ -32,7 +30,6 @@
 	"bs-smartlist-mostvisitedpagesdesc": "조회수별로 정렬된 가장 조회수가 많은 문서 목록입니다.",
 	"bs-smartlist-lasteditsdesc": "편집한 문서 목록입니다.",
 	"bs-smartlist-hitcounter-missing": "확장 기능 <a target='blank' href='https://www.mediawiki.org/wiki/Extension:HitCounters'>HitCounters</a>를 설치해야 합니다.",
-	"apihelp-bs-smartlist-tasks-description": "문서와 사용자 통계의 포틀릿 데이터를 제공할 API 함수들입니다.",
 	"bs-smartlist-ve-recentchanges-title": "최근 바뀜",
 	"bs-smartlist-ve-whatlinkshere-title": "이 문서의 링크"
 }

@@ -6,14 +6,14 @@ use BlueSpice\PageAssignments\IAssignment;
 use BlueSpice\PageHeaderBeforeContentFactory;
 use BlueSpice\Renderer;
 use BlueSpice\Renderer\Params;
-use Config;
 use Exception;
-use Html;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\MediaWikiServices;
 use QuickTemplate;
-use RequestContext;
 
 class PageHeaderAssignments extends Renderer {
 
@@ -35,8 +35,8 @@ class PageHeaderAssignments extends Renderer {
 	 * @param PageHeaderBeforeContentFactory|null $factory
 	 */
 	protected function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
-		$name = '', QuickTemplate $skinTemplate = null, PageHeaderBeforeContentFactory $factory = null ) {
+		?LinkRenderer $linkRenderer = null, ?IContextSource $context = null,
+		$name = '', ?QuickTemplate $skinTemplate = null, ?PageHeaderBeforeContentFactory $factory = null ) {
 		parent::__construct( $config, $params, $linkRenderer, $context, $name, $skinTemplate );
 
 		$this->factory = $factory;
@@ -55,8 +55,8 @@ class PageHeaderAssignments extends Renderer {
 	 * @return Renderer
 	 */
 	public static function factory( $name, MediaWikiServices $services, Config $config,
-		Params $params, IContextSource $context = null, LinkRenderer $linkRenderer = null,
-		QuickTemplate $skinTemplate = null, PageHeaderBeforeContentFactory $factory = null ) {
+		Params $params, ?IContextSource $context = null, ?LinkRenderer $linkRenderer = null,
+		?QuickTemplate $skinTemplate = null, ?PageHeaderBeforeContentFactory $factory = null ) {
 		if ( !$context ) {
 			$context = $params->get(
 				static::PARAM_CONTEXT,

@@ -6,18 +6,20 @@ namespace BlueSpice;
 
 use FileContentsHasher;
 use LightnCandy\LightnCandy;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\TemplateParser as MediaWikiTemplateParser;
+use MediaWiki\Message\Message;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
-use Message;
 use MessageLocalizer;
 use ObjectCache;
-use RequestContext;
 use RuntimeException;
+use Wikimedia\ObjectCache\BagOStuff;
 
-class TemplateParser extends \TemplateParser implements ITemplateParser, MessageLocalizer {
+class TemplateParser extends MediaWikiTemplateParser implements ITemplateParser, MessageLocalizer {
 
 	/**
 	 * @param string|null $templateDir
-	 * @param \BagOStuff|null $cache Unused, caching is always disabled
+	 * @param BagOStuff|null $cache Unused, caching is always disabled
 	 */
 	public function __construct( $templateDir = null, $cache = null ) {
 		// remove trailing slashes
@@ -106,7 +108,7 @@ class TemplateParser extends \TemplateParser implements ITemplateParser, Message
 		}
 		$helpers['_'] = function ( $msg ) {
 			$msgKey = array_shift( $msg );
-			return $this->msg( $msgKey, ...$msg )->plain();
+			return $this->msg( $msgKey, ...$msg )->text();
 		};
 		$helpers['__'] = function ( $msg ) {
 			$msgKey = array_shift( $msg );

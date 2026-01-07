@@ -1,9 +1,9 @@
 bs.util.registerNamespace( 'bs.vec.ui.widget' );
 
-bs.vec.ui.widget.HorizontalTextAlignmentWidget = function( contextItem ) {
+bs.vec.ui.widget.HorizontalTextAlignmentWidget = function ( contextItem ) {
 	bs.vec.ui.widget.HorizontalTextAlignmentWidget.parent.call( this, contextItem );
 
-	var styles = contextItem.getStyles();
+	const styles = contextItem.getStyles();
 	this.horizontalTextAlignment = styles.horizontalTextAlignment || 'left';
 
 	this.positionSelector = new OO.ui.ButtonSelectWidget( {
@@ -36,7 +36,7 @@ bs.vec.ui.widget.HorizontalTextAlignmentWidget = function( contextItem ) {
 
 OO.inheritClass( bs.vec.ui.widget.HorizontalTextAlignmentWidget, bs.vec.ui.widget.CommandWidget );
 
-bs.vec.ui.widget.HorizontalTextAlignmentWidget.prototype.onChange = function( selected ) {
+bs.vec.ui.widget.HorizontalTextAlignmentWidget.prototype.onChange = function ( selected ) {
 	if ( !selected ) {
 		return;
 	}
@@ -44,7 +44,7 @@ bs.vec.ui.widget.HorizontalTextAlignmentWidget.prototype.onChange = function( se
 	this.executeAction();
 };
 
-bs.vec.ui.widget.HorizontalTextAlignmentWidget.prototype.executeAction = function() {
+bs.vec.ui.widget.HorizontalTextAlignmentWidget.prototype.executeAction = function () {
 	if ( !this.shouldExecute() ) {
 		return;
 	}

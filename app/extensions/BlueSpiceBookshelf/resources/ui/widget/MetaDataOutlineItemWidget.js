@@ -1,12 +1,12 @@
 bs.util.registerNamespace( 'ext.bookshelf.ui.widget' );
 
 ext.bookshelf.ui.widget.MetaDataOutlineItemWidget = function ( config ) {
-	var label = config.label || '';
+	const label = config.label || '';
 	this.key = config.key || '';
 	this.checkboxChange = false;
 	this.checkbox = new OO.ui.CheckboxInputWidget( {
 		title: mw.message( 'bs-bookshelf-metadata-widget-checkbox-title', label ).text(),
-		selected: config.active || false ,
+		selected: config.active || false,
 		tabIndex: -1
 	} );
 	this.checkbox.connect( this, {
@@ -18,22 +18,22 @@ ext.bookshelf.ui.widget.MetaDataOutlineItemWidget = function ( config ) {
 		}
 	} );
 
-	ext.bookshelf.ui.widget.MetaDataOutlineItemWidget.super.call( this, $.extend( config, {
+	ext.bookshelf.ui.widget.MetaDataOutlineItemWidget.super.call( this, $.extend( config, { // eslint-disable-line no-jquery/no-extend
 		classes: [ 'bs-metadata-outline-widget' ],
 		$label: $( '<label>' ),
 		align: 'inline'
 	} ) );
 
 	this.$element.append( this.checkbox.$element, this.$label );
-	this.$element.on( 'click', function ( e ) {
+	this.$element.on( 'click', ( e ) => {
 		if ( e.target.nodeName === 'INPUT' ) {
 			this.checkboxChange = true;
 			return;
 		}
-		var state = this.checkbox.isSelected();
+		const state = this.checkbox.isSelected();
 		this.checkbox.setSelected( !state );
 		this.emit( 'property_selection', this.key, state );
-	}.bind( this ) );
+	} );
 };
 
 OO.inheritClass( ext.bookshelf.ui.widget.MetaDataOutlineItemWidget, OO.ui.OptionWidget );

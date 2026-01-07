@@ -37,7 +37,7 @@ class GraphFormatter {
 	];
 	private $legendItem = [];
 	private $options;
-	/** @var string $lineSeparator Line separator for line wrapped long text. */
+	/** @var string Line separator for line wrapped long text. */
 	private $lineSeparator;
 
 	public function __construct( GraphOptions $options ) {
@@ -45,9 +45,8 @@ class GraphFormatter {
 
 		// GraphViz is not working for version >= 1.33, so we need to use the Diagrams extension
 		// and formatting is a little different from the GraphViz extension
-		global $wgVersion;
 		$this->lineSeparator
-			= version_compare( $wgVersion, '1.33', '>=' ) && \ExtensionRegistry::getInstance()->isLoaded( 'Diagrams' )
+			= \ExtensionRegistry::getInstance()->isLoaded( 'Diagrams' )
 			? '<br />'
 			: PHP_EOL;
 	}
@@ -56,7 +55,7 @@ class GraphFormatter {
 		return $this->graph;
 	}
 
-	/*
+	/**
 	 * Add a single string to graph
 	 *
 	 * @param string $line
@@ -65,18 +64,16 @@ class GraphFormatter {
 		$this->graph .= $line;
 	}
 
-	/*
-	* Creates the DOT (graph description language),
-	*  which can be processed by the Diagrams, GraphViz or External Data extension
-	*
-	* @see https://www.graphviz.org/ for documentation about the DOT language
-	* @since 3.2
-	*
-	* @param SRF\Graph\GraphNodes[] $nodes
-	*/
+	/**
+	 * Creates the DOT (graph description language),
+	 *  which can be processed by the Diagrams, GraphViz or External Data extension
+	 *
+	 * @see https://www.graphviz.org/ for documentation about the DOT language
+	 * @since 3.2
+	 *
+	 * @param SRF\Graph\GraphNodes[] $nodes
+	 */
 	public function buildGraph( $nodes ) {
-		global $wgVersion;
-
 		$this->add( 'digraph "' . $this->options->getGraphName() . '" {' );
 
 		// set fontsize and fontname of graph, nodes and edges
@@ -119,8 +116,7 @@ class GraphFormatter {
 				$nodeTooltip = $nodeLabel ?: $node->getID();
 				// GraphViz is not working for version >= 1.33, so we need to use the Diagrams extension
 				// and formatting is a little different from the GraphViz extension
-				if ( version_compare( $wgVersion, '1.33', '>=' ) &&
-					\ExtensionRegistry::getInstance()->isLoaded( 'Diagrams' ) ) {
+				if ( \ExtensionRegistry::getInstance()->isLoaded( 'Diagrams' ) ) {
 					$nodeTooltip = str_replace( '<br />', '', $nodeTooltip );
 				}
 				// Label in HTML form enclosed with <>.
@@ -130,16 +126,32 @@ class GraphFormatter {
 								$alignment = in_array( $field['type'], [ '_num', '_qty', '_dat', '_tem' ] )
 									? 'right'
 									: 'left';
+								$valueLink = $field['valueLink'];
+								if ( $valueLink !== null ) {
+									$valueLink = $field['valueLink'];
+								} else {
+									$valueLink = $field['value'];
+								}
 								return '<tr><td align="left" href="[[Property:' . $field['page'] . ']]">'
 									. $field['name'] . '</td>'
-									. '<td align="' . $alignment . '">'
-										. $instance->getWordWrappedText(
-											$field['value'],
-											$instance->options->getWordWrapLimit()
+									. '<td align="' . $alignment . '"'
+										. (
+											$field['type'] === '_wpg'
+												? ' href="[[' . htmlspecialchars( $field['valueLink'] ) . ']]">'
+													. $instance->getWordWrappedText(
+														htmlspecialchars( $field['value'] ),
+														$instance->options->getWordWrapLimit()
+													)
+												: '>'
+													. $instance->getWordWrappedText(
+													htmlspecialchars( $field['value'] ),
+													$instance->options->getWordWrapLimit()
+												)
 										)
-									. '</td></tr>';
+										. '</td></tr>';
 							}, $fields ) ) . "\n</table>\n>";
-				$nodeLinkURL = null; // the value at the top is already hyperlinked.
+				$nodeLinkURL = null;
+				// the value at the top is already hyperlinked.
 			} else {
 				if ( $nodeLabel ) {
 					// Label, if any, is enclosed with "".
@@ -185,8 +197,8 @@ class GraphFormatter {
 
 					// handle parent/child switch (parentRelation)
 					$this->add( $this->options->getParentRelation()
-						? '"' . $parentNode['object'] . '" -> "' . $node->getID() . '"'
-						: '"' . $node->getID() . '" -> "' . $parentNode['object'] . '"' );
+						? '"' . htmlspecialchars( $parentNode['object'] ) . '" -> "' . htmlspecialchars( $node->getID() ) . '"'
+						: '"' . htmlspecialchars( $node->getID() ) . '" -> "' . htmlspecialchars( $parentNode['object'] ) . '"' );
 
 					if ( $this->options->isGraphLabel() || $this->options->isGraphColor() ) {
 						$this->add( ' [' );

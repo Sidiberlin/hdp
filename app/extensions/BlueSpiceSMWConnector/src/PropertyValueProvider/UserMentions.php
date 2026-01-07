@@ -3,15 +3,15 @@
 namespace BlueSpice\SMWConnector\PropertyValueProvider;
 
 use BlueSpice\SMWConnector\PropertyValueProvider;
+use MediaWiki\Content\WikitextContent;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use SESP\AppFactory;
 use SMW\DIProperty;
+use SMW\DIWikiPage;
 use SMW\SemanticData;
 use SMWDataItem;
-use SMWDIWikiPage;
-use Title;
 use WikiPage;
-use WikitextContent;
 
 class UserMentions extends PropertyValueProvider {
 
@@ -83,7 +83,7 @@ class UserMentions extends PropertyValueProvider {
 			$userPage = Title::makeTitle( NS_USER, $name );
 			$semanticData->addPropertyObjectValue(
 				$property,
-				SMWDIWikiPage::newFromTitle( $userPage )
+				DIWikiPage::newFromTitle( $userPage )
 			);
 		}
 	}

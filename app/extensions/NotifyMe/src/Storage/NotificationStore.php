@@ -5,11 +5,11 @@ namespace MediaWiki\Extension\NotifyMe\Storage;
 use Exception;
 use MediaWiki\Extension\NotifyMe\EventProvider;
 use MediaWiki\Extension\NotifyMe\NotificationSerializer;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 use MWStake\MediaWiki\Component\Events\Delivery\NotificationStatus;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
 use MWStake\MediaWiki\Component\Events\Notification;
-use User;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class NotificationStore {

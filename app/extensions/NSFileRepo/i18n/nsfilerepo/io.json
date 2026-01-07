@@ -4,5 +4,7 @@
 			"Joao Xavier"
 		]
 	},
-	"nsfilerepo-move-file-namespace-dialog-button-cancel": "Nuligar"
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "Nuligar",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "Nomaro (''namespace'')",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "Nomaro (''namespace'')"
 }

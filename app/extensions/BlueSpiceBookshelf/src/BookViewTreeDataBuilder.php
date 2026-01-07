@@ -2,8 +2,8 @@
 
 namespace BlueSpice\Bookshelf;
 
-use Title;
-use TitleFactory;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 
 class BookViewTreeDataBuilder {
 

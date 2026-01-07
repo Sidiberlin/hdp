@@ -12,7 +12,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Original",
 	"bs-visualeditorconnector-upload-type-simple": "Simples",
 	"bs-visualeditorconnector-upload-type-one-click": "Um clique",
-	"bs-visualeditorconnector-upload-type": "Tipo de carregamento",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Cancelar a edição",
 	"bs-visualeditorconnector-cancel-edit": "Cancelar a edição. As alterações não gravadas serão descartadas",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Tem a certeza de que pretende cancelar a edição? As suas alterações não gravadas serão descartadas.",
@@ -81,10 +80,14 @@
 	"bs-vec-table-border-dotted": "Pontilhada",
 	"bs-vec-table-border-double": "Dupla",
 	"bs-vec-insert-softhyphen-title": "Hífen de translineação",
-	"bs-visualeditorconnector-upload-type-help": "Original: o direito de carregamento é verificado. O nome do ficheiro, o espaço nominal e a categoria são editáveis. A descrição é obrigatória.\nSimples: o direito de carregamento não é verificado. O nome do ficheiro, o espaço nominal e a categoria são editáveis. A descrição é opcional.\nUm clique: o direito de carregamento não é verificado. O nome do ficheiro e a categoria não são editáveis. O espaço nominal é editável.",
 	"bs-vec-insert-line-break-title": "Quebra de linha (<br />)",
 	"bs-visualeditorconnector-text-style-tool-align-center-label": "Alinhar ao centro",
 	"bs-visualeditorconnector-align-center-annotation-desc": "Centra o texto selecionado",
 	"bs-visualeditorconnector-text-style-indent-label": "Indentar",
-	"bs-visualeditorconnector-indent-annotation-desc": "Indenta (afasta da margem) o texto selecionado"
+	"bs-visualeditorconnector-indent-annotation-desc": "Indenta (afasta da margem) o texto selecionado",
+	"bs-visualeditorconnector-upload-type": "Tipo de carregamento",
+	"bs-visualeditorconnector-upload-type-help": "Original: o direito de carregamento é verificado. O nome do ficheiro, o espaço nominal e a categoria são editáveis. A descrição é obrigatória.\nSimples: o direito de carregamento não é verificado. O nome do ficheiro, o espaço nominal e a categoria são editáveis. A descrição é opcional.\nUm clique: o direito de carregamento não é verificado. O nome do ficheiro e a categoria não são editáveis. O espaço nominal é editável.",
+	"bs-visualeditorconnector-dialog-table-title": "Tabela",
+	"bs-visualeditorconnector-dialog-action-insert": "Inserir",
+	"bs-visualeditor-save-label": "Guardar"
 }

@@ -8,11 +8,10 @@
 		]
 	},
 	"bs-qr-code-extension-description": "現在のページへのリンクを含む QR コードをツールバーに表示する。",
-	"bs-qr-code-title": "QR コード",
-	"bs-qr-code-text": "このページを携帯機器で開くには QR コードをスキャンしてください",
 	"bs-qr-code-action-qr-code-text": "QR コード",
 	"bs-qr-code-action-qr-code-dialog-title": "QR コード",
 	"bs-qr-code-action-qr-code-dialog-alt": "$1のQRコード",
+	"apihelp-bs-qr-code-param-revid": "パーマリンクを生成するページの版のID",
 	"apihelp-bs-qr-code-param-size": "QRコードのサイズ",
 	"bs-qr-code-alt-text": "$1のQRコード",
 	"bs-qr-code-tag-qrcode-title": "QR コード",
@@ -23,6 +22,5 @@
 	"bs-qr-code-droplet-desc": "ウィキページにQRコードを挿入します",
 	"bs-qr-code-tag-attr-size-option-small": "小",
 	"bs-qr-code-tag-attr-size-option-medium": "中",
-	"bs-qr-code-tag-attr-size-option-large": "大",
-	"apihelp-bs-qr-code-param-revid": "パーマリンクを生成するページの版のID"
+	"bs-qr-code-tag-attr-size-option-large": "大"
 }

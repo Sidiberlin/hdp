@@ -16,7 +16,6 @@
 	"bs-wikiexplorer-categories": "Kategorier",
 	"bs-wikiexplorer-linked-files": "Lenkede filer",
 	"bs-wikiexplorer-linked-pages": "Lenkede sider",
-	"apihelp-bs-wikiexplorer-store-description": "Tilbyr alle data for utvidelsen WikiExplorer",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "API-parameter for å indikere hvorvidt metadataene allerede har blitt lastet.",
 	"apihelp-bs-wikiexplorer-store-summary": "Tilbyr alle data for utvidelsen WikiExplorer",
 	"bs-wikiexplorer-icon-bool-true-aria-label": "krysset av",

@@ -2,11 +2,11 @@
 
 namespace BlueSpice\SaferEdit;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
-use Message;
-use Title;
-use User;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class EditWarningBuilder {

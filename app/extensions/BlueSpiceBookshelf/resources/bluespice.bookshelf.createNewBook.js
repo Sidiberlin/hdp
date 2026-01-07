@@ -1,7 +1,7 @@
-$( document ).on( 'click', '.new-book-action', function( e ) {
+$( document ).on( 'click', '#ca-bookshelf-panel-create-new-book, #ca-bookshelf-actions-primary-new-book, .new-book-action', ( e ) => {
 	e.preventDefault();
 	require( './ui/dialog/AddNewBook.js' );
-	var modules = require( './pluginModules.json' );
+	const modules = require( './pluginModules.json' );
 	mw.loader.using( modules ).done( function () {
 		if ( !this.windowManager ) {
 			this.windowManager = new OO.ui.WindowManager( {
@@ -9,15 +9,15 @@ $( document ).on( 'click', '.new-book-action', function( e ) {
 			} );
 			$( document.body ).append( this.windowManager.$element );
 		}
-		var dialog = new ext.bookshelf.ui.dialog.AddNewBookDialog();
+		const dialog = new ext.bookshelf.ui.dialog.AddNewBookDialog();
 		dialog.connect( this, {
-			book_created: function ( bookTitle ) {
+			book_created: function ( bookTitle ) { // eslint-disable-line camelcase
 				window.location.href = mw.util.getUrl(
 					'Special:Books',
 					{
 						filter: bookTitle
 					}
-				)
+				);
 			}
 		} );
 		this.windowManager.addWindows( [ dialog ] );

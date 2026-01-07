@@ -1,6 +1,8 @@
 <?php
 namespace BlueSpice\Bookshelf\MassAdd\Handler;
 
+use MediaWiki\Title\Title;
+
 class Subpage implements \BlueSpice\Bookshelf\MassAdd\IHandler {
 	/**
 	 * Title of the page we want to
@@ -19,9 +21,9 @@ class Subpage implements \BlueSpice\Bookshelf\MassAdd\IHandler {
 			$this->root = substr( $this->root, 0, -1 );
 		}
 
-		$title = \Title::newFromText( $this->root );
+		$title = Title::newFromText( $this->root );
 
-		if ( !( $title instanceof \Title ) || $title->exists() == false ) {
+		if ( !( $title instanceof Title ) || $title->exists() == false ) {
 			return [];
 		}
 

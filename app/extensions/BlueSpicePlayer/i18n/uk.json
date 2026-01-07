@@ -8,7 +8,6 @@
 	"bs-player-extension-description": "Вбудуйте медіаплеєр на сторінку.",
 	"bs-player-pref-autostart": "Розпочати відео автоматично",
 	"bs-player-file-does-not-exist": "Файл не існує.",
-	"bs-player-tag-showtime-desc": "Цей тег дозволяє вставляти відео.",
 	"bs-player-unsupported-type": "Цей тип файлу не підтримується.",
 	"bs-player-config-prefwidth": "Ширина відео за замовчуванням",
 	"bs-player-config-prefheight": "Висота відео за замовчуванням",

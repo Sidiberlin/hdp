@@ -3,12 +3,12 @@
 namespace MediaWiki\Extension\PdfHandler;
 
 use File;
-use IContextSource;
 use ImageHandler;
 use MediaTransformError;
 use MediaTransformOutput;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use PoolCounterWorkViaCallback;
+use MediaWiki\PoolCounter\PoolCounterWorkViaCallback;
 use ThumbnailImage;
 use TransformParameterError;
 
@@ -224,31 +224,17 @@ class PdfHandler extends ImageHandler {
 			"-q",
 			$srcPath
 		);
-		if ( wfIsWindows() ) {
-			$cmd .= " | " . wfEscapeShellArg(
-				$wgPdfPostProcessor,
-				"-",
-				"-depth",
-				"8",
-				"-quality",
-				$wgPdfHandlerJpegQuality,
-				"-resize",
-				$width,
-				$dstPath
-			);
-		} else {
-			$cmd .= " | " . wfEscapeShellArg(
-				$wgPdfPostProcessor,
-				"-depth",
-				"8",
-				"-quality",
-				$wgPdfHandlerJpegQuality,
-				"-resize",
-				$width,
-				"-",
-				$dstPath
-			);
-		}
+		$cmd .= " | " . wfEscapeShellArg(
+			$wgPdfPostProcessor,
+			"jpeg:-",
+			"-depth",
+			"8",
+			"-quality",
+			$wgPdfHandlerJpegQuality,
+			"-resize",
+			(string)$width,
+			$dstPath
+		);
 		$cmd .= ")";
 
 		wfDebug( __METHOD__ . ": $cmd\n" );
@@ -409,8 +395,8 @@ class PdfHandler extends ImageHandler {
 		if ( !$info ) {
 			$cache = MediaWikiServices::getInstance()->getMainWANObjectCache();
 			$info = $cache->getWithSetCallback(
-				$cache->makeKey( 'file-pdf', 'dimensions', $file->getSha1() ),
-				$cache::TTL_INDEFINITE,
+				$cache->makeKey( 'file-pdf-dimensions', $file->getSha1() ),
+				$cache::TTL_MONTH,
 				static function () use ( $file ) {
 					$data = $file->getMetadataItems( PdfImage::ITEMS_FOR_PAGE_SIZE );
 					if ( !$data || !isset( $data['Pages'] ) ) {

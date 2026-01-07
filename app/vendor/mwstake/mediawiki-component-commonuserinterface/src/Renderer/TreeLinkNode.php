@@ -52,6 +52,7 @@ class TreeLinkNode extends TreeTextNode {
 				'text' => $component->getText()->text(),
 				'href' => $component->getHref(),
 				'labelId' => "$id-label",
+				'preHtml' => $component->getPreHtml(),
 			];
 
 			$title = $component->getTitle()->text();

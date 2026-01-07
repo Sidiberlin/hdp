@@ -2,13 +2,13 @@
 
 namespace MediaWiki\Extension\ContentStabilization\Data\StabilizedPages;
 
-use Language;
 use MediaWiki\Extension\ContentStabilization\StabilizationBot;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\ContentStabilization\StableView;
-use Message;
+use MediaWiki\Language\Language;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\ISecondaryDataProvider;
-use Title;
 
 class SecondaryDataProvider implements ISecondaryDataProvider {
 
@@ -56,7 +56,7 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 			$hasChangedInclusions = $state === StableView::STATE_STABLE && $currentView->doesNeedStabilization();
 			$dataSet->set( Record::HAS_CHANGED_INCLUSIONS, $hasChangedInclusions );
 
-			$lastStable = $this->lookup->getLastStablePoint( $title );
+			$lastStable = $this->lookup->getLastRawStablePoint( $title );
 			if ( $lastStable ) {
 				$approver = $lastStable->getApprover();
 				$bot = new StabilizationBot();

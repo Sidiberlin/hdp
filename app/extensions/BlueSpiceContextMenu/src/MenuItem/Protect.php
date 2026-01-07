@@ -2,6 +2,8 @@
 
 namespace BlueSpice\ContextMenu\MenuItem;
 
+use MediaWiki\Message\Message;
+
 class Protect extends Base {
 
 	/**
@@ -9,12 +11,12 @@ class Protect extends Base {
 	 * @return string
 	 */
 	public function getIconClass() {
-		return 'bs-icon-shield';
+		return 'lock';
 	}
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabelMessage() {
 		return wfMessage( 'bs-contextmenu-page-protect' );

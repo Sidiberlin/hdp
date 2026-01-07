@@ -2,9 +2,9 @@
 
 namespace PageHeader;
 
-use Config;
-use IContextSource;
-use MWException;
+use LogicException;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MWStake\MediaWiki\Component\ManifestRegistry\IRegistry;
 
 class PageInfoFactory {
@@ -40,10 +40,11 @@ class PageInfoFactory {
 	/**
 	 * @param IContextSource $context
 	 * @return PageInfo[]
+	 * @throws LogicException
 	 */
 	public function getAll( IContextSource $context ) {
 		if ( !$context->getTitle() ) {
-			throw new MWException(
+			throw new LogicException(
 				"No Title in Context"
 			);
 		}

@@ -3,7 +3,7 @@
 namespace BlueSpice\Discovery\Structure;
 
 use BlueSpice\Discovery\Component\BackToTopButton;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 
 class BackToTop extends SkinStructureBase {
 

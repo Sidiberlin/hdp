@@ -4,13 +4,13 @@ namespace BlueSpice\ReadConfirmation\Rest;
 
 use BlueSpice\PageAssignments\AssignmentFactory;
 use BlueSpice\ReadConfirmation\MechanismFactory;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Message\Message;
 use MediaWiki\Permissions\PermissionManager;
 use MediaWiki\Rest\HttpException;
 use MediaWiki\Rest\SimpleHandler;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\UserFactory;
-use Message;
-use RequestContext;
-use TitleFactory;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class GetReadConfirmations extends SimpleHandler {

@@ -12,7 +12,7 @@ class TextNode extends MutableNode {
 		return 'text';
 	}
 
-	public function jsonSerialize() {
+	public function jsonSerialize(): array {
 		return [
 			'type' => 'text',
 			'wikitext' => $this->getOriginalData()

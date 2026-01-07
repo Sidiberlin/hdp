@@ -23,7 +23,7 @@ bs.vec.ui.CellStyleContextItem = function ( context, model, config ) {
 	bs.vec.ui.CellStyleContextItem.super.call( this, context, model, config );
 };
 
-OO.inheritClass( bs.vec.ui.CellStyleContextItem, bs.vec.ui.TableContextItem  );
+OO.inheritClass( bs.vec.ui.CellStyleContextItem, bs.vec.ui.TableContextItem );
 
 bs.vec.ui.CellStyleContextItem.static.name = 'cellStyle';
 

@@ -1,39 +1,58 @@
 .bs-chapter-pager-toolbar {
-	padding: 15px;
+	padding: 10px 0 0;
 	display: flex;
 	justify-content: space-between;
 	width: 100%;
 }
+
 .bs-chapter-pager-toolbar a,
 .bs-chapter-pager-toolbar a:visited {
 	cursor: pointer;
 	display: inline-block;
-	border-radius: 5px;
-	border: 0.5px solid var(--mws-secondary-fg);
-	color: var(--mws-secondary-fg);
-	background-color: var(--mws-secondary-bg);
-	padding: 0.375rem 0.75rem;
-	font-size: 15px;
-	font-weight: 400;
+	color: var( --link-fg );
+	padding: 0 0.75rem;
+	font-size: 15px; /* stylelint-disable-line declaration-property-unit-disallowed-list */
+	font-weight: normal;
 	line-height: 1.5;
 	user-select: none;
 	transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
-.bs-chapter-pager-toolbar a:hover {
-	background-color: var(--mws-secondary-bg--hover);
-	color: var(--mws-secondary-fg--hover);
-	border-color: var(--mws-secondary-fg);
-	text-decoration: none;
-}
+
 .bs-chapter-pager-toolbar a.disabled,
 .bs-chapter-pager-toolbar a:hover.disabled {
 	opacity: 0.65;
-	cursor: default;
-	background-color: var(--mws-secondary-bg);
+	text-decoration: none;
+	pointer-events: none;
 }
+
 #aftercontent #bs-bookshelfui-chapter-pager-bottom-top-cnt .bs-chapter-pager-toolbar a {
-	color: var(--mws-secondary-fg--hover);
+	color: var( --mws-secondary-fg--hover );
 }
+
 .bs-chapter-pager-heading .book-title {
-	font-size: 22.4px;
+	font-size: 22.4px; /* stylelint-disable-line declaration-property-unit-disallowed-list */
+}
+
+.previous-chapter::before {
+	content: '\F284';
+	font-family: 'bootstrap-icons';
+	font-style: normal;
+	font-weight: normal !important;
+	font-variant: normal;
+	text-transform: none;
+	vertical-align: bottom;
+}
+
+.next-chapter::after {
+	content: '\F285';
+	font-family: 'bootstrap-icons';
+	font-style: normal;
+	font-weight: normal !important;
+	font-variant: normal;
+	text-transform: none;
+	vertical-align: bottom;
+}
+
+#n-book-panel .bs-chapter-pager-toolbar {
+	padding-bottom: 10px;
 }

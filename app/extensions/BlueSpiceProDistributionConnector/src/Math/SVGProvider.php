@@ -2,23 +2,29 @@
 
 namespace BlueSpice\ProDistributionConnector\Math;
 
-use MediaWiki\Extension\Math\MathRenderer;
+use MediaWiki\Extension\Math\Render\RendererFactory;
 
 class SVGProvider {
 
+	/** @var RendererFactory */
+	private $rendererFactory;
+
+	public function __construct( RendererFactory $rendererFactory ) {
+		$this->rendererFactory = $rendererFactory;
+	}
+
 	/**
-	 * See `\MathRenderer::getSvg` from "Extension:Math"
 	 * @param string $hash
-	 * @return string
+	 * @return string|null
 	 */
 	public function getSvg( $hash ): string {
-		$renderer = MathRenderer::getRenderer( '', [], 'mathml' );
-		$renderer->setMd5( $hash );
-		// Required to actually load the data
-		$renderer->isInDatabase();
-		$renderer->render();
-		$svg = $renderer->getSvg();
+		$renderer = $this->rendererFactory->getFromHash( $hash );
+		$success = $renderer->render();
+		if ( !$success ) {
+			return null;
+		}
 
+		$svg = $renderer->getSvg();
 		return $svg;
 	}
 }

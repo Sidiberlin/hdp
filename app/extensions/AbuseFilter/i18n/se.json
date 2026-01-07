@@ -2,9 +2,9 @@
 	"@metadata": {
 		"authors": [
 			"Jeblad",
+			"Kimberli Mäkäräinen (WMNO)",
 			"Linnea",
-			"Yupik",
-			"Kimberli Mäkäräinen (WMNO)"
+			"Yupik"
 		]
 	},
 	"abuselog": "Boasttugeavahansilli logga",
@@ -86,7 +86,10 @@
 	"abusefilter-list-options-hidedisabled": "Čiega sihkkojuvvon silliid",
 	"abusefilter-list-options-search-rlike": "Virolaš cealkka",
 	"abusefilter-tools-reautoconfirm-user": "Geavaheaddji:",
+	"abusefilter-add": "Lasiheame boasttugeavahansilli",
 	"abusefilter-edit": "Rievdadeame boasttugeavahansilli",
+	"abusefilter-edit-specific": "Rievdadeame boasttugeavahansilli $1: $2",
+	"abusefilter-view-specific": "Čájeheapme boasttugeavahansilli $1: $2",
 	"abusefilter-edit-new": "Ođđa silli",
 	"abusefilter-edit-notes": "Lassedieđut:",
 	"abusefilter-edit-throttle-groups-help": "Geahča $1.",
@@ -95,6 +98,7 @@
 	"abusefilter-block-user": "hehtte registrerejuvvon geavaheddjiid",
 	"abusefilter-edit-notallowed": "Dus eai leat vuoigatvuođat ráhkadit dahje rievdadit boasttugeavahansilliid",
 	"abusefilter-edit-notallowed-global": "Dus eai leat vuoigatvuođat ráhkadit dahje rievdadit vuogádatviidosaš boasttugeavahansilliid",
+	"abusefilter-edit-builder-funcs-length": "Sreaŋgga guhkkodat ($1)",
 	"abusefilter-history": "Rievdadusaid historjá boasttugeavahansillái #$1",
 	"abusefilter-history-hidden": "Čihkosis",
 	"abusefilter-history-user": "Geavaheaddji",
@@ -108,5 +112,10 @@
 	"abusefilter-topnav-log": "Boasttugeavahanlogga",
 	"abusefilter-log-name": "Boasttugeavahansilli logga",
 	"abusefilter-log-noresults": "Eai bohtosat",
-	"abusefilter-diff-info": "Vuođđodieđut"
+	"abusefilter-diff-info": "Vuođđodieđut",
+	"abusefilter-blocked-domains-add-submit": "Sádde",
+	"abusefilter-blocked-domains-domain-header": "Domena",
+	"abusefilter-blocked-domains-remove": "sihko",
+	"abusefilter-blocked-domains-remove-reason": "Sivva",
+	"abusefilter-blocked-domains-remove-submit": "Sihko"
 }

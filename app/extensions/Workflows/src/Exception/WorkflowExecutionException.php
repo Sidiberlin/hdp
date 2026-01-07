@@ -5,7 +5,7 @@ namespace MediaWiki\Extension\Workflows\Exception;
 use Exception;
 use MediaWiki\Extension\Workflows\Definition\IElement;
 use MediaWiki\Extension\Workflows\Definition\ITask;
-use Message;
+use MediaWiki\Message\Message;
 
 class WorkflowExecutionException extends Exception {
 	/** @var string */
@@ -17,7 +17,7 @@ class WorkflowExecutionException extends Exception {
 	 * @param string $message
 	 * @param IElement|null $element
 	 */
-	public function __construct( $message, IElement $element = null ) {
+	public function __construct( $message, ?IElement $element = null ) {
 		$this->message = $message;
 		$this->element = $element;
 

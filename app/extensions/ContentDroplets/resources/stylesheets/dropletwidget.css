@@ -13,6 +13,7 @@
 
 .droplet .droplet-title {
 	font-weight: bold;
+	display: block;
 }
 
 .droplet .droplet-text {
@@ -27,11 +28,11 @@
 .droplet .oo-ui-horizontalLayout {
 	align-items: center;
 	display: flex;
+	flex-wrap: nowrap;
 }
 
 .droplet .content-droplet {
-	margin-left: 10px;
-	margin-top: 8px;
+	margin-top: 8px 0 8px 10px;
 }
 
 .droplet .oo-ui-fieldLayout {
@@ -39,7 +40,7 @@
 }
 
 .droplet .icon-droplet {
-	margin-top: 8px;
+	margin: 8px 0;
 	background-position: center;
 	background-repeat: no-repeat;
 	background-size: 50px;

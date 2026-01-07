@@ -2,9 +2,13 @@
 
 namespace BlueSpice\ContextMenu\MenuItem;
 
-use RequestContext;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\User\User;
 use SpecialEmailUser;
-use SpecialPage;
 
 class MailUser extends BaseUserAction {
 
@@ -13,12 +17,12 @@ class MailUser extends BaseUserAction {
 	 * @return string
 	 */
 	public function getIconClass() {
-		return 'icon-message';
+		return 'message';
 	}
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabelMessage() {
 		return wfMessage( 'bs-contextmenu-user-mail' );
@@ -42,24 +46,33 @@ class MailUser extends BaseUserAction {
 
 	/**
 	 *
-	 * @param \IContextSource $context
+	 * @param IContextSource $context
 	 * @return bool
 	 */
 	public function shouldList( $context ) {
 		if ( $this->targetUser ) {
-			$user = $this->getUser();
-			$eMailPermissioErrors = SpecialEmailUser::getPermissionsError(
+			if ( class_exists( '\MediaWiki\Mail\EmailUser' ) ) {
+				// MediaWiki 1.40+ required; required to work on MW 1.43+
+				$emailUser = MediaWikiServices::getInstance()
+					->getEmailUserFactory()
+					->newEmailUser( $this->getUser() );
+				return $emailUser->canSend()->isGood();
+			} else {
+				// Will not work on MW 1.43; to remove once MW 1.40 support is not needed
+				$user = $this->getUser();
+				$eMailPermissioErrors = SpecialEmailUser::getPermissionsError(
 					$user,
 					$context->getCsrfTokenSet()->getToken()->toString()
-			);
-			return $eMailPermissioErrors;
+				);
+				return $eMailPermissioErrors;
+			}
 		}
 		return false;
 	}
 
 	/**
 	 *
-	 * @return \User
+	 * @return User
 	 */
 	public function getUser() {
 		$context = RequestContext::getMain();

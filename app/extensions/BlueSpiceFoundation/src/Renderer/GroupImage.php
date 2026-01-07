@@ -1,11 +1,10 @@
 <?php
 namespace BlueSpice\Renderer;
 
-use BlueSpice\DynamicFileDispatcher\GroupImage as DFDGroupImage;
-use BlueSpice\DynamicFileDispatcher\Params as DFDParams;
 use BlueSpice\Utility\CacheHelper;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Language\RawMessage;
 use MediaWiki\Linker\LinkRenderer;
 
 class GroupImage extends \BlueSpice\TemplateRenderer {
@@ -29,8 +28,8 @@ class GroupImage extends \BlueSpice\TemplateRenderer {
 	 * @param CacheHelper|null $cacheHelper
 	 */
 	protected function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
-		$name = '', CacheHelper $cacheHelper = null ) {
+		?LinkRenderer $linkRenderer = null, ?IContextSource $context = null,
+		$name = '', ?CacheHelper $cacheHelper = null ) {
 		parent::__construct(
 			$config,
 			$params,
@@ -51,7 +50,7 @@ class GroupImage extends \BlueSpice\TemplateRenderer {
 
 		$message = $this->msg( 'group-' . $this->group );
 		if ( !$message->exists() ) {
-			$message = new \RawMessage( $this->group );
+			$message = new RawMessage( $this->group );
 		}
 
 		$this->args['groupname'] = $this->group;
@@ -82,15 +81,14 @@ class GroupImage extends \BlueSpice\TemplateRenderer {
 	 * @return string
 	 */
 	protected function render_imagesrc( $val ) {
-		$params = [
-			DFDParams::MODULE => DFDGroupImage::MODULE_NAME,
-			DFDGroupImage::GROUP => $val,
-			DFDGroupImage::WIDTH => $this->args[static::PARAM_WIDTH],
-			DFDGroupImage::HEIGHT => $this->args[static::PARAM_HEIGHT]
-		];
-
-		$dfdUrlBuilder = $this->services->getService( 'BSDynamicFileDispatcherUrlBuilder' );
-		return $dfdUrlBuilder->build( new DFDParams( $params ) );
+		return $this->services->getService( 'MWStake.DynamicFileDispatcher.Factory' )->getUrl(
+			'groupimage',
+			[
+				'group' => $val,
+				'width' => (int)$this->args[static::PARAM_WIDTH],
+				'height' => (int)$this->args[static::PARAM_HEIGHT],
+			]
+		);
 	}
 
 	/**

@@ -1,10 +1,10 @@
 {
 	"name": "Maps",
-	"version": "10.2.0",
+	"version": "11.0.1",
 
 	"author": [
 		"[https://EntropyWins.wtf/mediawiki Jeroen De Dauw]",
-		"[https://professional.wiki/ Professional.Wiki]"
+		"[https://professional.wiki/ Professional Wiki]"
 	],
 	"url": "https://maps.extension.wiki",
 	"descriptionmsg": "maps-desc",
@@ -248,7 +248,8 @@
 		"ext.maps.googlemaps3": {
 			"scripts": [
 				"GoogleMaps/jquery.googlemap.js",
-				"GoogleMaps/ext.maps.googlemaps3.js"
+				"GoogleMaps/ext.maps.googlemaps3.js",
+				"GoogleMaps/mylocation.js"
 			],
 			"messages": [
 				"maps-googlemaps3-incompatbrowser",
@@ -256,6 +257,7 @@
 				"maps-searchmarkers-text",
 				"maps-fullscreen-button",
 				"maps-fullscreen-button-tooltip",
+				"maps-mylocation-button-tooltip",
 				"maps-kml-parsing-failed"
 			],
 			"targets": [ "desktop", "mobile" ]

@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\TableTools\HookHandler;
 
-use MediaWiki\Hook\OutputPageBeforeHTMLHook;
+use MediaWiki\Output\Hook\OutputPageBeforeHTMLHook;
 
 class StickyHeader implements OutputPageBeforeHTMLHook {
 

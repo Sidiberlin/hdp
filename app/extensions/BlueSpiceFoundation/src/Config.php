@@ -4,20 +4,25 @@ namespace BlueSpice;
 
 use BlueSpice\Data\Settings\Record;
 use BlueSpice\Data\Settings\Store;
+use MediaWiki\Config\Config as MediaWikiConfig;
+use MediaWiki\Config\GlobalVarConfig;
+use MediaWiki\Config\HashConfig;
+use MediaWiki\Config\MultiConfig;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 
-class Config extends \MultiConfig {
+class Config extends MultiConfig {
 
 	/**
 	 *
-	 * @var \HashConfig
+	 * @var HashConfig
 	 */
 	protected $databaseConfig = null;
 
 	/**
 	 *
-	 * @var \HashConfig
+	 * @var HashConfig
 	 */
 	protected $overrides = null;
 
@@ -26,18 +31,19 @@ class Config extends \MultiConfig {
 	 */
 	public function __construct() {
 		$this->databaseConfig = $this->makeDatabaseConfig();
-		$this->overrides = new \GlobalVarConfig( 'bsgOverride' );
+		$this->overrides = new GlobalVarConfig( 'bsgOverride' );
 		parent::__construct( [
 			$this->overrides,
 			&$this->databaseConfig,
-			new \GlobalVarConfig( 'bsg' ),
-			new \GlobalVarConfig( 'wg' ),
+			new GlobalVarConfig( 'bsg' ),
+			new GlobalVarConfig( 'wg' ),
+			new GlobalVarConfig( 'mwsg' )
 		] );
 	}
 
 	/**
 	 * Factory method used by \ConfigFactory
-	 * @return \Config
+	 * @return MediaWikiConfig
 	 */
 	public static function newInstance() {
 		return new self();
@@ -54,7 +60,7 @@ class Config extends \MultiConfig {
 
 	/**
 	 *
-	 * @return \HashConfig
+	 * @return HashConfig
 	 */
 	protected function makeDatabaseConfig() {
 		$hash = [];
@@ -70,7 +76,7 @@ class Config extends \MultiConfig {
 			$hash[ $name ] = $record->get( Record::VALUE );
 		}
 
-		return new \HashConfig( $hash );
+		return new HashConfig( $hash );
 	}
 
 	/**
@@ -79,14 +85,14 @@ class Config extends \MultiConfig {
 	 */
 	protected function getStore() {
 		return new Store(
-			new Context( \RequestContext::getMain(), $this ),
+			new Context( RequestContext::getMain(), $this ),
 			MediaWikiServices::getInstance()->getDBLoadBalancer()
 		);
 	}
 
 	/**
 	 *
-	 * @return \HashConfig
+	 * @return HashConfig
 	 */
 	public function getOverrides() {
 		return $this->overrides;

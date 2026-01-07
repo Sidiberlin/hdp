@@ -1,17 +1,20 @@
 <?php
 namespace BlueSpice\Utility;
 
+use MediaWiki\Config\Config;
+use Wikimedia\ObjectCache\BagOStuff;
+
 class CacheHelper {
 
 	/**
 	 *
-	 * @var \BagOStuff
+	 * @var BagOStuff
 	 */
 	protected $cache = null;
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $config = null;
 
@@ -23,9 +26,9 @@ class CacheHelper {
 
 	/**
 	 *
-	 * @param \Config $config
+	 * @param Config $config
 	 */
-	public function __construct( \Config $config ) {
+	public function __construct( Config $config ) {
 		$this->config = $config;
 		$this->cache = \ObjectCache::getInstance(
 			$this->config->get( 'MainCacheType' )
@@ -34,7 +37,7 @@ class CacheHelper {
 
 	/**
 	 * gets cache which is set in $wgMainCacheType
-	 * @return \BagOStuff
+	 * @return BagOStuff
 	 */
 	public function getCache() {
 		return $this->cache;

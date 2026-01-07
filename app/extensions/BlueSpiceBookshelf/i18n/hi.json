@@ -7,13 +7,14 @@
 	"bs-bookshelf-ga-editing-label": "पुस्तकें",
 	"bs-bookshelf-booknav-book-label": "पुस्तक",
 	"bs-bookshelf-booknav-searchbox-placeholder": "खोजें",
+	"bs-bookshelf-search-center-filter-books-label": "पुस्तक",
 	"bs-bookshelf-chapter-plain-text-input-label": "टेक्स्ट",
 	"bs-bookshelf-chapter-wikilink-with-alias-text-input-label": "टेक्स्ट",
-	"bs-bookshelf-search-center-filter-books-label": "पुस्तक",
 	"bs-bookshelf-metadata-dlg-action-save-label": "सहेजें",
 	"bs-bookshelf-newbook-dlg-input-title-label": "पुस्तक का शीर्षक",
 	"bs-bookshelf-massadd-dlg-save-action-label": "जोड़ें",
 	"bs-bookshelf-droplet-search-book": "पुस्तक",
 	"bs-bookshelf-notification-subscription-set-book-title": "पुस्तक",
-	"bs-bookshelf-actionmenuentry-new-book": "नई पुस्तक"
+	"bs-bookshelf-actionmenuentry-new-book": "नई पुस्तक",
+	"bs-bookshelf-newbook-dlg-action-create-label": "बनाएँ"
 }

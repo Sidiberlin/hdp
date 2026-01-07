@@ -20,11 +20,6 @@
 	"bs-smartlist-month": "شهر",
 	"bs-smartlist-time": "الزمن",
 	"bs-smartlist-title": "العنوان",
-	"bs-smartlist-tag-smartlist-desc": "يظهر قوائم المقالات التي تم إنشاؤها تلقائيا. يعمل التكوين من خلال عدة أوضاع ووسائط.",
-	"bs-smartlist-tag-smartlist-example-rc": "الوضع: أحدث التغييرات",
-	"bs-smartlist-tag-smartlist-example-whatlinkshere": "الوضع: ماذا يصل هنا",
-	"bs-smartlist-tag-newbies-desc": "يعرض المستخدمين الجدد للويكي، يمكن أن تقتصر القائمة على رقم معين.",
-	"bs-smartlist-tag-toplist-desc": "يعرض الصفحات الأكثر زيارة، يمكن أن يكون محدودا من قبل عدة وسائط.",
 	"bs-smartlist-mostvisitedpages": "أكثر الصفحات زيارة",
 	"bs-smartlist-mosteditedpages": "أكثر الصفحات تعديلا",
 	"bs-smartlist-mostactiveusers": "أكثر المستخدمين نشاطا (حسب التعديلات)",
@@ -35,7 +30,6 @@
 	"bs-smartlist-mostvisitedpagesdesc": "قائمة أكثر الصفحات مشاهدة مرتبة حسب وجهات مشاهداتها.",
 	"bs-smartlist-lasteditsdesc": "قائمة الصفحات التي قمت بتحريرها.",
 	"bs-smartlist-hitcounter-missing": "يجب تثبيت ملحق <a target='blank' href='https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:HitCounters'>HitCounters</a> .",
-	"apihelp-bs-smartlist-tasks-description": "وظائف API لعرض بيانات المدخل لإحصاءات الصفحات والمستخدم.",
 	"apihelp-bs-smartlist-tasks-summary": "وظائف API لعرض بيانات المدخل لإحصاءات الصفحات والمستخدم.",
 	"bs-smartlist-ve-userlist-title": "قائمة المستخدم",
 	"bs-smartlist-ve-userlistinspector-groups": "المجموعات",
@@ -53,5 +47,10 @@
 	"bs-smartlist-droplet-what-links-here-name": "روابط لهذه الصفحة",
 	"bs-smartlist-droplet-what-links-here-desc": "قائمة الصفحات التي تصل إلى هذه الصفحة",
 	"bs-smartlist-ve-recentchanges-title": "التغييرات الأخيرة",
-	"bs-smartlist-ve-whatlinkshere-title": "روابط لهذه الصفحة"
+	"bs-smartlist-ve-whatlinkshere-title": "روابط لهذه الصفحة",
+	"bs-smartlist-error-mode-not-found": "لم يتم العثور على الوضع المحدد",
+	"bs-smartlist-input-validator-invalid mode": "القيمة \"$2\" لـ \"$1\" ليست وضع SmartList صالحًا",
+	"bs-smartlist-ve-tab-main": "عام",
+	"bs-smartlist-ve-tab-advanced": "متقدم",
+	"bs-smartlist-ve-tab-appearance": "المظهر"
 }

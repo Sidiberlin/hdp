@@ -5,8 +5,6 @@
 		]
 	},
 	"bs-validator-email-validation-approved": "Az e-mail cím megerősítése sikeres.",
-	"bs-validator-invalid-parameter": "Ez a paraméter nem engedélyezett",
-	"bs-validator-missing-required": "Ez a paraméter kötelező",
 	"bs-validator-email-validation-not-approved": "Az e-mail cím nem hitelesíthető.",
 	"bs-validator-url-validation-approved": "Az URL hitelesítése sikeresen megtörtént.",
 	"bs-validator-url-validation-not-approved": "Az URL nem hitelesíthető.",
@@ -21,5 +19,7 @@
 	"bs-validator-invalid-float": "Nem érvényes lebegőpontos szám",
 	"bs-validator-invalid-integer": "Nem érvényes egész szám",
 	"bs-validator-invalid-string": "Nem érvényes karakterlánc",
-	"bs-validator-invalid-coordinate": "Nem érvényes koordináta"
+	"bs-validator-invalid-coordinate": "Nem érvényes koordináta",
+	"bs-validator-invalid-parameter": "Ez a paraméter nem engedélyezett",
+	"bs-validator-missing-required": "Ez a paraméter kötelező"
 }

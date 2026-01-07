@@ -1,5 +1,0 @@
-==UEModulePDFRecursive.class.php==
-
-'UEModulePDFRecursiveAfterContent':
-$this:
- &$aContents:

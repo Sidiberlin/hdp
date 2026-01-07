@@ -3,12 +3,12 @@
 namespace BlueSpice\PageAccess\Permission\Lockdown\Module;
 
 use BlueSpice\PageAccess\CheckAccess;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use Message;
-use Title;
-use User;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class BlockActionsOnTagPageAccess extends \BlueSpice\Permission\Lockdown\Module {
 
@@ -49,9 +49,10 @@ class BlockActionsOnTagPageAccess extends \BlueSpice\Permission\Lockdown\Module 
 	 * @param CheckAccess|null $accessFactory
 	 * @return \static
 	 */
-	public static function getInstance( Config $config, IContextSource $context,
-		MediaWikiServices $services, array $blockableActions = null,
-		CheckAccess $accessFactory = null ) {
+	public static function getInstance(
+		Config $config, IContextSource $context, MediaWikiServices $services,
+		?array $blockableActions = null, ?CheckAccess $accessFactory = null
+	) {
 		if ( !$blockableActions ) {
 			$blockableActions = [];
 			if ( $config->has( 'PageAccessBlockableActions' ) ) {

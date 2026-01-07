@@ -5,10 +5,11 @@ namespace BlueSpice\SmartList\Mode;
 use BlueSpice\ParamProcessor\ParamDefinition;
 use BlueSpice\ParamProcessor\ParamType;
 use BsInvalidNamespaceException;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Permissions\PermissionManager;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\UserFactory;
 use RecentChange;
-use RequestContext;
-use TitleFactory;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class RecentChangesMode extends GenericSmartlistMode {
@@ -29,17 +30,23 @@ class RecentChangesMode extends GenericSmartlistMode {
 	/** @var MessageLocalizer */
 	private $messageLocalizer;
 
+	/** @var UserFactory */
+	private $userFactory;
+
 	/**
 	 *
 	 * @param PermissionManager $permissionManager
 	 * @param ILoadBalancer $lb
 	 * @param TitleFactory $titleFactory
+	 * @param UserFactory $userFactory
 	 */
-	public function __construct( PermissionManager $permissionManager, ILoadBalancer $lb, TitleFactory $titleFactory ) {
+	public function __construct( PermissionManager $permissionManager, ILoadBalancer $lb,
+		TitleFactory $titleFactory, UserFactory $userFactory ) {
 		parent::__construct();
 		$this->permissionManager = $permissionManager;
 		$this->lb = $lb;
 		$this->titleFactory = $titleFactory;
+		$this->userFactory = $userFactory;
 		$this->messageLocalizer = RequestContext::getMain();
 	}
 
@@ -87,7 +94,12 @@ class RecentChangesMode extends GenericSmartlistMode {
 	 * @inheritDoc
 	 */
 	protected function getMeta( $item, $context ): string {
-		$metaInfo = ' - <i>(' . $item->username . ', '
+		$user = $this->userFactory->newFromName( $item->username );
+		$userName = $user->getRealName();
+		if ( !$userName ) {
+			$userName = $user->getName();
+		}
+		$metaInfo = ' - <i>(' . $userName . ', '
 			. $context->getLanguage()->date( $item->time, true, true ) . ')</i>';
 		return $metaInfo;
 	}
@@ -203,12 +215,10 @@ class RecentChangesMode extends GenericSmartlistMode {
 			}
 
 			$title = $this->titleFactory->makeTitleSafe( $row->namespace, $row->title );
-			$userCanRead = $this->permissionManager->quickUserCan(
-				'read',
-				$context->getUser(),
-				$title
-			);
-			if ( !$title || !$userCanRead ) {
+			if ( !$title ) {
+				continue;
+			}
+			if ( !$this->userCanRead( $title, $context->getUser(), $this->permissionManager ) ) {
 				continue;
 			}
 

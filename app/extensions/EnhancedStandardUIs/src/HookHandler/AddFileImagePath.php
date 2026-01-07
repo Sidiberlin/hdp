@@ -2,11 +2,11 @@
 
 namespace MediaWiki\Extension\EnhancedStandardUIs\HookHandler;
 
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Hook\MWStakeCommonWebAPIsQueryStoreResultHook;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Rest\FileQueryStore;
 use MWStake\MediaWiki\Component\DataStore\ResultSet;
 use RepoGroup;
-use TitleFactory;
 
 class AddFileImagePath implements MWStakeCommonWebAPIsQueryStoreResultHook {
 

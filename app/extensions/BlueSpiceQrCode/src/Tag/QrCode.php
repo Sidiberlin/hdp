@@ -7,10 +7,11 @@ use BlueSpice\ParamProcessor\ParamType;
 use BlueSpice\Tag\GenericHandler;
 use BlueSpice\Tag\MarkerType\NoWiki;
 use BlueSpice\Tag\Tag;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
-use Parser;
-use PPFrame;
-use RequestContext;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MWStake\MediaWiki\Component\DynamicFileDispatcher\DynamicFileDispatcherFactory;
 
 class QrCode extends Tag {
 
@@ -58,7 +59,8 @@ class QrCode extends Tag {
 		$context = RequestContext::getMain();
 		$services = MediaWikiServices::getInstance();
 		$titleFactory = $services->getTitleFactory();
-		$dfdUrlBuilder = $services->getService( 'BSDynamicFileDispatcherUrlBuilder' );
+		/** @var DynamicFileDispatcherFactory $dfdFactory */
+		$dfdFactory = $services->getService( 'MWStake.DynamicFileDispatcher.Factory' );
 		return new QrCodeHandler(
 			$processedInput,
 			$processedArgs,
@@ -66,7 +68,7 @@ class QrCode extends Tag {
 			$frame,
 			$context,
 			$titleFactory,
-			$dfdUrlBuilder
+			$dfdFactory
 		);
 	}
 

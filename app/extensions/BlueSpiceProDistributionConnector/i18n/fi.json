@@ -1,10 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Minilammas",
 			"Pyscowicz"
 		]
 	},
 	"bs-pro-distribution-pdfembed-inspector-input-label": "PDF-tiedosto",
 	"bs-pro-distribution-pdfembed-inspector-width-label": "Leveys",
-	"bs-pro-distribution-pdfembed-inspector-height-label": "Korkeus"
+	"bs-pro-distribution-pdfembed-inspector-height-label": "Korkeus",
+	"bs-pro-distribution-droplet-bitbucket-name": "BitBucket-tiedosto",
+	"bs-pro-distribution-droplet-ec-embed-url-label": "URL"
 }

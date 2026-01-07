@@ -12,10 +12,10 @@ use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Permissions\PermissionManager;
 use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\Utils\UrlUtils;
 use MWStake\MediaWiki\Component\CommonUserInterface\LinkFormatter;
 use MWStake\MediaWiki\Component\Wikitext\ParserFactory;
-use TitleFactory;
 
 class Footer extends SkinStructureBase implements IBaseTemplateAware {
 

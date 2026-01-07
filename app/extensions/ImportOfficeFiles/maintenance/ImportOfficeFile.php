@@ -6,6 +6,7 @@ use MediaWiki\Extension\ImportOfficeFiles\IModule;
 use MediaWiki\Extension\ImportOfficeFiles\ModuleFactory;
 use MediaWiki\Extension\ImportOfficeFiles\Modules\MSOfficeWord;
 use MediaWiki\Extension\ImportOfficeFiles\Workspace;
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
 
 $maintPath = ( getenv( 'MW_INSTALL_PATH' ) !== false

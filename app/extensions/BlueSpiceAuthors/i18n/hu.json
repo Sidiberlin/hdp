@@ -5,20 +5,16 @@
 			"Misibacsi"
 		]
 	},
-	"bs-authors-profileimage": "Profilkép",
-	"bs-authors-profileimage-change": "Profilkép módosítása",
 	"bs-authors-desc": "Megjeleníti a lap szerzőinek profilképét",
 	"prefs-authors": "A lap szerzői",
 	"bs-authors-title": "{{PLURAL:$1|{{GENDER:$2|Szerző}}|Szerzők}}",
+	"bs-authors-profileimage": "Profilkép",
+	"bs-authors-profileimage-change": "Profilkép módosítása",
 	"bs-authors-show-all-authors": "További szerzők elérhetők",
-	"bs-authors-pref-show": "Szerzők megjelenítése",
-	"bs-authors-switch-description": "Szerzők elrejtése ezen a lapon",
 	"bs-authors-navigation-link-title": "A lap szerzői",
 	"bs-authors-navigation-link-text": "Szerzők",
-	"bs-authors-flyout-title": "A lap szerzői",
-	"bs-authors-author-type-originator": "Eredeti szerző",
-	"bs-authors-author-type-editor": "Szerkesztő",
 	"apihelp-bs-pageauthors-store-summary": "Listázza a lap összes szerzőjét a megadott kontextusból",
-	"bs-authors-pref-show-help": "Megjeleníti a lap szerkesztőit a lapinformáción a minőségirányítási eszközök között.",
-	"bs-authors-info-dialog": "A lap szerzői"
+	"bs-authors-info-dialog": "A lap szerzői",
+	"bs-authors-info-dialog-grid-column-author": "Szerző",
+	"bs-authors-info-dialog-grid-column-type": "Szerző típusa"
 }

@@ -14,6 +14,5 @@ return [
 	'db-user' => '',
 	'db-password' => '',
 	'log-level' => 'INFO',
-	'http-client-options' => [],
-	'behaviourOnError' => 'reinit'
+	'http-client-options' => []
 ];

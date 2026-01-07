@@ -1,4 +1,4 @@
-( function( mw, $, bs ) {
+( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.aggregatedStatistics.filter' );
 
 	bs.aggregatedStatistics.filter.NamespaceCategoryFilter = function ( cfg ) {
@@ -13,11 +13,11 @@
 		this.nsFilter.on( 'change', this.onNamespaceChange.bind( this ) );
 
 		this.$element.append( new OO.ui.LabelWidget( {
-			label: mw.message( "bs-statistics-aggregated-filter-category-namespace-notice" ).text()
+			label: mw.message( 'bs-statistics-aggregated-filter-category-namespace-notice' ).text()
 		} ).$element );
 		this.$element.append( new OO.ui.HorizontalLayout( { items: [
 			this.categoryFilter, this.nsFilter
-			] } ).$element );
+		] } ).$element );
 	};
 
 	OO.inheritClass( bs.aggregatedStatistics.filter.NamespaceCategoryFilter, bs.aggregatedStatistics.filter.Filter );
@@ -56,7 +56,7 @@
 	};
 
 	bs.aggregatedStatistics.filter.NamespaceCategoryFilter.prototype.getValue = function () {
-		return $.extend( {}, this.categoryFilter.getValue(), this.nsFilter.getValue() );
+		return Object.assign( {}, this.categoryFilter.getValue(), this.nsFilter.getValue() );
 	};
 
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

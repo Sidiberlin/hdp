@@ -1,35 +1,42 @@
 /* book title in book nav */
 #n-book-panel-header h4 {
-	font-size: var(--content-h4-font-size);
-	font-weight: var(--content-h4-font-weight);
+	font-size: var( --content-h4-font-size );
+	font-weight: var( --content-h4-font-weight );
 }
 
 /* tree nav */
 #bs-book-tree-nav .mws-tree-item.acitve > div:first-child {
-	border-color: var(--sidebar-primary-marker--hover);
-	background-color: var(--sidebar-primary-bg--hover);
-	color: var(--sidebar-primary-fg--hover);
+	border-color: var( --sidebar-primary-marker--hover );
+	background-color: var( --sidebar-primary-bg--hover );
+	color: var( --sidebar-primary-fg--hover );
 }
 
 #n-book-panel .card-footer {
-	border-top: none;
+	border-top: none; /* stylelint-disable-line declaration-property-value-disallowed-list */
 	text-align: right;
 }
 
 #n-book-panel .card-footer #book-panel-edit-book,
 #n-book-panel .card-footer #book-panel-edit-book:hover,
-#n-book-panel .card-footer #book-panel-edit-book:visited   {
+#n-book-panel .card-footer #book-panel-edit-book:visited {
 	visibility: hidden;
 	text-align: right;
 	font-size: 0.7rem;
-	color:  var(--sidebar-primary-fg);
+	color: var( --sidebar-primary-fg );
 }
+
 #n-book-panel:hover .card-footer #book-panel-edit-book {
 	visibility: visible;
 }
+
 #n-book-panel .card-header {
-	border-bottom: none;
+	border-bottom: none; /* stylelint-disable-line declaration-property-value-disallowed-list */
 }
+
 #n-book-panel .book-title {
-	font-size: 22.4px;
+	font-size: 22.4px; /* stylelint-disable-line declaration-property-unit-disallowed-list */
+}
+
+#book-panel-tree .bs-chapter-number {
+	margin-right: 0.3em;
 }

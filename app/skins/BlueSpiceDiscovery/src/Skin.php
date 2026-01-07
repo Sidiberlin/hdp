@@ -3,9 +3,10 @@
 namespace BlueSpice\Discovery;
 
 use Exception;
-use ExtensionRegistry;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use OutputPage;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Registration\ExtensionRegistry;
 use SkinTemplate;
 
 class Skin extends SkinTemplate {
@@ -103,8 +104,8 @@ class Skin extends SkinTemplate {
 	}
 
 	/**
-	 *
 	 * @param OutputPage $out
+	 * @return void
 	 */
 	public function initPage( OutputPage $out ) {
 		parent::initPage( $out );
@@ -113,7 +114,7 @@ class Skin extends SkinTemplate {
 		$out->addMeta( 'viewport', 'width=device-width, initial-scale=1' );
 
 		// Use mediawiki resource module for skin
-		$out->addModuleStyles( "skin.discovery.mw.skinning.interface" );
+		$out->addModuleStyles( "skin.discovery.styles" );
 
 		// Use bootstrap framework
 		$out->addModuleStyles( "skin.discovery.bootstrap.styles" );
@@ -130,7 +131,7 @@ class Skin extends SkinTemplate {
 	public function isViewMode() {
 		if (
 			$this->getTitle()->isMainPage() &&
-			$this->getRequest()->getRawVal( 'action', 'view' ) === 'view'
+			( $this->getRequest()->getRawVal( 'action' ) ?? 'view' ) === 'view'
 		) {
 			return true;
 		}

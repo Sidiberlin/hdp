@@ -6,30 +6,5 @@
 			"Omarov M.",
 			"Аль-Гимравий"
 		]
-	},
-	"bs-statistics-to": "Рахъалде",
-	"bs-statistics-grain": "Интервал",
-	"bs-statistics-mode": "Режим",
-	"bs-statistics-absolute": "абсолютияб",
-	"bs-statistics-year": "Сон",
-	"bs-statistics-month": "МоцӀ",
-	"bs-statistics-week": "ГӀужалаталъулаб анкь",
-	"bs-statistics-day": "Къо",
-	"bs-statistics-finish": "Диаграмма гӀуцӀизе",
-	"bs-statistics-filters": "Фильтрал",
-	"bs-statistics-diag-number-of-users": "ГӀуцӀарал гӀахьалчагӀазул къадар",
-	"bs-statistics-label-name": "ЦӀар",
-	"bs-statistics-label-registration": "Регистрация",
-	"bs-statistics-diag-number-of-pages": "Гьарурал гьумеразул къадар",
-	"bs-statistics-label-page": "Гьумер",
-	"bs-statistics-label-creator": "Автор",
-	"bs-statistics-diag-number-of-edits": "Хисизариязул рикӀкӀен",
-	"bs-statistics-label-searchterm": "Балагьиялъулаб термин",
-	"bs-statistics-label-maxhits": "Максималияб хӀасил",
-	"bs-statistics-filter-category": "Категория",
-	"bs-statistics-filter-searchscope": "Балагьиялъул бутӀалъи",
-	"bs-statistics-portlet-numberofpages": "Гьумеразул рикӀкӀен",
-	"bs-statistics-portlet-numberofeditsdesc": "Хисизариязул къадаралъул статистика",
-	"bs-statistics-portletconfig-periodday": "НолӀ",
-	"bs-statistics-portlet-numberofedits": "Хисизариязул рикӀкӀен"
+	}
 }

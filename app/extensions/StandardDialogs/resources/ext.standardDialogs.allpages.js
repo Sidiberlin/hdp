@@ -1,16 +1,17 @@
 window.registryPageInformation = new OO.Registry();
-$( document ).on( 'click', '.page-tree-action-info', function ( e ) {
-	const rlModules = require( './pageInfoPanelModuleRegistry.json' );
-	if ( !e.currentTarget.dataset.title ) {
+$( document ).on( 'click', '.page-tree-action-info a', ( e ) => {
+	const infoNode = $( e.currentTarget.parentNode )[ 0 ];
+	if ( !infoNode.dataset.title ) {
 		return;
 	}
-	var title = e.currentTarget.dataset.title;
-
-	mw.loader.using( 'ext.standardDialogs.ui.PageInformationDialog' ).done( function () {
-		mw.loader.using( rlModules ).done( function () {
+	e.stopImmediatePropagation();
+	const rlModules = require( './pageInfoPanelModuleRegistry.json' );
+	const title = infoNode.dataset.title;
+	mw.loader.using( 'ext.standardDialogs.ui.PageInformationDialog' ).done( () => {
+		mw.loader.using( rlModules ).done( () => {
 			const diag = new StandardDialogs.ui.PageInformationDialog( {
 				pageName: title,
-				panelRegistry: registryPageInformation
+				panelRegistry: registryPageInformation // eslint-disable-line no-undef
 			} );
 			diag.show();
 		} );

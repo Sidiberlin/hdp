@@ -2,19 +2,19 @@
 
 namespace SMW\MediaWiki\Specials\Admin\Maintenance;
 
-use Html;
-use SMW\Services\ServicesFactory as ApplicationFactory;
+use MediaWiki\Html\Html;
+use MediaWiki\Request\WebRequest;
+use MediaWiki\SpecialPage\SpecialPage;
 use SMW\DIWikiPage;
+use SMW\Localizer\Message;
 use SMW\MediaWiki\Renderer\HtmlFormRenderer;
-use SMW\MediaWiki\Specials\Admin\TaskHandler;
-use SMW\MediaWiki\Specials\Admin\OutputFormatter;
 use SMW\MediaWiki\Specials\Admin\ActionableTask;
-use SMW\Message;
-use Title;
-use WebRequest;
+use SMW\MediaWiki\Specials\Admin\OutputFormatter;
+use SMW\MediaWiki\Specials\Admin\TaskHandler;
+use SMW\Services\ServicesFactory as ApplicationFactory;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since   2.5
  *
  * @author mwjames
@@ -32,7 +32,7 @@ class FulltextSearchTableRebuildJobTaskHandler extends TaskHandler implements Ac
 	private $outputFormatter;
 
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	public $isApiTask = true;
 
@@ -70,7 +70,7 @@ class FulltextSearchTableRebuildJobTaskHandler extends TaskHandler implements Ac
 	 *
 	 * {@inheritDoc}
 	 */
-	public function getTask() : string {
+	public function getTask(): string {
 		return 'fulltrebuild';
 	}
 
@@ -79,7 +79,7 @@ class FulltextSearchTableRebuildJobTaskHandler extends TaskHandler implements Ac
 	 *
 	 * {@inheritDoc}
 	 */
-	public function isTaskFor( string $action ) : bool {
+	public function isTaskFor( string $action ): bool {
 		return $action === $this->getTask();
 	}
 
@@ -89,12 +89,11 @@ class FulltextSearchTableRebuildJobTaskHandler extends TaskHandler implements Ac
 	 * {@inheritDoc}
 	 */
 	public function getHtml() {
-
-		$subject = DIWikiPage::newFromTitle( \SpecialPage::getTitleFor( 'SMWAdmin' ) );
+		$subject = DIWikiPage::newFromTitle( SpecialPage::getTitleFor( 'SMWAdmin' ) );
 
 		if ( $this->hasFeature( SMW_ADM_FULLT ) && !$this->hasPendingJob() ) {
 			$this->htmlFormRenderer
-				->addHeader( 'h4', $this->msg( 'smw-admin-fulltext-title' ) )
+				->addHeader( 'h3', $this->msg( 'smw-admin-fulltext-title' ) )
 				->addParagraph( $this->msg( 'smw-admin-fulltext-intro', Message::PARSE ), [ 'class' => 'plainlinks' ] )
 				->setMethod( 'post' )
 				->addHiddenField( 'action', 'fulltrebuild' )
@@ -109,7 +108,7 @@ class FulltextSearchTableRebuildJobTaskHandler extends TaskHandler implements Ac
 				);
 		} elseif ( $this->hasFeature( SMW_ADM_FULLT ) ) {
 			$this->htmlFormRenderer
-				->addHeader( 'h4', $this->msg( 'smw-admin-fulltext-title' ) )
+				->addHeader( 'h3', $this->msg( 'smw-admin-fulltext-title' ) )
 				->addParagraph( $this->msg( 'smw-admin-fulltext-intro', Message::PARSE ), [ 'class' => 'plainlinks' ] )
 				->addParagraph(
 					Html::element(
@@ -140,14 +139,13 @@ class FulltextSearchTableRebuildJobTaskHandler extends TaskHandler implements Ac
 	 * {@inheritDoc}
 	 */
 	public function handleRequest( WebRequest $webRequest ) {
-
 		if ( !$this->hasFeature( SMW_ADM_FULLT ) || $this->hasPendingJob() || $this->isApiTask() ) {
 			return $this->outputFormatter->redirectToRootPage( '', [ 'tab' => 'maintenance' ] );
 		}
 
 		$job = ApplicationFactory::getInstance()->newJobFactory()->newByType(
 			'smw.fulltextSearchTableRebuild',
-			\SpecialPage::getTitleFor( 'SMWAdmin' ),
+			SpecialPage::getTitleFor( 'SMWAdmin' ),
 			[
 				'mode' => 'full'
 			]

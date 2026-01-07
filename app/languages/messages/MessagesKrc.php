@@ -1,8 +1,6 @@
 <?php
 /** Karachay-Balkar (къарачай-малкъар)
  *
- * To improve a translation please visit https://translatewiki.net
- *
  * @file
  * @ingroup Languages
  *
@@ -105,7 +103,7 @@ $specialPageAliases = [
 
 /** @phpcs-require-sorted-array */
 $magicWords = [
-	'nogallery'                 => [ '0', '_ГАЛЛЕРЕЯСЫЗ__', '__БЕЗ_ГАЛЕРЕИ__', '__NOGALLERY__' ],
+	'nogallery'                 => [ '0', '__ГАЛЛЕРЕЯСЫЗ__', '_ГАЛЛЕРЕЯСЫЗ__', '__БЕЗ_ГАЛЕРЕИ__', '__NOGALLERY__' ],
 	'notoc'                     => [ '0', '__БАШЛАСЫЗ__', '__БЕЗ_ОГЛАВЛЕНИЯ__', '__БЕЗ_ОГЛ__', '__NOTOC__' ],
 	'redirect'                  => [ '0', '#джибериу', '#редирект', '#перенаправление', '#перенапр', '#REDIRECT' ],
 ];

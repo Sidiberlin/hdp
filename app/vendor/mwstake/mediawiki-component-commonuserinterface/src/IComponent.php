@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 
 interface IComponent {
 

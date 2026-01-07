@@ -25,6 +25,11 @@ class Word2007ConverterParams {
 	private $username = '';
 
 	/**
+	 * @var int
+	 */
+	private $imageWidthThreshold = 700;
+
+	/**
 	 * @param array $params
 	 */
 	public function __construct( $params ) {
@@ -39,6 +44,9 @@ class Word2007ConverterParams {
 		}
 		if ( isset( $params['username'] ) ) {
 			$this->username = $params['username'];
+		}
+		if ( isset( $params['image-width-threshold'] ) ) {
+			$this->imageWidthThreshold = $params['image-width-threshold'];
 		}
 	}
 
@@ -68,5 +76,12 @@ class Word2007ConverterParams {
 	 */
 	public function getUsername(): string {
 		return $this->username;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getImageWidthThreshold(): int {
+		return $this->imageWidthThreshold;
 	}
 }

@@ -4,8 +4,8 @@ declare( strict_types = 1 );
 
 namespace MediaWiki\Extension\MenuEditor;
 
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Lib\Nodes\INode;
-use Title;
 
 interface IMenu {
 	/**

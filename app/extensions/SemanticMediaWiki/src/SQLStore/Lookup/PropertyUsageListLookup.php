@@ -2,17 +2,18 @@
 
 namespace SMW\SQLStore\Lookup;
 
+use MediaWiki\Message\Message;
 use RuntimeException;
 use SMW\DIProperty;
 use SMW\Exception\PropertyLabelNotResolvedException;
+use SMW\RequestOptions;
 use SMW\SQLStore\PropertyStatisticsStore;
 use SMW\SQLStore\SQLStore;
 use SMW\Store;
 use SMWDIError as DIError;
-use SMWRequestOptions as RequestOptions;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.2
  *
  * @author mwjames
@@ -41,7 +42,7 @@ class PropertyUsageListLookup implements ListLookup {
 	 * @param PropertyStatisticsStore $propertyStatisticsStore
 	 * @param RequestOptions|null $requestOptions
 	 */
-	public function __construct( Store $store, PropertyStatisticsStore $propertyStatisticsStore, RequestOptions $requestOptions = null ) {
+	public function __construct( Store $store, PropertyStatisticsStore $propertyStatisticsStore, ?RequestOptions $requestOptions = null ) {
 		$this->store = $store;
 		$this->propertyStatisticsStore = $propertyStatisticsStore;
 		$this->requestOptions = $requestOptions;
@@ -54,7 +55,6 @@ class PropertyUsageListLookup implements ListLookup {
 	 * @throws RuntimeException
 	 */
 	public function fetchList() {
-
 		if ( $this->requestOptions === null ) {
 			throw new RuntimeException( "Missing requestOptions" );
 		}
@@ -65,7 +65,7 @@ class PropertyUsageListLookup implements ListLookup {
 	/**
 	 * @since 2.2
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function isFromCache() {
 		return false;
@@ -74,7 +74,7 @@ class PropertyUsageListLookup implements ListLookup {
 	/**
 	 * @since 2.2
 	 *
-	 * @return integer
+	 * @return int
 	 */
 	public function getTimestamp() {
 		return wfTimestamp( TS_UNIX );
@@ -90,7 +90,6 @@ class PropertyUsageListLookup implements ListLookup {
 	}
 
 	private function doQueryPropertyTable() {
-
 		// the query needs to do the filtering of internal properties, else LIMIT is wrong
 		$options = [ 'ORDER BY' => 'smw_sort' ];
 		$search_field = 'smw_sortkey';
@@ -117,19 +116,18 @@ class PropertyUsageListLookup implements ListLookup {
 		$db = $this->store->getConnection( 'mw.db' );
 
 		$res = $db->select(
-			[ $db->tableName( SQLStore::ID_TABLE ), $db->tableName( SQLStore::PROPERTY_STATISTICS_TABLE ) ],
+			[ SQLStore::ID_TABLE, SQLStore::PROPERTY_STATISTICS_TABLE ],
 			[ 'smw_id', 'smw_title', 'usage_count' ],
 			$conditions,
 			__METHOD__,
 			$options,
-			[ $db->tableName( SQLStore::ID_TABLE ) => [ 'INNER JOIN', [ 'smw_id=p_id' ] ] ]
+			[ SQLStore::ID_TABLE => [ 'INNER JOIN', [ 'smw_id=p_id' ] ] ]
 		);
 
 		return $res;
 	}
 
 	private function getPropertyList( $res ) {
-
 		$result = [];
 
 		foreach ( $res as $row ) {
@@ -137,7 +135,7 @@ class PropertyUsageListLookup implements ListLookup {
 			try {
 				$property = new DIProperty( str_replace( ' ', '_', $row->smw_title ) );
 			} catch ( PropertyLabelNotResolvedException $e ) {
-				$property = new DIError( new \Message( 'smw_noproperty', [ $row->smw_title ] ) );
+				$property = new DIError( new Message( 'smw_noproperty', [ $row->smw_title ] ) );
 			}
 
 			$property->id = isset( $row->smw_id ) ? $row->smw_id : -1;

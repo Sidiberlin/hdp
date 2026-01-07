@@ -21,8 +21,8 @@ namespace MediaWiki\Extension\WebAuthn\Auth;
 use MediaWiki\Auth\AbstractSecondaryAuthenticationProvider;
 use MediaWiki\Auth\AuthenticationRequest;
 use MediaWiki\Auth\AuthenticationResponse;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\WebAuthn\Authenticator;
-use RequestContext;
 
 class WebAuthnSecondaryAuthenticationProvider extends AbstractSecondaryAuthenticationProvider {
 
@@ -80,21 +80,30 @@ class WebAuthnSecondaryAuthenticationProvider extends AbstractSecondaryAuthentic
 			$request->setAuthInfo( $authenticator->startAuthentication()->getValue()['json'] );
 			$this->addModules();
 			return AuthenticationResponse::newUI( [ $request ],
-				wfMessage( 'oathauth-login-failed' ), 'error' );
+				wfMessage( 'webauthn-error-credentials-missing' ), 'error' );
 		}
 
 		// Get credential retrieved from the client
 		$verificationData = $request->getSubmittedData();
+		if ( $verificationData['credential'] === '' ) {
+			return AuthenticationResponse::newUI( [ $request ],
+				wfMessage( 'webauthn-error-credentials-missing' ), 'error' );
+		}
+
 		$authResult = $authenticator->continueAuthentication( $verificationData );
 		if ( $authResult->isGood() ) {
 			return AuthenticationResponse::newPass( $authResult->getValue()->getUser()->getName() );
 		}
-		return AuthenticationResponse::newFail( wfMessage( 'oathauth-login-failed' ) );
+		// Return the first error from the authenticator, if there is any
+		foreach ( $authResult->getMessages() as $msg ) {
+			return AuthenticationResponse::newFail( wfMessage( $msg ) );
+		}
+		return AuthenticationResponse::newFail( wfMessage( 'webauthn-error-verification-failed' ) );
 	}
 
 	protected function addModules() {
-		// It would be better to add modules in HTMLFormField class
-		// but that does not seem to work for login form
+		// It would be better to add modules in HTMLFormField class,
+		// but that does not seem to work for the login form
 		$out = RequestContext::getMain()->getOutput();
 		$out->addModules( "ext.webauthn.login" );
 	}

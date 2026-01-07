@@ -5,10 +5,10 @@ declare( strict_types=1 );
 namespace MediaWiki\Extension\NotifyMe\Event;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
-use Message;
 use MWStake\MediaWiki\Component\Events\PriorityEvent;
-use Title;
 
 class EditRevertedEvent extends EditPageEvent implements PriorityEvent {
 	/** @var array */

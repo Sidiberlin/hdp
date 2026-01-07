@@ -1,7 +1,6 @@
-
 bs.util.registerNamespace( 'bs.vec.dm' );
 
-bs.vec.dm.InternalMediaLinkAnnotation = function() {
+bs.vec.dm.InternalMediaLinkAnnotation = function () {
 	// Parent constructor
 	bs.vec.dm.InternalMediaLinkAnnotation.super.apply( this, arguments );
 };
@@ -16,8 +15,9 @@ bs.vec.dm.InternalMediaLinkAnnotation.static.name = 'link/internalMedia';
 bs.vec.dm.InternalMediaLinkAnnotation.static.matchRdfaTypes = [ 'mw:MediaLink' ];
 
 bs.vec.dm.InternalMediaLinkAnnotation.static.toDataElement = function ( domElements, converter ) {
-	var targetData, data,
-		resource = domElements[ 0 ].getAttribute( 'resource' );
+	let targetData;
+	let data;
+	const resource = domElements[ 0 ].getAttribute( 'resource' );
 	if ( resource ) {
 		data = mw.libs.ve.parseParsoidResourceName( resource );
 
@@ -46,16 +46,15 @@ bs.vec.dm.InternalMediaLinkAnnotation.static.toDataElement = function ( domEleme
 };
 
 bs.vec.dm.InternalMediaLinkAnnotation.static.newFromImageInfo = function ( imageInfo, rawTitle ) {
-	var title = imageInfo.title || imageInfo.canonicaltitle,
-		titleObject = mw.Title.newFromText( title ),
-		element;
+	const title = imageInfo.title || imageInfo.canonicaltitle;
+	let titleObject = mw.Title.newFromText( title );
 
 	if ( titleObject.getNamespaceId() !== bs.ns.NS_FILE ) {
 		return null;
 	}
 
 	titleObject = mw.Title.makeTitle( bs.ns.NS_MEDIA, titleObject.getMainText() );
-	element = {
+	const element = {
 		type: 'link/internalMedia',
 		attributes: {
 			title: titleObject.toText(),
@@ -72,14 +71,13 @@ bs.vec.dm.InternalMediaLinkAnnotation.static.newFromImageInfo = function ( image
 };
 
 bs.vec.dm.InternalMediaLinkAnnotation.static.newFromTitle = function ( title, rawTitle ) {
-	var element,
-		target = title.toText();
+	const target = title.toText();
 
 	if ( title.getNamespaceId() !== bs.ns.NS_MEDIA ) {
 		return null;
 	}
 
-	element = {
+	const element = {
 		type: 'link/internalMedia',
 		attributes: {
 			title: target,

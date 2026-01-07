@@ -3,9 +3,9 @@
 namespace BlueSpice\Discovery\HookHandler\SkinTemplateNavigation;
 
 use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
-use MWException;
+use MediaWiki\Title\Title;
 use SkinTemplate;
-use Title;
+use Throwable;
 
 class ShareOptions implements SkinTemplateNavigation__UniversalHook {
 
@@ -33,8 +33,7 @@ class ShareOptions implements SkinTemplateNavigation__UniversalHook {
 			// `WebRequest::getRequestURL` may fail in some cases (e.g. UnitTests)
 			$requestUrl = $sktemplate->getConfig()->get( 'Server' )
 				. $sktemplate->getRequest()->getRequestURL();
-		}
-		catch ( MWException $ex ) {
+		} catch ( Throwable $ex ) {
 			$requestUrl = $title->getFullURL();
 		}
 

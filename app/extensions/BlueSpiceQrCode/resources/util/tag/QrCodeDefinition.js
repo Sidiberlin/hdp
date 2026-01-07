@@ -7,8 +7,8 @@ bs.qrcode.util.tag.QrCodeDefinition = function BsVecUtilQrCodeDefinition() {
 OO.inheritClass( bs.qrcode.util.tag.QrCodeDefinition, bs.vec.util.tag.Definition );
 
 bs.qrcode.util.tag.QrCodeDefinition.prototype.getCfg = function () {
-	var cfg = bs.qrcode.util.tag.QrCodeDefinition.super.prototype.getCfg.call( this );
-	return $.extend( cfg, {
+	const cfg = bs.qrcode.util.tag.QrCodeDefinition.super.prototype.getCfg.call( this );
+	return $.extend( cfg, { // eslint-disable-line no-jquery/no-extend
 		classname: 'QrCode',
 		name: 'qrCode',
 		tagname: 'qrcode',

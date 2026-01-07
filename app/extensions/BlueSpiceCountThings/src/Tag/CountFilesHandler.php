@@ -33,7 +33,12 @@ class CountFilesHandler extends Handler {
 		if ( $this->noduplicates ) {
 			$distinct = 'DISTINCT';
 		}
-		$number = $this->dbr->selectField( 'image', "COUNT( $distinct img_sha1 )" );
+		$number = $this->dbr->selectField(
+			'image',
+			"COUNT( $distinct img_sha1 )",
+			'',
+			__METHOD__
+		);
 		return " $number ";
 	}
 }

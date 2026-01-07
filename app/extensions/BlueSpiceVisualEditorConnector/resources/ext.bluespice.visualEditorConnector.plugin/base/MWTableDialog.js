@@ -6,18 +6,18 @@ bs.vec.ui.plugin.MWTableDialog = function BsVecUiPluginMWTableDialog( component 
 
 OO.initClass( bs.vec.ui.plugin.MWTableDialog );
 
-bs.vec.ui.plugin.MWTableDialog.prototype.initialize = function() {
+bs.vec.ui.plugin.MWTableDialog.prototype.initialize = function () {
 	// do nothing
 };
 
-bs.vec.ui.plugin.MWTableDialog.prototype.getValues = function( values ) {
+bs.vec.ui.plugin.MWTableDialog.prototype.getValues = function ( values ) {
 	return values;
 };
 
-bs.vec.ui.plugin.MWTableDialog.prototype.getSetupProcess = function( parentProcess, data ) {
+bs.vec.ui.plugin.MWTableDialog.prototype.getSetupProcess = function ( parentProcess, data ) { // eslint-disable-line no-unused-vars
 	return parentProcess;
 };
 
-bs.vec.ui.plugin.MWTableDialog.prototype.getActionProcess = function( parentProcess, action ) {
+bs.vec.ui.plugin.MWTableDialog.prototype.getActionProcess = function ( parentProcess, action ) { // eslint-disable-line no-unused-vars
 	return parentProcess;
 };

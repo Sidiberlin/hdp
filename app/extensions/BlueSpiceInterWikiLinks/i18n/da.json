@@ -6,7 +6,5 @@
 	},
 	"bs-interwikilinks-pfxexists": "Dette præfiks findes allerede.",
 	"bs-interwikilinks-headerprefix": "Præfiks",
-	"bs-interwikilinks-labelprefix": "Præfiks",
-	"bs-interwikilinks-insertlink-labelprefix": "Præfiks",
-	"bs-interwikilink-select-a-prefix": "Vælg præfiks"
+	"bs-interwikilinks-labelprefix": "Præfiks"
 }

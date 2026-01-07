@@ -2,9 +2,9 @@
 
 namespace MWStake\MediaWiki\Component\Events;
 
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 use MWStake\MediaWiki\Component\Events\Delivery\NotificationStatus;
-use User;
 
 final class Notification {
 	/** @var INotificationEvent */

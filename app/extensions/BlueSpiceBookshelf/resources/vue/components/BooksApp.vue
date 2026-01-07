@@ -1,27 +1,33 @@
 <template>
-	<div class="bs-books-search">
-		<cdx-search-input
-			v-model="searchInputValue"
-			:clearable="true"
-			:placeholder="searchPlaceholderLabel"
-			:aria-label="searchPlaceholderLabel"
-			@update:model-value="getSearchResults"
-		></cdx-search-input>
-	</div>
-	<div class="bs-books-bookshelfs" v-if="hasData" >
-		<bookshelf  v-for="bookshelf in bookshelfs"
-			v-show="bookshelf.isVisible"
-			v-bind:bookshelf="bookshelf.name"
-			v-bind:books="bookshelf.books"
-		></bookshelf>
+	<div  v-if="hasData" >
+		<div class="bs-books-search">
+			<cdx-search-input
+				v-model="searchInputValue"
+				:clearable="true"
+				:placeholder="searchPlaceholderLabel"
+				:aria-label="searchPlaceholderLabel"
+				@update:model-value="getSearchResults"
+			></cdx-search-input>
+		</div>
+		<div class="bs-books-bookshelfs">
+			<bookshelf  v-for="bookshelf in bookshelfs"
+				v-show="bookshelf.isVisible"
+				v-bind:bookshelf="bookshelf.name"
+				v-bind:books="bookshelf.books"
+			></bookshelf>
+		</div>
+		<div
+			id="bs-books-aria-lve"
+			aria-live="polite"
+			class="visually-hidden"
+		>{{ ariaLiveInitial }}</div>
 	</div>
 	<div class="bs-books-bookshelfs-empty" v-else>
-		{{ emptyMsg }}
+		<a href="" class="new-book-action">
+			<span class="bs-books-empty-image" ></span>
+			<span class="bs-books-empty-label">{{ emptyMsg }}</span>
+		</a>
 	</div>
-	<div
-		id="bs-books-aria-lve"
-		aria-live="polite"
-	>{{ ariaLiveInitial }}</div>
 </template>
 
 <script>
@@ -73,7 +79,7 @@ module.exports = exports = {
 			}
 		} else {
 			hasData = false;
-			emtyMsg = mw.message( 'bs-books-overview-page-bookshelf-empty' ).plain();
+			emtyMsg = mw.message( 'bs-books-overview-page-bookshelf-empty-text' ).text();
 		}
 
 		let visibleItems = this.items.filter( obj => { return obj.isVisible === true } );
@@ -182,7 +188,7 @@ function createBookshelfs( items ) {
 	const variousBooksIndex = bookshelfsInData.findIndex( bookshelf => bookshelf.name == '' );
 	if ( variousBooksIndex >= 0 ) {
 		const variousBooks = bookshelfsInData[variousBooksIndex];
-		variousBooks.name = mw.message( 'bs-books-overview-page-bookshelf-various-books' ).plain();
+		variousBooks.name = mw.message( 'bs-books-overview-page-bookshelf-various-books' ).text();
 		bookshelfsInData.shift( ...bookshelfsInData.splice( 0, variousBooksIndex ) );
 		bookshelfsInData.push( variousBooks );
 	}
@@ -209,27 +215,52 @@ function updateAriaLiveSection( count ) {
 
 <style lang="css">
 :root {
-	--bs-books-overview-page-focus-visible-color: #3E5389;
-	--bs-books-overview-page-book-new: #BD1D1D;
+	--bs-books-overview-page-focus-visible-color: #3e5389;
+	--bs-books-overview-page-book-new: #bd1d1d;
 }
+
 .bs-books-search {
 	width: 50%;
 	margin-left: 20px;
 }
+
 .bs-books-bookshelfs {
 	margin-top: 20px;
 }
+
 .bs-books-bookshelfs-empty {
 	padding: 20px;
 }
+
+.bs-books-empty-image {
+	height: 180px;
+	width: 180px;
+	display: block;
+	background-position: center;
+	background-size: 100% 100%;
+	background-image: url( ./../../images/assets/create_book.svg );
+	background-color: rgba( 62, 83, 137, 0.1 );
+	background-repeat: no-repeat;
+	margin: 0 auto 40px;
+	border-radius: 100%;
+}
+
+.bs-books-empty-label {
+	display: block;
+	text-align: center;
+	margin: 0;
+	font-weight: bold;
+}
+
 #bs-books-aria-lve {
 	height: 0;
 	overflow: hidden;
 }
+
 @media ( max-width: 768px ) {
 	.bs-books-search {
 		width: 100%;
-		margin-left: 0px;
+		margin-left: 0;
 	}
 }
 </style>

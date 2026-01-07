@@ -1,14 +1,16 @@
-# TabberNeue
-![](https://github.com/StarCitizenTools/mediawiki-extensions-TabberNeue/workflows/MediaWiki%20CI/badge.svg)
-
 ![](https://upload.wikimedia.org/wikipedia/commons/d/d7/TabberNeue-icon-ltr.svg)
+<div align="center">
+<h1>TabberNeue</h1>
+
+![](https://github.com/StarCitizenTools/mediawiki-extensions-TabberNeue/workflows/MediaWiki%20CI/badge.svg)
+</div>
 
 The TabberNeue extension allows wikis to create tabs within a page. It is a forked and rewritten version of [Extension:Tabber](https://www.mediawiki.org/wiki/Extension:Tabber). It includes multiple improvements such as page transclusion, responsive layout support, ARIA support, and conform to Wikimedia UI. **TabberNeue is a complete replacement of Tabber, please disable or remove Tabber before enabling TabberNeue.**
 
 [Extension:TabberNeue on MediaWiki](https://www.mediawiki.org/wiki/Extension:TabberNeue).
 
 ## Requirements
-* [MediaWiki](https://www.mediawiki.org) 1.39 or later
+* [MediaWiki](https://www.mediawiki.org) 1.43 or later
 
 ## Installation
 You can get the extension via Git (specifying TabberNeue as the destination directory):
@@ -91,10 +93,56 @@ Third Page Name|Third Tab Title
 </tabbertransclude>
 ```
 
+### HTML attributes
+You can add HTML attributes such as ID and class to the tabber element.
+```html
+<tabber id="very-awesome-tabber" class="awesome-tabber" data-test="awesome-data">
+|-|Awesome Tab Title 1=
+Awesome first tab content goes here.
+|-|Awesome Tab Title 2=
+Awesome second tab content goes here.
+|-|Awesome Tab Title 3=
+Awesome third tab content goes here.
+</tabber>
+```
+
+### Lua
+
+Tabber can be invoked in Lua with the `mw.ext.tabber` library. For example:
+```lua
+mw.ext.tabber.render( {
+    {
+        label = 'Tab 1',
+        content = 'Content 1'
+    },
+    {
+        label = 'Tab 2',
+        content = 'Content 2'
+    },
+    {
+        label = 'Tab 3',
+        content = 'Content 3'
+    },
+    {
+        label = 'Tab 4',
+        content = 'Content 4'
+    }
+} )
+```
+
 ## Configurations
 Name | Description | Values | Default
 :--- | :--- | :--- | :---
-`$wgTabberNeueParseTabName` | Parse tab name as wikitext. This can have a performance impact and cause unexpected behaviors. |`true` - enable; `false` - disable | `false`
-`$wgTabberNeueUseCodex` | Use Codex to render Tabber. It is experimental and many features might not work as expected |`true` - enable; `false` - disable | `false`
 `$wgTabberNeueEnableAnimation` | Enable or disable smooth scroll animation |`true` - enable; `false` - disable | `true`
+`$wgTabberNeueParseTabName` | Parse tab name as wikitext. This can have a performance impact and cause unexpected behaviors. |`true` - enable; `false` - disable | `false`
 `$wgTabberNeueUpdateLocationOnTabChange` | If enabled, when a tab is selected, the URL displayed on the browser changes. Opening this URL makes that tab initially selected |`true` - enable; `false` - disable | `true`
+`$wgTabberNeueAddTabPrefix` | If enabled, tabpanel IDs will be prepended with "tabber-" to avoid conflicts with page headings. |`true` - enable; `false` - disable | `true`
+
+#### Tracking category
+TabberNeue adds a tracking category to all pages using Tabber for maintenance purposes. There are two ways to suppress the category from viewers:
+1. Hide the categories by putting `__HIDDENCAT__` in the category page
+2. Remove the categories by creating the following pages and empty the page:
+```
+MediaWiki:Tabberneue-tabber-category
+MediaWiki:Tabberneue-tabbertransclude-category
+```

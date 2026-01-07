@@ -1,4 +1,4 @@
-( function( mw, $, bs ) {
+( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.aggregatedStatistics.filter' );
 
 	bs.aggregatedStatistics.filter.Filter = function ( cfg ) {
@@ -24,8 +24,8 @@
 		// STUB
 	};
 
-	bs.aggregatedStatistics.filter.Filter.prototype.setValue = function ( value ) {
+	bs.aggregatedStatistics.filter.Filter.prototype.setValue = function ( value ) { // eslint-disable-line no-unused-vars
 		// STUB
 	};
 
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

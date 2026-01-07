@@ -27,6 +27,9 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\User\User;
 
 abstract class FileDeleteComplete extends Hook {
 	/**
@@ -46,7 +49,7 @@ abstract class FileDeleteComplete extends Hook {
 	protected $wikipage = null;
 	/**
 	 *
-	 * @var \User
+	 * @var User
 	 */
 	protected $user = null;
 	/**
@@ -60,7 +63,7 @@ abstract class FileDeleteComplete extends Hook {
 	 * @param \File $file
 	 * @param string $oldimage
 	 * @param \WikiPage $wikipage
-	 * @param \User $user
+	 * @param User $user
 	 * @param string $reason
 	 * @return bool
 	 */
@@ -80,12 +83,12 @@ abstract class FileDeleteComplete extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param \File $file
 	 * @param string $oldimage
 	 * @param \WikiPage $wikipage
-	 * @param \User $user
+	 * @param User $user
 	 * @param string $reason
 	 */
 	public function __construct( $context, $config, $file, $oldimage, $wikipage, $user, $reason ) {

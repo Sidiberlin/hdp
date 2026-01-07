@@ -2,17 +2,15 @@
 
 namespace SMW\MediaWiki\Hooks;
 
-use SMW\Store;
-use SMW\NamespaceExaminer;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\User\User;
 use SMW\MediaWiki\HookListener;
-use SMW\DIWikiPage;
-use Title;
-use User;
+use SMW\NamespaceExaminer;
 
 /**
  * @see https://github.com/wikimedia/mediawiki-extensions-UserMerge/blob/master/includes/MergeUser.php#L654
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.2
  *
  * @author mwjames
@@ -46,7 +44,6 @@ class DeleteAccount implements HookListener {
 	 * @param User|string $user
 	 */
 	public function process( $user ) {
-
 		if ( !$this->namespaceExaminer->isSemanticEnabled( NS_USER ) ) {
 			return false;
 		}
@@ -58,7 +55,7 @@ class DeleteAccount implements HookListener {
 		$this->articleDelete->setOrigin( 'DeleteAccount' );
 
 		$this->articleDelete->process(
-			Title::newFromText( $user, NS_USER )
+			MediaWikiServices::getInstance()->getTitleFactory()->newFromText( $user, NS_USER )
 		);
 
 		return true;

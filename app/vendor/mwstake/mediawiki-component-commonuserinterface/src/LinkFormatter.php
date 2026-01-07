@@ -2,8 +2,8 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface;
 
-use Linker;
-use Message;
+use MediaWiki\Linker\Linker;
+use MediaWiki\Message\Message;
 
 class LinkFormatter {
 

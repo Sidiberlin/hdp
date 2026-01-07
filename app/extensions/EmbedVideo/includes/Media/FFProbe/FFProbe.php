@@ -4,16 +4,16 @@ declare( strict_types=1 );
 
 namespace MediaWiki\Extension\EmbedVideo\Media\FFProbe;
 
-use ConfigException;
 use Exception;
 use File;
-use FSFile;
 use JsonException;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Exception\ProcOpenError;
+use MediaWiki\Exception\ShellDisabledError;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\ProcOpenError;
 use MediaWiki\Settings\SettingsBuilder;
 use MediaWiki\Shell\Shell;
-use MediaWiki\ShellDisabledError;
+use Wikimedia\FileBackend\FSFile\FSFile;
 use Wikimedia\LightweightObjectStore\ExpirationAwareness;
 
 class FFProbe {
@@ -183,11 +183,12 @@ class FFProbe {
 			return null;
 		}
 
-		if ( Shell::isDisabled() || $ffprobeLocation === false || !file_exists( $ffprobeLocation ) ) {
+		if ( Shell::isDisabled() || empty( $ffprobeLocation ) || !file_exists( $ffprobeLocation ) ) {
 			return null;
 		}
 
-		$command = Shell::command( $ffprobeLocation );
+		$command = MediaWikiServices::getInstance()->getShellCommandFactory()->create();
+		$command->params( $ffprobeLocation );
 
 		$command->unsafeParams( [
 			'-v quiet',

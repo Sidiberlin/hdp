@@ -8,6 +8,8 @@
  * @license GPL-3.0-only
  */
 
+use MediaWiki\Maintenance\Maintenance;
+
 require_once 'BSMaintenance.php';
 
 class ConfirmUserEMail extends Maintenance {
@@ -53,8 +55,9 @@ class ConfirmUserEMail extends Maintenance {
 		$dbr = $this->getDB( DB_REPLICA );
 		$rRes = $dbr->select(
 			'user',
-			[ 'user_id','user_name','user_email','user_email_authenticated' ],
-			$condition
+			[ 'user_id', 'user_name', 'user_email', 'user_email_authenticated' ],
+			$condition,
+			__METHOD__
 		);
 
 		if ( !$rRes ) {
@@ -88,9 +91,11 @@ class ConfirmUserEMail extends Maintenance {
 			}
 			if ( empty( $aUserStore[$i]['setvalue'] ) ) {
 				if ( $bExecute ) {
-					$dbw->update( 'user',
+					$dbw->update(
+						'user',
 						[ 'user_email_authenticated' => date( 'YmdHis' ) ],
-						[ 'user_id' => $aUserStore[$i]['id'] ]
+						[ 'user_id' => $aUserStore[$i]['id'] ],
+						__METHOD__
 					);
 				}
 				$aUserStore[$i]['setvalue'] = ' => confirmed';

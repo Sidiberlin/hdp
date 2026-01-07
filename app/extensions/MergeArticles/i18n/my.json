@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Dr Lotus Black"
+		]
+	},
+	"mergearticles-target-new-label": "စာမျက်နှာအသစ်",
+	"mergearticles-type-file": "ဖိုင်",
+	"mergearticles-type-article": "စာမျက်နှာ",
+	"mergearticles-type-template": "တမ်းပလိတ်",
+	"mergearticles-type-category": "ကဏ္ဍ",
+	"mergearticles-do-merge-label": "ပေါင်းစပ်ရန်",
+	"mergearticles-file-layout-label": "ဖိုင်",
+	"mergearticles-diff-action-accept": "အတည်ပြု",
+	"mergearticles-diff-action-refuse": "ပယ်ချရန်",
+	"mergearticles-diff-item-undo": "နောက်ပြန် ပြန်ပြင်ရန်",
+	"mergearticles-file-diff-header": "ဖိုင်"
+}

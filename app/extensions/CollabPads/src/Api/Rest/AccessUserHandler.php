@@ -7,10 +7,10 @@ use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Permissions\PermissionManager;
 use MediaWiki\Rest\Response;
 use MediaWiki\Rest\SimpleHandler;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
 use Psr\Log\LoggerInterface;
-use Title;
-use User;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Rdbms\ILoadBalancer;
 
@@ -111,11 +111,12 @@ class AccessUserHandler extends SimpleHandler {
 	 */
 	private function grantedAccessResponse( User $user, Title $pageTitle ): Response {
 		$userData['userName'] = $user->getName();
+		$userData['realName'] = $user->getRealName();
 
 		return $this->getResponseFactory()->createJson( [
 			'access' => true,
 			'user' => $userData,
-			'pageTitle' => $pageTitle->mUrlform,
+			'pageTitle' => $pageTitle->getPartialURL(),
 			'pageNamespace' => $pageTitle->getNamespace(),
 			'message' => 'Access granted!',
 			'error' => null

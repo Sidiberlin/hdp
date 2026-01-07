@@ -2,39 +2,24 @@
 
 namespace MediaWiki\Extension\ContentStabilization\Integration\Hook;
 
-use BlueSpice\UEModulePDF\Hook\BSUEModulePDFBeforeAddingStyleBlocksHook;
-use BlueSpice\UEModulePDF\Hook\BSUEModulePDFbeforeGetPageHook;
-use BlueSpice\UEModulePDF\Hook\BSUEModulePDFgetPageHook;
-use Config;
-use DOMXPath;
-use Language;
+use DOMDocument;
+use DOMElement;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\ContentStabilization\StableView;
-use RequestContext;
-use Title;
-use TitleFactory;
-use User;
-use WebRequest;
+use MediaWiki\Extension\PDFCreator\Utility\PageContext;
+use MediaWiki\Language\Language;
+use MediaWiki\Message\Message;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\User\User;
+use MediaWiki\User\UserIdentity;
 
-class StabilizePDFExport implements
-	BSUEModulePDFgetPageHook,
-	BSUEModulePDFBeforeAddingStyleBlocksHook,
-	BSUEModulePDFbeforeGetPageHook
-{
+class StabilizePDFExport {
 	/** @var StabilizationLookup */
 	private $lookup;
 
-	/** @var TitleFactory */
-	private $titleFactory;
-
-	/** @var WebRequest */
-	private $request;
-
 	/** @var Config */
 	private $config;
-
-	/** @var User */
-	private $user;
 
 	/** @var StableView|null */
 	private $view = null;
@@ -42,151 +27,166 @@ class StabilizePDFExport implements
 	/** @var Language */
 	private $language;
 
+	/** @var array */
+	private $params;
+
 	/**
 	 * @param StabilizationLookup $stabilizationLookup
-	 * @param TitleFactory $titleFactory
 	 * @param Language $language
 	 * @param Config $config
 	 */
 	public function __construct(
-		StabilizationLookup $stabilizationLookup, TitleFactory $titleFactory,
-		Language $language, Config $config
+		StabilizationLookup $stabilizationLookup, Language $language, Config $config
 	) {
 		$this->lookup = $stabilizationLookup;
-		$this->titleFactory = $titleFactory;
-
 		$this->language = $language;
 		$this->config = $config;
-
-		$this->request = RequestContext::getMain()->getRequest();
-		$this->user = RequestContext::getMain()->getUser();
 	}
 
 	/**
-	 * @inheritDoc
+	 * @param RevisionRecord &$revisionRecord
+	 * @param UserIdentity $userIdentity
+	 * @param array $params
+	 * @return void
 	 */
-	public function onBSUEModulePDFBeforeAddingStyleBlocks( array &$template, array &$styleBlocks ): void {
-		$base = dirname( __DIR__, 3 ) . '/resources';
-		$styleBlocks[ 'ContentStabilization' ] = file_get_contents( "$base/stabilized-export.css" );
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function onBSUEModulePDFbeforeGetPage( &$params ): void {
-		$forceUnstable = $this->request->getBool( 'stable', true ) === false;
-		// Get oldid from params
-		$oldId = isset( $params['oldid'] ) ? (int)$params['oldid'] : null;
-		if ( !$oldId ) {
-			// if not set, get from request
-			$oldId = $this->request->getInt( 'oldid', null );
-		}
-		$title = $this->titleFactory->newFromID( $params['article-id'] ?? 0 );
-
-		if ( !( $title instanceof Title ) ) {
+	public function onPDFCreatorAfterSetRevision(
+		RevisionRecord &$revisionRecord, UserIdentity $userIdentity, array $params
+	): void {
+		if ( !$this->lookup->isStabilizationEnabled( $revisionRecord->getPage() ) ) {
 			return;
 		}
-		if ( !$oldId ) {
-			// If not set anywhere, use latest
-			$oldId = $title->getLatestRevID();
+		$this->params = $params;
+		$stable = true;
+		if ( isset( $this->params['stable'] ) ) {
+			$stable = $this->getBoolValueFor( $this->params['stable'] );
 		}
 
-		if ( !$title->canExist() ) {
+		if ( !$stable ) {
+			$this->params['forceUnstable'] = true;
+		}
+
+		$this->view = $this->lookup->getStableView( $revisionRecord->getPage(), $userIdentity, $this->params );
+		$revisionRecord = $this->view->getRevision();
+	}
+
+	/**
+	 * @param mixed $value
+	 * @return bool
+	 */
+	private function getBoolValueFor( $value ): bool {
+		if ( is_bool( $value ) ) {
+			return $value;
+		}
+		if ( is_int( $value ) ) {
+			if ( $value === 1 ) {
+				return true;
+			}
+
+			return false;
+		}
+		if ( is_string( $value ) ) {
+			if ( $value === '1' || strtolower( $value ) === 'true' ) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * @param DOMDocument $dom
+	 * @param PageContext $context
+	 * @return void
+	 */
+	public function onPDFCreatorAfterGetDOMDocument( DOMDocument $dom, PageContext $context ): void {
+		if ( !$this->config->get( 'ContentStabilizationPDFCreatorShowStabilizationTag' ) ) {
+			return;
+		}
+		if ( !$context->getTitle()->canExist() ) {
 			// Virtual namespace
 			return;
 		}
-		if ( !$this->lookup->isStabilizationEnabled( $title->toPageIdentity() ) ) {
-			return;
-		}
-		$this->view = $this->lookup->getStableView( $title, $this->user, [
-			'forceUnstable' => $forceUnstable,
-			'upToRevision' => $oldId
-		] );
-
-		if ( !$this->view ) {
-			return;
-		}
-		if ( !$this->view->getRevision() ) {
-			// Cannot show anything
-			$oldId = 0;
-		} else {
-			$oldId = $this->view->getRevision()->getId();
-		}
-
-		$params['oldid'] = $oldId;
-		$params['stabilized'] = true;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function onBSUEModulePDFgetPage( Title $title, array &$page, array &$params, DOMXPath $DOMXPath ): void {
-		if ( !$this->config->get( 'BlueSpiceUEModulePDFShowStabilizationTag' ) ) {
-			return;
-		}
-		if ( !$this->lookup->isStabilizationEnabled( $title ) ) {
+		if ( !$this->lookup->isStabilizationEnabled( $context->getTitle() ) ) {
 			return;
 		}
 		if ( !$this->view || !$this->view->getRevision() ) {
 			return;
+		}
+		$lastStable = null;
+		if ( $this->view->getStatus() === StableView::STATE_STABLE ) {
+			$lastStable = $this->view->getLastStablePoint();
 		}
 
 		// Timestamp when stable point was added (time of approval)
 		$lastStableTime = '';
 		// Timestamp when the revision was created
 		$lastStableRevisionTime = '';
-		$lastStable = $this->view->getLastStablePoint();
 		if ( $lastStable ) {
 			$lastStableTime = $lastStable->getTime()->format( 'YmdHis' );
 			$lastStableRevisionTime = $lastStable->getRevision()->getTimestamp();
 		}
-
-		$page['meta']['laststabledate'] = $this->formatTs( $lastStableTime );
-		$page['meta']['stablerevisiondate'] = $this->formatTs( $lastStableRevisionTime );
-
-		$stableTag = $page['dom']->createElement(
+		$stableTag = $dom->createElement(
 			'span',
-			\Message::newFromKey( 'contentstabilization-export-laststable-tag-text' )
-				->text()
+			Message::newFromKey( 'contentstabilization-export-laststable-tag-text' )
+				->text() . ' '
 		);
 
 		$stableTag->setAttribute( 'class', 'contentstabilization-export-laststable-tag' );
-		if ( !$lastStableTime ) {
-			$dateNode = $page['dom']->createElement(
+		if ( $lastStableTime === '' ) {
+			$dateNode = $dom->createElement(
 				'span',
-				\Message::newFromKey( 'contentstabilization-export-no-stable-date' )
+				Message::newFromKey( 'contentstabilization-export-no-stable-date' )
 					->plain()
 			);
 			$dateNode->setAttribute( 'class', 'nostable' );
 		} else {
-			$dateNode = $page['dom']->createTextNode( $page['meta']['laststabledate'] );
+			$dateNode = $dom->createTextNode( $this->formatTs( $lastStableTime, $context->getUser() ) );
 		}
 
 		$stableTag->appendChild( $dateNode );
 
-		$stableRevDateTag = $page['dom']->createElement(
+		$stableRevDateTag = $dom->createElement(
 			'span',
-			' / ' . \Message::newFromKey( 'contentstabilization-export-stablerevisiondate-tag-text' )
-				->params( $page['meta']['stablerevisiondate'] )
+			' / ' . Message::newFromKey( 'contentstabilization-export-stablerevisiondate-tag-text' )
+				->params( $this->formatTs( $lastStableRevisionTime, $context->getUser() ) )
 				->text()
 		);
 		$stableRevDateTag->setAttribute( 'class', 'contentstabilization-export' );
 
-		$page['firstheading-element']->parentNode->insertBefore(
-			$stableRevDateTag, $page['firstheading-element']->nextSibling
-		);
+		$headings = $dom->getElementsByTagName( 'h1' );
+		$firstHeading = null;
+		foreach ( $headings as $heading ) {
+			if ( $heading instanceof DOMElement === false ) {
+				continue;
+			}
+			if ( !$heading->hasAttribute( 'class' ) ) {
+				continue;
+			}
+			$classes = $heading->getAttribute( 'class' );
+			if ( strpos( $classes, 'firstHeading' ) === false ) {
+				continue;
+			}
+			$firstHeading = $heading;
+			break;
+		}
+		if ( $heading === null ) {
+			return;
+		}
 
-		$page['firstheading-element']->parentNode->insertBefore(
-			$stableTag, $page['firstheading-element']->nextSibling
-		);
+		$container = $dom->createElement( 'div' );
+		$container->setAttribute( 'class', 'contentstabilization-export-information' );
+
+		$container->appendChild( $stableTag );
+		$container->appendChild( $stableRevDateTag );
+
+		$firstHeading->parentNode->insertBefore( $container, $firstHeading->nextSibling );
 	}
 
 	/**
 	 * @param string $lastStableRevisionTime
-	 *
+	 * @param User $user
 	 * @return string
 	 */
-	private function formatTs( string $lastStableRevisionTime ): string {
-		return $this->language->userTimeAndDate( $lastStableRevisionTime, $this->user );
+	private function formatTs( string $lastStableRevisionTime, User $user ): string {
+		return $this->language->userTimeAndDate( $lastStableRevisionTime, $user );
 	}
 }

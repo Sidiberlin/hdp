@@ -2,10 +2,11 @@
 
 namespace BlueSpice\Data\Categories;
 
+use MediaWiki\Category\Category;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\IPrimaryDataProvider;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use stdClass;
-use Title;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\IResultWrapper;
 
@@ -51,7 +52,7 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 	 * @param stdClass $row
 	 */
 	protected function appendRowToData( $row ) {
-		$category = \Category::newFromRow( $row );
+		$category = Category::newFromRow( $row );
 		$title = Title::castFromPageReference( $category->getPage() );
 		if ( !$title instanceof Title ) {
 			return;

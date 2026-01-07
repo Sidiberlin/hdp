@@ -2,7 +2,9 @@
 
 namespace MWStake\MediaWiki\Component\Wikitext;
 
+use MediaWiki\Content\WikitextContent;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\Parser;
 use MediaWiki\Parser\Parsoid\Config\DataAccess;
 use MediaWiki\Parser\Parsoid\Config\PageConfig;
 use MediaWiki\Parser\Parsoid\Config\SiteConfig;
@@ -11,10 +13,9 @@ use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SlotRoleHandler;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\Wikitext\Parser\WikitextParser;
 use MWStake\MediaWiki\Lib\Nodes\INodeProcessor;
-use Parser;
-use TitleFactory;
 
 class ParserFactory {
 	/** @var SiteConfig */
@@ -44,7 +45,7 @@ class ParserFactory {
 		Parser $parser, SlotRoleHandler $slotRoleHandler
 	) {
 		$this->services = MediaWikiServices::getInstance();
-		$this->siteConfig = $this->services->getParsoidSiteConfig(); //@return SiteConfig
+		$this->siteConfig = $this->services->getParsoidSiteConfig();
 		$this->dataAccess = $this->services->getParsoidDataAccess();
 		$this->parser = $parser;
 		$this->slotRoleHandler = $slotRoleHandler;
@@ -96,7 +97,7 @@ class ParserFactory {
 	 * @throws \MWException
 	 */
 	public function getRevisionForText( $text, $title ): RevisionRecord {
-		$content = new \WikitextContent( $text );
+		$content = new WikitextContent( $text );
 		$revisionRecord = new MutableRevisionRecord( $title );
 		$revisionRecord->setSlot(
 			SlotRecord::newUnsaved(

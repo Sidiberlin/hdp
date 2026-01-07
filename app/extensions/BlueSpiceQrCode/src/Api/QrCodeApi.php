@@ -2,10 +2,11 @@
 
 namespace BlueSpice\QrCode\Api;
 
-use ApiBase;
 use Endroid\QrCode\QrCode;
-use Status;
-use Title;
+use Endroid\QrCode\Writer\PngWriter;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class QrCodeApi extends ApiBase {
@@ -81,7 +82,9 @@ class QrCodeApi extends ApiBase {
 	private function getQrCodeData( $url, $size ) {
 		$qrCode = new QrCode( $url );
 		$qrCode->setSize( $size );
-		return 'data:image/png;base64,' . base64_encode( $qrCode->writeString() );
+		$writer = new PngWriter();
+		$result = $writer->write( $qrCode );
+		return 'data:image/png;base64,' . base64_encode( $result->getString() );
 	}
 
 	/**

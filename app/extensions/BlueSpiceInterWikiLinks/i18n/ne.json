@@ -22,8 +22,5 @@
 	"bs-interwikilinks-titleeditinterwikilink": "अन्तरविकि लिङ्क सम्पादन गर्ने",
 	"bs-interwikilinks-labelprefix": "उपसर्ग",
 	"bs-interwikilinks-titledeleteinterwikilink": "अन्तरविकि लिङ्क मेट्ने",
-	"bs-interwikilinks-confirmdeleteinterwikilink": "के तपाईँ साच्चै यो अन्तरविकी लिङ्कलाई मेट्न चाहनुहुन्छ?",
-	"bs-interwikilinks-insertlink-tabtitle": "अन्य विकिसँग लिङ्क गर्ने",
-	"bs-interwikilinks-insertlink-labelprefix": "उपसर्ग",
-	"bs-interwikilink-select-a-prefix": "उपसर्ग छान्ने"
+	"bs-interwikilinks-confirmdeleteinterwikilink": "के तपाईँ साच्चै यो अन्तरविकी लिङ्कलाई मेट्न चाहनुहुन्छ?"
 }

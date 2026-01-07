@@ -5,6 +5,9 @@
  * @author Alexander Mashin
  *
  */
+use ExternalData\Presets\Base;
+use ExternalData\Presets\Media;
+
 abstract class EDConnectorBase {
 	use EDParsesParams;	// Needs paramToArray().
 
@@ -52,6 +55,16 @@ abstract class EDConnectorBase {
 	private $mappings = [];
 	/** @var array Data filters. */
 	protected $filters = [];
+
+	/** @var string $input This will be fed to program's standard input. */
+	protected $input;
+	/** @var array $params Parameters to command or to URL. */
+	protected $params;
+	/** @var ?callable $preprocessor A preprocessor for program input. */
+	private $preprocessor;
+	/** @var ?callable $postprocessor A postprocessor for program output. */
+	protected $postprocessor;
+
 	/** @var array Fetched data before filtering and mapping. */
 	protected $values = [];
 
@@ -63,7 +76,7 @@ abstract class EDConnectorBase {
 	 */
 	protected function __construct( array &$args, Title $title ) {
 		// Bring keys to lowercase:
-		$args = self::paramToArray( $args, true, false );
+		$args = self::paramToArray( $args, true );
 
 		// Check the presence of the identifier parameter ('source', 'url', 'db', etc.).
 		if ( !isset( $args[static::ID_PARAM] ) ) {
@@ -93,13 +106,72 @@ abstract class EDConnectorBase {
 
 		// Filters.
 		$this->filters = array_key_exists( 'filters', $args ) && $args['filters']
-					   ? self::paramToArray( $args['filters'], true, false )
-					   : [];
+			? self::paramToArray( $args['filters'], true, false )
+			: [];
+
+		// Preprocessor:
+		$this->preprocessor = $this->processor( $args['preprocess'] ?? null );
+
+		// stdin.
+		if ( isset( $args['input'] ) ) {
+			$input = $args['input'];
+			if ( isset( $args[$input] ) ) {
+				$this->input = $args[$input];
+				// Preprocess, if required.
+				$preprocessor = $this->preprocessor;
+				if ( $preprocessor ) {
+					$this->input = $preprocessor( $this->input, $args );
+				}
+			} else {
+				$this->error( 'externaldata-no-param-specified', $input );
+			}
+		}
+
+		// Postprocessor.
+		$this->postprocessor = $this->processor( $args['postprocess'] ?? null );
+
+		// Copy of the params.
+		$this->params = $args;
 
 		// Whether to suppress error messages.
 		if ( array_key_exists( 'suppress error', $args ) || array_key_exists( 'hidden', $args ) ) {
 			$this->suppressError = true;
 		}
+	}
+
+	/**
+	 * The function analyses and converts 'preprocess' and 'postprocess' params into callables.
+	 * @param callable|array $param
+	 * @return callable|null
+	 */
+	private function processor( $param ): ?callable {
+		$func = null;
+		if ( is_callable( $param ) ) {
+			$func = function ( string $input, array $params ) use ( $param ) {
+				try {
+					$output = $param( $input, $params );
+				} catch ( Exception $e ) {
+					$this->error( 'externaldata-processing-exception', $e->getMessage() );
+					return false;
+				}
+				return $output;
+			};
+		} elseif ( is_array( $param ) ) {
+			$callables = array_filter( $param, 'is_callable' );
+			$func = function ( string $input, array $params ) use ( $callables ) {
+				$output = $input;
+				foreach ( $callables as $callable ) {
+					try {
+						$output = $callable( $output, $params );
+					} catch ( Exception $e ) {
+						$this->error( 'externaldata-processing-exception', $e->getMessage() );
+						return false;
+					}
+				}
+				return $output;
+			};
+		}
+		return $func;
 	}
 
 	/**
@@ -133,6 +205,19 @@ abstract class EDConnectorBase {
 	}
 
 	/**
+	 * Add a special variable.
+	 *
+	 * @param string $variable Special variable's name.
+	 * @param mixed $value Special variable's value.
+	 */
+	protected function addSpecial( string $variable, $value ) {
+		if ( !isset( $this->values[$variable] ) ) {
+			$this->values[$variable] = [];
+		}
+		$this->values[$variable][] = $value;
+	}
+
+	/**
 	 * A list of available connectors.
 	 * @return array
 	 */
@@ -154,7 +239,7 @@ abstract class EDConnectorBase {
 	public static function getConnectors(): array {
 		$connectors = [];
 		foreach ( self::connectors() as $connector ) {
-			$parser_function = isset( $connector[0]['__pf'] ) ? $connector[0]['__pf'] : null;
+			$parser_function = $connector[0]['__pf'] ?? null;
 			if ( is_string( $parser_function ) && !isset( $connectors[$parser_function] ) ) {
 				// 'get_some_data' => 'getSomeData'.
 				$connectors[$parser_function] = preg_replace_callback( '/_(\w)/', static function ( array $captures ) {
@@ -173,7 +258,7 @@ abstract class EDConnectorBase {
 	 *
 	 * @return string Name of a EDConnector* class.
 	 */
-	protected static function getConnectorClass( $name, array $args ) {
+	protected static function getConnectorClass( ?string $name, array $args ): string {
 		$args['__pf'] = $name;
 		$connectors = self::connectors();
 		return self::getMatch( $args, $connectors );
@@ -184,12 +269,12 @@ abstract class EDConnectorBase {
 	 *
 	 * @param string|null $name Parser function name.
 	 * @param array $args Its parameters.
-	 * @param ?Title $title A title object.
+	 * @param Title $title A title object.
 	 *
 	 * @return EDConnectorBase An EDConnector* object.
 	 */
-	public static function getConnector( $name, array $args, $title ): EDConnectorBase {
-		$supplemented = self::supplementParams( $args );
+	public static function getConnector( ?string $name, array $args, Title $title ): EDConnectorBase {
+		$supplemented = self::supplementParams( $args, $title );
 		$class = self::getConnectorClass( $name, $supplemented );
 		// Instantiate the connector. If $class is empty, either this extension or $wgExternalDataConnectors is broken.
 		return new $class( $supplemented, $title );
@@ -221,21 +306,61 @@ abstract class EDConnectorBase {
 			}
 		}
 
+		// Load chosen presets and merge them with overrides.
+		foreach ( $sources as $source => &$settings ) {
+			if ( is_array( $settings ) ) {
+				if ( isset( $settings['preset'] ) ) {
+					$settings = array_replace_recursive(
+						call_user_func(
+							[ 'ExternalData\\Presets\\' . ucfirst( $settings['preset'] ), 'source' ],
+							$source
+						),
+						$settings
+					);
+					unset( $settings['preset'] );
+				}
+			} elseif ( is_string( $settings ) && in_array( ucfirst( $settings ), [ 'Test', 'Reference', 'Media' ] ) ) {
+				$settings = call_user_func( [ 'ExternalData\\Presets\\' . ucfirst( $settings ), 'source' ], $source );
+			}
+		}
+
+		// Load presets wholesale.
+		foreach ( [ 'test', 'reference', 'media' ] as $group ) {
+			if ( ( $sources["load $group presets"] ?? false ) || ( $sources['load all presets'] ?? false ) ) {
+				$presets = call_user_func( [ 'ExternalData\\Presets\\' . ucfirst( $group ), 'sources' ] );
+				$sources = array_replace_recursive( $presets, $sources );
+			}
+			unset( $sources["load $group presets"] );
+		}
+		unset( $sources["load all presets"] );
+
 		self::$sources = $sources;
 	}
 
 	/**
-	 * Substitute default values for the absent parameters. Log an error if a required parameter is not supplied.
+	 * Substitute default values for the absent parameters.
 	 *
 	 * @param array $parameters User-supplied parameters.
 	 * @param array $defaults An array of parameter defaults. A numeric key means that the value is a required param.
+	 * @param Title $title The Title object.
 	 * @return array The supplemented parameters.
 	 */
-	private static function setDefaults( array $parameters, array $defaults ): array {
+	private static function setDefaults( array $parameters, array $defaults, Title $title ): array {
 		// Check if the required parameters are present and provide default values for the optional ones.
+		// Literal defaults.
 		foreach ( $defaults as $key => $value ) {
-			if ( is_string( $key ) && !isset( $parameters[$key] ) ) { // no value provided.
+			if ( !is_callable( $value ) ) { // literal defaults.
+				if ( !isset( $parameters[$key] ) ) { // no value provided.
 					$parameters[$key] = $value;
+				}
+			}
+		}
+		// Functional defaults:
+		foreach ( $defaults as $key => $value ) {
+			if ( is_callable( $value ) ) { // literal defaults.
+				if ( !isset( $parameters[$key] ) ) { // no value provided.
+					$parameters[$key] = $value( $parameters, $title );
+				}
 			}
 		}
 		return $parameters;
@@ -252,7 +377,7 @@ abstract class EDConnectorBase {
 		// Check if the required parameters are present and provide default values for the optional ones.
 		foreach ( $defaults as $key => $value ) {
 			if ( is_numeric( $key ) && !isset( $parameters[$value] ) ) {
-					$this->error( 'externaldata-no-param-specified', $key );
+				$this->error( 'externaldata-no-param-specified', $value );
 			}
 		}
 		return $parameters;
@@ -268,17 +393,20 @@ abstract class EDConnectorBase {
 	private function validateParams( array $parameters, array $filters ): array {
 		// Validate parameters.
 		foreach ( $parameters as $key => $value ) {
-			if ( !(
-				// no filter for this parameter.
-				!isset( $filters[$key] )
-				// filter is a function and returns true.
-				|| is_callable( $filters[$key] ) && $filters[$key]( $value )
-				// filter is a regular expression and parameter matches it.
-				|| is_string( $filters[$key] ) && preg_match( $filters[$key], $value )
-			) ) {
-				$this->error( 'externaldata-illegal-parameter', $key, $value );
+			if ( !isset( $filters[$key] ) ) {
+				continue;
 			}
-
+			if ( is_callable( $filters[$key] ) ) {
+				if ( !$filters[$key]( $value, $parameters ) ) {
+					$this->error( 'externaldata-illegal-parameter', $key, $value );
+				}
+				continue;
+			}
+			if ( is_string( $filters[$key] ) ) {
+				if ( !preg_match( $filters[$key], $value ) ) {
+					$this->error( 'externaldata-illegal-parameter', $key, $value );
+				}
+			}
 		}
 		return $parameters;
 	}
@@ -319,18 +447,33 @@ abstract class EDConnectorBase {
 	}
 
 	/**
+	 * Checks, whether $args contains a data source identifier.
+	 * @param array $args
+	 * @return ?string
+	 */
+	public static function sourceSet( array $args ): ?string {
+		foreach ( self::ID_PARAMS as $arg ) {
+			if ( isset( $args[$arg] ) ) {
+				return $arg;
+			}
+		}
+		return null;
+	}
+
+	/**
 	 * This method adds secret parameters to user-supplied ones, extracting them from
 	 * global configuration variables.
 	 *
 	 * @param array $params User-supplied parameters.
+	 * @param Title $title Title object.
 	 * @return array Supplemented parameters.
 	 */
-	protected static function supplementParams( array $params ): array {
+	protected static function supplementParams( array $params, Title $title ): array {
 		$supplemented = $params;
 
 		// Allow concise syntax with unnamed first parameter instead of 'source', etc.
 		if ( isset( $params[0] ) ) {
-			$supplemented[self::ID_PARAM] = $params[0];
+			$supplemented[static::ID_PARAM] = $params[0];
 		}
 
 		// URL passed as 'source'.
@@ -353,11 +496,13 @@ abstract class EDConnectorBase {
 			}
 			// Second-level domain is likely to be both a throttle key and an index to find a throttle key or interval.
 			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset text saying why it was suppressed
-			if ( $supplemented['host'] && preg_match( '/(?<=^|\.)\w+\.\w+$/', $supplemented['host'], $matches ) ) {
-				$supplemented['2nd_lvl_domain'] = $matches[0];
-			} else {
-				// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset text saying why it was suppressed
-				$supplemented['2nd_lvl_domain'] = $supplemented['host'];
+			if ( isset( $supplemented['host'] ) ) {
+				if ( preg_match( '/(?<=^|\.)\w+\.\w+$/', $supplemented['host'], $matches ) ) {
+					$supplemented['2nd_lvl_domain'] = $matches[0];
+				} else {
+					// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset text saying why it was suppressed
+					$supplemented['2nd_lvl_domain'] = $supplemented['host'];
+				}
 			}
 			$fields = self::URL_PARAMS;
 		}
@@ -387,11 +532,11 @@ abstract class EDConnectorBase {
 
 		// Set default values.
 		if ( isset( $wiki_wide['params'] ) ) {
-			$params = self::setDefaults( $params, $wiki_wide['params'] );
+			$supplemented = self::setDefaults( $supplemented, $wiki_wide['params'], $title );
 		}
 
 		// Substitute user-supplied parameters into wiki-wide, where they contain wildcards.
-		$wiki_wide = self::substitute( $wiki_wide, self::forStrtr( $params ) );
+		$wiki_wide = self::substitute( $wiki_wide, self::forStrtr( $supplemented ) );
 
 		// Apply wiki-wide settings. They override user-provided ones.
 		foreach ( $wiki_wide as $param => $value ) {
@@ -491,7 +636,7 @@ abstract class EDConnectorBase {
 	 * Register an error.
 	 *
 	 * @param array|string $code Error message key or array of errors.
-	 * @param string ...$params Message parameters.
+	 * @param array|string ...$params Message parameters.
 	 */
 	protected function error( $code, ...$params ) {
 		if ( !$this->errors ) {
@@ -528,5 +673,274 @@ abstract class EDConnectorBase {
 	 */
 	public function suppressError() {
 		return $this->suppressError;
+	}
+
+	/**
+	 * Get a list of data sources emulating tags.
+	 * @return array[]
+	 */
+	public static function emulatedTags(): array {
+		$tags = [];
+		foreach ( self::$sources as $source => $config ) {
+			if ( isset( $config['tag'] ) ) {
+				$tag = $config['tag'];
+				$tags[$tag] = self::tagFunction( $config + [ 'source' => $source ] );
+				// @todo: is 'program' really necessary?
+			}
+		}
+		return $tags;
+	}
+
+	/**
+	 * Create a parser function implementing a tag.
+	 * @param array $config
+	 * @return callable
+	 * @throws Exception
+	 */
+	private static function tagFunction( array $config ): callable {
+		return static function (
+			?string $inner,
+			array $attributes,
+			Parser $parser,
+			PPFrame $_
+		) use ( $config ) {
+			$params = $attributes;
+			if ( isset( $config['input'] ) ) {
+				$params[$config['input']] = $inner;
+			}
+			$params['source'] = $config['source'];
+			$id = $params['id'] ?? 'output';
+			$params['data'] ??= "$id=__text";
+			$params['format'] = 'text';
+			$title = method_exists( $parser, 'getPage' ) ? $parser->getPage() : $parser->getTitle();
+			if ( !$title ) {
+				throw new MWException( 'No Title object.' ); // unreachable. Just to make the IDE shut up.
+			}
+			$params = self::supplementParams( $params, $title );
+			if ( $title ) {
+				// @phan-suppress-next-line SecurityCheck-ReDoS
+				$connector = self::getConnector( 'get_external_data', $params, $title );
+				if ( !$connector->errors() ) {
+					if ( $connector->run() ) {
+						$values = $connector->result();
+						// @todo: other markerTypes?
+						return [ $values[$id][0], 'markerType' => 'nowiki' ];
+					}
+				}
+				return EDParserFunctions::formatErrorMessages( $connector->errors() );
+			}
+			return false;
+		};
+	}
+
+	/**
+	 * Return the version of the relevant software to be used at Special:Version.
+	 * @param array $config
+	 * @return array [ 'name', 'version' ]
+	 */
+	public static function version( array $config ): array {
+		$name = $config['name'] ?? null;
+		$version = null;
+		// Program site.
+		if ( isset( $config['program url'] ) ) {
+			$name = "[{$config['program url']} $name]";
+		}
+		if ( isset( $config['version'] ) ) {
+			return [ $name, $config['version'] ];
+		}
+		return [ $name, $version ];
+	}
+
+	/**
+	 * Register used software for Special:Version.
+	 * @param array &$software
+	 * @return bool
+	 */
+	public static function addSoftware( array &$software ): bool {
+		foreach ( self::$sources as $id => $config ) {
+			$class = self::getConnectorClass( null, $config );
+			[ $name, $version ] = call_user_func( [ $class, 'version' ], $config );
+			if ( $name && $version !== false ) {
+				$software[$name] = $version ?: '(unknown)';
+			}
+		}
+		return true;
+	}
+
+	/*
+	 * Pre- and postprocessing utilities. Moved to \ExternalData\Presets\Base;
+	 * wrappers are preserved here for backward compatibility.
+	 */
+
+	/**
+	 * Validate XML.
+	 * @param string $xml
+	 * @return bool
+	 */
+	public static function validateXml( string $xml ): bool {
+		return Base::validateXml( $xml );
+	}
+
+	/**
+	 * Validate JSON.
+	 * @param string|array $json
+	 * @param array $params
+	 * @return bool
+	 */
+	public static function validateJson( $json, array $params ): bool {
+		return Base::validateJsonOrYaml( $json, $params );
+	}
+
+	/**
+	 * Convert [[wikilinks]] to dot links, including images and CSS.
+	 *
+	 * @param string $dot Text to add wikilinks in dot format.
+	 * @param array $params
+	 * @return string dot with links.
+	 */
+	public static function wikilinks4dot( string $dot, array $params ): string {
+		return Media::wikilinks4dot( $dot, $params );
+	}
+
+	/**
+	 * Convert [[wikilinks]] to UML links.
+	 *
+	 * @param string $uml Text to add wikilinks in UML format.
+	 * @return string dot with links.
+	 */
+	public static function wikilinks4uml( string $uml ): string {
+		return Media::wikilinks4uml( $uml );
+	}
+
+	/**
+	 * @param string $script
+	 * @return string
+	 */
+	public static function maskWikilinks( string $script ): string {
+		return Media::maskWikilinks( $script );
+	}
+
+	/**
+	 * @param string $masked
+	 * @return string
+	 */
+	public static function unmaskWikilinks( string $masked ): string {
+		return Media::unmaskWikilinks( $masked );
+	}
+
+	/**
+	 * Strip SVG from surrounding XML.
+	 *
+	 * @param string $xml XML to extract SVG from.
+	 * @return string The stripped SVG.
+	 */
+	public static function innerXML( string $xml ): string {
+		return Media::innerXml( $xml );
+	}
+
+	/**
+	 * Strips log messages before and after SVG that could not be stripped otherwise.
+	 * @param string $input
+	 * @return string
+	 */
+	public static function onlySvg( string $input ): string {
+		return Media::onlySvg( $input );
+	}
+
+	/**
+	 * Replace local image paths with URLs in SVG.
+	 * @param string $svg SVG to process
+	 * @return string Prcessed SVG
+	 */
+	public static function filepathToUrl( string $svg ): string {
+		return Media::filepathToUrl( $svg );
+	}
+
+	/**
+	 * Set SVG size, if not set.
+	 * @param string $svg
+	 * @param array $params
+	 * @return string
+	 */
+	public static function sizeSVG( string $svg, array $params ): string {
+		return Media::sizeSVG( $svg, $params );
+	}
+
+	/**
+	 * Convert [[…]] in SVG <text> into <a>.
+	 * @param string $svg
+	 * @return string
+	 */
+	public static function wikilinksInSvg( string $svg ): string {
+		return Media::wikilinksInSvg( $svg );
+	}
+
+	/**
+	 * Alter links to JavaScripts in SVG.
+	 * @param string $svg
+	 * @param array $params
+	 * @return string
+	 */
+	public static function jsLinks( string $svg, array $params ): string {
+		return Media::jsLinksInSvg( $svg, $params );
+	}
+
+	/**
+	 * Inject locale object for Vega.
+	 * @param array|string $json
+	 * @param array $params
+	 * @return string
+	 * @throws MWException
+	 */
+	public static function inject3d( $json, array $params ): string {
+		return Media::inject3d( $json, $params );
+	}
+
+	/**
+	 * Make interactive Vega visualisation based on the original JSON, with SVG fallback.
+	 * @param string $svg Vega visualisation exported to SVG to be used as fallback.
+	 * @param array $params Parameters passed to Vega engine, including the source JSON.
+	 * @return string HTML code containing the animated Vega with SVG fallback.
+	 */
+	public static function animateVega( string $svg, array $params ): string {
+		return Media::animateVega( $svg, $params );
+	}
+
+	/**
+	 * Make interactive ECharts visualisation based on the original JSON, with SVG fallback.
+	 * @param string $svg ECharts visualisation exported to SVG to be used as fallback.
+	 * @param array $params Parameters passed to ECharts engine, including the source JSON.
+	 * @return string HTML code containing the animated ECharts with SVG fallback.
+	 */
+	public static function animateEcharts( string $svg, array $params ): string {
+		return Media::animateEcharts( $svg, $params );
+	}
+
+	/**
+	 * Screen colons in wikilinks in a Mermaid diagram.
+	 * @param string $mmd
+	 * @return string
+	 */
+	public static function screenColons( string $mmd ): string {
+		return Media::screenColons( $mmd );
+	}
+
+	/**
+	 * Convert wikilinks in XML to proper hyperlinks.
+	 * @param string $xml
+	 * @return string
+	 */
+	public static function wikiLinksInXml( string $xml ): string {
+		return Media::wikiLinksInXml( $xml );
+	}
+
+	/**
+	 * Make interactive Mermaid diagram based on the source code, with SVG fallback.
+	 * @param string $svg Mermaid diagram converted to SVG server-side to be used as fallback.
+	 * @param array $params Parameters to <mermaid> tag including the Mermaid source code.
+	 * @return string The original SVG plus Mermaid source code with scripts to activate it.
+	 */
+	public static function animateMermaid( string $svg, array $params ): string {
+		return Media::animateMermaid( $svg, $params );
 	}
 }

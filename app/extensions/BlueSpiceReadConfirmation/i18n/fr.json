@@ -2,10 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Alien333",
-			"Amire80",
 			"Golmore",
 			"Gomoko",
 			"Graineahumus",
+			"Mahabarata",
 			"McDutchie",
 			"SleaY",
 			"Thibaut120094",
@@ -70,6 +70,8 @@
 	"bs-readconfirmation-page-info-user": "Utilisateur",
 	"bs-readconfirmation-page-info-confirmation": "Confirmation",
 	"readconfirmation-event-confirmation-request-key-desc": "Confirmation de lecture demandée",
+	"readconfirmation-event-confirmation-request": "{{GENDER:$1|}}a demandé une confirmation de lecture pour la page $2",
+	"readconfirmation-event-confirmation-request-bot": "Il vous a été demandé de confirmer que vous avez lu la page $1",
 	"readconfirmation-event-confirmation-remind-key-desc": "Rappel pour une confirmation de lecture en attente",
 	"readconfirmation-event-confirmation-remind-bot": "Rappel pour confirmer que vous avez lu la page $1",
 	"readconfirmation-event-confirmation-links-intro": "Veuillez visiter la page au lien suivant pour confirmer la page comme lue"

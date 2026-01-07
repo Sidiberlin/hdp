@@ -3,13 +3,15 @@
 namespace BlueSpice;
 
 use BlueSpice\ConfigDefinition\IOverwriteGlobal;
+use MediaWiki\Config\Config;
+use MediaWiki\HTMLForm\HTMLForm;
 use MediaWiki\MediaWikiServices;
 
 class Foundation {
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $config = null;
 
@@ -27,13 +29,13 @@ class Foundation {
 		\mwsInitComponents();
 
 		// currently there is no other way
-		\HTMLForm::$typeMappings['staticimage'] = 'HTMLStaticImageFieldOverride';
-		\HTMLForm::$typeMappings['link'] = 'HTMLInfoFieldOverride';
-		\HTMLForm::$typeMappings['text'] = 'HTMLTextFieldOverride';
-		\HTMLForm::$typeMappings['int'] = 'HTMLIntFieldOverride';
-		\HTMLForm::$typeMappings['multiselectex'] = 'HTMLMultiSelectEx';
-		\HTMLForm::$typeMappings['multiselectplusadd'] = 'HTMLMultiSelectPlusAdd';
-		\HTMLForm::$typeMappings['multiselectsort'] = 'HTMLMultiSelectSortList';
+		HTMLForm::$typeMappings['staticimage'] = 'HTMLStaticImageFieldOverride';
+		HTMLForm::$typeMappings['link'] = 'HTMLInfoFieldOverride';
+		HTMLForm::$typeMappings['text'] = 'HTMLTextFieldOverride';
+		HTMLForm::$typeMappings['int'] = 'HTMLIntFieldOverride';
+		HTMLForm::$typeMappings['multiselectex'] = 'HTMLMultiSelectEx';
+		HTMLForm::$typeMappings['multiselectplusadd'] = 'HTMLMultiSelectPlusAdd';
+		HTMLForm::$typeMappings['multiselectsort'] = 'HTMLMultiSelectSortList';
 
 		if ( !isset( $GLOBALS['wgExtensionFunctions'] ) ) {
 			$GLOBALS['wgExtensionFunctions'] = [];
@@ -60,6 +62,8 @@ class Foundation {
 		$this->initializeExtensions();
 		$this->overwriteGlobals();
 		$this->initializeRoleSystem();
+
+		$this->services->getHookContainer()->run( 'BlueSpiceFoundationAfterInitialize' );
 	}
 
 	protected function initializeExtensions() {

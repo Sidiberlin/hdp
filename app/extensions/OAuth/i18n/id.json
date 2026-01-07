@@ -1,12 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Agam Riyandana",
 			"Diki Ananta",
 			"Ilham151096",
 			"Iwan Novirion",
 			"Raynasution",
 			"Sumbukompor",
-			"Agam Riyandana"
+			"Penyuwangi"
 		]
 	},
 	"mwoauth-invalid-field": "Terjadi nilai tidak valid untuk bidang \"$1\"",
@@ -37,6 +38,7 @@
 	"mwoauthconsumerregistration-stage": "Status",
 	"mwoauthconsumerregistration-lastchange": "Perubahan terakhir",
 	"mwoauthconsumerregistration-manage": "kelola",
+	"mwoauthconsumerregistration-secretreset-owner-only-oauth2": "Token klien OAuth 2.0 Anda telah disetel ulang. Token baru adalah:\n; Kunci aplikasi klien: $1 \n; Rahasia aplikasi klien: $2 \n; Token akses: $3 \n <em>Harap rekam ini untuk referensi di masa mendatang.</em>",
 	"mwoauthmanageconsumers-description": "Deskripsi",
 	"mwoauthmanageconsumers-search-publisher": "konsumen dari pengguna ini",
 	"oauthlistconsumers": "Daftar aplikasi OAuth",
@@ -75,7 +77,7 @@
 	"mwoauth-invalid-authorization-title": "Galat otorisasi OAuth",
 	"mwoauth-form-button-approve": "Izinkan",
 	"mwoauth-form-button-cancel": "Batal",
-	"mwoauth-error": "Galat Koneksi Aplikasi",
+	"mwoauth-error": "Galat Sambungan Aplikasi",
 	"mwoauth-grants-heading": "Mohon izin:",
 	"mwoauth-grants-nogrants": "Aplikasi tidak ada mengajukan permohonan izin."
 }

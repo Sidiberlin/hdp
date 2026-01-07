@@ -2,8 +2,9 @@
 
 namespace BlueSpice\ReadConfirmation;
 
-use Title;
-use User;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 interface IMechanism {
 
@@ -81,4 +82,13 @@ interface IMechanism {
 	 * @return mixed
 	 */
 	public function mustRead( Title $title );
+
+	/**
+	 * Get latest revision that needs confirmation by the user
+	 *
+	 * @param Title $title
+	 * @param User $user
+	 * @return RevisionRecord
+	 */
+	public function getLatestRevisionToConfirm( Title $title, User $user ): ?RevisionRecord;
 }

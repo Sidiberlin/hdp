@@ -27,10 +27,5 @@
 	"simple-tasks-taskreport-state-title-open": "Задача осьтӧм",
 	"simple-tasks-taskreport-state-title-done": "Задача тыртӧма",
 	"simple-tasks-taskreport-state-filter-done": "Керӧма",
-	"simple-tasks-taskreport-state-filter-open": "Осьтны",
-	"echo-category-title-simple-tasks-notification-cat": "Задачаэз",
-	"simple-tasks-notification-cat-tooltip": "Юӧртӧ меным,кӧр лоасӧ лӧсьӧтӧмӧсь меным задачаэз",
-	"simple-tasks-echo-notification-task-subject": "Листбокын $1 тіянлӧ лӧсьӧтӧм задача",
-	"simple-tasks-echo-notification-task-email-body": "{{GENDER:$2|$3 иньдӧм}}тіянлӧ задача листбокӧ $1.\n\n$4",
-	"simple-tasks-echo-notification-task-web-body": "{{GENDER:$1|$2 иньдӧм}} тіянлӧ лӧсьӧтӧма задача: $3"
+	"simple-tasks-taskreport-state-filter-open": "Осьтны"
 }

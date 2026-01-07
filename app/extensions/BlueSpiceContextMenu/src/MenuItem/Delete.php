@@ -2,6 +2,8 @@
 
 namespace BlueSpice\ContextMenu\MenuItem;
 
+use MediaWiki\Message\Message;
+
 class Delete extends Base {
 
 	/**
@@ -9,12 +11,19 @@ class Delete extends Base {
 	 * @return string
 	 */
 	public function getIconClass() {
-		return 'bs-icon-bin';
+		return 'trash';
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getFlags(): array {
+		return [ 'destructive' ];
 	}
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabelMessage() {
 		return wfMessage( 'bs-contextmenu-page-delete' );

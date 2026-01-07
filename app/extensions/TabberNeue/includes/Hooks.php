@@ -4,20 +4,22 @@ declare( strict_types=1 );
 
 namespace MediaWiki\Extension\TabberNeue;
 
+use MediaWiki\Config\Config;
+use MediaWiki\Extension\TabberNeue\Scribunto\LuaLibrary;
+use MediaWiki\Extension\TabberNeue\Service\TabNameHelper;
 use MediaWiki\Hook\ParserFirstCallInitHook;
-use OutputPage;
-use Parser;
-use Skin;
+use MediaWiki\Html\TemplateParser;
+use MediaWiki\Parser\Parser;
 
 class Hooks implements ParserFirstCallInitHook {
-	/**
-	 * @see https://www.mediawiki.org/wiki/Extension:MobileFrontend/BeforePageDisplayMobile
-	 *
-	 * @param OutputPage $out
-	 * @param Skin $sk
-	 */
-	public static function onBeforePageDisplayMobile( OutputPage $out, Skin $sk ) {
-		$out->addModuleStyles( [ 'ext.tabberNeue.mobile.styles' ] );
+
+	private TemplateParser $templateParser;
+
+	public function __construct(
+		private Config $config,
+		private readonly TabNameHelper $tabNameHelper
+	) {
+		$this->templateParser = new TemplateParser( __DIR__ . '/templates' );
 	}
 
 	/**
@@ -26,7 +28,21 @@ class Hooks implements ParserFirstCallInitHook {
 	 * @param Parser $parser
 	 */
 	public function onParserFirstCallInit( $parser ): void {
-		$parser->setHook( 'tabber', Tabber::class . '::parserHook' );
-		$parser->setHook( 'tabbertransclude', TabberTransclude::class . '::parserHook' );
+		$parser->setHook( 'tabber', [ new Tabber( $this->config, $this->templateParser, $this->tabNameHelper ), 'parserHook' ] );
+		$parser->setHook( 'tabbertransclude', [ new TabberTransclude( $this->config, $this->templateParser, $this->tabNameHelper ), 'parserHook' ] );
+	}
+
+	/**
+	 * Register Lua libraries for Scribunto.
+	 * We cannot use hook handlers because it does not support conditional registration.
+	 *
+	 * @return bool|void
+	 */
+	public static function onScribuntoExternalLibraries( string $engine, array &$extraLibraries ) {
+		if ( $engine !== 'lua' ) {
+			return;
+		}
+
+		$extraLibraries['mw.ext.tabber'] = LuaLibrary::class;
 	}
 }

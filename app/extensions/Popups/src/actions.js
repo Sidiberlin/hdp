@@ -1,35 +1,11 @@
-/**
- * @module actions
- */
-
 import types from './actionTypes';
 import wait from './wait';
-import { createNullModel, previewTypes } from './preview/model';
-
-const
-	// See the following for context around this value.
-	//
-	// * https://phabricator.wikimedia.org/T161284
-	// * https://phabricator.wikimedia.org/T70861#3129780
-	FETCH_START_DELAY = 150, // ms.
-
-	// The minimum time a preview must be open before we judge it
-	// has been seen.
-	// See https://phabricator.wikimedia.org/T184793
-	PREVIEW_SEEN_DURATION = 1000, // ms
-
-	// The delay after which a FETCH_COMPLETE action should be dispatched.
-	//
-	// If the API endpoint responds faster than 350 ms (or, say, the API
-	// response is served from the UA's cache), then we introduce a delay of
-	// 350 ms - t to make the preview delay consistent to the user. The total
-	// delay from start to finish is 500 ms.
-	FETCH_COMPLETE_TARGET_DELAY = 350 + FETCH_START_DELAY, // ms.
-
-	FETCH_DELAY_REFERENCE_TYPE = 150, // ms.
-
-	ABANDON_END_DELAY = 300; // ms.
-
+import { createNullModel, previewTypes, getDwellDelay } from './preview/model';
+import { FETCH_START_DELAY, PREVIEW_SEEN_DURATION, ABANDON_END_DELAY } from './constants';
+/**
+ * @module actions
+ * @private
+ */
 /**
  * Mixes in timing information to an action.
  *
@@ -59,7 +35,7 @@ function timedAction( baseAction ) {
  *
  * @param {Object} initiallyEnabled Allows to disable individual popup types while still showing the
  *  footer link
- * @param {mw.user} user
+ * @param {mw.User} user
  * @param {ext.popups.UserSettings} userSettings
  * @param {mw.Map} config The config of the MediaWiki client-side application,
  *  i.e. `mw.config`
@@ -80,7 +56,6 @@ export function boot(
 		initiallyEnabled,
 		// This is only used for logging
 		isNavPopupsEnabled: config.get( 'wgPopupsConflictsWithNavPopupGadget' ),
-		sessionToken: user.sessionId(),
 		pageToken: user.getPageviewToken(),
 		page: {
 			url,
@@ -89,32 +64,32 @@ export function boot(
 			id: config.get( 'wgArticleId' )
 		},
 		user: {
-			isAnon: user.isAnon(),
+			isAnon: user.isAnon() || mw.user.isTemp(),
 			editCount
 		}
 	};
 }
 
 /**
- * Determines the delay before showing the preview when dwelling a link.
+ * Registers a page preview setting for anonymous users.
  *
- * @param {string} type
- * @return {number}
+ * @param {string} name setting name which is used for storage and deriving associated
+ *  messages.
+ * @param {boolean} enabled is the feature enabled by default?
+ * @return {Object}
  */
-function getDwellDelay( type ) {
-	switch ( type ) {
-		case previewTypes.TYPE_PAGE:
-			return FETCH_COMPLETE_TARGET_DELAY - FETCH_START_DELAY;
-		case previewTypes.TYPE_REFERENCE:
-			return FETCH_DELAY_REFERENCE_TYPE;
-		default:
-			return 0;
-	}
+export function registerSetting( name, enabled ) {
+	return {
+		type: types.REGISTER_SETTING,
+		name,
+		enabled
+	};
 }
 
 /**
  * Represents Page Previews fetching data via the gateway.
  *
+ * @private
  * @param {Gateway} gateway
  * @param {mw.Title} title
  * @param {HTMLAnchorElement} el
@@ -162,11 +137,11 @@ export function fetch( gateway, title, el, token, type ) {
 				throw exception;
 			} );
 
-		return $.when(
+		return Promise.all( [
 			chain,
 			wait( getDwellDelay( type ) )
-		)
-			.then( ( result ) => {
+		] )
+			.then( ( [ result ] ) => {
 				dispatch( {
 					type: types.FETCH_COMPLETE,
 					el,
@@ -213,6 +188,7 @@ export function fetch( gateway, title, el, token, type ) {
  * Represents the user dwelling on a link, either by hovering over it with
  * their mouse or by focussing it using their keyboard or an assistive device.
  *
+ * @private
  * @param {mw.Title} title
  * @param {HTMLAnchorElement} el
  * @param {ext.popups.Measures} measures
@@ -247,16 +223,21 @@ export function linkDwell( title, el, measures, gateway, generateToken, type ) {
 		}
 
 		if ( !isNewInteraction() ) {
-			return $.Deferred().resolve().promise();
+			return Promise.resolve();
 		}
 
 		return promise.then( () => {
 			const previewState = getState().preview;
+			const enabledValue = previewState.enabled[ type ];
+			// If there is no UI the enabledValue is always true.
+			const isEnabled = typeof enabledValue === 'undefined' ? true : enabledValue;
 
 			// The `enabled` flags allow to disable individual popup types while still showing the
 			// footer link. This comes from the boot() action (called `initiallyEnabled` there) and
 			// the preview() reducer.
-			if ( previewState.enabled[ type ] && isNewInteraction() ) {
+			// If the preview type has not been enabled, we ignore it as it cannot be disabled
+			// (currently) by the UI.
+			if ( isEnabled && isNewInteraction() ) {
 				return dispatch( fetch( gateway, title, el, token, type ) );
 			}
 		} );
@@ -269,6 +250,7 @@ export function linkDwell( title, el, measures, gateway, generateToken, type ) {
  * an assistive device, or abandoning a preview by moving their mouse away
  * from it.
  *
+ * @private
  * @return {Redux.Thunk}
  */
 export function abandon() {
@@ -276,7 +258,7 @@ export function abandon() {
 		const { activeToken: token, promise } = getState().preview;
 
 		if ( !token ) {
-			return $.Deferred().resolve().promise();
+			return Promise.resolve();
 		}
 
 		dispatch( timedAction( {
@@ -421,6 +403,7 @@ export function hideSettings() {
  * See docs/adr/0003-keep-enabled-state-only-in-preview-reducer.md for more
  * details.
  *
+ * @private
  * @param {Object} enabled Mapping preview type identifiers to boolean flags
  * @return {Redux.Thunk}
  */

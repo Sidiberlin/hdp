@@ -6,10 +6,11 @@
 			"बडा काजी"
 		]
 	},
+	"bs-distributionconnector-checkpermissions-label-user": "प्रयोगकर्ता",
 	"right-duplicate": "अनुलिपि पृष्ठहरू",
 	"action-duplicate": "अनुलिपि पृष्ठ",
 	"droplets-create-input-alignment-left-label": "बायाँ",
 	"droplets-create-input-alignment-right-label": "दायाँ",
-	"bs-distributionconnector-checkpermissions-label-user": "प्रयोगकर्ता",
-	"bs-distributionconnector-videodropletinspector-description-label": "विवरण"
+	"bs-distributionconnector-videodropletinspector-description-label": "विवरण",
+	"bs-distributionconnector-pref-eventbus-eventservices-subkey-url": "युआरएल"
 }

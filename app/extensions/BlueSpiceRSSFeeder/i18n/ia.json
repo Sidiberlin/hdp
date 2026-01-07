@@ -6,7 +6,6 @@
 	},
 	"bs-rssfeeder-desc": "Un extension que produce RSS valide pro omne extension que ha un function buildRss",
 	"rssfeeder": "Syndicator RSS",
-	"apihelp-bs-rssfeeder-tasks-description": "Forni processos commun pro RSSFeeder",
 	"apihelp-bs-rssfeeder-tasks-summary": "Forni processos commun pro RSSFeeder",
 	"bs-rssfeeder-pagetext": "Tu pote abonar te al sequente canales RSS:",
 	"bs-rssfeeder-recent-changes": "Modificationes recente",
@@ -30,13 +29,12 @@
 	"bs-rssstandards-link-text-watch": "Modificationes recente del ultime {{PLURAL:$1|die|$1 dies}}.",
 	"bs-rssstandards-desc-ns": "Canal con un vista general del modificationes recente in un spatio de nomines.",
 	"bs-rssstandards-changes-from": "Modificationes de: $1",
-	"apihelp-bs-rss-standards-pages-store-description": "Retornar un lista de paginas disponibile pro RSSFeeder",
 	"apihelp-bs-rss-standards-pages-store-summary": "Retornar un lista de paginas disponibile pro RSSFeeder",
 	"right-rssfeeder-viewspecialpage": "Accesso al pagina special [[Special:RSSFeeder]]",
 	"bs-rssstandards-title-rc": "Modificationes recente",
 	"bs-rss-feeder-pref-url-whitelist": "Lista de URLs permittite",
 	"bs-rss-feeder-pref-max-redirects": "Numero maxime de redirectiones permittite",
 	"bs-rssfeeder-rcunique-checkbox": "Celar duplicatos",
-	"bs-rss-feeder-pref-url-allow-help": "URLs permittite pro syndication RSS que pote esser usate in tabulieros de instrumentos",
+	"bs-rss-feeder-pref-url-allow-help": "URLs permittite pro syndication RSS que pote esser usate",
 	"bs-rss-feeder-pref-max-redirects-help": "Numero de redirectiones a sequer. Debe solo esser usate si le URLs de destination es digne de fide."
 }

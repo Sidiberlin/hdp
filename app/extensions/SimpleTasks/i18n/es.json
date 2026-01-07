@@ -5,6 +5,6 @@
 			"MarcoAurelio"
 		]
 	},
-	"simple-tasks-taskreport-inspector-state-done": "hecho",
-	"simple-tasks-notif-message": "{{GENDER:$1|asignado}} una tarea para usted: \"$1\""
+	"simple-tasks-notif-message": "{{GENDER:$1|asignado}} una tarea para usted: \"$1\"",
+	"simple-tasks-taskreport-inspector-state-done": "hecho"
 }

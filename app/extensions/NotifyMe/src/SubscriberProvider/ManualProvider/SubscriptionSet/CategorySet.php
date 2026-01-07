@@ -3,10 +3,10 @@
 namespace MediaWiki\Extension\NotifyMe\SubscriberProvider\ManualProvider\SubscriptionSet;
 
 use MediaWiki\Extension\NotifyMe\SubscriberProvider\ManualProvider\ISubscriptionSet;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\UserIdentity;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
 use MWStake\MediaWiki\Component\Events\ITitleEvent;
-use TitleFactory;
 
 class CategorySet implements ISubscriptionSet {
 

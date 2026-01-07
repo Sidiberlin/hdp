@@ -1,7 +1,10 @@
 <?php
 
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Content\ContentHandler;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\User\User;
 
 require_once __DIR__ . '/BSMaintenance.php';
 
@@ -34,6 +37,7 @@ class BSImportUsers extends BSMaintenance {
 		$userFactory = $services->getUserFactory();
 		$userOptionsManager = $services->getUserOptionsManager();
 		$wikiPageFactory = $services->getWikiPageFactory();
+		$userGroupManager = $services->getUserGroupManager();
 		foreach ( $oUserNodes as $oUserNode ) {
 			$sUserName = $this->getChildNodeValue( $oUserNode, 'name' );
 			$oUser = $userFactory->newFromName( $sUserName );
@@ -78,22 +82,20 @@ class BSImportUsers extends BSMaintenance {
 			} else {
 				$this->error(
 					$oUser->getName() . ' could not be added to database. Message '
-					. $oStatus->getMessage()->plain()
+					. $oStatus->getMessage()->text()
 				);
 				continue;
 			}
 
 			$sUserPassword = $this->getOption( 'defaultpw', '' );
 			if ( !empty( $sUserPassword ) ) {
-				$oUser->setPassword( $sUserPassword );
+				$oUser->changeAuthenticationData( [ 'password' => $sUserPassword ] );
 				$oUser->saveSettings();
 			}
 
 			$oGroups = $oUserNode->getElementsByTagName( 'group' );
 			foreach ( $oGroups as $oGroup ) {
-				MediaWikiServices::getInstance()
-					->getUserGroupManager()
-					->addUserToGroup( $oUser, $oGroup->getAttribute( 'name' ) );
+				$userGroupManager->addUserToGroup( $oUser, $oGroup->getAttribute( 'name' ) );
 			}
 
 			if ( $this->getOption( 'createuserpage', false ) ) {
@@ -129,7 +131,7 @@ class BSImportUsers extends BSMaintenance {
 					$this->error(
 						'Page ' . $oUser->getUserPage()->getPrefixedText()
 						. ' could not be created. Message: '
-						. $oEditStatus->getMessage()->plain()
+						. $oEditStatus->getMessage()->text()
 					);
 				}
 			}

@@ -33,7 +33,7 @@ class UsageTrackerUpdate extends BSMaintenance {
 	/**
 	 * @inheritDoc
 	 */
-	public function finalSetup( SettingsBuilder $settingsBuilder = null ) {
+	public function finalSetup( ?SettingsBuilder $settingsBuilder = null ) {
 		// @phan-suppress-next-line PhanParamTooMany temporary, see gerrit 757469
 		parent::finalSetup( $settingsBuilder );
 		$GLOBALS['wgMainCacheType'] = CACHE_NONE;

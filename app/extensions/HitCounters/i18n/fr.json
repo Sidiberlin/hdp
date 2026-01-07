@@ -1,10 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
+			"Funkytoast",
 			"Gomoko",
 			"Verdy p",
 			"Wladek92",
-			"Funkytoast",
 			"Mahabarata"
 		]
 	},
@@ -21,7 +21,9 @@
 	"hitcounters-statistics-views-total-desc": "Les consultations de pages inexistantes et des pages spéciales ne sont pas incluses",
 	"hitcounters-statistics-views-peredit": "Consultations par modification",
 	"hitcounters-statistics-mostpopular": "Pages les plus consultées",
-	"abusefilter-edit-builder-vars-page-views": "Consultations de pages",
-	"abusefilter-edit-builder-vars-movedfrom-views": "Consultations de pages sources",
-	"abusefilter-edit-builder-vars-movedto-views": "Consultations de pages cibles"
+	"abusefilter-edit-builder-vars-page-views": "Affichage de pages ($1)",
+	"abusefilter-edit-builder-vars-movedfrom-views": "Consultations de pages sources ($1)",
+	"abusefilter-edit-builder-vars-movedto-views": "Consultations de pages cibles ($1)",
+	"action-hitcounter-exempt": "exclure vos pages vues des statistiques",
+	"right-hitcounter-exempt": "Exclure vos pages vues des statistiques"
 }

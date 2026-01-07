@@ -2,10 +2,11 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface\Component;
 
-use Message;
+use HtmlArmor;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\ITreeNode;
 use MWStake\MediaWiki\Component\CommonUserInterface\ITreeTextNode;
-use RawMessage;
 
 class SimpleTreeTextNode extends ComponentBase implements ITreeNode, ITreeTextNode {
 
@@ -20,6 +21,7 @@ class SimpleTreeTextNode extends ComponentBase implements ITreeNode, ITreeTextNo
 			'role' => 'treeitem',
 			'text' => '',
 			'expanded' => false,
+			'preHtml' => new HtmlArmor( '' ),
 		], $options );
 	}
 
@@ -74,5 +76,12 @@ class SimpleTreeTextNode extends ComponentBase implements ITreeNode, ITreeTextNo
 	 */
 	public function getText(): Message {
 		return new RawMessage( $this->options['text'] );
+	}
+
+	/**
+	 * @return HtmlArmor
+	 */
+	public function getPreHtml(): HtmlArmor {
+		return $this->options['preHtml'];
 	}
 }

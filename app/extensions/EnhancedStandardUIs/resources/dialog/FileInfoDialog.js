@@ -67,12 +67,15 @@ ext.enhancedUI.dialog.FileInfoDialog.prototype.initialize = function () {
 
 	this.booklet.setPage( this.page );
 
+	// Aria label required for select widget container
+	this.booklet.$menu.find( '[role=listbox]' ).first().attr( 'aria-label',
+		mw.message( 'enhanced-standard-uis-filelist-dialog-booklet-page-select-aria-label' ).text() );
 	this.$body.append( this.booklet.$element );
 	this.updateSize();
 };
 
 ext.enhancedUI.dialog.FileInfoDialog.prototype.getSetupProcess = function ( data ) {
-	data = $.extend( data, {
+	data = Object.assign( data, {
 		title: this.fileName
 	} );
 	return ext.enhancedUI.dialog.FileInfoDialog.parent.prototype.getSetupProcess.call( this, data );
@@ -84,7 +87,7 @@ ext.enhancedUI.dialog.FileInfoDialog.prototype.getActionProcess = function ( act
 	).next(
 		function () {
 			if ( action === 'file' ) {
-				var filePageUrl = mw.util.getUrl( 'File:' + this.fileName );
+				const filePageUrl = mw.util.getUrl( 'File:' + this.fileName );
 				window.location.href = filePageUrl;
 			}
 			return ext.enhancedUI.dialog.FileInfoDialog.parent.prototype.getActionProcess.call(

@@ -1,6 +1,6 @@
 <?php
 
-namespace NSFileRepo;
+namespace MediaWiki\Extension\NSFileRepo;
 
 class MWNamespace implements \JsonSerializable {
 

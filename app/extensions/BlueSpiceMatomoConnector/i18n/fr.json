@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"JLTRY"
+		]
+	},
+	"bs-matomoconnector-extension-description": "Permet l'intégration de Matomo dans le wiki pour créer des tableaux de bord dans Matomo",
+	"bs-matomoconnector-pref-bsprivacyintegration": "Intégration de BlueSpicePrivacy",
+	"bs-matomoconnector-pref-bsprivacyintegration-help": "Activez l'intégration BlueSpicePrivacy. L'installation de Matomo nécessite l'activation du plugin AjaxOptOut. Voir docs/PrivacyIntegration.md",
+	"bs-matomoconnector-pref-siteid": "Identifiant de site",
+	"bs-matomoconnector-pref-siteid-help": "Identifiant du site Matomo. Il se trouve sous forme de paramètre URL dans la barre d'adresse du navigateur lorsque vous êtes connecté à Matomo.",
+	"bs-matomoconnector-pref-baseurl": "URL de base",
+	"bs-matomoconnector-pref-baseurl-help": "L'URL de racine de l'installation Matomo sans identifiant de site.",
+	"bs-matomoconnector-pref-authtoken": "Jeton d'authentification",
+	"bs-matomoconnector-pref-authtoken-help": "Le jeton d'authentification utilisé pour l'API HTTP. Il se trouve dans Matomo : Administration > Personnel > Sécurité > Jetons d'authentification.",
+	"bs-matomoconnector-pref-optoutfooter": "Afficher le lien de désinscription dans le pied de page",
+	"bs-matomoconnector-pref-optoutfooter-help": "Affiche le lien « Service d'analyse » dans le pied de page du wiki. La page du service d'analyse inclut une case à cocher pour désactiver Matomo.",
+	"bs-matomoconnector-special-optoutheading": "Service d'analyse",
+	"bs-matomoconnector-optout-footerlink": "Service d'analyse",
+	"bs-matomoconnector-privacy-cookie-group": "Matomo"
+}

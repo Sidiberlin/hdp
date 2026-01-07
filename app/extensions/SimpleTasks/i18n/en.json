@@ -9,6 +9,7 @@
 	"simple-tasks-task-desc": "Task created in page content",
 	"simple-tasks-notif-key": "Task assignment",
 	"simple-tasks-notif-message": "{{GENDER:$1|assigned}} a task to you: \"$1\"",
+	"simple-tasks-notif-message-with-due-date": "{{GENDER:$1|assigned}} a task to you: \"$1\". Task is due on $2",
 	"simple-tasks-taskreport-no-results": "No tasks found with selected filters",
 	"simple-tasks-taskreport-header-task": "Task",
 	"simple-tasks-taskreport-header-assignee": "Assignee",

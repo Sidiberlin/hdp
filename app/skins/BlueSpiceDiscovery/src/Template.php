@@ -4,9 +4,9 @@ namespace BlueSpice\Discovery;
 
 use BaseTemplate;
 use Exception;
-use ExtensionRegistry;
-use Html;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 use Wikimedia\ObjectFactory\ObjectFactory;
 
 /**
@@ -28,9 +28,6 @@ class Template extends BaseTemplate {
 			/* Output */
 			$this->html( 'headelement' );
 			echo $this->skinLayoutRenderer->getHtml();
-			$this->printTrail();
-			echo Html::closeElement( 'body' );
-			echo Html::closeElement( 'html' );
 		}
 	}
 

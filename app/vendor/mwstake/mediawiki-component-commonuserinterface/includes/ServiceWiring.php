@@ -1,5 +1,6 @@
 <?php
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
 use MWStake\MediaWiki\Component\CommonUserInterface\ComponentFilterFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\ComponentManager;

@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac",
+			"Okras"
+		]
+	},
+	"mergearticles-target-new-label": "Новая страница",
+	"mergearticles-type-file": "Файл",
+	"mergearticles-type-article": "Страница",
+	"mergearticles-type-template": "Шаблон",
+	"mergearticles-type-category": "Категория",
+	"mergearticles-request-invalid": "Неверный запрос",
+	"mergearticles-do-merge-label": "Объединить",
+	"mergearticles-file-layout-label": "Файл",
+	"mergearticles-diff-action-accept": "Утвердить",
+	"mergearticles-diff-action-refuse": "Отклонить",
+	"mergearticles-diff-refused": "Отклонено",
+	"mergearticles-diff-item-undo": "Отменить",
+	"mergearticles-discard-draft": "Удалить этот черновик",
+	"mergearticles-file-diff-header": "Файл",
+	"mergearticles-file-origin-header": "Черновик (новый)"
+}

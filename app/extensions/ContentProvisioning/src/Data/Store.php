@@ -2,12 +2,11 @@
 
 namespace MediaWiki\Extension\ContentProvisioning\Data;
 
-use Language;
+use MediaWiki\Language\Language;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Page\WikiPageFactory;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\DataStore\IStore;
-use TitleFactory;
-use Wikimedia\Rdbms\ILoadBalancer;
 
 class Store implements IStore {
 

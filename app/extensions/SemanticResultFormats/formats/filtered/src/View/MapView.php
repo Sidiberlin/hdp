@@ -4,7 +4,8 @@ namespace SRF\Filtered\View;
 
 use DataValues\Geo\Parsers\LatLongParser;
 use Exception;
-use SMWPropertyValue;
+use MediaWiki\MediaWikiServices;
+use SMW\DataValues\PropertyValue;
 use SRF\Filtered\ResultItem;
 
 class MapView extends View {
@@ -65,11 +66,12 @@ class MapView extends View {
 			$field->reset();
 
 			$value = $field->getNextDataItem();
-			if ( $printRequest->getData() instanceof SMWPropertyValue &&
+			if ( $printRequest->getData() instanceof PropertyValue &&
 				$printRequest->getData()->getInceptiveProperty()->getKey() === $markerPositionPropertyName &&
 				( $value instanceof \SMWDIGeoCoord || $value instanceof \SMWDIBlob )
 			) {
-				$values = []; // contains plain text
+				// contains plain text
+				$values = [];
 
 				if ( $value instanceof \SMWDIGeoCoord ) {
 
@@ -86,8 +88,7 @@ class MapView extends View {
 							$latlng = $coordParser->parse( $value->getSerialization() );
 							$values[] = [ 'lat' => $latlng->getLatitude(), 'lng' => $latlng->getLongitude() ];
 							$value = $field->getNextDataItem();
-						}
-						catch ( Exception $exception ) {
+						} catch ( Exception $exception ) {
 							$this->getQueryPrinter()->addError( "Error on '$value': " . $exception->getMessage() );
 						}
 					}
@@ -294,7 +295,6 @@ class MapView extends View {
 		$actualParameters = self::getActualParameters()['map view marker icons'];
 
 		foreach ( $actualParameters as $relation ) {
-
 			$relation = explode( '=', $relation, 2 );
 
 			if ( count( $relation ) === 1 ) {
@@ -305,7 +305,9 @@ class MapView extends View {
 				$icon = $relation[1];
 			}
 
-			$file = \WikiPage::factory( \Title::newFromText( $icon, NS_FILE ) )->getFile();
+			$file = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle(
+				\Title::newFromText( $icon, NS_FILE )
+			)->getFile();
 
 			if ( $file->exists() ) {
 				$ret[$key] = $file->getUrl();

@@ -3,6 +3,7 @@
 namespace BS\ExtendedSearch\Source\Formatter;
 
 use BS\ExtendedSearch\SearchResult;
+use MediaWiki\Registration\ExtensionRegistry;
 
 class FileFormatter extends Base {
 
@@ -28,13 +29,13 @@ class FileFormatter extends Base {
 	 */
 	protected function getImage( $resultData ) {
 		$mimeType = $resultData['mime_type'];
-		if ( strpos( $mimeType, 'image' ) === 0 ) {
+		if ( str_starts_with( $mimeType, 'image' ) ) {
 			// Show actual image
 			return $this->getActualImageUrl( $resultData );
 		}
 
 		$extension = strtolower( $resultData['extension'] );
-		$fileIcons = \ExtensionRegistry::getInstance()
+		$fileIcons = ExtensionRegistry::getInstance()
 			->getAttribute( 'BlueSpiceExtendedSearchIcons' );
 
 		$scriptPath = $this->getContext()->getConfig()->get( 'ScriptPath' );

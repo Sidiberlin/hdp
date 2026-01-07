@@ -9,7 +9,6 @@ body.mediawiki.x-body .x-btn-inner-default-toolbar-small {
 }
 
 /* fix for portlets */
-body.mediawiki.x-body
-.x-surface {
-    position: absolute;
+body.mediawiki.x-body .x-surface {
+	position: absolute;
 }

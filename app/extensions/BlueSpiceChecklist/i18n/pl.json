@@ -31,7 +31,5 @@
 	"bs-checklist-tag-checklist-tab-checkbox": "Pole wyboru",
 	"bs-checklist-tag-checklist-tab-list": "Lista",
 	"bs-checklist-tag-checklist-attr-value-label": "Wybrana opcja",
-	"bs-checklist-droplet-checklist-name": "Lista kontrolna",
-	"bs-checklist-tag-checklist-example-check": "Pole wyboru",
-	"bs-checklist-tag-checklist-example-list": "Wybierz menu"
+	"bs-checklist-droplet-checklist-name": "Lista kontrolna"
 }

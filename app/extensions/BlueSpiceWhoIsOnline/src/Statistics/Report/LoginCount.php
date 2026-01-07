@@ -4,7 +4,7 @@ namespace BlueSpice\WhoIsOnline\Statistics\Report;
 
 use BlueSpice\ExtendedStatistics\ClientReportHandler;
 use BlueSpice\ExtendedStatistics\IReport;
-use Message;
+use MediaWiki\Message\Message;
 
 class LoginCount implements IReport {
 

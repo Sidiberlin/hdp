@@ -43,7 +43,7 @@ class AddExpiryCreateEntry implements SkinTemplateNavigation__UniversalHook {
 			return;
 		}
 
-		$label = $sktemplate->msg( 'bs-expiry-menu-entry-create' )->plain();
+		$label = $sktemplate->msg( 'bs-expiry-menu-entry-create' )->text();
 		$expiry = Extension::getExpiryForPage( $sktemplate->getTitle()->getArticleID(), false );
 
 		if ( $expiry ) {

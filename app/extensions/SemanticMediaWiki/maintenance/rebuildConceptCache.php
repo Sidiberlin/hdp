@@ -2,6 +2,7 @@
 
 namespace SMW\Maintenance;
 
+use MediaWiki\Maintenance\Maintenance;
 use SMW\Services\ServicesFactory as ApplicationFactory;
 use SMW\Setup;
 use SMW\Utils\CliMsgFormatter;
@@ -9,11 +10,13 @@ use SMW\Utils\CliMsgFormatter;
 /**
  * Load the required class
  */
+// @codeCoverageIgnoreStart
 if ( getenv( 'MW_INSTALL_PATH' ) !== false ) {
 	require_once getenv( 'MW_INSTALL_PATH' ) . '/maintenance/Maintenance.php';
 } else {
 	require_once __DIR__ . '/../../../maintenance/Maintenance.php';
 }
+// @codeCoverageIgnoreEnd
 
 /**
  * Manage concept caches
@@ -63,13 +66,13 @@ if ( getenv( 'MW_INSTALL_PATH' ) !== false ) {
  *
  * @ingroup Maintenance
  *
- * @licence GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 1.9.2
  *
  * @author Markus Krötzsch
  * @author mwjames
  */
-class rebuildConceptCache extends \Maintenance {
+class rebuildConceptCache extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
@@ -102,7 +105,6 @@ class rebuildConceptCache extends \Maintenance {
 	 * @see Maintenance::execute
 	 */
 	public function execute() {
-
 		if ( $this->canExecute() !== true ) {
 			exit;
 		}
@@ -189,7 +191,6 @@ class rebuildConceptCache extends \Maintenance {
 	}
 
 	private function canExecute() {
-
 		if ( !Setup::isEnabled() ) {
 			return $this->reportMessage(
 				"\nYou need to have SMW enabled in order to run the maintenance script!\n"
@@ -207,9 +208,8 @@ class rebuildConceptCache extends \Maintenance {
 	}
 
 	private function checkForRebuildState( $rebuildResult ) {
-
 		if ( !$rebuildResult ) {
-			$this->reportMessage( "\n" . 'Use option --help for usage details.' . "\n"  );
+			$this->reportMessage( "\n" . 'Use option --help for usage details.' . "\n" );
 			return false;
 		}
 
@@ -218,5 +218,7 @@ class rebuildConceptCache extends \Maintenance {
 
 }
 
+// @codeCoverageIgnoreStart
 $maintClass = rebuildConceptCache::class;
-require_once ( RUN_MAINTENANCE_IF_MAIN );
+require_once RUN_MAINTENANCE_IF_MAIN;
+// @codeCoverageIgnoreEnd

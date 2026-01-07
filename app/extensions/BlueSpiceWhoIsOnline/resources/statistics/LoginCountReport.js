@@ -1,4 +1,4 @@
-(function ( mw, $, bs) {
+( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.whoisonline.report' );
 
 	bs.whoisonline.report.LoginCountReport = function ( cfg ) {
@@ -8,6 +8,8 @@
 	OO.inheritClass( bs.whoisonline.report.LoginCountReport, bs.aggregatedStatistics.report.ReportBase );
 
 	bs.whoisonline.report.LoginCountReport.static.label = mw.message( 'bs-whoisonline-statistics-report-login-number' ).text();
+
+	bs.whoisonline.report.LoginCountReport.static.desc = mw.message( 'bs-whoisonline-statistics-report-login-number-desc' ).text();
 
 	bs.whoisonline.report.LoginCountReport.prototype.getFilters = function () {
 		return [];
@@ -19,8 +21,8 @@
 
 	bs.whoisonline.report.LoginCountReport.prototype.getAxisLabels = function () {
 		return {
-			value: mw.message( "bs-whoisonline-statistics-report-login-number-axis-value" ).text()
+			value: mw.message( 'bs-whoisonline-statistics-report-login-number-axis-value' ).text()
 		};
 	};
 
-} )( mediaWiki, jQuery , blueSpice);
+}( mediaWiki, jQuery, blueSpice ) );

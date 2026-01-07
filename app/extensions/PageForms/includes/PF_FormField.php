@@ -5,6 +5,7 @@
  * @ingroup PF
  */
 
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -19,7 +20,7 @@ class PFFormField {
 	/**
 	 * @var PFTemplateField
 	 */
-	public $template_field;
+	private $template_field;
 	/**
 	 * @var array
 	 */
@@ -455,9 +456,6 @@ class PFFormField {
 						$value = $valuesSource . ':' . $value;
 					}
 				}
-				// Has to be set to false to not mess up the
-				// handling.
-				$f->mUseDisplayTitle = false;
 			}
 
 			$mappedValuesKey = json_encode( $f->mFieldArgs ) . $mappingType;
@@ -613,7 +611,8 @@ class PFFormField {
 				}
 				if ( trim( $template_instance_query_values[$fieldName] ) ) {
 					// Don't add the tag if field content has been removed.
-					$template_instance_query_values[$fieldName] = $tag . $template_instance_query_values[$fieldName];
+					$template_instance_query_values[$fieldName] = '<translate>' . $tag .
+						$template_instance_query_values[$fieldName] . '</translate>';
 				}
 			}
 			// If user has deleted some content, and there is some translate tag ("<!--T:X-->") with no content, remove the tag.
@@ -706,12 +705,9 @@ class PFFormField {
 			}
 			if ( !$form_submitted && $field_query_val != '' ) {
 				if ( is_array( $field_query_val ) ) {
-					$str = PFFormPrinter::getStringFromPassedInArray( $field_query_val, $delimiter );
-				} else {
-					$str = $field_query_val;
+					return PFFormPrinter::getStringFromPassedInArray( $field_query_val, $delimiter );
 				}
-				return str_replace( [ '<', '>' ], [ '&lt;', '&gt;' ], $str );
-
+				return $field_query_val;
 			}
 		}
 
@@ -1028,7 +1024,7 @@ class PFFormField {
 	 * @param array|null $default_args
 	 * @return array
 	 */
-	function getArgumentsForInputCall( array $default_args = null ) {
+	function getArgumentsForInputCall( ?array $default_args = null ) {
 		$parser = PFUtils::getParser();
 
 		// start with the arguments array already defined

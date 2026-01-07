@@ -13,7 +13,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Origineel",
 	"bs-visualeditorconnector-upload-type-simple": "Eenvoudig",
 	"bs-visualeditorconnector-upload-type-one-click": "Een klik",
-	"bs-visualeditorconnector-upload-type": "Uploadtype",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Bewerking annuleren",
 	"bs-visualeditorconnector-cancel-edit": "Bewerking annuleren. Niet-opgeslagen wijzigingen worden verwijderd",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Wilt u de bewerking echt annuleren? Uw niet-opgeslagen wijzigingen worden gewist.",
@@ -82,10 +81,16 @@
 	"bs-vec-table-border-dotted": "Gestippeld",
 	"bs-vec-table-border-double": "Dubbel",
 	"bs-vec-insert-softhyphen-title": "Zacht koppelteken",
-	"bs-visualeditorconnector-upload-type-help": "Oorspronkelijk: Er wordt gecontroleerd op uploadrechten. Bestandsnaam, naamruimte en categorie zijn te bewerken. Beschrijving is verplicht.\nEenvoudig: Er wordt niet gecontroleerd op uploadrechten. Bestandsnaam, naamruimte en categorie zijn te bewerken. Beschrijving is niet verplicht.\nEén klik: Er wordt niet gecontroleerd op uploadrechten. Bestandsnaam en categorie zijn niet te bewerken. De naamruimte is te bewerken.",
 	"bs-vec-insert-line-break-title": "Regeleinde (<br /> )",
 	"bs-visualeditorconnector-text-style-tool-align-center-label": "Midden uitlijnen",
 	"bs-visualeditorconnector-align-center-annotation-desc": "Centreert geselecteerde tekst",
 	"bs-visualeditorconnector-text-style-indent-label": "Inspringen",
-	"bs-visualeditorconnector-indent-annotation-desc": "Laat geselecteerde tekst inspringen"
+	"bs-visualeditorconnector-indent-annotation-desc": "Laat geselecteerde tekst inspringen",
+	"bs-visualeditor-save-label": "Opslaan",
+	"bs-visualeditorconnector-upload-type": "Uploadtype",
+	"bs-visualeditorconnector-upload-type-help": "Oorspronkelijk: Er wordt gecontroleerd op uploadrechten. Bestandsnaam, naamruimte en categorie zijn te bewerken. Beschrijving is verplicht.\nEenvoudig: Er wordt niet gecontroleerd op uploadrechten. Bestandsnaam, naamruimte en categorie zijn te bewerken. Beschrijving is niet verplicht.\nEén klik: Er wordt niet gecontroleerd op uploadrechten. Bestandsnaam en categorie zijn niet te bewerken. De naamruimte is te bewerken.",
+	"bs-visualeditorconnector-tab-file": "Koppeling naar bestand",
+	"bs-visualeditor-request-entity-too-large": "Het bestand is te groot om te uploaden.",
+	"bs-visualeditorconnector-dialog-table-title": "Tabel",
+	"bs-visualeditorconnector-dialog-action-insert": "Invoegen"
 }

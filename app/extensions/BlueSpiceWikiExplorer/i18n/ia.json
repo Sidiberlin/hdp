@@ -16,7 +16,6 @@
 	"bs-wikiexplorer-categories": "Categorias",
 	"bs-wikiexplorer-linked-files": "Files ligate",
 	"bs-wikiexplorer-linked-pages": "Paginas ligate",
-	"apihelp-bs-wikiexplorer-store-description": "Forni tote le datos pro le extension WikiExplorer",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "Parametro API pro indicar si le metadatos ha jam essite cargate.",
 	"apihelp-bs-wikiexplorer-store-summary": "Forni tote le datos pro le extension WikiExplorer",
 	"bs-wikiexplorer-icon-bool-true-aria-label": "marcate",

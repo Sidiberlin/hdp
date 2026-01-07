@@ -5,6 +5,11 @@ namespace BlueSpice\PageAssignments\Api\Task;
 use BlueSpice\PageAssignments\Event\AssignmentAddEvent;
 use BlueSpice\PageAssignments\Event\AssignmentRemoveEvent;
 use BlueSpice\PageAssignments\IAssignment;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Api\ApiMessage;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\Events\Notifier;
 
 class PageAssignments extends \BSApiTasksBase {
@@ -63,7 +68,7 @@ class PageAssignments extends \BSApiTasksBase {
 	/**
 	 * @inheritDoc
 	 */
-	public function __construct( \ApiMain $mainModule, $moduleName, $modulePrefix = '' ) {
+	public function __construct( ApiMain $mainModule, $moduleName, $modulePrefix = '' ) {
 		parent::__construct( $mainModule, $moduleName, $modulePrefix );
 	}
 
@@ -91,7 +96,7 @@ class PageAssignments extends \BSApiTasksBase {
 	 * @param array $params
 	 * @return \BlueSpice\Api\Response\Standard
 	 */
-	protected function task_edit( $taskData, $params ) {
+	protected function task_edit( $taskData, $params ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$result = $this->makeStandardReturn();
 
 		if ( empty( $taskData->pageId ) ) {
@@ -112,7 +117,7 @@ class PageAssignments extends \BSApiTasksBase {
 			);
 		if ( !empty( $permissionErrors ) ) {
 			foreach ( $permissionErrors as $error ) {
-				$result->message .= \ApiMessage::create(
+				$result->message .= ApiMessage::create(
 					$error,
 					null,
 					[ 'title' => $target->getTitle() ]
@@ -124,7 +129,7 @@ class PageAssignments extends \BSApiTasksBase {
 		$assignments = [];
 		foreach ( $taskData->pageAssignments as $id ) {
 			// 'user/WikiSysop' or 'group/bureaucrats'
-			list( $type, $key ) = explode( '/', $id );
+			[ $type, $key ] = explode( '/', $id );
 			if ( empty( $type ) || empty( $key ) ) {
 				continue;
 			}
@@ -179,7 +184,7 @@ class PageAssignments extends \BSApiTasksBase {
 	 * @param array $params
 	 * @return \BlueSpice\Api\Response\Standard
 	 */
-	protected function task_getForPage( $taskData, $params ) {
+	protected function task_getForPage( $taskData, $params ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$result = $this->makeStandardReturn();
 
 		if ( empty( $taskData->pageId ) ) {
@@ -221,7 +226,7 @@ class PageAssignments extends \BSApiTasksBase {
 		}
 
 		$user = $this->services->getUserFactory()->newFromName( $assignment->pa_assignee_key );
-		if ( $user instanceof \User === false ) {
+		if ( $user instanceof User === false ) {
 			return '';
 		}
 
@@ -239,7 +244,7 @@ class PageAssignments extends \BSApiTasksBase {
 	 */
 	protected function getAssigneeRealName( $assignment ) {
 		$user = $this->services->getUserFactory()->newFromName( $assignment->pa_assignee_key );
-		if ( $user instanceof \User === false ) {
+		if ( $user instanceof User === false ) {
 			return '';
 		}
 		$username = !empty( $user->getRealName() ) ? $user->getRealName() : $user->getName();
@@ -248,7 +253,7 @@ class PageAssignments extends \BSApiTasksBase {
 
 	/**
 	 *
-	 * @param \Title $title
+	 * @param Title $title
 	 * @param IAssignment[] $addedAssignments
 	 * @param IAssignment[] $removedAssignments
 	 */
@@ -271,7 +276,7 @@ class PageAssignments extends \BSApiTasksBase {
 
 	/**
 	 *
-	 * @param \Title $title
+	 * @param Title $title
 	 * @param array $addedAssignments
 	 * @param array $removedAssignments
 	 * @return bool
@@ -333,27 +338,27 @@ class PageAssignments extends \BSApiTasksBase {
 	/**
 	 *
 	 * @param int $pageId
-	 * @return \Status
+	 * @return Status
 	 */
 	protected function getTargetFromID( $pageId ) {
-		$title = \Title::newFromID( $pageId );
+		$title = Title::newFromID( $pageId );
 		if ( !$title || !$title->exists() ) {
-			return \Status::newFatal( 'bs-pageassignments-api-error-no-page' );
+			return Status::newFatal( 'bs-pageassignments-api-error-no-page' );
 		}
 		return $this->getTargetFromTitle( $title );
 	}
 
 	/**
 	 *
-	 * @param \Title $title
-	 * @return \Status
+	 * @param Title $title
+	 * @return Status
 	 */
-	protected function getTargetFromTitle( \Title $title ) {
+	protected function getTargetFromTitle( Title $title ) {
 		$target = $this->getFactory()->newFromTargetTitle( $title );
 		if ( !$target ) {
-			return \Status::newFatal( 'bs-pageassignments-api-error-no-page' );
+			return Status::newFatal( 'bs-pageassignments-api-error-no-page' );
 		}
-		return \Status::newGood( $target );
+		return Status::newGood( $target );
 	}
 
 	/**

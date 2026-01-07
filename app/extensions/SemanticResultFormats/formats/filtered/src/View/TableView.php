@@ -14,8 +14,7 @@ namespace SRF\Filtered\View;
 use Html;
 use Message;
 use SMW\Query\PrintRequest;
-use SMWPrintRequest;
-use SMWResultArray;
+use SMW\Query\Result\ResultArray;
 use SRF\Filtered\ResultItem;
 use Xml;
 
@@ -63,8 +62,8 @@ class TableView extends View {
 		$resultText = '';
 		$this->columnClasses = [];
 
-		// Table Header
-		if ( $this->mShowHeaders !== SMW_HEADERS_HIDE ) { // no headers when headers=hide
+		// Table Header, no headers when headers=hide
+		if ( $this->mShowHeaders !== SMW_HEADERS_HIDE ) {
 			$resultText .= $this->getTableHeaders();
 		}
 
@@ -185,13 +184,13 @@ class TableView extends View {
 	 *
 	 * @since 1.6.1
 	 *
-	 * @param SMWResultArray $resultArray
+	 * @param ResultArray $resultArray
 	 * @param $outputmode
 	 * @param string | null $columnClass
 	 *
 	 * @return string
 	 */
-	protected function getCellForPropVals( SMWResultArray $resultArray, $outputmode, $columnClass ) {
+	protected function getCellForPropVals( ResultArray $resultArray, $outputmode, $columnClass ) {
 		$resultArray->reset();
 
 		$dataValues = [];
@@ -223,7 +222,7 @@ class TableView extends View {
 			$content = $this->getCellContent(
 				$dataValues,
 				$outputmode,
-				$resultArray->getPrintRequest()->getMode() === SMWPrintRequest::PRINT_THIS
+				$resultArray->getPrintRequest()->getMode() === PrintRequest::PRINT_THIS
 			);
 		}
 

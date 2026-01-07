@@ -13,7 +13,9 @@ use Wikimedia\CSS\Sanitizer\PropertySanitizer;
 
 /**
  * Factory for predefined Grammar matchers
- * @note For security, the attr() and var() functions are not supported.
+ * @note For security, the attr() and var() functions are not supported,
+ * although as a limited exception var() is allowed for color attributes
+ * in `::colorFuncs()`.
  */
 class MatcherFactory {
 	/** @var MatcherFactory|null */
@@ -274,6 +276,15 @@ class MatcherFactory {
 			} );
 		}
 		return $this->cache[__METHOD__];
+	}
+
+	/**
+	 * @return TokenMatcher
+	 */
+	public function colorHex(): TokenMatcher {
+		return new TokenMatcher( Token::T_HASH, static function ( Token $t ) {
+			return preg_match( '/^([0-9a-f]{3}|[0-9a-f]{6})$/i', $t->value() );
+		} );
 	}
 
 	/**
@@ -597,60 +608,60 @@ class MatcherFactory {
 	}
 
 	/**
-	 * Matcher for a color value
-	 * @see https://www.w3.org/TR/2018/REC-css-color-3-20180619/#colorunits
+	 * Matcher for a color value, *not* including a custom property reference.
+	 *
+	 * Because custom properties can lead to unexpected behavior (generally
+	 * a bad thing for security) when concatenated together, this matcher
+	 * should be used for CSS rules which allow value concatenation.
+	 * For example, `border-color` allows up to 4 `var(...)` expressions to
+	 * potentially be concatenated.
+	 *
+	 * @see https://www.w3.org/TR/2022/CR-css-variables-1-20220616/#custom-property
+	 * @return Matcher
+	 */
+	public function safeColor() {
+		if ( !isset( $this->cache[__METHOD__] ) ) {
+			$this->cache[__METHOD__] = new Alternative( array_merge( [
+				$this->colorWords(),
+				$this->colorHex(),
+			], $this->colorFuncs() ) );
+		}
+		return $this->cache[__METHOD__];
+	}
+
+	/**
+	 * Matcher for a color value, including a possible custom property
+	 * reference and light-dark color function.
+	 *
+	 * Follows:
+	 * * https://www.w3.org/TR/2018/REC-css-color-3-20180619/#colorunits
+	 * * https://www.w3.org/TR/css-variables-1/
+	 * * https://www.w3.org/TR/2024/WD-css-color-5-20240229/#funcdef-light-dark
+	 *
 	 * @return Matcher
 	 */
 	public function color() {
 		if ( !isset( $this->cache[__METHOD__] ) ) {
-			$this->cache[__METHOD__] = new Alternative( array_merge( [
-				new KeywordMatcher( [
-					// Basic colors
-					'aqua', 'black', 'blue', 'fuchsia', 'gray', 'green',
-					'lime', 'maroon', 'navy', 'olive', 'purple', 'red',
-					'silver', 'teal', 'white', 'yellow',
-					// Extended colors
-					'aliceblue', 'antiquewhite', 'aquamarine', 'azure',
-					'beige', 'bisque', 'blanchedalmond', 'blueviolet', 'brown',
-					'burlywood', 'cadetblue', 'chartreuse', 'chocolate',
-					'coral', 'cornflowerblue', 'cornsilk', 'crimson', 'cyan',
-					'darkblue', 'darkcyan', 'darkgoldenrod', 'darkgray',
-					'darkgreen', 'darkgrey', 'darkkhaki', 'darkmagenta',
-					'darkolivegreen', 'darkorange', 'darkorchid', 'darkred',
-					'darksalmon', 'darkseagreen', 'darkslateblue',
-					'darkslategray', 'darkslategrey', 'darkturquoise',
-					'darkviolet', 'deeppink', 'deepskyblue', 'dimgray',
-					'dimgrey', 'dodgerblue', 'firebrick', 'floralwhite',
-					'forestgreen', 'gainsboro', 'ghostwhite', 'gold',
-					'goldenrod', 'greenyellow', 'grey', 'honeydew', 'hotpink',
-					'indianred', 'indigo', 'ivory', 'khaki', 'lavender',
-					'lavenderblush', 'lawngreen', 'lemonchiffon', 'lightblue',
-					'lightcoral', 'lightcyan', 'lightgoldenrodyellow',
-					'lightgray', 'lightgreen', 'lightgrey', 'lightpink',
-					'lightsalmon', 'lightseagreen', 'lightskyblue',
-					'lightslategray', 'lightslategrey', 'lightsteelblue',
-					'lightyellow', 'limegreen', 'linen', 'magenta',
-					'mediumaquamarine', 'mediumblue', 'mediumorchid',
-					'mediumpurple', 'mediumseagreen', 'mediumslateblue',
-					'mediumspringgreen', 'mediumturquoise', 'mediumvioletred',
-					'midnightblue', 'mintcream', 'mistyrose', 'moccasin',
-					'navajowhite', 'oldlace', 'olivedrab', 'orange',
-					'orangered', 'orchid', 'palegoldenrod', 'palegreen',
-					'paleturquoise', 'palevioletred', 'papayawhip',
-					'peachpuff', 'peru', 'pink', 'plum', 'powderblue',
-					'rosybrown', 'royalblue', 'saddlebrown', 'salmon',
-					'sandybrown', 'seagreen', 'seashell', 'sienna', 'skyblue',
-					'slateblue', 'slategray', 'slategrey', 'snow',
-					'springgreen', 'steelblue', 'tan', 'thistle', 'tomato',
-					'turquoise', 'violet', 'wheat', 'whitesmoke',
-					'yellowgreen',
-					// Other keywords. Intentionally omitting the deprecated system colors.
-					'transparent', 'currentColor',
-				] ),
-				new TokenMatcher( Token::T_HASH, static function ( Token $t ) {
-					return preg_match( '/^([0-9a-f]{3}|[0-9a-f]{6})$/i', $t->value() );
-				} ),
-			], $this->colorFuncs() ) );
+			$this->cache[__METHOD__] = new Alternative( [
+				$this->safeColor(),
+				new FunctionMatcher( 'var', new Juxtaposition( [
+						new CustomPropertyMatcher(),
+						Quantifier::optional( new Alternative( [
+							$this->colorWords(),
+							$this->colorHex(),
+						] ) ),
+				], true ) ),
+				new FunctionMatcher( 'light-dark', new Juxtaposition( [
+						new Alternative( [
+							$this->colorWords(),
+							$this->colorHex(),
+						] ),
+						new Alternative( [
+							$this->colorWords(),
+							$this->colorHex(),
+						] ),
+				], true ) ),
+			] );
 		}
 		return $this->cache[__METHOD__];
 	}
@@ -793,6 +804,8 @@ class MatcherFactory {
 	/**
 	 * Matcher for a CSS media query
 	 * @see https://www.w3.org/TR/2017/CR-mediaqueries-4-20170905/#mq-syntax
+	 * Level 5 accessibility queries are also supported
+	 * @see https://drafts.csswg.org/mediaqueries-5/#mf-user-preferences
 	 * @param bool $strict Only allow defined query types
 	 * @return Matcher
 	 */
@@ -815,7 +828,9 @@ class MatcherFactory {
 				];
 				$discreteFeatures = [
 					'orientation', 'scan', 'grid', 'update', 'overflow-block', 'overflow-inline', 'color-gamut',
-					'pointer', 'hover', 'any-pointer', 'any-hover', 'scripting'
+					'pointer', 'hover', 'any-pointer', 'any-hover', 'scripting', 'prefers-color-scheme',
+					'prefers-reduced-motion', 'prefers-reduced-transparency',
+					'prefers-contrast', 'forced-colors'
 				];
 				$mfName = new KeywordMatcher( array_merge(
 					$rangeFeatures,
@@ -857,6 +872,7 @@ class MatcherFactory {
 				$this->number(),
 				$this->dimension(),
 				$this->ident(),
+				new KeywordMatcher( [ 'light', 'dark' ] ),
 				new Juxtaposition( [ $posInt, new DelimMatcher( '/' ), $posInt ] ),
 			] );
 
@@ -938,7 +954,7 @@ class MatcherFactory {
 	 * @return Matcher
 	 */
 	public function cssSupportsCondition(
-		PropertySanitizer $declarationSanitizer = null, $strict = true
+		?PropertySanitizer $declarationSanitizer = null, $strict = true
 	) {
 		$ws = $this->significantWhitespace();
 		$anythingPlus = new AnythingMatcher( [ 'quantifier' => '+' ] );
@@ -979,7 +995,7 @@ class MatcherFactory {
 	 * @param PropertySanitizer|null $declarationSanitizer Check declarations against this Sanitizer
 	 * @return Matcher
 	 */
-	public function cssDeclaration( PropertySanitizer $declarationSanitizer = null ) {
+	public function cssDeclaration( ?PropertySanitizer $declarationSanitizer = null ) {
 		$anythingPlus = new AnythingMatcher( [ 'quantifier' => '+' ] );
 
 		return new CheckedMatcher(
@@ -1322,6 +1338,7 @@ class MatcherFactory {
 	 * following sources:
 	 * - https://www.w3.org/TR/2018/REC-selectors-3-20181106/#pseudo-classes
 	 * - https://www.w3.org/TR/2019/WD-css-pseudo-4-20190225/
+	 * - https://www.w3.org/TR/2022/WD-selectors-4-20221111/#the-dir-pseudo
 	 *
 	 * @return Matcher
 	 */
@@ -1330,6 +1347,7 @@ class MatcherFactory {
 			$colon = new TokenMatcher( Token::T_COLON );
 			$ows = $this->optionalWhitespace();
 			$anplusb = new Juxtaposition( [ $ows, $this->cssANplusB(), $ows ] );
+			$dirValues = new KeywordMatcher( [ 'ltr', 'rtl' ] );
 			$this->cache[__METHOD__] = new Alternative( [
 				new Juxtaposition( [
 					$colon,
@@ -1342,6 +1360,7 @@ class MatcherFactory {
 							'first-line', 'first-letter', 'before', 'after',
 						] ),
 						new FunctionMatcher( 'lang', new Juxtaposition( [ $ows, $this->ident(), $ows ] ) ),
+						new FunctionMatcher( 'dir', new Juxtaposition( [ $ows, $dirValues, $ows ] ) ),
 						new FunctionMatcher( 'nth-child', $anplusb ),
 						new FunctionMatcher( 'nth-last-child', $anplusb ),
 						new FunctionMatcher( 'nth-of-type', $anplusb ),
@@ -1466,6 +1485,55 @@ class MatcherFactory {
 			$this->cache[__METHOD__]->setDefaultOptions( [ 'skip-whitespace' => false ] );
 		}
 		return $this->cache[__METHOD__];
+	}
+
+	/**
+	 * @return KeywordMatcher
+	 */
+	public function colorWords(): KeywordMatcher {
+		return new KeywordMatcher( [
+			// Basic colors
+			'aqua', 'black', 'blue', 'fuchsia', 'gray', 'green',
+			'lime', 'maroon', 'navy', 'olive', 'purple', 'red',
+			'silver', 'teal', 'white', 'yellow',
+			// Extended colors
+			'aliceblue', 'antiquewhite', 'aquamarine', 'azure',
+			'beige', 'bisque', 'blanchedalmond', 'blueviolet', 'brown',
+			'burlywood', 'cadetblue', 'chartreuse', 'chocolate',
+			'coral', 'cornflowerblue', 'cornsilk', 'crimson', 'cyan',
+			'darkblue', 'darkcyan', 'darkgoldenrod', 'darkgray',
+			'darkgreen', 'darkgrey', 'darkkhaki', 'darkmagenta',
+			'darkolivegreen', 'darkorange', 'darkorchid', 'darkred',
+			'darksalmon', 'darkseagreen', 'darkslateblue',
+			'darkslategray', 'darkslategrey', 'darkturquoise',
+			'darkviolet', 'deeppink', 'deepskyblue', 'dimgray',
+			'dimgrey', 'dodgerblue', 'firebrick', 'floralwhite',
+			'forestgreen', 'gainsboro', 'ghostwhite', 'gold',
+			'goldenrod', 'greenyellow', 'grey', 'honeydew', 'hotpink',
+			'indianred', 'indigo', 'ivory', 'khaki', 'lavender',
+			'lavenderblush', 'lawngreen', 'lemonchiffon', 'lightblue',
+			'lightcoral', 'lightcyan', 'lightgoldenrodyellow',
+			'lightgray', 'lightgreen', 'lightgrey', 'lightpink',
+			'lightsalmon', 'lightseagreen', 'lightskyblue',
+			'lightslategray', 'lightslategrey', 'lightsteelblue',
+			'lightyellow', 'limegreen', 'linen', 'magenta',
+			'mediumaquamarine', 'mediumblue', 'mediumorchid',
+			'mediumpurple', 'mediumseagreen', 'mediumslateblue',
+			'mediumspringgreen', 'mediumturquoise', 'mediumvioletred',
+			'midnightblue', 'mintcream', 'mistyrose', 'moccasin',
+			'navajowhite', 'oldlace', 'olivedrab', 'orange',
+			'orangered', 'orchid', 'palegoldenrod', 'palegreen',
+			'paleturquoise', 'palevioletred', 'papayawhip',
+			'peachpuff', 'peru', 'pink', 'plum', 'powderblue',
+			'rosybrown', 'royalblue', 'saddlebrown', 'salmon',
+			'sandybrown', 'seagreen', 'seashell', 'sienna', 'skyblue',
+			'slateblue', 'slategray', 'slategrey', 'snow',
+			'springgreen', 'steelblue', 'tan', 'thistle', 'tomato',
+			'turquoise', 'violet', 'wheat', 'whitesmoke',
+			'yellowgreen',
+			// Other keywords. Intentionally omitting the deprecated system colors.
+			'transparent', 'currentColor',
+		] );
 	}
 
 	/** @} */

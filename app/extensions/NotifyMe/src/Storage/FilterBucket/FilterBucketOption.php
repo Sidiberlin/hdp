@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\NotifyMe\Storage\FilterBucket;
 
-use Message;
+use MediaWiki\Message\Message;
 
 class FilterBucketOption {
 

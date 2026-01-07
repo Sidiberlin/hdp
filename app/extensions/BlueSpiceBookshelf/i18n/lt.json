@@ -14,7 +14,6 @@
 	"bs-bookshelf-tag-next": "Kitas",
 	"bs-bookshelf-tag-prev": "Ankstesnis",
 	"bs-bookshelf-tag-edit-book": "Redaguoti knygą",
-	"bs-bookshelf-personal-books-page-prefix": "$1/Knygos/",
 	"bs-bookshelf-add-to-book-label": "Pridėti prie knygos",
 	"bs-bookshelf-add-to-book-label-book": "Knyga",
 	"bs-bookshelf-add-to-book-label-alias": "Kiti vardai",
@@ -22,9 +21,7 @@
 	"bs-bookshelf-setting-path-feature": "Knyga",
 	"bs-bookshelf-empty-selection": "Nieko nepasirinkta",
 	"bs-bookshelf-pref-titledisplaytext-help": "Rodo pavadinimą iš knygos naršymo kaip puslapio pavadinimą, o ne puslapio pavadinimą.",
-	"bs-bookshelf-grouping-template-type-local_storage": "Laikinos knygos",
 	"bs-bookshelf-grouping-template-type-ns_book": "Bendrosios knygos",
-	"bs-bookshelf-grouping-template-type-user_book": "Nuosavos knygos",
 	"bs-bookshelf-action-editbook": "Redaguoti šaltinį",
 	"bs-bookshelf-action-editbook-create": "Redaguoti šaltinį",
 	"bs-bookshelf-action-export-book": "Eksportuoti knygą",
@@ -36,10 +33,7 @@
 	"bookshelf": "Knygų lentyna",
 	"bookshelf-summary": "Bendrosios knygos",
 	"prefs-bookshelf": "Specialus knygų lentynos puslapis",
-	"bs-bookshelf-ga-manager-label": "Knygos",
-	"bs-bookshelf-prof-defaultview": "Numatytasis vaizdas",
-	"bs-bookshelf-prof-defaultview-grid": "Tinklelis",
-	"bs-bookshelf-prof-defaultview-images": "Paveikslėliai",
+	"bs-bookshelf-mainlinks-label": "Knygos",
 	"right-bookshelf-viewspecialpage": "Pasiekti specialų puslapį [[Special:Bookshelf]]",
 	"action-bookshelf-viewspecialpage": "pasiekti specialų puslapį [[Special:Bookshelf]]",
 	"bs-bookshelf-action-save-to-local-storage": "Išsaugoma vietinėje saugykloje",
@@ -58,6 +52,5 @@
 	"bs-bookshelf-ve-bookshelfinspector-title": "Knygų lentyna",
 	"bs-bookshelf-ve-bookshelf-attr-book-label": "Knyga",
 	"bs-bookshelf-ve-bookshelf-attr-book-help": "Nurodo, kuriai knygai priklauso puslapiai",
-	"bs-bookshelf-droplet-name": "Knygų sąrašas",
-	"bs-bookshelf-mainlinks-label": "Knygos"
+	"bs-bookshelf-droplet-name": "Knygų sąrašas"
 }

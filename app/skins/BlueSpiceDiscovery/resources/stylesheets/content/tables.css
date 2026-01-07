@@ -2,13 +2,13 @@ table {
 	caption-side: top;
 	border-collapse: collapse;
 	/* 0.875 * 16px = 14px */
-	font-size:calc(0.9333 * var(--content-font-size));
+	font-size: calc( 0.9333 * var( --content-font-size ) );
 	overflow-x: auto;
 	word-break: normal;
 }
 
 caption {
-	color: var(--font-color-secondary);
+	color: var( --font-color-secondary );
 	padding: 0.5rem 0;
 	text-align: left;
 	display: table-caption;
@@ -26,6 +26,7 @@ div.responsive-table-scrollable::-webkit-scrollbar {
 	height: 8px;
 	border-radius: 5px;
 }
+
 div.responsive-table-scrollable::-webkit-scrollbar-thumb {
 	background-color: #d8d8d9;
 	border-radius: 5px;

@@ -15,15 +15,13 @@
 	"bs-expiry-date-label": "Vanhentuu",
 	"bs-expiry-article-label": "Sivu",
 	"bs-expiry-comment-label": "Kommentti",
-	"bs-expiry-flyout-next-comment": "Kommentti: $1",
+	"bs-expiry-info-dialog-comment": "Kommentti: $1",
 	"bs-expiry-edit-grid-header-username": "Käyttäjä",
 	"bs-expiry-pageinfoelement-expired-label": "vanhentunut",
 	"bs-expiry-pageinfoelement-expired-tooltip": "Tämä sivu on vanhentunut",
-	"notification-bs-expiry-today-subject": "Sivu \"$1\" on vanhentunut",
 	"bs-expiry-error-invalid-date": "Virheellinen päiväys",
 	"bs-expiry-dialog-create-reminder-prompt": "Haluatko luoda muistutuksen tälle sivulle?",
 	"bs-expiry-dialog-create-reminder-title": "Luo muistutus",
 	"bs-expiry-dialog-action-no": "Ei",
-	"logentry-bs-expiry-expired": "Sivu $3 on vanhentunut",
-	"bs-expiry-info-dialog-comment": "Kommentti: $1"
+	"logentry-bs-expiry-expired": "Sivu $3 on vanhentunut"
 }

@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.dm' );
 
-bs.vec.dm.ColorAnnotation = function( element, store ) {
+bs.vec.dm.ColorAnnotation = function ( element, store ) {
 	// Parent constructor
 	bs.vec.dm.ColorAnnotation.super.apply( this, [ element, store ] );
 
@@ -20,17 +20,17 @@ bs.vec.dm.ColorAnnotation.static.name = 'textStyle/color';
 bs.vec.dm.ColorAnnotation.static.matchTagNames = [ 'span' ];
 
 bs.vec.dm.ColorAnnotation.static.matchFunction = function ( element ) {
-	let textColors = bs.vec.config.get( 'ColorPickerColors' );
-	let bgColors = bs.vec.config.get( 'ColorPickerColorsBackground' );
-	let colorClasses = textColors.concat( bgColors );
+	const textColors = bs.vec.config.get( 'ColorPickerColors' );
+	const bgColors = bs.vec.config.get( 'ColorPickerColorsBackground' );
+	const colorClasses = textColors.concat( bgColors );
 	for ( let i = 0; i < colorClasses.length; i++ ) {
-		let className = colorClasses[i].class;
+		const className = colorClasses[ i ].class;
 		if ( element.classList.contains( className ) ) {
 			return true;
 		}
 	}
 
-	let colorCode = this.getCodeFromElement( element );
+	const colorCode = this.getCodeFromElement( element );
 	if ( colorCode !== '' ) {
 		return true;
 	}
@@ -43,22 +43,22 @@ bs.vec.dm.ColorAnnotation.static.toDataElement = function ( domElements ) {
 	return {
 		type: this.name,
 		attributes: {
-			'class': domElements[ 0 ].getAttribute( 'class' ) || '',
+			class: domElements[ 0 ].getAttribute( 'class' ) || '',
 			code: this.getCodeFromElement( domElements[ 0 ] ),
 			style: domElements[ 0 ].getAttribute( 'style' ) || ''
 		}
 	};
 };
 
-bs.vec.dm.ColorAnnotation.static.getCodeFromElement = function( el ) {
-	var style, props, prop, i, propBits, val, propName;
-	style = el.getAttribute( 'style' );
+bs.vec.dm.ColorAnnotation.static.getCodeFromElement = function ( el ) {
+	let prop, i, propBits, val, propName;
+	const style = el.getAttribute( 'style' );
 	if ( !style ) {
 		return '';
 	}
-	props = style.split( ';' );
-	for( i = 0; i < props.length; i++ ) {
-		prop = props[i].trim();
+	const props = style.split( ';' );
+	for ( i = 0; i < props.length; i++ ) {
+		prop = props[ i ].trim();
 		if ( prop === '' ) {
 			continue;
 		}
@@ -76,7 +76,7 @@ bs.vec.dm.ColorAnnotation.static.getCodeFromElement = function( el ) {
 };
 
 bs.vec.dm.ColorAnnotation.static.toDomElements = function ( dataElement, doc ) {
-	var domElement = doc.createElement( 'span' );
+	const domElement = doc.createElement( 'span' );
 	if ( dataElement.attributes.class ) {
 		domElement.setAttribute( 'class', dataElement.attributes.class );
 	}
@@ -96,7 +96,7 @@ bs.vec.dm.ColorAnnotation.static.toDomElements = function ( dataElement, doc ) {
 bs.vec.dm.ColorAnnotation.prototype.getComparableObject = function () {
 	return {
 		type: this.name,
-		'class': this.getAttribute( 'class' ),
+		class: this.getAttribute( 'class' ),
 		style: this.getAttribute( 'style' )
 	};
 };
@@ -105,11 +105,11 @@ bs.vec.dm.ColorAnnotation.prototype.getComparableObject = function () {
  * Hash must be unique for each combination of values, otherwise,
  * annotations will be re-used instead of creating new ones
  *
- * @returns object
+ * @return {Object}
  */
 bs.vec.dm.ColorAnnotation.prototype.getHashObject = function () {
-	var hash, attr = {};
-	hash = this.constructor.static.getHashObject( this.element );
+	const attr = {};
+	const hash = this.constructor.static.getHashObject( this.element );
 	if ( this.colorData.hasOwnProperty( 'code' ) ) {
 		attr.code = this.colorData.code;
 	}

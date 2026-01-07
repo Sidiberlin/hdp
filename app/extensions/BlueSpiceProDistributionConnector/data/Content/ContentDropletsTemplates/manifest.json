@@ -3,25 +3,30 @@
 		"lang": "en",
 		"target_title": "Template:Decision",
 		"content_path": "/pages/Template/Decision.wiki",
-		"sha1": "b8cb87f838928090f23e903499cf6ff0af1b3232",
-		"old_sha1": []
+		"sha1": "aec79acd9ed2248c01d833edfc3b1a480395ad9e",
+		"old_sha1": [
+			"b8cb87f838928090f23e903499cf6ff0af1b3232"
+		]
 	},
 	"Template:Decision/styles.css": {
 		"lang": "en",
 		"target_title": "Template:Decision/styles.css",
 		"content_path": "/pages/Template/Decisionstyles.css.wiki",
-		"sha1": "1a88e7cd426ca084a799dbc353cddb5715bb3e4a",
-		"old_sha1": []
+		"sha1": "5d31441da40570225443673aea869f7293a6059b",
+		"old_sha1": [
+			"1a88e7cd426ca084a799dbc353cddb5715bb3e4a"
+		]
 	},
 	"Template:ModalDialog": {
 		"lang": "en",
 		"target_title": "Template:ModalDialog",
 		"content_path": "/pages/Template/ModalDialog.wiki",
-		"sha1": "b9b8450a094d368882c13fa132df041b5ac8052e",
+		"sha1": "34a351617db17eacbc693232f7b6687f6364f045",
 		"old_sha1": [
 			"5ceed40b0f55388c9231b3435c5ea8dd64891169",
 			"8a04e4d08a43a9fa51817638fdb2ad739f9fa508",
-			"1795ba79c6d51fa427a965b9fcd0cbdc4a8a1725"
+			"1795ba79c6d51fa427a965b9fcd0cbdc4a8a1725",
+			"b9b8450a094d368882c13fa132df041b5ac8052e"
 		]
 	},
 	"Template:ProConList": {

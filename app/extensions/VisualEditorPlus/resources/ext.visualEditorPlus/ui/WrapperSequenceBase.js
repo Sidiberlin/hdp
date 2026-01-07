@@ -6,7 +6,7 @@ ext.visualEditorPlus.ui.WrapperSequenceBase = function ExtVisualEditorPlusUiWrap
 	ext.visualEditorPlus.ui.WrapperSequenceBase.super.apply( this, [
 		this.wrapperSequenceName,
 		this.wrapperCommandName,
-		new RegExp( this.wrapperWrapChar + '.*?' + this.wrapperWrapChar + '.' ),
+		new RegExp( '\\s' + this.wrapperWrapChar + '.*?' + this.wrapperWrapChar + '\\s' ),
 		undefined,
 		{
 			setSelection: true
@@ -16,22 +16,21 @@ ext.visualEditorPlus.ui.WrapperSequenceBase = function ExtVisualEditorPlusUiWrap
 OO.inheritClass( ext.visualEditorPlus.ui.WrapperSequenceBase, ve.ui.Sequence );
 
 ext.visualEditorPlus.ui.WrapperSequenceBase.prototype.execute = function ( surface, range ) {
-	var surfaceModel = surface.getModel();
-	var firstBackTickRange = new ve.Range( range.start, range.start + 1 );
-	var lastBackTickRange = new ve.Range( range.end - 2, range.end - 1 );
+	const surfaceModel = surface.getModel(),
+		firstWrapperRange = new ve.Range( range.start + 1, range.start + 2 ),
+		lastWrapperRange = new ve.Range( range.end - 3, range.end - 1 ),
 
-	var firstBackTickFragment = surfaceModel.getLinearFragment( firstBackTickRange, true, true );
-	var lastBackTickFragment = surfaceModel.getLinearFragment( lastBackTickRange, true, true );
+		firstWrapperFragment = surfaceModel.getLinearFragment( firstWrapperRange, true, true );
+	firstWrapperFragment.removeContent();
+	const lastWrapperFragment = surfaceModel.getLinearFragment( lastWrapperRange, true, true );
+	lastWrapperFragment.removeContent();
 
-	firstBackTickFragment.removeContent();
-	lastBackTickFragment.removeContent();
+	range = new ve.Range( range.start + 1, range.end - 3 );
+	const parentReturn = ext.visualEditorPlus.ui.WrapperSequenceBase.super.prototype.execute.apply( this, arguments ),
 
-	range = new ve.Range( range.start, range.end - 3 );
-	var parentReturn = ext.visualEditorPlus.ui.WrapperSequenceBase.super.prototype.execute.apply( this, arguments );
-
-	var newSelection = surfaceModel.getSelection().collapseToEnd();
-	var newRange = newSelection.getRange();
-	var newFragment = surfaceModel.getLinearFragment( newRange, true, true );
+		newSelection = surfaceModel.getSelection().collapseToEnd(),
+		newRange = newSelection.getRange(),
+		newFragment = surfaceModel.getLinearFragment( newRange, true, true );
 
 	newFragment.insertContent( ' ' ).collapseToEnd().select();
 

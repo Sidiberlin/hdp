@@ -27,6 +27,8 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 abstract class BsAdapterAjaxPingResult extends Hook {
 
@@ -103,8 +105,8 @@ abstract class BsAdapterAjaxPingResult extends Hook {
 	}
 
 	/**
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param string $reference
 	 * @param array $params
 	 * @param int $articleId

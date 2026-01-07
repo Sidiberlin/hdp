@@ -3,22 +3,20 @@
 namespace SMW\MediaWiki\Hooks;
 
 use File;
-use Hooks;
 use MediaWiki\HookContainer\HookContainer;
-use ParserOptions;
-use SMW\Services\ServicesFactory as ApplicationFactory;
-use SMW\Localizer;
-use SMW\NamespaceExaminer;
-use Title;
-use User;
+use MediaWiki\Parser\ParserOptions;
+use MediaWiki\User\User;
+use SMW\Localizer\Localizer;
 use SMW\MediaWiki\HookListener;
+use SMW\NamespaceExaminer;
+use SMW\Services\ServicesFactory as ApplicationFactory;
 
 /**
  * Fires when a local file upload occurs
  *
  * @see https://www.mediawiki.org/wiki/Manual:Hooks/FileUpload
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 1.9
  *
  * @author mwjames
@@ -47,12 +45,11 @@ class FileUpload implements HookListener {
 	 * @since 3.0
 	 *
 	 * @param File $file
-	 * @param boolean $reUploadStatus
+	 * @param bool $reUploadStatus
 	 *
 	 * @return true
 	 */
 	public function process( File $file, $reUploadStatus = false ) {
-
 		if ( $this->canProcess( $file->getTitle() ) ) {
 			$this->doProcess( $file, $reUploadStatus );
 		}
@@ -65,7 +62,6 @@ class FileUpload implements HookListener {
 	}
 
 	private function doProcess( $file, $reUploadStatus = false ) {
-
 		$applicationFactory = ApplicationFactory::getInstance();
 		$filePage = $this->makeFilePage( $file, $reUploadStatus );
 
@@ -110,7 +106,6 @@ class FileUpload implements HookListener {
 	}
 
 	private function makeFilePage( $file, $reUploadStatus ) {
-
 		$filePage = ApplicationFactory::getInstance()->newPageCreator()->createFilePage(
 			$file->getTitle()
 		);

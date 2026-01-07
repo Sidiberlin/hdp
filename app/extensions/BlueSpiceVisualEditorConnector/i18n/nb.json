@@ -10,7 +10,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Original",
 	"bs-visualeditorconnector-upload-type-simple": "Enkel",
 	"bs-visualeditorconnector-upload-type-one-click": "Ettklikks",
-	"bs-visualeditorconnector-upload-type": "Opplastingstype",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Avbryt redigering",
 	"bs-visualeditorconnector-cancel-edit": "Avbryt redigering. Ulagrede endringer blir forkastet",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Ønsker du virkelig å avbryte redigeringen? Ulagrede endringer blir forkastet.",
@@ -79,5 +78,6 @@
 	"bs-vec-table-border-dotted": "Prikkete",
 	"bs-vec-table-border-double": "Dobbel",
 	"bs-vec-insert-softhyphen-title": "Myk bindestrek",
-	"bs-vec-insert-line-break-title": "Linjeskift (<br />)"
+	"bs-vec-insert-line-break-title": "Linjeskift (<br />)",
+	"bs-visualeditorconnector-upload-type": "Opplastingstype"
 }

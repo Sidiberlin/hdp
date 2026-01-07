@@ -8,8 +8,12 @@
  * @ingroup PF
  */
 
+use MediaWiki\EditPage\EditPage;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\ResourceLoader\ResourceLoader;
+use MediaWiki\StubObject\StubObject;
+use MediaWiki\Title\Title;
 
 class PFHooks {
 
@@ -24,7 +28,7 @@ class PFHooks {
 			return 1;
 		}
 
-		define( 'PF_VERSION', '5.8.1' );
+		define( 'PF_VERSION', '6.0.4' );
 
 		$GLOBALS['wgPageFormsIP'] = dirname( __DIR__ ) . '/../';
 
@@ -39,6 +43,14 @@ class PFHooks {
 			$GLOBALS['smwgEnabledSpecialPage'][] = 'RunQuery';
 		}
 
+		// @TODO - rename this variable to something like $wgPageFormsEDValues.
+		// (This was formerly an External Data global variable.)
+		if ( method_exists( 'EDParserFunctions', 'getAllValues' ) ) {
+			$GLOBALS['edgValues'] = EDParserFunctions::getAllValues();
+		} else {
+			$GLOBALS['edgValues'] = [];
+		}
+
 		// Allow for popup windows for file upload
 		$GLOBALS['wgEditPageFrameOptions'] = 'SAMEORIGIN';
 	}
@@ -49,7 +61,6 @@ class PFHooks {
 		// This global variable is needed so that other
 		// extensions can hook into it to add their own
 		// input types.
-		// @phan-suppress-next-line PhanUndeclaredFunctionInCallable
 		$GLOBALS['wgPageFormsFormPrinter'] = new StubObject( 'wgPageFormsFormPrinter', 'PFFormPrinter' );
 	}
 
@@ -106,6 +117,11 @@ class PFHooks {
 		$wgNamespacesWithSubpages[PF_NS_FORM_TALK] = true;
 	}
 
+	/**
+	 * Called by the ParserFirstCallInit hook.
+	 *
+	 * @param Parser $parser
+	 */
 	static function registerFunctions( Parser $parser ) {
 		$parser->setFunctionHook( 'default_form', [ 'PFDefaultForm', 'run' ] );
 		$parser->setFunctionHook( 'forminput', [ 'PFFormInputParserFunction', 'run' ] );
@@ -121,6 +137,11 @@ class PFHooks {
 		$parser->setFunctionHook( 'template_display', [ 'PFTemplateDisplay', 'run' ], Parser::SFH_OBJECT_ARGS );
 	}
 
+	/**
+	 * Called by the MakeGlobalVariablesScript hook.
+	 *
+	 * @param array &$vars
+	 */
 	static function setGlobalJSVariables( &$vars ) {
 		global $wgPageFormsTargetName;
 		global $wgPageFormsAutocompleteValues, $wgPageFormsAutocompleteOnAllChars;
@@ -151,22 +172,24 @@ class PFHooks {
 		$vars['wgPageFormsDelayReload'] = $wgPageFormsDelayReload;
 		$vars['wgPageFormsShowOnSelect'] = $wgPageFormsShowOnSelect;
 		$vars['wgPageFormsScriptPath'] = $wgPageFormsScriptPath;
-		if ( method_exists( 'EDParserFunctions', 'getAllValues' ) ) {
-			// External Data 2.3+
-			$vars['edgValues'] = EDParserFunctions::getAllValues();
-		} else {
-			$vars['edgValues'] = $edgValues;
-		}
+		$vars['edgValues'] = $edgValues;
 		$vars['wgPageFormsEDSettings'] = $wgPageFormsEDSettings;
 		$vars['wgAmericanDates'] = $wgAmericanDates;
 	}
 
+	/**
+	 * Called by the PageSchemasRegisterHandlers hook.
+	 */
 	public static function registerPageSchemasClass() {
 		global $wgPageSchemasHandlerClasses;
 		$wgPageSchemasHandlerClasses[] = 'PFPageSchemas';
-		return true;
 	}
 
+	/**
+	 * Called by the AdminLinks hook.
+	 *
+	 * @param ALTree &$admin_links_tree
+	 */
 	public static function addToAdminLinks( &$admin_links_tree ) {
 		$data_structure_label = wfMessage( 'pf-adminlinks-datastructure' )->escaped();
 		$data_structure_section = $admin_links_tree->getSection( $data_structure_label );
@@ -194,6 +217,12 @@ class PFHooks {
 		$pf_admin_row->addItem( ALItem::newFromSpecialPage( 'CreateCategory' ), 'SMWAdmin' );
 	}
 
+	/**
+	 * Called by the CargoTablesSetAllowedActions hook.
+	 *
+	 * @param SpecialPage $cargoTablesPage
+	 * @param array &$allowedActions
+	 */
 	public static function addToCargoTablesColumns( $cargoTablesPage, &$allowedActions ) {
 		if ( !$cargoTablesPage->getUser()->isAllowed( 'multipageedit' ) ) {
 			return;
@@ -307,6 +336,8 @@ class PFHooks {
 	}
 
 	/**
+	 * Called by the TinyMCEDisable hook.
+	 *
 	 * Disable TinyMCE if this is a form definition page, or a form-editable page.
 	 *
 	 * @param Title $title The page Title object
@@ -325,6 +356,12 @@ class PFHooks {
 		return true;
 	}
 
+	/**
+	 * Called by the EditPage::importFormData hook.
+	 *
+	 * @param EditPage $editpage
+	 * @param WebRequest $request
+	 */
 	public static function showFormPreview( EditPage $editpage, WebRequest $request ) {
 		global $wgOut, $wgPageFormsFormPrinter;
 

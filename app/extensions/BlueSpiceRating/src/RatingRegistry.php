@@ -27,7 +27,9 @@
 
 namespace BlueSpice\Rating;
 
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 
 /**
  * RatingRegistry class for Rating extension
@@ -39,13 +41,13 @@ class RatingRegistry {
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $config = null;
 
 	/**
 	 *
-	 * @param type $config
+	 * @param Config $config
 	 */
 	public function __construct( $config ) {
 		$this->config = $config;
@@ -61,7 +63,7 @@ class RatingRegistry {
 			return true;
 		}
 
-		$extRegistry = \ExtensionRegistry::getInstance();
+		$extRegistry = ExtensionRegistry::getInstance();
 		$this->ratingDefinitions = $extRegistry->getAttribute(
 			'BlueSpiceRatingRatingRegistry'
 		);

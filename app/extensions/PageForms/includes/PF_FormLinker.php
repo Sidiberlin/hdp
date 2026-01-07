@@ -2,6 +2,7 @@
 
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 /**
  * Gets the form(s) used to edit a page, both for existing pages and for
@@ -60,7 +61,7 @@ class PFFormLinker {
 		$userID = 1;
 		global $wgPageFormsAutoCreateUser;
 		if ( $wgPageFormsAutoCreateUser !== null ) {
-			$user = User::newFromName( $wgPageFormsAutoCreateUser );
+			$user = MediaWikiServices::getInstance()->getUserFactory()->newFromName( $wgPageFormsAutoCreateUser );
 			if ( $user !== null ) {
 				$userID = $user->getId();
 			}

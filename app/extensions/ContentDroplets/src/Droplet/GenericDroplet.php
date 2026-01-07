@@ -5,8 +5,8 @@ declare( strict_types = 1 );
 namespace MediaWiki\Extension\ContentDroplets\Droplet;
 
 use MediaWiki\Extension\ContentDroplets\IDropletDescription;
-use Message;
-use RawMessage;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
 
 class GenericDroplet implements IDropletDescription {
 	/** @var string */

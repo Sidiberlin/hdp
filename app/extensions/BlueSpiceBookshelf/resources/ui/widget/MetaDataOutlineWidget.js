@@ -15,14 +15,14 @@ ext.bookshelf.ui.widget.MetaDataOutlineWidget = function ( config ) {
 OO.inheritClass( ext.bookshelf.ui.widget.MetaDataOutlineWidget, OO.ui.Widget );
 
 ext.bookshelf.ui.widget.MetaDataOutlineWidget.prototype.addItems = function ( items ) {
-	var index = this.dataList.items.length;
-	for ( var i in items ) {
-		var item = this.createSelectItemWidget( items[i] );
+	let index = this.dataList.items.length;
+	for ( const i in items ) {
+		const item = this.createSelectItemWidget( items[ i ] );
 		if ( item.active ) {
 			this.dataList.selectItem( item );
 		}
 		item.connect( this, {
-			property_selection: function ( key, state ) {
+			property_selection: function ( key, state ) { // eslint-disable-line camelcase
 				if ( state ) {
 					this.dataList.selectItem( item );
 				} else {

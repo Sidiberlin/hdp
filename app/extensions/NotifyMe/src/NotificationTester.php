@@ -4,9 +4,9 @@ namespace MediaWiki\Extension\NotifyMe;
 
 use Exception;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 use MWStake\MediaWiki\Component\Events\Notifier;
-use Title;
 
 class NotificationTester {
 

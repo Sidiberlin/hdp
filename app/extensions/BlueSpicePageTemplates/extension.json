@@ -1,7 +1,7 @@
 {
 	"name": "BlueSpicePageTemplates",
 	"license-name": "GPL-3.0-only",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpicePageTemplates",
 	"author": [
 		"Markus Glaser",
@@ -10,9 +10,10 @@
 	"descriptionmsg": "bs-pagetemplates-desc",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0",
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"attributes": {
@@ -30,9 +31,6 @@
 			},
 			"TagRegistry": {
 				"pagetemplates": "\\BlueSpice\\PageTemplates\\Tag\\PageTemplates"
-			},
-			"AdminToolRegistry": {
-				"bs-pagetemplates": "BlueSpice\\PageTemplates\\AdminTool"
 			},
 			"PermissionRegistry": {
 				"pagetemplatesadmin-viewspecialpage": {
@@ -68,6 +66,13 @@
 					]
 				}
 			}
+		},
+		"PDFCreator": {
+			"StylesheetsProvider": {
+				"PageTemplates": {
+					"class": "BlueSpice\\PageTemplates\\Integration\\PDFCreator\\StylesheetsProvider\\PageTemplates"
+				}
+			}
 		}
 	},
 	"GroupPermissions": {
@@ -97,26 +102,27 @@
 	"AutoloadNamespaces": {
 		"BlueSpice\\PageTemplates\\": "src/"
 	},
+	"TestAutoloadNamespaces": {
+		"BlueSpice\\PageTemplates\\Tests\\": "tests/phpunit/"
+	},
 	"AutoloadClasses": {
 		"BSApiPageTemplatesStore": "includes/api/BSApiPageTemplatesStore.php",
 		"BSApiPageTemplatesTasks": "includes/api/BSApiPageTemplatesTasks.php",
 		"BSApiPageTemplateTagsStore": "includes/api/BSApiPageTemplateTagsStore.php",
-		"SpecialPageTemplatesAdmin": "includes/specials/SpecialPageTemplatesAdmin.php",
 		"BSPageTemplateList": "includes/BSPageTemplateList.php",
-		"BSPageTemplateListRenderer": "includes/BSPageTemplateListRenderer.php",
-		"BSTransformNSData": "maintenance/BSTransformNSData.php"
+		"BSPageTemplateListRenderer": "includes/BSPageTemplateListRenderer.php"
 	},
 	"TestAutoloadClasses": {
 		"BSPageTemplateFixtures": "tests/phpunit/utility/BSPageTemplateFixtures.php"
 	},
 	"ExtensionMessagesFiles": {
-		"PageTemplatesAdminAlias": "includes/specials/SpecialPageTemplatesAdmin.alias.php"
+		"PageTemplatesAdminAlias": "SpecialPageTemplatesAdmin.alias.php"
 	},
 	"config_prefix": "bsg",
 	"config": {
 		"PageTemplatesExcludeNs": {
 			"value": [
-				-2, -1, 6, 7, 8, 9, 10, 11, 14, 15
+				-2, -1, 5, 6, 7, 8, 9, 10, 11, 14, 15
 			]
 		},
 		"PageTemplatesForceNamespace": {
@@ -133,15 +139,34 @@
 			"value": false,
 			"descriptionmsg": "bs-pagetemplates-pref-hidedefaults",
 			"public": true
+		},
+		"PageTemplatesExcludeRegex": {
+			"value": [
+				"^.*\\/Sidebar$"
+			]
 		}
 	},
 	"SpecialPages": {
-		"PageTemplatesAdmin": "SpecialPageTemplatesAdmin"
+		"PageTemplatesAdmin": {
+			"class": "BlueSpice\\PageTemplates\\Special\\PageTemplatesAdministration"
+		}
 	},
 	"ResourceModules": {
 		"ext.bluespice.pageTemplates": {
-			"scripts": "bluespice.pageTemplates.js",
-			"dependencies": "ext.bluespice.extjs",
+			"scripts": [
+				"ui/dialog/EditTemplate.js",
+				"ui/dialog/DeleteTemplate.js",
+				"ui/Panel.js",
+				"bluespice.pageTemplates.js"
+			],
+			"dependencies": [
+				"ext.oOJSPlus.managerPanel",
+				"ext.bluespice",
+				"oojs-ui.styles.icons-user",
+				"oojs-ui.styles.icons-moderation",
+				"oojs-ui.styles.icons-editing-core",
+				"ext.oOJSPlus.data"
+			],
 			"messages": [
 				"bs-pagetemplates-headerlabel",
 				"bs-pagetemplates-headertargetnamespace",
@@ -164,7 +189,7 @@
 		"ext.bluespice.pageTemplates.tag": {
 			"scripts": [
 				"bluespice.pageTemplates.tag.js",
-				"BS.PageTemplates/TemplateSearch.js"
+				"TemplateSearch.js"
 			],
 			"dependencies": [
 				"ext.bluespice",
@@ -196,23 +221,25 @@
 		},
 		"writeNamespaceConfiguration": {
 			"class": "\\BlueSpice\\PageTemplates\\Hook\\WriteNamespaceConfiguration"
+		},
+		"handleShowingTemplateList": {
+			"class": "\\BlueSpice\\PageTemplates\\HookHandler\\HandleShowingTemplateList",
+			"services": [ "ConfigFactory", "TitleFactory", "PermissionManager" ]
+		},
+		"runDatabaseUpdates": {
+			"class": "\\BlueSpice\\PageTemplates\\HookHandler\\RunDatabaseUpdates"
 		}
 	},
 	"Hooks": {
-		"BeforePageDisplay": [
-			"common-user-interface"
-		],
-		"BSUEModulePDFBeforeAddingStyleBlocks": "\\BlueSpice\\PageTemplates\\Hook\\BSUEModulePDFBeforeAddingStyleBlocks\\AddStandardTemplatesStyles::callback",
-		"LoadExtensionSchemaUpdates": [
-			"\\BlueSpice\\PageTemplates\\Hook\\LoadExtensionSchemaUpdates\\AddPageTemplateTable::callback"
-		],
+		"BeforePageDisplay": "common-user-interface",
+		"LoadExtensionSchemaUpdates": "runDatabaseUpdates",
 		"BSUsageTrackerRegisterCollectors": "\\BlueSpice\\PageTemplates\\Hook\\BSUsageTrackerRegisterCollectors\\AddPageTemplatesTag::callback",
 		"NamespaceManager::getMetaFields": "BlueSpice\\PageTemplates\\Hook\\NamespaceManagerGetMetaFields\\RegisterMetaField::callback",
 		"BSApiNamespaceStoreMakeData": "BlueSpice\\PageTemplates\\Hook\\BSApiNamespaceStoreMakeData\\AddData::callback",
 		"NamespaceManager::editNamespace": "BlueSpice\\PageTemplates\\Hook\\NamespaceManagerEditNamespace\\SetPageTemplateValues::callback",
 		"NamespaceManagerBeforePersistSettings": "writeNamespaceConfiguration",
-		"HtmlPageLinkRendererBegin": "\\BlueSpice\\PageTemplates\\Extension::onHtmlPageLinkRendererBegin",
-		"MessagesPreLoad": "\\BlueSpice\\PageTemplates\\Extension::onMessagesPreLoad",
+		"HtmlPageLinkRendererBegin": "handleShowingTemplateList",
+		"MessagesPreLoad": "handleShowingTemplateList",
 		"MediaWikiPerformAction": "\\BlueSpice\\PageTemplates\\Hook\\MediaWikiPerformAction\\PreventEditMode::callback",
 		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface",
 		"SkinTemplateNavigation::Universal": "addPreloadForActions"

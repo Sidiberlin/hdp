@@ -55,7 +55,10 @@
  * limit:25
  */
 
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
 abstract class BSApiExtJSStoreBase extends \BlueSpice\Api {
@@ -690,7 +693,7 @@ abstract class BSApiExtJSStoreBase extends \BlueSpice\Api {
 	 */
 	private function canBeCastedToString( $mValue ) {
 		if ( !is_array( $mValue ) &&
-			( !is_object( $mValue ) && settype( $mValue, 'string' ) !== false ) ||
+			( !is_object( $mValue ) && settype( $mValue, 'string' ) !== false ) || // phpcs:ignore Generic.CodeAnalysis.RequireExplicitBooleanOperatorPrecedence.MissingParentheses, Generic.Files.LineLength.TooLong
 			( is_object( $mValue ) && method_exists( $mValue, '__toString' ) ) ) {
 			return true;
 		} else {

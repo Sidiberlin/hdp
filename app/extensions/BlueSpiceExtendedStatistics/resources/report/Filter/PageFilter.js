@@ -1,4 +1,4 @@
-( function( mw, $, bs ) {
+( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.aggregatedStatistics.filter' );
 
 	bs.aggregatedStatistics.filter.PageFilter = function ( cfg ) {
@@ -20,7 +20,7 @@
 		this.$element.append(
 			new OO.ui.FieldLayout( this.pagePicker, {
 				align: 'top',
-				label: mw.message( "bs-statistics-aggregated-report-filter-page" ).text()
+				label: mw.message( 'bs-statistics-aggregated-report-filter-page' ).text()
 			} ).$element
 		);
 	};
@@ -35,4 +35,4 @@
 		};
 	};
 
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

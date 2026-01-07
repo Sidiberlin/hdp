@@ -3,9 +3,9 @@
 namespace BlueSpice\SMWConnector\Data\Ask;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\ISecondaryDataProvider;
 use MWStake\MediaWiki\Component\DataStore\Record;
-use Title;
 
 class SecondaryDataProvider implements ISecondaryDataProvider {
 	/** @var Schema */
@@ -81,6 +81,9 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 			$links = $links[0];
 		}
 
+		if ( $key === 'page' ) {
+			$record->set( 'page_url', $title->getLocalURL() );
+		}
 		$record->set( "{$key}_link", $links );
 	}
 }

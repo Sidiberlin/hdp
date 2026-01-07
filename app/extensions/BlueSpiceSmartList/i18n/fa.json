@@ -5,6 +5,7 @@
 			"Dalba",
 			"FarsiNevis",
 			"Jeeputer",
+			"LordProfo",
 			"Reza1615"
 		]
 	},
@@ -19,8 +20,6 @@
 	"bs-smartlist-month": "ماه",
 	"bs-smartlist-time": "زمان",
 	"bs-smartlist-title": "عنوان",
-	"bs-smartlist-tag-smartlist-example-rc": "حالت: تغییرات اخیر",
-	"bs-smartlist-tag-smartlist-example-whatlinkshere": "حالت: پیوندها به این صفحه",
 	"bs-smartlist-mostvisitedpages": "صفحه‌هایی که بیشترین تعداد بازدیدکننده را داشته‌اند",
 	"bs-smartlist-mosteditedpages": "صفحه‌های دارای بیشترین ویرایش",
 	"bs-smartlist-mostactiveusers": "فعال‌ترین کاربران (بر اساس تعداد ویرایش‌ها)",
@@ -32,5 +31,8 @@
 	"bs-smartlist-lasteditsdesc": "فهرست صفحه‌هایی که ویرایش کرده‌اید.",
 	"bs-smartlist-droplet-userlist-name": "فهرست اعضا",
 	"bs-smartlist-droplet-newbies-name": "کاربران جدید",
-	"bs-smartlist-droplet-recent-changes-name": "تغییرات اخیر"
+	"bs-smartlist-droplet-recent-changes-name": "تغییرات اخیر",
+	"bs-smartlist-ve-tab-main": "عمومی",
+	"bs-smartlist-ve-tab-appearance": "نمایش صفحه",
+	"bs-smartlist-ve-tab-advanced": "پیشرفته"
 }

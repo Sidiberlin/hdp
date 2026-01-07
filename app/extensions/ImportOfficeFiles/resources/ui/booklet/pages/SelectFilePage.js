@@ -34,16 +34,16 @@ officeimport.ui.SelectFilePage.prototype.getData = function () {
 officeimport.ui.SelectFilePage.prototype.uploadFile = function ( file ) {
 	const dfd = $.Deferred();
 
-	mw.loader.using( [ 'ext.importofficefiles.api' ], function () {
+	mw.loader.using( [ 'ext.importofficefiles.api' ], () => {
 		const api = new officeimport.api.Api();
-		api.uploadFile( file ).done( function ( response ) {
+		api.uploadFile( file ).done( ( response ) => {
 			this.emit( 'uploadSuccess', response.uploadId, response.filename );
 			dfd.resolve( response.uploadId, response.filename );
-		}.bind( this ) ).fail( function ( error, xhr, type ) {
+		} ).fail( ( error, xhr, type ) => {
 			this.emit( 'uploadFailed', error, xhr, type );
 			dfd.reject( error, xhr, type );
-		}.bind( this ) );
-	}.bind( this ) );
+		} );
+	} );
 
 	return dfd.promise();
 };

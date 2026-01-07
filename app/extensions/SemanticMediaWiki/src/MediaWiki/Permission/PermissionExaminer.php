@@ -2,11 +2,11 @@
 
 namespace SMW\MediaWiki\Permission;
 
+use MediaWiki\User\User;
 use SMW\MediaWiki\PermissionManager;
-use User;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.2
  *
  * @author mwjames
@@ -29,7 +29,7 @@ class PermissionExaminer {
 	 * @param PermissionManager $permissionManager
 	 * @param User|null $user
 	 */
-	public function __construct( PermissionManager $permissionManager, User $user = null ) {
+	public function __construct( PermissionManager $permissionManager, ?User $user = null ) {
 		$this->permissionManager = $permissionManager;
 		$this->user = $user;
 	}
@@ -50,8 +50,7 @@ class PermissionExaminer {
 	 *
 	 * @return bool
 	 */
-	public function hasPermissionOf( string $right ) : bool {
-
+	public function hasPermissionOf( string $right ): bool {
 		if ( $this->user === null ) {
 			return false;
 		}

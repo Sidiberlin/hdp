@@ -1,6 +1,6 @@
 {
 	"name": "FlexiSkin",
-	"version": "2.2.2",
+	"version": "3.0.5",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:FlexiSkin",
 	"author": [
@@ -12,7 +12,7 @@
 	"namemsg": "flexiskin-extension-name",
 	"type": "specialpage",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"attributes": {
 		"BlueSpiceFoundation": {
@@ -96,7 +96,8 @@
 				"oojs-ui",
 				"oojs-ui.styles.icons-editing-core",
 				"oojs-ui.styles.icons-interactions",
-				"ext.oOJSPlus.widgets.colorPicker"
+				"ext.oOJSPlus.widgets.colorPicker",
+				"ext.oOJSPlus.managerPanel"
 			],
 			"messages": [
 				"flexiskin-ui-preview-loading-message",

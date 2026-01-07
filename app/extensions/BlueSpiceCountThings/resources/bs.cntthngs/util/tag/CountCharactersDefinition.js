@@ -5,16 +5,16 @@ bs.cntthngs.util.tag.CountCharactersDefinition = function BsVecUtilTagCountChara
 
 OO.inheritClass( bs.cntthngs.util.tag.CountCharactersDefinition, bs.vec.util.tag.Definition );
 
-bs.cntthngs.util.tag.CountCharactersDefinition.prototype.getCfg = function() {
-	var cfg = bs.cntthngs.util.tag.CountCharactersDefinition.super.prototype.getCfg.call( this );
-	return $.extend( cfg, {
-		classname : 'CountCharacters',
+bs.cntthngs.util.tag.CountCharactersDefinition.prototype.getCfg = function () {
+	const cfg = bs.cntthngs.util.tag.CountCharactersDefinition.super.prototype.getCfg.call( this );
+	return $.extend( cfg, { // eslint-disable-line no-jquery/no-extend
+		classname: 'CountCharacters',
 		name: 'countCharacters',
 		tagname: 'bs:countcharacters',
 		hideMainInput: false,
 		descriptionMsg: 'bs-countthings-tag-countcharacters-desc',
 		menuItemMsg: 'bs-countthings-ve-countcharacters-title',
-		attributes: [{
+		attributes: [ {
 			name: 'mode',
 			labelMsg: 'bs-countthings-ve-countthingsinspector-mode',
 			helpMsg: 'bs-countthings-tag-countcharacters-desc-param-mode',
@@ -42,8 +42,8 @@ bs.cntthngs.util.tag.CountCharactersDefinition.prototype.getCfg = function() {
 					label: mw.message( 'bs-countthings-ve-countcharacters-mode-pagesonly' ).plain()
 				}
 			]
-		}]
-	});
+		} ]
+	} );
 };
 
 bs.vec.registerTagDefinition(

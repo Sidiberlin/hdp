@@ -7,17 +7,11 @@
 	"bs-bookshelf-ga-editing-label": "Небӧггез",
 	"bs-bookshelf-config-mainlinks-bookshelf-label": "Мыччавны \" Небӧггез\" пыранін",
 	"bs-bookshelf-config-mainlinks-bookshelf-help": "Мыччавны шульга навигация инданпӧлын \" Небӧггез\" ыстісьӧмлісь пыранін.",
-	"bs-bookshelf-booknav-name": "Небӧг кузя вештасьӧм",
 	"bs-bookshelf-booknav-desc": "Мыччалӧ небӧг кузя вештасьӧм",
 	"bs-bookshelf-booknav-book-label": "Небӧг",
 	"bs-bookshelf-booknav-book-help": "Бӧрйӧ уджӧ пыртӧм понда небӧг",
 	"bs-bookshelf-booknav-chapter-label": "Юрпас",
 	"bs-bookshelf-booknav-chapter-help": "Бӧрйӧ мыччалӧм понда юрпас",
 	"bs-bookshelf-booknav-book-not-exist": "Небӧг $1 абу",
-	"bs-bookshelf-booknav-chapter-not-exist": "Юрпас $1 абу",
-	"bs-bookshelf-droplet-pdf-name": "PDF-ын небӧг вылӧ ыстісьӧм",
-	"bs-bookshelf-droplet-pdf-description": "PDF-ын небӧггез кӧрталӧм понда ыстісьӧм",
-	"bs-bookshelf-droplet-pdf-book-label": "Ыстӧм понда небӧг",
-	"bs-bookshelf-droplet-pdf-template-label": "PDF-ын небӧг бала",
-	"bs-bookshelf-droplet-pdf-link-label": "Ыстісьӧм пас"
+	"bs-bookshelf-booknav-chapter-not-exist": "Юрпас $1 абу"
 }

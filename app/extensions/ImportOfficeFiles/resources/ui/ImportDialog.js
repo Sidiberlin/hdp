@@ -97,7 +97,11 @@ officeimport.ui.ImportDialog.prototype.switchPage = function ( name, data ) {
 			this.setSize( 'medium' );
 			this.actions.setAbilities( { import: false, done: false, back: true, next: true } );
 			page.setDefaultValue( this.fileName );
-
+			page.connect( this, {
+				titleValidityChanged: ( isValid ) => {
+					this.actions.setAbilities( { next: isValid } );
+				}
+			} );
 			break;
 		case 'StructurePreview':
 			this.setSize( 'larger' );
@@ -117,7 +121,7 @@ officeimport.ui.ImportDialog.prototype.switchPage = function ( name, data ) {
 			page.connect( this, {
 				// eslint-disable-next-line no-unused-vars
 				importRunning: function ( processId, fileName ) {
-					const timer = setInterval( function () {
+					const timer = setInterval( () => {
 						page.checkImportStatus( processId, timer );
 					}, 500 );
 				},
@@ -222,14 +226,14 @@ officeimport.ui.ImportDialog.prototype.getActionProcess = function ( action ) {
 					if ( page.name === 'SelectFile' ) {
 						data = this.booklet.getCurrentPage().getData();
 
-						page.uploadFile( data ).done( function ( uploadId, fileName ) {
+						page.uploadFile( data ).done( ( uploadId, fileName ) => {
 
 							this.uploadId = uploadId;
 							this.fileName = fileName;
 							this.switchNextPage( {} );
 
 							dfd.resolve();
-						}.bind( this ) ).fail( function ( error, xhr ) {
+						} ).fail( ( error, xhr ) => {
 							this.popPending();
 
 							// eslint-disable-next-line no-console
@@ -241,13 +245,13 @@ officeimport.ui.ImportDialog.prototype.getActionProcess = function ( action ) {
 							);
 
 							dfd.reject( errorObj );
-						}.bind( this ) );
+						} );
 					}
 					if ( page.name === 'Configuration' ) {
 						data = this.booklet.getCurrentPage().getData();
 
 						page.analyzeFile( this.uploadId, this.fileName, data )
-							.done( function ( processId, timer ) {
+							.done( ( processId, timer ) => {
 								clearInterval( timer );
 
 								this.processId = processId;
@@ -255,7 +259,7 @@ officeimport.ui.ImportDialog.prototype.getActionProcess = function ( action ) {
 								this.switchNextPage( {} );
 
 								dfd.resolve();
-							}.bind( this ) ).fail( function ( error ) {
+							} ).fail( ( error ) => {
 								this.popPending();
 
 								// eslint-disable-next-line no-console
@@ -265,7 +269,7 @@ officeimport.ui.ImportDialog.prototype.getActionProcess = function ( action ) {
 								const errorObj = new OO.ui.Error( msg, { recoverable: false } );
 
 								dfd.reject( errorObj );
-							}.bind( this ) );
+							} );
 					}
 
 					return dfd.promise();

@@ -10,8 +10,5 @@ $filters:
 'WikiExplorer::buildDataSets':
 &$output['rows']:
 
-'WikiExplorer::getFieldDefinitions':
-&$output['fields']:
-
 'WikiExplorer::getColumnDefinitions':
 &$aColumns:

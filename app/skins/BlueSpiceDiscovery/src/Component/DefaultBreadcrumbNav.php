@@ -4,9 +4,13 @@ namespace BlueSpice\Discovery\Component;
 
 use BlueSpice\Discovery\BreadcrumbDataProviderFactory;
 use BlueSpice\Discovery\Renderer\DefaultBreadCrumbRenderer;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Title\NamespaceInfo;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MessageLocalizer;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
-use Title;
 
 class DefaultBreadcrumbNav extends Literal {
 
@@ -80,4 +84,20 @@ class DefaultBreadcrumbNav extends Literal {
 		return $renderer->getHtml();
 	}
 
+	/**
+	 *
+	 * @param IContextSource $context
+	 * @return bool
+	 */
+	public function shouldRender( IContextSource $context ): bool {
+		if ( !parent::shouldRender( $context ) ) {
+			return false;
+		}
+		$specialUserLogin = SpecialPage::getSafeTitleFor( 'Userlogin' );
+		$title = $context->getTitle();
+		if ( !$title || $specialUserLogin->equals( $title ) ) {
+			return false;
+		}
+		return true;
+	}
 }

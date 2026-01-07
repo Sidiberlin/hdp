@@ -5,9 +5,11 @@ declare( strict_types=1 );
 namespace MWStake\MediaWiki\Component\Events;
 
 use DateTime;
+use MediaWiki\Language\RawMessage;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
 use MediaWiki\User\UserIdentity;
-use Message;
+use MediaWiki\Utils\MWTimestamp;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 
 /**
@@ -24,7 +26,12 @@ abstract class NotificationEvent implements INotificationEvent {
 	 */
 	public function __construct( UserIdentity $agent ) {
 		$this->agent = $agent;
-		$this->time = new DateTime();
+		$mwTimestamp = MWTimestamp::now( TS_UNIX );
+		if ( is_string( $mwTimestamp ) ) {
+			$this->time = DateTime::createFromFormat( 'U', $mwTimestamp );
+		} else {
+			$this->time = new DateTime();
+		}
 	}
 
 	/**
@@ -45,7 +52,7 @@ abstract class NotificationEvent implements INotificationEvent {
 	 * @return Message
 	 */
 	public function getKeyMessage(): Message {
-		return new \RawMessage( $this->getKey() );
+		return new RawMessage( $this->getKey() );
 	}
 
 	/**

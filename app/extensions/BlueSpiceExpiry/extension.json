@@ -1,15 +1,16 @@
 {
 	"name": "BlueSpiceExpiry",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceExpiry",
 	"author": [ "Sebastian Ulbricht", "Markus Glaser" ],
 	"descriptionmsg": "bs-expiry-extension-description",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3",
-			"BlueSpiceReminder": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0",
+			"BlueSpiceReminder": ">= 5.0.0",
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"type": "bluespice",
@@ -24,8 +25,7 @@
 			},
 			"ConfigDefinitionRegistry": {
 				"ExpiryEnablePDFWatermark": "\\BlueSpice\\Expiry\\ConfigDefinition\\EnablePDFWatermark::getInstance",
-				"ExpiryEnablePageWatermark": "\\BlueSpice\\Expiry\\ConfigDefinition\\EnablePageWatermark::getInstance",
-				"ExpiryEnablePrintWatermark": "\\BlueSpice\\Expiry\\ConfigDefinition\\EnablePrintWatermark::getInstance"
+				"ExpiryEnablePageWatermark": "\\BlueSpice\\Expiry\\ConfigDefinition\\EnablePageWatermark::getInstance"
 			},
 			"PermissionRegistry": {
 				"expirearticle": {
@@ -81,17 +81,32 @@
 					"spec": {
 						"class": "\\BlueSpice\\Expiry\\Event\\ExpiryToday"
 					},
-					"buckets": [ "qm" ]
+					"buckets": [ "qm" ],
+					"description": "bs-expiry-event-expiry-today-desc"
 				},
 				"bs-expiry-one-week": {
 					"spec": {
 						"class": "\\BlueSpice\\Expiry\\Event\\ExpiryInOneWeek"
 					},
-					"buckets": [ "qm" ]
+					"buckets": [ "qm" ],
+					"description": "bs-expiry-event-expiry-one-week-desc"
+				}
+			}
+		},
+		"PDFCreator": {
+			"StyleBlocksProvider": {
+				"WatermarkStyles": {
+					"class": "BlueSpice\\Expiry\\Integration\\PDFCreator\\StyleBlockProvider\\WatermarkStyles",
+					"services": [ "ConfigFactory", "UserOptionsLookup" ]
+				}
+			},
+			"PreProcessors": {
+				"WatermarkImage": {
+					"class": "BlueSpice\\Expiry\\Integration\\PDFCreator\\PreProcessors\\WatermarkImage",
+					"services": [ "ConfigFactory", "UserOptionsLookup", "TitleFactory" ]
 				}
 			}
 		}
-
 	},
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
@@ -115,7 +130,7 @@
 		"expiry-delete"
 	],
 	"SpecialPages": {
-		"Expiry": "SpecialExpiry"
+		"Expiry": "\\BlueSpice\\Expiry\\Special\\Expiry"
 	},
 	"APIModules": {
 		"bs-expiry-tasks": "ApiExpiryTasks",
@@ -136,26 +151,35 @@
 		"BlueSpice\\Expiry\\Tests\\": "tests/phpunit"
 	},
 	"AutoloadClasses": {
-		"SpecialExpiry": "includes/specials/SpecialExpiry.php",
 		"ApiExpiryTasks": "includes/api/ApiExpiryTasks.php",
 		"ApiExpiryStore": "includes/api/ApiExpiryStore.php",
 		"ExpiryHooks": "includes/ExpiryHooks.php"
 	},
 	"ResourceModules": {
-		"ext.bluespice.expiry.special": {
+		"ext.bluespice.expiry.specialExpiry": {
 			"scripts": [
-				"bluespice.expiry.special.js"
+				"ext.bluespice.expiry.specialExpiry.js",
+				"ui/panel/SpecialExpiryPanel.js"
+			],
+			"styles": [
+				"bluespice.expiry.panel.css"
 			],
 			"messages": [
 				"bs-expiry-header-pagename",
 				"bs-expiry-header-date",
-				"bs-expiry-text-delete",
+				"bs-expiry-header-comment",
+				"bs-expiry-header-action-edit",
+				"bs-expiry-title-edit",
+				"bs-expiry-header-action-delete",
 				"bs-expiry-title-delete",
-				"bs-expiry-header-comment"
+				"bs-expiry-title-add",
+				"bs-expiry-text-delete"
 			],
 			"dependencies": [
+				"oojs-ui",
+				"ext.oOJSPlus.data",
+				"ext.oOJSPlus.managerPanel",
 				"ext.bluespice.expiry.dialog.pages",
-				"ext.bluespice.extjs",
 				"ext.bluespice.Expiry"
 			]
 		},
@@ -230,11 +254,6 @@
 			"value": true,
 			"descriptionmsg": "bs-expiry-pref-enablepagewatermark",
 			"public": true
-		},
-		"ExpiryEnablePrintWatermark": {
-			"value": true,
-			"descriptionmsg": "bs-expiry-pref-enableprintwatermark",
-			"public": true
 		}
 	},
 	"HookHandlers": {
@@ -259,11 +278,8 @@
 		"BeforePageDisplay": [
 			"\\BlueSpice\\Expiry\\Hook\\BeforePageDisplay\\AddResources::callback",
 			"\\BlueSpice\\Expiry\\Hook\\BeforePageDisplay\\AddPageWatermark::callback",
-			"\\BlueSpice\\Expiry\\Hook\\BeforePageDisplay\\AddPrintWatermark::callback",
 			"liveRegionStatusUpdater"
 		],
-		"BSUEModulePDFgetPage": "\\BlueSpice\\Expiry\\Hook\\BSUEModulePDFgetPage\\AddPDFWatermarkClass::callback",
-		"BSUEModulePDFBeforeAddingStyleBlocks": "\\BlueSpice\\Expiry\\Hook\\BSUEModulePDFBeforeAddingStyleBlocks\\AddPDFWatermarkStyles::callback",
 		"wgQueryPages": "ExpiryHooks::onQueryPages",
 		"LoadExtensionSchemaUpdates": "\\BlueSpice\\Expiry\\Hook\\LoadExtensionSchemaUpdates\\AddExpiryTable::callback",
 		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface",

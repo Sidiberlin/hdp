@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saederup92"
+		]
+	},
+	"mergearticles-target-new-label": "Ny side",
+	"mergearticles-type-file": "Fil",
+	"mergearticles-type-article": "Side",
+	"mergearticles-type-template": "Skabelon",
+	"mergearticles-type-category": "Kategori",
+	"mergearticles-no-pages-available": "Intet at vise!",
+	"mergearticles-action-unknown": "Ukendt handling",
+	"mergearticles-file-layout-label": "Fil",
+	"mergearticles-file-info-name": "Navn: $1",
+	"mergearticles-file-info-size": "Størrelse: $1",
+	"mergearticles-diff-refused": "Afvist",
+	"mergearticles-file-diff-header": "Fil",
+	"mergearticles-term-filter-label": "Sidenavn"
+}

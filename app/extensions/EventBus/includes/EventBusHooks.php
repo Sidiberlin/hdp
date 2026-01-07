@@ -24,31 +24,61 @@
 
 namespace MediaWiki\Extension\EventBus;
 
-use Campaign;
-use Content;
-use DeferredUpdates;
-use LinksUpdate;
 use ManualLogEntry;
 use MediaWiki\Block\DatabaseBlock;
+use MediaWiki\ChangeTags\Hook\ChangeTagsAfterUpdateTagsHook;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Deferred\LinksUpdate\LinksTable;
+use MediaWiki\Deferred\LinksUpdate\LinksUpdate;
+use MediaWiki\Extension\EventBus\HookHandlers\MediaWiki\PageChangeHooks;
+use MediaWiki\Hook\ArticleRevisionVisibilitySetHook;
+use MediaWiki\Hook\BlockIpCompleteHook;
+use MediaWiki\Hook\LinksUpdateCompleteHook;
+use MediaWiki\Hook\PageMoveCompleteHook;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\Hook\ArticleProtectCompleteHook;
+use MediaWiki\Page\Hook\ArticlePurgeHook;
+use MediaWiki\Page\Hook\PageDeleteCompleteHook;
+use MediaWiki\Page\Hook\PageUndeleteCompleteHook;
+use MediaWiki\Page\ProperPageIdentity;
+use MediaWiki\Permissions\Authority;
+use MediaWiki\Revision\Hook\RevisionRecordInsertedHook;
 use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
+use MediaWiki\Storage\Hook\PageSaveCompleteHook;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
 use RecentChange;
-use RequestContext;
-use Title;
-use UnexpectedValueException;
-use User;
+use Wikimedia\Assert\Assert;
+use Wikimedia\Rdbms\IDBAccessObject;
 use WikiPage;
 
-class EventBusHooks {
+/**
+ * @deprecated since EventBus 0.5.0 Use specific feature based hooks in HookHandlers/,
+ * 	or even better, put them in your own extension instead of in EventBus.
+ */
+class EventBusHooks implements
+	PageSaveCompleteHook,
+	PageMoveCompleteHook,
+	PageDeleteCompleteHook,
+	PageUndeleteCompleteHook,
+	ArticleRevisionVisibilitySetHook,
+	ArticlePurgeHook,
+	BlockIpCompleteHook,
+	LinksUpdateCompleteHook,
+	ArticleProtectCompleteHook,
+	ChangeTagsAfterUpdateTagsHook,
+	RevisionRecordInsertedHook
+{
 
 	/**
 	 * @return RevisionLookup
 	 */
-	private static function getRevisionLookup() {
+	private static function getRevisionLookup(): RevisionLookup {
 		return MediaWikiServices::getInstance()->getRevisionLookup();
 	}
 
@@ -76,35 +106,45 @@ class EventBusHooks {
 	 *
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ArticleDeleteComplete
 	 *
-	 * @param WikiPage $wikiPage the WikiPage that was deleted
-	 * @param User $user the user that deleted the article
-	 * @param string $reason the reason the article was deleted
-	 * @param int $id the ID of the article that was deleted
-	 * @param Content|null $content the content of the deleted article, or null in case of error
-	 * @param ManualLogEntry $logEntry the log entry used to record the deletion
-	 * @param int $archivedRevisionCount the number of revisions archived during the page delete
+	 * @param ProperPageIdentity $page Page that was deleted.
+	 * @param Authority $deleter Who deleted the page
+	 * @param string $reason Reason the page was deleted
+	 * @param int $pageID ID of the page that was deleted
+	 * @param RevisionRecord $deletedRev Last revision of the deleted page
+	 * @param ManualLogEntry $logEntry ManualLogEntry used to record the deletion
+	 * @param int $archivedRevisionCount Number of revisions archived during the deletion
+	 * @return true|void
 	 */
-	public static function onArticleDeleteComplete(
-		WikiPage $wikiPage,
-		User $user,
-		$reason,
-		$id,
-		?Content $content,
+	public function onPageDeleteComplete(
+		ProperPageIdentity $page,
+		Authority $deleter,
+		string $reason,
+		int $pageID,
+		RevisionRecord $deletedRev,
 		ManualLogEntry $logEntry,
-		$archivedRevisionCount
+		int $archivedRevisionCount
 	) {
 		$stream = $logEntry->getType() === 'suppress' ?
 			'mediawiki.page-suppress' : 'mediawiki.page-delete';
 		$eventbus = EventBus::getInstanceForStream( $stream );
 
-		$event = $eventbus->getFactory()->createPageDeleteEvent(
+		// Don't set performer in the event if this delete suppresses the page from other admins.
+		// https://phabricator.wikimedia.org/T342487
+		$performerForEvent = $logEntry->getType() == 'suppress' ? null : $deleter->getUser();
+
+		$eventBusFactory = $eventbus->getFactory();
+		$eventBusFactory->setCommentFormatter( MediaWikiServices::getInstance()->getCommentFormatter() );
+		$title = Title::castFromPageIdentity( $page );
+		Assert::postcondition( $title !== null, '$page can be cast to a LinkTarget' );
+
+		$event = $eventBusFactory->createPageDeleteEvent(
 			$stream,
-			$user,
-			$id,
-			$wikiPage->getTitle(),
-			$wikiPage->isRedirect(),
+			$performerForEvent,
+			$pageID,
+			$title,
+			$title->isRedirect(),
 			$archivedRevisionCount,
-			$wikiPage->getRevisionRecord(),
+			$deletedRev,
 			$reason
 		);
 
@@ -118,29 +158,42 @@ class EventBusHooks {
 	/**
 	 * When one or more revisions of an article are restored.
 	 *
-	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ArticleUndelete
+	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/PageUndeleteComplete
 	 *
-	 * @param Title $title title corresponding to the article restored
-	 * @param bool $create whether the restoration caused the page to be created
-	 * @param string $comment comment explaining the undeletion
-	 * @param int $oldPageId ID of page previously deleted (from archive table)
+	 * @param ProperPageIdentity $page Page that was undeleted.
+	 * @param Authority $restorer Who undeleted the page
+	 * @param string $reason Reason the page was undeleted
+	 * @param RevisionRecord $restoredRev Last revision of the undeleted page
+	 * @param ManualLogEntry $logEntry Log entry generated by the restoration
+	 * @param int $restoredRevisionCount Number of revisions restored during the deletion
+	 * @param bool $created Whether the undeletion result in a page being created
+	 * @param array $restoredPageIds Array of all undeleted page IDs.
+	 *        This will have multiple page IDs if there was more than one deleted page with the same page title.
+	 * @return void This hook must not abort, it must return no value
 	 */
-	public static function onArticleUndelete(
-		Title $title,
-		$create,
-		$comment,
-		$oldPageId
-	) {
+	public function onPageUndeleteComplete(
+		ProperPageIdentity $page,
+		Authority $restorer,
+		string $reason,
+		RevisionRecord $restoredRev,
+		ManualLogEntry $logEntry,
+		int $restoredRevisionCount,
+		bool $created,
+		array $restoredPageIds
+	): void {
 		$stream = 'mediawiki.page-undelete';
-		$performer = RequestContext::getMain()->getUser();
-
 		$eventBus = EventBus::getInstanceForStream( $stream );
-		$event = $eventBus->getFactory()->createPageUndeleteEvent(
+		$eventBusFactory = $eventBus->getFactory();
+		$eventBusFactory->setCommentFormatter( MediaWikiServices::getInstance()->getCommentFormatter() );
+
+		$event = $eventBusFactory->createPageUndeleteEvent(
 			$stream,
-			$performer,
-			$title,
-			$comment,
-			$oldPageId
+			$restorer->getUser(),
+			// @phan-suppress-next-line PhanTypeMismatchArgumentNullable PageIdentity is not null
+			Title::castFromPageIdentity( $page ),
+			$reason,
+			$page->getId(),
+			$restoredRev,
 		);
 
 		DeferredUpdates::addCallableUpdate( static function () use ( $eventBus, $event ) {
@@ -161,18 +214,20 @@ class EventBusHooks {
 	 * @param string $reason reason for the move
 	 * @param RevisionRecord $newRevisionRecord revision created by the move
 	 */
-	public static function onPageMoveComplete(
-		LinkTarget $oldTitle,
-		LinkTarget $newTitle,
-		UserIdentity $userIdentity,
-		int $pageid,
-		int $redirid,
-		string $reason,
-		RevisionRecord $newRevisionRecord
+	public function onPageMoveComplete(
+		$oldTitle,
+		$newTitle,
+		$userIdentity,
+		$pageid,
+		$redirid,
+		$reason,
+		$newRevisionRecord
 	) {
 		$stream = 'mediawiki.page-move';
 		$eventBus = EventBus::getInstanceForStream( $stream );
-		$event = $eventBus->getFactory()->createPageMoveEvent(
+		$eventBusFactory = $eventBus->getFactory();
+		$eventBusFactory->setCommentFormatter( MediaWikiServices::getInstance()->getCommentFormatter() );
+		$event = $eventBusFactory->createPageMoveEvent(
 			$stream,
 			$oldTitle,
 			$newTitle,
@@ -190,6 +245,7 @@ class EventBusHooks {
 
 	/**
 	 * Called when changing visibility of one or more revisions of an article.
+	 * Produces mediawiki.revision-visibility-change events.
 	 *
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/ArticleRevisionVisibilitySet
 	 *
@@ -200,25 +256,25 @@ class EventBusHooks {
 	 *              bits have changed for each revision.  This array is of the form
 	 *              [id => ['oldBits' => $oldBits, 'newBits' => $newBits], ... ]
 	 */
-	public static function onArticleRevisionVisibilitySet(
-		Title $title,
-		array $revIds,
-		array $visibilityChangeMap
+	public function onArticleRevisionVisibilitySet(
+		$title,
+		$revIds,
+		$visibilityChangeMap
 	) {
 		$stream = 'mediawiki.revision-visibility-change';
 		$events = [];
 		$eventBus = EventBus::getInstanceForStream( $stream );
+		// https://phabricator.wikimedia.org/T321411
 		$performer = RequestContext::getMain()->getUser();
 		$performer->loadFromId();
 
-		// Create a  event
-		// for each revId that was changed.
+		// Create an event for each revId that was changed.
 		foreach ( $revIds as $revId ) {
 			// Read from primary since due to replication lag the updated field visibility
 			// might still not be available on a replica and we are at risk of leaking
 			// just suppressed data.
 			$revision = self::getRevisionLookup()
-				->getRevisionById( $revId, RevisionLookup::READ_LATEST );
+				->getRevisionById( $revId, IDBAccessObject::READ_LATEST );
 
 			// If the page is deleted simultaneously (null $revision) or if
 			// this revId is not in the $visibilityChangeMap, then we can't
@@ -239,10 +295,31 @@ class EventBusHooks {
 				);
 				continue;
 			} else {
-				$events[] = $eventBus->getFactory()->createRevisionVisibilityChangeEvent(
+				$eventBusFactory = $eventBus->getFactory();
+				$eventBusFactory->setCommentFormatter( MediaWikiServices::getInstance()->getCommentFormatter() );
+
+				// If this revision is 'suppressed' AKA restricted, then the person performing
+				// 'RevisionDelete' should not be visible in public data.
+				// https://phabricator.wikimedia.org/T342487
+				//
+				// NOTE: This event stream tries to match the visibility of MediaWiki core logs,
+				// where regular delete/revision events are public, and suppress/revision events
+				// are private. In MediaWiki core logs, private events are fully hidden from
+				// the public.  Here, we need to produce a 'private' event to the
+				// mediawiki.page_change stream, to indicate to consumers that
+				// they should also 'suppress' the revision.  When this is done, we need to
+				// make sure that we do not reproduce the data that has been suppressed
+				// in the event itself.  E.g. if the username of the editor of the revision has been
+				// suppressed, we should not include any information about that editor in the event.
+				$performerForEvent = PageChangeHooks::isSecretRevisionVisibilityChange(
+					$visibilityChangeMap[$revId]['oldBits'],
+					$visibilityChangeMap[$revId]['newBits']
+				) ? null : $performer;
+
+				$events[] = $eventBusFactory->createRevisionVisibilityChangeEvent(
 					$stream,
 					$revision,
-					$performer,
+					$performerForEvent,
 					$visibilityChangeMap[$revId]
 				);
 			}
@@ -269,7 +346,7 @@ class EventBusHooks {
 	 *
 	 * @param WikiPage $wikiPage
 	 */
-	public static function onArticlePurge( WikiPage $wikiPage ) {
+	public function onArticlePurge( $wikiPage ) {
 		self::sendResourceChangedEvent( $wikiPage->getTitle(), [ 'purge' ] );
 	}
 
@@ -287,13 +364,13 @@ class EventBusHooks {
 	 * @param RevisionRecord $revisionRecord
 	 * @param EditResult $editResult
 	 */
-	public static function onPageSaveComplete(
-		WikiPage $wikiPage,
-		UserIdentity $userIdentity,
-		string $summary,
-		int $flags,
-		RevisionRecord $revisionRecord,
-		EditResult $editResult
+	public function onPageSaveComplete(
+		$wikiPage,
+		$userIdentity,
+		$summary,
+		$flags,
+		$revisionRecord,
+		$editResult
 	) {
 		if ( $editResult->isNullEdit() ) {
 			self::sendResourceChangedEvent( $wikiPage->getTitle(), [ 'null_edit' ] );
@@ -316,7 +393,7 @@ class EventBusHooks {
 	 *
 	 * @param RevisionRecord $revisionRecord RevisionRecord that has just been inserted
 	 */
-	public static function onRevisionRecordInserted( RevisionRecord $revisionRecord ) {
+	public function onRevisionRecordInserted( $revisionRecord ) {
 		self::sendRevisionCreateEvent(
 			'mediawiki.revision-create',
 			$revisionRecord
@@ -332,7 +409,11 @@ class EventBusHooks {
 		RevisionRecord $revisionRecord
 	) {
 		$eventBus = EventBus::getInstanceForStream( $stream );
-		$event = $eventBus->getFactory()->createRevisionCreateEvent(
+		$eventBusFactory = $eventBus->getFactory();
+		$eventBusFactory->setCommentFormatter(
+			MediaWikiServices::getInstance()->getCommentFormatter()
+		);
+		$event = $eventBusFactory->createRevisionCreateEvent(
 			$stream,
 			$revisionRecord
 		);
@@ -354,10 +435,10 @@ class EventBusHooks {
 	 * @param DatabaseBlock|null $previousBlock the previous block state for the block target.
 	 *        null if this is a new block target.
 	 */
-	public static function onBlockIpComplete(
-		DatabaseBlock $block,
-		User $user,
-		?DatabaseBlock $previousBlock
+	public function onBlockIpComplete(
+		$block,
+		$user,
+		$previousBlock
 	) {
 		$stream = 'mediawiki.user-blocks-change';
 		$eventBus = EventBus::getInstanceForStream( 'mediawiki.user-blocks-change' );
@@ -381,20 +462,21 @@ class EventBusHooks {
 	 * @see https://www.mediawiki.org/wiki/Manual:Hooks/LinksUpdateComplete
 	 *
 	 * @param LinksUpdate $linksUpdate the update object
+	 * @param mixed $ticket
 	 */
-	public static function onLinksUpdateComplete(
-		LinksUpdate $linksUpdate
+	public function onLinksUpdateComplete(
+		$linksUpdate, $ticket
 	) {
 		$addedProps = $linksUpdate->getAddedProperties();
 		$removedProps = $linksUpdate->getRemovedProperties();
-		$arePropsEmpty = empty( $removedProps ) && empty( $addedProps );
+		$arePropsEmpty = !$removedProps && !$addedProps;
 
-		$addedLinks = $linksUpdate->getAddedLinks();
+		$addedLinks = $linksUpdate->getPageReferenceArray( 'pagelinks', LinksTable::INSERTED );
 		$addedExternalLinks = $linksUpdate->getAddedExternalLinks();
-		$removedLinks = $linksUpdate->getRemovedLinks();
+		$removedLinks = $linksUpdate->getPageReferenceArray( 'pagelinks', LinksTable::DELETED );
 		$removedExternalLinks = $linksUpdate->getRemovedExternalLinks();
-		$areLinksEmpty = empty( $removedLinks ) && empty( $addedLinks )
-			&& empty( $removedExternalLinks ) && empty( $addedExternalLinks );
+		$areLinksEmpty = !$removedLinks && !$addedLinks
+			&& !$removedExternalLinks && !$addedExternalLinks;
 
 		if ( $arePropsEmpty && $areLinksEmpty ) {
 			return;
@@ -468,10 +550,10 @@ class EventBusHooks {
 	 * @param string[] $protect set of new restrictions details
 	 * @param string $reason the reason for page protection
 	 */
-	public static function onArticleProtectComplete(
-		WikiPage $wikiPage,
-		User $user,
-		array $protect,
+	public function onArticleProtectComplete(
+		$wikiPage,
+		$user,
+		$protect,
 		$reason
 	) {
 		$stream = 'mediawiki.page-restrictions-change';
@@ -512,16 +594,16 @@ class EventBusHooks {
 	 * @param User|null $user User who performed the tagging when the tagging is subsequent
 	 * to the action, or null
 	 */
-	public static function onChangeTagsAfterUpdateTags(
-		array $addedTags,
-		array $removedTags,
-		array $prevTags,
+	public function onChangeTagsAfterUpdateTags(
+		$addedTags,
+		$removedTags,
+		$prevTags,
 		$rc_id,
 		$rev_id,
 		$log_id,
 		$params,
-		?RecentChange $rc,
-		?User $user
+		$rc,
+		$user
 	) {
 		if ( $rev_id === null ) {
 			// We're only interested for revision (edits) tags for now.
@@ -536,7 +618,9 @@ class EventBusHooks {
 
 		$stream = 'mediawiki.revision-tags-change';
 		$eventBus = EventBus::getInstanceForStream( $stream );
-		$event = $eventBus->getFactory()->createRevisionTagsChangeEvent(
+		$eventBusFactory = $eventBus->getFactory();
+		$eventBusFactory->setCommentFormatter( MediaWikiServices::getInstance()->getCommentFormatter() );
+		$event = $eventBusFactory->createRevisionTagsChangeEvent(
 			$stream,
 			$revisionRecord,
 			$prevTags,
@@ -544,105 +628,6 @@ class EventBusHooks {
 			$removedTags,
 			$user
 		);
-
-		DeferredUpdates::addCallableUpdate(
-			static function () use ( $eventBus, $event ) {
-				$eventBus->send( [ $event ] );
-			}
-		);
-	}
-
-	/**
-	 * Handle CentralNoticeCampaignChange hook. Send an event corresponding to the type
-	 * of campaign change made (create, change or delete).
-	 *
-	 * This method is only expected to be called if CentralNotice is installed.
-	 *
-	 * @see https://www.mediawiki.org/wiki/Extension:CentralNotice/CentralNoticeCampaignChange
-	 *
-	 * @param string $changeType Type of change performed. Can be 'created', 'modified',
-	 *   or 'removed'.
-	 * @param string $time The time of the change. This is the same time that will be
-	 *   recorded for the change in the cn_notice_log table.
-	 * @param string $campaignName Name of the campaign created, modified or removed.
-	 * @param User $user The user who performed the change.
-	 * @param array|null $beginSettings Campaign settings before the change, if applicable.
-	 *   These will include start, end, enabled, archived and banners. If not applicable,
-	 *   this parameter will be null.
-	 * @param array|null $endSettings Campaign settings after the change, if applicable.
-	 *   These will include start, end, enabled, archived and banners. If not applicable,
-	 *   this parameter will be null.
-	 * @param string $summary Change summary provided by the user, or empty string if none
-	 *   was provided.
-	 */
-	public static function onCentralNoticeCampaignChange(
-		$changeType,
-		$time,
-		$campaignName,
-		User $user,
-		?array $beginSettings,
-		?array $endSettings,
-		$summary
-	) {
-		// Since we're running this hook, we'll assume that CentralNotice is installed.
-		$campaignUrl = Campaign::getCanonicalURL( $campaignName );
-
-		switch ( $changeType ) {
-			case 'created':
-				if ( !$endSettings ) {
-					return;
-				}
-
-				$stream = 'mediawiki.centralnotice.campaign-create';
-				$eventBus = EventBus::getInstanceForStream( $stream );
-				$eventFactory = $eventBus->getFactory();
-				$event = $eventFactory->createCentralNoticeCampaignCreateEvent(
-					$stream,
-					$campaignName,
-					$user,
-					$endSettings,
-					$summary,
-					$campaignUrl
-				);
-				break;
-
-			case 'modified':
-				if ( !$endSettings ) {
-					return;
-				}
-
-				$stream = 'mediawiki.centralnotice.campaign-change';
-				$eventBus = EventBus::getInstanceForStream( $stream );
-				$eventFactory = $eventBus->getFactory();
-				$event = $eventFactory->createCentralNoticeCampaignChangeEvent(
-					$stream,
-					$campaignName,
-					$user,
-					$endSettings,
-					$beginSettings ?: [],
-					$summary,
-					$campaignUrl
-				);
-				break;
-
-			case 'removed':
-				$stream = 'mediawiki.centralnotice.campaign-delete';
-				$eventBus = EventBus::getInstanceForStream( $stream );
-				$eventFactory = $eventBus->getFactory();
-				$event = $eventFactory->createCentralNoticeCampaignDeleteEvent(
-					$stream,
-					$campaignName,
-					$user,
-					$beginSettings ?: [],
-					$summary,
-					$campaignUrl
-				);
-				break;
-
-			default:
-				throw new UnexpectedValueException(
-					'Bad CentralNotice change type: ' . $changeType );
-		}
 
 		DeferredUpdates::addCallableUpdate(
 			static function () use ( $eventBus, $event ) {

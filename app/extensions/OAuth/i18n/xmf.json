@@ -4,10 +4,12 @@
 			"Narazeni"
 		]
 	},
+	"abusefilter-edit-builder-vars-oauth-consumer": "OAuth-კლიენტი, გჷმორინაფილი რედაქტირაფაშოთ ($1)",
 	"mwoauth-field-hidden": "(თე ინფორმაცია ტყობინაფილი რე)",
 	"mwoauth-field-private": "(თე ინფორმაცია კონფიდენციალური რე)",
 	"mwoauth-prefs-managegrants": "მერსხილი აპლიკაციეფი:",
 	"mwoauth-prefs-managegrantslink": "{{PLURAL:$1|$1 მერსხილი აპლიკაციაშ}} მართუა",
+	"mwoauth-consumer-allwikis": "არძა პროექტი",
 	"mwoauth-consumer-key": "კლიენტიშ იდენტიფიკატორი:",
 	"mwoauth-consumer-name": "აპლიკაციაშ ჯოხო:",
 	"mwoauth-consumer-version": "კლიენტიშ ვერსია:",

@@ -10,13 +10,13 @@ use BlueSpice\Bookshelf\BooksOverviewActions\View;
 use BlueSpice\Bookshelf\ChapterDataModel;
 use BlueSpice\Bookshelf\ChapterLookup;
 use BlueSpice\Bookshelf\IBooksOverviewAction;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Permissions\PermissionManager;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
 use RepoGroup;
-use Title;
-use TitleFactory;
-use User;
 
 class SecondaryDataProvider extends \MWStake\MediaWiki\Component\DataStore\SecondaryDataProvider {
 
@@ -256,13 +256,13 @@ class SecondaryDataProvider extends \MWStake\MediaWiki\Component\DataStore\Secon
 
 			$fileTitle = $this->titleFactory->newFromText( $basename );
 			if ( !$fileTitle->exists() || $fileTitle->getNamespace() !== NS_FILE ) {
-				$fileTitle = $this->titleFactory->newFromText( $basename, NS_FILE );
+				$fileTitle = $this->titleFactory->makeTitle( NS_FILE, $basename );
 			}
 
 			$localFile = $this->repoGroup->findFile( $fileTitle );
 			if ( $localFile !== false ) {
 				$thumb = $localFile->transform( [
-					'width' => 300
+					'width' => 350
 				] );
 				$path = $thumb->getURL();
 			}
@@ -311,8 +311,8 @@ class SecondaryDataProvider extends \MWStake\MediaWiki\Component\DataStore\Secon
 					$actionData = [
 						'iconClass' => implode( ' ', $actionItem->getIconClasses() ),
 						'class' => implode( ' ', $actionItem->getClasses() ),
-						'text' => $actionItem->getText()->plain(),
-						'title' => $actionItem->getTitle()->plain(),
+						'text' => $actionItem->getText()->text(),
+						'title' => $actionItem->getTitle()->text(),
 						'href' => $actionItem->getHref(),
 						'book' => $book->getPrefixedDBkey(),
 					];

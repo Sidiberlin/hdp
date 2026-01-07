@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"contentprovisioning-desc": "Forni un vista general de paginas approvisionate e permitte al administratores synchronisar contento",
+	"contentprovisioning": "Approvisionamento de contento",
+	"right-contentprovisioning-viewspecialpage": "Vider le pagina special pro le approvisionamento de contento",
+	"action-contentprovisioning-viewspecialpage": "vider le pagina special pro le approvisionamento de contento",
+	"contentprovisioning-ui-overview-grid-section-page": "Pagina",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "Synchrone?",
+	"contentprovisioning-ui-overview-grid-action-force-sync": "Fortiar synchronisation",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "Monstrar differentia",
+	"contentprovisioning-diff-no-change": "Nulle differentia inter le version del manifesto e le version del pagina wiki",
+	"contentprovisioning-ui-content-diff-title": "Differentias de contento",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "Wiki",
+	"contentprovisioning-ui-content-diff-headline-provisioner-content": "Distante"
+}

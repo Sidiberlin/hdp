@@ -13,6 +13,7 @@
 	"forms-form-editor-prop-targettypedatabase": "Pangkalan data",
 	"forms-form-editor-form-items-label": "Unsur borang",
 	"forms-formelement-group-other": "Lain-lain",
+	"forms-label-appearance": "Paparan",
 	"forms-label-target": "Sasaran",
 	"forms-label-city": "Bandar",
 	"forms-label-show-address": "Tunjuk alamat",
@@ -23,6 +24,5 @@
 	"forms-label-facilities": "Kemudahan",
 	"forms-title-new-customer": "Pelanggan baru",
 	"forms-form-editor-prop-targettypetemplate": "Templat",
-	"forms-form-editor-target-template-field-manual": "(manual)",
-	"forms-label-appearance": "Paparan"
+	"forms-form-editor-target-template-field-manual": "(manual)"
 }

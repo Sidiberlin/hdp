@@ -6,13 +6,13 @@
 	],
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceCategoryManager",
 	"descriptionmsg": "bluespicecategorymanager-desc",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"attributes": {
@@ -22,20 +22,6 @@
 					"className": "\\BlueSpice\\CategoryManager\\Extension",
 					"extPath": "/BlueSpiceCategoryManager"
 				}
-			},
-			"PermissionRegistry": {
-				"categorymanager-viewspecialpage": {
-					"type": "global",
-					"roles": [
-						"admin",
-						"editor",
-						"maintenanceadmin",
-						"structuremanager"
-					]
-				}
-			},
-			"AdminToolRegistry": {
-				"bs-category-manager": "BlueSpice\\CategoryManager\\AdminTool"
 			}
 		},
 		"BlueSpiceExtendedStatistics": {
@@ -47,36 +33,20 @@
 			},
 			"Reports": {
 				"cm-categorypages": {
-					"class": "\\BlueSpice\\CategoryManager\\Statistics\\Report\\CategoryPages"
+					"class": "\\BlueSpice\\CategoryManager\\Statistics\\Report\\CategoryPages",
+					"services": [ "TitleFactory" ]
 				}
 			}
 		}
 	},
-	"GroupPermissions": {
-		"*": {
-			"categorymanager-viewspecialpage": false
-		},
-		"user": {
-			"categorymanager-viewspecialpage": false
-		},
-		"sysop": {
-			"categorymanager-viewspecialpage": true
-		}
-	},
-	"AvailableRights": [
-		"categorymanager-viewspecialpage"
-	],
 	"SpecialPages": {
-		"BlueSpiceCategoryManager": "SpecialBlueSpiceCategoryManager"
+		"BlueSpiceCategoryManager": "\\BlueSpice\\CategoryManager\\Special\\CategoryManager"
 	},
 	"AutoloadNamespaces": {
 		"BlueSpice\\CategoryManager\\": "src/"
 	},
-	"AutoloadClasses": {
-		"SpecialBlueSpiceCategoryManager": "includes/specials/SpecialBlueSpiceCategoryManager.php"
-	},
 	"ExtensionMessagesFiles": {
-		"BlueSpiceCategoryManagerAlias": "includes/specials/SpecialBlueSpiceCategoryManager.alias.php"
+		"BlueSpiceCategoryManagerAlias": "languages/SpecialBlueSpiceCategoryManager.alias.php"
 	},
 	"MessagesDirs": {
 		"BlueSpiceCategoryManager": [
@@ -85,33 +55,49 @@
 	},
 	"ResourceModules": {
 		"ext.bluespice.categorymanager": {
-			"scripts": [
-				"bluespice.categorymanager.js"
+			"packageFiles": [
+				"bluespice.categorymanager.js",
+				"ui/CategoryManager.js",
+				"ui/tree/CategoryTree.js",
+				"ui/tree/CategoryTreeItem.js",
+				"ui/dialog/RenameCategory.js",
+				"api/CategoryActions.js",
+				"ui/toolbar/CategoryToolbar.js",
+				"ui/dialog/CreateCategory.js"
 			],
 			"styles": [
 				"bluespice.categorymanager.css"
 			],
 			"dependencies": [
-				"ext.bluespice.extjs",
-				"ext.bluespice.extjs.BS.deferred",
 				"mediawiki.api",
-				"mediawiki.Title"
+				"mediawiki.Title",
+				"oojs",
+				"oojs-ui.styles.icons-editing-core",
+				"oojs-ui.styles.icons-accessibility",
+				"oojs-ui.styles.icons-interactions",
+				"ext.oOJSPlus.data"
 			],
 			"messages": [
-				"bs-categorymanager-draganddrop-text",
-				"bs-categorymanager-dlg-new-prompt",
-				"bs-categorymanager-dlg-new-title",
+				"bs-categorymanager-dlg-add-title",
 				"bs-categorymanager-removecategoryconfirm-text",
 				"bs-categorymanager-removecategoryconfirm-title",
 				"bs-categorymanager-addcategory-dialog-error-title",
 				"bs-categorymanager-addcategory-dialog-error-duplicate-title",
 				"bs-categorymanager-addcategory-dialog-error-duplicate-text",
-				"bs-categorymanager-action-show-category",
 				"bs-categorymanager-rename-category",
 				"bs-categorymanager-rename-category-new-name",
-				"bs-categorymanager-move-new-name",
-				"bs-categorymanager-replace-in-pages",
-				"bs-categorymanager-category-column-name"
+				"bs-categorymanager-dialog-action-add-label",
+				"cancel",
+				"bs-categorymanager-removecategory-confirm",
+				"bs-categorymanager-dialog-create-category-placeholder",
+				"bs-categorymanager-add-category-label",
+				"bs-configmanager-tool-create-category-label",
+				"bs-categorymanager-movecategory-confirm",
+				"bs-categorymanager-category-item-rename-label",
+				"bs-categorymanager-category-item-view-label",
+				"bs-categorymanager-category-item-delete-label",
+				"bs-categorymanager-dialog-action-rename-label",
+				"bs-categorymanager-dlg-create-category-exists-label"
 			]
 		},
 		"ext.bluespice.categorymanager.statistics": {
@@ -120,6 +106,7 @@
 			],
 			"messages": [
 				"bs-categorymanager-statistics-report-category-pages",
+				"bs-categorymanager-statistics-report-category-pages-desc",
 				"bs-categorymanager-statistics-report-category-pages-axis-value"
 			]
 		}

@@ -31,7 +31,5 @@
 	"bs-countthings-tag-countusers-desc": "تعداد کاربران ثبت نام کرده را نمایش می‌دهد.",
 	"bs-countthings-tag-countfiles-desc": "شمار پرونده‌های موجود در ویکی را نمایش می‌دهد.",
 	"bs-countthings-tag-countcharacters-desc": "فراداده‌ای بر پایهٔ محتوای مقالهٔ مورد اشاره تهیه می‌کند. خروجی یک جعبهٔ اطلاعات است که می‌توتند در مقاله قرار داده شود. با استفاده از پارامتر «mode» می‌توان انواع مختلفی از اطلاعات را نمایش داد.",
-	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: آنچه باید شمارش شود <code>chars</code> (نویسه‌ها)، <code>words</code> (واژه‌ها) یا <code>pages</code> (صفحات).",
-	"bs-countthings-tag-countcharacters-example-1": "شمار واژه‌ها",
-	"bs-countthings-tag-countcharacters-example-2": "شمار نویسه‌ها"
+	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: آنچه باید شمارش شود <code>chars</code> (نویسه‌ها)، <code>words</code> (واژه‌ها) یا <code>pages</code> (صفحات)."
 }

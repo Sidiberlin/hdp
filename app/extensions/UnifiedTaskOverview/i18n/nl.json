@@ -8,5 +8,6 @@
 	"unifiedtaskoverview": "Mijn taken",
 	"unifiedtaskoverview-label-no-task": "Momenteel zijn er geen taken die moeten worden voltooid.",
 	"unifiedtaskoverview-personal-url-my-tasks": "Taken",
-	"unifiedtaskoverview-search-placeholder": "Zoeken"
+	"unifiedtaskoverview-search-placeholder": "Zoeken",
+	"unifiedtaskoverview-no-login-text": "Meld u aan om uw taken te bekijken"
 }

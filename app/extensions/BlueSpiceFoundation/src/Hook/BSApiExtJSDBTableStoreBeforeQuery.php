@@ -27,6 +27,8 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 abstract class BSApiExtJSDBTableStoreBeforeQuery extends Hook {
 	/**
@@ -117,8 +119,8 @@ abstract class BSApiExtJSDBTableStoreBeforeQuery extends Hook {
 	}
 
 	/**
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param \BSApiExtJSDBTableStoreBase $store
 	 * @param string $queryString
 	 * @param array $filters

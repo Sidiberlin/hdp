@@ -1,22 +1,22 @@
 bs.util.registerNamespace( 'bs.vec.ui' );
 
-bs.vec.ui.VerticalTextAlignmentStyle = function() {
+bs.vec.ui.VerticalTextAlignmentStyle = function () {
 	bs.vec.ui.VerticalTextAlignmentStyle.super.apply( this );
 	this.section = bs.vec.ui.TableStyle.static.SECTION_CELL;
 	this.applyTo = bs.vec.ui.TableStyle.static.ELEMENT_CELL;
 };
 
-OO.inheritClass( bs.vec.ui.VerticalTextAlignmentStyle , bs.vec.ui.TableStyle );
+OO.inheritClass( bs.vec.ui.VerticalTextAlignmentStyle, bs.vec.ui.TableStyle );
 
-bs.vec.ui.VerticalTextAlignmentStyle.prototype.getAttribute = function() {
+bs.vec.ui.VerticalTextAlignmentStyle.prototype.getAttribute = function () {
 	return 'vertical-align';
 };
 
-bs.vec.ui.VerticalTextAlignmentStyle.prototype.getUnit = function() {
+bs.vec.ui.VerticalTextAlignmentStyle.prototype.getUnit = function () {
 	return bs.vec.ui.TableStyle.static.UNIT_NONE;
 };
 
-bs.vec.ui.VerticalTextAlignmentStyle.prototype.getTool = function() {
+bs.vec.ui.VerticalTextAlignmentStyle.prototype.getTool = function () {
 	return {
 		widget: bs.vec.ui.widget.VerticalTextAlignmentWidget,
 		displaySection: bs.vec.ui.TableStyle.static.TYPE_ADDITIONAL,
@@ -24,7 +24,7 @@ bs.vec.ui.VerticalTextAlignmentStyle.prototype.getTool = function() {
 	};
 };
 
-bs.vec.ui.VerticalTextAlignmentStyle.prototype.getModelProperty = function() {
+bs.vec.ui.VerticalTextAlignmentStyle.prototype.getModelProperty = function () {
 	return 'verticalTextAlignment';
 };
 
@@ -40,4 +40,4 @@ bs.vec.ui.VerticalTextAlignmentStyle.prototype.decorate = function ( $element ) 
 	$element.css( this.getAttribute(), this.getValue() );
 };
 
-bs.vec.registry.TableStyle.register( "verticalTextAlignment", new bs.vec.ui.VerticalTextAlignmentStyle() );
+bs.vec.registry.TableStyle.register( 'verticalTextAlignment', new bs.vec.ui.VerticalTextAlignmentStyle() );

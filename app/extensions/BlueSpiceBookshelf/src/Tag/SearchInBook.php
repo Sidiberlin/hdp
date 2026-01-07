@@ -7,11 +7,11 @@ use BlueSpice\ParamProcessor\ParamDefinition;
 use BlueSpice\ParamProcessor\ParamType;
 use BlueSpice\Tag\IHandler;
 use BS\ExtendedSearch\Tag\TagSearch;
-use ConfigException;
+use MediaWiki\Config\ConfigException;
 use MediaWiki\MediaWikiServices;
-use Message;
-use Parser;
-use PPFrame;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class SearchInBook extends TagSearch {
 
@@ -32,7 +32,6 @@ class SearchInBook extends TagSearch {
 		$config = MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'bsg' );
-		$this->tagCounter++;
 
 		return new SearchInBookHandler(
 			$processedInput,
@@ -40,7 +39,7 @@ class SearchInBook extends TagSearch {
 			$parser,
 			$frame,
 			$config,
-			$this->tagCounter,
+			$this->nextTagId(),
 			MediaWikiServices::getInstance()->getService( 'BSBookshelfBookLookup' )
 		);
 	}

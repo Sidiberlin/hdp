@@ -1,6 +1,9 @@
 <?php
 
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiBookshelfStore extends BSApiExtJSStoreBase {
@@ -13,7 +16,7 @@ class ApiBookshelfStore extends BSApiExtJSStoreBase {
 
 	/**
 	 *
-	 * @param \ApiMain $mainModule
+	 * @param ApiMain $mainModule
 	 * @param string $moduleName
 	 * @param string $modulePrefix
 	 */
@@ -97,11 +100,17 @@ class ApiBookshelfStore extends BSApiExtJSStoreBase {
 
 		$dbr = $this->getDB();
 		$res = $dbr->select(
-			'page',
-			[ 'page_id', 'page_title', 'page_namespace' ],
+			[ 'page', 'bs_books' ],
+			[ 'page_id', 'page_title', 'page_namespace', 'book_id' ],
 			[ 'page_namespace' => NS_BOOK ],
 			__METHOD__,
-			[ 'ORDER BY' => 'page_title' ]
+			[ 'ORDER BY' => 'page_title' ],
+			[
+				'bs_books' => [
+					'INNER JOIN',
+					'book_title = page_title'
+				]
+			]
 		);
 
 		foreach ( $res as $row ) {
@@ -146,6 +155,7 @@ class ApiBookshelfStore extends BSApiExtJSStoreBase {
 		$oBook->book_prefixedtext = $oTitle->getPrefixedText();
 		$oBook->book_displaytext = $oTitle->getText();
 		$oBook->book_meta = $oPHP->getBookMeta();
+		$oBook->book_id = (int)$row->book_id;
 
 		// maybe for future or optional? Include full book tree in response. Very expensive!
 		// $oBook->book_tree = $oPHP->getExtendedTOCJSON();
@@ -190,6 +200,11 @@ class ApiBookshelfStore extends BSApiExtJSStoreBase {
 		return $data;
 	}
 
+	/**
+	 * @param string $name
+	 * @param mixed $content
+	 * @return stdClass
+	 */
 	private function makeDataSetForTemp( $name, $content ) {
 		$php = DynamicPageHierarchyProvider::getInstanceFor( $name, [ 'content' => $content ] );
 		$toc = $php->getExtendedTOCArray();

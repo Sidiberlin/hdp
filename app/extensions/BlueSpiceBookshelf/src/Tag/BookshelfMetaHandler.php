@@ -3,8 +3,8 @@
 namespace BlueSpice\Bookshelf\Tag;
 
 use BlueSpice\Tag\Handler;
-use FormatJson;
-use Html;
+use MediaWiki\Html\Html;
+use MediaWiki\Json\FormatJson;
 
 class BookshelfMetaHandler extends Handler {
 

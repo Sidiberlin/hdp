@@ -26,10 +26,9 @@
  */
 namespace BlueSpice\Entity;
 
-use MediaWiki\MediaWikiServices;
-use Status;
-use Title;
-use User;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 abstract class Content extends \BlueSpice\Entity {
 	public const NS = -1;
@@ -73,7 +72,7 @@ abstract class Content extends \BlueSpice\Entity {
 	 * @return User
 	 */
 	public function getOwner() {
-		return MediaWikiServices::getInstance()->getUserFactory()
+		return $this->services->getUserFactory()
 			->newFromId( $this->get( static::ATTR_OWNER_ID, 0 ) );
 	}
 
@@ -111,11 +110,9 @@ abstract class Content extends \BlueSpice\Entity {
 		if ( $this->tsCreatedCache ) {
 			return $this->tsCreatedCache;
 		}
-
 		$firstRev = $this->services->getRevisionLookup()
 			->getFirstRevision( $this->getTitle()->toPageIdentity() );
 		$this->tsCreatedCache = $firstRev ? $firstRev->getTimestamp() : false;
-
 		return $this->tsCreatedCache;
 	}
 
@@ -125,7 +122,7 @@ abstract class Content extends \BlueSpice\Entity {
 	 * @param array $aOptions
 	 * @return Status
 	 */
-	public function save( User $oUser = null, $aOptions = [] ) {
+	public function save( ?User $oUser = null, $aOptions = [] ) {
 		$oTitle = $this->getTitle();
 		if ( $oTitle === null ) {
 			return Status::newFatal( 'Related Title error' );
@@ -184,7 +181,7 @@ abstract class Content extends \BlueSpice\Entity {
 	 * @return bool True if the update succeeded
 	 */
 	protected function invalidateTitleCache( $purgeTime = null ) {
-		if ( MediaWikiServices::getInstance()->getReadOnlyMode()->isReadOnly() ) {
+		if ( $this->services->getReadOnlyMode()->isReadOnly() ) {
 			return false;
 		}
 

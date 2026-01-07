@@ -8,7 +8,7 @@ body.mediawiki .mw-echo-ui-overlay {
 }
 
 body.mediawiki .mw-notification-area {
-	top: var(--navbar-primary-height);
+	top: var( --navbar-primary-height );
 }
 
 /* Fix notification popup position */
@@ -21,19 +21,19 @@ body.mediawiki .mw-notification-area-layout {
 }
 
 .oo-ui-defaultOverlay .oo-ui-floatableElement-floatable {
-	/* For popups in dialogs => dialog has a fixed 1054 z-index (with !important)*/
+	/* For popups in dialogs => dialog has a fixed 1054 z-index (with !important) */
 	z-index: 1100;
 }
 
 body .mw-rcfilters-ui-highlights {
 	padding-bottom: 3px;
-	padding-right: 0px;
+	padding-right: 0;
 }
 
 /* mediawiki styles a.new is also set outside of mw-content-text
 => has to be adapted to our changes */
 body.mediawiki a.new {
-	color: var(--new-link-fg);
+	color: var( --new-link-fg );
 }
 
 body.mw-special-Allpages ul.mw-allpages-chunk li a {
@@ -52,4 +52,18 @@ body.mw-special-Allpages ul.mw-allpages-chunk li a {
 /* fix user setting links always underlined */
 body.mw-underline-always .mw-body-content a {
 	text-decoration: underline;
+}
+
+/* fix dialog container z-index */
+.skin-bluespicediscovery #mw-teleport-target {
+	z-index: 2000;
+}
+
+.skin-bluespicediscovery .oojs-plus-color-picker-standalone {
+	z-index: 2050;
+}
+
+/* fix MultimediaViewer fold bar width */
+.mw-mmv-above-fold {
+	box-sizing: content-box;
 }

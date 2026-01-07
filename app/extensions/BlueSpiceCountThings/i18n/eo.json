@@ -16,7 +16,5 @@
 	"bs-countthings-ve-countcharacters-mode-wordsandchars": "skribsignoj kaj vortoj",
 	"bs-countthings-ve-countcharacters-mode-pagesonly": "paĝoj",
 	"bs-countthings-ve-countcharacters-input-label": "Paĝoj",
-	"bs-countthings-error-not-exist": "La paĝo \"$1\" ne ekzistas.",
-	"bs-countthings-tag-countcharacters-example-1": "Nombro de vortoj",
-	"bs-countthings-tag-countcharacters-example-2": "Nombro de skribsignoj"
+	"bs-countthings-error-not-exist": "La paĝo \"$1\" ne ekzistas."
 }

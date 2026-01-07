@@ -2,8 +2,8 @@
 
 namespace BlueSpice;
 
+use MediaWiki\Html\TemplateParser;
 use RuntimeException;
-use TemplateParser;
 
 class LoadPlaceholderRegistry extends ExtensionAttributeBasedRegistry {
 
@@ -46,6 +46,14 @@ class LoadPlaceholderRegistry extends ExtensionAttributeBasedRegistry {
 		if ( !$path ) {
 			return '';
 		}
+		if ( substr( $path, -4 ) === '.svg' ) {
+			$svg = file_get_contents( $path );
+			if ( $svg === false ) {
+				return '';
+			}
+			return $svg;
+		}
+
 		$templateParser = new TemplateParser( $path );
 
 		try {

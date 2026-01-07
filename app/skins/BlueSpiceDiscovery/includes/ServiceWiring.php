@@ -1,6 +1,7 @@
 <?php
 
 use BlueSpice\Discovery\AttentionIndicatorFactory;
+use BlueSpice\Discovery\BackLinkProviderFactory;
 use BlueSpice\Discovery\BreadcrumbDataProviderFactory;
 use BlueSpice\Discovery\CookieHandler;
 use BlueSpice\Discovery\LangLinksProviderFactory;
@@ -11,7 +12,9 @@ use BlueSpice\Discovery\MetaItemsProviderFactory;
 use BlueSpice\Discovery\Renderer\ComponentRenderer;
 use BlueSpice\Discovery\Renderer\SkinSlotRenderer;
 use BlueSpice\Discovery\TemplateDataProviderFactory;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Request\WebRequest;
 
 return [
 	'BlueSpiceDiscoveryTemplateDataProvider' => static function ( MediaWikiServices $services ) {
@@ -91,6 +94,11 @@ return [
 	'BlueSpiceDiscoveryTemplateDataProviderFactory' => static function ( MediaWikiServices $services ) {
 		return new TemplateDataProviderFactory(
 			$services->get( 'MWStakeManifestObjectFactory' )
+		);
+	},
+	'BlueSpiceDiscoveryBackLinkProviderFactory' => static function ( MediaWikiServices $services ) {
+		return new BackLinkProviderFactory(
+			$services->getObjectFactory()
 		);
 	}
 ];

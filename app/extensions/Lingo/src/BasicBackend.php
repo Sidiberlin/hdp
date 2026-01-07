@@ -47,7 +47,7 @@ class BasicBackend extends Backend {
 	/**
 	 * @param MessageLog|null &$messages
 	 */
-	public function __construct( MessageLog &$messages = null ) {
+	public function __construct( ?MessageLog &$messages = null ) {
 		parent::__construct( $messages );
 
 		$this->registerHooks();
@@ -80,7 +80,7 @@ class BasicBackend extends Backend {
 			$line = array_pop( $this->mArticleLines );
 
 			if ( $this->isValidGlossaryLine( $line ) ) {
-				list( $term, $definitions ) = $this->processNextGlossaryLine( $line, $term, $definitions );
+				[ $term, $definitions ] = $this->processNextGlossaryLine( $line, $term, $definitions );
 
 				if ( $term !== null ) {
 					$ret = $this->queueDefinitions( $definitions, $term );
@@ -236,11 +236,9 @@ class BasicBackend extends Backend {
 
 	/**
 	 * Initiates the purging of the cache when the Terminology page was saved or purged.
-	 *
-	 * @param WikiPage $wikipage
 	 */
 	public function purgeCache( WikiPage $wikipage ) {
-		if ( $wikipage !== null && $wikipage->getTitle()->getText() === $this->getLingoPageName() ) {
+		if ( $wikipage->getTitle()->getText() === $this->getLingoPageName() ) {
 			$this->getLingoParser()->purgeGlossaryFromCache();
 		}
 	}

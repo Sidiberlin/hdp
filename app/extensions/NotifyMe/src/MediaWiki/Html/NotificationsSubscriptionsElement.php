@@ -2,9 +2,9 @@
 
 namespace MediaWiki\Extension\NotifyMe\MediaWiki\Html;
 
-use Html;
-use HTMLFormField;
-use MWException;
+use Exception;
+use MediaWiki\Html\Html;
+use MediaWiki\HTMLForm\HTMLFormField;
 use OOUI\ProgressBarWidget;
 
 class NotificationsSubscriptionsElement extends HTMLFormField {
@@ -20,7 +20,7 @@ class NotificationsSubscriptionsElement extends HTMLFormField {
 	/**
 	 * @param array $params
 	 *
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	public function __construct( $params ) {
 		parent::__construct( $params );
@@ -82,6 +82,7 @@ class NotificationsSubscriptionsElement extends HTMLFormField {
 		return Html::rawElement( 'div', [
 			'class' => 'notifications-subscriptions',
 			'data-buckets' => json_encode( $this->value['bucketData'] ),
+			'data-events' => json_encode( $this->value['eventData' ] ),
 			'data-channel-labels' => json_encode( $this->value['channelLabels'] ),
 		], $content . $underlyingField );
 	}

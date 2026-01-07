@@ -3,7 +3,7 @@
 namespace MediaWiki\Extension\UnifiedTaskOverview\Hook;
 
 use MediaWiki\Extension\UnifiedTaskOverview\ITaskDescriptor;
-use User;
+use MediaWiki\User\User;
 
 interface GetTaskDescriptors {
 

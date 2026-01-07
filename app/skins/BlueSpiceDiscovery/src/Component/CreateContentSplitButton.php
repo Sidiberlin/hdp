@@ -3,37 +3,17 @@
 namespace BlueSpice\Discovery\Component;
 
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Permissions\PermissionManager;
-use Message;
+use MediaWiki\Message\Message;
+use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleDropdownIconSplitButton;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleDropdownItemlistFromArray;
-use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleDropdownSplitButton;
-use MWStake\MediaWiki\Component\CommonUserInterface\LinkFormatter;
-use User;
 
-class CreateContentSplitButton extends SimpleDropdownSplitButton {
+class CreateContentSplitButton extends SimpleDropdownIconSplitButton {
 
 	/**
 	 *
-	 * @var User
 	 */
-	private $user = null;
-
-	/**
-	 *
-	 * @var PermissionManager
-	 */
-	private $permissionManager = null;
-
-	/**
-	 *
-	 * @param User $user
-	 * @param PermissionManager $permissionManager
-	 */
-	public function __construct( $user, $permissionManager ) {
+	public function __construct() {
 		parent::__construct( [] );
-
-		$this->user = $user;
-		$this->permissionManager = $permissionManager;
 	}
 
 	/**
@@ -60,35 +40,35 @@ class CreateContentSplitButton extends SimpleDropdownSplitButton {
 	 * @return array
 	 */
 	public function getContainerClasses(): array {
-		return [ 'mx-2' ];
+		return [ 'mx-2', 'new-page-split-btn' ];
 	}
 
 	/**
 	 * @return array
 	 */
 	public function getButtonClasses(): array {
-		return [ 'mws-button-primary', 'new-page' ];
+		return [ 'ico-btn', 'new-page-btn' ];
 	}
 
 		/**
 		 * @return array
 		 */
 	public function getSplitButtonClasses(): array {
-		return [ 'mws-button-primary' ];
+		return [ 'new-page-menu-btn' ];
 	}
 
 	/**
 	 * @return array
 	 */
 	public function getMenuClasses(): array {
-		return [ 'mws-dropdown-primary', 'dropdown-menu-end' ];
+		return [ 'mws-dropdown-secondary', 'dropdown-menu-end' ];
 	}
 
 	/**
 	 * @return Message
 	 */
-	public function getButtonText(): Message {
-		return Message::newFromKey( 'bs-discovery-header-create-button-text' );
+	public function getIconClasses(): array {
+		return [ 'bi-plus-lg' ];
 	}
 
 	/**

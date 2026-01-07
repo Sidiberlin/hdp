@@ -2,9 +2,10 @@
 
 namespace SMW\MediaWiki\Api;
 
-use ApiBase;
+use MediaWiki\Api\ApiBase;
 use SMW\Services\ServicesFactory as ApplicationFactory;
 use SMW\Site;
+use Wikimedia\ParamValidator\ParamValidator;
 
 /**
  * API module to obtain info about the SMW install, primarily targeted at
@@ -12,7 +13,7 @@ use SMW\Site;
  *
  * @ingroup Api
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 1.6
  *
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
@@ -23,7 +24,6 @@ class Info extends ApiBase {
 	 * @see ApiBase::execute
 	 */
 	public function execute() {
-
 		$params = $this->extractRequestParams();
 		$requestedInfo = $params['info'];
 
@@ -77,9 +77,9 @@ class Info extends ApiBase {
 	public function getAllowedParams() {
 		return [
 			'info' => [
-				ApiBase::PARAM_DFLT => 'propcount|usedpropcount|declaredpropcount',
-				ApiBase::PARAM_ISMULTI => true,
-				ApiBase::PARAM_TYPE => [
+				ParamValidator::PARAM_DEFAULT => 'propcount|usedpropcount|declaredpropcount',
+				ParamValidator::PARAM_ISMULTI => true,
+				ParamValidator::PARAM_TYPE => [
 					'propcount',
 					'errorcount',
 					'deletecount',
@@ -145,7 +145,6 @@ class Info extends ApiBase {
 	}
 
 	private function doMapResultInfoFrom( $map, $requestedInfo, $semanticStats ) {
-
 		$resultInfo = [];
 
 		foreach ( $map as $apiName => $smwName ) {

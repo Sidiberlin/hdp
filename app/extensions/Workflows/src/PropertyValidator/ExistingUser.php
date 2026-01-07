@@ -3,8 +3,9 @@
 namespace MediaWiki\Extension\Workflows\PropertyValidator;
 
 use MediaWiki\Extension\Workflows\IActivity;
+use MediaWiki\Message\Message;
+use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
-use Message;
 
 class ExistingUser implements IPropertyValidator {
 	/** @var UserFactory */
@@ -22,7 +23,7 @@ class ExistingUser implements IPropertyValidator {
 	 */
 	public function validate( $value, IActivity $activity ) {
 		$user = $this->userFactory->newFromName( $value );
-		return $user instanceof \User && $user->isRegistered();
+		return $user instanceof User && $user->isRegistered();
 	}
 
 	/**

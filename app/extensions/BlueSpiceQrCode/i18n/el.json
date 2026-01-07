@@ -6,8 +6,6 @@
 		]
 	},
 	"bs-qr-code-extension-description": "Προβάλλει έναν κωδικό QR με σύνδεσμο στην τρέχουσα σελίδα της γραμμής εργαλείων.",
-	"bs-qr-code-title": "Κωδικός QR",
-	"bs-qr-code-text": "Σάρωση κωδικού QR για άνοιγμα αυτής της σελίδας σε κινητό τηλέφωνο",
 	"bs-qr-code-alt-text": "Κωδικός QR για $1",
 	"bs-qr-code-tag-qrcode-title": "Κωδικός QR",
 	"bs-qr-code-tag-attr-page-label": "Σελίδα",

@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Ghaly",
+			"HitomiAkane",
 			"Jaideraf",
 			"Kghbln",
 			"Meno25",
@@ -103,7 +104,7 @@
 	"smw_purge": "تحديث",
 	"types": "أنواع",
 	"smw_types_docu": "التالى قائمه بجميع أنواع البيانات التى يمكن أن تسند إلى الخصائص.\nكل نوع بيانات له صفحه حيث يمكن توفير معلومات إضافيه.",
-	"smw_uri_doc": "محلل URI ينفذ [$1 W3C على httpRange-14]. إنه يتأكد من أن البشر لا يتحولون إلى مواقع ويب.",
+	"smw_uri_doc": "القرار URI بتطبق [$1 W3C TAG العثور على httpRange-14]. بيقفل إنه بيتم تسليم تمثيل RDF (للوحات) أو صفحة ويكي (للانسان) حسب الطلب.",
 	"ask": "بحث سيمانتيك",
 	"smw_ask_sortby": "الترتيب حسب العمود (اختياري)",
 	"smw_ask_ascorder": "تصاعدي",
@@ -182,6 +183,7 @@
 	"smw_concept_header": "صفحات المبدأ \"$1\"",
 	"smw_conceptarticlecount": "عرض {{PLURAL:$1||صفحه واحده تنتمي|صفحتين تنتميان|$1 صفحات تنتمي|$1 صفحه تنتمي}} إلى هذا المبدأ.",
 	"smw-livepreview-loading": "تحميل…",
+	"smw-schema-tag": "{{PLURAL:$1|وسم|وسوم}}",
 	"smw-listingcontinuesabbrev": "متابعه",
 	"smw-showingresults": "الصفحه دى بتعرض {{PLURAL:$1|<strong>1</strong> نتيجه}} من اول رقم <strong>$2</strong>."
 }

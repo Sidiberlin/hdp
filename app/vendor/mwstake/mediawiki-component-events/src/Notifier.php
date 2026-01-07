@@ -2,6 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\Events;
 
+use Exception;
 use MediaWiki\HookContainer\HookContainer;
 use Wikimedia\Rdbms\LBFactory;
 
@@ -33,7 +34,7 @@ class Notifier {
 	/**
 	 * @param INotificationEvent $event
 	 *
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public function emit( INotificationEvent $event ) {
 		if ( $this->inhibited ) {
@@ -153,7 +154,7 @@ class Notifier {
 		try {
 			// Need to make sure all DB writes are done before we continue, since this is just before __destruct
 			$this->loadBalancerFactory->commitPrimaryChanges();
-		} catch ( \Exception $e ) {
+		} catch ( Exception $e ) {
 			// We don't want to throw an exception here, since this is just before __destruct
 			// and we don't want to break the request
 		}

@@ -3,9 +3,9 @@
 namespace BlueSpice\Discovery\HookHandler\MWStakeCommonUIRegisterSkinSlotComponents;
 
 use BlueSpice\Discovery\Component\DefaultBreadcrumbNav;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
 use MWStake\MediaWiki\Component\CommonUserInterface\Hook\MWStakeCommonUIRegisterSkinSlotComponents;
-use RequestContext;
 
 class Breadcrumb implements MWStakeCommonUIRegisterSkinSlotComponents {
 

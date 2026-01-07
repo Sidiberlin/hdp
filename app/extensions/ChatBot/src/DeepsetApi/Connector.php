@@ -76,7 +76,7 @@ class Connector {
 	 * @param array $options
 	 * @param string $contentType
 	 *
-	 * @return void
+	 * @return array
 	 * @throws Exception
 	 */
 	protected function post( string $url, array $options, string $contentType = "application/json" ): array {
@@ -106,7 +106,7 @@ class Connector {
 	 * @param array $options
 	 * @param string $contentType
 	 *
-	 * @return void
+	 * @return array
 	 * @throws Exception
 	 */
 	protected function patch( string $url, array $options, string $contentType = "application/json" ): array {

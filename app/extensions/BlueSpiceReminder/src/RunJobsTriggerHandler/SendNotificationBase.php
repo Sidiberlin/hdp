@@ -4,10 +4,11 @@ namespace BlueSpice\Reminder\RunJobsTriggerHandler;
 
 use BlueSpice\RunJobsTriggerHandler;
 use DateTime;
-use FormatJson;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
-use Title;
 
 abstract class SendNotificationBase extends RunJobsTriggerHandler {
 	/**
@@ -22,13 +23,14 @@ abstract class SendNotificationBase extends RunJobsTriggerHandler {
 	protected $doUpdateRepeatingRemindersDate = false;
 
 	protected function doRun() {
-		$status = \Status::newGood();
+		$status = Status::newGood();
 
 		$dbr = $this->services->getDBLoadBalancer()->getConnection( DB_REPLICA );
 		$res = $dbr->select(
 			'bs_reminder',
 			'*',
-			$this->queryConds
+			$this->queryConds,
+			__METHOD__
 		);
 
 		$repeatingReminders = [];

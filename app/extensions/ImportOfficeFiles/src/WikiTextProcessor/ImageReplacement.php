@@ -2,11 +2,11 @@
 
 namespace MediaWiki\Extension\ImportOfficeFiles\WikiTextProcessor;
 
-use FormatJson;
 use MediaWiki\Extension\ImportOfficeFiles\FilenameBuilder;
 use MediaWiki\Extension\ImportOfficeFiles\IWikiTextProcessor;
 use MediaWiki\Extension\ImportOfficeFiles\Modules\MSOfficeWord;
 use MediaWiki\Extension\ImportOfficeFiles\Workspace;
+use MediaWiki\Json\FormatJson;
 
 class ImageReplacement implements IWikiTextProcessor {
 
@@ -36,9 +36,15 @@ class ImageReplacement implements IWikiTextProcessor {
 	private $nsFileRepoCompat = false;
 
 	/**
-	 * @param Workspace $workspace
+	 * @var int
 	 */
-	public function __construct( Workspace $workspace ) {
+	private $imageWidthThreshold;
+
+	/**
+	 * @param Workspace $workspace
+	 * @param int $imageWidthThreshold
+	 */
+	public function __construct( Workspace $workspace, int $imageWidthThreshold ) {
 		$this->workspace = $workspace;
 
 		$analyzerBucket = $this->workspace->loadBucket( MSOfficeWord::BUCKET_ANALYZER );
@@ -58,6 +64,8 @@ class ImageReplacement implements IWikiTextProcessor {
 		}
 
 		$this->idFilenameMap = $this->workspace->loadBucket( MSOfficeWord::BUCKET_MEDIA_ID_FILENAME );
+
+		$this->imageWidthThreshold = $imageWidthThreshold;
 	}
 
 	/**
@@ -99,12 +107,19 @@ class ImageReplacement implements IWikiTextProcessor {
 				$props .= '|thumb|center';
 			}
 
+			// If image is too large - scale it down to configured "threshold".
+			// For that reduce width to threshold and get rid of height (so image proportions will stay).
+			if ( !empty( $width ) && $width > $this->imageWidthThreshold ) {
+				$width = $this->imageWidthThreshold;
+				$height = null;
+			}
+
 			if ( !empty( $width ) && !empty( $height ) ) {
 				$props .= "|{$width}x{$height}px";
 			} elseif ( !empty( $width ) ) {
-				$props .= "|x{$width}px";
+				$props .= "|{$width}px";
 			} elseif ( !empty( $height ) ) {
-				$props .= "|{$height}px";
+				$props .= "|x{$height}px";
 			}
 
 			if ( isset( $this->idFilenameMap[$id] ) ) {

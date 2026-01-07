@@ -2,11 +2,11 @@
 
 namespace MediaWiki\Extension\FlexiSkin\Api;
 
-use ApiUsageException;
-use FormatJson;
+use MediaWiki\Api\ApiUsageException;
 use MediaWiki\Extension\FlexiSkin\FlexiSkin;
 use MediaWiki\Extension\FlexiSkin\FlexiSkinManager;
 use MediaWiki\Extension\FlexiSkin\IFlexiSkinSubscriber;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 

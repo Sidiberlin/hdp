@@ -3,6 +3,7 @@
 use BlueSpice\Api\Response\Standard;
 use BlueSpice\ReadConfirmation\IMechanism;
 use BlueSpice\ReadConfirmation\MechanismFactory;
+use MediaWiki\Title\Title;
 
 class BSApiReadConfirmationTasks extends BSApiTasksBase {
 
@@ -32,25 +33,27 @@ class BSApiReadConfirmationTasks extends BSApiTasksBase {
 	 * @param array $params
 	 * @return Standard
 	 */
-	protected function task_confirm( $taskData, $params ) {
+	protected function task_confirm( $taskData, $params ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$result = $this->makeStandardReturn();
 
 		if ( empty( $taskData->pageId ) ) {
-			$result->message = $this->msg( 'bs-readconfirmation-api-error-no-page' )->plain();
+			$result->message = $this->msg( 'bs-readconfirmation-api-error-no-page' )->text();
 			return $result;
 		}
 		$title = Title::newFromId( $taskData->pageId );
 		if ( !$title ) {
-			$result->message = $this->msg( 'bs-readconfirmation-api-error-no-page' )->plain();
+			$result->message = $this->msg( 'bs-readconfirmation-api-error-no-page' )->text();
 			return $result;
 		}
-		$revision = $this->services->getRevisionStore()->getRevisionByTitle( $title );
-		$revId = $revision ? $revision->getId() : 0;
-
-		if ( isset( $taskData->isStableRevision ) && $taskData->isStableRevision === true ) {
-			if ( isset( $taskData->stableRevId ) ) {
-				$revId = $taskData->stableRevId;
+		if ( $taskData->revId ) {
+			$revision = $this->services->getRevisionStore()->getRevisionById( $taskData->revId );
+			if ( !$revision || $revision->getPage()->getId() != $title->getArticleID() ) {
+				$revision = $this->services->getRevisionStore()->getRevisionByTitle( $title );
 			}
+		}
+		$revId = $revision ? $revision->getId() : null;
+		if ( isset( $taskData->stabilizedRevId ) && $taskData->stabilizedRevId !== $revId ) {
+			$revId = $taskData->stabilizedRevId;
 		}
 
 		$mechanismInstance = $this->getMechanismInstance();
@@ -60,7 +63,7 @@ class BSApiReadConfirmationTasks extends BSApiTasksBase {
 			$this->logTaskAction( 'confirm', [ 'revid' => $revId ], [ 'target' => $title ] );
 			$result->success = true;
 		} else {
-			$result->message = $this->msg( 'bs-readconfirmation-api-error-cant-confirm' )->plain();
+			$result->message = $this->msg( 'bs-readconfirmation-api-error-cant-confirm' )->text();
 		}
 
 		return $result;
@@ -71,26 +74,28 @@ class BSApiReadConfirmationTasks extends BSApiTasksBase {
 	 * @param array $params
 	 * @return Standard
 	 */
-	protected function task_check( $taskData, $params ) {
+	protected function task_check( $taskData, $params ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$result = $this->makeStandardReturn();
 		$mechanismInstance = $this->getMechanismInstance();
 
 		if ( empty( $taskData->pageId ) ) {
-			$result->message = $this->msg( 'bs-readconfirmation-api-error-no-page' )->plain();
+			$result->message = $this->msg( 'bs-readconfirmation-api-error-no-page' )->text();
 			return $result;
 		}
 		$title = Title::newFromId( $taskData->pageId );
 		if ( !$title ) {
-			$result->message = $this->msg( 'bs-readconfirmation-api-error-no-page' )->plain();
+			$result->message = $this->msg( 'bs-readconfirmation-api-error-no-page' )->text();
 			return $result;
 		}
-		$revision = $this->services->getRevisionStore()->getRevisionByTitle( $title );
-		$revId = $revision ? $revision->getId() : 0;
-
-		if ( isset( $taskData->isStableRevision ) && $taskData->isStableRevision === true ) {
-			if ( isset( $taskData->stableRevId ) ) {
-				$revId = $taskData->stableRevId;
+		if ( $taskData->revId ) {
+			$revision = $this->services->getRevisionStore()->getRevisionById( $taskData->revId );
+			if ( !$revision || $revision->getPage()->getId() != $title->getArticleID() ) {
+				$revision = $this->services->getRevisionStore()->getRevisionByTitle( $title );
 			}
+		}
+		$revId = $revision->getId();
+		if ( isset( $taskData->stabilizedRevId ) && $taskData->stabilizedRevId !== $revId ) {
+			$revId = $taskData->stabilizedRevId;
 		}
 
 		$result->success = true;
@@ -112,7 +117,7 @@ class BSApiReadConfirmationTasks extends BSApiTasksBase {
 	 * @param array $params
 	 * @return Standard
 	 */
-	protected function task_remind( $taskData, $params ) {
+	protected function task_remind( $taskData, $params ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$result = $this->makeStandardReturn();
 		$title = Title::newFromID( $taskData->pageId );
 		$mechanismInstance = $this->getMechanismInstance();
@@ -131,7 +136,7 @@ class BSApiReadConfirmationTasks extends BSApiTasksBase {
 
 		$this->logTaskAction(
 			'remind',
-			[ '4::users' => implode( ', ',  $userDisplayNames ) ],
+			[ '4::users' => implode( ', ', $userDisplayNames ) ],
 			[ 'target' => $title ]
 		);
 

@@ -2,7 +2,9 @@
 	"@metadata": {
 		"authors": [
 			"Ajeje Brazorf",
+			"Bananax47",
 			"Gomoko",
+			"Mahabarata",
 			"SleaY",
 			"Verdy p"
 		]
@@ -34,8 +36,16 @@
 	"page-checkout-workflow-activity-checkout-reason": "Cette page est actuellement réservée du fait d’un processus de travail en cours",
 	"page-checkout-workflow-activity-checkout-non-generic-reason": "Réservé durant l’exécution d’un processus de travail",
 	"page-checkout-workflow-clear-checkout": "Réservation supprimée du fait de l’annulation d’un processus de travail",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-title": "Activité de réservation de la page",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "Utilisateur",
-	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "Utilisateur",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user-help": "Pour qui la page sera réservée",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename": "Nom de la page",
-	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Nom de la page"
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename-help": "Si non spécifié, la page de contexte du processus de travail sera utilisée",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-force": "Forcer ?",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-force-help": "Si true, supprimera toute réservation existante (pour les autres utilisateurs) et créera une nouvelle réservation",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-title": "Activité d'enregistrement de page",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "Utilisateur",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user-help": "Pour qui la page sera réservée",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Nom de la page",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename-help": "Si non spécifié, la page de contexte du processus de travail sera utilisée"
 }

@@ -13,7 +13,7 @@ OO.inheritClass( flexiskin.ui.ColorPalleteWidget, OO.ui.Widget );
 flexiskin.ui.ColorPalleteWidget.prototype.updateColors = function ( colors ) {
 	this.$colorContainer.children().remove();
 
-	for ( var key in colors ) {
+	for ( const key in colors ) {
 		if ( !colors.hasOwnProperty( key ) ) {
 			continue;
 		}

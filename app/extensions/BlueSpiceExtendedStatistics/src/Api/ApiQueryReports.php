@@ -2,8 +2,6 @@
 
 namespace BlueSpice\ExtendedStatistics\Api;
 
-use ApiBase;
-use ApiQuery;
 use BlueSpice\ExtendedStatistics\AttributeRegistryFactory;
 use BlueSpice\ExtendedStatistics\IReport;
 use BlueSpice\ExtendedStatistics\ISnapshotProvider;
@@ -12,10 +10,13 @@ use BlueSpice\ExtendedStatistics\SnapshotDate;
 use BlueSpice\ExtendedStatistics\SnapshotDateRange;
 use DateInterval;
 use InvalidArgumentException;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiQuery;
+use MediaWiki\Api\ApiQueryBase;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class ApiQueryReports extends \ApiQueryBase {
+class ApiQueryReports extends ApiQueryBase {
 	/** @var AttributeRegistryFactory */
 	private $providerFactory;
 	/** @var ISnapshotStore */
@@ -95,6 +96,9 @@ class ApiQueryReports extends \ApiQueryBase {
 		];
 	}
 
+	/**
+	 * @return array
+	 */
 	private function getFilter() {
 		$param = $this->getParameter( 'filter' );
 		$parsed = json_decode( $param, 1 );
@@ -106,6 +110,10 @@ class ApiQueryReports extends \ApiQueryBase {
 		return $parsed;
 	}
 
+	/**
+	 * @param string $type
+	 * @return array
+	 */
 	private function getFiltered( $type ) {
 		$interval = $this->filter['interval'];
 		unset( $this->filter['interval'] );
@@ -121,6 +129,9 @@ class ApiQueryReports extends \ApiQueryBase {
 		return $snapshots;
 	}
 
+	/**
+	 * @return mixed
+	 */
 	private function getType() {
 		$param = $this->getParameter( 'type' );
 		if ( !$this->reportFactory->hasType( $param ) ) {

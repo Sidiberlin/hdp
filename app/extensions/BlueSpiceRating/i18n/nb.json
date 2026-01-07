@@ -27,12 +27,10 @@
 	"bs-rating-specialrating-titleTitle": "Tittel",
 	"bs-rating-specialrating-titleRating": "Vurdering",
 	"bs-rating-specialrating-titleVotes": "Antall vurderinger",
-	"apihelp-bs-rating-tasks-description": "Utfører felles oppgaver for utvidelsen Rating",
-	"apihelp-bs-rating-store-description": "Leverer vurderinger for artikler",
+	"apihelp-bs-rating-store-summary": "Leverer vurderinger for artikler",
 	"bs-rating-nsm-label": "Vurdering",
 	"bs-rating-nsm-label-recommendations": "Anbefalinger",
 	"apihelp-bs-rating-tasks-summary": "Utfører felles oppgaver for utvidelsen Rating",
 	"apihelp-bs-ratingarticle-store-summary": "Leverer vurderinger for artikler",
-	"apihelp-bs-ratingarticlelike-store-summary": "Leverer anbefalinger for artikler",
-	"apihelp-bs-rating-store-summary": "Leverer vurderinger for artikler"
+	"apihelp-bs-ratingarticlelike-store-summary": "Leverer anbefalinger for artikler"
 }

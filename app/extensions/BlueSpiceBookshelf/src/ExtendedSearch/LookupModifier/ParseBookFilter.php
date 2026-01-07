@@ -5,7 +5,7 @@ namespace BlueSpice\Bookshelf\ExtendedSearch\LookupModifier;
 use BlueSpice\Bookshelf\BookLookup;
 use BS\ExtendedSearch\Lookup;
 use BS\ExtendedSearch\Source\LookupModifier\LookupModifier;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 
 class ParseBookFilter extends LookupModifier {
 

@@ -1,6 +1,11 @@
 /**
  * @module preview/model
+ * @private
  */
+
+import { requiresSummary } from '../ui/renderer';
+
+const selectors = [];
 
 /**
  * Page Preview types as defined in Schema:Popups
@@ -14,9 +19,7 @@ const previewTypes = {
 	/** Standard page preview with or without thumbnail */
 	TYPE_PAGE: 'page',
 	/** Disambiguation page preview */
-	TYPE_DISAMBIGUATION: 'disambiguation',
-	/** Reference preview */
-	TYPE_REFERENCE: 'reference'
+	TYPE_DISAMBIGUATION: 'disambiguation'
 };
 
 export { previewTypes };
@@ -27,8 +30,6 @@ export { previewTypes };
  * @typedef {Object} PreviewModel
  * @property {string} url The canonical URL of the page being previewed
  * @property {string} type One of the previewTypes.TYPE_… constants.
- *
- * @global
  */
 
 /**
@@ -42,8 +43,6 @@ export { previewTypes };
  * @property {string} languageDirection Either "ltr" or "rtl", or an empty string if undefined.
  * @property {{source: string, width: number, height: number}|undefined} thumbnail
  * @property {number} pageId Currently not used by any known popup type.
- *
- * @global
  */
 
 /**
@@ -52,8 +51,6 @@ export { previewTypes };
  * @property {string} extract An HTML snippet, not necessarily with a single top-level node
  * @property {string} referenceType A type identifier, e.g. "web"
  * @property {string} sourceElementId ID of the parent element that triggered the preview
- *
- * @global
  */
 
 /**
@@ -106,39 +103,53 @@ export function createNullModel( title, url ) {
 }
 
 /**
- * Determines the applicable popup type based on title and link element.
- *
- * @param {HTMLAnchorElement} el
- * @param {mw.Map} config
- * @param {mw.Title} title
- * @return {string|null} One of the previewTypes.TYPE_… constants
+ * @param {HTMLElement} element
+ * @param {string} selector
+ * @return {boolean}
  */
-export function getPreviewType( el, config, title ) {
-	if ( !isSelfLink( title, config ) ) {
-		return previewTypes.TYPE_PAGE;
-	}
+const elementMatchesSelector = ( element, selector ) => {
+	return element.matches( selector );
+};
 
-	// The other selector can potentially pick up self-links with a class="reference"
-	// parent, but no fragment
-	if ( title.getFragment() &&
-		config.get( 'wgPopupsReferencePreviews' ) &&
-		// eslint-disable-next-line no-jquery/no-class-state
-		$( el ).parent().hasClass( 'reference' )
-	) {
-		return previewTypes.TYPE_REFERENCE;
+/**
+ * Recursively checks the element and its parents.
+ *
+ * @param {HTMLElement} element
+ * @return {HTMLElement|null}
+ */
+export function findNearestEligibleTarget( element ) {
+	if ( selectors.length ) {
+		const selector = selectors.join( ', ' );
+		return element.closest( selector );
 	}
-
 	return null;
 }
 
 /**
- * @param {mw.Title} title
- * @param {mw.Map} config
- * @return {boolean} True when the link points to the current page.
+ * @typedef {Object} PreviewType
+ * @property {string} name identifier for preview type
+ * @property {string} selector a CSS selector
+ * @type {PreviewType[]}
  */
-function isSelfLink( title, config ) {
-	return title.getNamespaceId() === config.get( 'wgNamespaceNumber' ) &&
-		title.getMainText() === config.get( 'wgTitle' );
+const registeredPreviewTypes = [];
+
+/**
+ * Determines the applicable popup type based on title and link element.
+ *
+ * @param {HTMLAnchorElement} el
+ * @return {string|null} One of the previewTypes.TYPE_… constants
+ */
+export function getPreviewType( el ) {
+	const candidates = registeredPreviewTypes.filter(
+		( type ) => elementMatchesSelector( el, type.selector )
+	);
+
+	// If the filter returned some possibilities, use the last registered one.
+	if ( candidates.length > 0 ) {
+		return candidates[ candidates.length - 1 ].name;
+	}
+
+	return null;
 }
 
 /**
@@ -171,7 +182,9 @@ function processExtract( extract ) {
  */
 
 function getPagePreviewType( type, processedExtract ) {
-	if ( processedExtract === undefined ) {
+	// If the preview type requires a summary to display and no extract was
+	// found show the generic (error) preview.
+	if ( processedExtract === undefined && requiresSummary( type ) ) {
 		return previewTypes.TYPE_GENERIC;
 	}
 
@@ -191,3 +204,54 @@ function getPagePreviewType( type, processedExtract ) {
 			return previewTypes.TYPE_PAGE;
 	}
 }
+
+const dwellDelay = {};
+
+/**
+ * Determines the delay before showing the preview when dwelling a link.
+ *
+ * @param {string} type
+ * @return {number}
+ */
+export function getDwellDelay( type ) {
+	return dwellDelay[ type ] || 0;
+}
+
+/***
+ * Set the delay before showing the preview when dwelling a link.
+ *
+ * @param {string} type
+ * @param {number} delay
+ */
+export function setDwellTime( type, delay ) {
+	dwellDelay[ type ] = delay;
+}
+
+/**
+ * Allows extensions to register their own page previews.
+ *
+ * @stable
+ * @param {string} type
+ * @param {string} selector A valid CSS selector to associate preview with
+ * @param {number} [delay] optional delay between hovering and displaying preview.
+ *  If not defined, delay will be zero.
+ */
+export function registerModel( type, selector, delay ) {
+	selectors.push( selector );
+	registeredPreviewTypes.push( {
+		name: type,
+		selector
+	} );
+	if ( delay ) {
+		setDwellTime( type, delay );
+	}
+}
+
+export const test = {
+	/** For testing only */
+	reset: () => {
+		while ( registeredPreviewTypes.length ) {
+			registeredPreviewTypes.pop();
+		}
+	}
+};

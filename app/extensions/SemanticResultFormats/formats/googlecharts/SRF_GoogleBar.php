@@ -1,17 +1,21 @@
 <?php
+
+use SMW\Query\QueryResult;
+use SMW\Query\ResultPrinters\ResultPrinter;
+
 /**
  * A query printer using the Google Chart API
  *
  * @note AUTOLOADED
  */
 
-class SRFGoogleBar extends SMWResultPrinter {
+class SRFGoogleBar extends ResultPrinter {
 
 	protected $m_width;
 
 	/**
 	 * (non-PHPdoc)
-	 * @see SMWResultPrinter::handleParameters()
+	 * @see ResultPrinter::handleParameters()
 	 */
 	protected function handleParameters( array $params, $outputmode ) {
 		parent::handleParameters( $params, $outputmode );
@@ -23,7 +27,7 @@ class SRFGoogleBar extends SMWResultPrinter {
 		return wfMessage( 'srf_printername_googlebar' )->text();
 	}
 
-	protected function getResultText( SMWQueryResult $res, $outputmode ) {
+	protected function getResultText( QueryResult $res, $outputmode ) {
 		$this->isHTML = true;
 
 		$t = "";
@@ -36,8 +40,10 @@ class SRFGoogleBar extends SMWResultPrinter {
 
 		// print all result rows
 		$first = true;
-		$count = 0; // How many bars will they be? Needed to calculate the height of the image
-		$max = 0; // the biggest value. needed for scaling
+		// How many bars will they be? Needed to calculate the height of the image
+		$count = 0;
+		// the biggest value. needed for scaling
+		$max = 0;
 
 		while ( $row = $res->getNext() ) {
 			$name = $row[0]->getNextDataValue()->getShortWikiText();
@@ -57,22 +63,25 @@ class SRFGoogleBar extends SMWResultPrinter {
 							$n = $name;
 						} else {
 							$t = $nr . ',' . $t;
-							$n .= '|' . $name; // yes, this is correct, it needs to be the other way
+							// yes, this is correct, it needs to be the other way
+							$n .= '|' . $name;
 						}
 					}
 				}
 			}
 		}
-
-		$barwidth = 20; // width of each bar
-		$bardistance = 4; // distance between two bars
-		$height = $count * ( $barwidth + $bardistance ) + 15; // calculates the height of the image
+		// width of each bar
+		$barwidth = 20;
+		// distance between two bars
+		$bardistance = 4;
+		// calculates the height of the image
+		$height = $count * ( $barwidth + $bardistance ) + 15;
 
 		return '<img src="https://chart.apis.google.com/chart?cht=bhs&chbh=' . $barwidth . ',' . $bardistance . '&chs=' . $this->m_width . 'x' . $height . '&chds=0,' . $max . '&chd=t:' . $t . '&chxt=y&chxl=0:|' . $n . '" width="' . $this->m_width . '" height="' . $height . '" />';
 	}
 
 	/**
-	 * @see SMWResultPrinter::getParamDefinitions
+	 * @see ResultPrinter::getParamDefinitions
 	 *
 	 * @since 1.8
 	 *

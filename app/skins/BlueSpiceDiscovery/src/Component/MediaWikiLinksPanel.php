@@ -2,9 +2,10 @@
 
 namespace BlueSpice\Discovery\Component;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCard;
@@ -12,7 +13,6 @@ use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCardHeader;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleLinklistGroupFromArray;
 use MWStake\MediaWiki\Component\CommonUserInterface\IComponent;
 use MWStake\MediaWiki\Component\CommonUserInterface\LinkFormatter;
-use Title;
 
 class MediaWikiLinksPanel extends SimpleCard {
 

@@ -44,7 +44,7 @@ ext.notifyme.ui.panel.NotificationCenter = function ( cfg ) {
 		if ( window.pageYOffset >= this.stickyPos ) {
 			$toolbar.addClass( 'sticky' );
 
-			const style = 'width: ' + this.toolbarWidth + 'px !important;' + 'left: ' + this.toolbarOffsetLeft + 'px';
+			const style = 'width: ' + this.toolbarWidth + 'px !important;' + 'left: ' + this.toolbarOffsetLeft + 'px'; // eslint-disable-line no-useless-concat
 			$toolbar.attr( 'style', style );
 		} else {
 			$toolbar.removeClass( 'sticky' );
@@ -169,7 +169,7 @@ ext.notifyme.ui.panel.NotificationCenter.prototype.tabSelected = function ( tab 
 	tab.applyFilter( this.filter );
 	tab.loadNotifications();
 
-	this.tabSelectWidget.$element.focus();
+	this.tabSelectWidget.$element.trigger( 'focus' );
 };
 
 /**
@@ -192,7 +192,7 @@ ext.notifyme.ui.panel.NotificationCenter.prototype.markNotificationsAllRead = fu
 		for ( const id in notifications ) {
 			const isProcessed = notifications[ id ];
 			if ( !isProcessed ) {
-				console.error( 'Failed to change read status of notification: ' + id );
+				console.error( 'Failed to change read status of notification: ' + id ); // eslint-disable-line no-console
 			}
 		}
 

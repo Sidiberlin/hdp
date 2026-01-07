@@ -1,5 +1,8 @@
 <?php
 
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Registration\ExtensionRegistry;
+
 require_once 'BSMaintenance.php';
 
 class InspectManifestAttributes extends BSMaintenance {

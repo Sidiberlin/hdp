@@ -5,7 +5,6 @@
 		]
 	},
 	"importofficefiles-desc": "Omogoča uvoz pisarniških datotek kot vikistrani",
-	"importofficefiles-ui-action-import-msword-text": "Uvoz Wordove datoteke",
 	"importofficefiles-ui-action-import-msword-title": "Ustvaritev strani iz datoteke Microsoft Word",
 	"importofficefiles-ui-import-dialog-title": "Uvozi datoteko",
 	"importofficefiles-ui-import-completed": "Uvoz končan!",
@@ -32,6 +31,7 @@
 	"importofficefiles-ui-dialog-preview-title": "Predogled",
 	"importofficefiles-ui-dialog-preview-label": "Uvožene bodo naslednje spremembe",
 	"importofficefiles-ui-dialog-link-import-files-text": "Seznam uvoženih datotek, izvoženih v $1",
+	"importofficefiles-ui-dialog-link-imported-page-text": "Datoteka je uvožena v $1",
 	"importofficefiles-api-storage-error-no-available-file": "Na voljo ni nobena datoteka za nalaganje",
 	"importofficefiles-api-storage-error-save-temp": "Začasno shranjevanje ni mogoče",
 	"importofficefiles-api-storage-error-no-valid-module": "Za obdelavo te datoteke ni na voljo noben modul",
@@ -39,6 +39,5 @@
 	"importofficefiles-ui-progress-import-pages-step": "Uvažanje strani ...",
 	"importofficefiles-ui-progress-remove-files-step": "Odstranjevanje začasnih datotek ...",
 	"importofficefiles-ui-import-error": "Med uvozom je prišlo do napake.",
-	"importofficefiles-ui-analyze-error": "Postopek analize je iz neznanega razloga spodletel.",
-	"importofficefiles-ui-dialog-link-imported-page-text": "Datoteka je uvožena v $1"
+	"importofficefiles-ui-analyze-error": "Postopek analize je iz neznanega razloga spodletel."
 }

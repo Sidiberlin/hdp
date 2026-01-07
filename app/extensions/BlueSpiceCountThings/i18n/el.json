@@ -25,7 +25,5 @@
 	"bs-countthings-error-not-exist": "Η σελίδα \"$1\" δεν υπάρχει.",
 	"bs-countthings-tag-countarticles-desc": "Εμφανίζει τον αριθμό των λημμάτων στο βίκι.",
 	"bs-countthings-tag-countusers-desc": "Εμφανίζει τον αριθμό των εγγεγραμμένων χρηστών.",
-	"bs-countthings-tag-countfiles-desc": "Εμφανίζει τον αριθμό των αρχείων στο βίκι.",
-	"bs-countthings-tag-countcharacters-example-1": "Αριθμός λέξεων",
-	"bs-countthings-tag-countcharacters-example-2": "Αριθμός χαρακτήρων"
+	"bs-countthings-tag-countfiles-desc": "Εμφανίζει τον αριθμό των αρχείων στο βίκι."
 }

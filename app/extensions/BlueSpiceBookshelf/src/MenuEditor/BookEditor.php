@@ -3,16 +3,17 @@
 namespace BlueSpice\Bookshelf\MenuEditor;
 
 use BlueSpice\Bookshelf\BookSourceParser;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\MenuEditor\EditPermissionProvider;
 use MediaWiki\Extension\MenuEditor\Menu\GenericMenu;
 use MediaWiki\Extension\MenuEditor\ParsableMenu;
 use MediaWiki\Extension\MenuEditor\Parser\IMenuParser;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MWException;
 use MWStake\MediaWiki\Component\Wikitext\ParserFactory;
-use RequestContext;
-use Title;
-use TitleFactory;
 
 class BookEditor extends GenericMenu implements ParsableMenu, EditPermissionProvider {
 
@@ -49,22 +50,26 @@ class BookEditor extends GenericMenu implements ParsableMenu, EditPermissionProv
 	 * @inheritDoc
 	 */
 	public function appliesToTitle( Title $title ): bool {
-		// TODO: User books
-		if ( MW_ENTRY_POINT === 'index' ) {
-			$requestContext = RequestContext::getMain();
-			$action = $requestContext->getRequest()->getVal( 'action' );
-			if ( !$action ) {
-				$this->apply = false;
-			}
-			if ( $action && $action === 'view' ) {
-				$this->apply = false;
-			}
-		}
-		if ( $title->getNamespace() !== 1504 ) {
-			$this->apply = false;
+		if ( $title->getNamespace() !== NS_BOOK ) {
+			return false;
 		}
 
-		return $this->apply;
+		// TODO: User books
+		$context = RequestContext::getMain();
+		if ( MW_ENTRY_POINT === 'index' ) {
+			$action = $context->getRequest()->getVal( 'action' );
+			if ( !$action || $action === 'view' ) {
+				return false;
+			}
+		}
+
+		$user = $context->getUser();
+		$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
+		if ( !$permissionManager->userCan( 'edit', $user, $title ) ) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/**

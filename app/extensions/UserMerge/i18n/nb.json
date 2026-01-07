@@ -1,15 +1,16 @@
 {
 	"@metadata": {
 		"authors": [
+			"EdoAug",
 			"Event",
 			"Jon Harald Søby",
-			"Nghtwlkr",
-			"EdoAug"
+			"Nghtwlkr"
 		]
 	},
 	"usermerge": "Brukersammenslåing og -sletting",
 	"usermerge-desc": "Gir muligheten til  å [[Special:UserMerge|slå sammen kontoer]] ved at alle referanser til en bruker byttes ut til en annen bruker i databasen, for så å slette den ene kontoen. Trenger rettigheten ''usermerge''.",
 	"usermerge-badnewuser": "Nytt brukernavn ugyldig",
+	"usermerge-badolduser": "Gammelt brukernavn ugyldig",
 	"usermerge-nonewuser": "Nytt brukernavn tomt &ndash; antar sammenslåing til «{{GENDER:$1|$1}}».<br />\nKlikk «{{int:usermerge-submit}}» for å godta.",
 	"usermerge-noolduser": "Gammelt brukernavn tomt",
 	"usermerge-same-old-and-new-user": "Det gamle og det nye brukernavnet må være forskjellige.",
@@ -18,6 +19,8 @@
 	"usermerge-newuser": "Nytt brukernavn (slå sammen til):",
 	"usermerge-deleteolduser": "Slett gammel bruker",
 	"usermerge-submit": "Slå sammen brukere",
+	"usermerge-merge-linkoncontribs": "slå sammen {{GENDER:$1|bruker}}",
+	"usermerge-delete-linkoncontribs": "slett {{GENDER:$1|bruker}}",
 	"usermerge-badtoken": "Ugyldig redigeringsnøkkel.",
 	"usermerge-userdeleted": "$1 ($2) har blitt slettet.",
 	"usermerge-success": "Sammenslåing fra $1 ($2) til $3 ($4) er fullført.",

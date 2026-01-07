@@ -3,7 +3,6 @@
 		"authors": []
 	},
 	"bs-player-extension-description": "{{desc|name=BlueSpicePlayer}}",
-	"bs-player-pref-autostart": "Label for autostart setting",
 	"bs-player-file-does-not-exist": "Error message shown instead of player when the embedded file does not exist",
 	"bs-player-unsupported-type": "Error message shown instead of player when the embedded file has an unsupported file type.",
 	"bs-player-config-prefwidth": "Description of a configuration variable that sets the default width for videos",

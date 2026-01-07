@@ -3,16 +3,16 @@
 namespace SMW;
 
 use InvalidArgumentException;
+use MediaWiki\Title\Title;
+use SMW\DataModel\ContainerSemanticData;
 use SMW\Exception\SubSemanticDataException;
-use SMWContainerSemanticData;
 use SMWDataValue;
 use SMWDIContainer;
-use Title;
 
 /**
  * @see http://www.semantic-mediawiki.org/wiki/Help:Subobject
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 1.9
  *
  * @author mwjames
@@ -25,7 +25,7 @@ class Subobject {
 	 protected $title;
 
 	/**
-	 * @var SMWContainerSemanticData
+	 * @var ContainerSemanticData
 	 */
 	 protected $semanticData;
 
@@ -87,7 +87,6 @@ class Subobject {
 	 * @param array|string $error
 	 */
 	public function addError( $error ) {
-
 		if ( is_string( $error ) ) {
 			$error = [ md5( $error ) => $error ];
 		}
@@ -106,7 +105,6 @@ class Subobject {
 	 * @throws InvalidArgumentException
 	 */
 	public function setEmptyContainerForId( $identifier ) {
-
 		if ( $identifier === '' ) {
 			throw new InvalidArgumentException( 'Expected a valid (non-empty) indentifier' );
 		}
@@ -118,7 +116,7 @@ class Subobject {
 			$identifier
 		);
 
-		$this->semanticData = new SMWContainerSemanticData( $subWikiPage );
+		$this->semanticData = new ContainerSemanticData( $subWikiPage );
 
 		return $this;
 	}
@@ -135,11 +133,10 @@ class Subobject {
 	 *
 	 * @since 1.9
 	 *
-	 * @return SMWContainerSemanticData
+	 * @return ContainerSemanticData
 	 */
 	public function getSemanticData() {
-
-		if ( !( $this->semanticData instanceof SMWContainerSemanticData ) ) {
+		if ( !( $this->semanticData instanceof ContainerSemanticData ) ) {
 			throw new SubSemanticDataException( 'The semantic data container is not initialized' );
 		}
 
@@ -171,13 +168,12 @@ class Subobject {
 	/**
 	 * @since 1.9
 	 *
-	 * @param DataValue $dataValue
+	 * @param SMWDataValue $dataValue
 	 *
 	 * @throws SubSemanticDataException
 	 */
 	public function addDataValue( SMWDataValue $dataValue ) {
-
-		if ( !( $this->semanticData instanceof SMWContainerSemanticData ) ) {
+		if ( !( $this->semanticData instanceof ContainerSemanticData ) ) {
 			throw new SubSemanticDataException( 'The semantic data container is not initialized' );
 		}
 

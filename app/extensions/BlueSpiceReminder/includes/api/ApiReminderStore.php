@@ -1,6 +1,10 @@
 <?php
 
 use BlueSpice\Reminder\Factory;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class ApiReminderStore extends BSApiExtJSStoreBase {
 
@@ -105,32 +109,32 @@ class ApiReminderStore extends BSApiExtJSStoreBase {
 		);
 		if ( $isAllowed ) {
 			$aMetadata['columns'][] = [
-				'header' => wfMessage( 'bs-reminder-header-username' )->plain(),
+				'header' => wfMessage( 'bs-reminder-header-username' )->text(),
 				'dataIndex' => 'user_name',
 				'render' => 'raw',
 				'sortable' => true
 			];
 		}
 		$aMetadata['columns'][] = [
-			'header' => wfMessage( 'bs-reminder-header-pagename' )->plain(),
+			'header' => wfMessage( 'bs-reminder-header-pagename' )->text(),
 			'dataIndex' => 'page_title',
 			'render' => 'page',
 			'sortable' => true
 		];
 		$aMetadata['columns'][] = [
-			'header' => wfMessage( 'bs-reminder-header-date' )->plain(),
+			'header' => wfMessage( 'bs-reminder-header-date' )->text(),
 			'dataIndex' => 'rem_date',
 			'render' => 'date',
 			'sortable' => true
 		];
 		$aMetadata['columns'][] = [
-			'header' => wfMessage( 'bs-reminder-header-comment' )->plain(),
+			'header' => wfMessage( 'bs-reminder-header-comment' )->text(),
 			'dataIndex' => 'rem_comment',
 			'render' => 'comment',
 			'sortable' => false
 		];
 		$aMetadata['columns'][] = [
-			'header' => wfMessage( 'bs-reminder-header-type' )->plain(),
+			'header' => wfMessage( 'bs-reminder-header-type' )->text(),
 			'dataIndex' => 'rem_type',
 			'render' => 'type',
 			'sortable' => false
@@ -175,8 +179,10 @@ class ApiReminderStore extends BSApiExtJSStoreBase {
 	 * @param User|null $requestedUser
 	 * @return array
 	 */
-	protected function getReminders( User $oUser, $iOffset = 0, $iLimit = 25, $sSortField = 'rem_date',
-		$sSortDirection = 'ASC', $iDate = 0, User $requestedUser = null ) {
+	protected function getReminders(
+		User $oUser, $iOffset = 0, $iLimit = 25, $sSortField = 'rem_date',
+		$sSortDirection = 'ASC', $iDate = 0, ?User $requestedUser = null
+	) {
 		$aData = [
 			'results' => [],
 			'total' => 0
@@ -189,17 +195,16 @@ class ApiReminderStore extends BSApiExtJSStoreBase {
 			return $aData;
 		}
 		$dbr = $this->services->getDBLoadBalancer()->getConnection( DB_REPLICA );
-		$sTblPrfx = $dbr->tablePrefix();
 
 		switch ( $sSortField ) {
 			case 'rem_date':
-				$sSortField = "{$sTblPrfx}bs_reminder.rem_date";
+				$sSortField = "bs_reminder.rem_date";
 				break;
 			case 'user_name':
-				$sSortField = "{$sTblPrfx}user.user_name";
+				$sSortField = "user.user_name";
 				break;
 			case 'page_title':
-				$sSortField = "{$sTblPrfx}page.page_title";
+				$sSortField = "page.page_title";
 				break;
 		}
 
@@ -207,24 +212,24 @@ class ApiReminderStore extends BSApiExtJSStoreBase {
 			'bs_reminder', 'user', 'page'
 		];
 		$aFields = [
-			"{$sTblPrfx}bs_reminder.rem_id",
-			"{$sTblPrfx}bs_reminder.rem_page_id",
-			"{$sTblPrfx}bs_reminder.rem_date",
-			"{$sTblPrfx}user.user_name",
-			"{$sTblPrfx}page.page_title",
-			"{$sTblPrfx}bs_reminder.rem_comment",
-			"{$sTblPrfx}bs_reminder.rem_is_repeating",
-			"{$sTblPrfx}bs_reminder.rem_repeat_date_end",
-			"{$sTblPrfx}bs_reminder.rem_type",
-			"{$sTblPrfx}bs_reminder.rem_repeat_config"
+			"bs_reminder.rem_id",
+			"bs_reminder.rem_page_id",
+			"bs_reminder.rem_date",
+			"user.user_name",
+			"page.page_title",
+			"bs_reminder.rem_comment",
+			"bs_reminder.rem_is_repeating",
+			"bs_reminder.rem_repeat_date_end",
+			"bs_reminder.rem_type",
+			"bs_reminder.rem_repeat_config"
 		];
 		$aConditions = [
-			"{$sTblPrfx}bs_reminder.rem_type" => $this->getFactory()->getRegisteredTypes()
+			"bs_reminder.rem_type" => $this->getFactory()->getRegisteredTypes()
 		];
 		$aOptions = [
 			'ORDER BY' => "{$sSortField} {$sSortDirection}",
-			'GROUP BY' => "{$sTblPrfx}bs_reminder.rem_id",
-			'SORT BY' => "{$sTblPrfx}bs_reminder.rem_date DESC"
+			'GROUP BY' => "bs_reminder.rem_id",
+			'SORT BY' => "bs_reminder.rem_date DESC"
 		];
 
 		if ( !empty( $iOffset ) ) {
@@ -236,8 +241,8 @@ class ApiReminderStore extends BSApiExtJSStoreBase {
 		}
 
 		$aJoinConditions = [
-			"user" => [ 'JOIN', "{$sTblPrfx}bs_reminder.rem_user_id = {$sTblPrfx}user.user_id" ],
-			"page" => [ 'JOIN', "{$sTblPrfx}bs_reminder.rem_page_id = {$sTblPrfx}page.page_id" ]
+			"user" => [ 'JOIN', "bs_reminder.rem_user_id = user.user_id" ],
+			"page" => [ 'JOIN', "bs_reminder.rem_page_id = page.page_id" ]
 		];
 
 		// give other extensions the opportunity to modify the query
@@ -261,13 +266,13 @@ class ApiReminderStore extends BSApiExtJSStoreBase {
 		);
 		if ( $isAllowed ) {
 			if ( $requestedUser && !$requestedUser->isAnon() ) {
-			$aConditions["{$sTblPrfx}bs_reminder.rem_user_id"] = $requestedUser->getId();
+				$aConditions["bs_reminder.rem_user_id"] = $requestedUser->getId();
 			}
 		} else {
-			$aConditions["{$sTblPrfx}bs_reminder.rem_user_id"] = $oUser->getId();
+			$aConditions["bs_reminder.rem_user_id"] = $oUser->getId();
 		}
 		if ( $iDate !== 0 ) {
-			$aConditions[] = "{$sTblPrfx}bs_reminder.rem_date <= '" . $iDate . "'";
+			$aConditions[] = "bs_reminder.rem_date <= '" . $iDate . "'";
 		}
 
 		$res = $dbr->select(
@@ -312,7 +317,7 @@ class ApiReminderStore extends BSApiExtJSStoreBase {
 		unset( $aOptions['LIMIT'], $aOptions['OFFSET'] );
 		$res = $dbr->select(
 			$aTables,
-			"COUNT({$sTblPrfx}bs_reminder.rem_id) AS total",
+			"COUNT(bs_reminder.rem_id) AS total",
 			$aConditions,
 			__METHOD__,
 			[],

@@ -2,6 +2,9 @@
 
 namespace BlueSpice\CountThings\Tag;
 
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+
 class CountUsers extends \BlueSpice\Tag\Tag {
 
 	/**
@@ -16,12 +19,12 @@ class CountUsers extends \BlueSpice\Tag\Tag {
 	 *
 	 * @param string $processedInput
 	 * @param array $processedArgs
-	 * @param \Parser $parser
-	 * @param \PPFrame $frame
+	 * @param Parser Parser $parser
+	 * @param PPFrame $frame
 	 * @return CountUsersHandler
 	 */
-	public function getHandler( $processedInput, array $processedArgs, \Parser $parser,
-		\PPFrame $frame ) {
+	public function getHandler( $processedInput, array $processedArgs, Parser $parser,
+		PPFrame $frame ) {
 		return new CountUsersHandler(
 			$processedInput,
 			$processedArgs,

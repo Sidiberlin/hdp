@@ -6,9 +6,9 @@ use BsPageContentProvider;
 use BsTagFinder;
 use DynamicPageHierarchyProvider;
 use InvalidArgumentException;
+use MediaWiki\Title\Title;
 use MWException;
 use PageHierarchyProvider;
-use Title;
 
 class PageHierarchyProviderFactory {
 	/** @var array */
@@ -81,7 +81,8 @@ class PageHierarchyProviderFactory {
 	 */
 	public function findSuitableSourceArticleReference( $aTags ) {
 		foreach ( $aTags as $aTag ) {
-			if ( empty( $aTag ) ) { continue;
+			if ( empty( $aTag ) ) {
+				continue;
 			}
 			$aAttributes = $aTag['attributes'];
 			$sSourceArticleTitle = '';
@@ -116,6 +117,10 @@ class PageHierarchyProviderFactory {
 		throw new MWException( 'Book type cannot be determined for given title' );
 	}
 
+	/**
+	 * @param array $params
+	 * @return PageHierarchyProvider
+	 */
 	private function getClassForParams( array $params ) {
 		if ( isset( $params['book_type'] ) && $params['book_type'] === 'local_storage' ) {
 			return DynamicPageHierarchyProvider::class;

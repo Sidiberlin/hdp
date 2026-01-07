@@ -2,9 +2,9 @@
 
 namespace MediaWiki\Extension\NotifyMe;
 
-use Config;
+use MediaWiki\Config\Config;
+use MediaWiki\User\Options\UserOptionsManager;
 use MediaWiki\User\UserIdentity;
-use MediaWiki\User\UserOptionsManager;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 
 /**
@@ -71,6 +71,13 @@ class SubscriptionConfigurator {
 	 */
 	public function getBucketData(): array {
 		return $this->bucketProvider->getBucketLabels();
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getEventData(): array {
+		return $this->bucketProvider->getEventDescription();
 	}
 
 	/**

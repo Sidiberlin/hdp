@@ -1,5 +1,5 @@
-var registry = bs.vec.registry.TableStyle.registry, key;
-for( key in registry ) {
+var registry = bs.vec.registry.TableStyle.registry, key; // eslint-disable-line no-var
+for ( key in registry ) {
 	if ( !registry.hasOwnProperty( key ) ) {
 		continue;
 	}
@@ -15,13 +15,13 @@ for( key in registry ) {
 ve.ui.commandRegistry.register(
 	new ve.ui.Command(
 		'duplicateRow', 'bs-vec-table', 'duplicate',
-		{ supportedSelections: [ 'table' ], args: [ "row" ] }
+		{ supportedSelections: [ 'table' ], args: [ 'row' ] }
 	)
 );
 
 ve.ui.commandRegistry.register(
 	new ve.ui.Command(
 		'duplicateColumn', 'bs-vec-table', 'duplicate',
-		{ supportedSelections: [ 'table' ], args: [ "col" ] }
+		{ supportedSelections: [ 'table' ], args: [ 'col' ] }
 	)
 );

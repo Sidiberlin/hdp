@@ -3,9 +3,9 @@
 namespace BlueSpice\Discovery\LangLinksProvider;
 
 use BlueSpice\Discovery\ILangLinksProvider;
-use ConfigFactory;
+use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Languages\LanguageNameUtils;
-use Title;
+use MediaWiki\Title\Title;
 
 class Hardwired implements ILangLinksProvider {
 

@@ -8,7 +8,5 @@
 	},
 	"bs-saferedit-desc": "在其他用户编辑页面时显示警告",
 	"bs-saferedit-user-editing": "$1 {{PLURAL:$2|正在}}{{GENDER:$1|编辑}}页面",
-	"bs-saferedit-someone-editing": "此页面正在编辑",
-	"bs-saferedit-pref-interval": "并发编辑的查找间隔：",
-	"bs-saferedit-pref-shownameofeditinguser": "显示当前编辑者的名字"
+	"bs-saferedit-someone-editing": "此页面正在编辑"
 }

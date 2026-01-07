@@ -2,12 +2,14 @@
 
 namespace BlueSpice\InsertCategory;
 
-use Html;
+use MediaWiki\Content\WikitextContent;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Page\WikiPageFactory;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
-use RequestContext;
-use Title;
 
 class InsertCategoryTool extends Literal {
 
@@ -29,12 +31,17 @@ class InsertCategoryTool extends Literal {
 	 */
 	private $permissionManager = null;
 
+	/** @var WikiPageFactory */
+	private $wikiPageFactory = null;
+
 	/**
 	 *
 	 */
 	public function __construct() {
 		$this->services = MediaWikiServices::getInstance();
 		$this->permissionManager = $this->services->getPermissionManager();
+		$this->wikiPageFactory = $this->services->getWikiPageFactory();
+
 		/** @var RequestContext */
 		$context = RequestContext::getMain();
 		$user = $context->getUser();
@@ -42,8 +49,12 @@ class InsertCategoryTool extends Literal {
 		/** @var Title */
 		$title = $context->getTitle();
 
-		$this->btnDisabled = !$this->permissionManager
-			->userCan( 'edit', $user, $title );
+		$this->btnDisabled =
+			!$this->permissionManager->userCan( 'edit', $user, $title );
+		if ( $title && $title->canExist() ) {
+			$content = $this->wikiPageFactory->newFromTitle( $title )->getContent();
+			$this->btnDisabled = $this->btnDisabled || !( $content instanceof WikitextContent );
+		}
 
 		parent::__construct(
 			'bs-category-inline-editor',
@@ -61,7 +72,8 @@ class InsertCategoryTool extends Literal {
 		if ( !$title || $title->isSpecialPage() ) {
 			return false;
 		}
-		return true;
+		$wikipage = $this->wikiPageFactory->newFromTitle( $title );
+		return $wikipage->getContentHandler()->supportsCategories();
 	}
 
 	/**
@@ -114,7 +126,7 @@ class InsertCategoryTool extends Literal {
 	 */
 	private function makeList( $title, RequestContext $context ): string {
 		$categoryNames = $this->getCategoriesFromPreference( $context );
-		krsort( $categoryNames, SORT_NATURAL );
+		sort( $categoryNames, SORT_NATURAL );
 
 		if ( empty( $categoryNames ) ) {
 			$html = Html::element(

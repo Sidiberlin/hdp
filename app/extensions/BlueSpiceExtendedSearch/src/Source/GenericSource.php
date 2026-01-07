@@ -23,9 +23,10 @@ use BS\ExtendedSearch\Source\LookupModifier\BaseTypeSecurityTrimming;
 use BS\ExtendedSearch\Source\LookupModifier\BaseUserRelevance;
 use BS\ExtendedSearch\Source\LookupModifier\BaseWildcarder;
 use BS\ExtendedSearch\Source\LookupModifier\RegExpQuoter;
+use BS\ExtendedSearch\Source\LookupModifier\SearchContext;
 use BS\ExtendedSearch\Source\PostProcessor\Base as PostProcessorBase;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
 use OpenSearch\Client;
 use Wikimedia\ObjectFactory\ObjectFactory;
@@ -67,7 +68,7 @@ class GenericSource implements ISearchSource {
 
 	/**
 	 *
-	 * @return \Config
+	 * @return Config
 	 */
 	public function getConfig() {
 		return $this->config;
@@ -139,6 +140,9 @@ class GenericSource implements ISearchSource {
 			"settings" => [
 				// Only for testing purposes on small sample, remove or increase for production
 				// "number_of_shards" => 1,
+				"index" => [
+					"max_ngram_diff" => 20
+				],
 				"analysis" => [
 					"normalizer" => [
 						"lowercase" => [
@@ -148,15 +152,19 @@ class GenericSource implements ISearchSource {
 						]
 					],
 					"analyzer" => [
-						"autocomplete" => [
-							"tokenizer" => "autocomplete",
-							"filter" => [ "lowercase" ]
-						]
+						"substring_analyzer" => [
+							"tokenizer" => "substring",
+							"filter" => [ "lowercase", "asciifolding" ]
+						],
+						"content_analyzer" => [
+							"tokenizer" => "whitespace",
+							"filter" => [ "lowercase", "asciifolding" ]
+						],
 					],
 					"tokenizer" => [
-						"autocomplete" => [
-							"type" => "edge_ngram",
-							"min_gram" => 1,
+						"substring" => [
+							"type" => "ngram",
+							"min_gram" => 3,
 							"max_gram" => 20,
 							"token_chars" => [ "letter", "digit" ]
 						]
@@ -272,6 +280,10 @@ class GenericSource implements ISearchSource {
 			new BaseAutocompleteSourceFields( $lookup, $context ),
 			new BaseConvertTypeFilter( $lookup, $context ),
 			new RegExpQuoter( $lookup, $context ),
+			new SearchContext(
+				$lookup, $context,
+				MediaWikiServices::getInstance()->getService( 'BSExtendedSearch.PluginManager' )
+			)
 		];
 	}
 

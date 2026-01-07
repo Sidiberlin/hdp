@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\StandardDialogs\Hook;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 
 interface StandardDialogsRegisterPageInfoPanelModules {

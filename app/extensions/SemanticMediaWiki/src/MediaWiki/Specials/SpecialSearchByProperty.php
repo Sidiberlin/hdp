@@ -2,12 +2,12 @@
 
 namespace SMW\MediaWiki\Specials;
 
-use SMW\Services\ServicesFactory as ApplicationFactory;
+use MediaWiki\SpecialPage\SpecialPage;
 use SMW\MediaWiki\Specials\SearchByProperty\PageBuilder;
 use SMW\MediaWiki\Specials\SearchByProperty\PageRequestOptions;
 use SMW\MediaWiki\Specials\SearchByProperty\QueryResultLookup;
+use SMW\Services\ServicesFactory as ApplicationFactory;
 use SMWInfolink as Infolink;
-use SpecialPage;
 
 /**
  * A special page to search for entities that have a certain property with
@@ -17,7 +17,7 @@ use SpecialPage;
  * relation-object pair,i.e. a typed backlink. For example, it shows me all
  * persons born in Croatia, or all winners of the Academy Award for best actress.
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since   2.1
  *
  * @author mwjames
@@ -35,16 +35,16 @@ class SpecialSearchByProperty extends SpecialPage {
 	 * @see SpecialPage::execute
 	 */
 	public function execute( $query ) {
-
 		$this->setHeaders();
 		$output = $this->getOutput();
 		$request = $this->getRequest();
 
 		$output->setPageTitle( $this->msg( 'searchbyproperty' )->text() );
+		$output->addModuleStyles( 'ext.smw.styles' );
 		$output->addModules( 'ext.smw.tooltip' );
 		$output->addModules( 'ext.smw.autocomplete.property' );
 
-		list( $limit, $offset ) = $this->getLimitOffset();
+		[ $limit, $offset ] = $this->getLimitOffset();
 
 		if ( $request->getText( 'cl', '' ) !== '' ) {
 			$query = Infolink::decodeCompactLink( 'cl:' . $request->getText( 'cl' ) );
@@ -83,24 +83,13 @@ class SpecialSearchByProperty extends SpecialPage {
 
 	private function getLimitOffset() {
 		$request = $this->getRequest();
-		if ( method_exists( $request, 'getLimitOffsetForUser' ) ) {
-			// MW 1.35+
-			return $request->getLimitOffsetForUser( $this->getUser() );
-		} else {
-			return $request->getLimitOffset();
-		}
+		return $request->getLimitOffsetForUser( $this->getUser() );
 	}
 
 	/**
 	 * @see SpecialPage::getGroupName
 	 */
 	protected function getGroupName() {
-
-		if ( version_compare( MW_VERSION, '1.33', '<' ) ) {
-			return 'smw_group';
-		}
-
-		// #3711, MW 1.33+
 		return 'smw_group/search';
 	}
 

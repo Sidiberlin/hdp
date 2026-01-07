@@ -2,41 +2,75 @@
 
 namespace BS\ExtendedSearch\Hook\BeforePageDisplay;
 
+use BS\ExtendedSearch\Plugin\ISearchContextProvider;
+use BS\ExtendedSearch\PluginManager;
+use MediaWiki\Config\ConfigFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Title\NamespaceInfo;
+use MediaWiki\Title\Title;
 
-class AddResources extends \BlueSpice\Hook\BeforePageDisplay {
+class AddResources implements BeforePageDisplayHook {
 
-	protected function skipProcessing() {
-		if ( !$this->out->getTitle() ) {
-			return true;
-		}
+	public function __construct(
+		private readonly NamespaceInfo $namespaceInfo,
+		private readonly ConfigFactory $configFactory,
+		private readonly PluginManager $pluginManager
+	) {
 	}
 
-	protected function doProcess() {
-		$title = $this->out->getTitle();
-		if ( $title->equals( \SpecialPage::getTitleFor( 'BSSearchCenter' ) ) === false ) {
-			$this->out->addJsConfigVars(
-				'ESMasterFilter',
-				$this->getMasterFilter()
-			);
-
-			$this->out->addModules( "ext.blueSpiceExtendedSearch.SearchFieldAutocomplete" );
+	/**
+	 * @inheritDoc
+	 */
+	public function onBeforePageDisplay( $out, $skin ): void {
+		if ( !$out->getTitle() || $out->getTitle()->isSpecial( 'BSSearchCenter' ) ) {
+			return;
 		}
+		$out->addJsConfigVars(
+			'ESMasterFilter',
+			$this->getMasterFilter( $out )
+		);
+
+		$out->addModules( [ 'ext.blueSpiceExtendedSearch.SearchFieldAutocomplete' ] );
+
+		$contexts = [];
+		/** @var ISearchContextProvider[] $contextProviders */
+		$contextProviders = $this->pluginManager->getPluginsImplementing( ISearchContextProvider::class );
+		foreach ( $contextProviders as $contextProvider ) {
+			$definition = $contextProvider->getContextDefinitionForPage( $out->getTitle(), $out->getUser() );
+			if ( $definition === null ) {
+				continue;
+			}
+			$contexts[$contextProvider->getContextKey()] = [
+				'text' => $contextProvider->getContextDisplayText(
+					$definition, $out->getUser(), $out->getLanguage()
+				)->parse(),
+				'showCustomPill' => $contextProvider->showContextFilterPill(),
+				'definition' => json_encode( $definition ),
+				'priority' => $contextProvider->getContextPriority(),
+			];
+		}
+		// Sort contexts by priority
+		uasort( $contexts, static function ( $a, $b ) {
+			return $a['priority'] <=> $b['priority'];
+		} );
+		$out->addJsConfigVars( 'ESContexts', $contexts );
 	}
 
 	/**
 	 * @return array|null
 	 */
-	private function getMasterFilter() {
+	private function getMasterFilter( OutputPage $out ) {
 		if (
-			!MediaWikiServices::getInstance()->getNamespaceInfo()->
-			hasSubpages( $this->out->getTitle()->getNamespace() )
+			!$this->namespaceInfo->hasSubpages( $out->getTitle()->getNamespace() )
 		) {
 			// Disable if NS does not support subpages
 			return null;
 		}
-
-		$patterns = $this->getConfig()->get( 'ESSubpageMasterFilterPatterns' );
+		$config = $this->configFactory->makeConfig( 'bsg' );
+		$patterns = $config->get( 'ESSubpageMasterFilterPatterns' );
 		if ( !$patterns ) {
 			return null;
 		}
@@ -45,8 +79,8 @@ class AddResources extends \BlueSpice\Hook\BeforePageDisplay {
 		foreach ( $patterns as $pattern ) {
 			$regex = "/^" . $pattern . "/";
 			if (
-				!preg_match( $regex, $this->out->getTitle()->getPrefixedDBkey() ) &&
-				!preg_match( $regex, $this->out->getTitle()->getPrefixedText() )
+				!preg_match( $regex, $out->getTitle()->getPrefixedDBkey() ) &&
+				!preg_match( $regex, $out->getTitle()->getPrefixedText() )
 			) {
 				continue;
 			}
@@ -58,17 +92,17 @@ class AddResources extends \BlueSpice\Hook\BeforePageDisplay {
 			return null;
 		}
 
-		$title = $this->out->getTitle()->getDBkey();
-		if ( $this->getConfig()->get( 'ESSubpageMasterFilterUseRootOnly' ) ) {
-			$titleBits = explode( '/', $this->out->getTitle()->getDBkey() );
+		$title = $out->getTitle()->getDBkey();
+		if ( $config->get( 'ESSubpageMasterFilterUseRootOnly' ) ) {
+			$titleBits = explode( '/', $out->getTitle()->getDBkey() );
 			$text = array_shift( $titleBits );
-			$newTitle = \Title::makeTitle( $this->out->getTitle()->getNamespace(), $text );
+			$newTitle = Title::makeTitle( $out->getTitle()->getNamespace(), $text );
 			$title = $newTitle->getDBkey();
 		}
 
-		$namespace = $this->out->getTitle()->getNamespace();
+		$namespace = $out->getTitle()->getNamespace();
 		if ( $namespace === NS_MAIN ) {
-			$namespaceText = \Message::newFromKey( 'bs-ns_main' )->text();
+			$namespaceText = Message::newFromKey( 'bs-ns_main' )->text();
 		} else {
 			$namespaceText = MediaWikiServices::getInstance()->getNamespaceInfo()
 				->getCanonicalName( $namespace );
@@ -77,7 +111,7 @@ class AddResources extends \BlueSpice\Hook\BeforePageDisplay {
 		return [
 			'title' => $title,
 			'namespace' => [
-				'id' => $this->out->getTitle()->getNamespace(),
+				'id' => $out->getTitle()->getNamespace(),
 				'text' => $namespaceText,
 			],
 		];

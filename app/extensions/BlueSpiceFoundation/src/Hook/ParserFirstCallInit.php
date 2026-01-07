@@ -27,18 +27,21 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Parser\Parser;
 
 abstract class ParserFirstCallInit extends Hook {
 
 	/**
 	 *
-	 * @var \Parser
+	 * @var Parser
 	 */
 	protected $parser = null;
 
 	/**
 	 *
-	 * @param \Parser &$parser
+	 * @param Parser &$parser
 	 * @return bool
 	 */
 	public static function callback( &$parser ) {
@@ -53,9 +56,9 @@ abstract class ParserFirstCallInit extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
-	 * @param \Parser &$parser
+	 * @param IContextSource $context
+	 * @param Config $config
+	 * @param Parser &$parser
 	 */
 	public function __construct( $context, $config, &$parser ) {
 		parent::__construct( $context, $config );

@@ -3,13 +3,14 @@
 namespace BlueSpice\DistributionConnector\SearchBackend;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore\Store;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore\TitleRecord;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use RevisionSearchResult;
 use SearchEngine;
-use TitleFactory;
 
 class BlueSpiceTitleSearch extends SearchEngine {
 	/** @var SearchEngine */
@@ -30,15 +31,15 @@ class BlueSpiceTitleSearch extends SearchEngine {
 		);
 		$this->titleFactory = $services->getTitleFactory();
 		$fallbackClass = $services->getSearchEngineFactory()::getSearchEngineClass(
-			$services->getDBLoadBalancer()
+			$services->getConnectionProvider()
 		);
-		$this->fallbackSearchEngine = new $fallbackClass( $services->getDBLoadBalancer() );
+		$this->fallbackSearchEngine = new $fallbackClass( $services->getConnectionProvider() );
 	}
 
 	/**
 	 * @param string $term
 	 *
-	 * @return \ISearchResultSet|\Status|null
+	 * @return \ISearchResultSet|Status|null
 	 */
 	public function searchText( $term ) {
 		return $this->fallbackSearchEngine->searchText( $term );
@@ -63,8 +64,9 @@ class BlueSpiceTitleSearch extends SearchEngine {
 		if ( $term === '*' ) {
 			$term = '';
 		}
-		[ $titles, $total ] = $this->search( $term );
+		[ $results, $total ] = $this->search( $term );
 		$searchResultSet = new SearchResultSet( $total );
+		$titles = $this->titlesFromResults( $results );
 		foreach ( $titles as $title ) {
 			$searchResultSet->add(
 				new RevisionSearchResult( $title )
@@ -80,7 +82,7 @@ class BlueSpiceTitleSearch extends SearchEngine {
 	 *
 	 * @return array
 	 */
-	private function search( $term, ?bool $mustStartWithTerm = false ) {
+	protected function search( $term, ?bool $mustStartWithTerm = false ) {
 		$term = trim( $term );
 
 		$params = [
@@ -111,15 +113,8 @@ class BlueSpiceTitleSearch extends SearchEngine {
 		}
 		$params = new ReaderParams( $params );
 		$res = $this->store->getReader()->read( $params );
-		$titles = [];
-		foreach ( $res->getRecords() as $record ) {
-			$titles[] = $this->titleFactory->makeTitleSafe(
-				$record->get( TitleRecord::PAGE_NAMESPACE ),
-				$record->get( TitleRecord::PAGE_DBKEY )
-			);
-		}
 
-		return [ array_filter( $titles ), $res->getTotal() ];
+		return [ $res->getRecords(), $res->getTotal() ];
 	}
 
 	/**
@@ -128,8 +123,24 @@ class BlueSpiceTitleSearch extends SearchEngine {
 	 * @return \SearchSuggestionSet
 	 */
 	protected function completionSearchBackend( $search ) {
-		[ $titles, $total ] = $this->search( trim( $search ), true );
-		return \SearchSuggestionSet::fromTitles( $titles );
+		[ $results, $total ] = $this->search( trim( $search ), true );
+		return \SearchSuggestionSet::fromTitles( $this->titlesFromResults( $results ) );
+	}
+
+	/**
+	 * @param array $results
+	 * @return array
+	 */
+	private function titlesFromResults( array $results ) {
+		$titles = [];
+		foreach ( $results as $record ) {
+			$titles[] = $this->titleFactory->makeTitleSafe(
+				$record->get( TitleRecord::PAGE_NAMESPACE ),
+				$record->get( TitleRecord::PAGE_DBKEY )
+			);
+		}
+
+		return array_filter( $titles );
 	}
 
 	/**

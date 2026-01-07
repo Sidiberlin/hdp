@@ -1,30 +1,28 @@
 .bs-revision-pager .bs-page-version-pager-toolbar {
 	display: flex;
 	justify-content: space-between;
-	padding: 10px 15px;
+	padding: 10px 0 0;
 }
 
 .bs-revision-pager .bs-page-version-pager-toolbar a {
 	cursor: pointer;
 	display: inline-block;
-	border-radius: 5px;
-	border: 0.5px solid var(--mws-secondary-fg);
-	color: var(--mws-secondary-fg);
-	background-color: var(--mws-secondary-bg);
-	padding: 0.375rem 0.75rem;
+	color: var( --bs-alert-color );
 	font-size: 15px;
-	font-weight: 400;
+	font-weight: normal;
 	line-height: 1.5;
 	user-select: none;
-	transition: color 0.15s ease-in-out,background-color 0.15s ease-in-out,border-color 0.15s ease-in-out,box-shadow 0.15s ease-in-out;
-  }
+	transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
 
 .bs-revision-pager .bs-page-version-pager-toolbar #bs-page-version-pager-previous::before {
-	content: "\e922";
-	font-family: "entypo";
+	content: '\F284';
+	font-family: 'bootstrap-icons';
+	padding-top: 0.3em;
 }
 
 .bs-revision-pager .bs-page-version-pager-toolbar #bs-page-version-pager-next::after {
-	content: "\e923";
-	font-family: "entypo";
+	content: '\F285';
+	font-family: 'bootstrap-icons';
+	padding-top: 0.3em;
 }

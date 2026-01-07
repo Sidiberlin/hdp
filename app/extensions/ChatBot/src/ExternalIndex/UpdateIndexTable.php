@@ -8,8 +8,8 @@ use ChatBot\RunJobsTriggerHandler\IndexDeepset;
 use Config;
 use Exception;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use Status;
-use Title;
 use TitleFactory;
 use Wikimedia\Rdbms\ILoadBalancer;
 

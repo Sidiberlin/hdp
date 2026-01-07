@@ -1,9 +1,9 @@
 <?php
 namespace BlueSpice\PageAssignments;
 
-use Config;
-use Title;
-use User;
+use MediaWiki\Config\Config;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 interface ITarget {
 	/**

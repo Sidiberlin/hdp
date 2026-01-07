@@ -3,13 +3,13 @@
 namespace BlueSpice;
 
 use BlueSpice\Permission\Lockdown;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Permissions\PermissionManager;
-use Status;
-use Title;
-use User;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class PermissionLockdownFactory {
 
@@ -111,7 +111,7 @@ class PermissionLockdownFactory {
 	 * @return string
 	 */
 	protected function getCacheKey( Title $title, User $user ) {
-		return "{$title->getArticleID()}-{$user->getId()}";
+		return "{$title->getNamespace()}-{$title->getDBkey()}-{$user->getId()}";
 	}
 
 	/**
@@ -133,7 +133,7 @@ class PermissionLockdownFactory {
 	 *
 	 * @return Status
 	 */
-	public function userCan( Title $title, $action = 'read', User $user = null,
+	public function userCan( Title $title, $action = 'read', ?User $user = null,
 		$rigor = PermissionManager::RIGOR_SECURE ) {
 		$status = Status::newGood();
 		if ( !$user ) {

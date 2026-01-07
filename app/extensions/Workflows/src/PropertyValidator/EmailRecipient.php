@@ -3,8 +3,9 @@
 namespace MediaWiki\Extension\Workflows\PropertyValidator;
 
 use MediaWiki\Extension\Workflows\IActivity;
+use MediaWiki\Message\Message;
+use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
-use Message;
 
 class EmailRecipient implements IPropertyValidator {
 	/** @var UserFactory */
@@ -29,7 +30,7 @@ class EmailRecipient implements IPropertyValidator {
 			return true;
 		}
 		$user = $this->userFactory->newFromName( $value );
-		if ( !$user instanceof \User && $user->isRegistered() ) {
+		if ( !$user instanceof User && $user->isRegistered() ) {
 			return false;
 		}
 		if ( !$user->getEmail() ) {

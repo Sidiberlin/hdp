@@ -2,13 +2,14 @@
 
 namespace NSFileRepo\Hooks;
 
-use NSFileRepo\NamespaceList;
-use IContextSource;
-use Config;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Extension\NSFileRepo\NamespaceList;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 use SkinTemplate;
-use Message;
-use Title;
-use FormatJson;
 
 class SkinTemplateNavigationUniversal {
 
@@ -39,13 +40,13 @@ class SkinTemplateNavigationUniversal {
 	/**
 	 *
 	 * @param SkinTemplate $sktemplate
-	 * @param array $links
-	 * @return boolean
+	 * @param array &$links
+	 * @return bool
 	 */
 	public static function handle( SkinTemplate $sktemplate, &$links ) {
 		$instance = new self(
-			\RequestContext::getMain(),
-			new \NSFileRepo\Config(),
+			RequestContext::getMain(),
+			new \MediaWiki\Extension\NSFileRepo\Config(),
 			$sktemplate,
 			$links
 		);
@@ -53,13 +54,12 @@ class SkinTemplateNavigationUniversal {
 		return $instance->process();
 	}
 
-
 	/**
 	 *
 	 * @param IContextSource $context
 	 * @param Config $config
 	 * @param SkinTemplate $sktemplate
-	 * @param array $links
+	 * @param array &$links
 	 */
 	public function __construct( IContextSource $context, Config $config, SkinTemplate $sktemplate, &$links ) {
 		$this->context = $context;
@@ -70,7 +70,7 @@ class SkinTemplateNavigationUniversal {
 
 	/**
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function process() {
 		if ( !$this->isFilePage() ) {
@@ -101,27 +101,35 @@ class SkinTemplateNavigationUniversal {
 		return true;
 	}
 
-	private function isFilePage() {
+	/**
+	 * @return bool
+	 */
+	private function isFilePage(): bool {
 		$title = $this->sktemplate->getTitle();
 		return $title && $title->getNamespace() === NS_FILE;
 	}
 
-	private function makeExcludeNS( $editableNamespaces ) {
+	/**
+	 * @param array $editableNamespaces
+	 * @return array
+	 */
+	private function makeExcludeNS( array $editableNamespaces ): array {
 		$allNamespaces = array_keys( $this->sktemplate->getLanguage()->getNamespaces() );
 
 		$nonEditableNamespaces = array_diff( $allNamespaces, $editableNamespaces );
 		return array_values( $nonEditableNamespaces );
 	}
 
-	private function getEditableNamespaces() {
+	/**
+	 * @return int[]|string[]
+	 */
+	private function getEditableNamespaces(): array {
 		$nsList = new NamespaceList(
 			$this->sktemplate->getUser(),
 			$this->config,
 			$this->sktemplate->getLanguage()
 		);
 
-		$editableNamespaces = array_keys( $nsList->getEditable() );
-
-		return $editableNamespaces;
+		return array_keys( $nsList->getEditable() );
 	}
 }

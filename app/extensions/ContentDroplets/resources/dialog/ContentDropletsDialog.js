@@ -54,7 +54,7 @@ ext.contentdroplets.ui.ContentDropletsDialog.prototype.initialize = function () 
 };
 
 ext.contentdroplets.ui.ContentDropletsDialog.prototype.getActionProcess = function ( action ) {
-	var droplet, content, command;
+	let droplet, content, command;
 	if ( action === 'insert' ) {
 		return new OO.ui.Process( function () {
 			droplet = this.content.selectedDroplet.getDropletObject();

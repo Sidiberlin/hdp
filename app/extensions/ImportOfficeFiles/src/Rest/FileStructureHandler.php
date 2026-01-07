@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\ImportOfficeFiles\Rest;
 
-use Config;
-use ConfigFactory;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Extension\ImportOfficeFiles\Process\ImportResultReader;
 use MediaWiki\Extension\ImportOfficeFiles\Workspace;
 use MediaWiki\Rest\Handler;

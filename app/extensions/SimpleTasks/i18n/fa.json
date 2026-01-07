@@ -15,6 +15,5 @@
 	"simple-tasks-taskreport-inspector-label-state": "وضعیت",
 	"simple-tasks-taskreport-state-title-done": "وظیفه انجام شده است",
 	"simple-tasks-taskreport-state-filter-done": "انجام شد",
-	"simple-tasks-taskreport-state-filter-open": "گشودن",
-	"simple-tasks-echo-notification-task-web-body": "{{GENDER:$1|$2}} وظیفه‌ای را به شما محول کرد: $3"
+	"simple-tasks-taskreport-state-filter-open": "گشودن"
 }

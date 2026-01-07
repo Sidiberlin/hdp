@@ -8,8 +8,8 @@ use BlueSpice\ParamProcessor\ParamType;
 use BlueSpice\Tag\MarkerType;
 use BlueSpice\Tag\MarkerType\NoWiki;
 use BlueSpice\Tag\Tag;
-use Parser;
-use PPFrame;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 use ValueValidators\RangeValidator;
 use ValueValidators\StringValidator;
 

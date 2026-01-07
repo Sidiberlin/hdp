@@ -10,15 +10,15 @@ class AddExpiryTable extends \BlueSpice\Hook\LoadExtensionSchemaUpdates {
 
 		$this->updater->addExtensionTable(
 			'bs_expiry',
-			"$dir/maintenance/db/sql/$dbType/bs_expiry-generated.sql"
+			"$dir/maintenance/db/$dbType/bs_expiry-generated.sql"
 		);
 
-		// Update date field to DATETIME
+		// DATE => DATETIME / TIMESTAMPTZ (mysql & sqlite / postgres)
 		// ERM38357
 		$this->updater->modifyExtensionField(
 			'bs_expiry',
 			'exp_date',
-			"$dir/maintenance/db/bs_expiry.patch.update_date_type.sql"
+			"$dir/maintenance/db/$dbType/bs_expiry_column_type_patch.sql"
 		);
 	}
 }

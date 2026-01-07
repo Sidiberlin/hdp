@@ -1,6 +1,6 @@
 {
 	"name": "PageHeader",
-	"version": "2.2.1",
+	"version": "3.0.5",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[http://www.hallowelt.com Hallo Welt! GmbH]",
@@ -9,7 +9,7 @@
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:PageHeader",
 	"descriptionmsg": "pageheader-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"attributes": {
 		"PageHeader": {

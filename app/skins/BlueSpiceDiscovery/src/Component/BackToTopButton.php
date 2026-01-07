@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Discovery\Component;
 
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleLink;
 
@@ -26,7 +26,7 @@ class BackToTopButton extends SimpleLink {
 	 * @inheritDoc
 	 */
 	public function getClasses(): array {
-		return [ 'back-to-top', 'd-none' ];
+		return [ 'back-to-top', 'd-none', 'bi-arrow-up-circle-fill' ];
 	}
 
 	/**

@@ -14,8 +14,8 @@ ext.simpletasks.api.Api.prototype.makeUrl = function ( path ) {
 };
 
 ext.simpletasks.api.Api.prototype.getTasksFromFilter = function ( count, data ) {
-	var filter = {};
-	for ( var paramKey in data ) {
+	const filter = {};
+	for ( const paramKey in data ) {
 		if ( data[ paramKey ].length > 0 ) {
 			filter[ paramKey ] = JSON.stringify( data[ paramKey ] );
 		}
@@ -30,7 +30,7 @@ ext.simpletasks.api.Api.prototype.get = function ( path, params ) {
 
 ext.simpletasks.api.Api.prototype.ajax = function ( path, data, method ) {
 	data = data || {};
-	var dfd = $.Deferred();
+	const dfd = $.Deferred();
 
 	$.ajax( {
 		method: method,
@@ -38,13 +38,13 @@ ext.simpletasks.api.Api.prototype.ajax = function ( path, data, method ) {
 		data: data,
 		contentType: 'application/json',
 		dataType: 'json'
-	} ).done( function ( response ) {
+	} ).done( ( response ) => {
 		if ( response.success === false ) {
 			dfd.reject();
 			return;
 		}
 		dfd.resolve( response );
-	} ).fail( function ( jgXHR, type, status ) {
+	} ).fail( ( jgXHR, type, status ) => {
 		if ( type === 'error' ) {
 			dfd.reject( {
 				error: jgXHR.responseJSON || jgXHR.responseText

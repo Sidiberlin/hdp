@@ -4,13 +4,14 @@ declare( strict_types=1 );
 
 namespace MediaWiki\Extension\EmbedVideo\EmbedService;
 
-use Config;
 use InvalidArgumentException;
+use JsonException;
 use MediaTransformOutput;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use RuntimeException;
 use ThumbnailImage;
-use Title;
 
 abstract class AbstractEmbedService {
 	/**
@@ -42,6 +43,7 @@ abstract class AbstractEmbedService {
 	 * @var string
 	 */
 	protected $id;
+	protected $unparsedId;
 
 	/**
 	 * Width of the iframe
@@ -101,6 +103,7 @@ abstract class AbstractEmbedService {
 			self::$config = MediaWikiServices::getInstance()->getConfigFactory()->makeConfig( 'EmbedVideo' );
 		}
 
+		$this->unparsedId = $id;
 		$this->id = $this->parseVideoID( $id );
 	}
 
@@ -135,7 +138,7 @@ abstract class AbstractEmbedService {
 	 * @return string
 	 */
 	public function getContentType(): ?string {
-		return 'content';
+		return 'video';
 	}
 
 	/**
@@ -185,7 +188,13 @@ abstract class AbstractEmbedService {
 	 *
 	 * @return float|null
 	 */
-	abstract public function getAspectRatio(): ?float;
+	public function getAspectRatio(): ?float {
+		if ( $this->width !== null && $this->height !== null ) {
+			return $this->width / $this->height;
+		}
+
+		return $this->getDefaultWidth() / $this->getDefaultHeight();
+	}
 
 	/**
 	 * Returns the service name
@@ -200,13 +209,13 @@ abstract class AbstractEmbedService {
 
 	/**
 	 * Returns the key for the service, mainly used for messages
-	 * Can be overriden when message key does not match the service class
+	 * Can be overridden when message key does not match the service class
 	 * Defaults to the class name
 	 *
 	 * @return string
 	 */
 	public function getServiceKey(): string {
-		return strtolower( substr( static::class, strrpos( static::class, '\\' ) + 1 ) );
+		return self::getServiceName();
 	}
 
 	/**
@@ -214,28 +223,36 @@ abstract class AbstractEmbedService {
 	 *
 	 * @return int
 	 */
-	abstract public function getDefaultWidth(): int;
+	public function getDefaultWidth(): int {
+		return 640;
+	}
 
 	/**
 	 * The default iframe height if no height is set specified
 	 *
 	 * @return int
 	 */
-	abstract public function getDefaultHeight(): int;
+	public function getDefaultHeight(): int {
+		return 360;
+	}
 
 	/**
 	 * Array of regexes to validate a given service url
 	 *
 	 * @return array
 	 */
-	abstract protected function getUrlRegex(): array;
+	protected function getUrlRegex(): array {
+		return [];
+	}
 
 	/**
 	 * Array of regexes to validate a given embed id
 	 *
 	 * @return array
 	 */
-	abstract protected function getIdRegex(): array;
+	protected function getIdRegex(): array {
+		return [];
+	}
 
 	/**
 	 * Returns the full url to the embed
@@ -244,10 +261,17 @@ abstract class AbstractEmbedService {
 	 */
 	public function getUrl(): string {
 		if ( $this->getUrlArgs() !== false ) {
-			return sprintf( '%s?%s', sprintf( $this->getBaseUrl(), $this->getId() ), $this->getUrlArgs() );
+			return wfAppendQuery(
+				sprintf(
+					$this->getBaseUrl(),
+					$this->getId(),
+					...$this->extraIds
+				),
+				$this->getUrlArgs()
+			);
 		}
 
-		return sprintf( $this->getBaseUrl(), $this->getId() );
+		return sprintf( $this->getBaseUrl(), $this->getId(), ...$this->extraIds );
 	}
 
 	/**
@@ -255,7 +279,9 @@ abstract class AbstractEmbedService {
 	 *
 	 * @return array
 	 */
-	abstract public function getCSPUrls(): array;
+	public function getCSPUrls(): array {
+		return [];
+	}
 
 	/**
 	 * Set the width of the player. This also will set the height automatically.
@@ -381,18 +407,14 @@ abstract class AbstractEmbedService {
 		$_args = explode( '&', $urlArgs );
 		$arguments = [];
 
-		if ( is_array( $_args ) ) {
-			foreach ( $_args as $rawPair ) {
-				[ $key, $value ] = explode( "=", $rawPair, 2 );
+		foreach ( $_args as $rawPair ) {
+			[ $key, $value ] = explode( "=", $rawPair, 2 );
 
-				if ( empty( $key ) || ( $value === null || $value === '' ) ) {
-					return false;
-				}
-
-				$arguments[$key] = htmlentities( $value, ENT_QUOTES );
+			if ( empty( $key ) || ( $value === null || $value === '' ) ) {
+				continue;
 			}
-		} else {
-			return false;
+
+			$arguments[$key] = htmlentities( $value, ENT_QUOTES );
 		}
 
 		$this->urlArgs += $arguments;
@@ -468,6 +490,29 @@ abstract class AbstractEmbedService {
 	 */
 	public function getTitle(): ?string {
 		return $this->title;
+	}
+
+	/**
+	 * @param null|int $width
+	 * @param null|int $height
+	 * @return string
+	 */
+	public function getIframeConfig( $width = 0, $height = 0 ): string {
+		$attributes = [];
+		if ( !empty( $width ) && $width !== $this->getDefaultWidth() ) {
+			$attributes['width'] = $width;
+		}
+		if ( !empty( $height ) && $height !== $this->getDefaultHeight() ) {
+			$attributes['height'] = $height;
+		}
+
+		$attributes['src'] = $this->getUrl();
+
+		try {
+			return json_encode( $attributes, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES );
+		} catch ( JsonException $e ) {
+			return '{"error": "Could not encode iframe config"}';
+		}
 	}
 
 	/**

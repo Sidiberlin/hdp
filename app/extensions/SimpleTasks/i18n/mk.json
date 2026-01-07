@@ -28,9 +28,5 @@
 	"simple-tasks-taskreport-state-title-done": "Задачата е завршена",
 	"simple-tasks-taskreport-state-filter-done": "Готово",
 	"simple-tasks-taskreport-state-filter-open": "Отворена",
-	"echo-category-title-simple-tasks-notification-cat": "Задачи",
-	"simple-tasks-notification-cat-tooltip": "Известете ме кога ќе ми бидат доделени задачи",
-	"simple-tasks-echo-notification-task-subject": "Задачи доделени вам на страницата $1",
-	"simple-tasks-echo-notification-task-email-body": "{{GENDER:$2|$3 ви додели}} задача на страницата $1.\n\n$4",
-	"simple-tasks-echo-notification-task-web-body": "{{GENDER:$1|$2 ви додели}} задача: $3"
+	"simple-tasks-notif-message-with-due-date": "{{GENDER:$1|ви зададе}} задача: „$1“. Рокот на задачата е на $2"
 }

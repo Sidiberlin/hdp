@@ -2,30 +2,33 @@
 
 namespace SMW\Maintenance;
 
+use MediaWiki\Maintenance\Maintenance;
 use Onoi\MessageReporter\CallbackMessageReporter;
 use Onoi\MessageReporter\MessageReporter;
-use SMW\SQLStore\QueryEngine\FulltextSearchTableFactory;
 use SMW\Services\ServicesFactory as ApplicationFactory;
-use SMWDataItem as DataItem;
 use SMW\Setup;
+use SMW\SQLStore\QueryEngine\FulltextSearchTableFactory;
 use SMW\Utils\CliMsgFormatter;
+use SMWDataItem as DataItem;
 
 /**
  * Load the required class
  */
+// @codeCoverageIgnoreStart
 if ( getenv( 'MW_INSTALL_PATH' ) !== false ) {
 	require_once getenv( 'MW_INSTALL_PATH' ) . '/maintenance/Maintenance.php';
 } else {
 	require_once __DIR__ . '/../../../maintenance/Maintenance.php';
 }
+// @codeCoverageIgnoreEnd
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.5
  *
  * @author mwjames
  */
-class rebuildFulltextSearchTable extends \Maintenance {
+class rebuildFulltextSearchTable extends Maintenance {
 
 	/**
 	 * @var MessageReporter
@@ -66,7 +69,6 @@ class rebuildFulltextSearchTable extends \Maintenance {
 	 * @see Maintenance::execute
 	 */
 	public function execute() {
-
 		if ( $this->canExecute() !== true ) {
 			exit;
 		}
@@ -122,7 +124,7 @@ class rebuildFulltextSearchTable extends \Maintenance {
 				$cliMsgFormatter->section( 'Notice' )
 			);
 
-			return $this->messageReporter->reportMessage( "\n" . "Full-text search indexing is not enabled or supported." ."\n" );
+			return $this->messageReporter->reportMessage( "\n" . "Full-text search indexing is not enabled or supported." . "\n" );
 		}
 
 		$this->messageReporter->reportMessage(
@@ -135,7 +137,7 @@ class rebuildFulltextSearchTable extends \Maintenance {
 		);
 
 		$this->messageReporter->reportMessage(
-			$cliMsgFormatter->section( 'Rebuild', 3 , '-', true )
+			$cliMsgFormatter->section( 'Rebuild', 3, '-', true )
 		);
 
 		$text = [
@@ -185,7 +187,6 @@ class rebuildFulltextSearchTable extends \Maintenance {
 	}
 
 	private function reportConfiguration( $searchTableRebuilder, $textSanitizer ) {
-
 		$cliMsgFormatter = new CliMsgFormatter();
 
 		$this->messageReporter->reportMessage( "\n" );
@@ -229,7 +230,6 @@ class rebuildFulltextSearchTable extends \Maintenance {
 	}
 
 	private function canExecute() {
-
 		if ( !Setup::isEnabled() ) {
 			return $this->reportMessage(
 				"\nYou need to have SMW enabled in order to run the maintenance script!\n"
@@ -248,5 +248,7 @@ class rebuildFulltextSearchTable extends \Maintenance {
 
 }
 
+// @codeCoverageIgnoreStart
 $maintClass = rebuildFulltextSearchTable::class;
-require_once ( RUN_MAINTENANCE_IF_MAIN );
+require_once RUN_MAINTENANCE_IF_MAIN;
+// @codeCoverageIgnoreEnd

@@ -20,8 +20,6 @@
 	"bs-discovery-create-button-new-file-title": "ဒင်ႏထင်ႏဖုဲင်တသာ",
 	"bs-discovery-navbar-global-actions-button-title": "တကမ္ဘာႏလွုမ်းခွုမ်မာꩻချက်ဖိုင်ႏ",
 	"bs-discovery-navbar-global-actions-button-aria-label": "တကမ္ဘာႏလွုမ်းခွုမ်မာꩻချက်ဖိုင်ႏ",
-	"bs-discovery-navbar-global-actions-tool-text": "ကိရိယာႏဖုံႏ",
-	"bs-discovery-navbar-global-actions-manager-text": "စီႏမံႏဖန်းဖြယ်",
 	"bs-discovery-breadcrumb-nav-node-ns-aria-label": "ယီးနယ်မိဉ်ꩻ",
 	"bs-discovery-breadcrumb-nav-node-ns-main": "လိတ်မဲ့ငါဖိုင်ႏ",
 	"bs-discovery-breadcrumb-nav-node-title": "ဗွောင် $1",
@@ -47,7 +45,6 @@
 	"bs-discovery-dialog-detailssectionheading-views": "ထွား",
 	"bs-discovery-dialog-detailssectionheading-toolbox": "ကိရိယာႏတွိုက်",
 	"bs-discovery-navigation-heading": "မာꩻစ",
-	"bs-discovery-sidebar-secondary-watch-link-title": "ထွားလိတ်မဲ့ငါ",
 	"bs-discovery-sidebar-secondary-watch-link-aria-label": "ထွားလိတ်မဲ့ငါ",
 	"bs-discovery-permalink-copy-text": "ထူႏဗိုန် URL",
 	"bs-discovery-breadcrumb-label-talk": "အိုင်ကိုမ်ဒေါ့ꩻရီ",
@@ -60,6 +57,5 @@
 	"bs-discovery-globalactionentry-templates-text": "တမ်းပလေက်ဖိုင်ႏ",
 	"bs-discovery-globalactionentry-templates-title": "တမ်းပလေက်ဖိုင်ႏလို့လို့",
 	"bs-discovery-last-edit-by-system-user": "စနိစ် ကေားသုင်ꩻသား",
-	"bs-discovery-enhanced-sidebar-edit-button-aria-label": "မွဉ်းဖျင် $1",
 	"bs-discovery-page-version-pager-next": "လွေꩻငါထဲင်း"
 }

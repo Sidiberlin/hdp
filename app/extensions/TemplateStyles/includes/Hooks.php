@@ -7,18 +7,21 @@ namespace MediaWiki\Extension\TemplateStyles;
  * @license GPL-2.0-or-later
  */
 
-use Config;
-use ContentHandler;
-use ExtensionRegistry;
-use Hooks as MWHooks;
-use Html;
 use InvalidArgumentException;
 use MapCacheLRU;
+use MediaWiki\Config\Config;
+use MediaWiki\Content\ContentHandler;
+use MediaWiki\Extension\TemplateStyles\Hooks\HookRunner;
+use MediaWiki\Hook\ParserClearStateHook;
+use MediaWiki\Hook\ParserFirstCallInitHook;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\Revision\Hook\ContentHandlerDefaultModelForHook;
 use MediaWiki\Revision\SlotRecord;
-use Parser;
-use PPFrame;
-use Title;
+use MediaWiki\Title\Title;
 use Wikimedia\CSS\Grammar\CheckedMatcher;
 use Wikimedia\CSS\Grammar\GrammarMatch;
 use Wikimedia\CSS\Grammar\MatcherFactory;
@@ -39,7 +42,11 @@ use Wikimedia\CSS\Sanitizer\SupportsAtRuleSanitizer;
 /**
  * TemplateStyles extension hooks
  */
-class Hooks {
+class Hooks implements
+	ParserFirstCallInitHook,
+	ParserClearStateHook,
+	ContentHandlerDefaultModelForHook
+{
 
 	/** @var MatcherFactory|null */
 	private static $matcherFactory = null;
@@ -108,7 +115,8 @@ class Hooks {
 				$propertySanitizer->getKnownProperties(),
 				array_flip( $config->get( 'TemplateStylesDisallowedProperties' ) )
 			) );
-			MWHooks::run( 'TemplateStylesPropertySanitizer', [ &$propertySanitizer, $matcherFactory ] );
+			$hookRunner = new HookRunner( MediaWikiServices::getInstance()->getHookContainer() );
+			$hookRunner->onTemplateStylesPropertySanitizer( $propertySanitizer, $matcherFactory );
 
 			$htmlOrBodySimpleSelectorSeqMatcher = new CheckedMatcher(
 				$matcherFactory->cssSimpleSelectorSeq(),
@@ -175,8 +183,8 @@ class Hooks {
 			];
 			$allRuleSanitizers = array_diff_key( $allRuleSanitizers, $disallowedAtRules );
 			$sanitizer = new StylesheetSanitizer( $allRuleSanitizers );
-			MWHooks::run( 'TemplateStylesStylesheetSanitizer',
-				[ &$sanitizer, $propertySanitizer, $matcherFactory ]
+			$hookRunner->onTemplateStylesStylesheetSanitizer(
+				$sanitizer, $propertySanitizer, $matcherFactory
 			);
 			self::$sanitizers[$key] = $sanitizer;
 		}
@@ -202,9 +210,10 @@ class Hooks {
 	 * Add `<templatestyles>` to the parser.
 	 * @param Parser $parser Parser object being cleared
 	 */
-	public static function onParserFirstCallInit( Parser $parser ) {
+	public function onParserFirstCallInit( $parser ) {
 		$parser->setHook( 'templatestyles', [ __CLASS__, 'handleTag' ] );
-		$parser->extTemplateStylesCache = new MapCacheLRU( 100 ); // 100 is arbitrary
+		// 100 is arbitrary
+		$parser->extTemplateStylesCache = new MapCacheLRU( 100 );
 	}
 
 	/**
@@ -213,7 +222,7 @@ class Hooks {
 	 * @param string &$model The model name
 	 * @return bool
 	 */
-	public static function onContentHandlerDefaultModelFor( $title, &$model ) {
+	public function onContentHandlerDefaultModelFor( $title, &$model ) {
 		// Allow overwriting attributes with config settings.
 		// Attributes can not use namespaces as keys, as processing them does not preserve
 		// integer keys.
@@ -233,26 +242,10 @@ class Hooks {
 	}
 
 	/**
-	 * Edit our CSS content model like core's CSS
-	 * @param Title $title Title being edited
-	 * @param string &$lang CodeEditor language to use
-	 * @param string $model Content model
-	 * @param string $format Content format
-	 * @return bool
-	 */
-	public static function onCodeEditorGetPageLanguage( $title, &$lang, $model, $format ) {
-		if ( $model === 'sanitized-css' && self::getConfig()->get( 'TemplateStylesUseCodeEditor' ) ) {
-			$lang = 'css';
-			return false;
-		}
-		return true;
-	}
-
-	/**
 	 * Clear our cache when the parser is reset
 	 * @param Parser $parser
 	 */
-	public static function onParserClearState( Parser $parser ) {
+	public function onParserClearState( $parser ) {
 		$parser->extTemplateStylesCache->clear();
 	}
 
@@ -288,7 +281,7 @@ class Hooks {
 		// or the like, though, because stuff like substing and Parsoid would
 		// wind up wanting to make that relative to the wrong page.
 		$title = Title::newFromText( $params['src'], $config->get( 'TemplateStylesDefaultNamespace' ) );
-		if ( !$title ) {
+		if ( !$title || $title->isExternal() ) {
 			return self::formatTagError( $parser, [ 'templatestyles-invalid-src' ] );
 		}
 
@@ -326,12 +319,13 @@ class Hooks {
 		if ( $revRecord->getId() ) {
 			$cacheKey = 'r' . $revRecord->getId();
 		} else {
-			$cacheKey = sha1( $content->getNativeData() );
+			$cacheKey = sha1( $content->getText() );
 		}
 
 		// Include any non-default wrapper class in the cache key too
 		$wrapClass = $parser->getOptions()->getWrapOutputClass();
-		if ( $wrapClass === false ) { // deprecated
+		if ( $wrapClass === false ) {
+			// deprecated
 			$wrapClass = 'mw-parser-output';
 		}
 		if ( $wrapClass !== 'mw-parser-output' || $extraWrapper !== null ) {
@@ -399,6 +393,7 @@ class Hooks {
 	 * Format an error in the `<templatestyles>` tag
 	 * @param Parser $parser
 	 * @param array $msg Arguments to wfMessage()
+	 * @phan-param non-empty-array $msg
 	 * @return string HTML
 	 */
 	private static function formatTagError( Parser $parser, array $msg ) {

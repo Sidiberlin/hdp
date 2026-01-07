@@ -1,8 +1,6 @@
 <?php
 /** Welsh (Cymraeg)
  *
- * To improve a translation please visit https://translatewiki.net
- *
  * @file
  * @ingroup Languages
  */
@@ -46,7 +44,7 @@ $magicWords = [
 	'fullurl'                   => [ '0', 'URLLLAWN:', 'FULLURL:' ],
 	'fullurle'                  => [ '0', 'URLLLAWNE:', 'FULLURLE:' ],
 	'grammar'                   => [ '0', 'GRAMMAR', 'GRAMADEG', 'GRAMMAR:' ],
-	'hiddencat'                 => [ '1', '_HIDDENCAT_', '_CATCUDD_', '__HIDDENCAT__' ],
+	'hiddencat'                 => [ '1', '__CATCUDD__', '_HIDDENCAT_', '_CATCUDD_', '__HIDDENCAT__' ],
 	'img_bottom'                => [ '1', 'gwaelod', 'godre', 'bottom' ],
 	'img_center'                => [ '1', 'canol', 'center', 'centre' ],
 	'img_left'                  => [ '1', 'chwith', 'left' ],
@@ -59,11 +57,11 @@ $magicWords = [
 	'img_thumbnail'             => [ '1', 'bawd', 'ewin_bawd', 'mân-lun', 'thumb', 'thumbnail' ],
 	'img_top'                   => [ '1', 'brig', 'top' ],
 	'img_upright'               => [ '1', 'unionsyth', 'unionsyth=$1', 'unionsyth_$1', 'upright', 'upright=$1', 'upright $1' ],
-	'language'                  => [ '0', '#IAITH:', '#LANGUAGE:' ],
+	'language'                  => [ '0', '#IAITH', '#LANGUAGE' ],
 	'localtimestamp'            => [ '1', 'STAMPAMSERLLEOL', 'LOCALTIMESTAMP' ],
 	'namespace'                 => [ '1', 'PARTH', 'NAMESPACE' ],
 	'namespacee'                => [ '1', 'NAMESPACE', 'PARTHE', 'NAMESPACEE' ],
-	'newsectionlink'            => [ '1', '_NEWSECTIONLINK_', '_CYSWLLTADRANNEWYDD_', '__NEWSECTIONLINK__' ],
+	'newsectionlink'            => [ '1', '__CYSWLLTADRANNEWYDD__', '_NEWSECTIONLINK_', '_CYSWLLTADRANNEWYDD_', '__NEWSECTIONLINK__' ],
 	'noeditsection'             => [ '0', '__DIMADRANGOLYGU__', '__DIMGOLYGUADRAN__', '__NOEDITSECTION__' ],
 	'notoc'                     => [ '0', '__DIMTAFLENCYNNWYS__', '__DIMRHESTRGYNNWYS__', '__DIMRHG__', '__NOTOC__' ],
 	'numberofadmins'            => [ '1', 'NIFERYGWEINYDDWYR', 'NUMBEROFADMINS' ],

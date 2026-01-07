@@ -5,9 +5,8 @@ namespace BlueSpice\Discovery\Structure;
 use BaseTemplate;
 use BlueSpice\Discovery\CookieHandler;
 use BlueSpice\Discovery\IBaseTemplateAware;
-use IContextSource;
-use MediaWiki\MediaWikiServices;
-use SpecialPage;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\SpecialPage\SpecialPage;
 
 class SidebarPrimary extends StackedTabPanelContainerBase implements IBaseTemplateAware {
 
@@ -87,11 +86,10 @@ class SidebarPrimary extends StackedTabPanelContainerBase implements IBaseTempla
 		}
 
 		$user = $context->getUser();
-		$services = MediaWikiServices::getInstance();
-		$permissionManager = $services->getPermissionManager();
-		if ( !$permissionManager->userCan( 'read', $user, $title ) ) {
+		if ( !$user->isAllowed( 'read' ) ) {
 			return false;
 		}
+
 		return true;
 	}
 

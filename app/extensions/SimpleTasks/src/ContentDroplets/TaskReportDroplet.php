@@ -3,7 +3,7 @@
 namespace SimpleTasks\ContentDroplets;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\TagDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class TaskReportDroplet extends TagDroplet {
 

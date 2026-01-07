@@ -13,7 +13,5 @@
 	"bs-countthings-error-invalid-mode": "Direizh eo ar mod \"$1\". Implijit \"chars\", \"words\", pe \"pages\", mar plij.",
 	"bs-countthings-error-not-exist": "N'eus ket eus ar bajenn \"$1\".",
 	"bs-countthings-tag-countarticles-desc": "Diskwel an niver a bennadoù er wiki.",
-	"bs-countthings-tag-countusers-desc": "Diskwel an niver a implijerien enskrivet.",
-	"bs-countthings-tag-countcharacters-example-1": "Niver a c'herioù",
-	"bs-countthings-tag-countcharacters-example-2": "Niver a arouezennoù"
+	"bs-countthings-tag-countusers-desc": "Diskwel an niver a implijerien enskrivet."
 }

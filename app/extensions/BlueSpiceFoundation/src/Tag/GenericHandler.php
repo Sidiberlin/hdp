@@ -3,7 +3,10 @@
 namespace BlueSpice\Tag;
 
 use BlueSpice\ParamProcessor\ProcessingErrorMessageTranslator;
-use Html;
+use MediaWiki\Html\Html;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Parser\Sanitizer;
 
 class GenericHandler {
 
@@ -49,7 +52,7 @@ class GenericHandler {
 
 	/**
 	 *
-	 * @var \Parser
+	 * @var Parser
 	 */
 	protected $parser = null;
 
@@ -67,7 +70,7 @@ class GenericHandler {
 
 	/**
 	 *
-	 * @var \PPFrame
+	 * @var PPFrame
 	 */
 	protected $frame = null;
 
@@ -83,12 +86,12 @@ class GenericHandler {
 	 *
 	 * @param string $input
 	 * @param array $args
-	 * @param \Parser $parser
-	 * @param \PPFrame $frame
+	 * @param Parser $parser
+	 * @param PPFrame $frame
 	 * @return array
 	 * @throws \MWException
 	 */
-	public function handle( $input, array $args, \Parser $parser, \PPFrame $frame ) {
+	public function handle( $input, array $args, Parser $parser, PPFrame $frame ) {
 		$elementName = $this->tag->getContainerElementName();
 		if ( !empty( $elementName ) && !$this->isValidContainerElementName( $elementName ) ) {
 			$tagNames = $this->tag->getTagNames();
@@ -150,7 +153,7 @@ class GenericHandler {
 	protected function makeContainerAttributes() {
 		$cssClasses = [ 'bs-tag' ];
 		foreach ( $this->tag->getTagNames() as $tagName ) {
-			$cssClasses[] = \Sanitizer::escapeClass( "bs-tag-$tagName" );
+			$cssClasses[] = Sanitizer::escapeClass( "bs-tag-$tagName" );
 		}
 
 		$attribs = [
@@ -179,7 +182,7 @@ class GenericHandler {
 		}
 		$paramName = $paramDefinition->getName();
 		$paramDefinition->setMessage(
-			wfMessage( 'bs-tag-input-desc' )->plain()
+			wfMessage( 'bs-tag-input-desc' )->text()
 		);
 
 		$options = new \ParamProcessor\Options();
@@ -219,7 +222,7 @@ class GenericHandler {
 				wfMessage(
 					'bs-tag-param-desc',
 					$paramDefinition->getName()
-				)->plain()
+				)->text()
 			);
 			$options = new \ParamProcessor\Options();
 			$options->setName( 'arg-' . $paramDefinition->getName() );
@@ -265,7 +268,7 @@ class GenericHandler {
 		foreach ( $this->errors as $errorKey => $errorMessage ) {
 			$translatedMessage = $translator->translate( $errorMessage );
 			$label = $this->makeErrorLabel( $errorKey );
-			$out[] = \Html::element(
+			$out[] = Html::element(
 				'div',
 				[ 'class' => 'bs-error bs-tag' ],
 				$label . $translatedMessage

@@ -10,10 +10,11 @@ use BlueSpice\ReadConfirmation\Event\ConfirmationRequestEvent;
 use BlueSpice\ReadConfirmation\IMechanism;
 use Exception;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use MWStake\MediaWiki\Component\Events\Notifier;
-use Title;
-use User;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class NonMinorEdit implements IMechanism {
@@ -115,6 +116,7 @@ class NonMinorEdit implements IMechanism {
 	 * @param Title $title
 	 * @param User $userAgent
 	 * @return User[]|bool
+	 * @throws Exception
 	 */
 	public function notify( Title $title, User $userAgent ) {
 		$target = $this->getTargetFromTitle( $title );
@@ -125,18 +127,7 @@ class NonMinorEdit implements IMechanism {
 		$notifyUsers = $this->getNotifyUsers( $target );
 		$this->notifier->emit( new ConfirmationRequestEvent( $userAgent, $title, $notifyUsers ) );
 
-		$notifiedUsers = [];
-		$userFactory = $this->services->getUserFactory();
-		foreach ( $notifyUsers as $userId ) {
-			$user = $userFactory->newFromId( $userId );
-			if ( !$user ) {
-				continue;
-			}
-			$notifiedUsers[] = $user;
-
-		}
-
-		return $notifiedUsers;
+		return $notifyUsers;
 	}
 
 	/**
@@ -210,9 +201,17 @@ class NonMinorEdit implements IMechanism {
 			'rc_user_id' => $user->getId()
 		];
 
-		$this->dbLoadBalancer->getConnection( DB_PRIMARY )->delete( 'bs_readconfirmation', $row );
+		$this->dbLoadBalancer->getConnection( DB_PRIMARY )->delete(
+			'bs_readconfirmation',
+			$row,
+			__METHOD__
+		);
 		$row[ 'rc_timestamp' ] = wfTimestampNow();
-		$this->dbLoadBalancer->getConnection( DB_PRIMARY )->insert( 'bs_readconfirmation', $row );
+		$this->dbLoadBalancer->getConnection( DB_PRIMARY )->insert(
+			'bs_readconfirmation',
+			$row,
+			__METHOD__
+		);
 
 		return true;
 	}
@@ -234,11 +233,8 @@ class NonMinorEdit implements IMechanism {
 	 * 	]
 	 */
 	private function getUserLatestReadRevisions( array $userIds ): array {
-		$conds = [];
-		if ( $userIds ) {
-			$conds = [
-				'rc_user_id' => $userIds
-			];
+		if ( !$userIds ) {
+			return [];
 		}
 
 		$res = $this->dbLoadBalancer->getConnection( DB_REPLICA )->select(
@@ -251,7 +247,9 @@ class NonMinorEdit implements IMechanism {
 				'rev_page',
 				'rc_user_id'
 			],
-			$conds,
+			[
+				'rc_user_id' => $userIds
+			],
 			__METHOD__,
 			[
 				'GROUP BY' => [
@@ -392,24 +390,15 @@ class NonMinorEdit implements IMechanism {
 			return [];
 		}
 
-		$res = $this->dbLoadBalancer->getConnection( DB_REPLICA )->select(
-			'revision',
-			[ 'rev_id', 'rev_page', 'rev_minor_edit' ],
-			[
-				'rev_minor_edit' => 0,
-				'rev_page' => $pageIds
-			],
-			__METHOD__,
-			[ 'ORDER BY' => 'rev_id DESC' ]
-		);
+		$res = $this->dbLoadBalancer->getConnection( DB_REPLICA )->newSelectQueryBuilder()
+			->from( 'page' )
+			->select( [ 'page_id', 'page_latest' ] )
+			->where( [ 'page_id' => $pageIds ] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
 
 		foreach ( $res as $row ) {
-			$pageId = (int)$row->rev_page;
-			if ( isset( $recentData[$pageId] ) ) {
-				continue;
-				// This way we get only the latest revisions
-			}
-			$recentData[$pageId] = (int)$row->rev_id;
+			$recentData[ (int)$row->page_id ] = (int)$row->page_latest;
 		}
 
 		return $recentData;
@@ -477,5 +466,14 @@ class NonMinorEdit implements IMechanism {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * @param Title $title
+	 * @param User $user
+	 * @return RevisionRecord|null
+	 */
+	public function getLatestRevisionToConfirm( Title $title, User $user ): ?RevisionRecord {
+		return $this->services->getRevisionLookup()->getRevisionByTitle( $title );
 	}
 }

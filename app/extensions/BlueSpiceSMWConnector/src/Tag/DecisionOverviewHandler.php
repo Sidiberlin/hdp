@@ -3,10 +3,11 @@
 namespace BlueSpice\SMWConnector\Tag;
 
 use BlueSpice\Tag\Handler;
-use Html;
-use Language;
-use Parser;
-use PPFrame;
+use MediaWiki\Html\Html;
+use MediaWiki\Language\Language;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Title\Title;
 use SMW\DIProperty;
 use SMW\DIWikiPage;
 use SMW\Query\QueryResult;
@@ -41,7 +42,7 @@ class DecisionOverviewHandler extends Handler {
 		$categories = $this->createSMWformat( $this->processedArgs[DecisionOverview::ATTR_CATEGORIES], 'categories' );
 		$namespaces = $this->createSMWformat( $this->processedArgs[DecisionOverview::ATTR_NAMESPACES], 'namespaces' );
 		$prefix = $this->createSMWformat( $this->processedArgs[DecisionOverview::ATTR_PREFIX], 'prefix' );
-		$this->parser->getOutput()->addModuleStyles( 'ext.BSSMWConnector.decisionOverview.styles' );
+		$this->parser->getOutput()->addModuleStyles( [ 'ext.BSSMWConnector.decisionOverview.styles' ] );
 
 		$query = '{{#ask:' . $categories . $namespaces . $prefix . '[[Decision::+]]|?Decision}}';
 		$queryResult = $this->runSMWQuery( $query );
@@ -286,7 +287,7 @@ class DecisionOverviewHandler extends Handler {
 		$propertiesData = [];
 		$semanticData = $store->getSemanticData( $DIWikiPage );
 		$DIProperties = $semanticData->getProperties();
-		/** @var \SMW\DIProperty $standardProperty */
+		/** @var DIProperty $standardProperty */
 		foreach ( $DIProperties as $DIProperty ) {
 			$values = $this->getPropertyData( $DIWikiPage, $DIProperty, $printouts, $store );
 			if ( empty( $values ) ) {

@@ -1,7 +1,11 @@
 <?php
 
-//phpcs:disable MediaWiki.NamingConventions.PrefixedGlobalFunctions.wfPrefix
-function getMaintenancePath() {
+use MediaWiki\Maintenance\Maintenance;
+
+/**
+ * @return string
+ */
+function getMaintenancePath() { //phpcs:ignore MediaWiki.NamingConventions.PrefixedGlobalFunctions.allowedPrefix
 	if ( isset( $argv[1] ) && file_exists( $argv[1] ) ) {
 		return $argv[1];
 	}

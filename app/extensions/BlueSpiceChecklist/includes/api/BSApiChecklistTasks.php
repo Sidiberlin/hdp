@@ -2,9 +2,12 @@
 
 use BlueSpice\Api\Response\Standard;
 use BlueSpice\Checklist\Extension as Checklist;
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Content\TextContent;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Title\Title;
 
 class BSApiChecklistTasks extends BSApiTasksBase {
 
@@ -80,7 +83,7 @@ class BSApiChecklistTasks extends BSApiTasksBase {
 	 * @param array $aParams
 	 * @return Standard
 	 */
-	public function task_doChangeCheckItem( $oTaskData, $aParams ) {
+	public function task_doChangeCheckItem( $oTaskData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$oResponse = $this->makeStandardReturn();
 		$iPos = (int)$oTaskData->pos;
 		if ( $iPos == 0 ) {
@@ -181,20 +184,20 @@ class BSApiChecklistTasks extends BSApiTasksBase {
 	 * @param array $aParams
 	 * @return Standard
 	 */
-	public function task_saveOptionsList( $oTaskData, $aParams ) {
+	public function task_saveOptionsList( $oTaskData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$oResponse = $this->makeStandardReturn();
 
 		$oTitle = Title::newFromText( $oTaskData->title, NS_TEMPLATE );
 
 		if ( $oTitle instanceof Title === false ) {
-			$oResponse->message = wfMessage( "bs-checklist-savelist-error-invalid-title" )->plain();
+			$oResponse->message = wfMessage( "bs-checklist-savelist-error-invalid-title" )->text();
 			return $oResponse;
 		}
 
 		if ( !$this->services->getPermissionManager()
 			->userCan( 'edit', $this->getUser(), $oTitle )
 		) {
-			$oResponse->message = wfMessage( "bs-checklist-savelist-error-edit-not-permitted" )->plain();
+			$oResponse->message = wfMessage( "bs-checklist-savelist-error-edit-not-permitted" )->text();
 			return $oResponse;
 		}
 
@@ -203,7 +206,7 @@ class BSApiChecklistTasks extends BSApiTasksBase {
 			$sContent .= '* ' . $record . "\n";
 		}
 
-		$sSummary = wfMessage( "bs-checklist-update-list" )->plain();
+		$sSummary = wfMessage( "bs-checklist-update-list" )->text();
 
 		$oWikiPage = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $oTitle );
 		$oContentHandler = $oWikiPage->getContentHandler();
@@ -222,7 +225,7 @@ class BSApiChecklistTasks extends BSApiTasksBase {
 		if ( $oResult->isGood() ) {
 			$oResponse->success = true;
 		} else {
-			$oResponse->message = $oResult->getMessage()->plain();
+			$oResponse->message = $oResult->getMessage()->text();
 		}
 
 		return $oResponse;
@@ -253,13 +256,13 @@ class BSApiChecklistTasks extends BSApiTasksBase {
 	protected function getSummary( $value, $type, $pos ) {
 		if ( $type === 'check' ) {
 			if ( $value ) {
-				return wfMessage( "bs-checklist-summary-checked", $pos )->plain();
+				return wfMessage( "bs-checklist-summary-checked", $pos )->text();
 			} else {
-				return wfMessage( "bs-checklist-summary-unchecked", $pos )->plain();
+				return wfMessage( "bs-checklist-summary-unchecked", $pos )->text();
 			}
 		}
 		if ( $type === 'list' ) {
-			return wfMessage( "bs-checklist-summary-changed", $pos, $value )->plain();
+			return wfMessage( "bs-checklist-summary-changed", $pos, $value )->text();
 		}
 
 		return '';

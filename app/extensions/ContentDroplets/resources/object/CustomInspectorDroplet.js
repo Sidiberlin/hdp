@@ -18,7 +18,7 @@ ext.contentdroplets.object.CustomInspectorDroplet.prototype.updateMWData =
 	};
 
 ext.contentdroplets.object.CustomInspectorDroplet.prototype.getForm = function ( data ) {
-	var form = new mw.ext.forms.standalone.Form( {
+	const form = new mw.ext.forms.standalone.Form( {
 		data: data,
 		definition: {
 			buttons: [],
@@ -34,8 +34,8 @@ ext.contentdroplets.object.CustomInspectorDroplet.prototype.getForm = function (
 
 	form.connect( this, {
 		initComplete: function ( f ) {
-			var inputs = f.getItems().inputs,
-				inputKey;
+			const inputs = f.getItems().inputs;
+			let inputKey;
 
 			for ( inputKey in inputs ) {
 				// eslint-disable-next-line no-prototype-builtins
@@ -45,7 +45,7 @@ ext.contentdroplets.object.CustomInspectorDroplet.prototype.getForm = function (
 				inputs[ inputKey ].connect( this, {
 					change: function () {
 						// eslint-disable-next-line no-shadow
-						var data = this.modifyFormDataBeforeSubmission( f.getData() );
+						const data = this.modifyFormDataBeforeSubmission( f.getData() );
 						form.emit( 'change', data );
 					}
 				} );
@@ -69,7 +69,5 @@ ext.contentdroplets.object.CustomInspectorDroplet.prototype.getFormItems = funct
 
 ext.contentdroplets.object.CustomInspectorDroplet.prototype.getClassname = function ( suffix ) {
 	suffix = suffix || '';
-	return this.getKey().split( /[-_]/ ).map( function ( bit ) {
-		return bit.charAt( 0 ).toUpperCase() + bit.slice( 1 );
-	} ).join( '' ) + suffix;
+	return this.getKey().split( /[-_]/ ).map( ( bit ) => bit.charAt( 0 ).toUpperCase() + bit.slice( 1 ) ).join( '' ) + suffix;
 };

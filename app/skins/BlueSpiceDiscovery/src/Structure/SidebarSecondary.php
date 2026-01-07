@@ -5,9 +5,9 @@ namespace BlueSpice\Discovery\Structure;
 use BaseTemplate;
 use BlueSpice\Discovery\CookieHandler;
 use BlueSpice\Discovery\IBaseTemplateAware;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use SpecialPage;
+use MediaWiki\SpecialPage\SpecialPage;
 
 class SidebarSecondary extends StackedTabPanelContainerBase implements IBaseTemplateAware {
 

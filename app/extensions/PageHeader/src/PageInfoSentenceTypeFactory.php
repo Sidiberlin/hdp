@@ -2,8 +2,8 @@
 
 namespace PageHeader;
 
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MWStake\MediaWiki\Component\ManifestRegistry\IRegistry;
 use PageHeader\PageInfoSentence\IType;
 

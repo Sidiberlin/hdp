@@ -1,4 +1,4 @@
-$( function () {
+$( () => {
 	const containerIds = [ '#collabpadsessions-grid', '#collabpadsessions-admin-grid' ];
 	const $container = $( containerIds.join( ', ' ) );
 

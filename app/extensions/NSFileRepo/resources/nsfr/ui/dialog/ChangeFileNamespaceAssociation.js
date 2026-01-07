@@ -15,7 +15,7 @@ window.nsfr.ui.dialog = window.nsfr.ui.dialog || {};
 		};
 	OO.inheritClass( nsfr.ui.dialog.ChangeFileNamespaceAssociation, OO.ui.ProcessDialog );
 
-	var theStatic = nsfr.ui.dialog.ChangeFileNamespaceAssociation.static;
+	const theStatic = nsfr.ui.dialog.ChangeFileNamespaceAssociation.static;
 	theStatic.name = 'nsrf-changefilenamespaceassoc-dialog';
 	theStatic.title = mw.message( 'nsfilerepo-move-file-namespace-dialog-title' ).plain();
 	theStatic.actions = [
@@ -30,7 +30,7 @@ window.nsfr.ui.dialog = window.nsfr.ui.dialog || {};
 		}
 	];
 
-	var thePrototype = nsfr.ui.dialog.ChangeFileNamespaceAssociation.prototype;
+	const thePrototype = nsfr.ui.dialog.ChangeFileNamespaceAssociation.prototype;
 	thePrototype.initialize = function () {
 		nsfr.ui.dialog.ChangeFileNamespaceAssociation.parent.prototype.initialize.apply(
 			this, arguments
@@ -58,19 +58,19 @@ window.nsfr.ui.dialog = window.nsfr.ui.dialog || {};
 	};
 
 	thePrototype.getActionProcess = function ( action ) {
-		var parentProcess =
+		const parentProcess =
 			nsfr.ui.dialog.ChangeFileNamespaceAssociation.parent.prototype.getActionProcess.call(
 				this, action
 			);
-		var dialog = this;
-		var selectedNamespace = parseInt( this.targetNamespaceSelector.getValue() );
-		var namespaceAssocHasBeenChanged = this.currentNS !== selectedNamespace;
+		const dialog = this;
+		const selectedNamespace = parseInt( this.targetNamespaceSelector.getValue() );
+		const namespaceAssocHasBeenChanged = this.currentNS !== selectedNamespace;
 
 		if ( action === 'save' && namespaceAssocHasBeenChanged ) {
-			var newFilePageName = this.makeNewFilePageName( selectedNamespace );
-			var dfd = new $.Deferred();
-			mw.loader.using( 'mediawiki.api' ).done( function () {
-				var mwApi = new mw.Api();
+			const newFilePageName = this.makeNewFilePageName( selectedNamespace );
+			const dfd = new $.Deferred();
+			mw.loader.using( 'mediawiki.api' ).done( () => {
+				const mwApi = new mw.Api();
 				mwApi.postWithEditToken( {
 					action: 'move',
 					from: dialog.currentPage,
@@ -91,7 +91,7 @@ window.nsfr.ui.dialog = window.nsfr.ui.dialog || {};
 		}
 
 		if ( action ) {
-			parentProcess.next( function () {
+			parentProcess.next( () => {
 				dialog.close( { action: action } );
 			} );
 		}
@@ -115,7 +115,7 @@ window.nsfr.ui.dialog = window.nsfr.ui.dialog || {};
 	 * @param {boolean} visible
 	 */
 	thePrototype.onTargetNamespaceSelectorToggle = function ( visible ) {
-		var css = {
+		const css = {
 			'z-index': 4 // Default
 		};
 		if ( visible ) {
@@ -126,7 +126,7 @@ window.nsfr.ui.dialog = window.nsfr.ui.dialog || {};
 	};
 
 	thePrototype.makeNewFilePageName = function ( selectedNamespace ) {
-		var prefix = this.formattedNamespaces[ 6 ] + ':'; // NS_FILE
+		let prefix = this.formattedNamespaces[ 6 ] + ':'; // NS_FILE
 		if ( selectedNamespace !== 0 ) { // NS_MAIN
 			prefix += this.formattedNamespaces[ selectedNamespace ] + ':';
 		}

@@ -1,4 +1,4 @@
-( function( mw, $, d, bs ) {
+( function ( mw, $, d, bs ) {
 	bs.util.registerNamespace( 'bs.bookshelf.ui' );
 	bs.bookshelf.ui.BookNavInspector = function BsBookshelfUiBookNavInspector( config ) {
 		// Parent constructor
@@ -21,7 +21,7 @@
 
 	bs.bookshelf.ui.BookNavInspector.static.dir = 'ltr';
 
-	//This tag does not have any content
+	// This tag does not have any content
 	bs.bookshelf.ui.BookNavInspector.static.allowedEmpty = true;
 	bs.bookshelf.ui.BookNavInspector.static.selfCloseEmptyBody = true;
 
@@ -74,19 +74,19 @@
 	bs.bookshelf.ui.BookNavInspector.prototype.getSetupProcess = function ( data ) {
 		return bs.bookshelf.ui.BookNavInspector.super.prototype.getSetupProcess.call( this, data )
 			.next( function () {
-				var attributes = this.selectedNode.getAttribute( 'mw' ).attrs;
+				const attributes = this.selectedNode.getAttribute( 'mw' ).attrs;
 
-				if( attributes.book ) {
+				if ( attributes.book ) {
 					this.bookInput.setValue( attributes.book );
 				}
-				if( attributes.chapter ) {
+				if ( attributes.chapter ) {
 					this.chapterInput.setValue( attributes.chapter );
 				}
 
 				this.bookInput.on( 'change', this.onChangeHandler );
 				this.chapterInput.on( 'change', this.onChangeHandler );
 
-				//Get this out of here
+				// Get this out of here
 				this.actions.setAbilities( { done: true } );
 			}, this );
 	};
@@ -98,13 +98,13 @@
 		if ( this.bookInput.getValue() ) {
 			mwData.attrs.book = this.bookInput.getValue();
 		} else {
-			delete( mwData.attrs.book );
+			delete ( mwData.attrs.book );
 		}
 
 		if ( this.chapterInput.getValue() ) {
 			mwData.attrs.chapter = this.chapterInput.getValue();
 		} else {
-			delete( mwData.attrs.chapter );
+			delete ( mwData.attrs.chapter );
 		}
 	};
 
@@ -126,4 +126,4 @@
 
 	ve.ui.windowFactory.register( bs.bookshelf.ui.BookNavInspector );
 
-})( mediaWiki, jQuery, document, blueSpice );
+}( mediaWiki, jQuery, document, blueSpice ) );

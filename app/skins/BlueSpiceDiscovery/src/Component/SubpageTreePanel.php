@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Discovery\Component;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCard;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCardHeader;

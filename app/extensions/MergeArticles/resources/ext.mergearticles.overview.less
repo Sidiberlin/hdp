@@ -1,0 +1,85 @@
+#merge-articles-overview {
+	.merge-articles-overview {
+		#merge-articles-type-layout {
+			.oo-ui-toggleWidget {
+				&.oo-ui-toggleWidget-on a {
+					background-color: #495284;
+					color: white;
+				}
+			}
+		}
+
+		.merge-articles-criterial-layout {
+			.oo-ui-fieldLayout {
+				width: 300px;
+			}
+
+			.ma-filter-layout {
+				float: right;
+			}
+		}
+
+		.merge-articles-page-layout {
+			margin-top: 20px;
+
+			.ma-no-pages-available {
+				margin: 1%;
+				font-size: 1.3em;
+				font-weight: bold;
+				color: #5f5f5f;
+				width: 96%;
+				background-color: #f9f9f9;
+				padding: 1%;
+			}
+
+			.ma-page-item {
+				width: 44%;
+				padding: 1%;
+				margin: 2%;
+				background-color: #e4e4e4;
+				position: relative;
+
+				.ma-page-item-data {
+					display: inline-block;
+					vertical-align: top;
+					width: 85%;
+
+					.ma-page-item-type-label {
+						font-size: 10px;
+						line-height: 10px;
+						margin: 0;
+						padding: 0;
+						position: absolute;
+						top: 2px;
+						color: #aaa9a9;
+					}
+
+					.ma-page-item-data-origin {
+						margin-top: 5px;
+					}
+
+					.ma-page-item-data-target {
+						&.new {
+							color: #11a451;
+						}
+
+						&.existing {
+							color: #484a49;
+						}
+					}
+				}
+
+				.ma-page-item-action {
+					display: inline-block;
+					vertical-align: top;
+					width: 15%;
+					text-align: right;
+
+					.oo-ui-buttonWidget {
+						margin-top: 10px;
+					}
+				}
+			}
+		}
+	}
+}

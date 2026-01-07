@@ -8,10 +8,10 @@ use MediaWiki\Extension\MenuEditor\Node\MenuNode;
 use MediaWiki\Rest\HttpException;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\Wikitext\ParserFactory;
 use MWStake\MediaWiki\Lib\Nodes\INode;
-use Title;
-use TitleFactory;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ParseHandler extends MenuHandler {

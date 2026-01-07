@@ -4,12 +4,12 @@ namespace BlueSpice\Data\Entity\Writer;
 
 use BlueSpice\Data\Entity\Writer;
 use BlueSpice\Entity;
-use CommentStoreComment;
 use Exception;
-use FormatJson;
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
-use Status;
+use MediaWiki\Status\Status;
 
 abstract class Content extends Writer {
 	/**

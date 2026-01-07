@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"McDutchie",
 			"[http://www.hallowelt.com Hallo Welt! GmbH]"
 		]
 	},
@@ -37,7 +38,7 @@
 	"notifyme-notification-tester-banner": "Auf dieser Seite können Sie alle im System registrierten Benachrichtigungen auslösen. Beachten Sie, dass: \n*nicht alle Benachrichtigungen diesen Test unterstützen, abhängig davon, welche Ressourcen zum Auslösen erforderlich sind und ob diese nachgebildet werden können (siehe Tabelle)\n*einige Benachrichtigungen von der Einstellung bestimmter Parameter (Seite, Empfänger) abhängen und ohne diese nicht ausgelöst werden. Darüber hinaus erfordern einige Benachrichtigungen einen bestimmten Wert für die Parameter, z. B. wenn du eine Benachrichtigung auf einer Diskussionsseite auslösen willst, muss die Seite in einem Diskussions-Namensraum angeben werden, damit es Sinn macht. \n* das Senden von Benachrichtigungen den gleichen Regeln folgt, als ob sie durch das eigentliche Ereignis ausgelöst würden und die Benutzereinstellungen gelten, d.h. wenn der Benutzer den Ereignisbereich nicht abonniert hat, wird keine Benachrichtigung ausgelöst.",
 	"notifyme-notification-tester-field-bot": "Als Bot Benutzer senden (einige Ereignisse verwenden unterschiedliche Nachrichten abhängig davon, ob sie von einem tatsächlichen Benutzer oder von einem Bot ausgelöst wurden)",
 	"notifyme-notification-generic-links-intro": "Sie können die Seite direkt über den folgenden Link aufrufen",
-	"notifyme-notification-tester-event-info": "Fügen Sie einen der \"Ereignisschlüssel\"aus der folgenden Tabelle ein",
+	"notifyme-notification-tester-event-info": "Fügen Sie einen der \"Ereignisschlüssel\" aus der folgenden Tabelle ein",
 	"notifyme-event-page-edit-revert": "{{GENDER:$1|hat}} Ihre Bearbeitung auf Seite $2 rückgängig gemacht",
 	"notifyme-event-page-edit-revert-bot": "Ihre Bearbeitung auf Seite $1 wurde rückgängig gemacht",
 	"notifyme-navbar-button-aria-label-unread-notifications": "Sie haben $1 ungelesene {{PLURAL:$1|Benachrichtigung|Benachrichtigungen}}"

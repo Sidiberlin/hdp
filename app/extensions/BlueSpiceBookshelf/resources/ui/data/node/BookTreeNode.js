@@ -8,7 +8,7 @@ ext.bookshelf.ui.data.node.BookTreeNode = function ( cfg ) {
 OO.inheritClass( ext.bookshelf.ui.data.node.BookTreeNode, ext.menueditor.ui.data.node.TreeNode );
 
 ext.bookshelf.ui.data.node.BookTreeNode.prototype.addLabel = function () {
-	var iconWidget = new OO.ui.IconWidget( {
+	const iconWidget = new OO.ui.IconWidget( {
 		icon: this.getIcon()
 	} );
 
@@ -19,14 +19,14 @@ ext.bookshelf.ui.data.node.BookTreeNode.prototype.addLabel = function () {
 	} );
 	this.$wrapper.append( this.chapterNumberWidget.$element );
 	this.labelWidget = new OOJSPlus.ui.widget.LabelWidget(
-		$.extend( {}, this.buttonCfg )
+		Object.assign( {}, this.buttonCfg )
 	);
 
 	this.$wrapper.append( this.labelWidget.$element );
 };
 
 ext.bookshelf.ui.data.node.BookTreeNode.prototype.calculateChapterNumber = function () {
-	return this.numberProcessor.calculateNumberForElement( this.tree.data, this.nodeData )
+	return this.numberProcessor.calculateNumberForElement( this.tree.data, this.nodeData );
 };
 
 ext.bookshelf.ui.data.node.BookTreeNode.prototype.updateNumber = function ( number ) {

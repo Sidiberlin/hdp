@@ -3,7 +3,8 @@
 namespace BlueSpice\PageFormsConnector\SaferEdit\EnvironmentChecker;
 
 use BlueSpice\SaferEdit\EnvironmentChecker\Base;
-use Title;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Title\Title;
 
 class FormEdit extends Base {
 
@@ -46,11 +47,14 @@ class FormEdit extends Base {
 	/**
 	 *
 	 * @param Title|null $title
-	 * @return Title
+	 * @return Title|null
 	 */
 	private function getTitleEditedOverSP( $title = null ) {
 		if ( $title === null ) {
 			$title = $this->context->getTitle();
+		}
+		if ( !$title ) {
+			return null;
 		}
 		if ( $title->isSpecialPage() ) {
 			$dbKey = $title->getDBkey();
@@ -61,7 +65,7 @@ class FormEdit extends Base {
 					->getSpecialPageFactory()
 					->getTitleForAlias( $specialPageName );
 				if ( !$specialTitle instanceof Title
-					|| !$specialTitle->equals( \SpecialPage::getTitleFor( 'FormEdit' ) ) ) {
+					|| !$specialTitle->equals( SpecialPage::getTitleFor( 'FormEdit' ) ) ) {
 					return null;
 				}
 				$page = array_pop( $bits );

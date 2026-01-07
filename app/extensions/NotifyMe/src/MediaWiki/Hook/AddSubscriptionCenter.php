@@ -2,13 +2,13 @@
 
 namespace MediaWiki\Extension\NotifyMe\MediaWiki\Hook;
 
-use HTMLForm;
 use MediaWiki\Extension\NotifyMe\MediaWiki\Html\NotificationsSubscriptionsElement;
 use MediaWiki\Extension\NotifyMe\SubscriberManager;
 use MediaWiki\Extension\NotifyMe\SubscriptionConfigurator;
+use MediaWiki\HTMLForm\HTMLForm;
 use MediaWiki\Preferences\Hook\GetPreferencesHook;
 use MediaWiki\User\Hook\UserGetDefaultOptionsHook;
-use User;
+use MediaWiki\User\User;
 
 class AddSubscriptionCenter implements GetPreferencesHook, UserGetDefaultOptionsHook {
 	/** @var SubscriptionConfigurator */
@@ -53,6 +53,7 @@ class AddSubscriptionCenter implements GetPreferencesHook, UserGetDefaultOptions
 			'value' => [
 				'configuration' => $config,
 				'bucketData' => $this->configurator->getBucketData(),
+				'eventData' => $this->configurator->getEventData(),
 				'channelLabels' => $this->configurator->getChannelLabels(),
 			]
 		];

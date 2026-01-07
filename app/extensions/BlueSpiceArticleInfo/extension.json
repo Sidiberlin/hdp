@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceArticleInfo",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceArticleInfo",
 	"author": [
@@ -10,9 +10,9 @@
 	"descriptionmsg": "bs-articleinfo-desc",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"attributes": {
@@ -26,9 +26,6 @@
 			"ConfigDefinitionRegistry": {
 				"ArticleInfoCheckRevisionInterval": "\\BlueSpice\\ArticleInfo\\ConfigDefinition\\CheckRevisionInterval::getInstance"
 			}
-		},
-		"BlueSpiceArticleInfo": {
-			"FlyoutModules": {}
 		}
 	},
 	"MessagesDirs": {
@@ -39,11 +36,14 @@
 	"AutoloadNamespaces": {
 		"BlueSpice\\ArticleInfo\\": "src/"
 	},
+	"TestAutoloadNamespaces": {
+		"BlueSpice\\ArticleInfo\\Tests\\": "tests/phpunit/"
+	},
 	"config_prefix": "bsg",
 	"config": {
 		"ArticleInfoCheckRevisionInterval": {
 			"value": 10,
-			"descriptionmsg": "bs-articleinfo-pref-CheckRevisionInterval",
+			"descriptionmsg": "bs-articleinfo-pref-checkrevisioninterval-label",
 			"public": true
 		}
 	},
@@ -55,31 +55,6 @@
 			"dependencies": [
 				"ext.bluespice"
 			]
-		},
-		"ext.bluespice.articleinfo.flyout": {
-			"scripts": "bluespice.articleInfo.flyout.js",
-			"messages": [
-				"bs-articleinfo-flyout-title",
-				"bs-articleinfo-flyout-intro",
-				"bs-articleinfo-nav-link-title",
-				"bs-articleinfo-flyout-categorylinks-title",
-				"bs-articleinfo-flyout-templatelinks-title",
-				"bs-articleinfo-flyout-subpages-title",
-				"bs-articleinfo-flyout-categorylinks-emptytext",
-				"bs-articleinfo-flyout-templatelinks-emptytext",
-				"bs-articleinfo-flyout-lasteditedtime-text",
-				"bs-articleinfo-flyout-lastediteduser-text"
-			],
-			"dependencies": [
-				"ext.bluespice.extjs",
-				"ext.bluespice"
-			]
-		},
-		"ext.bluespice.articleinfo.flyout.styles": {
-			"styles": [
-				"bluespice.articleInfo.flyout.less"
-			],
-			"class": "\\BlueSpice\\ResourceModule\\LessVars"
 		}
 	},
 	"ResourceFileModulePaths": {

@@ -1,17 +1,22 @@
 .bs-bookshelfui-chapter-pager-default-pnl {
-	padding: 15px 10px;
+	padding: 1rem;
 	margin: 0.5rem 0;
-	color: #333333;
-	background-color: rgba( 0, 0, 0, 0.05 );
+	color: #252525;
+	background-color: #f1f3f9;
+	border-radius: 0.375rem;
 }
+
 .bs-bookshelfui-chapter-pager-default-pnl .bs-chapter-pager-heading {
 	text-align: center;
-	border-bottom: 1px solid currentColor;
+	margin: 0 15px;
+	border-bottom: 1px solid currentcolor;
 }
+
 .bs-bookshelfui-chapter-pager-default-pnl .bs-chapter-pager-heading {
 	margin-top: 0;
 }
+
 .bs-chapter-pager-heading h4 {
-	font-size: 15px;
-	font-weight: var(--content-h4-font-weight);
+	font-size: 15px; /* stylelint-disable-line declaration-property-unit-disallowed-list */
+	font-weight: var( --content-h4-font-weight );
 }

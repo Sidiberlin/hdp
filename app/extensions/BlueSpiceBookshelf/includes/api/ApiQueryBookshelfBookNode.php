@@ -1,5 +1,6 @@
 <?php
 
+use MediaWiki\Api\ApiQueryBase;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiQueryBookshelfBookNode extends ApiQueryBase {

@@ -5,7 +5,6 @@
 		]
 	},
 	"importofficefiles-desc": "Permitte importar files Office como paginas wiki",
-	"importofficefiles-ui-action-import-msword-text": "Importar file Word",
 	"importofficefiles-ui-action-import-msword-title": "Crear paginas a partir de un file Microsoft Word",
 	"importofficefiles-ui-import-dialog-title": "Importar file",
 	"importofficefiles-ui-import-completed": "Importation complete!",
@@ -32,6 +31,8 @@
 	"importofficefiles-ui-dialog-preview-title": "Previsualisation",
 	"importofficefiles-ui-dialog-preview-label": "Le sequente paginas essera importate",
 	"importofficefiles-ui-dialog-link-import-files-text": "Lista de files importate exportate a $1",
+	"importofficefiles-ui-dialog-link-imported-page-text": "File importate in $1",
+	"importofficefiles-ui-dialog-page-collection-protected-namespace": "Nota ben: le pagina “pages collection” non ha essite create perque le spatio de nomines “$1” es protegite",
 	"importofficefiles-api-storage-error-no-available-file": "Nulle file incargate es disponibile",
 	"importofficefiles-api-storage-error-save-temp": "Le salveguarda temporari non es possibile",
 	"importofficefiles-api-storage-error-no-valid-module": "Nulle modulo es disponibile pro tractar iste file",
@@ -40,6 +41,9 @@
 	"importofficefiles-ui-progress-remove-files-step": "Deletion de files temporari in curso…",
 	"importofficefiles-ui-import-error": "Un error ha occurrite durante le importation.",
 	"importofficefiles-ui-analyze-error": "Le processo de analyse ha fallite a causa de un error incognite.",
-	"importofficefiles-ui-dialog-link-imported-page-text": "File importate in $1",
-	"importofficefiles-ui-dialog-page-collection-protected-namespace": "Nota ben: le pagina “pages collection” non ha essite create perque le spatio de nomines “$1” es protegite"
+	"importofficefiles-ui-action-import-msword-label": "Importar un nove file Word",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-characters": "Iste titulo non pote esser usate. Illo contine un character (“$1”) que non es permittite.",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-fallback": "Iste titulo non pote esser usate.",
+	"importofficefiles-ui-dialog-preview-action-close": "Clauder",
+	"importofficefiles-ui-dialog-preview-btn-title": "Previsualisation"
 }

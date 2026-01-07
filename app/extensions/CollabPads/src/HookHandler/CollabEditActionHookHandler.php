@@ -5,14 +5,14 @@ namespace MediaWiki\Extension\CollabPads\HookHandler;
 use MediaWiki\Extension\CollabPads\CollabPadAccessTokenDAO;
 use MediaWiki\Hook\MediaWikiPerformActionHook;
 use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
+use MediaWiki\Message\Message;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\Permissions\PermissionManager;
-use Message;
-use NamespaceInfo;
-use OutputPage;
+use MediaWiki\Request\WebRequest;
+use MediaWiki\Title\NamespaceInfo;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use PermissionsError;
-use Title;
-use User;
-use WebRequest;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class CollabEditActionHookHandler implements
@@ -65,8 +65,8 @@ class CollabEditActionHookHandler implements
 
 		$veTab = [
 			'href' => $title->getLocalURL( [ 'veaction' => 'collab-edit' ] ),
-			'text' => Message::newFromKey( 'collabpads-content-action-text' )->plain(),
-			'title' => Message::newFromKey( 'collabpads-content-action-tooltip' )->plain(),
+			'text' => Message::newFromKey( 'collabpads-content-action-text' )->text(),
+			'title' => Message::newFromKey( 'collabpads-content-action-tooltip' )->text(),
 			'primary' => true,
 			'class' => '',
 		];

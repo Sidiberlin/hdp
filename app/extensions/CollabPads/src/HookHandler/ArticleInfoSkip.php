@@ -3,7 +3,7 @@
 namespace MediaWiki\Extension\CollabPads\HookHandler;
 
 use BlueSpice\ArticleInfo\Hook\BSArticleInfoSkipHook;
-use Title;
+use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class ArticleInfoSkip implements BSArticleInfoSkipHook {

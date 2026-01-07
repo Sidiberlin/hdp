@@ -2,6 +2,8 @@
 
 use BlueSpice\Api\Response\Standard;
 use BlueSpice\Reminder\Factory;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\DBError;
 
 class ApiReminderTasks extends BSApiTasksBase {
@@ -22,12 +24,12 @@ class ApiReminderTasks extends BSApiTasksBase {
 	 * @param array $aParams
 	 * @return Standard
 	 */
-	public function task_deleteReminder( $oTaskData, $aParams ) {
+	public function task_deleteReminder( $oTaskData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$oResult = $this->makeStandardReturn();
 		$oUser = $this->getUser();
 		if ( $oUser->isAnon() ) {
 			$oResult->message = $oResult->errors[]
-				= wfMessage( 'bs-permissionerror' )->plain();
+				= wfMessage( 'bs-permissionerror' )->text();
 			return $oResult;
 		}
 
@@ -85,7 +87,7 @@ class ApiReminderTasks extends BSApiTasksBase {
 
 		if ( !$res || !$res->valid() || $res->numRows() < 1 ) {
 			$oResult->message = $oResult->errors[]
-				= wfMessage( 'bs-reminder-error-owner-reminder' )->plain();
+				= wfMessage( 'bs-reminder-error-owner-reminder' )->text();
 			return $oResult;
 		}
 
@@ -126,7 +128,7 @@ class ApiReminderTasks extends BSApiTasksBase {
 			return $oResult;
 			// @codeCoverageIgnoreEnd
 		}
-		$oResult->message = wfMessage( 'bs-reminder-delete-success' )->plain();
+		$oResult->message = wfMessage( 'bs-reminder-delete-success' )->text();
 		$oResult->payload = [ 'id' => count( $idsToRemove ) === 1 ? $idsToRemove[0] : $idsToRemove ];
 
 		return $oResult;
@@ -138,21 +140,21 @@ class ApiReminderTasks extends BSApiTasksBase {
 	 * @param array $aParams
 	 * @return Standard
 	 */
-	public function task_saveReminder( $oTaskData, $aParams ) {
+	public function task_saveReminder( $oTaskData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$oResult = $this->makeStandardReturn();
 		$oUser = $this->getUser();
 		$sComment = '';
 		$bIsUpdate = false;
 		if ( $oUser->isAnon() ) {
 			$oResult->message = $oResult->errors[]
-				= wfMessage( 'bs-permissionerror' )->plain();
+				= wfMessage( 'bs-permissionerror' )->text();
 			return $oResult;
 		}
 
 		$type = !empty( $oTaskData->type ) ? $oTaskData->type : '';
 		if ( !$this->getFactory()->isRegisteredType( $type ) ) {
 			$oResult->message = $oResult->errors[]
-				= $this->msg( 'bs-reminder-invalid-type' )->plain();
+				= $this->msg( 'bs-reminder-invalid-type' )->text();
 			return $oResult;
 		}
 
@@ -332,9 +334,9 @@ class ApiReminderTasks extends BSApiTasksBase {
 		$oResult->success = true;
 		$oResult->payload = [ 'id' => $iReminderId ];
 		if ( $bIsUpdate ) {
-			$oResult->message = wfMessage( "bs-reminder-update-success" )->plain();
+			$oResult->message = wfMessage( "bs-reminder-update-success" )->text();
 		} else {
-			$oResult->message = wfMessage( "bs-reminder-save-success" )->plain();
+			$oResult->message = wfMessage( "bs-reminder-save-success" )->text();
 		}
 
 		return $oResult;

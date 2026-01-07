@@ -1,9 +1,12 @@
 <?php
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\ContentStabilization\StabilizationBot;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\ContentStabilization\StableView;
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 require_once __DIR__ . '/../../../maintenance/Maintenance.php';
 

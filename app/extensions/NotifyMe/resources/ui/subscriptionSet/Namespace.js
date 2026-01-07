@@ -1,4 +1,4 @@
-ext.notifyme.ui.subscriptionset.Namespace = function ( cfg ) {
+ext.notifyme.ui.subscriptionset.Namespace = function () {
 	// Parent constructo
 	ext.notifyme.ui.subscriptionset.Namespace.parent.apply( this, arguments );
 };

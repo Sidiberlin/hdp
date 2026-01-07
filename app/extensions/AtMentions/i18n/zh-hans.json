@@ -7,8 +7,8 @@
 			"沈澄心"
 		]
 	},
-	"at-mentions-inspector-title": "提及一位用户",
 	"at-mentions-desc": "添加用户提及",
+	"at-mentions-inspector-title": "提及一位用户",
 	"at-mentions-inspector-title-add": "添加提及",
 	"at-mentions-inspector-title-edit": "编辑用户提及",
 	"at-mentions-ci-title": "用户提及",
@@ -22,13 +22,5 @@
 	"at-mentions-mention-notification-key": "您已被提及",
 	"at-mentions-mention-in-entity-notification-key": "您在评论或帖子中被提及",
 	"at-mentions-mention-in-entity-notification-message": "在页面“$2”的评论或帖子“$3”中{{GENDER:$1|提及了}}您",
-	"at-mentions-mention-in-entity-notification-post-link": "直接前往帖子",
-	"at-mentions-toolbar-tool-title": "添加提及",
-	"at-mentions-echo-mention-notification-summary": "您已在页面$1上被提及",
-	"at-mentions-echo-mention-notification-web-body": "{{GENDER:$2|$3提及}}您",
-	"at-mentions-echo-mention-notification-subject": "{{GENDER:$2|$3}}在页面$1上提及您",
-	"at-mentions-echo-mention-notification-email-body": "您已在页面$1上被提及",
-	"at-mentions-echo-mention-entity-notification-summary": "您在$1的评论或帖子中被提及",
-	"at-mentions-echo-mention-entity-notification-subject": "{{GENDER:$2|$3}}在页面$1的评论或帖子中提及您",
-	"at-mentions-echo-mention-entity-notification-email-body": "您在页面$1的帖子评论中被提及"
+	"at-mentions-toolbar-tool-title": "添加提及"
 }

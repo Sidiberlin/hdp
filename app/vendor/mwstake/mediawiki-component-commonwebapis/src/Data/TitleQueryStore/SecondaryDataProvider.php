@@ -2,24 +2,28 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore;
 
+use MediaWiki\Language\Language;
+use MediaWiki\Message\Message;
+use MediaWiki\Page\PageProps;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\DataStore\ISecondaryDataProvider;
 use MWStake\MediaWiki\Component\DataStore\Record;
-use Title;
 
 class SecondaryDataProvider implements ISecondaryDataProvider {
-	/** @var \TitleFactory */
+	/** @var TitleFactory */
 	protected $titleFactory;
-	/** @var \Language */
+	/** @var Language */
 	protected $language;
-	/** @var \PageProps */
+	/** @var PageProps */
 	protected $pageProps;
 
 	/**
-	 * @param \TitleFactory $titleFactory
-	 * @param \Language $language
-	 * @param \PageProps $pageProps
+	 * @param TitleFactory $titleFactory
+	 * @param Language $language
+	 * @param PageProps $pageProps
 	 */
-	public function __construct( $titleFactory, \Language $language, \PageProps $pageProps ) {
+	public function __construct( $titleFactory, Language $language, PageProps $pageProps ) {
 		$this->titleFactory = $titleFactory;
 		$this->language = $language;
 		$this->pageProps = $pageProps;
@@ -49,11 +53,19 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 		$dataSet->set( TitleRecord::PAGE_TITLE, $title->getText() );
 		$dataSet->set( TitleRecord::PAGE_PREFIXED, $title->getPrefixedText() );
 		$dataSet->set( TitleRecord::PAGE_URL, $title->getLocalURL() );
-		$dataSet->set(
-			TitleRecord::PAGE_NAMESPACE_TEXT, $this->language->getNsText( $title->getNamespace() )
-		);
+		if ( $title->getNamespace() === NS_MAIN ) {
+			$dataSet->set( TitleRecord::PAGE_NAMESPACE_TEXT, Message::newFromKey( 'blanknamespace' )->text() );
+		} else {
+			$dataSet->set(
+				TitleRecord::PAGE_NAMESPACE_TEXT, $this->language->getNsText( $title->getNamespace() )
+			);
+		}
 		$dataSet->set( TitleRecord::PAGE_DISPLAY_TITLE, $this->getDisplayTitle( $title ) );
 		$dataSet->set( TitleRecord::PAGE_IS_REDIRECT, $title->isRedirect() );
+		if ( $title->isSubpage() ) {
+			$dataSet->set( TitleRecord::LEAF_TITLE, $title->getSubpageText() );
+			$dataSet->set( TitleRecord::BASE_TITLE, $title->getBaseText() );
+		}
 	}
 
 	/**

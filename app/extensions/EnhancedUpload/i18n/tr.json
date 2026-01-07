@@ -3,10 +3,11 @@
 		"authors": [
 			"Asma",
 			"Hedda",
+			"SaldırganSincap",
 			"ToprakM"
 		]
 	},
-	"enhancedupload": "Gelişmiş Yükleme",
+	"enhancedupload": "Yükle",
 	"enhancedupload-desc": "Viki'ye bir veya daha fazla dosya yükleme seçeneği sunan özel bir sayfa",
 	"enhancedupload-text": "Dosya yükle",
 	"enhancedupload-details-header-label": "Ayrıntılar",
@@ -59,12 +60,11 @@
 	"enhancedupload-ve-attachmentinspector-categories": "Kategoriler",
 	"enhancedupload-ve-attachmentinspector-desc": "Açıklama",
 	"enhancedupload-ve-attachmentinspector-options": "Yükleme seçeneklerini geç",
-	"enhancedupload-attachment-tag-desc": "Bu etiket ile bu sayfaya dosyalar eklenebilir. Yeni dosyalar yüklenebilir ve eklenebilir ve ayrıca viki'deki mevcut dosyalar etikete eklenebilir. Etiket alanı ve yükleme seçenekleri için bir görüntüleme başlığı verilebilir: bir önek, '|' ile ayrılmış kategoriler ve yükleme sırasında otomatik olarak eklenen bir açıklama.",
 	"enhancedupload-attachments-tag-grid-editor-label": "Editör",
 	"enhancedupload-ve-attachmentinspector-grid-version": "Sürümü gizle",
 	"enhancedupload-ve-attachmentinspector-grid-editor": "Editörü gizle",
 	"enhancedupload-ve-attachmentinspector-grid-size": "Boyutu göster",
 	"enhancedupload-ve-attachmentinspector-grid-categories": "Kategorileri göster",
 	"enhancedupload-attachments-tag-grid-details-title": "Ayrıntılar",
-	"enhancedupload-upload-warning-exists": "bu dosya zaten mevcut"
+	"enhancedupload-upload-warning-exists": "Bu dosya adı zaten mevcut"
 }

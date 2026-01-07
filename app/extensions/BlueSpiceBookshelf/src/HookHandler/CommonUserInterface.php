@@ -8,11 +8,11 @@ use BlueSpice\Bookshelf\ChapterLookup;
 use BlueSpice\Bookshelf\Panel\ChapterPagerPanel;
 use BlueSpice\Bookshelf\Panel\MainLinkPanel;
 use BlueSpice\Bookshelf\Panel\SidebarBookPanel;
-use ConfigFactory;
+use MediaWiki\Config\ConfigFactory;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\Hook\MWStakeCommonUIRegisterSkinSlotComponents;
 use MWStake\MediaWiki\Component\CommonUserInterface\TreeDataGenerator;
-use RequestContext;
-use TitleFactory;
 
 class CommonUserInterface implements MWStakeCommonUIRegisterSkinSlotComponents {
 
@@ -109,10 +109,10 @@ class CommonUserInterface implements MWStakeCommonUIRegisterSkinSlotComponents {
 						'factory' => static function () use (
 							$title, $titleFactory, $bookContextProviderFactory, $bookLookup, $chapterLookup
 						) {
-						return new ChapterPagerPanel(
+							return new ChapterPagerPanel(
 							$title, $titleFactory, $bookContextProviderFactory, $bookLookup, $chapterLookup,
 							'bs-bookshelfui-chapter-pager-cnt-top'
-						);
+							);
 						}
 					]
 				]

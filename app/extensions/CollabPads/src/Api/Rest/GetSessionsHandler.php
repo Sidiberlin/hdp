@@ -2,10 +2,10 @@
 
 namespace MediaWiki\Extension\CollabPads\Api\Rest;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\CollabPads\CollabSessionManager;
 use MediaWiki\Permissions\PermissionManager;
 use MediaWiki\Rest\HttpException;
-use RequestContext;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class GetSessionsHandler extends CollabSessionHandlerBase {

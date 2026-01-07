@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs\Data\GroupStore;
 
-use GlobalVarConfig;
+use MediaWiki\Config\GlobalVarConfig;
 use MWStake\MediaWiki\Component\DataStore\IPrimaryDataProvider;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use MWStake\MediaWiki\Component\Utils\Utility\GroupHelper;
@@ -14,7 +14,7 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 	protected $groupHelper;
 
 	/**
-	 * @var \GlobalVarConfig
+	 * @var GlobalVarConfig
 	 */
 	protected $mwsgConfig;
 
@@ -56,7 +56,7 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 				'additional_group' => ( $this->groupHelper->getGroupType( $group ) === 'custom' ),
 				'group_type' => $this->groupHelper->getGroupType( $group ),
 				'displayname' => $displayName,
-				'usercount' => $this->groupHelper->countUsersInGroup( $group )
+				'usercount' => $this->groupHelper->countUsersInGroup( $group, true, true )
 			] );
 		}
 		return $data;

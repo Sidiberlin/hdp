@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"at-mentions-desc": "Engadir unha mención de usuario",
+	"at-mentions-inspector-title": "Mencionar un usuario",
+	"at-mentions-inspector-title-add": "Engadir unha mención",
+	"at-mentions-inspector-title-edit": "Editar unha mención de usuario",
+	"at-mentions-ci-title": "Mención de usuario",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|por [[User:$1|$1]]}}",
+	"at-mentions-tag-item-time": "ás $1",
+	"at-mentions-mentionslist-header-mine-all": "Mencionáronte nesta páxina",
+	"at-mentions-mentionslist-header-mine": "{{PLURAL:$1|No último día|Nos últimos $1 días}}, mencionáronte nestas páxinas:",
+	"at-mentions-mentionslist-header-all": "Mencionaron {{GENDER:$2|o usuario|a usuaria}} [[User:$2|$2]] nestas páxinas:",
+	"at-mentions-mentionslist-header": "{{PLURAL:$1|No último día|Nos últimos $1 días}}, mencionaron {{GENDER:$2|o usuario|a usuaria}} [[User:$2|$2]] nestas páxinas:",
+	"at-mentions-mention-notification-message": "{{GENDER:$1|mencionoute}} na páxina «$2»",
+	"at-mentions-mention-notification-key": "Mencionáronte",
+	"at-mentions-mention-in-entity-notification-key": "Mencionáronte nun comentario ou nunha publicación",
+	"at-mentions-mention-in-entity-notification-message": "{{GENDER:$1|mencionoute}} nun comentario ou nunha publicación «$3» da páxina «$2»",
+	"at-mentions-toolbar-tool-title": "Engadir unha mención"
+}

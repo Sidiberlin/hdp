@@ -2,6 +2,9 @@
 
 namespace BlueSpice\ContextMenu\MenuItem;
 
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
+
 class Reupload extends BaseFileAction {
 
 	/**
@@ -9,12 +12,12 @@ class Reupload extends BaseFileAction {
 	 * @return string
 	 */
 	public function getIconClass() {
-		return 'bs-icon-upload';
+		return 'upload';
 	}
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabelMessage() {
 		return wfMessage( 'bs-contextmenu-media-reupload' );
@@ -25,7 +28,7 @@ class Reupload extends BaseFileAction {
 	 * @return string String of the URL.
 	 */
 	public function getUrl() {
-		return \SpecialPage::getTitleFor( 'Upload' )->
+		return SpecialPage::getTitleFor( 'Upload' )->
 			getLocalURL( [ 'wpDestFile' => $this->title->getText() ] );
 	}
 

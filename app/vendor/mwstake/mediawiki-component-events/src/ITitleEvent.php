@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\Events;
 
-use Title;
+use MediaWiki\Title\Title;
 
 interface ITitleEvent extends INotificationEvent {
 	/**

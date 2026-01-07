@@ -42,9 +42,9 @@ ext.bookshelf.ui.widget.MetaDataLayout = function ( config ) {
 
 	// Events
 	this.outlineSelectWidget.connect( this, {
-		property_change: function( key ) {
-			var page = this.pages[ key ];
-			var isVisible = page.isVisible();
+		property_change: function ( key ) { // eslint-disable-line camelcase
+			const page = this.pages[ key ];
+			const isVisible = page.isVisible();
 			page.toggle( !isVisible );
 		}
 	} );
@@ -61,8 +61,8 @@ ext.bookshelf.ui.widget.MetaDataLayout = function ( config ) {
 OO.inheritClass( ext.bookshelf.ui.widget.MetaDataLayout, OO.ui.MenuLayout );
 
 ext.bookshelf.ui.widget.MetaDataLayout.prototype.addItems = function ( items ) {
-	for( var i in items ) {
-		this.pages[ items[ i ].key ] = items[i];
+	for ( const i in items ) {
+		this.pages[ items[ i ].key ] = items[ i ];
 	}
 	this.outlineSelectWidget.addItems( items );
 	this.stackLayout.addItems( items );

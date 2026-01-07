@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"bs-interwikisearch-desc": "Description of BlueSpiceInterwikiSearch for [[Special:Version]]",
+	"bs-interwikisearch-label": "Label for the interwiki search panel",
+	"bs-interwikisearch-item-button-label": "Label message for the results from other wikis.\n$1 - wiki name, $2 - number of hits",
+	"bs-interwikisearch-results-dialog-title": "Title for the dialog containing results from other wikis",
+	"bs-interwikisearch-results-dialog-button-go-full": "Label for the button that opens target wiki's search page",
+	"bs-interwikisearch-results-dialog-button-close": "Label for the button that closes the target wiki's result dialog",
+	"bs-interwikisearch-pref-searchinotherwikis": "Description message for $bsgInterwikiSearchSearchInOtherWikis",
+	"bs-interwikisearch-error-generic": "Generic error message if target wiki did not specify error message.\n$1 - target name",
+	"bs-interwikisearch-error-generic-with-message": "Generic error message if target wiki specifier error message.\n$1 - target name, $2 - error message",
+	"bs-interwikisearch-pref-silentonerror": "Description message for $bsgInterwikiSearchSilentOnError",
+	"bs-interwikisearch-error-open-target-action": "Button label to switch to target wiki",
+	"bs-interwikisearch-error-open-login-action": "Button label to login on target wiki",
+	"bs-interwikisearch-error-generic-dlg-title": "Title for error dialog",
+	"bs-interwikisearch-error-login-dlg-title": "Title for login error dialog",
+	"bs-interwikisearch-login-suggestion-label": "Label for error description",
+	"bs-interwikisearch-redirect-suggestion-label": "Message displayed to the user when error response indicates problem will not be solved by logging into the target wiki",
+	"bs-interwikisearch-results-desc-label": "Help message for other wiki's result dialog"
+}

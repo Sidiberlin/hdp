@@ -7,7 +7,7 @@ use BlueSpice\Discovery\Component\SpecialCategories;
 use BlueSpice\Discovery\Component\SpecialListFiles;
 use BlueSpice\Discovery\Component\SpecialMainPage;
 use BlueSpice\Discovery\Component\SpecialRecentChanges;
-use ConfigFactory;
+use MediaWiki\Config\ConfigFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\Hook\MWStakeCommonUIRegisterSkinSlotComponents;
 
 class MainLinksPanel implements MWStakeCommonUIRegisterSkinSlotComponents {

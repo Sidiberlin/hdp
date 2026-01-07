@@ -3,7 +3,7 @@
 namespace MediaWiki\Extension\DateTimeTools\ContentDroplets;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\TagDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class DateDroplet extends TagDroplet {
 

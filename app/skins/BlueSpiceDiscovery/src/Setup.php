@@ -2,6 +2,8 @@
 
 namespace BlueSpice\Discovery;
 
+use MediaWiki\Registration\ExtensionRegistry;
+
 class Setup {
 
 	/**
@@ -23,7 +25,7 @@ class Setup {
 		$skinSlots = new SkinSlots();
 		$skinSlots->init();
 
-		$GLOBALS['mwsgWikitextNodeProcessorRegistry'] += \ExtensionRegistry::getInstance()->getAttribute(
+		$GLOBALS['mwsgWikitextNodeProcessorRegistry'] += ExtensionRegistry::getInstance()->getAttribute(
 			"BlueSpiceDiscoveryEnhancedSidebarNodeProcessors"
 		);
 
@@ -56,7 +58,20 @@ class Setup {
 			'author' => 'Twitter Bootstrap',
 			'url' => 'https://getbootstrap.com',
 			'descriptionmsg' => 'bs-discovery-ext-credentials-desc-bootstrap-dist',
-			'version' => 'v5.3.2',
+			'version' => 'v5.3.3',
+		];
+
+		// License for "Hyperlegible" font
+		$path = $GLOBALS['IP'];
+		$path .= '/skins/BlueSpiceDiscovery/resources/fonts/Hyperlegible/LICENSE';
+		$GLOBALS['wgExtensionCredits']['bluespice-assets'][] = [
+			'path' => $path,
+			'name' => 'The Atkinson Hyperlegible Next Font',
+			'license-name' => 'SIL Open Font License',
+			'author' => 'Braille Institute of America, Inc.',
+			'url' => 'https://www.brailleinstitute.org/',
+			'descriptionmsg' => 'bs-discovery-ext-credentials-desc-hyperlegible-font',
+			'version' => '',
 		];
 	}
 }

@@ -1,5 +1,9 @@
 <?php
 
+use SMW\DataValueFactory;
+use SMW\Query\QueryResult;
+use SMW\Query\ResultPrinters\ResultPrinter;
+
 /**
  * Various mathematical functions - sum, product, average, min, max, median, variance, samplevariance, samplestandarddeviation, standarddeviation, range, quartillower, quartilupper, quartillower.exc, quartilupper.exc, interquartilerange, interquartilerange.exc, mode and interquartilemean
  *
@@ -236,11 +240,11 @@ class MathFormats {
 	}
 }
 
-class SRFMath extends SMWResultPrinter {
+class SRFMath extends ResultPrinter {
 
 	/**
 	 * (non-PHPdoc)
-	 * @see SMWResultPrinter::getName()
+	 * @see ResultPrinter::getName()
 	 */
 	public function getName() {
 		// Give grep a chance to find the usages:
@@ -250,15 +254,15 @@ class SRFMath extends SMWResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::buildResult
+	 * @see ResultPrinter::buildResult
 	 *
 	 * @since 1.8
 	 *
-	 * @param SMWQueryResult $results
+	 * @param QueryResult $results
 	 *
 	 * @return string
 	 */
-	protected function buildResult( SMWQueryResult $results ) {
+	protected function buildResult( QueryResult $results ) {
 		$number = $this->getResultText( $results, SMW_OUTPUT_HTML );
 
 		if ( count( $results->getPrintRequests() ) > 1 ) {
@@ -270,7 +274,7 @@ class SRFMath extends SMWResultPrinter {
 
 		// if raw-format ("-") than skip formatNum()
 		if ( $outputformat != "-" ) {
-			$dataValue = \SMW\DataValueFactory::getInstance()->newDataValueByType( '_num' );
+			$dataValue = DataValueFactory::getInstance()->newDataValueByType( '_num' );
 			$number = $dataValue->getLocalizedFormattedNumber( $number );
 		}
 
@@ -278,9 +282,9 @@ class SRFMath extends SMWResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::getResultText()
+	 * @see ResultPrinter::getResultText()
 	 */
-	protected function getResultText( SMWQueryResult $res, $outputmode ) {
+	protected function getResultText( QueryResult $res, $outputmode ) {
 		$numbers = $this->getNumbers( $res );
 
 		if ( count( $numbers ) == 0 ) {
@@ -290,70 +294,51 @@ class SRFMath extends SMWResultPrinter {
 		switch ( $this->mFormat ) {
 			case 'max':
 				return MathFormats::max_function( $numbers );
-				break;
 			case 'min':
 				return MathFormats::min_function( $numbers );
-				break;
 			case 'sum':
 				return MathFormats::sum_function( $numbers );
-				break;
 			case 'product':
 				return MathFormats::product_function( $numbers );
-				break;
 			case 'average':
 				return MathFormats::average_function( $numbers );
-				break;
 			case 'median':
 				return MathFormats::median_function( $numbers );
-				break;
 			case 'variance':
 				return MathFormats::variance_function( $numbers );
-				break;
 			case 'samplevariance':
 				return MathFormats::samplevariance_function( $numbers );
-				break;
 			case 'samplestandarddeviation':
 				return MathFormats::samplestandarddeviation_function( $numbers );
-				break;
 			case 'standarddeviation':
 				return MathFormats::standarddeviation_function( $numbers );
-				break;
 			case 'range':
 				return MathFormats::range_function( $numbers );
-				break;
 			case 'quartillower':
 				return MathFormats::quartillower_inc_function( $numbers );
-				break;
-			case 'quartilupper';
+			case 'quartilupper':
 				return MathFormats::quartilupper_inc_function( $numbers );
-				break;
-			case 'quartillower.exc';
+			case 'quartillower.exc':
 				return MathFormats::quartillower_exc_function( $numbers );
-				break;
-			case 'quartilupper.exc';
+			case 'quartilupper.exc':
 				return MathFormats::quartilupper_exc_function( $numbers );
-				break;
 			case 'interquartilerange':
 				return MathFormats::interquartilerange_inc_function( $numbers );
-				break;
-			case 'interquartilerange.exc';
+			case 'interquartilerange.exc':
 				return MathFormats::interquartilerange_exc_function( $numbers );
-				break;
-			case 'mode';
+			case 'mode':
 				return MathFormats::mode_function( $numbers );
-				break;
-			case 'interquartilemean';
+			case 'interquartilemean':
 				return MathFormats::interquartilemean_function( $numbers );
-				break;
 		}
 	}
 
 	/**
-	 * @param SMWQueryResult $res
+	 * @param QueryResult $res
 	 *
 	 * @return float[]
 	 */
-	private function getNumbers( SMWQueryResult $res ) {
+	private function getNumbers( QueryResult $res ) {
 		$numbers = [];
 
 		while ( $row = $res->getNext() ) {

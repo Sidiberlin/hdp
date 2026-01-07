@@ -2,15 +2,16 @@
 
 namespace MediaWiki\Extension\ImportOfficeFiles\Rest;
 
-use Config;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\ImportOfficeFiles\ModuleFactory;
 use MediaWiki\Extension\ImportOfficeFiles\Workspace;
+use MediaWiki\Message\Message;
 use MediaWiki\Rest\HttpException;
+use MediaWiki\Rest\RequestInterface;
 use MediaWiki\Rest\Response;
 use MediaWiki\Rest\SimpleHandler;
-use Message;
 use MWCryptRand;
-use RequestContext;
 use SplFileInfo;
 use UploadBase;
 use UploadFromFile;
@@ -111,7 +112,7 @@ class FileStorageHandler extends SimpleHandler {
 		$path = $this->uploadDirectory . '/cache/ImportOfficeFiles/';
 
 		$workspace = new Workspace( RequestContext::getMain()->getConfig() );
-		$workspace->init( $uniqueID );
+		$workspace->init( $uniqueID, $path );
 		$workspace->uploadSourceFile( $file );
 
 		$moduleFactory = new ModuleFactory();
@@ -122,5 +123,14 @@ class FileStorageHandler extends SimpleHandler {
 		}
 
 		return true;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getSupportedRequestTypes(): array {
+		return [
+			RequestInterface::MULTIPART_FORM_DATA_CONTENT_TYPE
+		];
 	}
 }

@@ -2,21 +2,21 @@
 
 namespace BS\ExtendedSearch;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
 
 class ClientConfig {
 
 	/**
-	 * @return array
+	 * @return string
 	 */
-	public static function makeConfigJson(): array {
+	public static function makeConfigJson(): string {
 		$services = MediaWikiServices::getInstance();
 		$config = $services->getConfigFactory()->makeConfig( 'bsg' );
 
-		return [
-			'useSubpagePillsAutocomplete' => self::useSubpagePills( $config )
-		];
+		return json_encode( [
+			'useSubpagePills' => self::useSubpagePills( $config )
+		] );
 	}
 
 	/**

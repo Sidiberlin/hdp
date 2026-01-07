@@ -13,12 +13,10 @@
 			"Zoranzoki21"
 		]
 	},
-	"bs-bluespiceconfigmanager-admintool-label": "Anchor text for the config manager.",
 	"action-bluespiceconfigmanager-viewspecialpage": "label for denied special page\n{{doc-action|bluespiceconfigmanager-viewspecialpage}}",
 	"bluespiceconfigmanager": "title label for special page",
 	"bs-configmanager-text": "Label for global actions\n\n{{Identical|Configuration}}",
 	"bs-configmanager-desc": "Description of the BlueSpiceConfigManager extension",
-	"bs-configmanager-discardchanges": "Text for prompt that asks you if you want to discard changes made in config manager",
 	"bs-configmanager-noentry": "Display text when no entry could be found in config manger search",
 	"bs-configmanager-mainpath": "Label for main path combobox in config manager",
 	"bs-configmanager-search": "Label for search field in config manager",
@@ -29,5 +27,9 @@
 	"log-description-bs-config-manager": "Used in [[Special:Log]], description of the log type",
 	"log-show-hide-bs-config-manager": "Used in [[Special:Log]]. Parameters:\n* $1 - link text; one of {{msg-mw|Show}} or {{msg-mw|Hide}}\n{{Related|Log-show-hide}}",
 	"logeventslist-bs-config-manager-log": "Config manager log option label on [[Special:Log]]",
-	"logentry-bs-config-manager-modify": "Log message about changes in config manager.\nParameters:\n* $4 - name of the setting\n* $5 - original value of the setting\n* $6 - new value of the setting"
+	"logentry-bs-config-manager-modify": "Log message about changes in config manager.\nParameters:\n* $4 - name of the setting\n* $5 - original value of the setting\n* $6 - new value of the setting",
+	"bs-configmanager-discard-open-changes": "Text for confirm dialog which is shown if user leaves page without saving changes",
+	"bs-configmanager-notify-configuration-saved": "Label for notification that configuration was saved",
+	"bs-configmanager-toolbar-action-save-label": "Label for toolbar action to save config changes\n{{Identical:Save}}",
+	"bs-configmanager-toolbar-action-discard-label": "Label for toolbar action to discard open config changes\n{{Identical:Discard}}"
 }

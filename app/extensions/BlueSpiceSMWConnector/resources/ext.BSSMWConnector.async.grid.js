@@ -1,16 +1,20 @@
-( function( $ ){
-	Ext.onReady( function(){
-		$( '.bs-smw-connector-async-ask-grid-container' ).each( function() {
-			var $container = $( this );
-			var data = $container.data( 'query' );
+( function ( $ ) {
+	$( '.bs-smw-connector-async-ask-grid-container' ).each( function () {
+		const $container = $( this );
+		const data = $container.data( 'query' );
 
-			Ext.require( 'BS.SMWConnector.grid.AsyncResultPrinter', function() {
-				Ext.create( 'BS.SMWConnector.grid.AsyncResultPrinter', {
-					renderTo: $container[0],
-					queryData: data,
-					storeAction: data.storeAction
-				} );
-			} );
+		const input = new OO.ui.SearchInputWidget();
+		const grid = new bs.smwconnector.ui.data.AsyncResultGrid( {
+			data: data
 		} );
+		input.connect( grid, {
+			change: function ( value ) {
+				if ( !this.initialized ) {
+					return;
+				}
+				this.store.globalQuery( value );
+			}
+		} );
+		$container.append( input.$element, grid.$element );
 	} );
-} )( jQuery );
+}( jQuery ) );

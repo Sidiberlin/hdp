@@ -7,14 +7,11 @@
 	"bluespicecategorymanager": "Gestore de categorije",
 	"bluespicecategorymanager-desc": "Strumende visuale pe gestì le categorije",
 	"action-categorymanager-viewspecialpage": "'ndruche 'u gestore de categorije",
-	"bs-categorymanager-draganddrop-text": "Pigghie e spuèste pe organizzà arrete",
 	"bs-categorymanager-label": "Gestore de categorije",
 	"bs-categorymanager-dlg-new-title": "Ccreje 'na categorije",
-	"bs-categorymanager-dlg-new-prompt": "Pe piacere mitte 'u nome:",
 	"bs-categorymanager-removecategoryconfirm-text": "Sì secure ca vuè ccu scangille sta categorije?",
 	"bs-categorymanager-removecategoryconfirm-title": "Live 'a categorije",
 	"bs-categorymanager-addcategory-dialog-error-title": "Ccrejazione d'a categorije sciute male",
-	"bs-categorymanager-action-show-category": "Fà 'ndrucà 'a categorije",
 	"right-categorymanager-viewspecialpage": "Tràse jndr'à pàgena speciale [[Special:BlueSpiceCategoryManager]]",
 	"bs-categorymanager-collection-type-categorizedpages": "Posizione d'a categorije",
 	"bs-categorymanager-collection-var-namespacename": "Namespace",
@@ -22,7 +19,5 @@
 	"bs-categorymanager-collection-var-uncategorizedpages": "Pàggene senze categorije",
 	"bs-categorymanager-rename-category": "Renomene 'a categorije",
 	"bs-categorymanager-rename-category-new-name": "Nome d'a categorije nove:",
-	"bs-categorymanager-move-new-name": "'Mboste 'u nome d'a categorije nove. Nome nuève:",
-	"bs-categorymanager-replace-in-pages": "Renomene jndrìà pàgene:",
 	"bs-categorymanager-statistics-report-category-pages": "Pàggene jndr'à categorije"
 }

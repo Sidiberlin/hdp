@@ -12,7 +12,7 @@ class Transclusion implements IParsoidNodeProcessor {
 	 * @inheritDoc
 	 */
 	public function matchTag(): array {
-		return [ 'span', 'p',  'div' ];
+		return [ 'span', 'p', 'div' ];
 	}
 
 	/**

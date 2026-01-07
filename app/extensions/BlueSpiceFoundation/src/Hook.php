@@ -26,21 +26,24 @@
  */
 namespace BlueSpice;
 
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
 use MessageLocalizer;
 
 abstract class Hook implements MessageLocalizer {
 
 	/**
 	 *
-	 * @var \IContextSource
+	 * @var IContextSource
 	 */
 	private $context = null;
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	private $config = null;
 
@@ -48,8 +51,8 @@ abstract class Hook implements MessageLocalizer {
 	 * Normally both parameters are NULL on instantiation. This is because we
 	 * perform a lazy loading out of performance reasons. But for the sake of
 	 * testablity we keep the DI here
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 */
 	public function __construct( $context, $config ) {
 		$this->context = $context;
@@ -58,11 +61,11 @@ abstract class Hook implements MessageLocalizer {
 
 	/**
 	 *
-	 * @return \IContextSource
+	 * @return IContextSource
 	 */
 	protected function getContext() {
-		if ( $this->context instanceof \IContextSource === false ) {
-			$this->context = \RequestContext::getMain();
+		if ( $this->context instanceof IContextSource === false ) {
+			$this->context = RequestContext::getMain();
 		}
 		return $this->context;
 	}
@@ -75,10 +78,10 @@ abstract class Hook implements MessageLocalizer {
 
 	/**
 	 *
-	 * @return \Config
+	 * @return Config
 	 */
 	protected function getConfig() {
-		if ( $this->config instanceof \Config === false ) {
+		if ( $this->config instanceof Config === false ) {
 			$this->config = $this->getServices()->getConfigFactory()->makeConfig(
 				static::$configName
 			);

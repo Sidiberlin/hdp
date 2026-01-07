@@ -2,21 +2,23 @@
 	"@metadata": {
 		"authors": []
 	},
+	"specialexpiry": "Istekle stranice",
 	"prefs-expiry": "Ističe",
+	"bs-expiry-header-pagename": "Stranica",
 	"bs-expiry-header-comment": "Komentar",
 	"bs-expiry-article-label": "Stranica",
 	"bs-expiry-comment-label": "Komentar",
 	"bs-expiry-unknown-page-msg": "Stranica ne postoji",
-	"bs-expiry-flyout-next-comment": "Komentar: $1",
+	"bs-expiry-info-dialog-comment": "Komentar: $1",
+	"bs-expiry-edit-grid-header-username": "Korisnik",
 	"bs-expiry-edit-grid-header-date": "Datum",
+	"bs-expiry-edit-grid-header-comment": "Komentar",
 	"right-expirearticle": "Izvoz stranica",
 	"right-expiry-delete": "uklanjanje isteka sa stranica",
 	"bs-expiry-create-reminder-label": "Napravi podsetnik",
 	"bs-expiry-do-updateexpirydate-article": "Promenite datum isteka",
 	"bs-expiry-dialog-action-no": "Ne",
-	"specialexpiry": "Istekle stranice",
-	"bs-expiry-header-pagename": "Stranica",
-	"bs-expiry-edit-grid-header-username": "Korisnik",
-	"bs-expiry-edit-grid-header-comment": "Komentar",
-	"bs-expiry-info-dialog-comment": "Komentar: $1"
+	"bs-expiry-header-action-edit": "Uredi",
+	"bs-expiry-header-action-delete": "Obriši",
+	"bs-expiry-pref-enable-page-watermark": "Prikaži vodeni žig"
 }

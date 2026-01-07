@@ -14,24 +14,24 @@ ext.bookshelf.ui.tools.MetadataTool.static.displayBothIconAndLabel = true;
 
 ext.bookshelf.ui.tools.MetadataTool.prototype.onSelect = function () {
 	this.setActive( false );
-	mw.loader.using( 'ext.bookshelf.metadata.dialog' ).done( function () {
+	mw.loader.using( 'ext.bookshelf.metadata.dialog' ).done( () => {
 		if ( !this.windowManager ) {
 			this.windowManager = new OO.ui.WindowManager( {
 				modal: true
 			} );
 			$( document.body ).append( this.windowManager.$element );
 		}
-		var data = this.toolbar.data;
-		var dialog = new ext.bookshelf.ui.dialog.MetaDataDialog( {
+		const data = this.toolbar.data;
+		const dialog = new ext.bookshelf.ui.dialog.MetaDataDialog( {
 			data: data
 		} );
 		this.windowManager.addWindows( [ dialog ] );
 		this.windowManager.openWindow( dialog );
-		dialog.on( 'metadataset', function ( metadata ) {
+		dialog.on( 'metadataset', ( metadata ) => {
 			this.toolbar.emit( 'metadataset', metadata );
-		}.bind( this ) );
+		} );
 		this.toolbar.emit( 'updateState' );
-	}.bind( this ) );
+	} );
 };
 
 ext.bookshelf.ui.tools.MetadataTool.prototype.onUpdateState = function () {};

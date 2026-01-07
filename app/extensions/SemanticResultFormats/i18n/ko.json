@@ -6,6 +6,7 @@
 			"Jerrykim306",
 			"Keysuck",
 			"Nemo bis",
+			"YeBoy371",
 			"Ykhwong",
 			"아라"
 		]
@@ -14,7 +15,6 @@
 	"prefs-srf": "시맨틱 결과 포맷",
 	"srf-prefs-intro-text": "시맨틱 결과 포맷 확장 기능을 설치하였습니다. 추가적인 도움을 받으려면 [https://www.semantic-mediawiki.org/wiki/Help:Result_formats 결과 포맷] 도움말 페이지를 방문해 주십시오.",
 	"prefs-srf-eventcalendar-options": "이벤트 캘린더 옵션",
-	"prefs-srf-datatables-options": "데이터테이블 옵션",
 	"srf-module-loading": "불러오는 중…",
 	"srf-paramdesc-layout": "사용할 수 있는 레이아웃",
 	"srf-paramdesc-height": "높이",
@@ -138,7 +138,7 @@
 	"srf-printername-datatables": "데이터테이블",
 	"srf-ui-datatables-label-conditions": "조건",
 	"srf-ui-datatables-label-parameters": "변수",
-	"srf-ui-datatables-label-filters": "컬럼 필터 및 검색",
+	"srf-ui-datatables-label-filters": "필터",
 	"srf-ui-datatables-label-information": "정보",
 	"srf-ui-datatables-label-update-success": "테이블 업데이트를 성공했습니다",
 	"srf-ui-datatables-label-update-error": "테이블 업데이트를 실패했습니다.",
@@ -166,9 +166,9 @@
 	"srf-printername-tree": "트리",
 	"srf-printername-ultree": "Ultree",
 	"srf-printername-oltree": "Oltree",
-	"srf-tree-noparentprop": "부모 속성이 지정되지 않았습니다. 부모 속성이 지정되지 않으면 트리를 만들 수 없습니다.",
+	"srf-tree-noparentprop": "상위 속성이 지정되지 않았습니다. 상위 속성이 지정되지 않으면 트리를 만들 수 없습니다.",
 	"srf-tree-rootinvalid": "$1은 올바른 문서 제목이 아닙니다.",
-	"srf-paramdesc-tree-parent": "부모 문서를 포함하는 속성",
+	"srf-paramdesc-tree-parent": "상위 문서를 포함하는 속성",
 	"srf-paramdesc-tree-root": "트리의 루트 페이지",
 	"srf-printername-slideshow": "슬라이드쇼",
 	"srf-paramdesc-delay": "슬라이드 간 지연 (초 단위)",
@@ -247,5 +247,8 @@
 	"srf-paramdesc-gantt-diagramtheme": "다이어그램 테마",
 	"srf-paramdesc-gantt-axisformat": "X축: 날짜 형식",
 	"srf-error-gantt-mermaid-not-installed": "Mermaid 확장 기능의 설치가 필요합니다.",
-	"srf-printername-gantt": "간트"
+	"srf-printername-gantt": "간트",
+	"srf-printername-mode": "모드",
+	"srf-printername-range": "범위",
+	"srf-printername-dataframe": "R 데이터프레임"
 }

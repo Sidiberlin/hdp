@@ -72,12 +72,12 @@ ext.enhancedUI.widget.Paginator.prototype.createBackButton = function () {
 };
 
 ext.enhancedUI.widget.Paginator.prototype.createPageButtons = function () {
-	var buttons = [];
+	const buttons = [];
 	if ( this.numberOfPages > 8 ) {
 		this.splitPageButtons = true;
 	}
-	for ( var i = 0; i <= this.numberOfPages; i++ ) {
-		var button = new OO.ui.ButtonOptionWidget( {
+	for ( let i = 0; i <= this.numberOfPages; i++ ) {
+		const button = new OO.ui.ButtonOptionWidget( {
 			label: ( i + 1 ).toString(),
 			data: i
 		} );
@@ -148,8 +148,8 @@ ext.enhancedUI.widget.Paginator.prototype.updateControls = function () {
 	if ( !this.splitPageButtons ) {
 		return;
 	}
-	var minRange = this.currentPage - 2;
-	var maxRange = this.currentPage + 2;
+	let minRange = this.currentPage - 2;
+	let maxRange = this.currentPage + 2;
 	if ( minRange < 0 ) {
 		minRange = 0;
 		maxRange = this.currentPage + 4;
@@ -159,7 +159,7 @@ ext.enhancedUI.widget.Paginator.prototype.updateControls = function () {
 		minRange = this.currentPage - 4;
 	}
 
-	this.buttonSelect.items.forEach( function ( button ) {
+	this.buttonSelect.items.forEach( ( button ) => {
 		if ( minRange <= button.data && button.data <= maxRange ) {
 			button.toggle( true );
 		} else {
@@ -175,12 +175,12 @@ ext.enhancedUI.widget.Paginator.prototype.first = function () {
 };
 
 ext.enhancedUI.widget.Paginator.prototype.previous = function () {
-	var data = this.currentPage - 1;
+	const data = this.currentPage - 1;
 	this.buttonSelect.selectItemByData( data );
 };
 
 ext.enhancedUI.widget.Paginator.prototype.next = function () {
-	var data = this.currentPage + 1;
+	const data = this.currentPage + 1;
 	this.buttonSelect.selectItemByData( data );
 };
 

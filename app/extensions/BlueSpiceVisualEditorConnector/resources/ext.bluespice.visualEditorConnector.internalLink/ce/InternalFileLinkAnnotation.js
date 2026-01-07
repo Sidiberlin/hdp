@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.ce' );
 
-bs.vec.ce.InternalFileLinkAnnotation = function() {
+bs.vec.ce.InternalFileLinkAnnotation = function () {
 	// Parent InternalFileLinkAnnotation
 	bs.vec.ce.InternalFileLinkAnnotation.super.apply( this, arguments );
 };

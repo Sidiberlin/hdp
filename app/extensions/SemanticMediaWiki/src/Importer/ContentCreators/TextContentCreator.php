@@ -2,19 +2,20 @@
 
 namespace SMW\Importer\ContentCreators;
 
-use ContentHandler;
+use MediaWiki\Content\ContentHandler;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\User\User;
 use Onoi\MessageReporter\MessageReporterAwareTrait;
-use RequestContext;
 use SMW\Importer\ContentCreator;
 use SMW\Importer\ImportContents;
-use SMW\MediaWiki\Database;
+use SMW\MediaWiki\Connection\Database;
 use SMW\MediaWiki\TitleFactory;
 use SMW\Utils\CliMsgFormatter;
-use Title;
-use User;
+use WikiPage;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.5
  *
  * @author mwjames
@@ -64,11 +65,6 @@ class TextContentCreator implements ContentCreator {
 	 * @param ImportContents $importContents
 	 */
 	public function create( ImportContents $importContents ) {
-
-		if ( !class_exists( 'ContentHandler' ) ) {
-			return $this->messageReporter->reportMessage( "\nContentHandler doesn't exist therefore importing is not possible.\n" );
-		}
-
 		$this->cliMsgFormatter = new CliMsgFormatter();
 
 		$indent = '   ...';
@@ -81,9 +77,9 @@ class TextContentCreator implements ContentCreator {
 			);
 		}
 
-		$title = $this->titleFactory->newFromText(
-			$name,
-			$importContents->getNamespace()
+		$title = $this->titleFactory->makeTitleSafe(
+			$importContents->getNamespace(),
+			$name
 		);
 
 		if ( $title === null ) {
@@ -135,16 +131,15 @@ class TextContentCreator implements ContentCreator {
 			);
 		}
 
-		// Avoid a possible "Notice: WikiPage::doEditContent: Transaction already
+		// Avoid a possible "Notice: WikiPage::doUserEditContent: Transaction already
 		// in progress (from DatabaseUpdater::doUpdates), performing implicit
 		// commit ..."
-		$this->connection->onTransactionCommitOrIdle( function() use ( $page, $title, $importContents, $action ) {
+		$this->connection->onTransactionCommitOrIdle( function () use ( $page, $title, $importContents, $action ) {
 			$this->doCreateContent( $page, $title, $importContents, $action );
 		} );
 	}
 
 	private function doCreateContent( $page, $title, $importContents, $action ) {
-
 		$content = ContentHandler::makeContent(
 			$this->fetchContents( $importContents ),
 			$title
@@ -156,28 +151,14 @@ class TextContentCreator implements ContentCreator {
 			$user = User::newSystemUser( $importContents->getImportPerformer(), [ 'steal' => true ] );
 		}
 
-		if ( method_exists( $page, 'doUserEditContent' ) ) {
-			// MW 1.36+
-			// Use the global user if necessary (same as doEditContent())
-			$user = $user ?? RequestContext::getMain()->getUser();
-			$status = $page->doUserEditContent(
-				$content,
-				$user,
-				$importContents->getDescription(),
-				EDIT_FORCE_BOT
-			);
-		} else {
-			// <= MW 1.35
-			$status = $page->doEditContent(
-				$content,
-				$importContents->getDescription(),
-				EDIT_FORCE_BOT,
-				false,
-				$user
-			);
-		}
-
-
+		// Use the global user if necessary (same as doUserEditContent())
+		$user = $user ?? RequestContext::getMain()->getUser();
+		$status = $page->doUserEditContent(
+			$content,
+			$user,
+			$importContents->getDescription(),
+			EDIT_FORCE_BOT
+		);
 
 		if ( !$status->isOk() ) {
 			$action = 'FAILED';
@@ -195,7 +176,6 @@ class TextContentCreator implements ContentCreator {
 	}
 
 	private function fetchContents( $importContents ) {
-
 		if ( $importContents->getContentsFile() === '' ) {
 			return $importContents->getContents();
 		}
@@ -214,11 +194,10 @@ class TextContentCreator implements ContentCreator {
 		);
 	}
 
-	private function isCreatorLastEditor( $page ) {
-
-		$lastEditor = User::newFromID(
-			$page->getUser()
-		);
+	private function isCreatorLastEditor( WikiPage $page ): bool {
+		$lastEditor = MediaWikiServices::getInstance()
+			->getUserFactory()
+			->newFromId( (int)$page->getUser() );
 
 		if ( !$lastEditor instanceof User ) {
 			return false;

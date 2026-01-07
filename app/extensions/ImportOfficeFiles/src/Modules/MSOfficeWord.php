@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\ImportOfficeFiles\Modules;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\ImportOfficeFiles\Analyzer\MSOfficeWordAnalyzer;
 use MediaWiki\Extension\ImportOfficeFiles\Converter\MSOfficeWordConverter;
 use MediaWiki\Extension\ImportOfficeFiles\IAnalyzer;

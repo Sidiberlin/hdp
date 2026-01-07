@@ -6,13 +6,13 @@ use BlueSpice\Expiry\Data\Record;
 use BlueSpice\Expiry\Data\Store;
 use DateTime;
 use DateTimeZone;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\FieldType;
 use MWStake\MediaWiki\Component\DataStore\Filter\Date;
 use MWStake\MediaWiki\Component\DataStore\Filter\Numeric;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use MWStake\MediaWiki\Component\DataStore\ResultSet;
-use Status;
-use Title;
 
 class Factory {
 
@@ -46,9 +46,9 @@ class Factory {
 					Numeric::KEY_VALUE => $title->getArticleID(),
 					Numeric::KEY_TYPE => 'numeric'
 				]
-			] ], [
+				] ], [
 				ReaderParams::PARAM_LIMIT => ReaderParams::LIMIT_INFINITE
-			]
+				]
 		);
 		$res = $this->getStore()->getReader()->read( $readerParams );
 		$record = false;
@@ -94,7 +94,7 @@ class Factory {
 	 * @param DateTime|null $to
 	 * @return Title[]
 	 */
-	public function getExpiredTitles( DateTime $from = null, DateTime $to = null ) {
+	public function getExpiredTitles( ?DateTime $from = null, ?DateTime $to = null ) {
 		if ( !$from ) {
 			$from = new DateTime( 'now', new DateTimeZone( 'UTC' ) );
 		}

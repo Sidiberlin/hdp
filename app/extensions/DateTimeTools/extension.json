@@ -1,6 +1,6 @@
 {
 	"name": "DateTimeTools",
-	"version": "1.0.6",
+	"version": "2.0.5",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[https://www.hallowelt.com Hallo Welt! GmbH]"
@@ -8,7 +8,7 @@
 	"url": "https://www.mediawiki.org/wiki/Extension:DateTimeTools",
 	"descriptionmsg": "datetimetools-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"attributes": {
 		"VisualEditor": {

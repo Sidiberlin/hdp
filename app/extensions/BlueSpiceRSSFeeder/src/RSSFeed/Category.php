@@ -2,9 +2,7 @@
 
 namespace BlueSpice\RSSFeeder\RSSFeed;
 
-use MediaWiki\MediaWikiServices;
-use Title;
-use ViewFormElementSelectbox;
+use MediaWiki\Title\Title;
 
 class Category extends RecentChanges {
 
@@ -38,48 +36,44 @@ class Category extends RecentChanges {
 	/**
 	 * @inheritDoc
 	 */
-	public function getViewElement() {
-		$set = $this->getViewElementFieldset();
-
-		$select = new ViewFormElementSelectbox();
-		$select->setId( 'selFeedCat' );
-		$select->setName( 'selFeedCat' );
-		$select->setLabel( $this->getDisplayName()->plain() );
-
-		$categories = $this->getCategories();
-		foreach ( $categories as $category ) {
-			$select->addData( [
-				'value' => $this->getFeedURL( [ 'cat' => $category ] ),
-				'label' => $category
-			] );
-		}
-
-		$set->addItem( $select );
-		$set->addItem( $this->getSubmitButton() );
-		$set->addItem( $this->getRCUniqueCheckbox() );
-
-		return $set;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
 	public function getRss() {
 		$request = $this->context->getRequest();
 		$cat = $request->getVal( 'cat', '' );
 		$dbr = $this->services->getDBLoadBalancer()->getConnection( DB_REPLICA );
 		$conditions = $this->getConditions();
 		$prefix = $this->context->getConfig()->get( 'DBprefix' );
-		// phpcs:ignore MediaWiki.Usage.DbrQueryUsage.DbrQueryFound
-		$rc = $dbr->query(
-			"SELECT r.* from {$prefix}categorylinks AS c "
-			. "INNER JOIN {$prefix}page AS p ON c.cl_from = p.page_id "
-			. "INNER JOIN {$prefix}recentchanges AS r "
-			. 'ON r.rc_namespace = p.page_namespace AND r.rc_title = p.page_title '
-			. 'WHERE ' . implode( ' AND ', $conditions )
-			. ' ORDER BY r.rc_timestamp DESC;'
-		);
-
+		$rc = $dbr->newSelectQueryBuilder()
+			->select( [
+				'r.*',
+				'rc_comment_text' => 'c.comment_text',
+				'rc_comment_data' => 'c.comment_data'
+			] )
+			->from(
+				$prefix . 'categorylinks',
+				'catlinks'
+			)
+			->join(
+				$prefix . 'page',
+				'p',
+				'catlinks.cl_from = p.page_id'
+			)
+			->join(
+				$prefix . 'recentchanges',
+				'r',
+				[
+					'r.rc_namespace = p.page_namespace',
+					'r.rc_title = p.page_title'
+				]
+			)
+			->join(
+				$prefix . 'comment',
+				'c',
+				'r.rc_comment_id = c.comment_id'
+			)
+			->where( $conditions )
+			->orderBy( 'r.rc_timestamp', 'DESC' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
 		$channel = $this->getChannel( addslashes( $cat ) );
 		foreach ( $rc as $row ) {
 			$title = Title::makeTitle( $row->rc_namespace, $row->rc_title );
@@ -103,12 +97,17 @@ class Category extends RecentChanges {
 		$conditions = [ 'r.rc_timestamp > ' . $rcTimestamp ];
 		if ( $rcUnique ) {
 			$rcUniqueIds = $this->getUniqueRecentChangesIds( [ 'rc_timestamp > ' . $rcTimestamp ] );
-			$conditions = [
-				'r.rc_id IN (' . implode( ',', $rcUniqueIds ) . ')'
-			];
+			if ( !empty( $rcUniqueIds ) ) {
+				$conditions = [ 'r.rc_id IN (' . implode( ',', $rcUniqueIds ) . ')' ];
+			}
 		}
 
-		MediaWikiServices::getInstance()->getHookContainer()->run(
+		$category = $this->context->getRequest()->getVal( 'cat', '' );
+		if ( $category ) {
+			$conditions[] = 'catlinks.cl_to = ' . $dbr->addQuotes( $category );
+		}
+
+		$this->services->getHookContainer()->run(
 			'BSRSSFeederBeforeGetRecentChanges',
 			[
 				&$conditions,
@@ -120,40 +119,9 @@ class Category extends RecentChanges {
 	}
 
 	/**
-	 * @return array
-	 */
-	private function getCategories() {
-		$categories = [];
-		$dbr = $this->services->getDBLoadBalancer()->getConnection( DB_REPLICA );
-		$res = $dbr->select(
-			'categorylinks',
-			'cl_to',
-			[],
-			__METHOD__,
-			[
-				'GROUP BY' => 'cl_to',
-				'ORDER BY' => 'cl_to',
-			]
-		);
-
-		foreach ( $res as $row ) {
-			$categories[] = $row->cl_to;
-		}
-
-		return $categories;
-	}
-
-	/**
 	 * @inheritDoc
 	 */
 	protected function getItemTitle( $title, $row ) {
 		return $title->getPrefixedText();
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getJSHandler() {
-		return 'bs.rssfeeder.handler.category';
 	}
 }

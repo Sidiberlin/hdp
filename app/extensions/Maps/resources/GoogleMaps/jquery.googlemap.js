@@ -91,7 +91,7 @@
 			};
 
 			if ( markerOptions.text !== '' ) {
-				markerOptions.text = $('<div>' + markerOptions.text + '</div>').text();
+				markerOptions.text = $('<div>').text(markerOptions.text).text();
 			}
 
 			if (!markerData.hasOwnProperty('icon') || markerData.icon !== '') {
@@ -730,6 +730,11 @@
 			// - Fullscreen
 			if(options.fullscreen){
 				this.map.controls[google.maps.ControlPosition.TOP_RIGHT].push(new FullscreenControl(this.map));
+			}
+
+			// - My Location
+			if(options.mylocation){
+				this.map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(new window.MyLocationControl(this.map, options.mylocationfollow, options.mylocationzoom));
 			}
 		};
 

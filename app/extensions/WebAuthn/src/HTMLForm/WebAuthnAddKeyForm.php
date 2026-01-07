@@ -2,16 +2,18 @@
 
 namespace MediaWiki\Extension\WebAuthn\HTMLForm;
 
-use ConfigException;
-use FormatJson;
-use IContextSource;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\OATHAuth\HTMLForm\OATHAuthOOUIHTMLForm;
 use MediaWiki\Extension\OATHAuth\IModule;
 use MediaWiki\Extension\OATHAuth\OATHUser;
 use MediaWiki\Extension\OATHAuth\OATHUserRepository;
 use MediaWiki\Extension\WebAuthn\Authenticator;
 use MediaWiki\Extension\WebAuthn\HTMLField\AddKeyLayout;
-use SpecialPage;
+use MediaWiki\Extension\WebAuthn\HTMLField\NoJsInfoField;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Status\Status;
 
 class WebAuthnAddKeyForm extends OATHAuthOOUIHTMLForm {
 
@@ -41,7 +43,7 @@ class WebAuthnAddKeyForm extends OATHAuthOOUIHTMLForm {
 	}
 
 	/**
-	 * @param array|bool|\Status|string $submitResult
+	 * @param array|bool|Status|string $submitResult
 	 * @return string
 	 */
 	public function getHTML( $submitResult ) {
@@ -73,9 +75,9 @@ class WebAuthnAddKeyForm extends OATHAuthOOUIHTMLForm {
 		$registrationResult = $authenticator->continueRegistration( $credential );
 		if ( $registrationResult->isGood() ) {
 			return true;
-		} else {
-			return [ $registrationResult->getMessage() ];
 		}
+
+		return [ $registrationResult->getMessage() ];
 	}
 
 	/**
@@ -83,14 +85,12 @@ class WebAuthnAddKeyForm extends OATHAuthOOUIHTMLForm {
 	 */
 	protected function getDescriptors() {
 		return [
-			'name-help' => [
-				'type' => 'info',
-				'default' => wfMessage( 'webauthn-ui-key-register-help' )->escaped(),
-				'raw' => true,
-				'section' => 'webauthn-add-key-section-name'
+			'nojs' => [
+				'class' => NoJsInfoField::class,
+				'section' => 'webauthn-add-key-section-name',
 			],
 			'name-layout' => [
-				'type' => 'null',
+				'label-message' => 'webauthn-ui-key-register-help',
 				'class' => AddKeyLayout::class,
 				'raw' => true,
 				'section' => 'webauthn-add-key-section-name'

@@ -4,11 +4,11 @@ namespace MediaWiki\Extension\AIEditingAssistant\ConfigDefinition;
 
 use BlueSpice\ConfigDefinition\ArraySetting;
 use BlueSpice\ConfigDefinition\IOverwriteGlobal;
-use Config;
-use HTMLFormField;
-use HTMLSelectField;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\AIEditingAssistant\ProviderFactory;
+use MediaWiki\HTMLForm\Field\HTMLSelectField;
+use MediaWiki\HTMLForm\HTMLFormField;
 use MediaWiki\MediaWikiServices;
 
 class ProviderType extends ArraySetting implements IOverwriteGlobal {
@@ -78,10 +78,10 @@ class ProviderType extends ArraySetting implements IOverwriteGlobal {
 	protected function getOptions() {
 		$providers = $this->providerFactory->getProviderNames();
 		$options = [
-			$this->msg( 'aieditingassistant-config-provider-type-none' )->plain() => null,
+			$this->msg( 'aieditingassistant-config-provider-type-none' )->text() => null,
 		];
 		foreach ( $providers as $key => $label ) {
-			$options[$label->plain()] = $key;
+			$options[$label->text()] = $key;
 		}
 		return $options;
 	}

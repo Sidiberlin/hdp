@@ -32,10 +32,10 @@ class ManifestObjectFactory {
 		ManifestRegistryFactory $registryFactory,
 		ObjectFactory $objectFactory,
 		LoggerInterface $logger
-		) {
-			$this->registryFactory = $registryFactory;
-			$this->objectFactory = $objectFactory;
-			$this->logger = $logger;
+	) {
+		$this->registryFactory = $registryFactory;
+		$this->objectFactory = $objectFactory;
+		$this->logger = $logger;
 	}
 
 	/**
@@ -43,14 +43,15 @@ class ManifestObjectFactory {
 	 * @param string $registryKey
 	 * @param array $options
 	 * @param string|null $instanceof
+	 * @phpcs:ignore MediaWiki.Commenting.FunctionComment.ObjectTypeHintReturn
 	 * @return object|null
 	 */
 	public function createObject(
 		string $registryName,
 		string $registryKey,
 		array $options = [],
-		string $instanceof = null
-		): ?object {
+		?string $instanceof = null
+	): ?object {
 		/** @var ManifestAttributeBasedRegistry */
 		$registry = $this->registryFactory->get( $registryName );
 
@@ -78,8 +79,8 @@ class ManifestObjectFactory {
 	public function createAllObjects(
 		string $registryName,
 		array $options = [],
-		string $instanceof = null
-		): array {
+		?string $instanceof = null
+	): array {
 		/** @var ManifestAttributeBasedRegistry */
 		$registry = $this->registryFactory->get( $registryName );
 		$registryKeys = $registry->getAllKeys();

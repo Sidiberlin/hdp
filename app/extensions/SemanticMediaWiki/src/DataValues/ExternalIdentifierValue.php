@@ -2,12 +2,14 @@
 
 namespace SMW\DataValues;
 
+use MediaWiki\Html\Html;
 use SMW\DIProperty;
+use SMWDataItem;
 
 /**
  * @private
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.5
  *
  * @author mwjames
@@ -43,10 +45,9 @@ class ExternalIdentifierValue extends StringValue {
 	/**
 	 * @see DataValue::getShortWikiText
 	 *
-	 * @param string $value
+	 * @param string|null $linker
 	 */
 	public function getShortWikiText( $linker = null ) {
-
 		if ( !$this->isValid() ) {
 			return '';
 		}
@@ -75,7 +76,7 @@ class ExternalIdentifierValue extends StringValue {
 			$url = '[' . $uri . ' ' . $this->m_caption . ']';
 		}
 
-		return \Html::rawElement(
+		return Html::rawElement(
 			'span',
 			[
 				'class' => 'plainlinks smw-eid'
@@ -88,7 +89,6 @@ class ExternalIdentifierValue extends StringValue {
 	 * @see StringValue::getShortHTMLText
 	 */
 	public function getShortHTMLText( $linker = null ) {
-
 		if ( !$this->isValid() ) {
 			return '';
 		}
@@ -111,7 +111,7 @@ class ExternalIdentifierValue extends StringValue {
 			return $this->m_caption;
 		}
 
-		return \Html::rawElement(
+		return Html::rawElement(
 			'a',
 			[
 				'href'   => $uri,
@@ -138,10 +138,9 @@ class ExternalIdentifierValue extends StringValue {
 	/**
 	 * @since 2.5
 	 *
-	 * @return DataItem
+	 * @return SMWDataItem
 	 */
 	public function getUri() {
-
 		if ( !$this->isValid() ) {
 			return '';
 		}
@@ -155,7 +154,6 @@ class ExternalIdentifierValue extends StringValue {
 	}
 
 	private function makeUri( $value ) {
-
 		if ( $this->uri !== null ) {
 			return $this->uri;
 		}
@@ -200,7 +198,6 @@ class ExternalIdentifierValue extends StringValue {
 	}
 
 	private function filterParameters( &$value ) {
-
 		$parameters = [];
 		$matches = [];
 

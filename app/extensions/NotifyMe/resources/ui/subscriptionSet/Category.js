@@ -1,4 +1,4 @@
-ext.notifyme.ui.subscriptionset.Category = function ( cfg ) {
+ext.notifyme.ui.subscriptionset.Category = function () {
 	// Parent constructor
 	ext.notifyme.ui.subscriptionset.Category.parent.apply( this, arguments );
 };
@@ -18,9 +18,9 @@ ext.notifyme.ui.subscriptionset.Category.prototype.getEditor = function ( dialog
 };
 
 ext.notifyme.ui.subscriptionset.Category.prototype.getHeaderKeyValue = function () {
-	let text = this.value.set.category,
-		// Strip namespace prefix
-	 index = text.indexOf( ':' );
+	let text = this.value.set.category;
+	// Strip namespace prefix
+	const index = text.indexOf( ':' );
 	if ( index !== -1 ) {
 		text = text.slice( index + 1 );
 	}

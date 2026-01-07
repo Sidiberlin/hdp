@@ -2,12 +2,13 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface\ResourceLoader;
 
-use Config;
+use MediaWiki\Config\Config;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Request\WebRequest;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 use MediaWiki\ResourceLoader\FileModule as ResourceLoaderFileModule;
 use MWStake\MediaWiki\Component\CommonUserInterface\LessVars as LessVarsObject;
-use WebRequest;
 
 class LessVars extends ResourceLoaderFileModule {
 
@@ -44,6 +45,6 @@ class LessVars extends ResourceLoaderFileModule {
 			return [];
 		}
 
-		return \FormatJson::decode( $value, 1 ) ?? [];
+		return FormatJson::decode( $value, 1 ) ?? [];
 	}
 }

@@ -2,8 +2,8 @@
 
 namespace BlueSpice;
 
-use Status;
-use Title;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
 
 interface ISecondaryDataUpdate {
 	/**

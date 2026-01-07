@@ -3,8 +3,8 @@
 namespace BlueSpice\Bookshelf;
 
 use BlueSpice\ExtensionAttributeBasedRegistry;
-use Config;
-use FormatJson;
+use MediaWiki\Config\Config;
+use MediaWiki\Json\FormatJson;
 
 class TreeParser {
 
@@ -156,10 +156,10 @@ class TreeParser {
 				while ( $depth < $level ) {
 					array_pop( $number );
 					$level--;
-					$number[$level - 1] ++;
+					$number[$level - 1]++;
 				}
 			} else {
-				$number[$level - 1] ++;
+				$number[$level - 1]++;
 			}
 			$this->simpleTOC[] = [
 				'number-array' => $number,
@@ -248,6 +248,10 @@ class TreeParser {
 		$this->tree = FormatJson::decode( $this->jsonStringBuffer, true );
 	}
 
+	/**
+	 * @param int $lineNo
+	 * @return int
+	 */
 	private function getNextLevel( $lineNo ) {
 		$hasNextLevel =
 			$lineNo < count( $this->extendedTOC )

@@ -1,6 +1,9 @@
 <?php
 
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Permissions\PermissionStatus;
+use MediaWiki\Title\Title;
 
 /**
  * Lets the user import an XML file to turn into wiki pages
@@ -14,7 +17,7 @@ class DTImportXML extends SpecialPage {
 	 * Constructor
 	 */
 	public function __construct( $name = 'ImportXML' ) {
-		parent::__construct( $name );
+		parent::__construct( $name, 'datatransferimport' );
 	}
 
 	public function doesWrites() {
@@ -23,15 +26,38 @@ class DTImportXML extends SpecialPage {
 
 	function execute( $query ) {
 		$this->setHeaders();
+
+		// We call isDefinitelyAllowed() here because, unlike other
+		// permission checks, this one also checks whether the user is
+		// currently blocked.
+		if ( method_exists( $this->getAuthority(), 'isDefinitelyAllowed' ) ) {
+			// MW 1.41+
+			$status = PermissionStatus::newEmpty();
+			$this->getAuthority()->isDefinitelyAllowed( 'datatransferimport', $status );
+			if ( !$status->isGood() ) {
+				throw new PermissionsError( 'datatransferimport' );
+			}
+		} else {
+			if ( !$this->getUser()->isAllowed( 'datatransferimport' ) ) {
+				throw new PermissionsError( 'datatransferimport' );
+			}
+		}
+
 		$out = $this->getOutput();
 		$out->enableOOUI();
 
-		if ( !$this->getUser()->isAllowed( 'datatransferimport' ) ) {
-			throw new PermissionsError( 'datatransferimport' );
-		}
-
 		$request = $this->getRequest();
-		if ( $request->getCheck( 'import_file' ) ) {
+		if ( $request->wasPosted() && $request->getCheck( 'import_file' ) ) {
+			$editToken = $request->getVal( 'wpEditToken' );
+			if ( !$this->getContext()->getCsrfTokenSet()->matchToken( $editToken ) ) {
+				// @todo - ideally, this should output a prefilled form with
+				// a new edit token ready to go for more convenient resubmitting.
+				// This would be best done by outputting the form using Codex,
+				// OOUI or HTMLForm.
+				$text = $this->msg( 'import-token-mismatch' )->parse();
+				$out->addHTML( $text );
+				return;
+			}
 			$text = DTUtils::printImportingMessage();
 			$uploadResult = ImportStreamSource::newFromUpload( "file_name" );
 			$source = $uploadResult->value;
@@ -42,6 +68,7 @@ class DTImportXML extends SpecialPage {
 			$formText = DTUtils::printFileSelector( $this->msg( 'dt_filetype_xml' )->text() );
 			$formText .= DTUtils::printExistingPagesHandling();
 			$formText .= DTUtils::printImportSummaryInput( $this->msg( 'dt_filetype_xml' )->text() );
+			$formText .= DTUtils::printEditTokenInput( $this->getContext()->getCsrfTokenSet() );
 			$formText .= DTUtils::printSubmitButton();
 			$text = "\t" . Xml::tags( 'form',
 				[

@@ -32,7 +32,7 @@ bs.vec.dm.RemoveLineBreakSign.static.toDomElements = function ( dataElement, doc
 	try {
 		const brElements = doc.body.getElementsByTagName( 'br' );
 
-		Array.from( brElements ).forEach( ( brElement ) => { // eslint-disable-line compat/compat
+		Array.from( brElements ).forEach( ( brElement ) => {
 			const nextSibling = brElement.nextSibling;
 
 			if ( nextSibling && nextSibling.nodeType === Node.TEXT_NODE ) {

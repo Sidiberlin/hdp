@@ -1,10 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ham II",
-			"Lloffiwr",
 			"Afalau",
-			"Ceirios"
+			"Ceirios",
+			"Ham II",
+			"Lloffiwr"
 		]
 	},
 	"scribunto-console-clear": "Clirio",

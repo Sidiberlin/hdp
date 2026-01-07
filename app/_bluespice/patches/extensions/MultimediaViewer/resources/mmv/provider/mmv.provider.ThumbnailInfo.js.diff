@@ -1,39 +1,33 @@
 diff --git a/resources/mmv/provider/mmv.provider.ThumbnailInfo.js b/resources/mmv/provider/mmv.provider.ThumbnailInfo.js
-index 45b6cdef..e14abfa7 100644
+index a3d742a3..0e698376 100644
 --- a/resources/mmv/provider/mmv.provider.ThumbnailInfo.js
 +++ b/resources/mmv/provider/mmv.provider.ThumbnailInfo.js
-@@ -49,17 +49,25 @@
- 	 */
- 	ThumbnailInfo.prototype.get = function ( file, width, height ) {
- 		var provider = this,
--			cacheKey = file.getPrefixedDb() + '|' + ( width || '' ) + '|' + ( height || '' );
-+			cacheKey = file.getPrefixedDb() + '|' + ( width || '' ) + '|' + ( height || '' ) + '|' + ( file.timestamp | '' );
-+
-+		var params = {
-+			action: 'query',
-+			prop: 'imageinfo',
-+			titles: file.getPrefixedDb(),
-+			iiprop: 'url',
-+			iiurlwidth: width, // mw.Api will omit null/undefined parameters
-+			iiurlheight: height
+@@ -50,9 +50,9 @@ class ThumbnailInfo extends Api {
+	get( file, sampleUrl, width, height ) {
+		const match = sampleUrl.match( /(lang|page)([\d\-a-z]+)-(\d+)px/ ); // multi lingual SVG or PDF page
+		const iiurlparam = match ? `${ match[ 1 ] }${ match[ 2 ] }-${ width }px` : undefined;
+-		const cacheKey = [ file.getPrefixedDb(), width || '', height || '', iiurlparam || '' ].join();
++		const cacheKey = [ file.getPrefixedDb(), width || '', height || '', iiurlparam || '', file.timestamp || '' ].join();
+ 
+-		return this.getCachedPromise( cacheKey, () => this.apiGetWithMaxAge( {
++		const params = {
+			formatversion: 2,
+			action: 'query',
+			prop: 'imageinfo',
+@@ -61,7 +61,15 @@ class ThumbnailInfo extends Api {
+			iiurlparam,
+			iiurlwidth: width,
+			iiurlheight: height
+-		} ).then( ( data ) => this.getQueryPage( data ) ).then( ( page ) => {
 +		};
 +
 +		if ( file.timestamp ) {
-+			params.iistart = file.timestamp -1;
++			params.iistart = file.timestamp - 1;
 +		}
- 
- 		return this.getCachedPromise( cacheKey, function () {
--			return provider.apiGetWithMaxAge( {
--				action: 'query',
--				prop: 'imageinfo',
--				titles: file.getPrefixedDb(),
--				iiprop: 'url',
--				iiurlwidth: width, // mw.Api will omit null/undefined parameters
--				iiurlheight: height
--			} ).then( function ( data ) {
-+			return provider.apiGetWithMaxAge(
-+				params
-+			).then( function ( data ) {
- 				return provider.getQueryPage( file, data );
- 			} ).then( function ( page ) {
- 				var imageInfo;
++
++		return this.getCachedPromise( cacheKey, () => this.apiGetWithMaxAge(
++			params
++		).then( ( data ) => this.getQueryPage( data ) ).then( ( page ) => {
+			let imageInfo;
+			if ( page.imageinfo && page.imageinfo[ 0 ] ) {
+				imageInfo = page.imageinfo[ 0 ];

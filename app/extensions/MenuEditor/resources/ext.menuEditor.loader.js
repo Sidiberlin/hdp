@@ -1,10 +1,10 @@
 ( function ( mw, $ ) {
 	ext.menueditor.init.loadEntities = function () {
-		var dfd = $.Deferred();
+		const dfd = $.Deferred();
 
 		function register( value, registry ) {
-			var registerDfd = $.Deferred(), modules = [];
-			for ( var name in value ) {
+			const registerDfd = $.Deferred(), modules = [];
+			for ( const name in value ) {
 				if ( !value.hasOwnProperty( name ) ) { // eslint-disable-line no-prototype-builtins
 					continue;
 				}
@@ -12,9 +12,9 @@
 				registry.register( name, value[ name ].classname );
 			}
 
-			mw.loader.using( $.uniqueSort( modules ), function () {
+			mw.loader.using( $.uniqueSort( modules ), () => {
 				registerDfd.resolve();
-			}, function () {
+			}, () => {
 				registerDfd.reject( 'Cannot load modules:' + $.uniqueSort( modules ) );
 			} );
 
@@ -27,9 +27,9 @@
 		$.when(
 			register( require( './menus.json' ), ext.menueditor.registry.menu, dfd ),
 			register( require( './nodes.json' ), ext.menueditor.registry.node, dfd )
-		).then( function () {
+		).then( () => {
 			dfd.resolve( require( './menus.json' ) );
-		}, function ( e ) {
+		}, ( e ) => {
 			console.error( e ); // eslint-disable-line no-console
 			dfd.reject( e );
 		} );

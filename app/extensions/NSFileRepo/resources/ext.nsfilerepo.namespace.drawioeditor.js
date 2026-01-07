@@ -1,3 +1,3 @@
-mw.hook( 'drawioeditor.makeFilenameProcessor' ).add( function ( filenameProcessor ) {
+mw.hook( 'drawioeditor.makeFilenameProcessor' ).add( ( filenameProcessor ) => {
 	filenameProcessor.processor = new nsfr.NamespaceFilenameProcessor();
 } );

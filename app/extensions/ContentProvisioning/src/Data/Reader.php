@@ -2,11 +2,10 @@
 
 namespace MediaWiki\Extension\ContentProvisioning\Data;
 
-use Language;
+use MediaWiki\Language\Language;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Page\WikiPageFactory;
-use TitleFactory;
-use Wikimedia\Rdbms\ILoadBalancer;
+use MediaWiki\Title\TitleFactory;
 
 class Reader extends \MWStake\MediaWiki\Component\DataStore\Reader {
 

@@ -2,6 +2,8 @@
 
 use BlueSpice\Api\Response\Standard as StandardResponse;
 use BlueSpice\NamespaceManager\Utils\NameChecker;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\SpecialPage\SpecialPage;
 
 class BSApiNamespaceTasks extends BSApiTasksBase {
 
@@ -105,7 +107,7 @@ class BSApiNamespaceTasks extends BSApiTasksBase {
 	 * @param array $aParams
 	 * @return StandardResponse
 	 */
-	protected function task_add( $oData, $aParams ) {
+	protected function task_add( $oData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$sNamespace = $oData->name;
 
 		$aAdditionalSettings = (array)$oData->settings;
@@ -176,7 +178,7 @@ class BSApiNamespaceTasks extends BSApiTasksBase {
 				'create',
 				[ '4::namespace' => $sNamespace ]
 			);
-			$aResult['message'] = wfMessage( 'bs-namespacemanager-nsadded' )->plain();
+			$aResult['message'] = wfMessage( 'bs-namespacemanager-nsadded' )->text();
 			$this->services->getHookContainer()->run(
 				'NamespaceManagerAfterAddNamespace',
 				[
@@ -199,7 +201,7 @@ class BSApiNamespaceTasks extends BSApiTasksBase {
 	 * @param array $aParams
 	 * @return StandardResponse
 	 */
-	protected function task_edit( $oData, $aParams ) {
+	protected function task_edit( $oData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$bluespiceNamespaces = $this->getConfig()->get( 'SystemNamespaces' );
 
 		$sNamespace = $oData->name;
@@ -229,13 +231,13 @@ class BSApiNamespaceTasks extends BSApiTasksBase {
 			->getUserNamespaces( true );
 
 		if ( !is_numeric( $oData->id ) ) {
-			$oResult->message = $this->msg( 'bs-namespacemanager-invalid-id' )->plain();
+			$oResult->message = $this->msg( 'bs-namespacemanager-invalid-id' )->text();
 			return $oResult;
 		}
 		$iNS = (int)$oData->id;
 
 		if ( !isset( $systemNamespaces[$iNS ] ) && !isset( $aUserNamespaces[$iNS] ) ) {
-			$oResult->message = $this->msg( 'bs-namespacemanager-invalid-namespace' )->plain();
+			$oResult->message = $this->msg( 'bs-namespacemanager-invalid-namespace' )->text();
 			return $oResult;
 		}
 
@@ -315,7 +317,7 @@ class BSApiNamespaceTasks extends BSApiTasksBase {
 				] );
 			}
 
-			$aResult['message'] = wfMessage( 'bs-namespacemanager-nsedited' )->plain();
+			$aResult['message'] = wfMessage( 'bs-namespacemanager-nsedited' )->text();
 		}
 
 		$oResult->success = $aResult['success'];
@@ -331,19 +333,19 @@ class BSApiNamespaceTasks extends BSApiTasksBase {
 	 * @param array $aParams
 	 * @return StandardResponse
 	 */
-	protected function task_remove( $oData, $aParams ) {
+	protected function task_remove( $oData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$oResult = $this->makeStandardReturn();
 		$iNS = (int)$oData->id;
 
 		if ( $iNS < 0 ) {
-			$oResult->message = $this->msg( 'bs-namespacemanager-invalid-id' )->plain();
+			$oResult->message = $this->msg( 'bs-namespacemanager-invalid-id' )->text();
 			return $oResult;
 		}
 
 		$aUserNamespaces = $this->services->getService( 'BSNamespaceManager' )
 			->getUserNamespaces( true );
 		if ( !isset( $aUserNamespaces[$iNS] ) ) {
-			$oResult->message = $this->msg( 'bs-namespacemanager-msgnoteditabledelete' )->plain();
+			$oResult->message = $this->msg( 'bs-namespacemanager-msgnoteditabledelete' )->text();
 			return $oResult;
 		}
 
@@ -351,7 +353,7 @@ class BSApiNamespaceTasks extends BSApiTasksBase {
 		$isTalkNS = $namespceInfo->isTalk( $iNS );
 		try {
 			$talkNS = $namespceInfo->getTalk( $iNS );
-		} catch ( MWException $e ) {
+		} catch ( Throwable $e ) {
 			// the given namespace doesn't have an associated talk namespace
 		}
 
@@ -361,7 +363,7 @@ class BSApiNamespaceTasks extends BSApiTasksBase {
 		$aNamespacesToRemoveNames[] = $sNamespace;
 		if ( $isTalkNS ) {
 			if ( $talkNS && isset( $aUserNamespaces[ $talkNS ] ) ) {
-				$oResult->message = $this->msg( 'bs-namespacemanager-nodeletetalk' )->plain();
+				$oResult->message = $this->msg( 'bs-namespacemanager-nodeletetalk' )->text();
 				return $oResult;
 			}
 		}
@@ -452,10 +454,10 @@ class BSApiNamespaceTasks extends BSApiTasksBase {
 					$namespacesToRemove
 				);
 				$oResult->success = $aResult[ 'success' ];
-				$oResult->message = wfMessage( 'bs-namespacemanager-nsremoved' )->plain();
+				$oResult->message = wfMessage( 'bs-namespacemanager-nsremoved' )->text();
 			}
 		} else {
-			$oResult->message = $this->msg( 'bs-namespacemanager-error_on_remove_namespace' )->plain();
+			$oResult->message = $this->msg( 'bs-namespacemanager-error_on_remove_namespace' )->text();
 			return $oResult;
 		}
 

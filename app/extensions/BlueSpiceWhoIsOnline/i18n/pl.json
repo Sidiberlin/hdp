@@ -13,8 +13,5 @@
 	"prefs-whoisonline": "Kto jest online?",
 	"bs-whoisonline-pref-limitcount": "Maksymalna liczba użytkowników do pokazania:",
 	"bs-whoisonline-pref-orderby": "Sortuj według:",
-	"bs-whoisonline-pref-interval": "Interwał aktualizacji w sekundach:",
-	"bs-whoisonline-tag-whoisonlinecount-desc": "Pokazuje liczbę wszystkich użytkowników, którzy zalogowali się w ciągu ostatnich 10 minut.",
-	"bs-whoisonline-tag-whoisonlinepopup-desc": "Pokazuje wszystkich użytkowników, którzy zalogowali się w ciągu ostatnich 10 minut.",
 	"bs-whoisonline-droplet-popup-name": "Lista zalogowanych użytkowników"
 }

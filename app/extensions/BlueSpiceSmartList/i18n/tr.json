@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"BaRaN6161 TURK",
+			"SaldırganSincap",
 			"Sayginer"
 		]
 	},
@@ -19,11 +20,6 @@
 	"bs-smartlist-month": "Ay",
 	"bs-smartlist-time": "Zaman",
 	"bs-smartlist-title": "Başlık",
-	"bs-smartlist-tag-smartlist-desc": "Otomatik olarak oluşturulan madde listelerini gösterir. Yapılandırma birkaç modi ve parametre ile çalışır.",
-	"bs-smartlist-tag-smartlist-example-rc": "Mod: Son değişiklikler",
-	"bs-smartlist-tag-smartlist-example-whatlinkshere": "Mod: Sayfaya bağlantılar",
-	"bs-smartlist-tag-newbies-desc": "Vikinin yeni kullanıcılarını gösterir. Liste belirli bir numarayla sınırlandırılabilir.",
-	"bs-smartlist-tag-toplist-desc": "En çok ziyaret edilen sayfaları gösterir. Birkaç parametre ile sınırlandırılabilir.",
 	"bs-smartlist-mostvisitedpages": "En çok görüntülenen sayfalar",
 	"bs-smartlist-mosteditedpages": "En düzenlenmiş sayfalar",
 	"bs-smartlist-mostactiveusers": "En aktif kullanıcılar (düzenlemelere göre)",
@@ -33,7 +29,5 @@
 	"bs-smartlist-mosteditedpagesdesc": "Düzenlenmişlerine göre en çok düzenlenmiş sayfaların listesi.",
 	"bs-smartlist-mostvisitedpagesdesc": "En çok görüntülenen sayfaların görünümlerine göre sıralanmış listesi.",
 	"bs-smartlist-lasteditsdesc": "Düzenlediğiniz sayfaların listesi.",
-	"bs-smartlist-hitcounter-missing": "<a target='blank' href='https://www.mediawiki.org/wiki/Extension:HitCounters'>HitCounters</a> uzantısı kurulmalıdır.",
-	"apihelp-bs-smartlist-tasks-description": "Sayfa ve kullanıcı istatistikleri için portlet verileri sunmak üzere API işlevleri.",
-	"apihelp-bs-smartlist-tasks-summary": "Sayfa ve kullanıcı istatistikleri için portlet verileri sunmak üzere API işlevleri."
+	"bs-smartlist-hitcounter-missing": "<a target='blank' href='https://www.mediawiki.org/Special:MyLanguage/wiki/Extension:HitCounters'>HitCounters</a> uzantısı kurulmalıdır."
 }

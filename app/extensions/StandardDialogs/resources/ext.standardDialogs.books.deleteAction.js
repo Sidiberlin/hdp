@@ -1,11 +1,11 @@
-$( document ).on( 'click', '.bs-books-overview-action-delete', function ( e ) {
-	var target = e.target;
-	if ( target.nodeName != 'A' ) {
+$( document ).on( 'click', '.bs-books-overview-action-delete', ( e ) => {
+	let target = e.target;
+	if ( target.nodeName !== 'A' ) {
 		target = $( target ).parent();
 	}
 
-	var pageName = $( target ).data( 'prefixed_db_key' );
-	mw.loader.using( [ 'ext.standardDialogs.ui.DeleteDialog' ] ).done( function () {
+	const pageName = $( target ).data( 'prefixed_db_key' );
+	mw.loader.using( [ 'ext.standardDialogs.ui.DeleteDialog' ] ).done( () => {
 		const msg = require( './deleteDialogMsg.json' );
 
 		const diag = new StandardDialogs.ui.DeleteDialog( {
@@ -13,7 +13,7 @@ $( document ).on( 'click', '.bs-books-overview-action-delete', function ( e ) {
 			pageName: pageName,
 			msg: msg
 		} );
-		diag.on( 'actioncompleted', function () {
+		diag.on( 'actioncompleted', () => {
 			window.location.reload();
 		} );
 		diag.show();

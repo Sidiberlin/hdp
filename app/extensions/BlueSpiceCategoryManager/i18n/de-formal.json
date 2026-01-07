@@ -6,6 +6,5 @@
 		]
 	},
 	"bs-categorymanager-removecategoryconfirm-text": "Sind Sie sicher, dass Sie diese Kategorie löschen möchten?",
-	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Bitte verwenden Sie einen anderen Kategorienamen",
-	"bs-categorymanager-dlg-new-prompt": "Bitte geben Sie den Namen ein:"
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Bitte verwenden Sie einen anderen Kategorienamen"
 }

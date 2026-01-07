@@ -18,13 +18,6 @@ class Twitch extends AbstractEmbedService {
 	/**
 	 * @inheritDoc
 	 */
-	public function getAspectRatio(): ?float {
-		return 620 / 378;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
 	public function getServiceKey(): string {
 		return 'twitch';
 	}
@@ -80,14 +73,7 @@ class Twitch extends AbstractEmbedService {
 			$urlArgs = http_build_query( $parsedArgs );
 		}
 
-		return sprintf( '%s&%s', sprintf( $this->getBaseUrl(), $this->getId() ), $urlArgs );
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getContentType(): ?string {
-		return 'video';
+		return wfAppendQuery( sprintf( $this->getBaseUrl(), $this->getId() ), $urlArgs );
 	}
 
 	/**

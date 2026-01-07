@@ -2,7 +2,7 @@
 
 namespace BlueSpice\ArticleInfo\Hook;
 
-use Title;
+use MediaWiki\Title\Title;
 
 interface BSArticleInfoSkipHook {
 

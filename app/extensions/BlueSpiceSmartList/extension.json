@@ -1,7 +1,7 @@
 {
 	"name": "BlueSpiceSmartList",
 	"license-name": "GPL-3.0-only",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:SmartList",
 	"author": [
 		"Markus Glaser",
@@ -13,16 +13,16 @@
 	"descriptionmsg": "bs-smartlist-desc",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"attributes": {
 		"BlueSpiceFoundation": {
 			"Extensions": {
 				"BlueSpiceSmartList": {
-					"className": "SmartList",
+					"className": "BlueSpice\\SmartList\\Extension",
 					"extPath": "/BlueSpiceSmartList"
 				}
 			},
@@ -74,7 +74,7 @@
 				},
 				"recentchanges": {
 					"class": "BlueSpice\\SmartList\\Mode\\RecentChangesMode",
-					"services": [ "PermissionManager", "DBLoadBalancer", "TitleFactory" ]
+					"services": [ "PermissionManager", "DBLoadBalancer", "TitleFactory", "UserFactory" ]
 				},
 				"toplist": {
 					"class": "BlueSpice\\SmartList\\Mode\\ToplistMode",
@@ -91,9 +91,6 @@
 			}
 		}
 	},
-	"APIModules": {
-		"bs-smartlist-tasks": "BSApiTasksSmartList"
-	},
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
 	],
@@ -104,10 +101,6 @@
 	},
 	"AutoloadNamespaces": {
 		"BlueSpice\\SmartList\\": "src/"
-	},
-	"AutoloadClasses": {
-		"SmartList": "SmartList.class.php",
-		"BSApiTasksSmartList": "includes/api/BSApiTasksSmartList.php"
 	},
 	"ResourceModules": {
 		"ext.bluespice.smartList.visualEditor": {
@@ -240,11 +233,7 @@
 		"remoteExtPath": "BlueSpiceSmartList/resources"
 	},
 	"Hooks": {
-		"BSUsageTrackerRegisterCollectors": "\\BlueSpice\\SmartList\\Hook\\BSUsageTrackerRegisterCollectors\\AddSmartlistTag::callback",
-		"BSDashboardsAdminDashboardPortalPortlets": "\\BlueSpice\\SmartList\\Hook\\BSDashboardsAdminDashboardPortalPortlets\\AddPortlets::callback",
-		"BSDashboardsAdminDashboardPortalConfig": "\\BlueSpice\\SmartList\\Hook\\BSDashboardsAdminDashboardPortalConfig\\AddConfigs::callback",
-		"BSDashboardsUserDashboardPortalPortlets": "\\BlueSpice\\SmartList\\Hook\\BSDashboardsUserDashboardPortalPortlets\\AddPortlets::callback",
-		"BSDashboardsUserDashboardPortalConfig": "\\BlueSpice\\SmartList\\Hook\\BSDashboardsUserDashboardPortalConfig\\AddConfigs::callback"
+		"BSUsageTrackerRegisterCollectors": "\\BlueSpice\\SmartList\\Hook\\BSUsageTrackerRegisterCollectors\\AddSmartlistTag::callback"
 	},
 	"load_composer_autoloader": true,
 	"manifest_version": 2

@@ -5,11 +5,11 @@ namespace BlueSpice\Bookshelf\Tag;
 use BlueSpice\Bookshelf\BookLookup;
 use BS\ExtendedSearch\Lookup;
 use BS\ExtendedSearch\Tag\TagSearchHandler;
-use Config;
 use Exception;
-use Message;
-use Parser;
-use PPFrame;
+use MediaWiki\Config\Config;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class SearchInBookHandler extends TagSearchHandler {
 

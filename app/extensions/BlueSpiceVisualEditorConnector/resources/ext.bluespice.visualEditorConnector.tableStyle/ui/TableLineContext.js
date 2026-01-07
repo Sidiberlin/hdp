@@ -1,4 +1,3 @@
-
 /**
  * Select entire row/column on icon click
  *
@@ -6,10 +5,10 @@
  */
 ve.ui.TableLineContext.prototype.onIconMouseDown = function ( e ) {
 	e.preventDefault();
-	var surfaceModel = this.tableNode.surface.getModel(),
-		selection = surfaceModel.getSelection(),
-		matrix = selection.getTableNode( surfaceModel.getDocument() ).getMatrix(),
-		newSelection = [];
+	const surfaceModel = this.tableNode.surface.getModel();
+	const selection = surfaceModel.getSelection();
+	const matrix = selection.getTableNode( surfaceModel.getDocument() ).getMatrix();
+	let newSelection = [];
 
 	if ( selection instanceof ve.dm.TableSelection ) {
 		return;
@@ -31,8 +30,9 @@ ve.ui.TableLineContext.prototype.onIconMouseDown = function ( e ) {
 
 /**
  * No-op
- * @param e
+ *
+ * @param {Event} e
  */
-ve.ui.TableLineContext.prototype.onDocumentMouseDown = function ( e ) {
+ve.ui.TableLineContext.prototype.onDocumentMouseDown = function ( e ) { // eslint-disable-line no-unused-vars
 	return;
 };

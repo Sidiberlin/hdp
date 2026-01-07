@@ -3,10 +3,10 @@
 namespace BlueSpice\SaferEdit;
 
 use BlueSpice\ExtensionAttributeBasedRegistry;
-use IContextSource;
-use Status;
-use Title;
-use User;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use Wikimedia\Rdbms\IDatabase;
 
 class SaferEditManager {
@@ -78,14 +78,19 @@ class SaferEditManager {
 			$updateOk = $this->db->update(
 				$table,
 				$fields,
-				[ "se_id" => $row->se_id ]
+				[ "se_id" => $row->se_id ],
+				__METHOD__
 			);
 			if ( $updateOk ) {
 				return Status::newGood();
 			}
 		} else {
 			$title->invalidateCache();
-			$insertOk = $this->db->insert( $table, $conditions + $fields );
+			$insertOk = $this->db->insert(
+				$table,
+				$conditions + $fields,
+				__METHOD__
+			);
 			if ( $insertOk ) {
 				return Status::newGood();
 			}
@@ -108,7 +113,8 @@ class SaferEditManager {
 				"se_user_name" => $user->getName(),
 				"se_page_title" => $title->getDBkey(),
 				"se_page_namespace" => $title->getNamespace(),
-			]
+			],
+			__METHOD__
 		);
 
 		if ( $deleteOk ) {

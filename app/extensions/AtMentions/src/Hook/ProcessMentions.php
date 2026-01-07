@@ -8,31 +8,31 @@ use AtMentions\MentionParser;
 use AtMentions\MentionStore;
 use HtmlArmor;
 use ManualLogEntry;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Hook\PageMoveCompleteHook;
 use MediaWiki\Hook\ParserBeforeInternalParseHook;
 use MediaWiki\Linker\Hook\HtmlPageLinkRendererEndHook;
 use MediaWiki\Linker\LinkTarget;
-use MediaWiki\Page\Hook\ArticleUndeleteHook;
 use MediaWiki\Page\Hook\PageDeleteCompleteHook;
+use MediaWiki\Page\Hook\PageUndeleteCompleteHook;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Storage\Hook\PageSaveCompleteHook;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\UserFactory;
 use MediaWiki\User\UserIdentity;
 use MWStake\MediaWiki\Component\Events\Notifier;
-use RequestContext;
-use Title;
-use TitleFactory;
 
 class ProcessMentions implements
 	ParserBeforeInternalParseHook,
 	PageSaveCompleteHook,
 	PageMoveCompleteHook,
 	PageDeleteCompleteHook,
-	ArticleUndeleteHook,
+	PageUndeleteCompleteHook,
 	HtmlPageLinkRendererEndHook
 {
 	/** @var MentionParser */
@@ -109,7 +109,7 @@ class ProcessMentions implements
 		if ( $origLabel === $targetTitle->getPrefixedText() || $origLabel === $targetTitle->getPrefixedDBkey() ) {
 			$user = $this->userFactory->newFromName( $targetTitle->getText() );
 			if ( $user ) {
-				$text = new HtmlArmor( $user->getRealName() ?: $user->getName() );
+				$text = $user->getRealName() ?: $user->getName();
 			}
 		}
 		$attribs['style'] = 'background-color: #e5e4ff; border: 1px solid #acaeff;' .
@@ -262,7 +262,20 @@ class ProcessMentions implements
 	/**
 	 * @inheritDoc
 	 */
-	public function onArticleUndelete( $title, $create, $comment, $oldPageId, $restoredPages ) {
+	public function onPageUndeleteComplete(
+		ProperPageIdentity $page,
+		Authority $restorer,
+		string $reason,
+		RevisionRecord $restoredRev,
+		ManualLogEntry $logEntry,
+		int $restoredRevisionCount,
+		bool $created,
+		array $restoredPageIds
+	): void {
+		$title = $this->titleFactory->castFromPageIdentity( $page );
+		if ( !$title ) {
+			return;
+		}
 		if ( $title->getContentModel() !== CONTENT_MODEL_WIKITEXT ) {
 			// For now only support wikitext
 			return;

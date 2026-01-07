@@ -5,11 +5,11 @@ namespace BlueSpice\Bookshelf\Panel;
 use BlueSpice\Bookshelf\BookContextProviderFactory;
 use BlueSpice\Bookshelf\BookLookup;
 use BlueSpice\Bookshelf\TreeDataProvider;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleTreeContainer;
 use MWStake\MediaWiki\Component\CommonUserInterface\TreeDataGenerator;
-use Title;
-use TitleFactory;
 
 class BookNavigationTreeContainer extends SimpleTreeContainer {
 

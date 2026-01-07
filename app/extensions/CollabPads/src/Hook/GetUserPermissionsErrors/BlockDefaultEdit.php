@@ -2,10 +2,10 @@
 
 namespace MediaWiki\Extension\CollabPads\Hook\GetUserPermissionsErrors;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\CollabPads\CollabSessionManager;
+use MediaWiki\Message\Message;
 use MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook;
-use Message;
-use RequestContext;
 
 class BlockDefaultEdit implements GetUserPermissionsErrorsHook {
 
@@ -26,32 +26,35 @@ class BlockDefaultEdit implements GetUserPermissionsErrorsHook {
 	 */
 	public function onGetUserPermissionsErrors( $title, $user, $action, &$result ) {
 		if ( defined( 'MEDIAWIKI_INSTALL' ) || defined( 'MW_UPDATER' ) ) {
-			return true;
+			return;
 		}
-		if ( $title->isSpecialPage() ) {
-			return true;
+
+		if (
+			$action !== 'edit' ||
+			!$title->exists() ||
+			!$title->isContentPage()
+		) {
+			return;
+		}
+
+		$context = RequestContext::getMain();
+		if ( $context->getActionName() === 'view' ) {
+			// Don't block edit from page view
+			return;
+		}
+
+		$request = $context->getRequest();
+		$requestAction = $request->getText( 'action', $request->getText( 'veaction', 'view' ) );
+		if ( $requestAction === 'collab-edit' ) {
+			return;
 		}
 
 		$session = $this->collabSessionManager->getSession( $title->getNamespace(), $title->getText() );
-		if ( $action === 'edit' && $session ) {
-			$context = RequestContext::getMain();
-			if ( $context->getActionName() === 'view' ) {
-				// Don't block starting edit at all when viewing the page
-				return true;
-			}
+		if ( $session ) {
+			// Block visual/source edit if there is a collab session running
+			$result = Message::newFromKey( 'collabpads-normal-edit-blocked' );
 
-			$request = $context->getRequest();
-
-			$action = $request->getText( 'action', $request->getText( 'veaction', 'view' ) );
-
-			if ( $action !== 'collab-edit' ) {
-				// But block visual/source edit if there is a collab session running
-				$result = Message::newFromKey( 'collabpads-normal-edit-blocked' );
-
-				return false;
-			}
+			return false;
 		}
-
-		return true;
 	}
 }

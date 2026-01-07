@@ -2,9 +2,12 @@
 namespace BlueSpice\Content;
 
 use BlueSpice\Entity as EntityBase;
+use MediaWiki\Content\JsonContent;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Xml\Xml;
 
-class Entity extends \JsonContent {
+class Entity extends JsonContent {
 
 	/**
 	 * @param string $text
@@ -20,7 +23,7 @@ class Entity extends \JsonContent {
 	 * @return array
 	 */
 	public function getJsonData() {
-		return \FormatJson::decode( $this->getText(), true );
+		return FormatJson::decode( $this->getText(), true );
 	}
 
 	/**
@@ -36,11 +39,11 @@ class Entity extends \JsonContent {
 	 * @return bool|null|string
 	 */
 	public function beautifyJSON() {
-		$decoded = \FormatJson::decode( $this->getText(), true );
+		$decoded = FormatJson::decode( $this->getText(), true );
 		if ( !is_array( $decoded ) ) {
 			return null;
 		}
-		return \FormatJson::encode( $decoded, true );
+		return FormatJson::encode( $decoded, true );
 	}
 
 	/**
@@ -55,8 +58,8 @@ class Entity extends \JsonContent {
 		foreach ( $mapping as $key => $val ) {
 			$rows[] = $this->objectRow( $key, $val );
 		}
-		return \Xml::tags( 'table', [ 'class' => 'mw-json' ],
-			\Xml::tags( 'tbody', [], implode( "\n", $rows ) )
+		return Xml::tags( 'table', [ 'class' => 'mw-json' ],
+			Xml::tags( 'tbody', [], implode( "\n", $rows ) )
 		);
 	}
 
@@ -68,20 +71,20 @@ class Entity extends \JsonContent {
 	 * @return string HTML.
 	 */
 	protected function objectRow( $key, $val ) {
-		$th = \Xml::elementClean( 'th', [], $key );
+		$th = Xml::elementClean( 'th', [], $key );
 		if ( is_array( $val ) ) {
-			$td = \Xml::tags( 'td', [], self::objectTable( $val ) );
+			$td = Xml::tags( 'td', [], self::objectTable( $val ) );
 		} else {
 			if ( is_string( $val ) ) {
 				$val = '"' . $val . '"';
 			} else {
-				$val = \FormatJson::encode( $val );
+				$val = FormatJson::encode( $val );
 			}
 
-			$td = \Xml::elementClean( 'td', [ 'class' => 'value' ], $val );
+			$td = Xml::elementClean( 'td', [ 'class' => 'value' ], $val );
 		}
 
-		return \Xml::tags( 'tr', [], $th . $td );
+		return Xml::tags( 'tr', [], $th . $td );
 	}
 
 	/**

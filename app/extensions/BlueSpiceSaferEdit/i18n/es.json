@@ -13,9 +13,5 @@
 	},
 	"bs-saferedit-desc": "Proporciona advertencias si otros usuarios están editando la página",
 	"bs-saferedit-user-editing": "$1 {{PLURAL:$2|está|están}} {{GENDER:$1|editando}} la página",
-	"bs-saferedit-someone-editing": "La página se está editando",
-	"bs-saferedit-pref-interval": "Intervalo en el cual buscar ediciones concurrentes:",
-	"bs-saferedit-pref-shownameofeditinguser": "Mostrar el nombre del editor actual",
-	"bs-saferedit-pref-interval-help": "Establece el tiempo en segundos para comprobar si otra persona está editando la página.",
-	"bs-saferedit-pref-shownameofeditinguser-help": "Muestra los usuarios que están editando actualmente la página como una sugerencia en la parte superior de la página."
+	"bs-saferedit-someone-editing": "La página se está editando"
 }

@@ -6,11 +6,11 @@ use BlueSpice\Expiry\Data\Record;
 use BlueSpice\Expiry\Factory;
 use BlueSpice\RunJobsTriggerHandler;
 use BlueSpice\UtilityFactory;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\Events\Notifier;
-use Status;
-use Title;
 use Wikimedia\Rdbms\LoadBalancer;
 
 abstract class SendNotification extends RunJobsTriggerHandler {
@@ -50,7 +50,7 @@ abstract class SendNotification extends RunJobsTriggerHandler {
 	 * @param UtilityFactory|null $util
 	 * @return RunJobsTriggerHandler
 	 */
-	public static function factory( $config, $loadBalancer, Factory $factory = null, UtilityFactory $util = null ) {
+	public static function factory( $config, $loadBalancer, ?Factory $factory = null, ?UtilityFactory $util = null ) {
 		if ( !$factory ) {
 			$factory = MediaWikiServices::getInstance()->getService(
 				'BSExpiryFactory'

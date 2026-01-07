@@ -4,7 +4,7 @@ ext.enhancedUI.data = ext.enhancedUI.data || {};
 ext.enhancedUI.data.store = ext.enhancedUI.data.store || {};
 
 ext.enhancedUI.data.store.Store = function () {
-	var cfg = {};
+	const cfg = {};
 	cfg.path = 'mws/v1/title-tree-store';
 	cfg.request = null;
 	ext.enhancedUI.data.store.Store.parent.call( this, cfg );
@@ -14,7 +14,7 @@ ext.enhancedUI.data.store.Store = function () {
 OO.inheritClass( ext.enhancedUI.data.store.Store, OOJSPlus.ui.data.store.RemoteRestStore );
 
 ext.enhancedUI.data.store.Store.prototype.doLoadData = function () {
-	var dfd = $.Deferred(),
+	const dfd = $.Deferred(),
 		data = {
 			start: this.offset,
 			limit: this.limit,
@@ -35,7 +35,7 @@ ext.enhancedUI.data.store.Store.prototype.doLoadData = function () {
 				this.request.abort();
 			}
 		}.bind( this )
-	} ).done( function ( response ) {
+	} ).done( ( response ) => {
 		this.request = null;
 		// eslint-disable-next-line no-prototype-builtins
 		if ( response.hasOwnProperty( 'results' ) ) {
@@ -44,10 +44,10 @@ ext.enhancedUI.data.store.Store.prototype.doLoadData = function () {
 			return;
 		}
 		dfd.reject();
-	}.bind( this ) ).fail( function ( jgXHR, type, status ) {
+	} ).fail( ( jgXHR, type, status ) => {
 		this.request = null;
 		dfd.reject( { type: type, status: status } );
-	}.bind( this ) );
+	} );
 
 	return dfd.promise();
 };
@@ -86,10 +86,10 @@ ext.enhancedUI.data.store.Store.prototype.getSubpages = function ( pageName ) {
 
 ext.enhancedUI.data.store.Store.prototype.reload = function () {
 	this.data = {};
-	var loadPromise = this.load();
-	loadPromise.done( function ( data ) {
+	const loadPromise = this.load();
+	loadPromise.done( ( data ) => {
 		this.emit( 'reload', data );
-	}.bind( this ) );
+	} );
 
 	return loadPromise;
 };

@@ -4,9 +4,9 @@ namespace BlueSpice\ExtendedStatistics\Tag;
 
 use BlueSpice\Tag\Handler;
 use BsPageContentProvider;
-use Html;
-use Message;
-use RequestContext;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
+use MediaWiki\Message\Message;
 
 class ProgressHandler extends Handler {
 

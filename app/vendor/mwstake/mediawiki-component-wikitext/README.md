@@ -3,15 +3,22 @@
 
 **This code is meant to be executed within the MediaWiki application context. No standalone usage is intended.**
 
+## Compatibility
+- `7.0.x` -> MediaWiki 1.43
+- `6.0.x` -> MediaWiki 1.39
+- `5.0.x` -> MediaWiki 1.35
+
 ## Use in a MediaWiki extension
 
-**MediaWiki 1.35**
+Require this component in the `composer.json` of your extension:
 
-- Add `"mwstake/mediawiki-component-wikitext": "~5"` to the `require` section of your `composer.json` file.
-
-**MediaWiki 1.39**
-
-- Add `"mwstake/mediawiki-component-wikitext": "~6"` to the `require` section of your `composer.json` file.
+```json
+{
+	"require": {
+		"mwstake/mediawiki-component-wikitext": "~7"
+	}
+}
+```
 
 Since 2.0 explicit initialization is required. This can be achived by
 - either adding `"callback": "mwsInitComponents"` to your `extension.json`/`skin.json`

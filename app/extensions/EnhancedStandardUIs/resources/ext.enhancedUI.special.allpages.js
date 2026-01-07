@@ -1,30 +1,30 @@
 ( function ( mw, $ ) {
 
-	$( function () {
+	$( () => {
 		require( './panel/AllPagesPanel.js' );
 		/* eslint-disable-next-line no-jquery/no-global-selector */
-		var $allPagesCnt = $( '#enhanced-ui-allpages-cnt' );
-		var isMobile = $( window ).width() < 767;
+		const $allPagesCnt = $( '#enhanced-ui-allpages-cnt' );
+		const isMobile = $( window ).width() < 767;
 
-		var namespaceId = 0;
+		let namespaceId = 0;
 		if ( mw.util.getParamValue( 'namespace' ) ) {
 			namespaceId = parseInt( mw.util.getParamValue( 'namespace' ) );
 		}
-		var allPagesPanel = new ext.enhancedUI.panel.AllPagesPanel( {
+		const allPagesPanel = new ext.enhancedUI.panel.AllPagesPanel( {
 			mobileView: isMobile,
 			namespaceId: namespaceId
 		} );
 		$allPagesCnt.append( allPagesPanel.$element );
 
-		var offsetJson = require( './addOffset.json' );
-		var offsetHeight = offsetJson.offsetHeight;
-		var floatingPaginator = false;
-		var rightPos = getRightValue();
-		var $paginator = $( '.enhanced-ui-allpages-panel-paginator' ); // eslint-disable-line no-jquery/no-global-selector
-		var topValue = $( $paginator ).offset().top;
+		const offsetJson = require( './addOffset.json' );
+		const offsetHeight = offsetJson.offsetHeight;
+		let floatingPaginator = false;
+		const rightPos = getRightValue();
+		const $paginator = $( '.enhanced-ui-allpages-panel-paginator' ); // eslint-disable-line no-jquery/no-global-selector
+		const topValue = $( $paginator ).offset().top;
 
 		$( window ).on( 'scroll', function () {
-			var windowTop = $( this ).scrollTop();
+			const windowTop = $( this ).scrollTop();
 			if ( windowTop > topValue ) {
 				if ( !floatingPaginator ) {
 					$paginator.css( 'top', offsetHeight );
@@ -40,8 +40,8 @@
 			}
 		} );
 
-		$( '.oo-ui-outlineSelectWidget' ).on( 'focus', function ( e ) { // eslint-disable-line no-jquery/no-global-selector
-			var target = e.target;
+		$( '.oo-ui-outlineSelectWidget' ).on( 'focus', ( e ) => { // eslint-disable-line no-jquery/no-global-selector
+			const target = e.target;
 			if ( window.innerHeight < target.clientHeight ) {
 				$( target ).css( 'top', offsetHeight );
 				$( target ).css( 'position', 'fixed' );
@@ -52,7 +52,7 @@
 				$( '.enhanced-ui-allpages-panel' ).css( 'min-height', target.clientHeight ); // eslint-disable-line no-jquery/no-global-selector
 			}
 		} );
-		$( '.oo-ui-outlineSelectWidget' ).on( 'blur', function ( e ) { // eslint-disable-line no-jquery/no-global-selector
+		$( '.oo-ui-outlineSelectWidget' ).on( 'blur', ( e ) => { // eslint-disable-line no-jquery/no-global-selector
 			$( e.target ).removeAttr( 'style' );
 			$( '.enhanced-ui-allpages-panel' ).removeAttr( 'style' ); // eslint-disable-line no-jquery/no-global-selector
 		} );
@@ -60,7 +60,7 @@
 
 	function getRightValue() {
 		// eslint-disable-next-line no-jquery/no-global-selector
-		var $mainValue = $( '#mw-content-text' ).offset().left + $( '#mw-content-text' ).width();
+		const $mainValue = $( '#mw-content-text' ).offset().left + $( '#mw-content-text' ).width();
 		return $( document ).width() - $mainValue;
 	}
 }( mediaWiki, jQuery ) );

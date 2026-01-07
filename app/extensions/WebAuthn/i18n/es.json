@@ -4,7 +4,8 @@
 			"Canaan9801",
 			"Fitoschido",
 			"Jackiezelaya",
-			"MarcoAurelio"
+			"MarcoAurelio",
+			"Avengium"
 		]
 	},
 	"webauthn-desc": "Brinda compatibilidad con la autenticación a través del protocolo WebAuthn",
@@ -15,11 +16,9 @@
 	"webauthn-error-browser-unsupported-console": "Este navegador no admite WebAuthentication o no está disponible en este sitio web",
 	"webauthn-error-auth-generic": "Se interrumpió el proceso de autenticación. Por favor reinicia el proceso.",
 	"webauthn-error-reg-generic": "No se pudo verificar tu clave. Por favor reinicia el proceso de registro.",
-	"webauthn-key-type-missmatch": "El usuario tiene registradas claves de varios tipos",
 	"oathauth-webauthn-registered-keys-section-name": "Claves registradas",
 	"webuathn-ui-remove-key": "Eliminar",
 	"webauthn-error-module-not-enabled": "El módulo «$1» no está activado para {{GENDER:$2|el usuario|la usuaria}} «$2»",
-	"webauthn-error-invalid-key": "{{GENDER:$1|El usuario|La usuaria}} \"$1\" ha habilitado el módulo WebAuthn, pero tiene una clave inválida",
 	"webauthn-error-verification-failed": "Fallo en la verificación",
 	"webauthn-error-cannot-register": "{{GENDER:$1|El usuario|La usuaria}} \"$1\" no puede registrar una credencial nueva",
 	"webauthn-error-invalid-new-key": "La nueva clave devuelta por el módulo no es del tipo requerido",

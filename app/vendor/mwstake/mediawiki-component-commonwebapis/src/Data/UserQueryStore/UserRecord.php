@@ -10,7 +10,9 @@ class UserRecord extends Record {
 	public const USER_REAL_NAME = 'user_real_name';
 	public const USER_REGISTRATION = 'user_registration';
 	public const USER_EDITCOUNT = 'user_editcount';
+	public const USER_EMAIL = 'user_email';
 	public const GROUPS = 'groups';
+	public const GROUPS_RAW = 'groups_raw';
 	public const ENABLED = 'enabled';
 	public const DISPLAY_NAME = 'display_name';
 	public const DISPLAY_HTML = 'display_html';

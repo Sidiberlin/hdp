@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpicePlayer",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpicePlayer",
 	"author": [
@@ -10,7 +10,7 @@
 	"descriptionmsg": "bs-player-extension-description",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"attributes": {
 		"BlueSpiceFoundation": {
@@ -50,9 +50,6 @@
 		"localBasePath": "resources",
 		"remoteExtPath": "BlueSpicePlayer/resources"
 	},
-	"DefaultUserOptions": {
-		"bs-showtime-pref-autostart": false
-	},
 	"config_prefix": "bsg",
 	"config": {
 		"ShowtimePrefWidth": {
@@ -63,9 +60,6 @@
 			"value": 240,
 			"descriptionmsg": "bs-player-config-prefheight"
 		}
-	},
-	"Hooks": {
-		"GetPreferences": "\\BlueSpice\\Player\\Hook\\GetPreferences\\Autostart::callback"
 	},
 	"manifest_version": 2
 }

@@ -6,8 +6,8 @@ use BlueSpice\ParamProcessor\ParamDefinition;
 use BlueSpice\ParamProcessor\ParamType;
 use BlueSpice\Tag\GenericHandler;
 use BlueSpice\Tag\MarkerType\NoWiki;
-use Parser;
-use PPFrame;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class PopUp extends \BlueSpice\Tag\Tag {
 	public const PARAM_ANCHOR_TEXT = 'anchortext';

@@ -36,7 +36,8 @@ return [
 	'BSBookshelfBookLookup' => static function ( MediaWikiServices $services ) {
 		$provider = new BookLookup(
 			$services->getTitleFactory(),
-			$services->getDBLoadBalancer(),
+			$services->getConnectionProvider(),
+			$services->getObjectCacheFactory(),
 			$services->getService( 'BSBookshelfBookChapterLookup' )
 		);
 		return $provider;

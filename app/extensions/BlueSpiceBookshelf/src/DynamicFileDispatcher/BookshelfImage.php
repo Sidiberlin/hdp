@@ -4,7 +4,7 @@ namespace BlueSpice\Bookshelf\DynamicFileDispatcher;
 
 use BlueSpice\DynamicFileDispatcher\ArticlePreviewImage;
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 
 class BookshelfImage extends ArticlePreviewImage {
 

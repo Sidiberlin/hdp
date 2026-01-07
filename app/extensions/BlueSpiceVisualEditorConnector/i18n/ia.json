@@ -9,7 +9,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Original",
 	"bs-visualeditorconnector-upload-type-simple": "Simple",
 	"bs-visualeditorconnector-upload-type-one-click": "Un sol clic",
-	"bs-visualeditorconnector-upload-type": "Typo de incargamento",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Cancellar modification",
 	"bs-visualeditorconnector-cancel-edit": "Cancellar modification. Le cambiamentos non salveguardate essera perdite.",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Vole tu vermente cancellar le modification? Tu cambiamentos non salveguardate essera perdite.",
@@ -78,10 +77,16 @@
 	"bs-vec-table-border-dotted": "Punctate",
 	"bs-vec-table-border-double": "Duple",
 	"bs-vec-insert-softhyphen-title": "Tracto de union conditional",
-	"bs-visualeditorconnector-upload-type-help": "Original: Derecto de incargamento es verificate. Nomine de file, spatio de nomines e categoria es modificabile. Description es obligatori.\nSimple: Derecto de incargamento non es verificate. Nomine de file, spatio de nomines e categoria es modificabile. Description es optional.\nUn clic: Derecto de incargamento non es verificate. Nomine de file e categoria non es modificabile. Le spatio de nomines es modificabile.",
 	"bs-vec-insert-line-break-title": "Salto de linea (<br />)",
 	"bs-visualeditorconnector-text-style-tool-align-center-label": "Centrar",
 	"bs-visualeditorconnector-align-center-annotation-desc": "Centra le texto seligite",
 	"bs-visualeditorconnector-text-style-indent-label": "Indentar",
-	"bs-visualeditorconnector-indent-annotation-desc": "Indenta le texto seligite"
+	"bs-visualeditorconnector-indent-annotation-desc": "Indenta le texto seligite",
+	"bs-visualeditor-save-label": "Salveguardar",
+	"bs-visualeditorconnector-upload-type": "Typo de incargamento",
+	"bs-visualeditorconnector-upload-type-help": "Original: Derecto de incargamento es verificate. Nomine de file, spatio de nomines e categoria es modificabile. Description es obligatori.\nSimple: Derecto de incargamento non es verificate. Nomine de file, spatio de nomines e categoria es modificabile. Description es optional.\nUn clic: Derecto de incargamento non es verificate. Nomine de file e categoria non es modificabile. Le spatio de nomines es modificabile.",
+	"bs-visualeditorconnector-tab-file": "Ligar a un file",
+	"bs-visualeditor-request-entity-too-large": "Le file es troppo grande pro esser incargate.",
+	"bs-visualeditorconnector-dialog-table-title": "Tabella",
+	"bs-visualeditorconnector-dialog-action-insert": "Inserer"
 }

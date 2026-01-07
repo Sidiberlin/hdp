@@ -6,7 +6,10 @@ require_once "$IP/maintenance/Maintenance.php";
 use BlueSpice\Rating\Data\Record;
 use BlueSpice\Rating\RatingFactory;
 use BlueSpice\Rating\RatingItem\Article;
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class BSRatingMigrateRatedComments extends LoggedUpdateMaintenance {
 
@@ -19,7 +22,7 @@ class BSRatingMigrateRatedComments extends LoggedUpdateMaintenance {
 	}
 
 	protected function noDataToMigrate() {
-		return $this->getDB( DB_REPLICA )->tableExists( 'bs_rating' ) === false;
+		return $this->getDB( DB_REPLICA )->tableExists( 'bs_rating', __METHOD__ ) === false;
 	}
 
 	/** @var stdClass[][] */
@@ -29,8 +32,8 @@ class BSRatingMigrateRatedComments extends LoggedUpdateMaintenance {
 		$res = $this->getDB( DB_REPLICA )->select(
 			'bs_rating',
 			'*',
-			[ 'rat_reftype = "rcarticle"' ]
-
+			[ 'rat_reftype = "rcarticle"' ],
+			__METHOD__
 		);
 		foreach ( $res as $row ) {
 			$this->data[$row->rat_ref][] = $row;
@@ -48,7 +51,7 @@ class BSRatingMigrateRatedComments extends LoggedUpdateMaintenance {
 		$userFactory = $this->services->getUserFactory();
 		foreach ( $this->data as $articleId => $ratings ) {
 			// article does not exists anymore => ignore ratings
-			$title = \Title::newFromID( (int)$articleId );
+			$title = Title::newFromID( (int)$articleId );
 			if ( !$title ) {
 				continue;
 			}
@@ -113,10 +116,10 @@ class BSRatingMigrateRatedComments extends LoggedUpdateMaintenance {
 
 	/**
 	 *
-	 * @param \Title $title
+	 * @param Title $title
 	 * @return article
 	 */
-	protected function makeRatingItem( \Title $title ) {
+	protected function makeRatingItem( Title $title ) {
 		$ratingItem = $this->getRatingFactory()->newFromObject( (object)[
 			Record::CONTEXT => 0,
 			Record::REFTYPE => 'article',

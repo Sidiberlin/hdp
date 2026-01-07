@@ -2,18 +2,18 @@
 
 namespace MediaWiki\Extension\NotifyMe\Skin\Component;
 
-use Html;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\NotifyMe\Storage\WebNotificationQueryStore;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCard;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCardBody;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCardHeader;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleDropdownIcon;
 use MWStake\MediaWiki\Component\CommonUserInterface\IRestrictedComponent;
-use RequestContext;
 
 class NotificationsMenu extends SimpleDropdownIcon implements IRestrictedComponent {
 

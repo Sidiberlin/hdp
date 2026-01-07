@@ -31,11 +31,15 @@ namespace HitCounters;
 
 use Html;
 use Linker;
+use MediaWiki\MediaWikiServices;
 use QueryPage;
 use Skin;
 use Title;
 
 class SpecialPopularPages extends QueryPage {
+	/**
+	 * @param string $name
+	 */
 	public function __construct( $name = 'PopularPages' ) {
 		parent::__construct( $name );
 	}
@@ -48,6 +52,9 @@ class SpecialPopularPages extends QueryPage {
 		return false;
 	}
 
+	/**
+	 * @return array|null
+	 */
 	public function getQueryInfo() {
 		return HitCounters::getQueryInfo();
 	}
@@ -78,7 +85,10 @@ class SpecialPopularPages extends QueryPage {
 
 		$link = $this->getLinkRenderer()->makeKnownLink(
 			$title,
-			$this->getContentLanguage()->convert( $title->getPrefixedText() )
+			MediaWikiServices::getInstance()->
+				getLanguageConverterFactory()->
+				getLanguageConverter()->
+				convert( $title->getPrefixedText() )
 		);
 
 		$msg = 'hitcounters-pop-page-line';
@@ -93,6 +103,7 @@ class SpecialPopularPages extends QueryPage {
 		);
 	}
 
+	/** @inheritDoc */
 	protected function getGroupName() {
 		return 'wiki';
 	}

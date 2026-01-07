@@ -4,7 +4,7 @@ namespace MediaWiki\Extension\ContentStabilization\Integration\ConfigDefinition;
 
 use BlueSpice\ConfigDefinition\BooleanSetting;
 use BlueSpice\ConfigDefinition\IOverwriteGlobal;
-use ExtensionRegistry;
+use MediaWiki\Registration\ExtensionRegistry;
 
 class SearchIndexOnlyStable extends BooleanSetting implements IOverwriteGlobal {
 
@@ -26,6 +26,13 @@ class SearchIndexOnlyStable extends BooleanSetting implements IOverwriteGlobal {
 	 */
 	public function getLabelMessageKey() {
 		return 'contentstabilization-pref-index-stable';
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getHelpMessageKey() {
+		return 'contentstabilization-pref-index-stable-help';
 	}
 
 	/**

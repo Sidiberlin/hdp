@@ -10,7 +10,7 @@ OO.inheritClass( enhancedUpload.ui.dialog.VEInsertMediaDialog, ve.ui.NodeDialog 
 
 enhancedUpload.ui.dialog.VEInsertMediaDialog.static.name = 'mediaUpload';
 
-enhancedUpload.ui.dialog.VEInsertMediaDialog.static.title = OO.ui.deferMsg( 'enhancedupload-ve-dialog-title' );
+enhancedUpload.ui.dialog.VEInsertMediaDialog.static.title = OO.ui.deferMsg( 'enhancedupload-ve-file-dialog-title' );
 
 enhancedUpload.ui.dialog.VEInsertMediaDialog.static.size = 'medium';
 
@@ -19,7 +19,6 @@ enhancedUpload.ui.dialog.VEInsertMediaDialog.static.size = 'medium';
  */
 enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.initialize = function () {
 	enhancedUpload.ui.dialog.VEInsertMediaDialog.super.prototype.initialize.call( this );
-	var panel;
 	this.pageName = mw.config.get( 'wgPageName' );
 
 	// Slashes are no valid chars in a filename
@@ -28,17 +27,27 @@ enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.initialize = function () 
 	this.targetTitle = new OO.ui.TextInputWidget( {
 		value: this.pageName + '_' + Date.now()
 	} );
+	const titleLayout = new OO.ui.FieldLayout( this.targetTitle, {
+		label: mw.message( 'enhancedupload-ve-file-dialog-filename-label' ).plain(),
+		align: 'top'
+	} );
+
+	const categories = mw.config.get( 'wgCategories', [] );
+	const insertCategoryEnabled = mw.config.get( 'bsgInsertCategoryUploadPanelIntegration', false );
+	this.categoryInput = new OOJSPlus.ui.widget.CategoryMultiSelectWidget( {
+		$overlay: this.$overlay,
+		selected: insertCategoryEnabled ? categories : []
+	} );
+	const categoryLayout = new OO.ui.FieldLayout( this.categoryInput, {
+		label: mw.message( 'enhancedupload-details-categories-label' ).plain(),
+		align: 'top'
+	} );
 
 	this.content = new OO.ui.PanelLayout( {
 		padded: true,
 		expanded: true
 	} );
-
-	panel = new OO.ui.FieldLayout( this.targetTitle, {
-		label: mw.message( 'enhancedupload-ve-dialog-filename-label' ).plain(),
-		align: 'top'
-	} );
-	this.content.$element.append( panel.$element );
+	this.content.$element.append( titleLayout.$element, categoryLayout.$element );
 
 	this.$body.append( this.content.$element );
 };
@@ -58,8 +67,7 @@ enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.getSetupProcess = functio
  * @inheritdoc
  */
 enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.getBodyHeight = function () {
-	// eslint-disable-next-line no-jquery/no-class-state
-	if ( !this.$errors.hasClass( 'oo-ui-element-hidden' ) ) {
+	if ( !this.$errors.hasClass( 'oo-ui-element-hidden' ) ) { // eslint-disable-line no-jquery/no-class-state
 		return this.$element.find( '.oo-ui-processDialog-errors' )[ 0 ].scrollHeight;
 	}
 
@@ -67,11 +75,10 @@ enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.getBodyHeight = function 
 };
 
 enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.getActionProcess = function ( action ) {
-	var me = this;
 	if ( action === 'done' ) {
-		var doneActionProcess = this.makeDoneProcess();
-		doneActionProcess.next( function () {
-			me.close( { action: action } );
+		const doneActionProcess = this.makeDoneProcess();
+		doneActionProcess.next( () => {
+			this.close( { action: action } );
 		} );
 		return doneActionProcess;
 	}
@@ -87,33 +94,34 @@ enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.showErrors = function ( e
 };
 
 enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.makeDoneProcess = function () {
-	var dfd = new $.Deferred(),
-		me = this,
-		params, dfdUpload, fileName, fileType, fileFormat;
+	const dfd = new $.Deferred();
 
-	fileType = this.file.type;
-	// eslint-disable-next-line unicorn/prefer-string-slice
-	fileFormat = this.file.name.substring( this.file.name.indexOf( '.' ) + 1 );
-	fileName = this.targetTitle.getValue() + '.' + fileFormat;
+	const fileType = this.file.type;
+	const fileFormat = this.file.name.slice( Math.max( 0, this.file.name.indexOf( '.' ) + 1 ) );
+	const fileName = this.targetTitle.getValue() + '.' + fileFormat;
+	const selectedCategories = this.categoryInput.getSelectedCategories().map(
+		( cat ) => `[[Category:${ cat }]]`
+	).join( '\n' );
 
-	params = {
+	let params = {
 		filename: fileName,
 		format: fileType,
-		ignorewarnings: false
+		ignorewarnings: false,
+		text: selectedCategories
 	};
 
 	params = this.sanitizeFilename( params );
 	params = this.preprocessParams( params );
 
-	dfdUpload = this.doUpload( me.file, params );
+	const dfdUpload = this.doUpload( this.file, params );
 
-	dfdUpload.done( function ( resp ) {
-		me.insertMedia( params.filename, resp.upload.imageinfo.url, me.file );
-		dfd.resolve.apply( me );
-	} ).fail( function ( error ) {
+	dfdUpload.done( ( resp ) => {
+		this.insertMedia( params.filename, resp.upload.imageinfo.url, this.file );
+		dfd.resolve.apply( this );
+	} ).fail( ( error, result ) => {
 		if ( error === 'fileexists-no-change' || error === 'duplicate' || error === 'exists' ) {
-			me.handleErrors( error, arguments, params.filename, me.fragment );
-			dfd.resolve.apply( me );
+			this.handleErrors( error, result, params.filename, this.fragment );
+			dfd.resolve.apply( this );
 		} else {
 			dfd.reject(
 				[ new OO.ui.Error( error, { recoverable: true } ) ]
@@ -125,19 +133,19 @@ enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.makeDoneProcess = functio
 };
 
 enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.doUpload = function ( file, params ) {
-	var mwApi = new mw.Api(),
+	const mwApi = new mw.Api(),
 		dfd = new $.Deferred();
-	mwApi.upload( file, params ).done( function ( resp ) {
+	mwApi.upload( file, params ).done( ( resp ) => {
 		dfd.resolve( resp );
-	} ).fail( function ( error, result ) {
-		var warnings = [],
+	} ).fail( ( error, result ) => {
+		let warnings = [],
 			errorMessage = mw.message( 'enhancedupload-upload-error-unhandled' ).plain();
 
 		if ( result.error !== undefined ) {
 			dfd.reject( result.error.info, result );
 		}
-		if ( arguments[ 1 ] && arguments[ 1 ].upload && arguments[ 1 ].upload.warnings ) {
-			warnings = arguments[ 1 ].upload.warnings;
+		if ( result.upload && result.upload.warnings ) {
+			warnings = result.upload.warnings;
 		}
 		if ( 'exists' in warnings || 'exists-normalized' in warnings ) {
 			errorMessage = 'exists';
@@ -157,166 +165,158 @@ enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.doUpload = function ( fil
 	return dfd.promise();
 };
 
-enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.insertMedia =
-	function ( fileName, url, file, fragment ) {
-		var title, annotationTitle, surfaceModel;
-		// eslint-disable-next-line no-restricted-syntax
-		if ( file.type.includes( 'image' ) ) {
-			if ( !fragment ) {
-				fragment = this.getFragment();
-			}
-			title = mw.Title.newFromText( 'File:' + fileName );
-			var config = require( './insertMediaConfig.json' );
-			var alignConfig = config.imagesAlignment;
-			var typeConfig = config.imagesType;
-			var heightConfig = config.imagesHeight;
-			if ( heightConfig !== 'auto' ) {
-				heightConfig = parseInt( heightConfig );
-			}
-			var widthConfig = config.imagesWidth;
-			if ( widthConfig !== 'auto' ) {
-				widthConfig = parseInt( widthConfig );
-			}
-			var isDefaultSize = false;
-			if ( heightConfig === 'auto' && widthConfig === 'auto' ) {
-				isDefaultSize = true;
-			}
-			this.imageModel = ve.dm.MWImageModel.static.newFromImageAttributes(
-				{
-					src: url,
-					href: './' + title.getPrefixedText(),
-					width: widthConfig,
-					height: heightConfig,
-					resource: title.getPrefixedText(),
-					mediaType: file.type,
-					type: typeConfig,
-					align: alignConfig,
-					defaultSize: isDefaultSize
-				},
-				fragment.getDocument()
-			);
-			this.imageModel.insertImageNode( fragment );
-		} else {
-			title = mw.Title.newFromText( 'Media:' + fileName );
+enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.insertMedia = function ( fileName, url, file, fragment ) {
+	let title;
 
-			surfaceModel = ve.init.target.getSurface().getModel();
-			fragment = surfaceModel.getFragment();
-
-			annotationTitle = ve.dm.MWInternalLinkAnnotation.static.newFromTitle(
-				title, title.getPrefixedText()
-			);
-
-			fragment.insertContent( title.getMainText(), true );
-			fragment.annotateContent( 'set', 'link/mwInternal', annotationTitle.element );
+	if ( file.type.includes( 'image' ) ) {
+		if ( !fragment ) {
+			fragment = this.getFragment();
 		}
-	};
+		title = mw.Title.newFromText( 'File:' + fileName );
+		const config = require( './insertMediaConfig.json' );
+		const alignConfig = config.imagesAlignment;
+		const typeConfig = config.imagesType;
+		let heightConfig = config.imagesHeight;
+		if ( heightConfig !== 'auto' ) {
+			heightConfig = parseInt( heightConfig );
+		}
+		let widthConfig = config.imagesWidth;
+		if ( widthConfig !== 'auto' ) {
+			widthConfig = parseInt( widthConfig );
+		}
+		let isDefaultSize = false;
+		if ( heightConfig === 'auto' && widthConfig === 'auto' ) {
+			isDefaultSize = true;
+		}
+		this.imageModel = ve.dm.MWImageModel.static.newFromImageAttributes(
+			{
+				src: url,
+				href: './' + title.getPrefixedText(),
+				width: widthConfig,
+				height: heightConfig,
+				resource: title.getPrefixedText(),
+				mediaType: file.type,
+				type: typeConfig,
+				align: alignConfig,
+				defaultSize: isDefaultSize
+			},
+			fragment.getDocument()
+		);
+		this.imageModel.insertImageNode( fragment );
+	} else {
+		title = mw.Title.newFromText( 'Media:' + fileName );
 
-enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.insertExistingMedia =
-	function ( fragment, fileName ) {
-		var me = this,
-			url = '', imageInfoApi = new mw.Api(), apiParams, title;
-		// eslint-disable-next-line no-restricted-syntax
-		if ( this.file.type.includes( 'image' ) ) {
-			title = mw.Title.newFromText( 'File:' + fileName );
-			apiParams = {
-				action: 'query',
-				format: 'json',
-				prop: 'imageinfo',
-				iiprop: 'url',
-				titles: title.getPrefixedText()
-			};
+		const surfaceModel = ve.init.target.getSurface().getModel();
+		fragment = surfaceModel.getFragment();
 
-			imageInfoApi.get( apiParams ).done( function ( data ) {
-				var pages = data.query.pages, p;
-				for ( p in pages ) {
-					url = pages[ p ].imageinfo[ 0 ].url;
+		const annotationTitle = ve.dm.MWInternalLinkAnnotation.static.newFromTitle(
+			title, title.getPrefixedText()
+		);
+
+		fragment.insertContent( title.getMainText(), true );
+		fragment.annotateContent( 'set', 'link/mwInternal', annotationTitle.element );
+	}
+};
+
+enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.insertExistingMedia = function ( fragment, fileName ) {
+	let url = '';
+
+	if ( this.file.type.includes( 'image' ) ) {
+		const title = mw.Title.newFromText( 'File:' + fileName );
+		const apiParams = {
+			action: 'query',
+			format: 'json',
+			prop: 'imageinfo',
+			iiprop: 'url',
+			titles: title.getPrefixedText()
+		};
+
+		const imageInfoApi = new mw.Api();
+		imageInfoApi.get( apiParams ).done( ( data ) => {
+			const pages = data.query.pages;
+			for ( const p in pages ) {
+				url = pages[ p ].imageinfo[ 0 ].url;
+			}
+			this.insertMedia( fileName, url, this.file, fragment );
+		} );
+	} else {
+		this.insertMedia( fileName, url, this.file );
+	}
+};
+
+enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.handleErrors = function ( error, results, fileName, fragment ) { // eslint-disable-line no-shadow-restricted-names
+	const dfd = $.Deferred();
+	if ( error === 'fileexists-no-change' ) {
+		this.insertExistingMedia( fragment, fileName );
+		dfd.resolve.apply( this );
+	}
+	if ( error === 'duplicate' ) {
+		const origFileName = results.upload.warnings.duplicate[ 0 ];
+		OO.ui.confirm(
+			mw.message( 'enhancedupload-ve-dialog-duplicate-confirm' ).plain() )
+			.done( ( confirmed ) => {
+				if ( confirmed ) {
+					this.insertExistingMedia( fragment, origFileName );
+					dfd.resolve.apply( this );
 				}
-				me.insertMedia( fileName, url, me.file, fragment );
 			} );
-		} else {
-			me.insertMedia( fileName, url, me.file );
-		}
-	};
+	}
+	if ( error === 'exists' ) {
+		OO.ui.prompt(
+			mw.message( 'enhancedupload-ve-dialog-title-exists' ).plain(),
+			{
+				textInput: {
+					placeholder: Date.now()
+				}
+			} )
+			.done( ( result ) => {
+				const fileFormat = this.file.name.slice( Math.max( 0, this.file.name.indexOf( '.' ) + 1 ) ),
+					newFileName = result + '.' + fileFormat;
+				let params, dfdReUpload;
+				if ( result !== null ) {
+					params = {
+						filename: newFileName,
+						format: this.file.type,
+						ignorewarnings: true
+					};
 
-enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.handleErrors =
-// eslint-disable-next-line no-shadow-restricted-names
-	function ( error, arguments, fileName, fragment ) {
-		var me = this,
-			dfd = $.Deferred();
-		if ( error === 'fileexists-no-change' ) {
-			me.insertExistingMedia( fragment, fileName );
-			dfd.resolve.apply( me );
-		}
-		if ( error === 'duplicate' ) {
-			var origFileName = arguments[ 1 ].upload.warnings.duplicate[ 0 ];
-			OO.ui.confirm(
-				mw.message( 'enhancedupload-ve-dialog-duplicate-confirm' ).plain() )
-				.done( function ( confirmed ) {
-					if ( confirmed ) {
-						me.insertExistingMedia( fragment, origFileName );
-						dfd.resolve.apply( me );
-					}
-				} );
-		}
-		if ( error === 'exists' ) {
-			OO.ui.prompt(
-				mw.message( 'enhancedupload-ve-dialog-title-exists' ).plain(),
-				{
-					textInput: {
-						placeholder: Date.now()
-					}
-				} )
-				.done( function ( result ) {
-					/* eslint-disable-next-line unicorn/prefer-string-slice */
-					var fileFormat = me.file.name.substring( me.file.name.indexOf( '.' ) + 1 ),
-						newFileName = result + '.' + fileFormat,
-						params, dfdReUpload;
-					if ( result !== null ) {
-						params = {
-							filename: newFileName,
-							format: me.file.type,
-							ignorewarnings: true
-						};
-
-						params = this.sanitizeFilename( params );
-						params = me.preprocessParams( params );
-						dfdReUpload = me.doUpload( me.file, params );
-						dfdReUpload.done( function ( resp ) {
-							me.insertMedia(
-								params.filename,
-								resp.upload.imageinfo.url,
-								me.file,
-								fragment
-							);
-							// eslint-disable-next-line no-undef
-							me.close( { action: action } );
-							dfd.resolve.apply( me );
-						} )
-							// eslint-disable-next-line no-shadow-restricted-names
-							.fail( function ( err, arguments ) {
-								if ( err === 'fileexists-no-change' || err === 'duplicate' || err === 'exists' ) {
-									me.handleErrors( err, arguments, params.filename, fragment );
-									dfd.resolve.apply( me );
-								} else {
-									dfd.reject(
-										[ new OO.ui.Error( err, { recoverable: false } ) ]
-									);
-								}
-							} );
-					}
-				} );
-		}
-		return new OO.ui.Process( dfd.promise(), this );
-	};
+					params = this.sanitizeFilename( params );
+					params = this.preprocessParams( params );
+					dfdReUpload = this.doUpload( this.file, params );
+					dfdReUpload.done( ( resp ) => {
+						this.insertMedia(
+							params.filename,
+							resp.upload.imageinfo.url,
+							this.file,
+							fragment
+						);
+						this.close( { action: action } ); // eslint-disable-line no-undef
+						dfd.resolve.apply( this );
+					} )
+						.fail( ( err, args ) => {
+							if ( err === 'fileexists-no-change' || err === 'duplicate' || err === 'exists' ) {
+								this.handleErrors( err, args, params.filename, fragment );
+								dfd.resolve.apply( this );
+							} else {
+								dfd.reject(
+									[ new OO.ui.Error( err, { recoverable: false } ) ]
+								);
+							}
+						} );
+				}
+			} );
+	}
+	return new OO.ui.Process( dfd.promise(), this );
+};
 
 enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.sanitizeFilename = function ( params ) {
 	// Split namespace prefix and filename
-	var fileNameParts = params.filename.split( ':' );
+	const fileNameParts = params.filename.split( ':' );
 
-	var partsLength = fileNameParts.length;
+	const partsLength = fileNameParts.length;
 
 	params.prefix = '';
-	for ( var i = 0; i < partsLength - 1; i++ ) {
+	for ( let i = 0; i < partsLength - 1; i++ ) {
 		params.prefix += fileNameParts[ i ] + ':';
 	}
 	params.filename = fileNameParts[ partsLength - 1 ];
@@ -328,14 +328,19 @@ enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.sanitizeFilename = functi
 };
 
 enhancedUpload.ui.dialog.VEInsertMediaDialog.prototype.preprocessParams = function ( params ) {
-	var paramsProcessor = { processor: new enhancedUpload.ParamsProcessor() };
+	const paramsProcessor = { processors: [ new enhancedUpload.ParamsProcessor() ] };
 	mw.hook( 'enhancedUpload.makeParamProcessor' ).fire( paramsProcessor );
-	this.paramsProcessor = paramsProcessor.processor;
+	this.paramsProcessors = paramsProcessor.processors;
 
-	var item = { name: params.filename };
-	var skipOption = true;
+	const item = { name: params.filename };
+	const skipOption = true;
 
-	params = this.paramsProcessor.getParams( params, item, skipOption );
+	for ( let i = 0; i < this.paramsProcessors.length; i++ ) {
+		const processor = this.paramsProcessors[ i ];
+		if ( processor instanceof enhancedUpload.ParamsProcessor ) {
+			params = processor.getParams( params, item, skipOption );
+		}
+	}
 
 	return params;
 };

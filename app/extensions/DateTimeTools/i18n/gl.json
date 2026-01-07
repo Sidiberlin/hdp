@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"datetimetools-desc": "Ofrece ferramentas de datas no editor visual",
+	"datetimetools-ve-inspector-title": "Editar a data",
+	"datetimetools-ve-inspector-date-picker-label": "Seleccionar unha data",
+	"datetimetools-droplet-date-name": "Data",
+	"datetimetools-droplet-date-description": "Insire unha data"
+}

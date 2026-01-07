@@ -10,57 +10,121 @@ class Transaction implements \JsonSerializable {
 	private $operations;
 
 	/**
-	 * @var int
+	 * @var int|null
 	 */
 	private $author;
 
 	/**
 	 * @param array $operations
-	 * @param int $author
+	 * @param int|null $author
 	 */
-	public function __construct( array $operations, int $author ) {
+	public function __construct( array $operations, ?int $author = null ) {
 		$this->operations = $operations;
 		$this->author = $author;
 	}
 
 	/**
 	 * @param array|string $data
-	 * @return static
+	 * @return Transaction
 	 */
-	public static function fromMinified( $data ): static {
-		$operations = static::deminifyOperations( $data );
+	public static function fromMinified( $data ): Transaction {
+		if ( !isset( $data['o'] ) ) {
+			$a = $data['a'] ?? null;
+			unset( $data['a'] );
+			return new Transaction( static::deminifyOperations( $data ), $a );
+		}
+		$operations = static::deminifyOperations( $data['o'] );
 		return new Transaction( $operations, $data['a'] );
 	}
 
 	/**
-	 * @return int
+	 * @param string $data
+	 * @return array
 	 */
-	public function getAuthor(): int {
+	public static function split( string $data ): array {
+		$bits = mb_str_split( $data );
+		$final = [];
+		foreach ( $bits as $bit ) {
+			if ( static::isEmoji( $bit ) ) {
+				$final[] = $bit;
+				// Pad for surrogate
+				$final[] = ' ';
+				continue;
+			}
+			$final[] = $bit;
+		}
+
+		return $final;
+	}
+
+	/**
+	 * @param string $char
+	 * @return bool
+	 */
+	private static function isEmoji( string $char ): bool {
+		// Convert the string to UTF-16
+		$utf16 = mb_convert_encoding( $char, 'UTF-16', 'UTF-8' );
+
+		// Unpack the UTF-16 string into an array of code units
+		$codeUnits = unpack( 'n*', $utf16 );
+
+		// Check if the string contains surrogate pairs
+		foreach ( $codeUnits as $codeUnit ) {
+			if ( $codeUnit >= 0xD800 && $codeUnit <= 0xDFFF ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param Transaction $foreign
+	 * @return bool
+	 */
+	public function equals( Transaction $foreign ): bool {
+		return $this->author === $foreign->author && $this->operations === $foreign->operations;
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getAuthor(): ?int {
 		return $this->author;
 	}
 
 	/**
-	 * @param array $data
+	 * @param array $ops
 	 * @return array
 	 */
-	private static function deminifyOperations( array $data ) {
-		$ops = $data['o'];
+	private static function deminifyOperations( array $ops ) {
 		$expanded = [];
 		foreach ( $ops as $op ) {
 			if ( is_numeric( $op ) ) {
-				$expanded[] = [ 'type' => 'retain' , 'length' => $op ];
+				$expanded[] = [ 'type' => 'retain', 'length' => $op ];
 				continue;
 			}
-			if ( is_array( $op ) ) {
+			if ( static::isLinearArray( $op ) ) {
 				$expanded[] = [
 					'type' => 'replace',
 					'remove' => static::deminifyLinearData( $op[0] ),
 					'insert' => static::deminifyLinearData( $op[1] )
 				];
+			} else {
+				// Clone $op
+				$expanded[] = array_merge( [], $op );
 			}
 		}
 
 		return $expanded;
+	}
+
+	/**
+	 * @param mixed $op
+	 * @return bool
+	 */
+	private static function isLinearArray( $op ): bool {
+		return is_array( $op ) && array_keys( $op ) === range( 0, count( $op ) - 1 );
 	}
 
 	/**
@@ -72,7 +136,7 @@ class Transaction implements \JsonSerializable {
 			if ( $element === '' ) {
 				return [];
 			}
-			return str_split( $element );
+			return static::split( $element );
 		}
 		return $element;
 	}
@@ -99,6 +163,14 @@ class Transaction implements \JsonSerializable {
 			} elseif ( $op['type'] === 'replace' ) {
 				$offset += $this->operationLen( $op['insert'] );
 				$diff += $this->operationLen( $op['insert'] ) - $this->operationLen( $op['remove'] );
+			}
+			if ( $op['type'] === 'attribute' || $op['type'] === 'replaceMetadata' ) {
+				// Op with length 0 but that effectively modifies 1 position
+				$end = $offset + 1;
+				$endOpIndex = $i + 1;
+			} elseif ( $active ) {
+				$end = $offset;
+				$endOpIndex = $i + 1;
 			}
 		}
 
@@ -131,12 +203,15 @@ class Transaction implements \JsonSerializable {
 			} elseif ( $ops[$i]['length'] === 0 ) {
 				array_splice( $ops, $i, 1 );
 			}
+			$this->operations = $ops;
 			return;
 		}
 		if ( $diff < 0 ) {
 			throw new \Error( 'Negative retain length' );
 		}
-		$ops = array_splice( $ops, $start ? 0 : count( $ops ), 0, [ 'type' => 'retain', 'length' => $diff ] );
+		$this->operations = array_splice(
+			$ops, $start ? 0 : count( $ops ), 0, [ 'type' => 'retain', 'length' => $diff ]
+		);
 	}
 
 	/**
@@ -147,7 +222,15 @@ class Transaction implements \JsonSerializable {
 			if ( $op['type'] === 'retain' ) {
 				return $op['length'];
 			}
-			return [ $this->minifyLinearData( $op['remove'] ), $this->minifyLinearData( $op['insert'] ) ];
+			$insertLength = isset( $op['insert'] ) ? $this->operationLen( $op['insert'] ) : 0;
+			if (
+				$op['type'] === 'replace' &&
+				( !isset( $op['insertedDataOffset' ] ) || !$op['insertedDataOffset'] ) &&
+				( !isset( $op['insertedDataLength' ] ) || $op['insertedDataLength'] === $insertLength )
+			) {
+				return [ $this->minifyLinearData( $op['remove'] ), $this->minifyLinearData( $op['insert'] ) ];
+			}
+			return $op;
 		}, $this->operations );
 
 		if ( $this->author !== null ) {
@@ -192,6 +275,26 @@ class Transaction implements \JsonSerializable {
 			if ( $allSingle ) {
 				return implode( '', $data );
 			}
+			// Handle special case => template with no params
+			// Due to the way PHP handles json encoding/decoding of empty arrays, it will
+			// produce an array, instead of {}
+			// in JSON output, this breaks Parsoid conversion
+			foreach ( $data as &$element ) {
+				if (
+					isset( $element['type'] ) && $element['type'] === 'mwTransclusionBlock' &&
+					isset( $element['attributes']['mw']['parts'] ) && is_array( $element['attributes']['mw']['parts'] )
+				) {
+					foreach ( $element['attributes']['mw']['parts'] as &$part ) {
+						if (
+							is_array( $part ) && isset( $part['template']['params'] ) &&
+							is_array( $part['template']['params'] ) && empty( $part['template']['params'] )
+						) {
+							$part['template']['params'] = new \stdClass();
+						}
+					}
+				}
+			}
+
 		}
 		return $data;
 	}
@@ -251,6 +354,9 @@ class Transaction implements \JsonSerializable {
 	 */
 	private function operationLen( mixed $op ): int {
 		if ( is_array( $op ) ) {
+			if ( isset( $op['length'] ) ) {
+				return (int)$op['length'];
+			}
 			return count( $op );
 		}
 		return strlen( $op ) ?? 0;

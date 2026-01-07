@@ -6,8 +6,8 @@ use BlueSpice\AlertProviderBase;
 use BlueSpice\Discovery\PageVersionPager;
 use BlueSpice\IAlertProvider;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
 use MediaWiki\Revision\RevisionRecord;
-use Message;
 
 class PageVersionPagerAlert extends AlertProviderBase {
 

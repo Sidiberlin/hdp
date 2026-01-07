@@ -7,7 +7,6 @@
 	"bs-player-extension-description": "Permet d’encapsuler un lecteur de médias sur une page.",
 	"bs-player-pref-autostart": "Démarrer la vidéo automatiquement",
 	"bs-player-file-does-not-exist": "Le fichier n’existe pas.",
-	"bs-player-tag-showtime-desc": "Cette balise vous permet d’encapsuler une vidéo.",
 	"bs-player-unsupported-type": "Ce type de fichier n’est pas pris en charge.",
 	"bs-player-config-prefwidth": "Largeur par défaut des vidéos",
 	"bs-player-config-prefheight": "Hauteur par défaut des vidéos",

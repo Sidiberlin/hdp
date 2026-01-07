@@ -1,4 +1,4 @@
-(function ( mw, $, bs) {
+( function ( mw, $, bs ) {
 
 	bs.util.registerNamespace( 'bs.aggregatedStatistics.report' );
 
@@ -12,22 +12,22 @@
 
 		this.filters = this.getFilters();
 		this.value = {};
-		if ( this.filters.length > 0 ){
-			var filterLayout = new OO.ui.HorizontalLayout();
-			for( var i = 0; i < this.filters.length; i++ ) {
-				this.filters[i].connect( this, {
+		if ( this.filters.length > 0 ) {
+			const filterLayout = new OO.ui.HorizontalLayout();
+			for ( let i = 0; i < this.filters.length; i++ ) {
+				this.filters[ i ].connect( this, {
 					change: 'updateChart'
 				} );
-				if ( this.filters[i] instanceof bs.aggregatedStatistics.filter.IntervalFilter ) {
-					this.defaultFilterLayout.$element.append( this.filters[i].$element );
+				if ( this.filters[ i ] instanceof bs.aggregatedStatistics.filter.IntervalFilter ) {
+					this.defaultFilterLayout.$element.append( this.filters[ i ].$element );
 				} else {
-					filterLayout.$element.append( this.filters[i].$element );
+					filterLayout.$element.append( this.filters[ i ].$element );
 				}
 			}
 			this.$element.append( filterLayout.$element );
 		}
 
-		this.$chartCnt = $( '<div id="chartCtn">' );
+		this.$chartCnt = $( '<div id="chartCtn">' ); // eslint-disable-line no-jquery/no-parse-html-literal
 		this.$element.append( this.$chartCnt );
 		this.chart = this.getChart();
 		this.updateChart();
@@ -36,6 +36,8 @@
 	OO.inheritClass( bs.aggregatedStatistics.report.ReportBase, OO.ui.Widget );
 
 	bs.aggregatedStatistics.report.ReportBase.static.label = '';
+
+	bs.aggregatedStatistics.report.ReportBase.static.desc = '';
 
 	bs.aggregatedStatistics.report.ReportBase.static.tagName = 'div';
 
@@ -70,7 +72,8 @@
 
 	/**
 	 * Returns label for any or all axis keys provided
-	 * @returns {Array}
+	 *
+	 * @return {Array}
 	 */
 	bs.aggregatedStatistics.report.ReportBase.prototype.getAxisLabels = function () {
 		return {};
@@ -78,8 +81,9 @@
 
 	/**
 	 * Called before data is set to the chart
+	 *
 	 * @param {Array} data
-	 * @returns {Array}
+	 * @return {Array}
 	 */
 	bs.aggregatedStatistics.report.ReportBase.prototype.finalizeData = function ( data ) {
 		return data;
@@ -87,7 +91,7 @@
 
 	bs.aggregatedStatistics.report.ReportBase.prototype.setChartData = function ( filters ) {
 		this.setLoading( true );
-		this.query( filters ).done( function( data ) {
+		this.query( filters ).done( ( data ) => {
 			data = this.finalizeData( data );
 			if ( data.length === 0 ) {
 				this.setLoading( false );
@@ -95,33 +99,33 @@
 				this.emit( 'dataset', [] );
 				return;
 			}
-			this.chart.setAxisLabels( this.getAxisLabels());
+			this.chart.setAxisLabels( this.getAxisLabels() );
 			this.chart.updateData( data );
 
 			this.setLoading( false );
-			this.$chartCnt.html( this.chart.$element._groups[0] );
+			this.$chartCnt.html( this.chart.$element._groups[ 0 ] ); // eslint-disable-line no-underscore-dangle
 			this.emit( 'dataset', data );
-		}.bind( this ) )
-		.fail( function( err ) {
-			this.setLoading( false );
-			this.showError( typeof err === 'string' ? err : null );
-			console.error( err );
-		}.bind( this ) );
+		} )
+			.fail( ( err ) => {
+				this.setLoading( false );
+				this.showError( typeof err === 'string' ? err : null );
+				console.error( err ); // eslint-disable-line no-console
+			} );
 	};
 
-	bs.aggregatedStatistics.report.ReportBase.prototype.query = function( filter ) {
+	bs.aggregatedStatistics.report.ReportBase.prototype.query = function ( filter ) {
 		this.api.abort();
-		var dfd = $.Deferred();
+		const dfd = $.Deferred();
 
 		this.api.get( {
 			action: 'query',
 			meta: 'statistics-reports',
 			esrfilter: JSON.stringify( filter ),
 			esrtype: this.getName(),
-			esraggregate: this.isAggregate() ? 1 : 0,
-		} ).done( function( response ) {
-			dfd.resolve( response.query['statistics-reports'][this.getName()] );
-		}.bind( this ) ).fail( function( response ) {
+			esraggregate: this.isAggregate() ? 1 : 0
+		} ).done( ( response ) => {
+			dfd.resolve( response.query[ 'statistics-reports' ][ this.getName() ] );
+		} ).fail( ( response ) => {
 			if ( response.hasOwnProperty( 'error' ) ) {
 				dfd.reject( response.error.info );
 			}
@@ -132,20 +136,20 @@
 	};
 
 	bs.aggregatedStatistics.report.ReportBase.prototype.updateChart = function () {
-		var value = {};
-		for ( var i = 0; i < this.filters.length; i++ ) {
-			value = $.extend( value, this.filters[i].getValue() );
+		let value = {};
+		for ( let i = 0; i < this.filters.length; i++ ) {
+			value = $.extend( value, this.filters[ i ].getValue() ); // eslint-disable-line no-jquery/no-extend
 		}
-		this.setChartData( $.extend( {}, this.dateFilter.getValue(), value ) );
+		this.setChartData( Object.assign( {}, this.dateFilter.getValue(), value ) );
 	};
 
 	bs.aggregatedStatistics.report.ReportBase.prototype.getNoDataMessage = function () {
-		return $( '<h3>' ).text( mw.message( "bs-statistics-aggregated-report-no-date" ).text() );
+		return $( '<h3>' ).text( mw.message( 'bs-statistics-aggregated-report-no-date' ).text() );
 	};
 
 	bs.aggregatedStatistics.report.ReportBase.prototype.setLoading = function ( loading ) {
 		if ( loading ) {
-			this.$loading = $( '<h3>' ).text( mw.message( "bs-statistics-aggregated-report-loading" ).text() );
+			this.$loading = $( '<h3>' ).text( mw.message( 'bs-statistics-aggregated-report-loading' ).text() );
 			this.$chartCnt.html( this.$loading );
 		} else if ( this.$loading ) {
 			this.$loading.remove();
@@ -154,13 +158,13 @@
 
 	bs.aggregatedStatistics.report.ReportBase.prototype.showError = function ( err ) {
 		if ( !err ) {
-			err = mw.message( "bs-statistics-aggregated-report-error" ).text();
+			err = mw.message( 'bs-statistics-aggregated-report-error' ).text();
 		}
 		this.$chartCnt.html(
 			$( '<div>' )
-			.addClass( 'as-error-cnt' )
-			.text( err )
+				.addClass( 'as-error-cnt' )
+				.text( err )
 		);
 	};
 
-} )( mediaWiki, jQuery , blueSpice);
+}( mediaWiki, jQuery, blueSpice ) );

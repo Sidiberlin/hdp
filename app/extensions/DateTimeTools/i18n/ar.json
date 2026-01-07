@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Meno25"
+		]
+	},
+	"datetimetools-desc": "توفير أدوات التاريخ في VisualEditor",
+	"datetimetools-ve-inspector-title": "تعديل التاريخ",
+	"datetimetools-ve-inspector-date-picker-label": "حدد التاريخ",
+	"datetimetools-droplet-date-name": "تاريخ",
+	"datetimetools-droplet-date-description": "إدراج تاريخ"
+}

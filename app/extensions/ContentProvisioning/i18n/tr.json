@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Hedda"
+		]
+	},
+	"contentprovisioning-desc": "Sağlanan sayfaların genel görünümünü sunar ve yöneticilerin içeriği eşitlemesine olanak tanır.",
+	"contentprovisioning": "İçerik sağlama",
+	"right-contentprovisioning-viewspecialpage": "İçerik sağlama özel sayfasını görüntüle",
+	"action-contentprovisioning-viewspecialpage": "İçerik sağlama özel sayfasını görüntüle",
+	"contentprovisioning-ui-overview-grid-section-page": "Sayfa",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "Eşitlenmiş mi?",
+	"contentprovisioning-ui-overview-grid-action-force-sync": "Eşitlemeyi zorla",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "Farkı göster",
+	"contentprovisioning-diff-no-change": "Manifest sürümü ile viki sayfası sürümü birebir aynı",
+	"contentprovisioning-ui-content-diff-title": "İçerik farklılıkları",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "Viki",
+	"contentprovisioning-ui-content-diff-headline-provisioner-content": "Uzak içerik"
+}

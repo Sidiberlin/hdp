@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Mschlindwein",
-			"TMg"
+			"TMg",
+			"Vhoesl"
 		]
 	},
 	"pagecheckout-desc": "Erlaubt exklusive Rechte auf einer Seite für einen Benutzer",
@@ -20,7 +21,7 @@
 	"apihelp-pagecheckout-clear-example": "Checkout für Hauptseite aufheben",
 	"apihelp-pagecheckout-clear-summary": "Aktiven Seiten-Checkout aufheben",
 	"apihelp-pagecheckout-clear-param-page_title": "Titel der Seite auf der Checkouts aufgehoben werden sollen",
-	"pagecheckout-ui-clear-confirm": "Bestätigst du die Aufhebung des aktiven Checkouts auf dieser Seite? Dadurch wird die Seite für alle normalerweise berechtigten Benutzer bearbeitbar",
+	"pagecheckout-ui-clear-confirm": "{{#FORMAL:Bestätigst du|Bestätigen Sie}} die Aufhebung des aktiven Checkouts auf dieser Seite? Dadurch wird die Seite für alle normalerweise berechtigten Benutzer bearbeitbar",
 	"log-name-pagecheckout": "Seiten-Checkouts",
 	"log-description-pagecheckout": "Erfasst den Status der Seiten-Checkouts und Checkins",
 	"logentry-pagecheckout-checkin": "$1 {{GENDER:$2| hat }} die Seite $3, die für den Benutzer $4 ausgecheckt war, eingecheckt",
@@ -31,5 +32,7 @@
 	"pagecheckout-alertbanner-checkout-with-comment": "Die Seite ist aktuell für $2 {{GENDER:$1|ausgecheckt}}. Kommentar: $3",
 	"page-checkout-workflow-activity-checkout-reason": "Diese Seite ist derzeit aufgrund eines laufenden Workflows ausgecheckt",
 	"page-checkout-workflow-activity-checkout-non-generic-reason": "Während der Workflow-Ausführung ausgecheckt",
-	"page-checkout-workflow-clear-checkout": "Checkout aufgrund Abbruch des Workflows aufgehoben"
+	"page-checkout-workflow-clear-checkout": "Checkout aufgrund Abbruch des Workflows aufgehoben",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-title": "Aktivität \"Seite auschecken\"",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-title": "Aktivität \"Seite einchecken\""
 }

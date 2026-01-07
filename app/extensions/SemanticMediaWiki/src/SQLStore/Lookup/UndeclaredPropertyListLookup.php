@@ -2,16 +2,17 @@
 
 namespace SMW\SQLStore\Lookup;
 
+use MediaWiki\Message\Message;
 use RuntimeException;
 use SMW\DIProperty;
 use SMW\Exception\PropertyLabelNotResolvedException;
+use SMW\RequestOptions;
 use SMW\SQLStore\SQLStore;
 use SMW\Store;
 use SMWDIError as DIError;
-use SMWRequestOptions as RequestOptions;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.2
  *
  * @author mwjames
@@ -54,7 +55,6 @@ class UndeclaredPropertyListLookup implements ListLookup {
 	 * @throws RuntimeException
 	 */
 	public function fetchList() {
-
 		if ( $this->requestOptions === null ) {
 			throw new RuntimeException( "Missing requestOptions" );
 		}
@@ -72,7 +72,7 @@ class UndeclaredPropertyListLookup implements ListLookup {
 	/**
 	 * @since 2.2
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function isFromCache() {
 		return false;
@@ -81,7 +81,7 @@ class UndeclaredPropertyListLookup implements ListLookup {
 	/**
 	 * @since 2.2
 	 *
-	 * @return integer
+	 * @return int
 	 */
 	public function getTimestamp() {
 		return wfTimestamp( TS_UNIX );
@@ -97,7 +97,6 @@ class UndeclaredPropertyListLookup implements ListLookup {
 	}
 
 	private function selectPropertiesFromTable( $propertyTable ) {
-
 		$options = $this->store->getSQLOptions( $this->requestOptions, 'title' );
 		$idTable = SQLStore::ID_TABLE;
 
@@ -140,7 +139,6 @@ class UndeclaredPropertyListLookup implements ListLookup {
 	}
 
 	private function buildPropertyList( $res ) {
-
 		$result = [];
 
 		foreach ( $res as $row ) {
@@ -151,18 +149,16 @@ class UndeclaredPropertyListLookup implements ListLookup {
 	}
 
 	private function addPropertyFor( $title ) {
-
 		try {
 			$property = new DIProperty( $title );
 		} catch ( PropertyLabelNotResolvedException $e ) {
-			$property = new DIError( new \Message( 'smw_noproperty', [ $title ] ) );
+			$property = new DIError( new Message( 'smw_noproperty', [ $title ] ) );
 		}
 
 		return $property;
 	}
 
 	private function getPropertyTableForType( $type ) {
-
 		$propertyTables = $this->store->getPropertyTables();
 		$tableIdForType = $this->store->findTypeTableId( $type );
 

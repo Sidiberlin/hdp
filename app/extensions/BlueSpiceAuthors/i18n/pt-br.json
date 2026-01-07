@@ -13,14 +13,8 @@
 	"bs-authors-profileimage": "Imagem de perfil",
 	"bs-authors-profileimage-change": "Mudar a imagem de perfil",
 	"bs-authors-show-all-authors": "Mais autores disponíveis",
-	"bs-authors-pref-show": "Mostrar autores",
-	"bs-authors-switch-description": "Esconde os autores nesta página.",
 	"bs-authors-navigation-link-title": "Autores desta página",
 	"bs-authors-navigation-link-text": "Autores",
-	"bs-authors-flyout-title": "Autores desta página",
-	"bs-authors-author-type-originator": "Autor original",
-	"bs-authors-author-type-editor": "Editor",
 	"apihelp-bs-pageauthors-store-summary": "Listar todos os autores de uma página fornecida no contexto",
-	"bs-authors-pref-show-help": "Mostra os editores de página nas informações da página nas ferramentas de gerenciamento de qualidade.",
 	"bs-authors-info-dialog": "Autores desta página"
 }

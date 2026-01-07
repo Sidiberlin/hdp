@@ -27,23 +27,22 @@ flexiskin.ui.plugin.ColorPresets.prototype.provideControls = function () {
 	};
 };
 
-flexiskin.ui.plugin.ColorPresets.prototype.onInit = function ( data, itemId ) {
+flexiskin.ui.plugin.ColorPresets.prototype.onInit = function ( data ) {
 	data = data || {};
 
 	if ( data instanceof flexiskin.ui.Configurator ) {
 		data.connect( this, {
 			makeFormComplete: function ( formItems ) {
-				var colorItems = data.getItems( 'colors' ),
-					colorsLayout = formItems.colors || null,
-					colorsLayoutItems;
+				const colorItems = data.getItems( 'colors' ),
+					colorsLayout = formItems.colors || null;
 
 				if ( !colorsLayout ) {
 					return;
 				}
-				colorsLayoutItems = colorsLayout.getItems();
+				const colorsLayoutItems = colorsLayout.getItems();
 
-				for ( var i = 0; i < colorsLayoutItems.length; i++ ) {
-					var itemData = colorsLayoutItems[ i ].getData();
+				for ( let i = 0; i < colorsLayoutItems.length; i++ ) {
+					const itemData = colorsLayoutItems[ i ].getData();
 					if ( itemData.hasOwnProperty( 'group' ) && itemData.group !== 'color_presets' ) {
 						this.addCustomColorLayout( colorsLayoutItems[ i ] );
 					}

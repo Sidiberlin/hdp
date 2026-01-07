@@ -4,5 +4,6 @@
 			"Joao Xavier"
 		]
 	},
-	"bs-categorymanager-text": "Kategorii"
+	"bs-categorymanager-text": "Kategorii",
+	"bs-categorymanager-collection-var-namespacename": "Nomaro (''namespace'')"
 }

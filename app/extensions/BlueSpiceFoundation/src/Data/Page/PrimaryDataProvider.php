@@ -2,12 +2,12 @@
 
 namespace BlueSpice\Data\Page;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\DataStore\PrimaryDatabaseDataProvider;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams as DataStoreReaderParams;
-use Title;
-use User;
 use Wikimedia\Rdbms\IDatabase;
 
 class PrimaryDataProvider extends PrimaryDatabaseDataProvider {
@@ -65,7 +65,9 @@ class PrimaryDataProvider extends PrimaryDatabaseDataProvider {
 				'page_id',
 				'page_is_new',
 				'page_touched'
-			]
+			],
+			'',
+			__METHOD__
 		);
 
 		foreach ( $res as $row ) {
@@ -150,7 +152,7 @@ class PrimaryDataProvider extends PrimaryDatabaseDataProvider {
 	 * @param Title $title
 	 * @return bool
 	 */
-	protected function userCanRead( \Title $title ) {
+	protected function userCanRead( Title $title ) {
 		if ( $this->isSystemUser ) {
 			return true;
 		}

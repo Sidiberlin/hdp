@@ -4,11 +4,11 @@ namespace SRF;
 
 use Html;
 use MediaWiki\MediaWikiServices;
-use SMW\ResultPrinter;
+use SMW\Query\PrintRequest;
+use SMW\Query\QueryResult;
+use SMW\Query\ResultPrinters\ResultPrinter;
 use SMWDataItem;
 use SMWOutputs;
-use SMWPrintRequest;
-use SMWQueryResult;
 use SRFUtils;
 use Title;
 use TraditionalImageGallery;
@@ -23,7 +23,7 @@ use TraditionalImageGallery;
 class Gallery extends ResultPrinter {
 
 	/**
-	 * @see SMWResultPrinter::getName
+	 * @see ResultPrinter::getName
 	 *
 	 * @return string
 	 */
@@ -32,15 +32,15 @@ class Gallery extends ResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::buildResult
+	 * @see ResultPrinter::buildResult
 	 *
 	 * @since 1.8
 	 *
-	 * @param SMWQueryResult $results
+	 * @param QueryResult $results
 	 *
 	 * @return string
 	 */
-	protected function buildResult( SMWQueryResult $results ) {
+	protected function buildResult( QueryResult $results ) {
 		// Intro/outro are not planned to work with the widget option
 		if ( ( $this->params['intro'] !== '' || $this->params['outro'] !== '' ) && $this->params['widget'] !== '' ) {
 			$results->addErrors(
@@ -56,14 +56,14 @@ class Gallery extends ResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::getResultText
+	 * @see ResultPrinter::getResultText
 	 *
-	 * @param $results SMWQueryResult
+	 * @param $results QueryResult
 	 * @param $outputmode integer
 	 *
 	 * @return string | array
 	 */
-	public function getResultText( SMWQueryResult $results, $outputmode ) {
+	public function getResultText( QueryResult $results, $outputmode ) {
 		$ig = new TraditionalImageGallery();
 
 		$ig->setShowBytes( false );
@@ -72,8 +72,8 @@ class Gallery extends ResultPrinter {
 		if ( method_exists( $ig, 'setShowDimensions' ) ) {
 			$ig->setShowDimensions( false );
 		}
-
-		$ig->setCaption( $this->mIntro ); // set caption to IQ header
+		// set caption to IQ header
+		$ig->setCaption( $this->mIntro );
 
 		// No need for a special page to use the parser but for the "normal" page
 		// view we have to ensure caption text is parsed correctly through the parser
@@ -124,7 +124,7 @@ class Gallery extends ResultPrinter {
 		$redirectType = '';
 
 		/**
-		 * @var SMWPrintRequest $printReq
+		 * @var PrintRequest $printReq
 		 */
 		foreach ( $results->getPrintRequests() as $printReq ) {
 			$printReqLabels[] = $printReq->getLabel();
@@ -135,8 +135,8 @@ class Gallery extends ResultPrinter {
 			}
 		}
 
-		if ( $this->params['imageproperty'] !== '' && in_array( $this->params['imageproperty'], $printReqLabels ) ||
-			$this->params['redirects'] !== '' && in_array( $this->params['redirects'], $printReqLabels ) ) {
+		if ( ( $this->params['imageproperty'] !== '' && in_array( $this->params['imageproperty'], $printReqLabels ) ) ||
+			( $this->params['redirects'] !== '' && in_array( $this->params['redirects'], $printReqLabels ) ) ) {
 
 			$this->addImageProperties(
 				$results,
@@ -149,9 +149,6 @@ class Gallery extends ResultPrinter {
 		} else {
 			$this->addImagePages( $results, $ig );
 		}
-
-		// SRF Global settings
-		SRFUtils::addGlobalJSVariables();
 
 		// Display a processing image as long as the DOM is no ready
 		if ( $this->params['widget'] !== '' ) {
@@ -193,43 +190,47 @@ class Gallery extends ResultPrinter {
 	 *
 	 * @since 1.5.3
 	 *
-	 * @param SMWQueryResult $results
+	 * @param QueryResult $results
 	 * @param TraditionalImageGallery &$ig
 	 * @param string $imageProperty
 	 * @param string $captionProperty
 	 * @param string $redirectProperty
 	 * @param $outputMode
 	 */
-	protected function addImageProperties( SMWQueryResult $results, &$ig, $imageProperty, $captionProperty, $redirectProperty, $outputMode ) {
-		while ( /* array of SMWResultArray */
-		$rows = $results->getNext() ) { // Objects (pages)
+	protected function addImageProperties( QueryResult $results, &$ig, $imageProperty, $captionProperty, $redirectProperty, $outputMode ) {
+		/* array of \SMW\Query\Result\ResultArray */
+		while (
+		$rows = $results->getNext() ) {
 			$images = [];
 			$captions = [];
 			$redirects = [];
-
-			for ( $i = 0, $n = count( $rows ); $i < $n; $i++ ) { // Properties
+			// Properties
+			for ( $i = 0, $n = count( $rows ); $i < $n; $i++ ) {
 				/**
-				 * @var \SMWResultArray $resultArray
+				 * @var \SMW\Query\Result\ResultArray $resultArray
 				 * @var \SMWDataValue $dataValue
 				 */
 				$resultArray = $rows[$i];
 
-				$label = $resultArray->getPrintRequest()->getMode() == SMWPrintRequest::PRINT_THIS
+				$label = $resultArray->getPrintRequest()->getMode() == PrintRequest::PRINT_THIS
 					? '-' : $resultArray->getPrintRequest()->getLabel();
 
 				// Make sure always use real label here otherwise it results in an empty array
 				if ( $resultArray->getPrintRequest()->getLabel() == $imageProperty ) {
-					while ( ( $dataValue = $resultArray->getNextDataValue() ) !== false ) { // Property values
+					// Property values
+					while ( ( $dataValue = $resultArray->getNextDataValue() ) !== false ) {
 						if ( $dataValue->getTypeID() == '_wpg' ) {
 							$images[] = $dataValue->getDataItem()->getTitle();
 						}
 					}
 				} elseif ( $label == $captionProperty ) {
-					while ( ( $dataValue = $resultArray->getNextDataValue() ) !== false ) { // Property values
+					// Property values
+					while ( ( $dataValue = $resultArray->getNextDataValue() ) !== false ) {
 						$captions[] = $dataValue->getShortText( $outputMode, $this->getLinker( true ) );
 					}
 				} elseif ( $label == $redirectProperty ) {
-					while ( ( $dataValue = $resultArray->getNextDataValue() ) !== false ) { // Property values
+					// Property values
+					while ( ( $dataValue = $resultArray->getNextDataValue() ) !== false ) {
 						if ( $dataValue->getDataItem()->getDIType() == SMWDataItem::TYPE_WIKIPAGE ) {
 							$redirects[] = $dataValue->getTitle();
 						} elseif ( $dataValue->getDataItem()->getDIType() == SMWDataItem::TYPE_URI ) {
@@ -265,13 +266,13 @@ class Gallery extends ResultPrinter {
 	 *
 	 * @since 1.5.3
 	 *
-	 * @param SMWQueryResult $results
+	 * @param QueryResult $results
 	 * @param TraditionalImageGallery &$ig
 	 */
-	protected function addImagePages( SMWQueryResult $results, &$ig ) {
+	protected function addImagePages( QueryResult $results, &$ig ) {
 		while ( $row = $results->getNext() ) {
 			/**
-			 * @var \SMWResultArray $firstField
+			 * @var \SMW\Query\Result\ResultArray $firstField
 			 */
 			$firstField = $row[0];
 
@@ -328,7 +329,7 @@ class Gallery extends ResultPrinter {
 			}
 		}
 
-		if ( $this->params['captiontemplate'] !== '' && gettype($ig->mParser) == "object" ) {
+		if ( $this->params['captiontemplate'] !== '' && gettype( $ig->mParser ) == "object" ) {
 			$templateCode = "{{" . $this->params['captiontemplate'] .
 				"|imageraw=" . $imgTitle->getPrefixedText() . "|imagecaption=$imgCaption|imageredirect=$imgRedirect}}";
 
@@ -377,14 +378,17 @@ class Gallery extends ResultPrinter {
 	private function getCarouselWidget() {
 		// Set attributes for jcarousel
 		$dataAttribs = [
-			'wrap' => 'both', // Whether to wrap at the first/last item (or both) and jump back to the start/end.
-			'vertical' => 'false', // Orientation: vertical = false means horizontal
-			'rtl' => 'false', // Directionality: rtl = false means ltr
+			// Whether to wrap at the first/last item (or both) and jump back to the start/end.
+			'wrap' => 'both',
+			// Orientation: vertical = false means horizontal
+			'vertical' => 'false',
+			// Directionality: rtl = false means ltr
+			'rtl' => 'false',
 		];
 
 		// Use the perrow parameter to determine the scroll sequence.
 		if ( empty( $this->params['perrow'] ) ) {
-			$dataAttribs['scroll'] = 1;  // default 1
+			$dataAttribs['scroll'] = 1;
 		} else {
 			$dataAttribs['scroll'] = $this->params['perrow'];
 			$dataAttribs['visible'] = $this->params['perrow'];
@@ -426,7 +430,7 @@ class Gallery extends ResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::getParamDefinitions
+	 * @see ResultPrinter::getParamDefinitions
 	 *
 	 * @since 1.8
 	 *

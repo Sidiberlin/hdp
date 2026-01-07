@@ -2,11 +2,11 @@
 
 namespace BlueSpice\UserSidebar;
 
-use IContextSource;
+use MediaWiki\Content\TextContent;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use TextContent;
-use Title;
-use TitleFactory;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 
 class Parser {
 	/**
@@ -64,9 +64,7 @@ class Parser {
 				$section = $widget->getHeaderMessage()->text();
 				$links = $widget->getLinks();
 			}
-			if ( empty( $links ) ) {
-				continue;
-			}
+
 			$this->parsed[$title->getFullText()][$section] = $links;
 		}
 
@@ -103,8 +101,7 @@ class Parser {
 				} else {
 					$isIndentCharacter = false;
 				}
-			}
-			while ( $isIndentCharacter );
+			} while ( $isIndentCharacter );
 
 			$line = trim( substr( $line, $depth ) );
 			if ( empty( $line ) ) {

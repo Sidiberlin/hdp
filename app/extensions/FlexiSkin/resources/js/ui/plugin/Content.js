@@ -7,7 +7,7 @@ OO.inheritClass( flexiskin.ui.plugin.Content, flexiskin.ui.plugin.Plugin );
 flexiskin.registry.Plugin.register( 'content', flexiskin.ui.plugin.Content );
 
 flexiskin.ui.plugin.Content.prototype.provideControls = function () {
-	var h1ColorWidget = new flexiskin.ui.widget.ColorPicker(),
+	const h1ColorWidget = new flexiskin.ui.widget.ColorPicker(),
 		h2ColorWidget = new flexiskin.ui.widget.ColorPicker(),
 		h3ColorWidget = new flexiskin.ui.widget.ColorPicker(),
 		h4ColorWidget = new flexiskin.ui.widget.ColorPicker(),

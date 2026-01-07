@@ -1,0 +1,19 @@
+.bs-bookshelf-chapter-insertion-details {
+	margin: 20px 0;
+}
+
+.bs-bookshelf-chapter-insertion-details > div {
+	margin: 10px 0;
+}
+
+.bs-bookshelf-chapter-picker-layout {
+	flex-wrap: nowrap;
+}
+
+.bs-bookshelf-chapter-insertion-editable .oo-ui-horizontalLayout {
+	flex-wrap: nowrap;
+}
+
+.bs-bookshelf-chapter-insertion-move-btn {
+	float: right;
+}

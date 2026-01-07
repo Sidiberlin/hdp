@@ -2,14 +2,14 @@
 
 namespace MediaWiki\Extension\EnhancedUpload\HookHandler;
 
-use FormatJson;
-use Html;
 use MediaWiki\Hook\ParserFirstCallInitHook;
-use Parser;
-use PPFrame;
-use Sanitizer;
-use Title;
-use TitleFactory;
+use MediaWiki\Html\Html;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 
 class Tag implements ParserFirstCallInitHook {
 	public const NAME = 'attachments';
@@ -117,7 +117,6 @@ class Tag implements ParserFirstCallInitHook {
 			'data-showsize' => $tagShowSize,
 			'data-showcategories' => $tagShowCategories
 		] );
-		$out .= $parser->recursiveTagParseFully( $input, $frame );
 		$out .= Html::element( 'div', [
 			'class' => 'attachments-loader',
 			'id' => 'loader-' . $count
@@ -149,9 +148,9 @@ class Tag implements ParserFirstCallInitHook {
 
 	/**
 	 * @param string $text
-	 * @return title
+	 * @return Title
 	 */
-	private function getTitle( string $text ): title {
+	private function getTitle( string $text ): Title {
 		$linkParts = explode( '|', $text );
 		$titleParts = explode( ':', $linkParts[ 0 ], 2 );
 		$titleText = trim( $titleParts[ 1 ] );

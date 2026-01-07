@@ -1,10 +1,11 @@
-window.nsfr = window.nsfr || {};
+// eslint-disable-next-line no-implicit-globals, no-global-assign
+nsfr = window.nsfr || {};
 
 nsfr.EnhancedUploadParamsProcessor = function () {
 	this.config = require( './config.json' );
 
 	// eslint-disable-next-line no-underscore-dangle
-	var excludeNS = this._getInvalidNamespaces();
+	const excludeNS = this._getInvalidNamespaces();
 	this.targetNamespaceSelector = new mw.widgets.NamespaceInputWidget( {
 		exclude: excludeNS,
 		dropdown: {
@@ -33,9 +34,9 @@ nsfr.EnhancedUploadParamsProcessor.prototype.getElement = function () {
 };
 
 nsfr.EnhancedUploadParamsProcessor.prototype.setDefaultPrefix = function ( prefix ) {
-	var namespace = prefix.split( ':' );
-	var namespaces = mw.config.get( 'wgFormattedNamespaces' );
-	for ( var namespaceId in namespaces ) {
+	const namespace = prefix.split( ':' );
+	const namespaces = mw.config.get( 'wgFormattedNamespaces' );
+	for ( const namespaceId in namespaces ) {
 		if ( namespaces[ namespaceId ] === namespace[ 0 ] ) {
 			this.targetNamespaceSelector.setValue( namespaceId );
 			break;
@@ -44,7 +45,7 @@ nsfr.EnhancedUploadParamsProcessor.prototype.setDefaultPrefix = function ( prefi
 };
 
 nsfr.EnhancedUploadParamsProcessor.prototype.getParams = function ( params, item, skipOption ) {
-	var skipNamespace = skipOption || false;
+	const skipNamespace = skipOption || false;
 	if ( !skipNamespace ) {
 		params.namespace = this.targetNamespaceSelector.getValue();
 	}
@@ -55,16 +56,16 @@ nsfr.EnhancedUploadParamsProcessor.prototype.getParams = function ( params, item
 
 // eslint-disable-next-line no-underscore-dangle
 nsfr.EnhancedUploadParamsProcessor.prototype._makeUploadFilenameFromParams = function ( params ) {
-	var prefix = params.prefix || '';
-	var filename = params.filename || '';
-	var namespace = params.namespace || false;
-	var namespaces = mw.config.get( 'wgFormattedNamespaces' );
+	let prefix = params.prefix || '';
+	const filename = params.filename || '';
+	let namespace = params.namespace || false;
+	const namespaces = mw.config.get( 'wgFormattedNamespaces' );
 
-	var prefixNamespace = '';
+	let prefixNamespace = '';
 	if ( params.namespace ) {
 		prefixNamespace = namespaces[ namespace ];
 	}
-	var prefixParts = prefix.split( ':' );
+	const prefixParts = prefix.split( ':' );
 	if ( prefixParts.length > 1 ) {
 		prefixNamespace = prefixParts[ 0 ];
 		prefixParts.splice( 0, 1 );
@@ -75,11 +76,11 @@ nsfr.EnhancedUploadParamsProcessor.prototype._makeUploadFilenameFromParams = fun
 		prefixNamespace = prefixNamespace.replace( /_/g, ' ' );
 	}
 
-	var prefixStub = prefixParts.join( ':' );
+	let prefixStub = prefixParts.join( ':' );
 	prefixStub = prefixStub.replace( ':', '_' );
 
-	var validPrefixNamespace = false;
-	for ( var index in namespaces ) {
+	let validPrefixNamespace = false;
+	for ( const index in namespaces ) {
 		if ( namespaces[ index ] === prefixNamespace ) {
 			namespace = index;
 			validPrefixNamespace = true;
@@ -114,19 +115,19 @@ nsfr.EnhancedUploadParamsProcessor.prototype._makeUploadFilenameFromParams = fun
 
 // eslint-disable-next-line no-underscore-dangle
 nsfr.EnhancedUploadParamsProcessor.prototype._getInvalidNamespaces = function () {
-	var excludeNS = [];
-	var namespaces = mw.config.get( 'wgNamespaceIds' );
-	var namespacesThreshold = this.config.egNSFileRepoNamespaceThreshold;
-	var namespacesBlacklist = this.config.egNSFileRepoNamespaceBlacklist;
-	var skiptalk = this.config.egNSFileRepoSkipTalk;
+	const excludeNS = [];
+	const namespaces = mw.config.get( 'wgNamespaceIds' );
+	const namespacesThreshold = this.config.egNSFileRepoNamespaceThreshold;
+	const namespacesBlacklist = this.config.egNSFileRepoNamespaceBlacklist;
+	const skiptalk = this.config.egNSFileRepoSkipTalk;
 
-	for ( var namespace in namespaces ) {
-		var nsId = namespaces[ namespace ];
+	for ( const namespace in namespaces ) {
+		const nsId = namespaces[ namespace ];
 		if ( nsId < namespacesThreshold && nsId !== 0 ) {
 			excludeNS.push( nsId );
 			continue;
 		}
-		// eslint-disable-next-line no-restricted-syntax
+		// eslint-disable-next-line es-x/no-array-prototype-includes
 		if ( namespacesBlacklist.includes( nsId ) ) {
 			excludeNS.push( nsId );
 			continue;

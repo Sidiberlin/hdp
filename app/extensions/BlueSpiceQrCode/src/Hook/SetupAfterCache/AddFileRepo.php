@@ -10,7 +10,7 @@ class AddFileRepo extends \BlueSpice\Hook\SetupAfterCache {
 	protected function doProcess() {
 		global $wgForeignFileRepos;
 		$wgForeignFileRepos[] = [
-			'class' => 'FileRepo',
+			'class' => \FileRepo::class,
 			'name' => 'QrCode',
 			'backend' => 'QrCode-backend',
 			'directory' => BS_DATA_DIR . '/QrCode/',

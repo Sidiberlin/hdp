@@ -2,66 +2,13 @@
 
 namespace BlueSpice\Bookshelf;
 
-use Config;
-use ExtensionRegistry;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\ResourceLoader\Context;
 use MWStake\MediaWiki\Component\ManifestRegistry\ManifestAttributeBasedRegistry;
 use stdClass;
 
 class ClientConfig {
-
-	/**
-	 *
-	 * @param Context $context
-	 * @param Config $config
-	 * @return array
-	 */
-	public static function makeConfigJson(
-		Context $context,
-		Config $config
-	) {
-		$services = MediaWikiServices::getInstance();
-		$config = $services->getConfigFactory()->makeConfig( 'bsg' );
-
-		$defaultTemplate = $config->get( 'UEModuleBookPDFDefaultTemplate' );
-		$defaultTemplatePath = $config->get( 'UEModuleBookPDFTemplatePath' );
-
-		$availableTemplates = [];
-		$dir = opendir( $defaultTemplatePath );
-		if ( $dir ) {
-			$subDir = readdir( $dir );
-			while ( $subDir !== false ) {
-				if ( in_array( $subDir, [ '.', '..', 'common' ] ) ) {
-					$subDir = readdir( $dir );
-					continue;
-				}
-
-				if ( !is_dir( "{$defaultTemplatePath}/{$subDir}" ) ) {
-					$subDir = readdir( $dir );
-					continue;
-				}
-
-				if ( file_exists( "{$defaultTemplatePath}/{$subDir}/template.php" ) ) {
-					$availableTemplates[] = $subDir;
-				}
-
-				$subDir = readdir( $dir );
-			}
-		}
-
-		if ( empty( $availableTemplates ) ) {
-			$defaultTemplate = '';
-		} else {
-			if ( !in_array( $defaultTemplate, $availableTemplates ) ) {
-				$defaultTemplate = $availableTemplates[0];
-			}
-		}
-		return [
-			'defaultTemplate' => $defaultTemplate,
-			'availableTemplates' => $availableTemplates
-		];
-	}
 
 	/**
 	 *
@@ -89,7 +36,7 @@ class ClientConfig {
 			];
 			$modules = array_merge( $modules, $object->getRLModules() );
 		}
-		array_unique( $modules );
+		$modules = array_unique( $modules );
 		return [
 			'modules' => $modules,
 			'pages' => $pages
@@ -147,7 +94,7 @@ class ClientConfig {
 
 			$tools[] = [
 				'type' => $tool->getType(),
-				'label' => $context->msg( $tool->getLabelMsgKey() )->plain(),
+				'label' => $context->msg( $tool->getLabelMsgKey() )->text(),
 				'class' => implode( ' ', $tool->getClasses() ),
 				'callback' => $tool->getCallback(),
 				'slot' => $tool->getSlot(),
@@ -176,7 +123,7 @@ class ClientConfig {
 		$services = MediaWikiServices::getInstance();
 		$dbr = $services->getDBLoadBalancer()->getConnection( DB_REPLICA );
 
-		$pageCollectionPrefix = wfMessage( 'bs-pagecollection-prefix' )->inContentLanguage()->plain();
+		$pageCollectionPrefix = wfMessage( 'bs-pagecollection-prefix' )->inContentLanguage()->text();
 		$pageCollectionPrefix = str_replace( ' ', '_', $pageCollectionPrefix );
 		$pageCollectionPrefix .= "/";
 
@@ -186,7 +133,8 @@ class ClientConfig {
 			[
 				"page_namespace" => NS_MEDIAWIKI,
 				"page_title" . $dbr->buildLike( $pageCollectionPrefix, $dbr->anyString() )
-			]
+			],
+			__METHOD__
 		);
 
 		foreach ( $res as $row ) {
@@ -200,5 +148,32 @@ class ClientConfig {
 		$pages = array_values( $pages );
 
 		return $pages;
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getPDFTemplates() {
+		if ( !ExtensionRegistry::getInstance()->isLoaded( 'PDFCreator' ) ) {
+			return [];
+		}
+		$services = MediaWikiServices::getInstance();
+		$configFactory = $services->getConfigFactory();
+		$titleFactory = $services->getTitleFactory();
+		$pdfcreatorUtil = $services->getService( 'PDFCreator.Util' );
+		$templates = $pdfcreatorUtil->getAvailableTemplateNames();
+		$bsgConfig = $configFactory->makeConfig( 'bsg' );
+		$template = $bsgConfig->get( 'BookshelfDefaultBookTemplate' );
+		$templateTitle = $titleFactory->newFromText( 'MediaWiki:PDFCreator/' . $template );
+		if ( !$templateTitle->exists() ) {
+			return [
+				'default' => '',
+				'templates' => $templates
+			];
+		}
+		return [
+			'default' => $templateTitle->getSubpageText(),
+			'templates' => $templates
+		];
 	}
 }

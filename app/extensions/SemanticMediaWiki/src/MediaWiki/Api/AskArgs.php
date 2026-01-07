@@ -2,13 +2,15 @@
 
 namespace SMW\MediaWiki\Api;
 
-use ApiBase;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiFormatXml;
+use Wikimedia\ParamValidator\ParamValidator;
 
 /**
  * API module to query SMW by providing a query specified as
  * a list of conditions, printouts and parameters.
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 1.6.2
  *
  * @author Jeroen De Dauw < jeroendedauw@gmail.com >
@@ -19,7 +21,6 @@ class AskArgs extends Query {
 	 * @see ApiBase::execute
 	 */
 	public function execute() {
-
 		$params = $this->extractRequestParams();
 
 		$parameterFormatter = new ApiRequestParameterFormatter( $this->extractRequestParams() );
@@ -31,7 +32,7 @@ class AskArgs extends Query {
 			$parameterFormatter->getAskArgsApiParameter( 'parameters' )
 		) );
 
-		if ( $this->getMain()->getPrinter() instanceof \ApiFormatXml ) {
+		if ( $this->getMain()->getPrinter() instanceof ApiFormatXml ) {
 			$outputFormat = 'xml';
 		}
 
@@ -51,23 +52,23 @@ class AskArgs extends Query {
 	public function getAllowedParams() {
 		return [
 			'conditions' => [
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_ISMULTI => true,
-				ApiBase::PARAM_REQUIRED => true,
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_ISMULTI => true,
+				ParamValidator::PARAM_REQUIRED => true,
 			],
 			'printouts' => [
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_DFLT => '',
-				ApiBase::PARAM_ISMULTI => true,
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_DEFAULT => '',
+				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'parameters' => [
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_DFLT => '',
-				ApiBase::PARAM_ISMULTI => true,
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_DEFAULT => '',
+				ParamValidator::PARAM_ISMULTI => true,
 			],
 			'api_version' => [
-				ApiBase::PARAM_TYPE => [ '2', '3' ],
-				ApiBase::PARAM_DFLT => '2',
+				ParamValidator::PARAM_TYPE => [ '2', '3' ],
+				ParamValidator::PARAM_DEFAULT => '2',
 				ApiBase::PARAM_HELP_MSG => 'apihelp-ask-parameter-api-version',
 			],
 		];

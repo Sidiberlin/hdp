@@ -14,10 +14,11 @@ use BlueSpice\Discovery\ISkinLayout;
 use BlueSpice\Discovery\ISkinLayoutAware;
 use BlueSpice\Discovery\SkinSlotRenderer\NavbarPrimaryItemsSkinSlotRenderer;
 use BlueSpice\Discovery\SkinSlotRenderer\NavbarPrimarySearchFormSkinSlotRenderer;
-use Config;
-use IContextSource;
-use Message;
-use Title;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Title\Title;
 
 class NavbarPrimary extends NavbarBase implements ISkinLayoutAware {
 
@@ -46,6 +47,20 @@ class NavbarPrimary extends NavbarBase implements ISkinLayoutAware {
 	 */
 	public function getName(): string {
 		return 'navbar-primary';
+	}
+
+	/**
+	 *
+	 * @param IContextSource $context
+	 * @return bool
+	 */
+	public function shouldRender( IContextSource $context ): bool {
+		$specialUserLogin = SpecialPage::getSafeTitleFor( 'Userlogin' );
+		$title = $context->getTitle();
+		if ( $specialUserLogin->equals( $title ) ) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -79,9 +94,7 @@ class NavbarPrimary extends NavbarBase implements ISkinLayoutAware {
 	 * @return void
 	 */
 	private function fetchNewContentButtonHtml() {
-		$user = $this->template->getSkin()->getUser();
-
-		$component = new CreateContentSplitButton( $user, $this->permissionManager );
+		$component = new CreateContentSplitButton();
 		$html = $this->componentRenderer->getComponentHtml( $component, $this->componentProcessData );
 
 		$this->skinComponents['new-content-button'] = $html;

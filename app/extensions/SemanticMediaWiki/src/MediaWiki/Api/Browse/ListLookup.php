@@ -10,7 +10,7 @@ use SMW\Store;
 use SMW\StringCondition;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.0
  *
  * @author mwjames
@@ -42,7 +42,7 @@ class ListLookup extends Lookup {
 	/**
 	 * @since 3.0
 	 *
-	 * @return string|integer
+	 * @return string|int
 	 */
 	public function getVersion() {
 		return 'ListLookup:' . self::VERSION;
@@ -56,7 +56,6 @@ class ListLookup extends Lookup {
 	 * @return array
 	 */
 	public function lookup( array $parameters ) {
-
 		$requestOptions = $this->newRequestOptions(
 			$parameters
 		);
@@ -85,7 +84,7 @@ class ListLookup extends Lookup {
 		}
 
 		if ( isset( $parameters['search'] ) ) {
-			list( $res, $continueOffset ) = $this->fetchFromTable( $ns, $requestOptions, $parameters );
+			[ $res, $continueOffset ] = $this->fetchFromTable( $ns, $requestOptions, $parameters );
 		}
 
 		// Changing this output format requires to set a new version
@@ -109,7 +108,6 @@ class ListLookup extends Lookup {
 	}
 
 	private function newRequestOptions( $parameters ) {
-
 		$limit = 50;
 		$offset = 0;
 		$search = '';
@@ -182,7 +180,6 @@ class ListLookup extends Lookup {
 	}
 
 	private function fetchFromTable( $ns, $requestOptions, $parameters ) {
-
 		$limit = $requestOptions->getLimit() - 1;
 		$list = [];
 		$options = [];
@@ -215,7 +212,7 @@ class ListLookup extends Lookup {
 		$connection = $this->store->getConnection( 'mw.db' );
 
 		$res = $connection->select(
-			$connection->tableName( SQLStore::ID_TABLE ),
+			SQLStore::ID_TABLE,
 			$fields,
 			$conditions,
 			__METHOD__,
@@ -238,7 +235,7 @@ class ListLookup extends Lookup {
 			if ( $ns === SMW_NS_PROPERTY ) {
 				try {
 					$label = DIProperty::newFromUserLabel( $row->smw_title )->getLabel();
-				} catch( Exception $e ) {
+				} catch ( Exception $e ) {
 					continue;
 				}
 

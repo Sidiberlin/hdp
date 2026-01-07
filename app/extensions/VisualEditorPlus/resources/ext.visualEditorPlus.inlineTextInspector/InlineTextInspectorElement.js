@@ -12,10 +12,9 @@ ext.visualEditorPlus.ui.InlineTextInspectorElement.prototype.init = function () 
 	// Called when inspector element is added to the parent inspector
 };
 
-ext.visualEditorPlus.ui.InlineTextInspectorElement.prototype.inspect =
-	function ( range, selectedText ) {
-		// Overwrite this method in your inspector
-	};
+ext.visualEditorPlus.ui.InlineTextInspectorElement.prototype.inspect = function ( range, selectedText ) { // eslint-disable-line no-unused-vars
+	// Overwrite this method in your inspector
+};
 
 ext.visualEditorPlus.ui.InlineTextInspectorElement.prototype.getTitleLabel = function () {
 	// Override this method in your inspector
@@ -35,7 +34,7 @@ ext.visualEditorPlus.ui.InlineTextInspectorElement.prototype.getHeader = functio
 	if ( !this.getTitleLabel() ) {
 		return null;
 	}
-	var header = new OO.ui.HorizontalLayout( {
+	const header = new OO.ui.HorizontalLayout( {
 		classes: [ 'ext-visualEditorPlus-inlineTextInspector-element-header' ]
 	} );
 	if ( this.getIcon() ) {

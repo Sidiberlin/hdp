@@ -1,5 +1,6 @@
 <?php
 
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\Rdbms\IDatabase;
 
@@ -10,6 +11,8 @@ class PrepareActorMigration2 extends Maintenance {
 	private $tablesToFix = [
 		'revision' => [ 'rev_user', 'rev_user_text' ],
 		'archive' => [ 'ar_user', 'ar_user_text' ],
+		// This script is meant for use in legacy version 1.35 only,
+		// therefore the reference to the `ipblocks` table can remain
 		'ipblocks' => [ 'ipb_by', 'ipb_by_text' ],
 		'image' => [ 'img_user', 'img_user_text' ],
 		'oldimage' => [ 'oi_user', 'oi_user_text' ],
@@ -52,7 +55,12 @@ class PrepareActorMigration2 extends Maintenance {
 	}
 
 	private function fetchAllUsers() {
-		$res = $this->db->select( 'user', [ 'user_name' ] );
+		$res = $this->db->select(
+			'user',
+			[ 'user_name' ],
+			'',
+			__METHOD__
+		);
 		foreach ( $res as $row ) {
 			$this->userNames[] = $row->user_name;
 		}
@@ -61,7 +69,12 @@ class PrepareActorMigration2 extends Maintenance {
 	private function fixTable( $table, $userIDField, $userNameField ) {
 		$this->output( "Replacing user names in $table\n" );
 
-		$res = $this->db->select( $table, [ $userNameField ] );
+		$res = $this->db->select(
+			$table,
+			[ $userNameField ],
+			'',
+			__METHOD__
+		);
 		$userNameReplacements = [];
 		foreach ( $res as $row ) {
 			$userName = $row->$userNameField;

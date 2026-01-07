@@ -7,11 +7,12 @@
 	"descriptionmsg": "bs-privacy-desc",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpicePrivacy",
 	"type": "bluespice",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0",
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"AuthManagerAutoConfig": {
@@ -40,9 +41,6 @@
 					"roles": [ "admin", "accountmanager" ]
 				}
 			},
-			"AdminToolRegistry": {
-				"bs-privacy-admin": "BlueSpice\\Privacy\\AdminTool"
-			},
 			"AlertProviderRegistry": {
 				"bs-privacy-alert": "\\BlueSpice\\Privacy\\AlertProvider\\MissingPrivacyPages::factory"
 			}
@@ -50,16 +48,31 @@
 		"BlueSpicePrivacy": {
 			"Modules": {
 				"anonymization": {
-					"class": "\\BlueSpice\\Privacy\\Module\\Anonymization"
+					"class": "\\BlueSpice\\Privacy\\Module\\Anonymization",
+					"services": [
+						"DBLoadBalancer", "MWStake.Notifier", "PermissionManager", "ConfigFactory",
+						"UserFactory", "ContentLanguage", "SpecialPageFactory", "GroupPermissionsLookup"
+					]
 				},
 				"deletion": {
-					"class": "\\BlueSpice\\Privacy\\Module\\Deletion"
+					"class": "\\BlueSpice\\Privacy\\Module\\Deletion",
+					"services": [
+						"DBLoadBalancer", "MWStake.Notifier", "PermissionManager", "ConfigFactory",
+						"UserFactory", "ContentLanguage", "SpecialPageFactory", "GroupPermissionsLookup",
+						"DatabaseBlockStore", "MainConfig"
+					]
 				},
 				"transparency": {
-					"class": "\\BlueSpice\\Privacy\\Module\\Transparency"
+					"class": "\\BlueSpice\\Privacy\\Module\\Transparency",
+					"services": [
+						"DBLoadBalancer", "MWStake.Notifier", "PermissionManager", "ContentLanguage"
+					]
 				},
 				"consent": {
-					"class": "\\BlueSpice\\Privacy\\Module\\Consent"
+					"class": "\\BlueSpice\\Privacy\\Module\\Consent",
+					"services": [
+						"DBLoadBalancer", "MWStake.Notifier", "PermissionManager", "UserOptionsManager", "ConfigFactory", "MainConfig"
+					]
 				}
 			},
 			"Handlers": [
@@ -146,8 +159,7 @@
 				},
 				"bs-privacy-request-submitted": {
 					"spec": {
-						"class": "\\BlueSpice\\Privacy\\Event\\RequestSubmitted",
-						"services": [ "SpecialPageFactory", "GroupPermissionsLookup", "DBLoadBalancer", "UserFactory" ]
+						"class": "\\BlueSpice\\Privacy\\Event\\RequestSubmitted"
 					},
 					"buckets": [ "personal" ]
 				}
@@ -159,8 +171,7 @@
 	],
 	"APIModules": {
 		"bs-privacy": "\\BlueSpice\\Privacy\\Api\\PrivacyApi",
-		"bs-privacy-get-requests": "\\BlueSpice\\Privacy\\Api\\GetRequests",
-		"bs-privacy-get-all-consents": "\\BlueSpice\\Privacy\\Api\\GetAllConsents"
+		"bs-privacy-get-requests": "\\BlueSpice\\Privacy\\Api\\GetRequests"
 	},
 	"MessagesDirs": {
 		"BlueSpicePrivacy": "i18n"
@@ -169,13 +180,22 @@
 		"BlueSpicePrivacyAliases": "languages/BlueSpicePrivacy.alias.php"
 	},
 	"SpecialPages": {
-		"PrivacyCenter": "\\BlueSpice\\Privacy\\Special\\PrivacyCenter",
-		"PrivacyAdmin": "\\BlueSpice\\Privacy\\Special\\PrivacyAdmin",
+		"PrivacyCenter": {
+			"class": "\\BlueSpice\\Privacy\\Special\\PrivacyCenter",
+			"services": [ "BlueSpicePrivacy.ModuleRegistry", "ConfigFactory" ]
+		},
+		"PrivacyAdmin": {
+			"class": "\\BlueSpice\\Privacy\\Special\\PrivacyAdmin",
+			"services": [ "BlueSpicePrivacy.ModuleRegistry", "ConfigFactory" ]
+		},
 		"PrivacyPages": {
 			"class": "\\BlueSpice\\Privacy\\Special\\PrivacyPages",
 			"args": [ "PrivacyPages" ]
 		},
-		"PrivacyConsent": "\\BlueSpice\\Privacy\\Special\\PrivacyConsent"
+		"PrivacyConsent": {
+			"class": "\\BlueSpice\\Privacy\\Special\\PrivacyConsent",
+			"services": [ "BlueSpicePrivacy.ModuleRegistry" ]
+		}
 	},
 	"ResourceModules": {
 		"ext.bluespice.privacy.styles": {
@@ -209,6 +229,7 @@
 			],
 			"dependencies": [
 				"oojs-ui",
+				"ext.oOJSPlus.widgets",
 				"ext.bluespice.privacy.util"
 			]
 		},
@@ -234,11 +255,14 @@
 				"bs-privacy-admin-requests-disabled",
 				"bs-privacy-admin-request-grid-action-deny",
 				"bs-privacy-admin-icon-bool-true-aria-label",
-				"bs-privacy-admin-icon-bool-false-aria-label"
+				"bs-privacy-admin-icon-bool-false-aria-label",
+				"bs-privacy-module-name-anonymization",
+				"bs-privacy-module-name-deletion"
 			],
 			"dependencies": [
 				"oojs-ui",
-				"ext.bluespice.extjs",
+				"ext.oOJSPlus.data",
+				"ext.oOJSPlus.widgets",
 				"ext.bluespice.privacy.util"
 			]
 		},
@@ -343,7 +367,10 @@
 			"messages": [
 				"bs-privacy-admin-consent-overview-title",
 				"bs-privacy-admin-consent-overview-help",
-				"bs-privacy-admin-consent-grid-column-user"
+				"bs-privacy-admin-consent-grid-column-user",
+				"bs-privacy-consent-type-privacy-policy-short",
+				"bs-privacy-consent-type-terms-of-service-short"
+
 			],
 			"dependencies": [
 				"ext.bluespice.privacy.admin"
@@ -395,7 +422,7 @@
 				"bs-privacy-cookie-convenience-group-label",
 				"bs-privacy-cookie-convenience-group-desc",
 				"bs-privacy-cookie-consent-mw-provider-settings-dialog-save",
-				"bs-privacy-cookie-consent-mw-provider-settings-dialog-cancel"
+				"cancel"
 			],
 			"group": "general",
 			"dependencies": [
@@ -445,8 +472,12 @@
 			"services": [ "MainConfig", "ConfigFactory" ]
 		},
 		"redirectToConsent": {
-			"class": "\\BlueSpice\\Privacy\\Hook\\OutputPageParserOutput\\RedirectToConsent",
-			"services": [ "SpecialPageFactory", "ConfigFactory", "TitleFactory" ]
+			"class": "\\BlueSpice\\Privacy\\HookHandler\\RedirectToConsent",
+			"services": [ "SpecialPageFactory", "ConfigFactory", "TitleFactory", "BlueSpicePrivacy.ModuleRegistry" ]
+		},
+		"addPreferences": {
+			"class": "\\BlueSpice\\Privacy\\HookHandler\\AddPreferences",
+			"services": [ "BlueSpicePrivacy.ModuleRegistry" ]
 		}
 	},
 	"Hooks": {
@@ -454,14 +485,12 @@
 		"LoadExtensionSchemaUpdates": [
 			"\\BlueSpice\\Privacy\\Hook\\LoadExtensionSchemaUpdates\\AddPrivacyRequestTable::callback"
 		],
-		"GetPreferences": [
-			"\\BlueSpice\\Privacy\\Hook\\GetPreferences\\AddConsentPrefs::callback"
-		],
+		"GetPreferences": "addPreferences",
 		"BeforePageDisplay": "addCookieConsent",
 		"TitleReadWhitelist": "\\BlueSpice\\Privacy\\Hook\\TitleReadWhitelist\\AddWhitelistPages::callback",
 		"WebResponseSetCookie": "\\BlueSpice\\Privacy\\Hook\\WebResponseSetCookie\\BlockCookie::callback",
 		"OutputPageParserOutput": "redirectToConsent",
-		"SpecialPageBeforeExecute": "\\BlueSpice\\Privacy\\Hook\\SpecialPageBeforeExecute\\RedirectToConsent::callback",
+		"SpecialPageBeforeExecute": "redirectToConsent",
 		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface"
 	},
 	"callback": "\\BlueSpice\\Privacy\\Extension::onCallback",
@@ -505,6 +534,22 @@
 			"value": ""
 		}
 	},
+	"RestRoutes": [
+		{
+			"path": "/bs/privacy/v1/all-consents",
+			"class": "\\BlueSpice\\Privacy\\Rest\\AllConsentStore",
+			"services": [
+				"HookContainer",
+				"DBLoadBalancer",
+				"UserFactory",
+				"LinkRenderer",
+				"TitleFactory",
+				"MWStakeCommonUtilsConfig",
+				"BlueSpicePrivacy.ModuleRegistry",
+				"UserOptionsLookup"
+			]
+		}
+	],
 	"LogTypes": [ "bs-privacy" ],
 	"LogNames": {
 		"bs-privacy": "bs-privacy"
@@ -518,6 +563,12 @@
 	"AutoloadNamespaces": {
 		"BlueSpice\\Privacy\\": "src/"
 	},
+	"TestAutoloadNamespaces": {
+		"BlueSpice\\Privacy\\Tests\\": "tests/phpunit/"
+	},
+	"ServiceWiringFiles": [
+		"ServiceWiring.php"
+	],
 	"load_composer_autoloader": true,
 	"manifest_version": 2
 }

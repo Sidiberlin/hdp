@@ -8,8 +8,8 @@ use BlueSpice\Tag\GenericHandler;
 use BlueSpice\Tag\MarkerType\NoWiki;
 use BlueSpice\Tag\Tag;
 use MediaWiki\MediaWikiServices;
-use Parser;
-use PPFrame;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class DecisionOverview extends Tag {
 

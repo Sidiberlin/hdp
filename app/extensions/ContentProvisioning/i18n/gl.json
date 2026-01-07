@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"contentprovisioning-desc": "Ofrece unha visión xeral das páxinas aprovisionadas e permite á administración sincronizar contido",
+	"contentprovisioning": "Aprovisionamento de contido",
+	"right-contentprovisioning-viewspecialpage": "Ver a páxina especial de aprovisionamento de contido",
+	"action-contentprovisioning-viewspecialpage": "Ver a páxina especial de aprovisionamento de contido",
+	"contentprovisioning-ui-overview-grid-section-page": "Páxina",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "Está sincronizada?",
+	"contentprovisioning-ui-overview-grid-action-force-sync": "Forzar a sincronización",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "Amosar as diferenzas",
+	"contentprovisioning-diff-no-change": "Non hai diferenzas entre a versión do manifesto e a versión da páxina wiki",
+	"contentprovisioning-ui-content-diff-title": "Diferenzas de contido",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "Wiki",
+	"contentprovisioning-ui-content-diff-headline-provisioner-content": "Remoto"
+}

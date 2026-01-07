@@ -2,10 +2,10 @@
 namespace BlueSpice\Expiry\Hook;
 
 use BlueSpice\Hook;
-use Config;
-use IContextSource;
-use Title;
-use User;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 abstract class BsExpiryOnUpdate extends Hook {
 	/**

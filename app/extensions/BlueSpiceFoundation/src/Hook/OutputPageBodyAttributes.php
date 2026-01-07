@@ -27,9 +27,9 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
-use Config;
-use IContextSource;
-use OutputPage;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Output\OutputPage;
 use Skin;
 
 abstract class OutputPageBodyAttributes extends Hook {

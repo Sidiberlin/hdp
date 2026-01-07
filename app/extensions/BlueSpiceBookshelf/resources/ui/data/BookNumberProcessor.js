@@ -8,10 +8,10 @@ ext.bookshelf.ui.data.BookNumberProcessor = function () {};
 OO.initClass( ext.bookshelf.ui.data.BookNumberProcessor );
 
 ext.bookshelf.ui.data.BookNumberProcessor.prototype.calculateNumbersFromList = function ( items ) {
-	let numbering = [];
-	let counters = [ 0 ];
+	const numbering = [];
+	const counters = [ 0 ];
 
-	items.forEach( function ( item ) {
+	items.forEach( ( item ) => {
 		const level = item.level;
 		while ( counters.length < level ) {
 			counters.push( 0 );
@@ -32,9 +32,9 @@ ext.bookshelf.ui.data.BookNumberProcessor.prototype.calculateNumberForElement = 
 	function processItems( currentItems, prefix = '' ) {
 		let count = 0;
 
-		for ( let i = 0; i < currentItems.length; i++)  {
+		for ( let i = 0; i < currentItems.length; i++ ) {
 			count++;
-			const currentNumber = prefix ? `${prefix}.${count}` : `${count}`;
+			const currentNumber = prefix ? `${ prefix }.${ count }` : `${ count }`;
 			const currentItem = currentItems[ i ];
 
 			if ( currentItem === item ) {
@@ -44,7 +44,9 @@ ext.bookshelf.ui.data.BookNumberProcessor.prototype.calculateNumberForElement = 
 
 			if ( currentItem.items && currentItem.items.length > 0 ) {
 				processItems( currentItem.items, currentNumber );
-				if ( result ) return; // Stop processing if the item is found
+				if ( result ) {
+					return;
+				} // Stop processing if the item is found
 			}
 		}
 	}

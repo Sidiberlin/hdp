@@ -7,7 +7,8 @@
 	},
 	"bs-categorymanager-text": "Կատեգորիաներ",
 	"bs-categorymanager-removecategoryconfirm-title": "Հեռացնել կատեգորիան",
-	"bs-categorymanager-action-show-category": "Ցուցադրել կատեգորիան",
 	"bs-categorymanager-collection-var-namespacename": "Անվանատարածք",
-	"bs-categorymanager-statistics-report-category-pages-axis-value": "Էջերի քանակը"
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "Էջերի քանակը",
+	"bs-categorymanager-dialog-action-add-label": "Ավելացնել",
+	"bs-categorymanager-category-item-rename-label": "Վերանվանել"
 }

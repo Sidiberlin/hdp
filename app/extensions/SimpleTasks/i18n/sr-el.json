@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"simple-tasks-task-duedate": "Krajnji rok: $1",
+	"simple-tasks-taskreport-header-task": "Zadatak",
+	"simple-tasks-taskreport-header-assignee": "Dodeljeno",
+	"simple-tasks-taskreport-header-due-to": "Krajnji rok",
+	"simple-tasks-taskreport-header-state": "Stanje",
+	"simple-tasks-taskreport-inspector-state-done": "urađeno",
+	"simple-tasks-taskreport-inspector-state-open": "otvoreno",
+	"simple-tasks-taskreport-inspector-label-namespaces": "Imenski prostori",
+	"simple-tasks-taskreport-inspector-label-state": "Stanje",
+	"simple-tasks-taskreport-state-title-done": "Zadatak urađen",
+	"simple-tasks-taskreport-state-filter-done": "Urađeno",
+	"simple-tasks-taskreport-state-filter-open": "Otvoreno"
+}

@@ -2,6 +2,8 @@
 
 namespace BlueSpice\ContextMenu\MenuItem;
 
+use MediaWiki\Message\Message;
+
 class Download extends BaseFileAction {
 
 	/**
@@ -9,12 +11,12 @@ class Download extends BaseFileAction {
 	 * @return string
 	 */
 	public function getIconClass() {
-		return 'bs-icon-download';
+		return 'download';
 	}
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabelMessage() {
 		return wfMessage( 'bs-contextmenu-file-download' );
@@ -26,8 +28,7 @@ class Download extends BaseFileAction {
 	 */
 	public function getUrl() {
 		// add a query parameter to force download
-		$url = $this->file->getURL() . "?download=1";
-		return $url;
+		return $this->file->getURL() . "?download=1";
 	}
 
 	/**

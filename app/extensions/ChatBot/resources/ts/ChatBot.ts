@@ -67,7 +67,12 @@ export default class ChatBot {
 
 	private browserStorage: BrowserStorage;
 
-	public constructor( chatUrl: string, sessionUrl: string, historyUrl: string, feedbackUrl: string ) {
+	public constructor(
+		chatUrl: string,
+		sessionUrl: string,
+		historyUrl: string,
+		feedbackUrl: string
+	) {
 		this.dom = new Dom();
 
 		if ( !chatUrl || !historyUrl || !sessionUrl || !feedbackUrl ) {
@@ -100,11 +105,11 @@ export default class ChatBot {
 				try {
 					this.browserStorage.updateChatHistory( chatHistory );
 				} catch ( error ) {
-					this.throwError( mw.message( 'chat-api-error', error ).text() );
+					this.throwError( error );
 				}
 				return chatHistory;
 			} catch ( error ) {
-				this.throwError( mw.message( 'chat-api-error', error.message ).text() );
+				this.throwError( error.message );
 			}
 		}
 
@@ -148,7 +153,7 @@ export default class ChatBot {
 				this.browserStorage.setRunningSession( sessionId );
 				this.dom.setChatButtonActive( true );
 			} catch ( error ) {
-				this.throwError( mw.message( 'chat-api-error', error.message ).text() );
+				this.throwError( error.message );
 			}
 		}
 
@@ -267,7 +272,7 @@ export default class ChatBot {
 		try {
 			this.browserStorage.updateChatHistory( chatHistory );
 		} catch ( error ) {
-			this.throwError( mw.message( 'chat-api-error', error ).text() );
+			this.throwError( error );
 		}
 		this.dom.enableExport();
 	}
@@ -287,7 +292,7 @@ export default class ChatBot {
 			} );
 			this.bluespiceApi.downloadChatHistory( chatHistory, `ExportHdP-Chatbot_${ dateString }`, format );
 		} catch ( error ) {
-			this.throwError( mw.message( 'chat-api-error', error.message ).text() );
+			this.throwError( error.message );
 		}
 	}
 

@@ -9,7 +9,7 @@ class GraphNode {
 	private $fields = [];
 
 	/**
-	 * @var string $id : Node ID including namespace
+	 * @param string $id : Node ID including namespace
 	 */
 	public function __construct( $id ) {
 		$this->id = $id;
@@ -35,9 +35,10 @@ class GraphNode {
 	 * @param string $value : Field value
 	 * @param string $type : Type of the field, for aligning
 	 * @param string $page : Property page
+	 * @param string|null $valueLink : The page to link the value to
 	 */
-	public function addField( $name, $value, $type, $page ) {
-		$this->fields[] = [ 'name' => $name ?: $page, 'value' => $value, 'type' => $type, 'page' => $page ];
+	public function addField( $name, $value, $type, $page, $valueLink = null ) {
+		$this->fields[] = [ 'name' => $name ?: $page, 'value' => $value, 'type' => $type, 'page' => $page, 'valueLink' => $valueLink ];
 	}
 
 	/**

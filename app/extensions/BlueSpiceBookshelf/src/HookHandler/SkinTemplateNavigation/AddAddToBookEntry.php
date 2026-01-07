@@ -3,10 +3,20 @@
 namespace BlueSpice\Bookshelf\HookHandler\SkinTemplateNavigation;
 
 use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Permissions\PermissionManager;
 use SkinTemplate;
 
 class AddAddToBookEntry implements SkinTemplateNavigation__UniversalHook {
+
+	/** @var PermissionManager */
+	private $permissionManager;
+
+	/**
+	 * @param PermissionManager $permissionManager
+	 */
+	public function __construct( PermissionManager $permissionManager ) {
+		$this->permissionManager = $permissionManager;
+	}
 
 	/**
 	 * @param SkinTemplate $sktemplate
@@ -17,9 +27,10 @@ class AddAddToBookEntry implements SkinTemplateNavigation__UniversalHook {
 		if ( !$title->exists() ) {
 			return true;
 		}
-		if ( !MediaWikiServices::getInstance()->getPermissionManager()
-			->userCan( 'edit', $sktemplate->getUser(), $title )
-		) {
+		if ( !$title->isContentPage() ) {
+			return true;
+		}
+		if ( !$this->permissionManager->userCan( 'edit', $sktemplate->getUser(), $title ) ) {
 			return true;
 		}
 		return false;

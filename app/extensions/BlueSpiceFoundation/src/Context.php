@@ -1,8 +1,8 @@
 <?php
 namespace BlueSpice;
 
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Session\CsrfTokenSet;
@@ -67,6 +67,13 @@ class Context implements IContextSource {
 	/**
 	 * @inheritDoc
 	 */
+	public function getLanguageCode() {
+		return $this->context->getLanguageCode();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
 	public function getOutput() {
 		return $this->context->getOutput();
 	}
@@ -119,8 +126,7 @@ class Context implements IContextSource {
 	 */
 	public function getWikiPage() {
 		wfDeprecated( __METHOD__, '1.37' );
-		$services = MediaWikiServices::getInstance();
-		return $services->getWikiPageFactory()->newFromTitle( $this->context->getTitle() );
+		return $this->services->getWikiPageFactory()->newFromTitle( $this->context->getTitle() );
 	}
 
 	/**

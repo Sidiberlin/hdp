@@ -1,0 +1,228 @@
+{
+	"name": "MergeArticles",
+	"author": [
+		"[https://www.hallowelt.com Hallo Welt! GmbH]",
+		"Dejan Savuljesku <savuljesku@hallowelt.com>"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:MergeArticles",
+	"license-name": "GPL-3.0-only",
+	"version": "3.0.5",
+	"descriptionmsg": "mergearticles-extension-desc",
+	"requires": {
+		"MediaWiki": ">= 1.43.0"
+	},
+	"MessagesDirs": {
+		"MergeArticles": "i18n"
+	},
+	"ExtensionMessagesFiles": {
+		"MergeArticlesAlias": "languages/MergeArticles.alias.php"
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"PermissionRegistry": {
+				"merge-articles": {
+					"type": "global",
+					"roles": [ "admin" ]
+				}
+			}
+		},
+		"MergeArticles": {
+			"PageFilters": {
+				"term": "\\MergeArticles\\PageFilter\\Term::factory"
+			}
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "MergeArticles/resources"
+	},
+	"SpecialPages": {
+		"MergeArticles": {
+			"class": "\\MergeArticles\\Special\\MergeArticles",
+			"services": [ "TitleFactory", "DBLoadBalancer" ]
+		}
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"APIModules": {
+		"ma-merge-page-new": {
+			"class": "\\MergeArticles\\Api\\MergeNewPage",
+			"services": [ "HookContainer", "WikiPageFactory", "RepoGroup", "DeletePageFactory" ]
+		},
+		"ma-merge-page-existing": {
+			"class": "\\MergeArticles\\Api\\MergeExistingPage",
+			"services": [ "HookContainer", "WikiPageFactory", "RepoGroup", "DeletePageFactory" ]
+		},
+		"ma-set-related-titles": "\\MergeArticles\\Api\\SetRelatedTitle",
+		"ma-discard-draft": {
+			"class": "\\MergeArticles\\Api\\DiscardDraft",
+			"services": [ "HookContainer", "WikiPageFactory", "RepoGroup", "DeletePageFactory" ]
+		}
+	},
+	"AvailableRights": [
+		"merge-articles"
+	],
+	"GroupPermissions": {
+		"*": {
+			"merge-articles": false
+		},
+		"user": {
+			"merge-articles": false
+		},
+		"sysop": {
+			"merge-articles": true
+		}
+	},
+	"AutoloadNamespaces": {
+		"MergeArticles\\": "src/"
+	},
+	"ResourceModules": {
+		"ext.mergearticles": {
+			"scripts": [
+				"widget/MultilineTextInputWidget.js",
+				"ext.mergearticles.js"
+			],
+			"dependencies": [
+				"mediawiki.api",
+				"mediawiki.Title",
+				"oojs",
+				"oojs-ui",
+				"oojs-ui.styles.icons-editing-core",
+				"oojs-ui.styles.icons-movement"
+			]
+		},
+		"ext.mergearticles.overview": {
+			"scripts": [
+				"widget/PageItem.js",
+				"panel/Overview.js",
+				"ext.mergearticles.overview.js"
+			],
+			"styles": [
+				"ext.mergearticles.overview.less"
+			],
+			"dependencies": [
+				"ext.mergearticles"
+			],
+			"messages": [
+				"mergearticles-target-exists-label",
+				"mergearticles-target-new-label",
+				"mergearticles-page-item-action-compare",
+				"mergearticles-page-item-action-review",
+				"mergearticles-type-file",
+				"mergearticles-type-article",
+				"mergearticles-type-template",
+				"mergearticles-type-category",
+				"mergearticles-no-pages-available"
+			]
+		},
+		"ext.mergearticles.review": {
+			"scripts": [
+				"panel/Review.js",
+				"ext.mergearticles.review.js"
+			],
+			"styles": [
+				"ext.mergearticles.action.less"
+			],
+			"dependencies": [
+				"ext.mergearticles"
+			],
+			"messages": [
+				"mergearticles-do-merge-label",
+				"mergearticles-merge-success-header",
+				"mergearticles-merge-success-page-label",
+				"mergearticles-merge-fail-header",
+				"mergearticles-back-to-overview",
+				"mergearticles-merge-new-help",
+				"mergearticles-no-content-message",
+				"mergearticles-review-header",
+				"mergearticles-discard-draft",
+				"mergearticles-discard-draft-help",
+				"mergearticles-draft-discard-fail-header",
+				"mergearticles-draft-discard-success-header",
+				"mergearticles-draft-discard-success-text"
+			]
+		},
+		"ext.mergearticles.compare": {
+			"scripts": [
+				"panel/Review.js",
+				"panel/Compare.js",
+				"ext.mergearticles.compare.js"
+			],
+			"styles": [
+				"ext.mergearticles.action.less"
+			],
+			"dependencies": [
+				"ext.mergearticles",
+				"oojs-ui.styles.icons-moderation"
+			],
+			"messages": [
+				"mergearticles-do-merge-label",
+				"mergearticles-diff-action-accept",
+				"mergearticles-diff-action-refuse",
+				"mergearticles-resolution-counter",
+				"mergearticles-same-block-label",
+				"mergearticles-diff-option-hide-identical-blocks-label",
+				"mergearticles-diff-option-accept-all-label",
+				"mergearticles-diff-accepted",
+				"mergearticles-diff-refused",
+				"mergearticles-diff-item-undo",
+				"mergearticles-show-final-text-button-label",
+				"mergearticles-show-final-text-label",
+				"mergearticles-diff-header",
+				"mergearticles-final-text-header-label",
+				"mergearticles-final-text-header-note",
+				"mergearticles-merge-success-header",
+				"mergearticles-merge-success-page-label",
+				"mergearticles-merge-fail-header",
+				"mergearticles-discard-draft",
+				"mergearticles-discard-draft-help",
+				"mergearticles-draft-discard-fail-header",
+				"mergearticles-draft-discard-success-header",
+				"mergearticles-draft-discard-success-text",
+				"mergearticles-no-diff-message",
+				"mergearticles-back-to-overview",
+				"mergearticles-no-diff-file-message",
+				"mergearticles-diff-action-refuse-both",
+				"mergearticles-diff-action-accept-both",
+				"mergearticles-diff-accepted-both",
+				"mergearticles-diff-refused-both"
+			]
+		},
+		"ext.mergearticles.filters": {
+			"scripts": [
+				"pageFilters/Filter.js",
+				"pageFilters/Term.js"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"mediawiki.Title"
+			]
+		}
+	},
+	"namespaces": [
+		{
+			"id": 1004,
+			"constant": "NS_DRAFT",
+			"name": "Draft"
+		},
+		{
+			"id": 1005,
+			"constant": "NS_DRAFT_TALK",
+			"name": "Draft_talk"
+		}
+	],
+	"config": {
+		"MADraftFilePrefix": {
+			"value": "Draft_"
+		},
+		"MAUseLineByLineDiff": {
+			"value": false
+		},
+		"MAEnableBetaFeatures": {
+			"value": false
+		}
+	},
+	"load_composer_autoloader": true,
+	"manifest_version": 2
+}

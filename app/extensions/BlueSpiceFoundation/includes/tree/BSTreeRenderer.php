@@ -1,5 +1,12 @@
 <?php
 
+use MediaWiki\Config\Config;
+use MediaWiki\Config\HashConfig;
+use MediaWiki\Config\MultiConfig;
+use MediaWiki\Html\Html;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Parser\Sanitizer;
+
 class BSTreeRenderer {
 
 	public const CONFIG_ID = 'id';
@@ -168,7 +175,7 @@ class BSTreeRenderer {
 	 */
 	public function renderNode( $node ) {
 		$this->html .= Html::openElement( 'span', [ 'class' => 'bs-treenode-value' ] );
-		$this->html .= $node->get( 'html',  $node->getText() );
+		$this->html .= $node->get( 'html', $node->getText() );
 		$this->html .= Html::closeElement( 'span' );
 	}
 

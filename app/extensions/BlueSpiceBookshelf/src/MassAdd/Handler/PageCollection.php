@@ -1,8 +1,9 @@
 <?php
 namespace BlueSpice\Bookshelf\MassAdd\Handler;
 
+use MediaWiki\Content\TextContent;
 use MediaWiki\MediaWikiServices;
-use TextContent;
+use MediaWiki\Title\Title;
 
 class PageCollection implements \BlueSpice\Bookshelf\MassAdd\IHandler {
 	/**
@@ -18,10 +19,10 @@ class PageCollection implements \BlueSpice\Bookshelf\MassAdd\IHandler {
 	 * @return array
 	 */
 	public function getData() {
-		$pageCollectionPrefix = wfMessage( 'bs-pagecollection-prefix' )->inContentLanguage()->plain();
+		$pageCollectionPrefix = wfMessage( 'bs-pagecollection-prefix' )->inContentLanguage()->text();
 		$pageCollectionPrefix = str_replace( ' ', '_', $pageCollectionPrefix );
 		$pageCollectionPrefix .= "/";
-		$pageCollectionTitle = \Title::makeTitle( NS_MEDIAWIKI, $pageCollectionPrefix . $this->root );
+		$pageCollectionTitle = Title::makeTitle( NS_MEDIAWIKI, $pageCollectionPrefix . $this->root );
 
 		if ( $pageCollectionTitle->exists() === false ) {
 			return [];
@@ -51,8 +52,8 @@ class PageCollection implements \BlueSpice\Bookshelf\MassAdd\IHandler {
 					$pageDisplayText = $linkPieces[1];
 				}
 			}
-			$title = \Title::newFromText( $page );
-			if ( !( $title instanceof \Title ) ) {
+			$title = Title::newFromText( $page );
+			if ( !( $title instanceof Title ) ) {
 				continue;
 			}
 			if ( !$pageDisplayText ) {

@@ -7,6 +7,7 @@ ext.notifyme.ui.panel.IndividualSubscriptions = function ( cfg ) {
 	ext.notifyme.ui.panel.IndividualSubscriptions.parent.call( this, cfg );
 	this.setRegistry = ext.notifyme.subscriptionSetRegistry;
 	this.buckets = cfg.buckets || [];
+	this.events = cfg.events || [];
 	this.channelLabels = cfg.channelLabels || {};
 
 	this.emptyMessage = null;
@@ -60,10 +61,11 @@ ext.notifyme.ui.panel.IndividualSubscriptions.prototype.openDialog = function ( 
 		id: id,
 		data: data,
 		buckets: this.buckets,
+		events: this.events,
 		channelLabels: this.channelLabels
 	} );
 	windowManager.addWindows( [ window ] );
-	windowManager.openWindow( window ).closed.then( ( data ) => {
+	windowManager.openWindow( window ).closed.then( ( data ) => { // eslint-disable-line no-shadow
 		if ( data && data.action === 'create' ) {
 			if ( data.value.id ) {
 				this.sets[ data.value.id ].setValue( data.value );
@@ -80,14 +82,14 @@ ext.notifyme.ui.panel.IndividualSubscriptions.prototype.addSet = function ( data
 		hash = this.generateId( data );
 
 	if ( !set ) {
-		console.error( 'Invalid set type provided', data.setType );
+		console.error( 'Invalid set type provided', data.setType ); // eslint-disable-line no-console
 		return;
 	}
 	if ( this.sets.hasOwnProperty( hash ) ) {
 		OO.ui.alert( mw.message( 'notifyme-ui-subscription-set-duplicate' ).text() );
 		return;
 	}
-	const setInstance = new set( hash );
+	const setInstance = new set( hash ); // eslint-disable-line new-cap
 	setInstance.setBucketDisplayLabels( this.buckets );
 	setInstance.setValue( data );
 	setInstance.connect( this, { edit: 'onEditClick', delete: 'onDeleteClick' } );
@@ -116,7 +118,7 @@ ext.notifyme.ui.panel.IndividualSubscriptions.prototype.getValue = function () {
 	const value = [];
 	for ( const hash in this.sets ) {
 		if ( this.sets.hasOwnProperty( hash ) ) {
-			const setValue = $.extend( {
+			const setValue = Object.assign( {
 				setType: this.sets[ hash ].getKey()
 			}, this.sets[ hash ].getValue() );
 			value.push( setValue );

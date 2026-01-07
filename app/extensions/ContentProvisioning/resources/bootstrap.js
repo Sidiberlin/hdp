@@ -1,3 +1,4 @@
+/* eslint-disable no-underscore-dangle */
 window.contentProvisioning = {
 	api: {},
 	store: {},
@@ -10,15 +11,15 @@ window.contentProvisioning = {
 			promise: null,
 			api: null
 		},
-		_getApi: function() {
+		_getApi: function () {
 			// Get API Singleton
 			if ( contentProvisioning._internal._api.promise ) {
 				return contentProvisioning._internal._api.promise;
 			}
 
-			var dfd = $.Deferred();
+			const dfd = $.Deferred();
 			if ( !contentProvisioning._internal._api.api ) {
-				mw.loader.using( [ "ext.contentProvisioning.api" ], function() {
+				mw.loader.using( [ 'ext.contentProvisioning.api' ], () => {
 					contentProvisioning._internal._api.api = new contentProvisioning.api.Api();
 					contentProvisioning._internal._api.promise = null;
 					dfd.resolve( contentProvisioning._internal._api.api );
@@ -30,6 +31,6 @@ window.contentProvisioning = {
 			}
 			return dfd.promise();
 		}
-	},
+	}
 
-}
+};

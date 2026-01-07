@@ -12,6 +12,9 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GPL-3.0-only
  * @filesource
  */
+
+use MediaWiki\Maintenance\Maintenance;
+
 require_once dirname( dirname( dirname( __DIR__ ) ) ) . '/maintenance/Maintenance.php';
 
 /**

@@ -6,17 +6,14 @@ use Exception;
 use Job;
 use MediaWiki\Extension\EventBus\EventBus;
 use MediaWiki\Extension\EventBus\EventFactory;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Rest\HttpException;
-use MediaWiki\Rest\RequestInterface;
-use MediaWiki\Rest\Validator\BodyValidator;
 use Psr\Log\LoggerInterface;
 
 /**
- * Class EventBodyValidator
- *
  * Validates the body
  */
-class EventBodyValidator implements BodyValidator {
+class EventBodyValidator {
 
 	/**
 	 * @var string
@@ -33,33 +30,21 @@ class EventBodyValidator implements BodyValidator {
 		$this->logger = $logger;
 	}
 
-	/**
-	 * @param RequestInterface $request
-	 * @return Job|mixed|void
-	 * @throws HttpException
-	 */
-	public function validateBody( RequestInterface $request ) {
-		// get the info contained in the body
-		$event = null;
-		try {
-			$event = json_decode( $request->getBody()->getContents(), true );
-		} catch ( Exception $e ) {
-			throw new HttpException( "Could not decode the event", 500, [
-				'error' => $e->getMessage(),
-			] );
-		}
-
+	public function validateEvent( array $event ): Job {
 		// check that we have the needed components of the event
 		if ( !isset( $event['database'] ) ||
 			!isset( $event['type'] ) ||
 			!isset( $event['params'] )
 		) {
 			$missingParams = [];
-			if ( !isset( $event['database'] ) ) { $missingParams[] = 'database';
+			if ( !isset( $event['database'] ) ) {
+				$missingParams[] = 'database';
 			}
-			if ( !isset( $event['type'] ) ) { $missingParams[] = 'type';
+			if ( !isset( $event['type'] ) ) {
+				$missingParams[] = 'type';
 			}
-			if ( !isset( $event['params'] ) ) { $missingParams[] = 'params';
+			if ( !isset( $event['params'] ) ) {
+				$missingParams[] = 'params';
 			}
 			throw new HttpException( 'Invalid event received', 400, [ 'missing_params' => $missingParams ] );
 		}
@@ -116,7 +101,8 @@ class EventBodyValidator implements BodyValidator {
 	 */
 	private function getJobFromParams( array $jobEvent ) {
 		try {
-			$job = Job::factory( $jobEvent['type'], $jobEvent['params'] );
+			$jobFactory = MediaWikiServices::getInstance()->getJobFactory();
+			$job = $jobFactory->newJob( $jobEvent['type'], $jobEvent['params'] );
 		} catch ( Exception $e ) {
 			$this->throwJobErrors( [
 				'status'  => false,

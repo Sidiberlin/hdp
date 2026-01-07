@@ -1,21 +1,21 @@
-( function( mw, $, d ){
+( function ( mw, $, d ) {
 
-	$( d ).ready( function() {
-		var hash = window.location.hash;
-		var offset = $( '#main' ).offset().top + $( '#title-line' ).height();
+	$( () => {
+		const hash = window.location.hash;
+		const offset = $( '#main' ).offset().top + $( '#title-line' ).height();
 		if ( hash !== '' ) {
-			var jumpmark = getJumpmarkEl( hash );
+			const jumpmark = getJumpmarkEl( hash );
 			if ( !jumpmark ) {
 				return;
 			}
 
-			var position = getPosition( jumpmark, offset);
-			$( 'body, html').animate( {
-					scrollTop: position
-				},
-				100
+			const position = getPosition( jumpmark, offset );
+			$( 'body, html' ).animate( {
+				scrollTop: position
+			},
+			100
 			);
-		};
+		}
 
 		$( d ).on( 'click',
 			'nav.skip-links a, #mw-content-text a:not( [id] ):not( [class] ),#mw-content-text map area',
@@ -36,20 +36,20 @@
 	} );
 
 	function userInputScroll( event, element, offset ) {
-		let localUrl = element.pathname + element.search;
-		let fullUrl = window.location.origin + localUrl;
+		const localUrl = element.pathname + element.search;
+		const fullUrl = window.location.origin + localUrl;
 
-		if( element.href.indexOf( localUrl ) !== 0 && element.href.indexOf( fullUrl ) !== 0 ) {
+		if ( element.href.indexOf( localUrl ) !== 0 && element.href.indexOf( fullUrl ) !== 0 ) {
 			return;
 		}
 
 		if ( element.hash !== '' ) {
-			var jumpmark = getJumpmarkEl( element.hash );
+			const jumpmark = getJumpmarkEl( element.hash );
 			if ( !jumpmark ) {
 				return;
 			}
 
-			var position = getPosition( jumpmark, offset );
+			const position = getPosition( jumpmark, offset );
 			if ( position === 0 ) {
 				return;
 			}
@@ -62,9 +62,9 @@
 
 	function getJumpmarkEl( hash ) {
 		// Strip the leading # to get the id
-		var id = hash.replace( '#', '' ),
-			urldecodedId = decodeURIComponent( id ),
-			element = d.getElementById( urldecodedId );
+		let id = hash.replace( '#', '' );
+		const urldecodedId = decodeURIComponent( id );
+		let element = d.getElementById( urldecodedId );
 
 		if ( !element ) {
 			// MediaWiki may use additional anchors
@@ -75,15 +75,15 @@
 	}
 
 	function getPosition( jumpmark, offset ) {
-		var $jumpmark = $( jumpmark ),
-			$heading = $jumpmark.closest( 'h1,h2,h3,h4,h5,h6' ),
-			position = $jumpmark.offset().top;
+		const $jumpmark = $( jumpmark );
+		const $heading = $jumpmark.closest( 'h1,h2,h3,h4,h5,h6' );
+		let position = $jumpmark.offset().top;
 
-		if ( $heading.length === 1  ) {
+		if ( $heading.length === 1 ) {
 			position -= $heading.height();
 		}
 
 		return position - offset;
 	}
 
-} )( mediaWiki, jQuery, document );
+}( mediaWiki, jQuery, document ) );

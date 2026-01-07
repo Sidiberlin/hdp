@@ -49,7 +49,7 @@ ext.atMentions.ui.UserMentionInspector.prototype.getAnnotation = function () {
  * @inheritdoc
  */
 ext.atMentions.ui.UserMentionInspector.prototype.getAnnotationFromFragment = function ( fragment ) {
-	var text = fragment.getText();
+	const text = fragment.getText();
 
 	return text ? ext.atMentions.dm.UserMentionAnnotation.static.newFromUsername( text ) : null;
 };
@@ -64,33 +64,38 @@ ext.atMentions.ui.UserMentionInspector.prototype.getAnnotationFromFragment = fun
  */
 // eslint-disable-next-line no-unused-vars
 ext.atMentions.ui.UserMentionInspector.prototype.onUserChoose = function ( user ) {
-	this.updateActions();
-	this.onFormSubmit();
+	const promise = this.updateActions();
+	promise.then( () => {
+		this.onFormSubmit();
+	} );
 };
 
 ext.atMentions.ui.UserMentionInspector.prototype.makeAnnotation = function () {
-	var user = this.userPicker.getSelectedUser();
+	const user = this.userPicker.getSelectedUser();
 	return user ? ext.atMentions.dm.UserMentionAnnotation.static.newFromUser( user ) : null;
 };
 
 /**
  * Update the actions based on the annotation state
  *
- * @return {void}
+ * @return {Promise}
  */
 ext.atMentions.ui.UserMentionInspector.prototype.updateActions = function () {
-	var isValid = false,
-		inspector = this,
-		annotation = this.makeAnnotation();
+	const inspector = this;
+	const annotation = this.makeAnnotation();
+	const promise = this.userPicker.getValidity();
+	let isValid = false;
 
-	this.userPicker.getValidity()
-		.then( function () { isValid = true; } )
-		.always( function () {
+	promise.then( () => {
+		isValid = true;
+	} )
+		.always( () => {
 			isValid = isValid && !!annotation;
-			inspector.actions.forEach( { actions: [ 'done', 'insert' ] }, function ( action ) {
+			inspector.actions.forEach( { actions: [ 'done', 'insert' ] }, ( action ) => {
 				action.setDisabled( !isValid );
 			} );
 		} );
+	return promise;
 };
 
 /**
@@ -104,7 +109,7 @@ ext.atMentions.ui.UserMentionInspector.prototype.shouldRemoveAnnotation = functi
  * @inheritdoc
  */
 ext.atMentions.ui.UserMentionInspector.prototype.getInsertionText = function () {
-	var user = this.userPicker.getSelectedUser();
+	const user = this.userPicker.getSelectedUser();
 	return user ? user.getDisplayName() : '';
 };
 
@@ -117,7 +122,7 @@ ext.atMentions.ui.UserMentionInspector.prototype.shouldInsertText = function () 
 };
 
 ext.atMentions.ui.UserMentionInspector.prototype.setFromAnnotation = function ( annotation ) {
-	var current = this.makeAnnotation();
+	const current = this.makeAnnotation();
 	if ( ve.compare(
 		annotation ? annotation.getComparableObject() : {},
 		current ? current.getComparableObject() : {}
@@ -136,7 +141,7 @@ ext.atMentions.ui.UserMentionInspector.prototype.setFromAnnotation = function ( 
 ext.atMentions.ui.UserMentionInspector.prototype.getSetupProcess = function ( data ) {
 	return ext.atMentions.ui.UserMentionInspector.super.prototype.getSetupProcess.call( this, data )
 		.next( function () {
-			var title = ve.msg(
+			const title = ve.msg(
 				this.isReadOnly() ?
 					'at-mentions-inspector-title' : (
 						this.isNew ?
@@ -180,7 +185,7 @@ ext.atMentions.ui.UserMentionInspector.prototype.getHoldProcess = function ( dat
  * @inheritdoc
  */
 ext.atMentions.ui.UserMentionInspector.prototype.getTeardownProcess = function ( data ) {
-	var fragment;
+	let fragment;
 	// Intentionally different parent class, we need parent of parent
 	return ve.ui.LinkAnnotationInspector.super.prototype.getTeardownProcess.call( this, data )
 		.first( function () {

@@ -3,7 +3,7 @@
 namespace BlueSpice\Discovery\HookHandler\OutputPageBodyAttributes;
 
 use BlueSpice\Discovery\CookieHandler;
-use OutputPage;
+use MediaWiki\Output\OutputPage;
 use Skin;
 
 class AddToBodyAttributes {
@@ -27,5 +27,8 @@ class AddToBodyAttributes {
 
 			$bodyAttrs[ 'class' ] .= " $bodyClassName $skinBodyClasses";
 		}
+
+		// Add a class to enable extension code for custom skins.
+		$bodyAttrs[ 'class' ] .= ' base-bluespicediscovery';
 	}
 }

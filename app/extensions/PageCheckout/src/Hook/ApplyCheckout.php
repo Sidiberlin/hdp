@@ -3,10 +3,10 @@
 namespace MediaWiki\Extension\PageCheckout\Hook;
 
 use MediaWiki\Extension\PageCheckout\CheckoutManager;
+use MediaWiki\Message\Message;
 use MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook;
-use Message;
-use Title;
-use User;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class ApplyCheckout implements GetUserPermissionsErrorsHook {
 	/** @var string[] Permissions to lock */

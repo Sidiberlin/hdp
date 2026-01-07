@@ -7,10 +7,8 @@ bs.skin.enhancedSidebar.tree.EnhancedSidebarTree = function ( cfg ) {
 	bs.skin.enhancedSidebar.tree.EnhancedSidebarTree.parent.call( this, cfg );
 };
 
-// eslint-disable-next-line max-len
 OO.inheritClass( bs.skin.enhancedSidebar.tree.EnhancedSidebarTree, ext.menueditor.ui.data.tree.Tree );
 
-// eslint-disable-next-line max-len
 bs.skin.enhancedSidebar.tree.EnhancedSidebarTree.prototype.getPossibleNodesForLevel = function ( lvl ) {
 	if ( lvl === 0 ) {
 		return [ 'enhanced-sidebar-panel-heading' ];

@@ -11,6 +11,7 @@
 	"contentdroplets-droplet-text-box-tip": "Tipp",
 	"contentdroplets-droplet-text-box-neutral": "Message",
 	"contentdroplets-category-label-content": "Inhalt",
+	"contentdroplets-category-label-media": "Medien",
 	"contentdroplets-category-label-visualization": "Visualisatioun",
 	"contentdroplets-category-label-data": "Donnéeën",
 	"contentdroplets-category-label-navigation": "Navigatioun",
@@ -25,6 +26,5 @@
 	"contentdroplets-droplet-icon-name": "Symbol",
 	"contentdroplet-dialog-action-close": "Ofbriechen",
 	"contentdroplet-dialog-action-insert": "Drasetzen",
-	"contentdroplets-droplet-code-name": "Code",
-	"contentdroplets-category-label-media": "Medien"
+	"contentdroplets-droplet-code-name": "Code"
 }

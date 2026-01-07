@@ -2,8 +2,8 @@
 
 namespace BlueSpice\Discovery\Component;
 
-use IContextSource;
-use Message;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\ComponentBase;
 use MWStake\MediaWiki\Component\CommonUserInterface\IComponent;
 use MWStake\MediaWiki\Component\CommonUserInterface\IRestrictedComponent;

@@ -2,51 +2,48 @@
 
 namespace MediaWiki\Extension\CollabPads;
 
+use ObjectCacheFactory;
+use Wikimedia\Rdbms\IConnectionProvider;
 use Wikimedia\Rdbms\IDatabase;
-use Wikimedia\Rdbms\ILoadBalancer;
+use Wikimedia\Rdbms\Platform\ISQLPlatform;
 
 class CollabSessionManager {
 
-	/**
-	 * @var IDatabase
-	 */
-	private $dbr = null;
+	/** @var IDatabase */
+	private $dbr;
+
+	/** @var IDatabase */
+	private $dbw;
+
+	/** @var IConnectionProvider */
+	private $connectionProvider;
+
+	/** @var ObjectCacheFactory */
+	private $objectCacheFactory;
 
 	/**
-	 * @var IDatabase
+	 * @param IConnectionProvider $connectionProvider
+	 * @param ObjectCacheFactory $objectCacheFactory
 	 */
-	private $dbw = null;
-
-	/**
-	 * @var ILoadBalancer
-	 */
-	private $lb = null;
-
-	/**
-	 * @param ILoadBalancer $lb
-	 */
-	public function __construct( ILoadBalancer $lb ) {
-		$this->lb = $lb;
+	public function __construct( IConnectionProvider $connectionProvider, ObjectCacheFactory $objectCacheFactory ) {
+		$this->connectionProvider = $connectionProvider;
+		$this->objectCacheFactory = $objectCacheFactory;
 	}
 
 	/**
 	 * @return IDatabase
 	 */
 	private function getDBW() {
-		if ( $this->dbw === null ) {
-			$this->dbw = $this->lb->getConnection( DB_PRIMARY );
-		}
-		return $this->dbw;
+		$dbw = $this->dbw ??= $this->connectionProvider->getPrimaryDatabase();
+		return $dbw;
 	}
 
 	/**
 	 * @return IDatabase
 	 */
 	private function getDBR() {
-		if ( $this->dbr === null ) {
-			$this->dbr = $this->lb->getConnection( DB_REPLICA );
-		}
-		return $this->dbr;
+		$dbr = $this->dbr ??= $this->connectionProvider->getReplicaDatabase();
+		return $dbr;
 	}
 
 	/**
@@ -58,21 +55,39 @@ class CollabSessionManager {
 		if ( defined( 'MW_UPDATER' ) || defined( 'MEDIAWIKI_INSTALL' ) ) {
 			return [];
 		}
-		$res = $this->getDBR()->select(
-			'collabpad_session',
-			[ 's_page_namespace', 's_page_title', 's_id', 's_owner', 's_participants' ],
-			[ 's_page_title' => $pageTitle, 's_page_namespace' => $pageNamespace ],
-			__METHOD__
+
+		$objectCache = $this->objectCacheFactory->getLocalServerInstance();
+		$fname = __METHOD__;
+
+		return $objectCache->getWithSetCallback(
+			$objectCache->makeKey( 'collabpads-getsession', $pageNamespace, $pageTitle ),
+			$objectCache::TTL_SECOND,
+			function () use ( $pageNamespace, $pageTitle, $fname ) {
+				$dbr = $this->getDBR();
+
+				$row = $dbr->newSelectQueryBuilder()
+					->table( 'collabpad_session' )
+					->field( ISQLPlatform::ALL_ROWS )
+					->where( [
+						's_page_namespace' => $pageNamespace,
+						's_page_title' => $pageTitle
+					] )
+					->caller( $fname )
+					->fetchRow();
+
+				if ( !$row ) {
+					return [];
+				}
+
+				return [
+					'sessionId' => $row->s_id,
+					'pageNamespace' => $row->s_page_namespace,
+					'pageTitle' => $row->s_page_title,
+					'owner' => $row->s_owner,
+					'participants' => $row->s_participants
+				];
+			}
 		);
-		$session = [];
-		foreach ( $res as $row ) {
-			$session['sessionId'] = $row->s_id;
-			$session['pageNamespace'] = $row->s_page_namespace;
-			$session['pageTitle'] = $row->s_page_title;
-			$session['owner'] = $row->s_owner;
-			$session['participants'] = $row->s_participants;
-		}
-		return $session;
 	}
 
 	/**
@@ -122,7 +137,8 @@ class CollabSessionManager {
 				's_page_title' => $pageTitle,
 				's_owner' => $user,
 				's_participants' => serialize( $participants )
-			]
+			],
+			__METHOD__
 		);
 	}
 

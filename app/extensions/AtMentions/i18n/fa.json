@@ -20,12 +20,5 @@
 	"at-mentions-mention-notification-key": "شما مورد اشاره قرار گرفته‌اید",
 	"at-mentions-mention-in-entity-notification-key": "شما در یک پیام یا مبحث مورد اشاره قرار گرفته‌اید",
 	"at-mentions-mention-in-entity-notification-message": "در یک پیام یا مبحث «$2» در صفحهٔ $1 به شما اشاره کرد",
-	"at-mentions-mention-in-entity-notification-post-link": "رفتن مستقیم به مبحث",
-	"at-mentions-toolbar-tool-title": "افزودن اشاره",
-	"at-mentions-echo-mention-notification-summary": "شما در صفحهٔ $1 مورد اشاره قراره گرفته‌اید",
-	"at-mentions-echo-mention-notification-web-body": "{{GENDER:$2|$3}} به شما {{GENDER:$2|اشاره کرد}}",
-	"at-mentions-echo-mention-notification-subject": "{{GENDER:$2|$3}} در صفحهٔ $1 به شما {{GENDER:$2|اشاره کرد}}",
-	"at-mentions-echo-mention-notification-email-body": "شما در صفحهٔ $1 مورد اشاره قراره گرفته‌اید",
-	"at-mentions-echo-mention-entity-notification-subject": "{{GENDER:$2|$3}} در یک پیام یا مبحثی رد صفحهٔ $2 به شما {{GENDER:$2|اشاره کرد}}",
-	"at-mentions-echo-mention-entity-notification-email-body": "شما در نظری مربوط به یکی از ارسال‌های صفحه $1 مورد اشاره قرار گرفته‌اید"
+	"at-mentions-toolbar-tool-title": "افزودن اشاره"
 }

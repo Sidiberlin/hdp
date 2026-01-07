@@ -27,12 +27,15 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\Title;
 
 abstract class LinkerMakeMediaLinkFile extends Hook {
 
 	/**
 	 *
-	 * @var \Title
+	 * @var Title
 	 */
 	protected $title = null;
 
@@ -61,14 +64,14 @@ abstract class LinkerMakeMediaLinkFile extends Hook {
 	protected $ret = '';
 
 	/**
-	 * @param \Title $title
+	 * @param Title $title
 	 * @param \File $file
 	 * @param string &$html
 	 * @param array &$attribs
 	 * @param string &$ret
 	 * @return bool Always true to keep hook running
 	 */
-	public static function callback( \Title $title, $file, &$html, &$attribs, &$ret ) {
+	public static function callback( Title $title, $file, &$html, &$attribs, &$ret ) {
 		$className = static::class;
 		$hookHandler = new $className(
 			null,
@@ -84,15 +87,15 @@ abstract class LinkerMakeMediaLinkFile extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
-	 * @param \Title $title
+	 * @param IContextSource $context
+	 * @param Config $config
+	 * @param Title $title
 	 * @param \File $file
 	 * @param string &$html
 	 * @param array &$attribs
 	 * @param string &$ret
 	 */
-	public function __construct( $context, $config, \Title $title, $file, &$html, &$attribs, &$ret ) {
+	public function __construct( $context, $config, Title $title, $file, &$html, &$attribs, &$ret ) {
 		parent::__construct( $context, $config );
 
 		$this->title = $title;

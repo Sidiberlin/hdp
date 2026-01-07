@@ -3,14 +3,14 @@
 namespace BlueSpice\Avatars\AvatarGenerator;
 
 use BlueSpice\Avatars\AvatarGenerator;
-use User;
+use MediaWiki\User\User;
 
 class Identicon extends AvatarGenerator {
 
 	/**
 	 *
 	 * @param User $user
-	 * @param type $size
+	 * @param int $size
 	 * @param array $params
 	 * @return string
 	 */

@@ -2,30 +2,30 @@
 
 namespace SMW\Maintenance;
 
+use MediaWiki\Maintenance\Maintenance;
 use Onoi\MessageReporter\MessageReporter;
-use Onoi\MessageReporter\CallbackMessageReporter;
-use SMW\Services\ServicesFactory as ApplicationFactory;
-use SMW\Setup;
-use SMW\Utils\CliMsgFormatter;
-use SMW\Maintenance\MaintenanceCheck;
 use SMW\Localizer\CopyLocalMessages;
+use SMW\Services\ServicesFactory as ApplicationFactory;
+use SMW\Utils\CliMsgFormatter;
 
 /**
  * Load the required class
  */
+// @codeCoverageIgnoreStart
 if ( getenv( 'MW_INSTALL_PATH' ) !== false ) {
 	require_once getenv( 'MW_INSTALL_PATH' ) . '/maintenance/Maintenance.php';
 } else {
 	require_once __DIR__ . '/../../../maintenance/Maintenance.php';
 }
+// @codeCoverageIgnoreEnd
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.2
  *
  * @author mwjames
  */
-class runLocalMessageCopy extends \Maintenance {
+class runLocalMessageCopy extends Maintenance {
 
 	/**
 	 * @var MessageReporter
@@ -63,7 +63,6 @@ class runLocalMessageCopy extends \Maintenance {
 	 * @param string $message
 	 */
 	public function reportMessage( $message ) {
-
 		if ( $this->messageReporter !== null ) {
 			return $this->messageReporter->reportMessage( $message );
 		}
@@ -75,9 +74,8 @@ class runLocalMessageCopy extends \Maintenance {
 	 * @see Maintenance::execute
 	 */
 	public function execute() {
-
 		if ( ( $maintenanceCheck = new MaintenanceCheck() )->canExecute() === false ) {
-			exit ( $maintenanceCheck->getMessage() );
+			exit( $maintenanceCheck->getMessage() );
 		}
 
 		$applicationFactory = ApplicationFactory::getInstance();
@@ -128,18 +126,17 @@ class runLocalMessageCopy extends \Maintenance {
 		$this->reportMessage( "Reading files ...\n" );
 
 		if ( $this->hasOption( 'copy-canonicalmessages' ) ) {
-			$this->copyCanonicalMessages();
+			$this->copyCanonicalMessages( $cliMsgFormatter, $file );
 		}
 
 		if ( $this->hasOption( 'copy-translatedmessages' ) ) {
-			$this->copyTranslatedMessages();
+			$this->copyTranslatedMessages( $cliMsgFormatter, $file );
 		}
 
 		$this->reportMessage( "   ... done.\n" );
 	}
 
-	private function copyCanonicalMessages() {
-
+	private function copyCanonicalMessages( $cliMsgFormatter, $file ) {
 		$this->reportMessage(
 			$cliMsgFormatter->firstCol( "... copy `$file` messages to canonical `en.json` ...", 3 )
 		);
@@ -155,8 +152,7 @@ class runLocalMessageCopy extends \Maintenance {
 		);
 	}
 
-	private function copyTranslatedMessages() {
-
+	private function copyTranslatedMessages( $cliMsgFormatter, $file ) {
 		$this->reportMessage(
 			$cliMsgFormatter->firstCol( "... copy i18n messages to the `$file`", 3 )
 		);
@@ -178,5 +174,7 @@ class runLocalMessageCopy extends \Maintenance {
 
 }
 
+// @codeCoverageIgnoreStart
 $maintClass = runLocalMessageCopy::class;
-require_once( RUN_MAINTENANCE_IF_MAIN );
+require_once RUN_MAINTENANCE_IF_MAIN;
+// @codeCoverageIgnoreEnd

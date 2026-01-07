@@ -42,7 +42,7 @@ OO.inheritClass( ext.enhancedUI.widget.CompareTool, OO.ui.Tool );
 ext.enhancedUI.widget.CompareTool.static.name = 'compare';
 ext.enhancedUI.widget.CompareTool.static.icon = '';
 ext.enhancedUI.widget.CompareTool.static.title = mw.message( 'enhanced-standard-uis-history-compare-tool-title' ).text();
-/* eslint-disable-next-line es-x/no-regexp-prototype-flags */
+
 ext.enhancedUI.widget.CompareTool.static.flags = [ 'primary', 'progressive' ];
 ext.enhancedUI.widget.CompareTool.static.displayBothIconAndLabel = true;
 ext.enhancedUI.widget.CompareTool.prototype.onSelect = function () {

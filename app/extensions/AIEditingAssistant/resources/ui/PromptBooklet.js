@@ -9,7 +9,7 @@ ext.AIEditingAssistant.ui.PromptBooklet = function ( config ) {
 	this.initialize();
 
 	this.connect( this, {
-		set: function( page ) {
+		set: function ( page ) {
 			if ( page instanceof ext.AIEditingAssistant.ui.CommandExecution ) {
 				page.init();
 				this.activePage = page;
@@ -28,36 +28,40 @@ ext.AIEditingAssistant.ui.PromptBooklet.prototype.getActivePage = function () {
 };
 
 ext.AIEditingAssistant.ui.PromptBooklet.prototype.initialize = function () {
-	var pages = [],
-		commands = {};
+	let pages = [];
+	const commands = {};
 
-	for ( var key in ext.AIEditingAssistant.commandRegistry.registry ) {
+	for ( const key in ext.AIEditingAssistant.commandRegistry.registry ) {
+		/* eslint-disable-next-line */
 		if ( !ext.AIEditingAssistant.commandRegistry.registry.hasOwnProperty( key ) ) {
 			continue;
 		}
 
-		var data = ext.AIEditingAssistant.commandRegistry.registry[ key ];
-		var page = new ext.AIEditingAssistant.ui.CommandExecution( {
+		const data = ext.AIEditingAssistant.commandRegistry.registry[ key ];
+		const page = new ext.AIEditingAssistant.ui.CommandExecution( {
+			/* eslint-disable-next-line */
 			label: mw.msg( data.labelMsg ),
+			/* eslint-disable-next-line */
 			data: $.extend( data, { key: key } )
 		}, this.operationalText );
 		page.connect( this, {
-			loadingChange: function( isLoading, wasSuccessful, isMainCall ) {
+			loadingChange: function ( isLoading, wasSuccessful, isMainCall ) {
 				this.emit( 'loadingChange', this.activePage, isLoading, wasSuccessful, isMainCall );
 			},
-			undo: function() {
-				this.emit('undo');
+			undo: function () {
+				this.emit( 'undo' );
 			}
 		} );
-		commands[key] = mw.msg( data.labelMsg );
+		/* eslint-disable-next-line */
+		commands[ key ] = mw.msg( data.labelMsg );
 		pages.push( page );
 	}
-	var selectionPage = new ext.AIEditingAssistant.ui.CommandSelectionPage( {}, commands );
+	const selectionPage = new ext.AIEditingAssistant.ui.CommandSelectionPage( {}, commands );
 	pages = [ selectionPage ].concat( pages );
 	this.addPages( pages );
 
 	selectionPage.connect( this, {
-		commandSelect: function( key ) {
+		commandSelect: function ( key ) {
 			this.setPage( 'commandPage_' + key );
 		}
 	} );

@@ -1,5 +1,7 @@
 <?php
 
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class BSApiWikiSubPageTreeStore extends BSApiExtJSStoreBase {
@@ -70,7 +72,7 @@ class BSApiWikiSubPageTreeStore extends BSApiExtJSStoreBase {
 
 			$sNodeText = $oDummyTitle->getNsText();
 			if ( $iNamespaceId === NS_MAIN ) {
-				$sNodeText = wfMessage( 'bs-ns_main' )->plain();
+				$sNodeText = wfMessage( 'bs-ns_main' )->text();
 			}
 
 			$oDataSet = new stdClass();

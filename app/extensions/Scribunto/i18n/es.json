@@ -11,13 +11,14 @@
 			"Maor X",
 			"MarcoAurelio",
 			"McDutchie",
-			"Peter Bowman",
-			"Ryo567",
-			"Vfrico",
 			"No se",
-			"Qwrop"
+			"Peter Bowman",
+			"Qwrop",
+			"Ryo567",
+			"Vfrico"
 		]
 	},
+	"content-model-scribunto": "Módulo Scribunto",
 	"scribunto-desc": "Marco para la incorporación de lenguajes de script en páginas de MediaWiki",
 	"scribunto-line": "en la línea $1",
 	"scribunto-module-line": "en $1 en la línea $2",

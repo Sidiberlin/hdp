@@ -1,14 +1,15 @@
 {
 	"name": "BlueSpiceRating",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceRating",
 	"author": "Patric Wirth",
 	"descriptionmsg": "bs-rating-extension-description",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0",
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"type": "bluespice",
@@ -80,6 +81,13 @@
 					"class": "\\BlueSpice\\Rating\\MetaItemProvider\\RatingProvider"
 				}
 			}
+		},
+		"BlueSpiceSMWConnector": {
+			"ExtraPropertyRegistry": {
+				"bsratingtotal": "BlueSpice\\Rating\\Property\\RatingTotalValueProvider::factory",
+				"bsratingaverage": "BlueSpice\\Rating\\Property\\RatingAverageValueProvider::factory",
+				"bsrecommendationstotal": "BlueSpice\\Rating\\Property\\RecommendationsTotalValueProvider::factory"
+			}
 		}
 	},
 	"ServiceWiringFiles": [
@@ -146,6 +154,9 @@
 		"ext.bluespice.rating.styles": {
 			"styles": [
 				"bluespice.rating.css"
+			],
+			"dependencies": [
+				"ext.rating.starRatingSvg.styles"
 			]
 		},
 		"ext.bluespice.rating": {
@@ -278,6 +289,10 @@
 		},
 		"writeNamespaceConfiguration": {
 			"class": "\\BlueSpice\\Rating\\Hook\\WriteNamespaceConfiguration"
+		},
+		"addResources": {
+			"class": "\\BlueSpice\\Rating\\Hook\\BeforePageDisplay\\AddResources",
+			"services": [ "ConfigFactory", "BSRatingRegistry", "BSRatingConfigFactory" ]
 		}
 	},
 	"Hooks": {
@@ -288,7 +303,7 @@
 			"\\BlueSpice\\Rating\\Hook\\LoadExtensionSchemaUpdates\\AddBSRatingRemoveDuplicateEntriesMaintenanceScript::callback",
 			"\\BlueSpice\\Rating\\Hook\\LoadExtensionSchemaUpdates\\AddRatingMigrateRatedCommentsScript::callback"
 		],
-		"BeforePageDisplay": "\\BlueSpice\\Rating\\Hook\\BeforePageDisplay\\AddResources::callback",
+		"BeforePageDisplay": "addResources",
 		"BSMigrateSettingsFromDeviatingNames": "\\BlueSpice\\Rating\\Extension::onBSMigrateSettingsFromDeviatingNames",
 		"NamespaceManager::getMetaFields": "BlueSpice\\Rating\\Hook\\NamespaceManagerGetMetaFields\\RegisterMetaFields::callback",
 		"BSApiNamespaceStoreMakeData": "BlueSpice\\Rating\\Hook\\BSApiNamespaceStoreMakeData\\AddData::callback",

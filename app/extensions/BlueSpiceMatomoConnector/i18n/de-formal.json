@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"    Josef Konrad <konrad@hallowelt.biz>"
+		]
+	},
+	"bs-matomoconnector-extension-description": "Erlaubt die Anbindung von Matomo an das Wiki, um Dashboards in Matomo zu erstellen",
+	"bs-matomoconnector-pref-siteid": "Seiten-ID",
+	"bs-matomoconnector-pref-baseurl": "Basis-URL",
+	"bs-matomoconnector-pref-optoutfooter": "Opt-Out-Link im Footer anzeigen",
+	"bs-matomoconnector-special-optoutheading": "Analysedienste",
+	"bs-matomoconnector-special-privacynote": "<p>Informationen über Ihre Benutzung dieser Webseite werden nicht an Dritte weitergegeben. Sie können die Verwendung der Cookies durch eine entsprechende Einstellung Ihrer Browser Software verhindern, es kann jedoch sein, dass Sie in diesem Fall gegebenenfalls nicht sämtliche Funktionen dieser Website voll umfänglich nutzen können.</p>\n<br />\n<p>Wenn Sie mit der Speicherung und Auswertung dieser Daten aus Ihrem Besuch nicht einverstanden sind, dann können Sie der Speicherung und Nutzung nachfolgend per Mausklick jederzeit widersprechen. In diesem Fall wird in Ihrem Browser ein sog. Opt-Out-Cookie abgelegt, was zur Folge hat, dass Matomo keinerlei Sitzungsdaten erhebt. Achtung: Wenn Sie Ihre Cookies löschen, so hat dies zur Folge, dass auch das Opt-Out-Cookie gelöscht wird und ggf. von Ihnen erneut aktiviert werden muss.</p>\n<br />\n<h3 style='font-family:times new roman'>Widerspruch:</h3>",
+	"bs-matomoconnector-pref-siteid-help": "Matomo Seiten-ID. Sichtbar als URL-Parameter in der Adressleiste des Browsers, wenn Sie bei Matomo angemeldet sind."
+}

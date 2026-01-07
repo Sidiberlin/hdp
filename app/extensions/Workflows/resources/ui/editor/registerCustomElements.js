@@ -1,4 +1,5 @@
 workflows.editor.element.registry.register( 'custom_form', {
+	isUserActivity: true,
 	class: 'activity-custom-form activity-bootstrap-icon',
 	label: mw.message( 'workflows-uto-activity-custom_form' ).text(),
 	defaultData: {
@@ -60,7 +61,7 @@ workflows.editor.element.registry.register( 'group_feedback', {
 			threshold_unit: '',
 			threshold_value: '',
 			users_feedbacks: '',
-			comment: '',
+			comment: ''
 		}
 	}
 } );
@@ -81,7 +82,7 @@ workflows.editor.element.registry.register( 'group_vote', {
 			threshold_no_value: '',
 			users_voted: '',
 			vote: '',
-			comment: '',
+			comment: ''
 		}
 	}
 } );

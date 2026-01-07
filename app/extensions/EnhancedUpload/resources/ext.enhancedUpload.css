@@ -2,23 +2,23 @@
 	max-width: unset;
 }
 
-/* stylelint-disable unit-disallowed-list */
+.enhancedUpload-widget .oo-ui-horizontalLayout {
+	justify-content: space-between;
+}
+
 .enhancedUpload-widget .oo-ui-horizontalLayout.heading {
 	margin: 1rem 0;
 	border-bottom: 1px solid #747474;
 }
-/* stylelint-enable unit-disallowed-list */
 
 .enhancedUpload-widget .oo-ui-horizontalLayout .toggle-icon {
 	float: right;
 }
 
-/* stylelint-disable unit-disallowed-list */
 .enhancedUpload-widget .buttonField {
 	margin: 1rem 0;
 	float: right;
 }
-/* stylelint-enable unit-disallowed-list */
 
 .enhancedUpload-widget .file-preview-widget {
 	margin: 20px 0;
@@ -144,8 +144,10 @@ label.enhancedupload-dialog-title {
 }
 /* stylelint-enable declaration-no-important */
 
-/* stylelint-disable unit-disallowed-list */
 .oo-ui-popupButtonWidget-popup.preview-label label {
 	font-size: 0.75rem;
 }
-/* stylelint-enable unit-disallowed-list */
+
+.index-width .oo-ui-horizontalLayout {
+	display: block;
+}

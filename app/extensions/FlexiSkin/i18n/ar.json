@@ -1,13 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
-			"Alshamiri1"
+			"Alshamiri1",
+			"Meno25"
 		]
 	},
 	"flexiskin-extension-desc": "يسمح بتخصيص الجلد",
 	"flexiskin-label": "جلد",
-	"right-flexiskin-viewspecialpage": "اعرض [[خاص: FlexiSkin | صفحة خاصة]] لتخصيص الجلد",
-	"action-flexiskin-viewspecialpage": "عرض [[خاص: FlexiSkin | صفحة خاصة]] لتخصيص الجلد",
+	"right-flexiskin-viewspecialpage": "اعرض [[Special:FlexiSkin|صفحة خاصة]] لتخصيص الجلد",
+	"action-flexiskin-viewspecialpage": "عرض [[Special:FlexiSkin|صفحة خاصة]] لتخصيص الجلد",
 	"right-flexiskin-api": "استخدم FlexiSkin APIs",
 	"action-flexiskin-api": "استخدام واجهات برمجة تطبيقات FlexiSkin",
 	"apihelp-flexiskin-skinoperation-param-skinname": "اسم الجلد المراد إدارة FlexiSkin لم",

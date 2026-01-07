@@ -3,7 +3,7 @@
 namespace BlueSpice\Discovery\Component;
 
 use BlueSpice\Discovery\CookieHandler;
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleLink;
 
 class SidebarSecondaryToggleButton extends SimpleLink {
@@ -90,7 +90,7 @@ class SidebarSecondaryToggleButton extends SimpleLink {
 	 * @return Message
 	 */
 	private function getButtonTitle(): Message {
-		if ( $this->isExpanded !== 'true' ) {
+		if ( $this->isExpanded === 'true' ) {
 			return Message::newFromKey( 'bs-discovery-sidebar-secondary-toggle-hide-title' );
 		} else {
 			return Message::newFromKey( 'bs-discovery-sidebar-secondary-toggle-show-title' );
@@ -102,7 +102,7 @@ class SidebarSecondaryToggleButton extends SimpleLink {
 	 * @return Message
 	 */
 	private function getButtonAriaLabel(): Message {
-		if ( $this->isExpanded !== 'true' ) {
+		if ( $this->isExpanded === 'true' ) {
 			return Message::newFromKey( 'bs-discovery-sidebar-secondary-toggle-hide-aria-label' );
 		} else {
 			return Message::newFromKey( 'bs-discovery-sidebar-secondary-toggle-show-aria-label' );

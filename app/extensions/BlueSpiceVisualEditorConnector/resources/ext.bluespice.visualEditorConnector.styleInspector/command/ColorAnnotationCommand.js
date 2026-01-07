@@ -1,12 +1,12 @@
 bs.util.registerNamespace( 'bs.vec.ui' );
 
-bs.vec.ui.ColorAnnotationCommand = function() {
+bs.vec.ui.ColorAnnotationCommand = function () {
 	// Parent constructor
 	bs.vec.ui.ColorAnnotationCommand.super.call(
 		this, 'color'
 	);
 	this.warning = null;
-	this.supportedSelections = ['linear'];
+	this.supportedSelections = [ 'linear' ];
 	this.action = 'content';
 	this.method = 'insert';
 	this.args = [ 'textStyle/color' ];
@@ -17,31 +17,30 @@ bs.vec.ui.ColorAnnotationCommand = function() {
 
 OO.inheritClass( bs.vec.ui.ColorAnnotationCommand, ve.ui.Command );
 
-
 /**
  * @inheritdoc
  */
-bs.vec.ui.ColorAnnotationCommand.prototype.execute = function ( surface, args, source ) {
+bs.vec.ui.ColorAnnotationCommand.prototype.execute = function ( surface, args, source ) { // eslint-disable-line no-unused-vars
 	if ( !this.isExecutable( surface.getModel().getFragment( surface.getModel().getSelection() ) ) ) {
 		return;
 	}
 
-	var picker = this.showPicker();
+	const picker = this.showPicker();
 	picker.connect( this, {
-		colorSelected: function( data ) {
+		colorSelected: function ( data ) {
 			data = data || {};
-			var annotationAction = new ve.ui.AnnotationAction( surface );
+			const annotationAction = new ve.ui.AnnotationAction( surface );
 			annotationAction.clear( 'textStyle/color' );
 
-			var annotationData = {
+			const annotationData = {
 				attributes: data,
 				type: 'textStyle/color'
 			};
 
 			annotationAction.set( 'textStyle/color', annotationData );
 		},
-		clear: function() {
-			var annotationAction = new ve.ui.AnnotationAction( surface );
+		clear: function () {
+			const annotationAction = new ve.ui.AnnotationAction( surface );
 			annotationAction.clear( 'textStyle/color' );
 		}
 	} );
@@ -68,7 +67,7 @@ bs.vec.ui.ColorAnnotationCommand.prototype.onSelectionChanged = function ( e ) {
 bs.vec.ui.ColorAnnotationCommand.prototype.showPicker = function () {
 	$( document.body ).find( '.oojs-plus-color-picker-standalone' ).remove();
 
-	var offset = $( '.ve-ui-toolbar-group-style' ).offset(),
+	const offset = $( '.ve-ui-toolbar-group-style' ).offset(),
 		picker = new OOJSPlus.ui.widget.ColorPickerStandaloneWidget( {
 			colors: bs.vec.config.get( 'ColorPickerColors' )
 		} );
@@ -79,19 +78,19 @@ bs.vec.ui.ColorAnnotationCommand.prototype.showPicker = function () {
 	picker.$element.offset( offset );
 
 	// Added mousedown event listener in case of Chrome not triggered
-	picker.$element.on('mousedown', function(e) {
+	picker.$element.on( 'mousedown', ( e ) => {
 		e.preventDefault();
-	});
+	} );
 
 	return picker;
 };
 
 bs.vec.ui.ColorAnnotationCommand.prototype.isExecutable = function ( fragment ) {
 	// Parent method
-	var ranges = fragment.getSelection().getRanges( ve.init.target.getSurface().getModel().getDocument() );
-	var hasActualSelection = false;
-	for( var i = 0; i < ranges.length; i++ ) {
-		var range = ranges[i];
+	const ranges = fragment.getSelection().getRanges( ve.init.target.getSurface().getModel().getDocument() );
+	let hasActualSelection = false;
+	for ( let i = 0; i < ranges.length; i++ ) {
+		const range = ranges[ i ];
 		if ( range.from !== range.to ) {
 			hasActualSelection = true;
 			break;
@@ -105,7 +104,6 @@ bs.vec.ui.ColorAnnotationCommand.prototype.isExecutable = function ( fragment ) 
 		bs.vec.ui.ColorAnnotationCommand.super.prototype.isExecutable.apply( this, arguments ) &&
 		hasActualSelection;
 };
-
 
 /* Registration */
 ve.ui.commandRegistry.register( new bs.vec.ui.ColorAnnotationCommand() );

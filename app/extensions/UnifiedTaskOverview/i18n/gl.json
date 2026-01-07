@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"unifiedtaskoverview-desc": "Ofrece unha páxina especial cunha visión xeral das tarefas dos usuarios",
+	"unifiedtaskoverview": "As miñas tarefas",
+	"unifiedtaskoverview-label-no-task": "Actualmente non hai tarefas por completar.",
+	"unifiedtaskoverview-personal-url-my-tasks": "Tarefas",
+	"unifiedtaskoverview-search-placeholder": "Procurar",
+	"unifiedtaskoverview-no-login-text": "Inicia sesión para ver as túas tarefas"
+}

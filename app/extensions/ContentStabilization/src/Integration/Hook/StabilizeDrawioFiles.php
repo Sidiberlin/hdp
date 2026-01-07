@@ -3,12 +3,12 @@
 namespace MediaWiki\Extension\ContentStabilization\Integration\Hook;
 
 use File;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\DrawioEditor\Hook\DrawioGetFileHook;
+use MediaWiki\User\User;
 use RepoGroup;
-use RequestContext;
-use User;
 
 class StabilizeDrawioFiles implements DrawioGetFileHook {
 
@@ -72,8 +72,9 @@ class StabilizeDrawioFiles implements DrawioGetFileHook {
 					$isNotApproved = true;
 					return;
 				}
-				$file = $this->repoGroup->findFile( $file->getTitle(), [ 'time' => $image['timestamp'] ] );
-				$displayFile = $file;
+				// Apply "freeze" concept only for "display file"
+				// Still, in diagram "Edit" mode user should still always see and edit the latest diagram version
+				$displayFile = $this->repoGroup->findFile( $file->getTitle(), [ 'time' => $image['timestamp'] ] );
 				return;
 			}
 		}

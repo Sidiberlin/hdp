@@ -3,16 +3,15 @@
 namespace MediaWiki\Extension\PageCheckout\Activity;
 
 use MediaWiki\Extension\PageCheckout\CheckoutManager;
-use MediaWiki\Extension\Workflows\Activity\ActivityPropertyValidator;
 use MediaWiki\Extension\Workflows\Activity\ExecutionStatus;
 use MediaWiki\Extension\Workflows\Activity\GenericActivity;
 use MediaWiki\Extension\Workflows\Definition\ITask;
 use MediaWiki\Extension\Workflows\Exception\WorkflowExecutionException;
 use MediaWiki\Extension\Workflows\WorkflowContext;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
-use Title;
-use TitleFactory;
-use User;
 
 abstract class CheckoutActivity extends GenericActivity {
 	/** @var CheckoutManager */
@@ -60,7 +59,7 @@ abstract class CheckoutActivity extends GenericActivity {
 				'passed_user' => $data['user'] ?? '(none)',
 				'context' => 'workflow-activity'
 			] );
-			$user = User::newSystemUser( 'MediaWiki default' );
+			$user = User::newSystemUser( 'MediaWiki default', [ 'steal' => true ] );
 		}
 		if ( !$user instanceof User ) {
 			// Cannot use even a system user, give up
@@ -107,24 +106,4 @@ abstract class CheckoutActivity extends GenericActivity {
 	 * @param Title $title
 	 */
 	abstract protected function doAction( User $user, Title $title );
-
-	/**
-	 * @return array[]|null
-	 */
-	public function getPropertySpecification(): ?array {
-		return [
-			'pageId' => [
-				ActivityPropertyValidator::TYPE => ActivityPropertyValidator::TYPE_INT,
-				ActivityPropertyValidator::REQUIRED => false
-			],
-			'pagename' => [
-				ActivityPropertyValidator::TYPE => ActivityPropertyValidator::TYPE_STRING,
-				ActivityPropertyValidator::REQUIRED => false
-			],
-			'user' => [
-				ActivityPropertyValidator::TYPE => ActivityPropertyValidator::TYPE_STRING,
-				ActivityPropertyValidator::REQUIRED => true
-			]
-		];
-	}
 }

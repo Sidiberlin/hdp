@@ -4,7 +4,7 @@
 
 namespace MediaWiki\Extension\EnhancedStandardUIs\HookHandler;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\EnhancedStandardUIs\Special\EnhancedAllPages;
 use MediaWiki\Extension\EnhancedStandardUIs\Special\EnhancedFilelist;
 use MediaWiki\Extension\EnhancedStandardUIs\Special\EnhancedSpecialPages;
@@ -33,11 +33,7 @@ class OverwriteSpecialPages implements SpecialPage_initListHook {
 		}
 
 		if ( $this->config->get( 'EnhancedUIsFilelistOverride' ) ) {
-			$list['Filelist'] = [ 'class' => EnhancedFilelist::class ];
-		}
-
-		if ( $this->config->get( 'EnhancedUIsExtendedFilelistOverride' ) ) {
-			$list['BlueSpiceExtendedFilelist'] = [ 'class' => EnhancedFilelist::class ];
+			$list['Listfiles'] = [ 'class' => EnhancedFilelist::class ];
 		}
 
 		if ( $this->config->get( 'EnhancedUIsSpecialSpecialPagesOverride' ) ) {

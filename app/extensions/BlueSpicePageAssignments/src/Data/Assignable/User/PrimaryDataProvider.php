@@ -3,12 +3,12 @@
 namespace BlueSpice\PageAssignments\Data\Assignable\User;
 
 use BlueSpice\PageAssignments\Data\Record;
-use GlobalVarConfig;
+use MediaWiki\Config\GlobalVarConfig;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use MWStake\MediaWiki\Component\DataStore\Schema;
-use Title;
-use User;
 use Wikimedia\Rdbms\IDatabase;
 
 class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Data\UserQueryStore\PrimaryDataProvider {
@@ -63,13 +63,6 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 				'LEFT OUTER JOIN', [ 'user_id = ug_user' ]
 			]
 		];
-	}
-
-	/**
-	 * @return string[]
-	 */
-	protected function getTableNames() {
-		return array_merge( parent::getTableNames(), [ 'user_groups' ] );
 	}
 
 	/**

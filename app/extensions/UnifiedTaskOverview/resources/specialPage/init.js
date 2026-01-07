@@ -1,16 +1,16 @@
-var Vue = require( 'vue' ),
-	Tiles = require( './Tiles.vue' ),
-	$allRLModules = [];
+var Vue = require( 'vue' ); // eslint-disable-line no-var
+var Tiles = require( './Tiles.vue' ); // eslint-disable-line no-var
+var $allRLModules = []; // eslint-disable-line no-var
 
 function getList() {
-	var dfd = $.Deferred();
+	const dfd = $.Deferred();
 	$.ajax( {
 		url: mw.util.wikiScript( 'rest' ) + '/unifiedtaskoverview/list',
-		contentType: "application/json",
+		contentType: 'application/json',
 		dataType: 'json'
-	} ).done( function( response ) {
+	} ).done( ( response ) => {
 		dfd.resolve( response );
-	} ).fail ( function ( jgXHR, type, status ) {
+	} ).fail( ( jgXHR, type, status ) => {
 		if ( type === 'error' ) {
 			dfd.reject( {
 				error: jgXHR.responseJSON || jgXHR.responseText
@@ -21,9 +21,9 @@ function getList() {
 	return dfd.promise();
 }
 
-function loadData( response) {
+function loadData( response ) {
 	loadRLModules( response );
-	var itemData = sortItems( response );
+	const itemData = sortItems( response );
 	setVisibility( itemData );
 	return itemData;
 }
@@ -34,51 +34,51 @@ function sortItems( data ) {
 }
 
 // get RLModules from data
-function loadRLModules ( data ) {
-	for ( var x = 0; x < data.length; x++ ) {
-		data[x][ 'RLmodules' ].forEach( function ( item ) {
-			if ($allRLModules.length === 0 ) {
+function loadRLModules( data ) {
+	for ( let x = 0; x < data.length; x++ ) {
+		data[ x ].RLmodules.forEach( ( item ) => {
+			if ( $allRLModules.length === 0 ) {
 				$allRLModules.push( item );
 			} else {
-				$allRLModules.forEach( function ( module ) {
+				$allRLModules.forEach( ( module ) => {
 					if ( module !== item ) {
 						$allRLModules.push( item );
 					}
-				});
+				} );
 			}
-		});
+		} );
 	}
 	mw.loader.using( $allRLModules );
 }
 
-function setDataForSearch ( items ) {
-	var dataSearch = [];
-	items.forEach( function ( item )  {
-		dataSearch.push( item.type.toLowerCase() + " "
-			+ item.header.toLowerCase() + " " + item.subheader.toLowerCase() + " "
-			+ item.body.toLowerCase() );
-	});
+function setDataForSearch( items ) {
+	const dataSearch = [];
+	items.forEach( ( item ) => {
+		dataSearch.push( item.type.toLowerCase() + ' ' +
+			item.header.toLowerCase() + ' ' + item.subheader.toLowerCase() + ' ' +
+			item.body.toLowerCase() );
+	} );
 	return dataSearch;
 }
 
-function setVisibility ( items ) {
-	items.forEach( function ( item )  {
+function setVisibility( items ) {
+	items.forEach( ( item ) => {
 		item.isVisible = true;
-	});
+	} );
 }
 
 function render() {
-	var deferred = $.Deferred();
-	var dfdList = getList();
-	dfdList.done( function( response ) {
-		var h = Vue.h;
-		var vm = Vue.createMwApp( {
+	const deferred = $.Deferred();
+	const dfdList = getList();
+	dfdList.done( ( response ) => {
+		const h = Vue.h;
+		const vm = Vue.createMwApp( {
 			mounted: function () {
 				deferred.resolve( this.$el );
 			},
 			render: function () {
-				var listItems = [];
-				var searchElts = [];
+				let listItems = [];
+				let searchElts = [];
 				if ( response.length > 0 ) {
 					listItems = loadData( response );
 					searchElts = setDataForSearch( listItems );
@@ -87,12 +87,12 @@ function render() {
 				return h( Tiles, {
 					items: listItems,
 					searchElements: searchElts,
-					noTaskDesc: listItems.length == 0,
+					noTaskDesc: listItems.length == 0, // eslint-disable-line eqeqeq
 					searchPlaceholderLabel: mw.message( 'unifiedtaskoverview-search-placeholder' ).plain()
 				} );
 			}
 		} );
-		vm.mount( '#unifiedTaskOverview-tiles');
+		vm.mount( '#unifiedTaskOverview-tiles' );
 		return deferred;
 	} );
 }

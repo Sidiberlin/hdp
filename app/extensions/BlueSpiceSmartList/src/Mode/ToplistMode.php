@@ -6,9 +6,9 @@ use BlueSpice\ParamProcessor\ParamDefinition;
 use BlueSpice\ParamProcessor\ParamType;
 use BsInvalidNamespaceException;
 use BsNamespaceHelper;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Permissions\PermissionManager;
-use RequestContext;
-use TitleFactory;
+use MediaWiki\Title\TitleFactory;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class ToplistMode extends SmartListBaseMode {
@@ -216,11 +216,7 @@ class ToplistMode extends SmartListBaseMode {
 					$title = $this->titleFactory->makeTitle( $row->page_namespace, $row->page_title );
 				}
 
-				if ( !$this->permissionManager->quickUserCan(
-					'read',
-					$context->getUser(),
-					$title
-				) ) {
+				if ( !$this->userCanRead( $title, $context->getUser(), $this->permissionManager ) ) {
 					continue;
 				}
 

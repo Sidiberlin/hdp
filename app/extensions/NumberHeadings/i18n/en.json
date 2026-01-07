@@ -6,5 +6,6 @@
 	},
 	"numberheadings-desc": "Number headings in content namespaces",
 	"numberheadings-conf-exlude-namespaces": "Exclude namespaces from heading numbering",
-	"numberheadings-conf-enable": "Enable heading numbering"
+	"numberheadings-conf-enable-numbering": "Show heading numbering",
+	"numberheadings-conf-enable-numbering-help": "Adds the numbers from the table of contents to the page headings"
 }

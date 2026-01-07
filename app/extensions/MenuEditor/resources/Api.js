@@ -8,7 +8,7 @@
 
 	ext.menueditor.api.Api.prototype.ajax = function ( path, data, method ) {
 		data = data || {};
-		var dfd = $.Deferred();
+		const dfd = $.Deferred();
 
 		$.ajax( {
 			method: method,
@@ -16,13 +16,13 @@
 			data: data,
 			contentType: 'application/json',
 			dataType: 'json'
-		} ).done( function ( response ) {
+		} ).done( ( response ) => {
 			if ( typeof response === 'object' && response.success === false ) {
 				dfd.reject();
 				return;
 			}
 			dfd.resolve( response );
-		} ).fail( function ( jgXHR, type, status ) {
+		} ).fail( ( jgXHR, type, status ) => {
 			if ( type === 'error' ) {
 				dfd.reject( {
 					error: jgXHR.responseJSON || jgXHR.responseText
@@ -48,7 +48,7 @@
 
 	ext.menueditor.api.Api.prototype.post = function ( path, params ) {
 		params = params || {};
-		return this.ajax( path, JSON.stringify( params ), 'POST' );
+		return this.ajax( path, JSON.stringify( { data: params } ), 'POST' );
 	};
 
 	ext.menueditor.api.Api.prototype.delete = function ( path, params ) {

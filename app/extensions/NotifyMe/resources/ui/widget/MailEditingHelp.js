@@ -52,14 +52,14 @@ ext.notifyme.ui.widget.MailEditingHelp.prototype.makePages = function ( data ) {
 };
 
 ext.notifyme.ui.widget.MailEditingHelp.prototype.makePage = function ( type, data ) {
-	const page = function ( t, data, parent ) {
+	const page = function ( t, data, parent ) { // eslint-disable-line no-shadow
 		this.type = t;
 		this.pageData = data;
 		page.parent.call( this, 'mailtemplate-help-' + this.type, { expanded: false, padded: true } );
 
-		const headerMsg = mw.message( 'notifyme-mail-template-edit-help-' + this.type );
+		const headerMsg = mw.message( 'notifyme-mail-template-edit-help-' + this.type ); // eslint-disable-line mediawiki/msg-doc
 		if ( headerMsg.exists() ) {
-			this.$element.append( headerMsg.plain() );
+			this.$element.append( headerMsg.text() );
 		}
 		const renderFunction = 'render' + this.type.charAt( 0 ).toUpperCase() + this.type.slice( 1 );
 		if ( typeof parent[ renderFunction ] === 'function' ) {
@@ -70,10 +70,10 @@ ext.notifyme.ui.widget.MailEditingHelp.prototype.makePage = function ( type, dat
 	OO.inheritClass( page, OO.ui.PageLayout );
 
 	page.prototype.setupOutlineItem = function () {
-		this.outlineItem.setLabel( mw.message( 'notifyme-mail-template-edit-help-category-' + this.type ).text() );
+		this.outlineItem.setLabel( mw.message( 'notifyme-mail-template-edit-help-category-' + this.type ).text() ); // eslint-disable-line mediawiki/msg-doc
 	};
 
-	return new page( type, data[ type ] || {}, this );
+	return new page( type, data[ type ] || {}, this ); // eslint-disable-line new-cap
 };
 
 ext.notifyme.ui.widget.MailEditingHelp.prototype.renderColors = function ( data ) {
@@ -84,9 +84,9 @@ ext.notifyme.ui.widget.MailEditingHelp.prototype.renderColors = function ( data 
 			continue;
 		}
 		const layout = new OO.ui.HorizontalLayout(
-				{ align: 'top', classes: [ 'ext-notifyme-mail-template-edit-help-color-layout' ] }
-			),
-		 $color = $( '<div>' ).addClass( 'ext-notifyme-mail-template-edit-help-color-color' ).css( 'background-color', data[ name ] );
+			{ align: 'top', classes: [ 'ext-notifyme-mail-template-edit-help-color-layout' ] }
+		);
+		const $color = $( '<div>' ).addClass( 'ext-notifyme-mail-template-edit-help-color-color' ).css( 'background-color', data[ name ] );
 		layout.$element.append(
 			$color,
 			new OO.ui.LabelWidget( { label: '@' + name } ).$element
@@ -138,8 +138,8 @@ ext.notifyme.ui.widget.MailEditingHelp.prototype.renderParamRows = function ( da
 			continue;
 		}
 		const paramConfig = data[ param ];
-		$row = $( '<tr>' );
-		$exampleCell = $( '<td>' ).html( '<pre>' + paramConfig.example + '</pre>' );
+		const $row = $( '<tr>' );
+		const $exampleCell = $( '<td>' ).html( '<pre>' + paramConfig.example + '</pre>' );
 		$row.append(
 			$( '<td>' ).html( '<b>' + param + '</b>' ),
 			$exampleCell,

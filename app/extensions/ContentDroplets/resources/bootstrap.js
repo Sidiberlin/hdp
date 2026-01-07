@@ -8,7 +8,7 @@ ext.contentdroplets = {
 	ui: {},
 	api: {
 		getDroplets: function () {
-			var dfd = $.Deferred();
+			const dfd = $.Deferred();
 
 			$.ajax( {
 				method: 'GET',
@@ -16,9 +16,9 @@ ext.contentdroplets = {
 				data: {},
 				contentType: 'application/json',
 				dataType: 'json'
-			} ).done( function ( response ) {
+			} ).done( ( response ) => {
 				dfd.resolve( response );
-			} ).fail( function ( jgXHR, type, status ) {
+			} ).fail( ( jgXHR, type, status ) => {
 				if ( type === 'error' ) {
 					dfd.reject( {
 						error: jgXHR.responseJSON || jgXHR.responseText
@@ -38,26 +38,26 @@ ext.contentdroplets = {
 		return this._get( 'categories', noCache );
 	},
 	_get: function ( key, noCache ) {
-		var dfd = $.Deferred();
+		const dfd = $.Deferred();
 
 		// eslint-disable-next-line no-prototype-builtins
 		if ( ext.contentdroplets._cache.hasOwnProperty( key ) && !noCache ) {
 			return dfd.resolve( ext.contentdroplets._cache[ key ] ).promise();
 		}
-		this._doLoad().done( function ( data ) {
+		this._doLoad().done( ( data ) => {
 			dfd.resolve( data[ key ] );
-		} ).fail( function ( error ) {
+		} ).fail( ( error ) => {
 			dfd.reject( error );
 		} );
 		return dfd.promise();
 	},
 	_doLoad: function () {
-		var dfd = $.Deferred();
+		const dfd = $.Deferred();
 
-		ext.contentdroplets.api.getDroplets().done( function ( data ) {
-			var instances = {},
-				modules = [ 'ext.forms.standalone' ],
-				droplets = data.droplets,
+		ext.contentdroplets.api.getDroplets().done( ( data ) => {
+			const instances = {};
+			const droplets = data.droplets;
+			let modules = [ 'ext.forms.standalone' ],
 				key, config, dropletClass;
 
 			ext.contentdroplets._cache.categories = data.categories;
@@ -70,7 +70,7 @@ ext.contentdroplets = {
 				modules = modules.concat( droplets[ key ].rlModules || [] );
 			}
 
-			mw.loader.using( modules, function () {
+			mw.loader.using( modules, () => {
 				for ( key in droplets ) {
 					// eslint-disable-next-line no-prototype-builtins
 					if ( !droplets.hasOwnProperty( key ) ) {
@@ -95,11 +95,11 @@ ext.contentdroplets = {
 
 				ext.contentdroplets._cache.droplets = instances;
 				dfd.resolve( ext.contentdroplets._cache );
-			}, function () {
+			}, ( err ) => {
 				ext.contentdroplets._cache = {};
-				console.error( 'ContentDroplets: Required RL modules failed to load' );
+				console.error( 'ContentDroplets: Required RL modules failed to load', err );
 			} );
-		} ).fail( function ( error ) {
+		} ).fail( ( error ) => {
 			ext.contentdroplets._cache = {};
 			console.error( 'ContentDroplets: ' + error );
 		} );
@@ -109,25 +109,7 @@ ext.contentdroplets = {
 	_cache: {}
 };
 
-mw.loader.using( 'ext.visualEditor.desktopArticleTarget.init', function () {
-	mw.libs.ve.targetLoader.addPlugin( function () {
-		var dfd = $.Deferred();
-		ext.contentdroplets.getDroplets().done( function () {
-			mw.loader.using( [ 'ext.contentdroplets.ve.toolbar' ], function () {
-				dfd.resolve();
-			}, function () {
-				dfd.reject();
-			} );
-		} ).fail( function () {
-			dfd.reject();
-		} );
-
-		return dfd.promise();
-	} );
-
-} );
-
-mw.hook( 've.collabpad.DropletsActivation' ).add( function () {
+mw.hook( 've.collabpad.DropletsActivation' ).add( () => {
 	ve.init.mw.CollabTarget.static.toolbarGroups.push( {
 		include: [ 'contentdroplet-toolbar' ]
 	} );

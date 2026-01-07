@@ -1,6 +1,9 @@
 <?php
 
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Request\DerivativeRequest;
 
 /**
  * NamespacerNuker
@@ -33,7 +36,8 @@ class NamespaceNuker {
 			],
 			[
 				'page_namespace' => $idNS
-			]
+			],
+			__METHOD__
 		);
 
 		$sToken = RequestContext::getMain()->getCsrfTokenSet()->getToken()->toString();
@@ -83,7 +87,8 @@ class NamespaceNuker {
 			],
 			[
 				'page_namespace' => $idNS
-			]
+			],
+			__METHOD__
 		);
 
 		$sToken = RequestContext::getMain()->getCsrfTokenSet()->getToken()->toString();

@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\ContentStabilization\Data\StabilizedPages;
 
-use Language;
 use MediaWiki\Extension\ContentStabilization\StableView;
+use MediaWiki\Language\Language;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\PrimaryDatabaseDataProvider;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
@@ -49,6 +49,9 @@ class PrimaryDataProvider extends PrimaryDatabaseDataProvider {
 	 */
 	public function makeData( $params ) {
 		$this->data = [];
+		if ( empty( $this->enabledNamespaces ) ) {
+			return $this->data;
+		}
 		$conds = $this->makePreFilterConds( $params );
 		$conds[] = 'page_namespace IN (' . $this->db->makeList( $this->enabledNamespaces ) . ')';
 		$options = $this->makePreOptionConds( $params );

@@ -1,3 +1,4 @@
+@import 'mediawiki.skin.variables.less';
 @import '../../variables.less';
 @import '../../mixins.less';
 
@@ -11,38 +12,31 @@
 //   Not tall  Landscape  Portrait
 //   Not tall  Missing    Landscape
 
-@borderColorPopup: rgba( 0, 0, 0, 0.05 );
+@borderColorPopup: @background-color-neutral;
 // The subtracting-triangles method results in a line that
 // is ~0.7px wide, so make it slightly darker to compensate.
 @borderColorPopupPointerNoImage: rgba( 0, 0, 0, 0.07 );
 @previewFooterCogIconInteractionAreaSize: 34px;
 @previewFooterHeight: @popupPadding + @previewFooterCogIconInteractionAreaSize;
+@previewBoxShadow: 0 30px 90px -20px rgba( 0, 0, 0, 0.3 ), 0 0 0 1px @borderColorPopup;
 
 // Same as the --pointer-height in popup.less
 @previewPointerHeight: 8px;
 
 .mwe-popups {
-	background: #fff;
+	background: @background-color-base;
 	position: absolute;
 	z-index: @zIndexPopup;
-	box-shadow: 0 30px 90px -20px rgba( 0, 0, 0, 0.3 ), 0 0 1px 1px @borderColorPopup;
+	box-shadow: @previewBoxShadow;
 	padding: 0;
 	display: none;
 	font-size: 14px;
 	line-height: @lineHeight;
 	min-width: 300px;
-	border-radius: @borderRadius;
-
-	// icons positioned at the top of the popup
-	.mw-ui-icon-preview-disambiguation,
-	.mw-ui-icon-preview-generic {
-		opacity: 0.25;
-	}
+	border-radius: @border-radius-base;
 
 	.mwe-popups-container {
-		color: @colorText;
-		margin-top: -@previewPointerHeight;
-		padding-top: 9px;
+		color: @color-base;
 		text-decoration: none;
 
 		footer {
@@ -52,7 +46,6 @@
 			margin: 0;
 			position: absolute;
 			bottom: 0;
-			left: 0;
 			pointer-events: none; // Allows clicking 'through' the element
 
 			a {
@@ -61,21 +54,12 @@
 		}
 	}
 
-	.mwe-popups-settings-icon {
-		display: block;
+	.mwe-popups-settings-button {
 		float: right; // positions icon near bottom right corner
-		border-radius: @borderRadius;
-		opacity: 0.67;
-		.transition( ~'background-color 100ms, opacity 100ms' );
-
-		&:hover {
-			background-color: @colorGray14;
-		}
-
-		&:active {
-			background-color: @colorGray12;
-			opacity: 1;
-		}
+		pointer-events: auto; // Overrides pointer-events: none on footer to ensure the button is interactive
+		// !important needed to override 'responsive' button styles on smaller viewports defined in Vector's Button.less
+		min-width: 32px !important; /* stylelint-disable-line declaration-no-important */
+		min-height: 32px !important; /* stylelint-disable-line declaration-no-important */
 	}
 
 	.mwe-popups-extract {
@@ -84,16 +68,16 @@
 		// the settings cog in IE9-11.
 		margin: @popupPadding;
 		display: block;
-		color: @colorText;
+		color: @color-base;
 		text-decoration: none;
 		position: relative;
+		padding-bottom: 4px; // T330570
 
 		&:hover {
 			text-decoration: none;
 		}
 
-		&:after,
-		blockquote:after {
+		&::after {
 			content: ' ';
 			position: absolute;
 			bottom: 0;
@@ -103,31 +87,19 @@
 			pointer-events: none; // Allows clicking 'through' the element
 		}
 
-		/* Stylelint rule broken for vendor prefixes: https://github.com/stylelint/stylelint/issues/1939 */
-		/* stylelint-disable function-linear-gradient-no-nonstandard-direction */
-		&[ dir='ltr' ]:after {
+		&[ dir='ltr' ]::after {
 			/* @noflip */
 			right: 0;
 			/* @noflip */
 			background-image: linear-gradient( to right, rgba( 255, 255, 255, 0 ), rgba( 255, 255, 255, 1 ) 50% );
 		}
 
-		&[ dir='rtl' ]:after {
+		&[ dir='rtl' ]::after {
 			/* @noflip */
 			left: 0;
 			/* @noflip */
 			background-image: linear-gradient( to left, rgba( 255, 255, 255, 0 ), rgba( 255, 255, 255, 1 ) 50% );
 		}
-
-		blockquote:after {
-			width: 100%;
-			height: @lineHeight + 5px;
-			/* @noflip */
-			bottom: 0;
-			/* @noflip */
-			background-image: linear-gradient( to bottom, rgba( 255, 255, 255, 0 ), rgba( 255, 255, 255, 1 ) 75% );
-		}
-		/* stylelint-enable function-linear-gradient-no-nonstandard-direction */
 
 		// Make the text fit in exactly as many lines as we want.
 		p {
@@ -142,6 +114,13 @@
 		dt {
 			margin-top: 0;
 			margin-bottom: 0;
+		}
+
+		blockquote {
+			// Adjust default spacing to ensure it lines up with the rest of the text
+			// and the fade indicator
+			margin: 0;
+			padding: 0 20px;
 		}
 	}
 
@@ -163,15 +142,9 @@
 			float: left;
 		}
 
-		.mwe-popups-extract + footer {
+		footer {
 			left: 0;
 			right: @popupLandscapeThumbnailWidth;
-
-			.rtl & {
-				/* @noflip */
-				right: -12px;
-				width: @popupTallWidth;
-			}
 		}
 	}
 
@@ -179,107 +152,61 @@
 		width: @popupWidth;
 
 		.mwe-popups-extract {
-			@minHeight: @previewFooterHeight + @previewPointerHeight;
 			// On short summaries, we want to avoid an overlap with the gradient.
-			min-height: @minHeight;
+			min-height: @previewFooterHeight;
 			max-height: 202px - @previewFooterHeight - @popupPadding;
 			overflow: hidden;
-			margin-bottom: @minHeight;
-			padding-bottom: 0;
+			margin-bottom: @previewFooterHeight;
 		}
 
 		footer {
-			// 2px = border
-			width: @popupWidth - @cogIconSize - 2;
-		}
-	}
-
-	// TODO: Remove when not in Beta any more (T276200)
-	.mwe-popups-container.footer-empty .mwe-popups-extract {
-		margin-bottom: @popupPadding;
-
-		.mwe-popups-scroll {
-			max-height: 403px - 2 * @popupPadding + @previewPointerHeight;
-		}
-	}
-
-	// TODO: Remove when not in Beta any more (T276200)
-	&.flipped-y .mwe-popups-container.footer-empty .mwe-popups-extract,
-	&.flipped-x-y .mwe-popups-container.footer-empty .mwe-popups-extract {
-		margin-bottom: @popupPadding + @previewPointerHeight;
-	}
-
-	&.mwe-popups-type-generic,
-	&.mwe-popups-type-disambiguation {
-		.mwe-popups-extract {
-			min-height: auto;
-			padding-top: 4px;
-			margin-top: 0;
-			margin-bottom: var( --margin-bottom );
-			--margin-bottom: 60px;
-		}
-
-		.mwe-popups-read-link {
-			font-weight: bold;
-			font-size: 12px;
-		}
-
-		// When the user dwells on the 'There was an issue displaying this preview'
-		// text, which is a link to the page, then highlight the 'Go to this page'
-		// link too.
-		.mwe-popups-extract:hover + footer .mwe-popups-read-link {
-			text-decoration: underline;
+			left: 0;
+			right: 0;
 		}
 	}
 
 	/* Triangles/Pointers */
 	&.mwe-popups-no-image-pointer {
-		&:before {
+		&::before {
 			.mwe-popups-border-pointer-top( 8px, 10px, @borderColorPopupPointerNoImage, 0 );
 		}
 
-		&:after {
-			.mwe-popups-border-pointer-top( 7px, 7px, #fff, 4px );
+		&::after {
+			.mwe-popups-border-pointer-top( 7px, 7px, @background-color-base, 4px );
 		}
 	}
 
 	&.flipped-x.mwe-popups-no-image-pointer {
-		&:before {
+		&::before {
 			left: auto;
 			right: 10px;
 		}
 
-		&:after {
+		&::after {
 			left: auto;
 			right: 7px;
 		}
 	}
 
 	&.mwe-popups-image-pointer {
-		&:before {
-			.mwe-popups-border-pointer-top( 9px, 9px, @colorGray10, 0 );
+		&::before {
+			.mwe-popups-border-pointer-top( 9px, 9px, @border-color-base, 0 );
 			z-index: @zIndexBackground;
 		}
 
-		&:after {
-			.mwe-popups-border-pointer-top( 8px, 6px, #fff, 4px );
+		&::after {
+			.mwe-popups-border-pointer-top( 8px, 6px, @background-color-base, 4px );
 			z-index: @zIndexForeground;
 		}
 
 		&.flipped-x {
-			&:before {
-				.mwe-popups-border-pointer-top( 9px, 293px, @colorGray10, 0 );
+			&::before {
+				.mwe-popups-border-pointer-top( 9px, 293px, @border-color-base, 0 );
 			}
 
-			&:after {
-				.mwe-popups-border-pointer-top( 8px, 290px, #fff, 4px );
+			&::after {
+				.mwe-popups-border-pointer-top( 8px, 290px, @background-color-base, 4px );
 			}
-		}
-
-		.mwe-popups-extract {
-			padding-top: @popupPadding;
-			// The number here should reflect landscapeImage.h
-			margin-top: 200px;
 		}
 
 		> div > a > svg {
@@ -293,8 +220,8 @@
 	&.flipped-x.mwe-popups-is-tall {
 		min-height: 242px;
 
-		&:before {
-			.mwe-popups-border-pointer-top( 9px, 420px, @colorGray10, 0 );
+		&::before {
+			.mwe-popups-border-pointer-top( 9px, 420px, @border-color-base, 0 );
 			z-index: @zIndexBackground;
 		}
 
@@ -306,32 +233,28 @@
 			z-index: @zIndexThumbnailMask;
 			right: 0;
 		}
-
-		.mwe-popups-extract {
-			margin-top: 8px;
-		}
 	}
 
 	&.flipped-x-y {
-		&:before {
-			.mwe-popups-border-pointer-bottom( 9px, 293px, @colorGray10, 0 );
+		&::before {
+			.mwe-popups-border-pointer-bottom( 9px, 293px, @border-color-base, 0 );
 			z-index: @zIndexBackground;
 		}
 
-		&:after {
-			.mwe-popups-border-pointer-bottom( 8px, 290px, #fff, 4px );
+		&::after {
+			.mwe-popups-border-pointer-bottom( 8px, 290px, @background-color-base, 4px );
 			z-index: @zIndexForeground;
 		}
 
 		&.mwe-popups-is-tall {
 			min-height: 242px;
 
-			&:before {
-				.mwe-popups-border-pointer-bottom( 9px, 420px, @colorGray10, 0 );
+			&::before {
+				.mwe-popups-border-pointer-bottom( 9px, 420px, @border-color-base, 0 );
 			}
 
-			&:after {
-				.mwe-popups-border-pointer-bottom( 8px, 417px, #fff, 4px );
+			&::after {
+				.mwe-popups-border-pointer-bottom( 8px, 417px, @background-color-base, 4px );
 			}
 
 			> div > a > svg {
@@ -345,12 +268,12 @@
 	}
 
 	&.flipped-y {
-		&:before {
-			.mwe-popups-border-pointer-bottom( 8px, 10px, @colorGray10, 0 );
+		&::before {
+			.mwe-popups-border-pointer-bottom( 8px, 10px, @border-color-base, 0 );
 		}
 
-		&:after {
-			.mwe-popups-border-pointer-bottom( 7px, 7px, #fff, 4px );
+		&::after {
+			.mwe-popups-border-pointer-bottom( 7px, 7px, @background-color-base, 4px );
 		}
 	}
 }
@@ -401,32 +324,42 @@
 			outline: 1px solid rgba( 0, 0, 0, 0.1 );
 		}
 
-		.mwe-popups-extract[ dir='rtl' ] + footer {
-			/* @noflip */
-			left: unset;
-			/* @noflip */
-			right: 0;
-
-			.mwe-popups-settings-icon {
-				/* @noflip */
-				float: left;
-			}
-		}
-
+		// Add bottom padding the same size as the pokey height to account for clip-path.
 		&.flipped-y,
 		&.flipped-x-y {
-			.mwe-popups-discreet {
-				margin-bottom: 0;
-			}
-
 			.mwe-popups-container {
 				--y1: 100%;
 				--y2: ~'calc(100% - var(--pointer-height))';
 				--y3: ~'calc(100% - var(--pointer-height) - var(--pseudo-radius))';
 				--y4: ~'var(--pseudo-radius)';
 				--y5: 0;
-				margin-bottom: -9px;
+				margin-bottom: calc( var( --pointer-height ) * -1 );
+				padding-bottom: var( --pointer-height );
+			}
+		}
+
+		// Add top padding the same size as the pokey height to account for clip-path.
+		&:not( .flipped-y ):not( .flipped-x-y ) {
+			.mwe-popups-container {
+				margin-top: calc( var( --pointer-height ) * -1 );
+				padding-top: var( --pointer-height );
+			}
+		}
+
+		// We apply a negative top margin to the image by default. This style handles the following cases:
+		// - when the pokey is on the top, this style accounts for the top padding on .mwe-popups-container
+		// - when the pokey is on the bottom and the popup is not tall, this style is still needed to ensure
+		//	the overall height of the popup is still the same.
+		.mwe-popups-discreet {
+			margin-top: calc( var( --pointer-height ) * -1 );
+		}
+
+		// We apply a negative bottom margin to the image when the pokey is on the bottom and the pop is tall
+		&.mwe-popups-is-tall.flipped-y,
+		&.mwe-popups-is-tall.flipped-x-y {
+			.mwe-popups-discreet {
 				margin-top: 0;
+				margin-bottom: calc( var( --pointer-height ) * -1 );
 			}
 		}
 
@@ -445,7 +378,7 @@
 			--y5: 100%;
 			padding-top: 0;
 			display: flex;
-			background: #fff;
+			background: @background-color-base;
 			--pseudo-radius: 2px;
 			--pointer-height: 8px;
 			--pointer-width: 16px;
@@ -481,43 +414,12 @@
 			}
 		}
 
-		&:before {
+		&::before {
 			display: none;
 		}
 
-		&:after {
+		&::after {
 			display: none;
-		}
-
-		&.mwe-popups-image-pointer {
-			.mwe-popups-discreet {
-				// Override the negative margin on element which undesirably pulls
-				// mwe-popups-extract up.
-				margin-bottom: 0;
-			}
-
-			.mwe-popups-extract {
-				margin-top: 0;
-			}
-		}
-
-		// Add top padding the same size as the pokey height to account for
-		// clip-path cutting off the .mwe-popups-extract's margin. We don't want
-		// this to apply to elements with the .mwe-popups-image-pointer class
-		// because the pokey is on the image.
-		&:not( .flipped-y ):not( .flipped-x-y ):not( .mwe-popups-image-pointer ):not( .mwe-popups-type-disambiguation ) .mwe-popups-extract {
-			padding-top: var( --pointer-height );
-		}
-
-		&.mwe-popups-type-generic:not( .flipped-y ):not( .flipped-x-y ),
-		&.mwe-popups-type-disambiguation:not( .flipped-y ):not( .flipped-x-y ) {
-			.mwe-popups-container {
-				padding-top: var( --pointer-height );
-
-				.mwe-popups-extract {
-					margin-bottom: ~'calc( var( --margin-bottom ) - var( --pointer-height ) )';
-				}
-			}
 		}
 	}
 
@@ -530,6 +432,43 @@
 				--x4: ~'calc(100% - var(--pointer-offset))';
 				--x5: ~'calc(100% - var(--pointer-offset) + (var(--pointer-width) / 2))';
 			}
+		}
+	}
+}
+
+// Apply night mode styles that can't be handled with CSS variables, i.e. anything with rgba()
+@media screen {
+	html.skin-theme-clientpref-night {
+		.mwe-popups.mwe-popups-no-image-pointer::before {
+			.mwe-popups-border-pointer-top( 8px, 10px, rgba( 255, 255, 255, 0.07 ), 0 );
+		}
+
+		.mwe-popups-extract[ dir='ltr' ]::after {
+			/* @noflip */
+			background-image: linear-gradient( to right, transparent, @background-color-base 50% );
+		}
+
+		.mwe-popups-extract[ dir='rtl' ]::after {
+			/* @noflip */
+			background-image: linear-gradient( to left, transparent, @background-color-base 50% );
+		}
+	}
+}
+
+@media screen and ( prefers-color-scheme: dark ) {
+	html.skin-theme-clientpref-os {
+		.mwe-popups.mwe-popups-no-image-pointer::before {
+			.mwe-popups-border-pointer-top( 8px, 10px, rgba( 255, 255, 255, 0.07 ), 0 );
+		}
+
+		.mwe-popups-extract[ dir='ltr' ]::after {
+			/* @noflip */
+			background-image: linear-gradient( to right, transparent, @background-color-base 50% );
+		}
+
+		.mwe-popups-extract[ dir='rtl' ]::after {
+			/* @noflip */
+			background-image: linear-gradient( to left, transparent, @background-color-base 50% );
 		}
 	}
 }

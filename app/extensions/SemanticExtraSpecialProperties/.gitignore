@@ -1,0 +1,15 @@
+*~
+*.kate-swp
+.*.swp
+
+!.*
+.idea/
+.env
+composer.lock
+composer.phar
+
+vendor/
+extensions/
+coverage/
+docker-compose.override*
+.phpunit.result.cache

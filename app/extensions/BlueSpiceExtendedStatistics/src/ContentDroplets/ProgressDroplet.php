@@ -3,7 +3,7 @@
 namespace BlueSpice\ExtendedStatistics\ContentDroplets;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\TagDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class ProgressDroplet extends TagDroplet {
 

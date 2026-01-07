@@ -1,7 +1,7 @@
 {
 	"name": "BlueSpiceAbout",
 	"license-name": "GPL-3.0-only",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceAbout",
 	"author": [
 		"Markus Glaser",
@@ -17,9 +17,6 @@
 					"className": "\\BlueSpice\\About\\Extension",
 					"extPath": "/BlueSpiceAbout"
 				}
-			},
-			"AdminToolRegistry": {
-				"bs-bluespiceabout": "BlueSpice\\About\\AdminTool"
 			},
 			"PermissionRegistry": {
 				"bluespiceabout-viewspecialpage": {
@@ -42,9 +39,9 @@
 		}
 	},
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"SpecialPages": {
@@ -78,6 +75,54 @@
 	"AvailableRights": [
 		"bluespiceabout-viewspecialpage"
 	],
+	"ResourceModules": {
+		"ext.bluespice.about.banner.newsletter": {
+			"scripts": [
+				"ext.bluespice.about.banner.newsletter.js",
+				"ui/BannerNewsletter.js"
+			],
+			"dependencies": [
+				"ext.bluespice",
+				"oojs-ui"
+			]
+		},
+		"ext.bluespice.about.banner.newsletter.styles": {
+			"styles": [
+				"ext.bluespice.about.banner.newsletter.less"
+			]
+		},
+		"ext.bluespice.about.banner.rating": {
+			"scripts": [
+				"ext.bluespice.about.banner.rating.js",
+				"ui/BannerRating.js"
+			],
+			"dependencies": [
+				"ext.bluespice",
+				"oojs-ui"
+			]
+		},
+		"ext.bluespice.about.banner.rating.styles": {
+			"styles": [
+				"ext.bluespice.about.banner.rating.less"
+			]
+		}
+	},
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "BlueSpiceAbout/resources"
+	},
+	"Hooks": {
+		"GetPreferences": "userPreference",
+		"BeforePageDisplay": "addBanner"
+	},
+	"HookHandlers": {
+		"addBanner": {
+			"class": "BlueSpice\\About\\HookHandlers\\BeforePageDisplay\\AddBanners"
+		},
+		"userPreference": {
+			"class": "BlueSpice\\About\\HookHandlers\\GetPreferences\\UserPreference"
+		}
+	},
 	"load_composer_autoloader": true,
 	"manifest_version": 2
 }

@@ -9,5 +9,6 @@
 	"unifiedtaskoverview": "My tasks",
 	"unifiedtaskoverview-label-no-task": "Currently there are no tasks to be completed.",
 	"unifiedtaskoverview-personal-url-my-tasks": "Tasks",
-	"unifiedtaskoverview-search-placeholder": "Search"
+	"unifiedtaskoverview-search-placeholder": "Search",
+	"unifiedtaskoverview-no-login-text": "Please login to see your tasks"
 }

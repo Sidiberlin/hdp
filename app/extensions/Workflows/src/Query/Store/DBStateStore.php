@@ -11,7 +11,7 @@ use MediaWiki\Extension\Workflows\Storage\AggregateRoot\Id\WorkflowId;
 use MediaWiki\Extension\Workflows\Storage\Event\Event;
 use MediaWiki\Extension\Workflows\Storage\WorkflowEventClassInflector;
 use MediaWiki\Extension\Workflows\Workflow;
-use User;
+use MediaWiki\User\User;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 final class DBStateStore implements WorkflowStateStore {
@@ -95,17 +95,29 @@ final class DBStateStore implements WorkflowStateStore {
 	}
 
 	/**
+	 * @param array $sort
+	 * @return void
+	 */
+	public function setSort( array $sort ): void {
+		$dbSort = [];
+		foreach ( $sort as $field => $dir ) {
+			$dbSort[] = $field . ' ' . strtoupper( $dir );
+		}
+		$this->options['ORDER BY'] = implode( ', ', $dbSort );
+	}
+
+	/**
 	 * @inheritDoc
 	 */
 	public function query( $returnModel = false ): array {
 		$db = $this->lb->getConnection( DB_REPLICA );
-		$res = $db->select(
-			static::TABLE,
-			[ 'wfs_workflow_id' ],
-			$this->conditions,
-			__METHOD__,
-			$this->options
-		);
+		$res = $db->newSelectQueryBuilder()
+			->from( static::TABLE )
+			->fields( [ 'wfs_workflow_id' ] )
+			->where( $this->conditions )
+			->options( $this->options )
+			->caller( __METHOD__ )
+			->fetchResultSet();
 
 		$return = [];
 		foreach ( $res as $row ) {
@@ -119,6 +131,7 @@ final class DBStateStore implements WorkflowStateStore {
 
 		// reset conditions
 		$this->conditions = [];
+		$this->options = [];
 		return $return;
 	}
 
@@ -194,7 +207,8 @@ final class DBStateStore implements WorkflowStateStore {
 		$res = $this->lb->getConnection( DB_REPLICA )->selectRow(
 			static::TABLE,
 			'*',
-			[ 'wfs_workflow_id' => $id->toString() ]
+			[ 'wfs_workflow_id' => $id->toString() ],
+			__METHOD__
 		);
 
 		if ( !$res ) {
@@ -267,6 +281,15 @@ final class DBStateStore implements WorkflowStateStore {
 			switch ( $field ) {
 				case 'context':
 					if ( !$this->matchContextFilter( $model->getPayload(), $filterData ) ) {
+						return false;
+					}
+					break;
+				case 'definition':
+					$definition = $model->getPayload()['definition'];
+					if (
+						$definition['repositoryKey'] !== $filterData['repositoryKey'] ||
+						$definition['name'] !== $filterData['name']
+					) {
 						return false;
 					}
 					break;

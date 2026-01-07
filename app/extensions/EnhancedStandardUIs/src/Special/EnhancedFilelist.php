@@ -2,11 +2,10 @@
 
 namespace MediaWiki\Extension\EnhancedStandardUIs\Special;
 
-use ExtensionRegistry;
-use Html;
-use SpecialPage;
+use MediaWiki\Html\Html;
+use OOJSPlus\Special\OOJSGridSpecialPage;
 
-class EnhancedFilelist extends SpecialPage {
+class EnhancedFilelist extends OOJSGridSpecialPage {
 
 	/**
 	 *
@@ -20,20 +19,10 @@ class EnhancedFilelist extends SpecialPage {
 	 *
 	 * @inheritDoc
 	 */
-	public function execute( $subPage ) {
+	public function doExecute( $subPage ) {
 		$out = $this->getOutput();
-
-		$this->setHeaders();
-		$this->outputHeader();
-		$out->setPreventClickjacking( false );
-		$this->setHeaders();
-		$out->enableOOUI();
-
+		$out->getMetadata()->setPreventClickjacking( false );
 		$out->addModules( [ 'ext.enhancedstandarduis.special.filelist' ] );
-		$modules = ExtensionRegistry::getInstance()->getAttribute(
-			'EnhancedStandardUIsFilelistPluginModules'
-		);
-		$out->addModules( $modules );
 
 		$html = Html::element(
 			'div',

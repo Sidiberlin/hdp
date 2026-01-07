@@ -3,11 +3,13 @@
 namespace BlueSpice\Discovery\Renderer;
 
 use BlueSpice\Discovery\BreadcrumbDataProvider;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Language\RawMessage;
 use MediaWiki\SpecialPage\SpecialPageFactory;
+use MediaWiki\Title\NamespaceInfo;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MessageLocalizer;
-use RequestContext;
-use Title;
-use User;
 
 class DefaultBreadCrumbRenderer extends TemplateRendererBase {
 
@@ -131,9 +133,7 @@ class DefaultBreadCrumbRenderer extends TemplateRendererBase {
 			'text' => str_replace( '_', ' ', $rootNodeText ),
 			'href' => $rootNodeUrl,
 			'role' => 'link',
-			'title' => $rootNodeText,
-			'aria-label' => $this->messageLocalizer->msg(
-				'bs-discovery-breadcrumb-nav-node-ns-aria-label' )->text()
+			'title' => $rootNodeText
 		];
 	}
 
@@ -158,7 +158,7 @@ class DefaultBreadCrumbRenderer extends TemplateRendererBase {
 
 			$nodeHTML = [
 				'id' => md5( 'breadcrumb-nav-subpages-' . $node['id'] ),
-				'button-text' => new \RawMessage( trim( $nodeText ) ),
+				'button-text' => new RawMessage( trim( $nodeText ) ),
 				'button-classes' => $node['classes'],
 				'split-button-title' => $this->messageLocalizer
 					->msg( 'bs-discovery-breadcrumb-nav-node-split-button-title' ),
@@ -169,11 +169,9 @@ class DefaultBreadCrumbRenderer extends TemplateRendererBase {
 				'path' => $node['path']
 			];
 
-			/** TODO: Inject context */
-			$requestContext = RequestContext::getMain();
-			$action = $requestContext->getRequest()->getVal( 'action', 'view' );
+			$isSelfLink = $this->breadcrumbProvider->isSelfLink( $node );
 
-			if ( isset( $node['current'] ) && $node['current'] === true && $action === 'view' ) {
+			if ( $isSelfLink ) {
 				$nodeHTML = array_merge(
 					$nodeHTML,
 					[
@@ -186,15 +184,17 @@ class DefaultBreadCrumbRenderer extends TemplateRendererBase {
 					[
 						'tag' => 'a',
 						'button-title' => $this->messageLocalizer
-							->msg( 'bs-discovery-breadcrumb-nav-node-title', $node['title'] ),
+							->msg( 'bs-discovery-breadcrumb-nav-node-title', $node['title'] )->text(),
 						'button-href' => $node['url'],
 						'button-aria-label' => $this->messageLocalizer
-							->msg( 'bs-discovery-breadcrumb-nav-node-aria-label', $node['title'] ),
+							->msg( 'bs-discovery-breadcrumb-nav-node-aria-label', $node['title'] )->text(),
 					]
 				);
 			}
 
 			// append subpage menu
+			$requestContext = RequestContext::getMain();
+			$action = $requestContext->getRequest()->getVal( 'action', 'view' );
 			if ( !isset( $node['current'] ) || $node['current'] !== true || $action === 'view' ) {
 				$nodeHTML = array_merge(
 					$nodeHTML,

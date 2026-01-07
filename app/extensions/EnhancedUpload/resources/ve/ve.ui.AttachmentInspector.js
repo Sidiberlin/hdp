@@ -116,7 +116,7 @@ ve.ui.AttachmentInspector.prototype.setLayouts = function () {
 ve.ui.AttachmentInspector.prototype.getSetupProcess = function ( data ) {
 	return ve.ui.AttachmentInspector.super.prototype.getSetupProcess.call( this, data )
 		.next( function () {
-			var attributes = this.selectedNode.getAttribute( 'mw' ).attrs;
+			const attributes = this.selectedNode.getAttribute( 'mw' ).attrs;
 
 			this.titleInput.setValue( attributes.title || '' );
 			this.catInput.setValue( attributes.categories || '' );

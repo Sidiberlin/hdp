@@ -2,9 +2,9 @@
 
 namespace BlueSpice\UserSidebar\Component;
 
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
-use Title;
 
 class EditPersonalMenu extends RestrictedTextLink {
 

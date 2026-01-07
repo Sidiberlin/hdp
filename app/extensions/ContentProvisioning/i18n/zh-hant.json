@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"contentprovisioning-desc": "提供已供應頁面的概要並允許管理員同步內容",
+	"contentprovisioning": "內容供應",
+	"right-contentprovisioning-viewspecialpage": "查看內容供應特殊頁面",
+	"action-contentprovisioning-viewspecialpage": "查看內容供應特殊頁面",
+	"contentprovisioning-ui-overview-grid-section-page": "頁面",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "同步？",
+	"contentprovisioning-ui-overview-grid-action-force-sync": "強制同步",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "顯示差異",
+	"contentprovisioning-diff-no-change": "清單版本和 wiki 頁面版本之間沒有差異",
+	"contentprovisioning-ui-content-diff-title": "內容差異",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "Wiki",
+	"contentprovisioning-ui-content-diff-headline-provisioner-content": "遠端"
+}

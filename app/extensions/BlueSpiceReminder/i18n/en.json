@@ -4,11 +4,8 @@
 	},
 	"bs-reminder-extension-description": "Gives the user the opportunity to create reminders.",
 	"reminder": "Reminder",
-	"specialreminder": "Reminder",
 	"prefs-reminder": "Reminder",
 	"bs-reminder-text": "Reminders",
-	"apihelp-bs-reminder-store-description": "Serves the data for Special:Reminder overview grid",
-	"apihelp-bs-reminder-tasks-description": "Executes tasks like update and delete for Special:Reminder overview grid",
 	"bs-reminder-pref-DefaultReminderPeriod": "Default reminder period",
 	"bs-reminder-pref-DefaultReminderPeriod-help": "Enter number of days for the reminder period.",
 	"bs-reminder-pref-SetReminderOnCreate": "Set reminder on page creation",
@@ -89,7 +86,7 @@
 	"bs-reminder-info-dialog": "Reminder",
 	"bs-reminder-info-dialog-button-label": "Manage reminders",
 	"bs-reminder-actionmenuentry-setreminder-label": "Set reminder",
-	"bs-reminder-ui-workflows-inspector-activity-set-reminder-title": "Set reminder activity",
+	"bs-reminder-ui-workflows-inspector-activity-set-reminder-title": "\"Set reminder\" activity",
 	"bs-reminder-ui-workflows-inspector-activity-set-reminder-property-username": "Username",
 	"bs-reminder-ui-workflows-inspector-activity-set-reminder-property-page": "Page",
 	"bs-reminder-ui-workflows-inspector-activity-set-reminder-property-date": "Remind on",
@@ -102,7 +99,7 @@
 	"bs-reminder-event-one-week-with-comment": "Your reminder for page [$1 $2] is due in one week.<br><br>Comment on the reminder:<br><b>$3</b>",
 	"bs-reminder-special-myreminder-heading": "My reminder",
 	"bs-reminder-title-edit": "Edit reminder",
-	"bs-reminder-title-add": "Add reminder",
 	"bs-reminder-header-action-edit": "Edit",
-	"bs-reminder-header-action-delete": "Delete"
+	"bs-reminder-header-action-delete": "Delete",
+	"bs-reminder-assign-user-label": "Assign reminder to"
 }

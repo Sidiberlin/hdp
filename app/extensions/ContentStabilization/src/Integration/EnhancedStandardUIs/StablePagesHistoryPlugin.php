@@ -2,13 +2,13 @@
 
 namespace MediaWiki\Extension\ContentStabilization\Integration\EnhancedStandardUIs;
 
-use Language;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\EnhancedStandardUIs\IHistoryPlugin;
+use MediaWiki\Language\Language;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserFactory;
-use Message;
-use RequestContext;
-use Title;
 
 class StablePagesHistoryPlugin implements IHistoryPlugin {
 
@@ -60,6 +60,7 @@ class StablePagesHistoryPlugin implements IHistoryPlugin {
 		}
 		$user = RequestContext::getMain()->getUser();
 		if ( !$point ) {
+			$entry['sp_approved'] = false;
 			$classes[] = 'content-stabilization-not-stable';
 			$title = $historyAction->getTitle();
 			if ( !$title ) {
@@ -70,7 +71,7 @@ class StablePagesHistoryPlugin implements IHistoryPlugin {
 			if ( !$this->lookup->canUserSeeUnstable( $user ) && !$this->showFirstUnstable( $title ) ) {
 				$classes[] = 'content-stabilization-hidden';
 			} else {
-				$lastStable = $this->lookup->getLastStablePoint( $title->toPageIdentity() );
+				$lastStable = $this->lookup->getLastRawStablePoint( $title->toPageIdentity() );
 				$entry['sp_approver'] = '';
 				$entry['sp_approve_ts'] = '';
 				$entry['sp_approve_comment'] = '';
@@ -94,6 +95,7 @@ class StablePagesHistoryPlugin implements IHistoryPlugin {
 			$comment = '-';
 		}
 
+		$entry['sp_approved'] = true;
 		$entry['sp_state'] = Message::newFromKey( 'contentstabilization-status-stable' )->parse();
 		$entry['sp_approver'] = $actorName;
 		$entry['sp_approve_ts'] = $timestamp;

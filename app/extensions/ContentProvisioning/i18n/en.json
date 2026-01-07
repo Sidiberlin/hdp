@@ -1,6 +1,13 @@
 {
-	"contentprovisioning-desc": "English description of ContentProvisioning",
+	"@metadata": {
+		"authors": [
+			"HalloWelt! GmbH"
+		]
+	},
+	"contentprovisioning-desc": "Provides an overview of provisioned pages and allows administrators to synchronise content",
 	"contentprovisioning": "Content provisioning",
+	"right-contentprovisioning-viewspecialpage": "View content provisioning special page",
+	"action-contentprovisioning-viewspecialpage": "View content provisioning special page",
 	"contentprovisioning-ui-overview-grid-section-page": "Page",
 	"contentprovisioning-ui-overview-grid-section-in-sync": "In sync?",
 	"contentprovisioning-ui-overview-grid-action-force-sync": "Force sync",

@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Milicevic01"
+		]
+	},
+	"collabpads-start-dialog-show-again": "Не приказуј поново ову поруку",
+	"collabpads-toolbar-save-button": "Сачувај измене…",
+	"collabpads-toolbar-save-button-label": "Сачувај",
+	"collabpads-save-dialog-title": "Сачувај измене",
+	"collabpads-save-dialog-save-button-label": "Сачувај",
+	"collabpads-save-dialog-summary": "Опис:",
+	"collabpads-save-dialog-minor-edit": "Ово је мања измена",
+	"collabpads-leave-dialog-leave-button": "Напусти",
+	"collabpads-dialog-cancel-button": "Откажи",
+	"collabpads-dialog-accept-button": "Прихватам",
+	"collabpads-leave-tooltip": "Напусти",
+	"collabpads-author-join": "$1 се {{GENDER:$2|придружио|придружила}}",
+	"collabpads-author-leave": "$1 је {{GENDER:$2|отишао|отишла}}",
+	"collabpads-author-save": "$1 је {{GENDER:$2|сачувао|сачувала}}",
+	"collabpads-namespace-label": "Именски простор",
+	"collabpads-owner-label": "Власник",
+	"collabpads-save-complete-notif": "Страница сачувана",
+	"collabpads-invalid-change-dialog-delete-button": "Обриши",
+	"collabpads-invalid-change-dialog-save-button": "Сачувај"
+}

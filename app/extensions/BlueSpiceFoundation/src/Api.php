@@ -28,18 +28,18 @@
 
 namespace BlueSpice;
 
-use ApiBase;
-use ApiMain;
-use ApiMessage;
 use BlueSpice\Api\ErrorFormatter;
 use BlueSpice\Api\Format\Json;
 use BSExtendedApiContext;
-use Language;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Api\ApiMessage;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
-use RequestContext;
-use Status;
-use Title;
-use User;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use Wikimedia\ParamValidator\ParamValidator;
 
 /**
@@ -155,7 +155,7 @@ abstract class Api extends ApiBase {
 			$errorLang = $this->services->getContentLanguage();
 		} else {
 			$errorLangCode = RequestContext::sanitizeLangCode( $errorLangCode );
-			$errorLang = Language::factory( $errorLangCode );
+			$errorLang = $this->services->getLanguageFactory()->getLanguage( $errorLangCode );
 		}
 
 		return new ErrorFormatter(
@@ -233,7 +233,7 @@ abstract class Api extends ApiBase {
 	 * @param Title|null $title
 	 */
 	protected function checkPermission( Status $status, User $user, $permission,
-		Title $title = null ) {
+		?Title $title = null ) {
 		if ( !$status->isOK() ) {
 			return;
 		}

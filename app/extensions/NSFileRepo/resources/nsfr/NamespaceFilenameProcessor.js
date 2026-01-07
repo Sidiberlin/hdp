@@ -6,7 +6,7 @@ nsfr.NamespaceFilenameProcessor = function () {};
  * @inheritDoc
  */
 nsfr.NamespaceFilenameProcessor.prototype.initializeFilename = function () {
-	var filename = mw.config.get( 'wgPageName' ) + '-' + ( Math.floor( Math.random() * 100000000 ) + 1 );
+	let filename = mw.config.get( 'wgPageName' ) + '-' + ( Math.floor( Math.random() * 100000000 ) + 1 );
 	// filename must only contain alphanumeric characters, colons (for namespaces),
 	// dashes and underscores
 	filename = this.sanitizeFilename( filename );

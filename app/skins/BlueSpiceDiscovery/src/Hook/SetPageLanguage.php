@@ -2,9 +2,9 @@
 
 namespace BlueSpice\Discovery\Hook;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Languages\LanguageNameUtils;
 use MediaWiki\Storage\Hook\PageSaveCompleteHook;
-use RequestContext;
 use SpecialPageLanguage;
 
 class SetPageLanguage implements PageSaveCompleteHook {

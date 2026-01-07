@@ -13,9 +13,9 @@
 	},
 	"getdata": "الحصول على البيانات",
 	"externaldata-desc": "يسمح باسترجاع البيانات الهيكلية من مسارات خارجية، قواعد البيانات ومصادر أخرى",
-	"externaldata-smw-needed": "خطأ: يجب تثبيت Semantic MediaWiki لاستدعاء {{#store_external_table:}}.",
 	"externaldata-no-param-specified": "خطأ: لم يتم تحديد وسيط \"$1\".",
 	"externaldata-param-type-error": "خطأ: يجب أن تكون المعلمة $1 من النوع $2 .",
+	"externaldata-processing-exception": "تم طرح استثناء أثناء تشغيل المعالج المسبق أو المعالج اللاحق: $1",
 	"externaldata-php-library-missing": "خطأ: مكتبة PHP $1 ، اللازمة لاستخدام $2 ، مفقودة.",
 	"external-data-no-suitable-connector": "خطأ: لم يتم تحديد مصدر بيانات مناسب لاستعلام البيانات الخارجية هذا",
 	"externaldata-throttled": "يتم تقييد المكالمات إلى $1 حتى {{#time: c | @ $2 }}.",
@@ -52,9 +52,10 @@
 	"externaldata-url-unknown-error": "خطأ غير معروف أثناء جلب البيانات من URL $1 .",
 	"externaldata-url-not-allowed": "URL $1 غير مسموح به في هذا الويكي.",
 	"externaldata-caught-exception-soap": "تم اكتشاف استثناء $1 أثناء إنشاء عميل SOAP.",
-	"externaldata-parsing-html-failed": "تعذر تحليل HTML.",
+	"externaldata-parsing-html-failed": "لم نتمكن من تحليل HTML:\n $1",
 	"externaldata-caught-exception-parsing-html": "تم اكتشاف استثناء أثناء تحليل HTML. رسالة الخطأ هي \" $1 \".",
-	"externaldata-error-converting-css-to-xpath": "تم اكتشاف استثناء أثناء تحويل محدد CSS $1 إلى XPath:! N! $2",
+	"externaldata-error-converting-css-to-xpath": "استثناء مصاب تحويل اختيار CSS $1 إلى XPath: $2",
+	"externaldata-jsonpath-error": "JSONpath غير قانوني $1",
 	"externaldata-missing-library": "المكتبة $1 ، المطلوبة لاستخدام وظيفة المحلل اللغوي ' $2 ' أو وظيفة Lua <code>$3</code> ، مفقودة.",
 	"externaldata-undefined-file": "لم يتم تعريف الملف $1 .",
 	"externaldata-missing-file": "ملف $1 مفقود.",
@@ -72,5 +73,5 @@
 	"externaldata-no-local-variable": "خطأ: لم يتم تعيين متغير محلي \" $1 \".",
 	"externaldata-no-template": "خطأ: لم يتم تحديد قالب.",
 	"externaldata-no-loop-body": "خطأ: لم يتم تعيين نص الحلقة كمعامل أول أو ثاني.",
-	"externaldata-getdata-badurl": "يجب عليك تحديد اسم الصفحة في عنوان URL ؛\nيجب أن يبدو عنوان URL \"Special:GetData/<page name>\"."
+	"externaldata-getdata-badurl": "يجب عليك تحديد اسم الصفحة في عنوان URL. يجب أن يبدو عنوان URL \"<bdi>{{#Special:GetData}}/Page_name</bdi>\"."
 }

@@ -2,9 +2,9 @@
 
 namespace MediaWiki\Extension\NotifyMe\Grouping;
 
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\Events\GroupableEvent;
 use MWStake\MediaWiki\Component\Events\Notification;
-use User;
 
 /**
  * Decorator for Notification class

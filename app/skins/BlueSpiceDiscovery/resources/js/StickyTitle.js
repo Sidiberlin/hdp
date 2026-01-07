@@ -1,21 +1,21 @@
-( function( mw, $, d ){
+( function ( $ ) {
 
-	var initialTitlePos = 0;
-	$( document ).ready( function( e ) {
+	let initialTitlePos = 0;
+	$( ( e ) => { // eslint-disable-line no-unused-vars
 		initialTitlePos = getTitleLineContent().offset().top;
 		if ( initialTitlePos === 'undefined' ) {
 			initialTitlePos = 0;
 		}
 
-		$( window ).scroll( function() {
-			if( !isSpecialPage() && window.innerWidth >= 767  ) {
+		$( window ).on( 'scroll', () => {
+			if ( !isSpecialPage() && window.innerWidth >= 767 ) {
 				setSickyTitleForVerticalPosition();
 				handleVEToolbar();
 			}
 		} );
 
-		$( window ).on( 'resize', function( e ) {
-			if ( ( window.innerWidth < 766 ) &&  $( 'body' ).hasClass( 'title-fixed' ) ) {
+		$( window ).on( 'resize', () => {
+			if ( ( window.innerWidth < 766 ) && $( 'body' ).hasClass( 'title-fixed' ) ) {
 				disableStickyTitle();
 			} else if ( window.innerWidth >= 767 ) {
 				setSickyTitleForVerticalPosition();
@@ -24,18 +24,18 @@
 		} );
 
 		if ( $( 'body' ).hasClass( 'title-fixed' ) ) {
-			let resizeObserver = new ResizeObserver(() => {
+			const resizeObserver = new ResizeObserver( () => {
 				alignTitleLine();
 				resizeTitleLineContent();
 			} );
-			resizeObserver.observe( $( '#main' )[0] );
+			resizeObserver.observe( $( '#main' )[ 0 ] );
 		}
 
-	} )
+	} );
 
 	function setSickyTitleForVerticalPosition() {
-		var windowTop = $( this ).scrollTop();
-		var headerHeight = $( '#header > nav' ).height();
+		const windowTop = $( this ).scrollTop();
+		const headerHeight = $( '#header > nav' ).height();
 
 		if ( windowTop > ( initialTitlePos - headerHeight ) ) {
 			enableSitckyTitle();
@@ -47,8 +47,8 @@
 	function enableSitckyTitle() {
 		$( 'body' ).addClass( 'title-fixed' );
 
-		var $titleLine = getTitleLine();
-		var $titleSection = getTitleSection();
+		const $titleLine = getTitleLine();
+		const $titleSection = getTitleSection();
 		$titleSection.css( 'padding-top', $titleLine.height() );
 
 		alignTitleLine();
@@ -58,10 +58,10 @@
 	function disableStickyTitle() {
 		$( 'body' ).removeClass( 'title-fixed' );
 
-		var $titleSection = getTitleSection();
+		const $titleSection = getTitleSection();
 		$titleSection.removeAttr( 'style' );
 
-		var $titleLineContent = getTitleLineContent();
+		const $titleLineContent = getTitleLineContent();
 		$titleLineContent.removeAttr( 'style' );
 	}
 
@@ -96,7 +96,7 @@
 	}
 
 	function setTitleLineContentWidth( width ) {
-		var $titleLineContent = getTitleLineContent();
+		const $titleLineContent = getTitleLineContent();
 		$titleLineContent.outerWidth( width );
 	}
 
@@ -109,7 +109,7 @@
 	}
 
 	function getMainPosLeft() {
-		var offset =  $( '#main' ).offset();
+		const offset = $( '#main' ).offset();
 		return offset.left;
 	}
 
@@ -118,7 +118,7 @@
 	}
 
 	function resizeTitleLineContent() {
-		var mainWidth = getMainWidth();
+		const mainWidth = getMainWidth();
 		// MMV overlay triggers this resize method but with
 		// var mainWidth = 0
 		if ( mainWidth > 0 ) {
@@ -127,37 +127,37 @@
 	}
 
 	function alignTitleLine() {
-		var left = getMainPosLeft();
+		const left = getMainPosLeft();
 		$( 'body.title-fixed #title-line > div' ).css( 'margin-left', left );
 	}
 
 	function getVEToolbar() {
-		return  $( '#content .ve-init-target >.ve-ui-toolbar > .oo-ui-toolbar-bar' );
+		return $( '#content .ve-init-target >.ve-ui-toolbar > .oo-ui-toolbar-bar' );
 	}
 
 	function setVEToolbarPosition() {
-		var top = getWrapperTopPosition();
-		var mainWidth = getContentWidth();
-		var $titleLine = getTitleLine();
-		var topPosition = $titleLine.height() + top;
+		const top = getWrapperTopPosition();
+		const mainWidth = getContentWidth();
+		const $titleLine = getTitleLine();
+		const topPosition = $titleLine.height() + top;
 
-		var $toolbar = getVEToolbar();
+		const $toolbar = getVEToolbar();
 		$toolbar.css( 'top', topPosition );
 		$toolbar.css( 'position', 'fixed' );
 		$toolbar.width( mainWidth );
 
-		var $titleSection = getTitleSection();
+		const $titleSection = getTitleSection();
 		$titleSection.css( 'padding-bottom', $toolbar.height() );
 	}
 
 	function resetVEToolbarPosition() {
-		var $toolbar = getVEToolbar();
-		$toolbar.removeAttr( "style" );
+		const $toolbar = getVEToolbar();
+		$toolbar.removeAttr( 'style' );
 	}
 
 	function inEditMode() {
-		var targetVisual = $( '.ve-init-target-visual' );
-		var targetSource = $( '.ve-init-target-source' );
+		const targetVisual = $( '.ve-init-target-visual' );
+		const targetSource = $( '.ve-init-target-source' );
 
 		if ( targetVisual.length || targetSource.length ) {
 			return true;
@@ -166,4 +166,4 @@
 		return false;
 	}
 
-} )( mediaWiki, jQuery, document );
+}( jQuery ) );

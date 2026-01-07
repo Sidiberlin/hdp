@@ -6,15 +6,15 @@ bs.cntthngs.util.tag.CountFilesDefinition = function BsVecUtilTagCountFilesDefin
 
 OO.inheritClass( bs.cntthngs.util.tag.CountFilesDefinition, bs.vec.util.tag.Definition );
 
-bs.cntthngs.util.tag.CountFilesDefinition.prototype.getCfg = function() {
-	var cfg = bs.cntthngs.util.tag.CountFilesDefinition.super.prototype.getCfg.call( this );
-	return $.extend( cfg, {
-		classname : 'CountFiles',
+bs.cntthngs.util.tag.CountFilesDefinition.prototype.getCfg = function () {
+	const cfg = bs.cntthngs.util.tag.CountFilesDefinition.super.prototype.getCfg.call( this );
+	return $.extend( cfg, { // eslint-disable-line no-jquery/no-extend
+		classname: 'CountFiles',
 		name: 'countFiles',
 		tagname: 'bs:countfiles',
 		menuItemMsg: 'bs-countthings-ve-countfiles-title',
 		descriptionMsg: 'bs-countthings-tag-countfiles-desc'
-	});
+	} );
 };
 
 bs.vec.registerTagDefinition(

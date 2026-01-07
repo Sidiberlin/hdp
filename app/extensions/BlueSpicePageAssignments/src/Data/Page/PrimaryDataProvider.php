@@ -7,11 +7,11 @@ use BlueSpice\PageAssignments\Assignment;
 use BlueSpice\PageAssignments\Data\Record as AssignmentRecord;
 use BsStringHelper;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\Filter\StringValue;
 use MWStake\MediaWiki\Component\DataStore\FilterFinder;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
-use Title;
 
 class PrimaryDataProvider extends PageDataProvider {
 
@@ -47,6 +47,7 @@ class PrimaryDataProvider extends PageDataProvider {
 			return;
 		}
 		$row->{Record::ASSIGNMENTS} = [];
+		$row->{Record::HAS_ASSIGNMENTS} = false;
 		$row->{Record::PREFIXED_TEXT} = $title->getPrefixedText();
 		$assignments = $this->getPageAssignments();
 		$assignmentQuery = '';
@@ -81,6 +82,7 @@ class PrimaryDataProvider extends PageDataProvider {
 				$assignData[] = $assignment->toStdClass();
 			}
 			$row->{Record::ASSIGNMENTS} = $assignData;
+			$row->{Record::HAS_ASSIGNMENTS} = !empty( $assignData );
 
 		} elseif ( !empty( $assignmentQuery ) ) {
 			return;
@@ -88,7 +90,7 @@ class PrimaryDataProvider extends PageDataProvider {
 
 		$fields = [ Record::ID, Record::NS, Record::TITLE, Record::IS_REDIRECT,
 			Record::ID_NEW, Record::TOUCHED, Record::LATEST, Record::CONTENT_MODEL,
-			Record::ASSIGNMENTS, Record::PREFIXED_TEXT ];
+			Record::ASSIGNMENTS, Record::HAS_ASSIGNMENTS, Record::PREFIXED_TEXT ];
 		$data = [];
 		foreach ( $fields as $key ) {
 			$data[ $key ] = $row->{$key};

@@ -1,5 +1,7 @@
 <?php
 
+use SMW\Query\ResultPrinters\AggregatablePrinter;
+
 /**
  * Abstract class to hold common functionality for the jqPlot result printers.
  *
@@ -11,15 +13,15 @@
  * @author Yaron Koren
  * @author Sanyam Goyal
  */
-abstract class SRFjqPlot extends SMWAggregatablePrinter {
+abstract class SRFjqPlot extends AggregatablePrinter {
 
 	/**
 	 * @inheritDoc
 	 */
 	protected function getLinker( $firstcol = false ) {
 		// *** force null since labels are never clickable
-                return null;
-        }
+				return null;
+	}
 
 	public static function getCommonParams() {
 		$params = [];
@@ -143,7 +145,6 @@ abstract class SRFjqPlot extends SMWAggregatablePrinter {
 	 *
 	 * @since 1.8
 	 *
-	 * @param array $data
 	 * @param $minValue
 	 * @param $maxValue
 	 *

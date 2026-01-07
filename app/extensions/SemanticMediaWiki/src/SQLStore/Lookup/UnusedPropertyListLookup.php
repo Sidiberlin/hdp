@@ -2,17 +2,18 @@
 
 namespace SMW\SQLStore\Lookup;
 
+use MediaWiki\Message\Message;
 use RuntimeException;
 use SMW\DIProperty;
 use SMW\Exception\PropertyLabelNotResolvedException;
+use SMW\RequestOptions;
 use SMW\SQLStore\PropertyStatisticsStore;
 use SMW\SQLStore\SQLStore;
 use SMW\Store;
 use SMWDIError as DIError;
-use SMWRequestOptions as RequestOptions;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.2
  *
  * @author mwjames
@@ -55,7 +56,6 @@ class UnusedPropertyListLookup implements ListLookup {
 	 * @throws RuntimeException
 	 */
 	public function fetchList() {
-
 		if ( $this->requestOptions === null ) {
 			throw new RuntimeException( "Missing requestOptions" );
 		}
@@ -66,7 +66,7 @@ class UnusedPropertyListLookup implements ListLookup {
 	/**
 	 * @since 2.2
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function isFromCache() {
 		return false;
@@ -75,7 +75,7 @@ class UnusedPropertyListLookup implements ListLookup {
 	/**
 	 * @since 2.2
 	 *
-	 * @return integer
+	 * @return int
 	 */
 	public function getTimestamp() {
 		return wfTimestamp( TS_UNIX );
@@ -91,7 +91,6 @@ class UnusedPropertyListLookup implements ListLookup {
 	}
 
 	private function selectPropertiesFromTable() {
-
 		// the query needs to do the filtering of internal properties, else LIMIT is wrong
 		$options = [ 'ORDER BY' => 'smw_sort' ];
 
@@ -128,7 +127,6 @@ class UnusedPropertyListLookup implements ListLookup {
 	}
 
 	private function buildPropertyList( $res ) {
-
 		$result = [];
 
 		foreach ( $res as $row ) {
@@ -139,11 +137,10 @@ class UnusedPropertyListLookup implements ListLookup {
 	}
 
 	private function addPropertyFor( $title ) {
-
 		try {
 			$property = new DIProperty( $title );
 		} catch ( PropertyLabelNotResolvedException $e ) {
-			$property = new DIError( new \Message( 'smw_noproperty', [ $title ] ) );
+			$property = new DIError( new Message( 'smw_noproperty', [ $title ] ) );
 		}
 
 		return $property;

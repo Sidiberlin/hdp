@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Bookshelf;
 
-use Message;
+use MediaWiki\Message\Message;
 
 interface IMetaDataDescription {
 

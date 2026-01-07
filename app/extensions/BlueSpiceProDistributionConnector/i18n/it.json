@@ -20,5 +20,7 @@
 	"bs-pro-distribution-pdfembed-inspector-page-label": "Inizia con la pagina",
 	"bs-pro-distribution-pdfembed-inspector-title": "Incorpora PDF",
 	"bs-pro-distribution-pdfembed-droplet-name": "Anteprima PDF",
-	"bs-pro-distribution-pdfembed-droplet-description": "Incorpora l'anteprima del file PDF nella pagina wiki"
+	"bs-pro-distribution-pdfembed-droplet-description": "Incorpora l'anteprima del file PDF nella pagina wiki",
+	"bs-pro-distribution-droplet-ec-embed-url-label": "URL",
+	"bs-pro-distribution-droplets-ec-embed-show-line-numbers-label": "Mostra i numeri di riga"
 }

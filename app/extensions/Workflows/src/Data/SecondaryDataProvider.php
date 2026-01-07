@@ -2,9 +2,12 @@
 
 namespace MediaWiki\Extension\Workflows\Data;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\Workflows\Storage\AggregateRoot\Id\WorkflowId;
 use MediaWiki\Extension\Workflows\WorkflowFactory;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
 use MWStake\MediaWiki\Component\DataStore\ISecondaryDataProvider;
 
@@ -15,7 +18,7 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 	private $linkRenderer;
 	/** @var UserFactory */
 	private $userFactory;
-	/** @var \RequestContext|null */
+	/** @var RequestContext|null */
 	private $context;
 
 	/**
@@ -29,7 +32,7 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 		$this->workflowFactory = $workflowFactory;
 		$this->linkRenderer = $linkRenderer;
 		$this->userFactory = $userFactory;
-		$this->context = \RequestContext::getMain();
+		$this->context = RequestContext::getMain();
 	}
 
 	/**
@@ -40,12 +43,18 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 	public function extend( $dataSets ) {
 		foreach ( $dataSets as &$dataSet ) {
 			$title = $dataSet->get( 'page_title_object' );
-			if ( $title instanceof \Title ) {
+			if ( $title instanceof Title ) {
 				$dataSet->set( Record::PAGE_LINK, $title->getLocalURL() );
 			}
 			/** @var WorkflowId $id */
 			$id = $dataSet->get( Record::ID );
-			$workflow = $this->workflowFactory->getWorkflow( $id );
+			try {
+				$workflow = $this->workflowFactory->getWorkflow( $id );
+			} catch ( \Exception $e ) {
+				// If the workflow is not found, we skip it
+				continue;
+			}
+
 			$dataSet->set( Record::ID, $id->toString() );
 			$dataSet->set( Record::ASSIGNEE, $this->formatAssignee( $dataSet->get( Record::ASSIGNEE ) ) );
 			$dataSet->set( Record::STATE_LABEL, $this->getStateLabel( $workflow->getCurrentState() ) );
@@ -54,7 +63,9 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 			if ( $startedTs ) {
 				$dataSet->set(
 					Record::START_FORMATTED,
-					$this->context->getLanguage()->userDate( $startedTs, $this->context->getUser() )
+					$this->context->getLanguage()->userTimeAndDate( $startedTs, $this->context->getUser(), [
+						'timecorrection' => true
+					] )
 				);
 			}
 
@@ -62,7 +73,9 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 			if ( $touchedTs ) {
 				$dataSet->set(
 					Record::LAST_FORMATTED,
-					$this->context->getLanguage()->userDate( $touchedTs, $this->context->getUser() )
+					$this->context->getLanguage()->userTimeAndDate( $touchedTs, $this->context->getUser(), [
+						'timecorrection' => true
+					] )
 				);
 			}
 
@@ -78,7 +91,7 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 			$bits = explode( '#', $assignee );
 			$username = array_shift( $bits );
 			$user = $this->userFactory->newFromName( $username );
-			if ( $user instanceof \User ) {
+			if ( $user instanceof User ) {
 				$res[] = $this->linkRenderer->makeLink(
 					$user->getUserPage(), $user->getRealName() ?: $user->getName()
 				);

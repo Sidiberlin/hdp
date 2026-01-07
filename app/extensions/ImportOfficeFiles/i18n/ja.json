@@ -4,7 +4,6 @@
 			"MathXplore"
 		]
 	},
-	"importofficefiles-ui-action-import-msword-text": "Wordファイルをインポートする",
 	"importofficefiles-ui-action-import-msword-title": "Microsoft Wordファイルからページを作成する",
 	"importofficefiles-ui-import-dialog-title": "ファイルをインポートする",
 	"importofficefiles-ui-import-completed": "インポートを完了しました",

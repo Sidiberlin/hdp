@@ -1,6 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
+			"Meno25",
+			"Mohammed Qays",
 			"ديفيد"
 		]
 	},
@@ -11,8 +13,12 @@
 	"recommendations": "توصيات",
 	"bs-rating-yourrating": "تقييمك: $1",
 	"bs-rating-special-rating-heading": "التقييمات",
+	"bs-rating-ratingvalue-title": "أُعطي تقيمًا $1 من أصل 5",
+	"bs-rating-ratingcount-title": "$1 {{PLURAL:$1| تقييم|تقييمات}}",
 	"bs-rating-articlelike-ratingtext": "الموصى به ($1)",
 	"bs-rating-articlelike-uratingtextservoted": "الموصى به ($1)",
+	"bs-rating-articlelike-ratingtext-reader-title": "{{PLURAL:$1|توصية|توصيات}} ($1)",
+	"bs-rating-articlelike-uservoted-title": "موصى به من قبلك",
 	"action-rating-viewspecialpage": "عرض الصفحات المحمية باستخدام صلاحية \"Rating-Viewspecialpage\"",
 	"action-rating-read": "قراءة التقييمات على الصفحات",
 	"action-rating-write": "التصويت على الصفحات",
@@ -27,12 +33,20 @@
 	"bs-rating-specialrating-titleTitle": "عنوان",
 	"bs-rating-specialrating-titleRating": "تقييم",
 	"bs-rating-specialrating-titleVotes": "عدد التقييمات",
-	"apihelp-bs-rating-tasks-description": "ينفذ المهام المشتركة لتمديد التقييم",
-	"apihelp-bs-rating-store-description": "يسلم تقييمات للمقالات",
+	"apihelp-bs-rating-store-summary": "يسلم تقييمات للمقالات",
 	"bs-rating-nsm-label": "تقييم",
 	"bs-rating-nsm-label-recommendations": "توصيات",
 	"apihelp-bs-rating-tasks-summary": "ينفذ المهام المشتركة لتمديد التقييم",
 	"apihelp-bs-ratingarticle-store-summary": "يسلم تقييمات للمقالات",
 	"apihelp-bs-ratingarticlelike-store-summary": "يسلم توصيات للمقالات",
-	"apihelp-bs-rating-store-summary": "يسلم تقييمات للمقالات"
+	"bs-rating-star-rating-star-label": "تقييم النجمة $1",
+	"bs-rating-star-rating-star-selected-announce": "تم اختيار نجمة التقييم $1",
+	"bs-rating-sesp-rating-average": "التقييم المتوسط",
+	"bs-rating-sesp-rating-average-desc": "متوسط تقييم الصفحة",
+	"bs-rating-sesp-rating-total": "عدد التقييمات",
+	"bs-rating-sesp-rating-total-desc": "عدد التقييمات للصفحة",
+	"bs-rating-sesp-recommendations-total": "عدد التوصيات",
+	"bs-rating-sesp-recommendations-total-desc": "عدد التوصيات للصفحة",
+	"bs-rating-button-name": "تقييم",
+	"bs-rating-article-star-group-form-desc": "قم بتقييم محتوى هذه الصفحة."
 }

@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\FlexiSkin;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
 
 class FlexiSkinConfig implements Config {

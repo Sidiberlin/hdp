@@ -2,8 +2,8 @@
 
 namespace PageHeader\PageInfoSentence;
 
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 abstract class Type implements IType {
 

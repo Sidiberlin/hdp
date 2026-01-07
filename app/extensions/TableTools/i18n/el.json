@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Geraki"
+		]
+	},
+	"tabletools-desc": "Προσθέτει πρόσθετη λειτουργικότητα για πίνακες περιεχομένου",
+	"tabletools-ve-plugin-table-style-sticky": "Σταθερή κεφαλίδα"
+}

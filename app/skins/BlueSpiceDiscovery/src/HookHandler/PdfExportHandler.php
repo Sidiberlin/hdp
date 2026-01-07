@@ -34,10 +34,10 @@ class PdfExportHandler {
 		$dom = $template['dom'];
 
 		/** @var DOMElement */
-		$bootstrapFontStyles = $this->createLinkNode( $dom,  'stylesheets/bootstrap-icons-fonts.css' );
+		$bootstrapFontStyles = $this->createLinkNode( $dom, 'stylesheets/bootstrap-icons-fonts.css' );
 
 		/** @var DOMElement */
-		$bootstrapIconsStyles = $this->createLinkNode( $dom,  'stylesheets/bootstrap-icons.css' );
+		$bootstrapIconsStyles = $this->createLinkNode( $dom, 'stylesheets/bootstrap-icons.css' );
 
 		/** @var DOMNodeList */
 		$head = $dom->getElementsByTagName( 'head' );

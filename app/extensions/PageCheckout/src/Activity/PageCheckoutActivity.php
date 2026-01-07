@@ -4,22 +4,20 @@ namespace MediaWiki\Extension\PageCheckout\Activity;
 
 use MediaWiki\Extension\Workflows\Activity\ExecutionStatus;
 use MediaWiki\Extension\Workflows\WorkflowContext;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWException;
-use Title;
-use User;
 
 class PageCheckoutActivity extends CheckoutActivity {
 	/** @var bool */
 	private $force;
-	/** @var string */
-	private $genericUsername = 'Mediawiki default';
 
 	/**
 	 * @inheritDoc
 	 */
 	public function execute( $data, WorkflowContext $context ): ExecutionStatus {
-		$this->force = isset( $data['force'] ) ? (bool)$data['force'] : false;
+		$this->force = isset( $data['force'] ) && $data['force'];
 		return parent::execute( $data, $context );
 	}
 
@@ -35,7 +33,7 @@ class PageCheckoutActivity extends CheckoutActivity {
 		$payload = [
 			'workflowId' => $this->workflowContext->getWorkflowId()->toString(),
 		];
-		if ( $user->getName() === $this->genericUsername ) {
+		if ( $user->isSystemUser() ) {
 			$payload['alertText'] = Message::newFromKey(
 				'page-checkout-workflow-activity-checkout-reason'
 			)->text();

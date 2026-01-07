@@ -3,7 +3,7 @@
 namespace BlueSpice\Discovery\Component;
 
 use BlueSpice\Discovery\CookieHandler;
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleLink;
 
 class SidebarPrimaryToggleButton extends SimpleLink {

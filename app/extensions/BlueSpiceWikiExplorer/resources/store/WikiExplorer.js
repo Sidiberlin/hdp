@@ -10,10 +10,10 @@ bs.wikiexplorer.store.WikiExplorer = function ( cfg ) {
 
 OO.inheritClass( bs.wikiexplorer.store.WikiExplorer, OOJSPlus.ui.data.store.RemoteStore );
 
-bs.wikiexplorer.store.WikiExplorer.prototype.doLoadData = function() {
-	var dfd = $.Deferred();
+bs.wikiexplorer.store.WikiExplorer.prototype.doLoadData = function () {
+	const dfd = $.Deferred();
 
-	var data = this.getRequestData();
+	const data = this.getRequestData();
 
 	this.request = $.ajax( {
 		method: 'GET',
@@ -21,13 +21,13 @@ bs.wikiexplorer.store.WikiExplorer.prototype.doLoadData = function() {
 		data: data,
 		contentType: 'application/json',
 		dataType: 'json',
-		beforeSend: function() {
+		beforeSend: () => {
 			if ( this.request ) {
 				this.request.abort();
 			}
-		}.bind( this ),
+		},
 		timeout: 30 * 60 * 1000 // 30 minutes
-	} ).done( function( response ) {
+	} ).done( ( response ) => {
 		this.request = null;
 		if ( response.hasOwnProperty( 'results' ) ) {
 			this.total = response.total;
@@ -35,15 +35,15 @@ bs.wikiexplorer.store.WikiExplorer.prototype.doLoadData = function() {
 			return;
 		}
 		dfd.reject();
-	}.bind( this ) ).fail( function( jgXHR, type, status ) {
+	} ).fail( ( jgXHR, type, status ) => {
 		this.request = null;
 		dfd.reject( { type: type, status: status } );
-	}.bind( this ) );
+	} );
 
 	return dfd.promise();
 };
 
-bs.wikiexplorer.store.WikiExplorer.prototype.getRequestData = function() {
+bs.wikiexplorer.store.WikiExplorer.prototype.getRequestData = function () {
 	return {
 		action: 'bs-wikiexplorer-store',
 		start: this.offset,
@@ -55,8 +55,8 @@ bs.wikiexplorer.store.WikiExplorer.prototype.getRequestData = function() {
 	};
 };
 
-bs.wikiexplorer.store.WikiExplorer.prototype.getColumnsMeta = function() {
-	var dfd = $.Deferred();
+bs.wikiexplorer.store.WikiExplorer.prototype.getColumnsMeta = function () {
+	const dfd = $.Deferred();
 
 	$.ajax( {
 		method: 'GET',
@@ -67,13 +67,13 @@ bs.wikiexplorer.store.WikiExplorer.prototype.getColumnsMeta = function() {
 		},
 		contentType: 'application/json',
 		dataType: 'json'
-	} ).done( function( response ) {
+	} ).done( ( response ) => {
 		if ( response.hasOwnProperty( 'metadata' ) ) {
 			dfd.resolve( response.metadata.columns );
 		}
 
 		dfd.reject();
-	}.bind( this ) ).fail( function( jgXHR, type, status ) {
+	} ).fail( ( jgXHR, type, status ) => {
 		dfd.reject( { type: type, status: status } );
 	} );
 

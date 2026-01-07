@@ -1,19 +1,19 @@
-( function( d, $, mw ) {
+( function ( d, $, mw ) {
 	init();
 
-	$( d ).on( 'click', '.sb-toggle', function( e ) {
+	$( d ).on( 'click', '.sb-toggle', function ( e ) {
 		// TODO: This has to be improved. It will only work as long
 		// bootstrap scripts run before this script runs
 		e.preventDefault();
 		e.stopPropagation();
 
-		var controls = $( this ).attr( 'aria-controls' );
+		const controls = $( this ).attr( 'aria-controls' );
 
 		if ( controls === 'sb-pri-cnt' || controls === 'sb-sec-cnt' ) {
-			var expanded = $( this ).attr( 'aria-expanded' );
+			const expanded = $( this ).attr( 'aria-expanded' );
 			if ( expanded === 'true' ) {
 				if ( $( window ).width() < 1400 ) {
-					$( 'body ').css( 'overflow', '' );
+					$( 'body ' ).css( 'overflow', '' );
 				}
 
 				toggleSidebar( controls );
@@ -24,20 +24,19 @@
 			}
 			if ( expanded === 'false' ) {
 				if ( $( window ).width() < 1400 ) {
-					$( 'body ').css( 'overflow-x', 'hidden' );
+					$( 'body ' ).css( 'overflow-x', 'hidden' );
 				}
 
 				toggleSidebar( controls );
 
 				if ( controls === 'sb-sec-cnt' ) {
-					$( '#back-to-top' ).addClass( 'collapsed');
+					$( '#back-to-top' ).addClass( 'collapsed' );
 				}
 			}
 		}
-	});
+	} );
 
-
-	$( d ).on( 'click', '#full-screen-btn', function( e ){
+	$( d ).on( 'click', '#full-screen-btn', function ( e ) {
 		e.preventDefault();
 
 		if ( $( this ).hasClass( 'fs-mode-enabled' ) ) {
@@ -68,10 +67,10 @@
 
 		$( 'body' ).addClass( 'fs-mode-enabled' );
 
-		width = $( '#main' ).width();
+		const width = $( '#main' ).width();
 		resizeTitleLine( width );
 
-		addToBodyClassesCookie( { 'fsMode': 'fs-mode-enabled' } );
+		addToBodyClassesCookie( { fsMode: 'fs-mode-enabled' } );
 		discovery_cookie.set( 'fsMode', 'true' );
 	}
 
@@ -96,7 +95,7 @@
 
 		$( 'body' ).removeClass( 'fs-mode-enabled' );
 
-		width = $( '#main' ).width();
+		const width = $( '#main' ).width();
 		resizeTitleLine( width );
 
 		removeFromBodyClassesCookie( 'fsMode' );
@@ -104,12 +103,12 @@
 	}
 
 	function fullscreenModePreserveSidebarState() {
-		var preserve_obj = {};
+		const preserve_obj = {};
 
-		var sbPriState = discovery_cookie.get( 'sb-pri-cnt' );
+		const sbPriState = discovery_cookie.get( 'sb-pri-cnt' );
 		Object.assign( preserve_obj, { 'sb-pri-cnt': sbPriState } );
 
-		var sbSecState = discovery_cookie.get( 'sb-sec-cnt' );
+		const sbSecState = discovery_cookie.get( 'sb-sec-cnt' );
 		Object.assign( preserve_obj, { 'sb-sec-cnt': sbSecState } );
 
 		discovery_cookie.set(
@@ -119,16 +118,16 @@
 	}
 
 	function fullscreenModeRestoreSidebarState() {
-		var preserve = discovery_cookie.get( 'fsPreserve' );
-		var preserve_obj = {};
+		const preserve = discovery_cookie.get( 'fsPreserve' );
+		let preserve_obj = {};
 		if ( preserve ) {
 			preserve_obj = JSON.parse( preserve );
 
-			for ( var id in preserve_obj ) {
-				var sbState = discovery_cookie.get( id );
+			for ( const id in preserve_obj ) {
+				const sbState = discovery_cookie.get( id );
 
 				if ( sbState === 'false' ) {
-					toggleSidebar( id, preserve_obj[id] );
+					toggleSidebar( id, preserve_obj[ id ] );
 				} else {
 					// if the sidebar was collapsed but is open now it should stay open
 					toggleSidebar( id, sbState );
@@ -138,8 +137,8 @@
 	}
 
 	function addToBodyClassesCookie( obj ) {
-		var classes_obj = {};
-		var classes = discovery_cookie.get( 'bodyClasses' );
+		let classes_obj = {};
+		const classes = discovery_cookie.get( 'bodyClasses' );
 		if ( classes ) {
 			classes_obj = JSON.parse( classes );
 		}
@@ -153,13 +152,13 @@
 	}
 
 	function removeFromBodyClassesCookie( key ) {
-		var classes = discovery_cookie.get( 'bodyClasses' );
+		const classes = discovery_cookie.get( 'bodyClasses' );
 
 		if ( classes ) {
-			var classes_obj = JSON.parse( classes );
+			const classes_obj = JSON.parse( classes );
 
 			if ( classes_obj.hasOwnProperty( key ) ) {
-				delete classes_obj[key];
+				delete classes_obj[ key ];
 
 				discovery_cookie.set(
 					'bodyClasses',
@@ -170,28 +169,59 @@
 	}
 
 	function init() {
-		if ( $( window ).width() >= 1400 && discovery_cookie.get( 'sb-pri-cnt' ) !== 'false' ) {
-			showSidebarPrimary();
-		}
-		if ( $( window ).width() >= 1400 && $( '#book-navigation-panel.active').length ) {
-			showSidebarPrimary();
-		}
-		if ( $( window ).width() < 1400 ) {
+		const isWideScreen = $( window ).width() >= 1400;
+		const isMobile = $( window ).width() < 768;
+
+		if ( isWideScreen ) {
+			// Show primary sidebar if not explicitly hidden
+			if ( discovery_cookie.get( 'sb-pri-cnt' ) !== 'false' ) {
+				showSidebarPrimary();
+			}
+
+			// Show primary sidebar if book navigation is active
+			if ( $( '#book-navigation-panel.active' ).length ) {
+				showSidebarPrimary();
+			}
+
+			// Show secondary sidebar if not explicitly hidden
+			if ( discovery_cookie.get( 'sb-sec-cnt' ) !== 'false' ) {
+				showSidebarSecondary();
+			}
+		} else {
+			// Small screens: hide both
 			hideSidebarPrimary();
 			hideSidebarSecondary();
 		}
-		if( $( '#sb-sec-cnt.show' ).length ) {
+
+		if ( $( '#sb-sec-cnt.show' ).length ) {
 			$( '#back-to-top' ).addClass( 'collapsed' );
 		}
+		if ( isMobile ) {
+			$( 'html' ).addClass( 'discovery-mobile' );
+		} else {
+			$( 'html' ).removeClass( 'discovery-mobile' );
+		}
+		if ( $( '#sb-sec-cnt.show' ).length ) {
+			$( '#back-to-top' ).addClass( 'collapsed' );
+		}
+
+		const resizeObserver = new ResizeObserver( () => { // eslint-disable-line compat/compat
+			if ( isMobile ) {
+				$( 'html' ).addClass( 'discovery-mobile' );
+			} else {
+				$( 'html' ).removeClass( 'discovery-mobile' );
+			}
+		} );
+		resizeObserver.observe( $( 'html' )[ 0 ] );
 	}
 
 	function toggleSidebar( id, expand ) {
-		var $toggleBtns = $( '.sb-toggle[aria-controls='+id+']' );
-		var $sidebarCnt = $( '#'+id );
+		const $toggleBtns = $( '.sb-toggle[aria-controls=' + id + ']' );
+		const $sidebarCnt = $( '#' + id );
 
-		// Allow only 'undefinded' or strings 'true' or 'false' 
+		// Allow only 'undefinded' or strings 'true' or 'false'
 		if ( expand !== 'true' && expand !== 'false' ) {
-			expand = undefined
+			expand = undefined;
 		}
 
 		if ( expand === undefined ) {
@@ -201,19 +231,19 @@
 			}
 		}
 
-		var state = '';
-		if ( expand ===  'true' ) {
+		let state = '';
+		if ( expand === 'true' ) {
 			$sidebarCnt.removeClass( 'collapse' );
 			$sidebarCnt.addClass( 'show' );
 			state = 'hide';
-			
+
 		} else {
 			$sidebarCnt.removeClass( 'show' );
 			$sidebarCnt.addClass( 'collapse' );
 			state = 'show';
 		}
 
-		var name = '';
+		let name = '';
 		if ( id === 'sb-pri-cnt' ) {
 			name = 'primary';
 		}
@@ -221,12 +251,12 @@
 			name = 'secondary';
 		}
 
-		if ( ( name !== '' ) && ( $toggleBtns.length > 0  ) ) {
+		if ( ( name !== '' ) && ( $toggleBtns.length > 0 ) ) {
 			$toggleBtns.attr( 'title',
-				mw.message( 'bs-discovery-sidebar-'+name+'-toggle-'+state+'-title' ).text()
+				mw.message( 'bs-discovery-sidebar-' + name + '-toggle-' + state + '-title' ).text() // eslint-disable-line mediawiki/msg-doc
 			);
 			$toggleBtns.attr( 'aria-label',
-				mw.message( 'bs-discovery-sidebar-'+name+'-toggle-'+state+'-aria-label' ).text()
+				mw.message( 'bs-discovery-sidebar-' + name + '-toggle-' + state + '-aria-label' ).text() // eslint-disable-line mediawiki/msg-doc
 			);
 
 			$toggleBtns.attr( 'aria-expanded', expand );
@@ -263,10 +293,9 @@
 	});
 	*/
 
-
 	// Fix for new content dropdown focus if dialog is opened - ERM36346
-	$( '#new-content-itms .dropdown-item' ).on( 'click', function ( e ) {
-		$( '#new-content-menu-btn' ).focus();
+	$( '#new-content-itms .dropdown-item' ).on( 'click', () => {
+		$( '#new-content-menu-btn' ).trigger( 'focus' );
 	} );
 
 	blueSpiceDiscovery.ui.toggleSidebar = toggleSidebar;
@@ -277,4 +306,4 @@
 	blueSpiceDiscovery.ui.enterFullscreenMode = enableFullscreenMode;
 	blueSpiceDiscovery.ui.exitFullscreenMode = disableFullscreenMode;
 
-})( document, jQuery, mediaWiki );
+}( document, jQuery, mediaWiki ) );

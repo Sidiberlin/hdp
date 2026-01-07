@@ -3,7 +3,7 @@
 namespace BlueSpice\SaferEdit\EnvironmentChecker;
 
 use BlueSpice\SaferEdit\IEnvironmentChecker;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 
 abstract class Base implements IEnvironmentChecker {
 	/**

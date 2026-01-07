@@ -21,7 +21,6 @@
 	"bs-wikiexplorer-categories": "Short label for row in ExtJS manager that displays the page categories.\n{{Identical|Categories}}",
 	"bs-wikiexplorer-linked-files": "Short label for row in ExtJS manager that displays the pages linked files.\n{{Identical|Linked files}}",
 	"bs-wikiexplorer-linked-pages": "Short label for row in ExtJS manager that displays the pages that link to this page.",
-	"apihelp-bs-wikiexplorer-store-description": "{{doc-apihelp-description|bs-wikiexplorer-store}}\nDescription of the API endpoint that provides all data for the extension WikiExplorer",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "{{doc-apihelp-param|bs-wikiexplorer-store|metaLoaded}}\nDescription of the API parameter to indicate whether the MetaData has already been loaded.",
 	"apihelp-bs-wikiexplorer-store-summary": "{{doc-apihelp-summary|bs-wikiexplorer-store}}",
 	"bs-wikiexplorer-icon-bool-true-aria-label": "Aria label for a icon that indicates a checked state of a boolean option",

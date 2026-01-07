@@ -2,12 +2,12 @@
 
 namespace MediaWiki\Extension\ContainerFilter\HookHandler;
 
-use Html;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Hook\ParserFirstCallInitHook;
+use MediaWiki\Html\Html;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 use OOUI\SearchInputWidget;
-use Parser;
-use PPFrame;
-use RequestContext;
 
 class Main implements ParserFirstCallInitHook {
 
@@ -35,7 +35,7 @@ class Main implements ParserFirstCallInitHook {
 		$selector = $args['selector'] ?? $defaultSelector;
 		// Using `$parser->getOutput()->setEnableOOUI( true );` will not work for some reason
 		RequestContext::getMain()->getOutput()->enableOOUI();
-		$parser->getOutput()->addModules( 'ext.containerFilter.tag' );
+		$parser->getOutput()->addModules( [ 'ext.containerFilter.tag' ] );
 		$searchField = new SearchInputWidget( [
 			'classes' => [ 'container-filter-search' ],
 			'infusable' => true,

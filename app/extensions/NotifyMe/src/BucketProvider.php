@@ -3,7 +3,7 @@
 namespace MediaWiki\Extension\NotifyMe;
 
 use Exception;
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
 
 class BucketProvider {
@@ -99,5 +99,21 @@ class BucketProvider {
 			throw new \Exception( "Event with key {$event->getKey()} is not registered" );
 		}
 		return $events[$event->getKey()]['buckets'] ?? [];
+	}
+
+	/**
+	 * @return array
+	 */
+	public function getEventDescription(): array {
+		$events = $this->eventProvider->getRegisteredEvents();
+		$eventBuckets = [];
+		foreach ( $events as $event => $eventDef ) {
+			$desc = Message::newFromKey( 'notifyme-event-page-missing-desc' )->parse();
+			if ( isset( $eventDef['description'] ) ) {
+				$desc = Message::newFromKey( $eventDef['description'] )->text();
+			}
+			$eventBuckets[ $eventDef['buckets'][0] ][ $event ] = $desc;
+		}
+		return $eventBuckets;
 	}
 }

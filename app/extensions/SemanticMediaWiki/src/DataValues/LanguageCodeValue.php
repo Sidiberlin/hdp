@@ -2,7 +2,8 @@
 
 namespace SMW\DataValues;
 
-use SMW\Localizer;
+use MediaWiki\Language\LanguageCode;
+use SMW\Localizer\Localizer;
 use SMWDIBlob as DIBlob;
 
 /**
@@ -11,7 +12,7 @@ use SMWDIBlob as DIBlob;
  *
  * @see https://en.wikipedia.org/wiki/IETF_language_tag
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.4
  *
  * @author mwjames
@@ -34,16 +35,15 @@ class LanguageCodeValue extends StringValue {
 	 */
 	public function __construct( $typeid = '' ) {
 		parent::__construct( self::TYPE_ID );
-		$this->nonstandardLanguageCodeMapping = \LanguageCode::getNonstandardLanguageCodeMapping();
+		$this->nonstandardLanguageCodeMapping = LanguageCode::getNonstandardLanguageCodeMapping();
 	}
 
 	/**
 	 * @see DataValue::parseUserValue
 	 *
-	 * @param string $value
+	 * @param string $userValue
 	 */
 	protected function parseUserValue( $userValue ) {
-
 		$languageCode = Localizer::asBCP47FormattedLanguageCode( $userValue );
 
 		if ( $languageCode === '' ) {

@@ -14,5 +14,8 @@
 	"bs-pro-distribution-pdfembed-inspector-input-label": "PDF datoteka",
 	"bs-pro-distribution-pdfembed-inspector-width-label": "Širina",
 	"bs-pro-distribution-pdfembed-inspector-height-label": "Visina",
-	"bs-pro-distribution-pdfembed-inspector-title": "Ugradi PDF"
+	"bs-pro-distribution-pdfembed-inspector-title": "Ugradi PDF",
+	"bs-pro-distribution-config-comment-streams-enabled": "Komentari",
+	"bs-pro-distribution-config-link-titles-source-ns": "Izvorni imenski prostori",
+	"bs-pro-distribution-config-link-titles-target-ns": "Ciljni imenski prostori"
 }

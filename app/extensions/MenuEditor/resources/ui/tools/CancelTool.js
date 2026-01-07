@@ -3,8 +3,7 @@ ext.menueditor.ui.tools.CancelTool = function () {
 };
 OO.inheritClass( ext.menueditor.ui.tools.CancelTool, OO.ui.Tool );
 ext.menueditor.ui.tools.CancelTool.static.name = 'cancel';
-ext.menueditor.ui.tools.CancelTool.static.icon = 'cancel';
-ext.menueditor.ui.tools.CancelTool.static.flags = [ 'destructive' ];
+ext.menueditor.ui.tools.CancelTool.static.icon = 'close';
 ext.menueditor.ui.tools.CancelTool.static.title = mw.message( 'menueditor-toolbar-cancel' );
 
 ext.menueditor.ui.tools.CancelTool.prototype.onSelect = function () {

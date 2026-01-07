@@ -25,7 +25,8 @@ trait UpdateLogStorageTrait {
 			'ul_key',
 			[
 				'ul_key' => $entityKey
-			]
+			],
+			__METHOD__
 		);
 
 		return $exists;
@@ -57,7 +58,8 @@ trait UpdateLogStorageTrait {
 			'updatelog',
 			$row,
 			'ul_key',
-			$row
+			$row,
+			__METHOD__
 		);
 	}
 
@@ -76,7 +78,8 @@ trait UpdateLogStorageTrait {
 			'ul_value',
 			[
 				'ul_key' => $entityKey
-			]
+			],
+			__METHOD__
 		);
 
 		$entityData = json_decode( $entityDataRaw, true );

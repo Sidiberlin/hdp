@@ -9,10 +9,10 @@
 namespace BS\ExtendedSearch;
 
 use BS\ExtendedSearch\Source\Job\UpdateBase;
-use Config;
 use Exception;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
-use Status;
+use MediaWiki\Status\Status;
 
 abstract class ExternalIndex implements IExternalIndex {
 

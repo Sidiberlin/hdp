@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"बडा काजी"
+		]
+	},
+	"at-mentions-desc": "प्रयोगकर्ता उल्लेख थप्नुहोस्",
+	"at-mentions-inspector-title": "प्रयोगकर्तालाई उल्लेख गर्नुहोस्",
+	"at-mentions-inspector-title-add": "उल्लेख थप्नुहोस्",
+	"at-mentions-inspector-title-edit": "प्रयोगकर्ताको उल्लेख सम्पादन गर्नुहोस्",
+	"at-mentions-ci-title": "प्रयोगकर्ताको उल्लेख",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|[[User:$1|$1]] द्वारा}}",
+	"at-mentions-tag-item-time": "$1 मा",
+	"at-mentions-mentionslist-header-mine-all": "यस पृष्ठमा तपाईंलाई उल्लेख गरिएको छ।",
+	"at-mentions-mentionslist-header-mine": "पछिल्लो {{PLURAL:$1| दिन| $1 दिन}} भित्र, तपाईंलाई यी पृष्ठहरूमा उल्लेख गरिएको छ:",
+	"at-mentions-mentionslist-header-all": "प्रयोगकर्ता {{GENDER:$2|[[User:$2|$2]] यी पृष्ठहरूमा उल्लेख गरिएको छ}}:",
+	"at-mentions-mentionslist-header": "पछिल्लो {{PLURAL:$1|दिन|$1 दिन}} भित्र, {{GENDER:$2| [[User:$2|$2]] यी पृष्ठहरूमा उल्लेख गरिएको छ}}:",
+	"at-mentions-mention-notification-message": "पृष्ठ $2 मा तपाईंलाई {{GENDER:$1|उल्लेख गरिएको}} छ",
+	"at-mentions-mention-notification-key": "तपाईंको उल्लेख गरिएको छ।",
+	"at-mentions-mention-in-entity-notification-key": "तपाईंलाई टिप्पणी वा पोस्टमा उल्लेख गरिएको छ।",
+	"at-mentions-mention-in-entity-notification-message": "पृष्ठ $2 मा \"$3\" मा टिप्पणी वा पोस्टमा तपाईंलाई {{GENDER:$1|ले उल्लेख गर्नुभयो}}",
+	"at-mentions-toolbar-tool-title": "उल्लेख थप्नुहोस्"
+}

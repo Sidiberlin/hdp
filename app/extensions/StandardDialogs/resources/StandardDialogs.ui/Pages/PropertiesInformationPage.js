@@ -17,7 +17,7 @@ StandardDialogs.ui.PropertiesInformationPage.prototype.setup = function () {
 	const me = this;
 	me.pageInfo = {};
 	const dfdData = this.getData();
-	$.when( dfdData ).done( function () {
+	$.when( dfdData ).done( () => {
 		if ( me.pageInfo !== undefined ) {
 			const fieldLayout = new OO.ui.FieldsetLayout();
 			const contentTable = $( '<table>' );
@@ -60,7 +60,7 @@ StandardDialogs.ui.PropertiesInformationPage.prototype.setup = function () {
 };
 
 StandardDialogs.ui.PropertiesInformationPage.prototype.getData = function () {
-	var me = this;
+	const me = this;
 	const dfd = new $.Deferred();
 
 	me.pageInfo.templates = [];
@@ -73,7 +73,7 @@ StandardDialogs.ui.PropertiesInformationPage.prototype.getData = function () {
 	const dfdImages = me.doApiCall( 'images', 'im', '' );
 	me.pageInfo.extlinks = [];
 	const dfdExtLinks = me.doApiCall( 'extlinks', 'el', '' );
-	$.when( dfdTemplates, dfdCategories, dfdLinks, dfdImages, dfdExtLinks ).done( function () {
+	$.when( dfdTemplates, dfdCategories, dfdLinks, dfdImages, dfdExtLinks ).done( () => {
 		const dfds = [];
 		dfds.push( dfdTemplates );
 		dfds.push( dfdCategories );
@@ -99,15 +99,15 @@ StandardDialogs.ui.PropertiesInformationPage.prototype.doApiCall = function ( pr
 		format: 'json',
 		prop: prop
 	};
-	var paramProperty = continueProp + 'continue';
+	const paramProperty = continueProp + 'continue';
 	if ( continueVal !== '' ) {
 		params[ paramProperty ] = continueVal;
 	}
 	mwApi.postWithToken( 'csrf', params ).fail( function () {
 		dfd.reject( [ new OO.ui.Error( arguments[ 0 ], { recoverable: false } ) ] );
 	} )
-		.done( function ( resp ) {
-			for ( var page in resp.query.pages ) {
+		.done( ( resp ) => {
+			for ( const page in resp.query.pages ) {
 				if ( resp.query.pages[ page ][ prop ] ) {
 					me.pageInfo[ prop ].push( resp.query.pages[ page ][ prop ] );
 				}
@@ -120,7 +120,7 @@ StandardDialogs.ui.PropertiesInformationPage.prototype.doApiCall = function ( pr
 						continueProp,
 						resp.continue[ paramProperty ]
 					);
-					recursiveCall.done( function () {
+					recursiveCall.done( () => {
 						dfd.resolve( resp );
 					} );
 				}
@@ -250,4 +250,4 @@ StandardDialogs.ui.PropertiesInformationPage.prototype.getExternalLinks = functi
 };
 
 // register
-registryPageInformation.register( 'properties_infos', StandardDialogs.ui.PropertiesInformationPage );
+registryPageInformation.register( 'properties_infos', StandardDialogs.ui.PropertiesInformationPage ); // eslint-disable-line no-undef

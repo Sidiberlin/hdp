@@ -2,8 +2,8 @@
 
 namespace BlueSpice;
 
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MWException;
 
 class PageHeaderBeforeContentFactory {
@@ -49,7 +49,7 @@ class PageHeaderBeforeContentFactory {
 	 * @param IContextSource|null $context
 	 * @return PageHeaderBeforeContentElement[]
 	 */
-	public function getAll( IContextSource $context = null ) {
+	public function getAll( ?IContextSource $context = null ) {
 		$elements = [];
 		foreach ( $this->registry->getAllKeys() as $key ) {
 			$instance = $this->get( $key, $context );
@@ -70,7 +70,7 @@ class PageHeaderBeforeContentFactory {
 	 * @return IPageHeaderBeforeContent
 	 * @throws MWException
 	 */
-	public function get( $key, IContextSource $context = null ) {
+	public function get( $key, ?IContextSource $context = null ) {
 		if ( !$context ) {
 			$context = $this->context;
 		}

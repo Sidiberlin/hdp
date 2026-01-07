@@ -2,8 +2,8 @@
 
 namespace BlueSpice\HideTitle;
 
-use ExtensionRegistry;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 use Wikimedia\ObjectFactory\ObjectFactory;
 

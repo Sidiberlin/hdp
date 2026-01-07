@@ -5,15 +5,15 @@ namespace BlueSpice\Discovery\Component;
 use BlueSpice\Discovery\ILastEditInfoModifier;
 use BlueSpice\Timestamp;
 use DateTime;
-use ExtensionRegistry;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
-use Message;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
-use RequestContext;
-use Title;
 use Wikimedia\ObjectFactory\ObjectFactory;
 
 class LastEditInfo extends Literal {
@@ -209,7 +209,12 @@ class LastEditInfo extends Literal {
 			'bs-discovery-title-last-edit-info-user-aria-label',
 			$username
 		);
-		$html = $this->linkRenderer->makeLink(
+		$makeLinkMethod = in_array(
+			$username,
+			$GLOBALS['wgReservedUsernames'],
+			true
+		) ? 'makeKnownLink' : 'makeLink';
+		$html = $this->linkRenderer->$makeLinkMethod(
 			$user->getUserPage(),
 			$username,
 			[

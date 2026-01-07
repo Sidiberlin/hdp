@@ -1,15 +1,15 @@
 {
 	"name": "BlueSpiceInstanceStatus",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[http://www.hallowelt.com Hallo Welt! GmbH]"
 	],
-	"url": "http://www.bluespice.com",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceInstanceStatus",
 	"descriptionmsg": "bs-instancestatus-desc",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"MessagesDirs": {
 		"BlueSpiceInstanceStatus": "i18n"
@@ -25,8 +25,7 @@
 			"PluginModules": [ "ext.bs.instancestatus.overview" ],
 			"InstanceStatusProvider": {
 				"bluespiceversion": {
-					"class": "BlueSpice\\InstanceStatus\\InstanceStatusProvider\\BlueSpiceVersion",
-					"services": [ "ConfigFactory" ]
+					"class": "BlueSpice\\InstanceStatus\\InstanceStatusProvider\\BlueSpiceVersion"
 				},
 				"created": {
 					"class": "BlueSpice\\InstanceStatus\\InstanceStatusProvider\\Created",
@@ -39,6 +38,23 @@
 				"salescontact": {
 					"class": "BlueSpice\\InstanceStatus\\InstanceStatusProvider\\SalesContact",
 					"services": [ "ConfigFactory" ]
+				}
+			},
+			"ApiInstanceStatusProvider": {
+				"bluespiceversion": {
+					"class": "BlueSpice\\InstanceStatus\\InstanceStatusProvider\\BlueSpiceVersion"
+				},
+				"memcached": {
+					"class": "\\BlueSpice\\InstanceStatus\\InstanceStatusProvider\\Memcached",
+					"services": [ "ObjectCacheFactory", "MainConfig" ]
+				},
+				"directories": {
+					"class": "\\BlueSpice\\InstanceStatus\\InstanceStatusProvider\\Directories",
+					"services": [ "MainConfig" ]
+				},
+				"mathoid": {
+					"class": "\\BlueSpice\\InstanceStatus\\InstanceStatusProvider\\Mathoid",
+					"services": [ "MainConfig", "HttpRequestFactory" ]
 				}
 			}
 		}
@@ -88,15 +104,16 @@
 	"SpecialPages": {
 		"InstanceStatus": {
 			"class": "BlueSpice\\InstanceStatus\\Special\\InstanceStatus",
-			"services": [
-				"ObjectFactory"
-			]
+			"services": [ "BlueSpiceInstanceStatus.Report" ]
 		}
 	},
 	"config_prefix": "bsg",
 	"config": {
 		"InstanceStatusBSContactLink": {
 			"value": "https://bluespice.com/contact/"
+		},
+		"InstanceStatusCheckAllowedIP": {
+			"value": null
 		}
 	},
 	"Hooks": {
@@ -108,6 +125,16 @@
 			"services": [ "SpecialPageFactory" ]
 		}
 	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"RestRoutes": [
+		{
+			"path": "/instance_status/v1/statuscheck",
+			"class": "BlueSpice\\InstanceStatus\\Rest\\StatusCheckHandler",
+			"services": [ "BlueSpiceInstanceStatus.Report", "ConfigFactory" ]
+		}
+	],
 	"load_composer_autoloader": true,
 	"manifest_version": 2
 }

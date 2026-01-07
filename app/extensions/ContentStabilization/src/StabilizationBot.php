@@ -2,10 +2,12 @@
 
 namespace MediaWiki\Extension\ContentStabilization;
 
+use IDBAccessObject;
 use MediaWiki\Block\Block;
 use MediaWiki\Page\PageIdentity;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Permissions\PermissionStatus;
+use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
 
 /**
@@ -24,20 +26,22 @@ class StabilizationBot implements Authority {
 	 * @inheritDoc
 	 */
 	public function getUser(): UserIdentity {
-		return \User::newSystemUser( "ContentStabilizationBot", [ "steal" => true ] );
+		return User::newSystemUser( "ContentStabilizationBot", [ "steal" => true ] );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function getBlock( int $freshness = self::READ_NORMAL ): ?Block {
+	public function getBlock( int $freshness = IDBAccessObject::READ_NORMAL ): ?Block {
 		return null;
 	}
 
 	/**
+	 * @param string $permission
+	 * @param PermissionStatus|null $status
 	 * @inheritDoc
 	 */
-	public function isAllowed( string $permission ): bool {
+	public function isAllowed( string $permission, ?PermissionStatus $status = null ): bool {
 		return in_array( $permission, $this->permissions );
 	}
 
@@ -74,28 +78,28 @@ class StabilizationBot implements Authority {
 	/**
 	 * @inheritDoc
 	 */
-	public function probablyCan( string $action, PageIdentity $target, PermissionStatus $status = null ): bool {
+	public function probablyCan( string $action, PageIdentity $target, ?PermissionStatus $status = null ): bool {
 		return $this->isAllowed( $action );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function definitelyCan( string $action, PageIdentity $target, PermissionStatus $status = null ): bool {
+	public function definitelyCan( string $action, PageIdentity $target, ?PermissionStatus $status = null ): bool {
 		return $this->isAllowed( $action );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function authorizeRead( string $action, PageIdentity $target, PermissionStatus $status = null ): bool {
+	public function authorizeRead( string $action, PageIdentity $target, ?PermissionStatus $status = null ): bool {
 		return $this->isAllowed( $action );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
-	public function authorizeWrite( string $action, PageIdentity $target, PermissionStatus $status = null ): bool {
+	public function authorizeWrite( string $action, PageIdentity $target, ?PermissionStatus $status = null ): bool {
 		return $this->isAllowed( $action );
 	}
 
@@ -118,5 +122,23 @@ class StabilizationBot implements Authority {
 	 */
 	public function isNamed(): bool {
 		return true;
+	}
+
+	/**
+	 * @param string $action
+	 * @param PermissionStatus|null $status
+	 * @return bool
+	 */
+	public function isDefinitelyAllowed( string $action, ?PermissionStatus $status = null ): bool {
+		return $this->isAllowed( $action, $status );
+	}
+
+	/**
+	 * @param string $action
+	 * @param PermissionStatus|null $status
+	 * @return bool
+	 */
+	public function authorizeAction( string $action, ?PermissionStatus $status = null ): bool {
+		return $this->isAllowed( $action, $status );
 	}
 }

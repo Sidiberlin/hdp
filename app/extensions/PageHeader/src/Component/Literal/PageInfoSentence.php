@@ -3,7 +3,7 @@
 namespace PageHeader\Component\Literal;
 
 use HTML;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
 use PageHeader\PageInfoSentenceBuilder;
 

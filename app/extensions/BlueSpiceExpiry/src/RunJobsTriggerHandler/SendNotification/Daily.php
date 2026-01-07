@@ -8,8 +8,8 @@ use BlueSpice\Expiry\RunJobsTriggerHandler\SendNotification;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\Events\Notifier;
-use Title;
 
 class Daily extends SendNotification {
 

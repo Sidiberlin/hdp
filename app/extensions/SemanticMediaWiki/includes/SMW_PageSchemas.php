@@ -9,7 +9,10 @@
  * @ingroup SMW
  */
 
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Xml\Xml;
 
 class SMWPageSchemas extends PSExtensionHandler {
 
@@ -67,7 +70,7 @@ class SMWPageSchemas extends PSExtensionHandler {
 		foreach ( $psTemplates as $psTemplate ) {
 			$psTemplateFields = $psTemplate->getFields();
 			foreach ( $psTemplateFields as $psTemplateField ) {
-				$prop_array = $psTemplateField->getObject('semanticmediawiki_Property');
+				$prop_array = $psTemplateField->getObject( 'semanticmediawiki_Property' );
 				if ( empty( $prop_array ) ) {
 					continue;
 				}
@@ -115,17 +118,18 @@ class SMWPageSchemas extends PSExtensionHandler {
 		$pagesToGenerate = [];
 
 		$psTemplates = $pageSchemaObj->getTemplates();
+		$titleFactory = MediaWikiServices::getInstance()->getTitleFactory();
 		foreach ( $psTemplates as $psTemplate ) {
 			$smwConnectingPropertyName = self::getConnectingPropertyName( $psTemplate );
-			if ( is_null( $smwConnectingPropertyName ) ) {
+			if ( $smwConnectingPropertyName === null ) {
 				continue;
 			}
-			$pagesToGenerate[] = Title::makeTitleSafe( SMW_NS_PROPERTY, $smwConnectingPropertyName );
+			$pagesToGenerate[] = $titleFactory->makeTitleSafe( SMW_NS_PROPERTY, $smwConnectingPropertyName );
 		}
 
 		$propertyDataArray = self::getAllPropertyData( $pageSchemaObj );
 		foreach ( $propertyDataArray as $propertyData ) {
-			$title = Title::makeTitleSafe( SMW_NS_PROPERTY, $propertyData['name'] );
+			$title = $titleFactory->makeTitleSafe( SMW_NS_PROPERTY, $propertyData['name'] );
 			$pagesToGenerate[] = $title;
 		}
 		return $pagesToGenerate;
@@ -144,13 +148,13 @@ class SMWPageSchemas extends PSExtensionHandler {
 			if ( substr( $var, 0, 18 ) == 'smw_property_name_' ) {
 				$fieldNum = substr( $var, 18 );
 				$xml = '<semanticmediawiki_Property name="' . $val . '" >';
-			} elseif ( substr( $var, 0, 18 ) == 'smw_property_type_'){
+			} elseif ( substr( $var, 0, 18 ) == 'smw_property_type_' ) {
 				$xml .= '<Type>' . $val . '</Type>';
-			} elseif ( substr( $var, 0, 16 ) == 'smw_linked_form_') {
+			} elseif ( substr( $var, 0, 16 ) == 'smw_linked_form_' ) {
 				if ( $val !== '' ) {
 					$xml .= '<LinkedForm>' . $val . '</LinkedForm>';
 				}
-			} elseif ( substr( $var, 0, 11 ) == 'smw_values_') {
+			} elseif ( substr( $var, 0, 11 ) == 'smw_values_' ) {
 				if ( $val !== '' ) {
 					// replace the comma substitution character that has no chance of
 					// being included in the values list - namely, the ASCII beep
@@ -174,7 +178,7 @@ class SMWPageSchemas extends PSExtensionHandler {
 	 * Returns the HTML necessary for getting information about the
 	 * "connecting property" within the Page Schemas 'editschema' page.
 	 */
-	public static function getTemplateEditingHTML( $psTemplate) {
+	public static function getTemplateEditingHTML( $psTemplate ) {
 		// Only display this if the Semantic Internal Objects extension
 		// isn't displaying something similar.
 		if ( class_exists( 'SIOPageSchemas' ) ) {
@@ -183,9 +187,9 @@ class SMWPageSchemas extends PSExtensionHandler {
 
 		$prop_array = [];
 		$hasExistingValues = false;
-		if ( !is_null( $psTemplate ) ) {
+		if ( $psTemplate !== null ) {
 			$prop_array = $psTemplate->getObject( 'semanticmediawiki_ConnectingProperty' );
-			if ( !is_null( $prop_array ) ) {
+			if ( $prop_array !== null ) {
 				$hasExistingValues = true;
 			}
 		}
@@ -201,18 +205,17 @@ class SMWPageSchemas extends PSExtensionHandler {
 	 * semantic property within the Page Schemas 'editschema' page.
 	 */
 	public static function getFieldEditingHTML( $psTemplateField ) {
-
 		$smwgContLang = smwfContLang();
 
 		$prop_array = [];
 		$hasExistingValues = false;
-		if ( !is_null( $psTemplateField ) ) {
-			$prop_array = $psTemplateField->getObject('semanticmediawiki_Property');
-			if ( !is_null( $prop_array ) ) {
+		if ( $psTemplateField !== null ) {
+			$prop_array = $psTemplateField->getObject( 'semanticmediawiki_Property' );
+			if ( $prop_array !== null ) {
 				$hasExistingValues = true;
 			}
 		}
-		$html_text = '<p>' . wfMessage( 'ps-optional-name' )->text() . ' ';
+		$html_text = '<p>' . wfMessage( 'ps-optional-name' )->escaped() . ' ';
 		$propName = PageSchemas::getValueFromObject( $prop_array, 'name' );
 		$html_text .= Html::input( 'smw_property_name_num', $propName, 'text', [ 'size' => 15 ] ) . "\n";
 		$propType = PageSchemas::getValueFromObject( $prop_array, 'Type' );
@@ -220,7 +223,7 @@ class SMWPageSchemas extends PSExtensionHandler {
 		$datatype_labels = $smwgContLang->getDatatypeLabels();
 		foreach ( $datatype_labels as $label ) {
 			$optionAttrs = [];
-			if ( $label == $propType) {
+			if ( $label == $propType ) {
 				$optionAttrs['selected'] = 'selected';
 			}
 			$select_body .= "\t" . Xml::element( 'option', $optionAttrs, $label ) . "\n";
@@ -228,14 +231,14 @@ class SMWPageSchemas extends PSExtensionHandler {
 		$propertyDropdownAttrs = [
 			'id' => 'property_dropdown',
 			'name' => 'smw_property_type_num',
-			'value' => $propType
+			'value' => $propType ?? ''
 		];
 		$html_text .= "Type: " . Xml::tags( 'select', $propertyDropdownAttrs, $select_body ) . "</p>\n";
 
 		// This can't be last, because of the hacky way the XML is
 		// ocnstructed from this form's output.
 		if ( defined( 'SF_VERSION' ) ) {
-			$html_text .= '<p>' . wfMessage( 'sf_createproperty_linktoform' )->text() . ' ';
+			$html_text .= '<p>' . wfMessage( 'sf_createproperty_linktoform' )->escaped() . ' ';
 			$linkedForm = PageSchemas::getValueFromObject( $prop_array, 'LinkedForm' );
 			$html_text .= Html::input( 'smw_linked_form_num', $linkedForm, 'text', [ 'size' => 15 ] ) . "\n";
 			$html_text .= "(for Page properties only)</p>\n";
@@ -246,7 +249,7 @@ class SMWPageSchemas extends PSExtensionHandler {
 			'size' => 80
 		];
 		$allowedValues = PageSchemas::getValueFromObject( $prop_array, 'allowed_values' );
-		if ( is_null( $allowedValues ) ) {
+		if ( $allowedValues === null ) {
 			$allowed_val_string = '';
 		} else {
 			$allowed_val_string = implode( ', ', $allowedValues );
@@ -261,6 +264,8 @@ class SMWPageSchemas extends PSExtensionHandler {
 	 * passed-in Page Schemas XML object.
 	 */
 	public static function generatePages( $pageSchemaObj, $selectedPages ) {
+		$services = MediaWikiServices::getInstance();
+		$titleFactory = $services->getTitleFactory();
 		$datatypeLabels = smwfContLang()->getDatatypeLabels();
 		$pageTypeLabel = $datatypeLabels['_wpg'];
 
@@ -272,10 +277,10 @@ class SMWPageSchemas extends PSExtensionHandler {
 		$psTemplates = $pageSchemaObj->getTemplates();
 		foreach ( $psTemplates as $psTemplate ) {
 			$smwConnectingPropertyName = self::getConnectingPropertyName( $psTemplate );
-			if ( is_null( $smwConnectingPropertyName ) ) {
+			if ( $smwConnectingPropertyName === null ) {
 				continue;
 			}
-			$propTitle = Title::makeTitleSafe( SMW_NS_PROPERTY, $smwConnectingPropertyName );
+			$propTitle = $titleFactory->makeTitleSafe( SMW_NS_PROPERTY, $smwConnectingPropertyName );
 			if ( !in_array( $propTitle, $selectedPages ) ) {
 				continue;
 			}
@@ -287,7 +292,7 @@ class SMWPageSchemas extends PSExtensionHandler {
 		// Second, create jobs for all regular properties.
 		$propertyDataArray = self::getAllPropertyData( $pageSchemaObj );
 		foreach ( $propertyDataArray as $propertyData ) {
-			$propTitle = Title::makeTitleSafe( SMW_NS_PROPERTY, $propertyData['name'] );
+			$propTitle = $titleFactory->makeTitleSafe( SMW_NS_PROPERTY, $propertyData['name'] );
 			if ( !in_array( $propTitle, $selectedPages ) ) {
 				continue;
 			}
@@ -298,19 +303,13 @@ class SMWPageSchemas extends PSExtensionHandler {
 			$jobs[] = new PSCreatePageJob( $propTitle, $jobParams );
 		}
 
-		if ( method_exists( MediaWikiServices::class, 'getJobQueueGroup' ) ) {
-			// MW 1.37+
-			MediaWikiServices::getInstance()->getJobQueueGroup()->push( $jobs );
-		} else {
-			JobQueueGroup::singleton()->push( $jobs );
-		}
+		$services->getJobQueueGroup()->push( $jobs );
 	}
 
 	/**
 	 * Creates the text for a property page.
 	 */
-	static public function createPropertyText( $propertyType, $allowedValues, $linkedForm = null ) {
-
+	public static function createPropertyText( $propertyType, $allowedValues, $linkedForm = null ) {
 		$smwgContLang = smwfContLang();
 
 		$propLabels = $smwgContLang->getPropertyLabels();
@@ -325,7 +324,7 @@ class SMWPageSchemas extends PSExtensionHandler {
 			$text .= ' ' . wfMessage( 'sf_property_linkstoform', $defaultFormTag )->inContentLanguage()->text();
 		}
 
-		if ( $allowedValues != null) {
+		if ( $allowedValues != null ) {
 			$text .= "\n\n" . wfMessage( 'smw-createproperty-allowedvals', MediaWikiServices::getInstance()->getContentLanguage()->formatNum( count( $allowedValues ) ) )->inContentLanguage()->text();
 
 			foreach ( $allowedValues as $value ) {
@@ -340,7 +339,7 @@ class SMWPageSchemas extends PSExtensionHandler {
 	/**
 	 * Returns either the "connecting property", or a field property, based
 	 * on the XML passed from the Page Schemas extension.
-	*/
+	 */
 	public static function createPageSchemasObject( $tagName, $xml ) {
 		if ( $tagName == "semanticmediawiki_ConnectingProperty" ) {
 			foreach ( $xml->children() as $tag => $child ) {

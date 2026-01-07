@@ -1,0 +1,3 @@
+#bs-expiry-special-expiry-container .bs-expiry-date-column-expired {
+	color: var( --bs-destructive-fg );
+}

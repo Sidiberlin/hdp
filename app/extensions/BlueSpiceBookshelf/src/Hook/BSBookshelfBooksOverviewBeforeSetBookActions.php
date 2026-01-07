@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Bookshelf\Hook;
 
-use Title;
+use MediaWiki\Title\Title;
 
 interface BSBookshelfBooksOverviewBeforeSetBookActions {
 

@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\EnhancedUpload\HookHandler;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\Hook\MimeMagicImproveFromExtensionHook;
 
 class AddMimeType implements MimeMagicImproveFromExtensionHook {
@@ -21,6 +21,10 @@ class AddMimeType implements MimeMagicImproveFromExtensionHook {
 	 * @inheritDoc
 	 */
 	public function onMimeMagicImproveFromExtension( $mimeMagic, $ext, &$mime ) {
+		if ( !$ext ) {
+			return;
+		}
+
 		$allow = $this->mainConfig->get( 'EnhancedUploadAllowMismatchedMimeTypes' );
 		if ( $allow === false ) {
 			return;

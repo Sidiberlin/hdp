@@ -24,6 +24,10 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GPL-3.0-only
  */
 
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Request\DerivativeRequest;
+
 /**
  * ShoutBox Api class
  * @package BlueSpice_Extensions
@@ -97,7 +101,7 @@ class BSApiTasksRSSFeeder extends BSApiTasksBase {
 		} else {
 			$oReturn->message = wfMessage(
 				'bs-rssfeeder-invalid-url'
-			)->plain();
+			)->text();
 			return $oReturn;
 		}
 

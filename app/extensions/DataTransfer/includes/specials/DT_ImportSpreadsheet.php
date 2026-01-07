@@ -22,6 +22,7 @@ class DTImportSpreadsheet extends DTImportCSV {
 		$formText = DTUtils::printFileSelector( $this->getFiletype() );
 		$formText .= DTUtils::printExistingPagesHandling();
 		$formText .= DTUtils::printImportSummaryInput( $this->getFiletype() );
+		$formText .= DTUtils::printEditTokenInput( $this->getContext()->getCsrfTokenSet() );
 		$formText .= DTUtils::printSubmitButton();
 		$text = "\t" . Xml::tags( 'form',
 			[
@@ -42,7 +43,7 @@ class DTImportSpreadsheet extends DTImportCSV {
 		}
 
 		if ( $excelFileString == '' ) {
-			return $this->msg( 'emptyfile' )->text();
+			return $this->msg( 'emptyfile' )->escaped();
 		}
 
 		$filename = wfTempDir() . '/' . time() . '.xlsx';

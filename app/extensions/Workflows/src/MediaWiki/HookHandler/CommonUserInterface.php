@@ -3,11 +3,10 @@
 namespace MediaWiki\Extension\Workflows\MediaWiki\HookHandler;
 
 use MediaWiki\Extension\Workflows\TriggerRepo;
+use MediaWiki\Message\Message;
 use MediaWiki\SpecialPage\SpecialPageFactory;
-use Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
 use MWStake\MediaWiki\Component\CommonUserInterface\Hook\MWStakeCommonUIRegisterSkinSlotComponents;
-use Title;
 
 class CommonUserInterface implements MWStakeCommonUIRegisterSkinSlotComponents {
 	/** @var SpecialPageFactory */
@@ -49,16 +48,13 @@ class CommonUserInterface implements MWStakeCommonUIRegisterSkinSlotComponents {
 		// BlueSpiceDiscovery 4.3 b/c
 		$registry->register( 'GlobalActionsTools', $overviewEntry );
 
-		$triggerPage = $this->triggerRepo->getTitle();
-		if ( !( $triggerPage instanceof Title ) ) {
-			return;
-		}
+		$specialTriggers = $this->spf->getTitleForAlias( 'WorkflowTriggers' );
 		$triggersEntry = [
 			'bs-workflow-triggers' => [
-				'factory' => static function () use ( $triggerPage ) {
+				'factory' => static function () use ( $specialTriggers ) {
 					return new RestrictedTextLink( [
 						'id' => 'bs-workflow-triggers',
-						'href' => $triggerPage->getLocalURL(),
+						'href' => $specialTriggers->getLocalURL(),
 						'text' => Message::newFromKey( 'workflows-ui-trigger-page-title' ),
 						'title' => Message::newFromKey( 'workflows-ui-trigger-page-desc' ),
 						'aria-label' => Message::newFromKey( 'workflows-ui-trigger-page-title' ),

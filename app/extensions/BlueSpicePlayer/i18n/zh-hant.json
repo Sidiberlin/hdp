@@ -7,7 +7,6 @@
 	"bs-player-extension-description": "在頁面內嵌媒體播放器。",
 	"bs-player-pref-autostart": "自動開始影片",
 	"bs-player-file-does-not-exist": "檔案不存在。",
-	"bs-player-tag-showtime-desc": "此標籤允許您嵌入一段影片。",
 	"bs-player-unsupported-type": "不支援此檔案類型。",
 	"bs-player-config-prefwidth": "預設影片寬度",
 	"bs-player-config-prefheight": "預設影片高度",

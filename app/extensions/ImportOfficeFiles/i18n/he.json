@@ -1,11 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80"
+			"Amire80",
+			"YaronSh"
 		]
 	},
 	"importofficefiles-desc": "אפשרות יבוא קובצי אופיס כדפי ויקי",
-	"importofficefiles-ui-action-import-msword-text": "יבוא קובץ וורד",
 	"importofficefiles-ui-action-import-msword-title": "יצירת דפים מקובץ מייקרוסופט וורד",
 	"importofficefiles-ui-import-dialog-title": "יבוא קובץ",
 	"importofficefiles-ui-import-completed": "היבוא הושלם!",
@@ -32,6 +32,8 @@
 	"importofficefiles-ui-dialog-preview-title": "תצוגה מקדימה",
 	"importofficefiles-ui-dialog-preview-label": "הדפים הבאים ייובאו",
 	"importofficefiles-ui-dialog-link-import-files-text": "רשימת הקבצים המיובאים שיוצאו ל{{GRAMMAR:תחילית|$1}}",
+	"importofficefiles-ui-dialog-link-imported-page-text": "הקובץ יובא לאוסף $1",
+	"importofficefiles-ui-dialog-page-collection-protected-namespace": "לתשומת ליבך: דף \"אוסף דפים\" לא נוצר מכיוון שמרחב השמות \"$1\" מוגן",
 	"importofficefiles-api-storage-error-no-available-file": "אין קבצים זמינים להעלאה",
 	"importofficefiles-api-storage-error-save-temp": "אין אפשרות שמירה זמנית",
 	"importofficefiles-api-storage-error-no-valid-module": "אין מודול זמין לטיפול בקובץ הזה",
@@ -40,6 +42,9 @@
 	"importofficefiles-ui-progress-remove-files-step": "הסרת קבצים זמניים...",
 	"importofficefiles-ui-import-error": "אירעה שגיאה כלשהי במהלך היבוא.",
 	"importofficefiles-ui-analyze-error": "תהליך הניתוח נכשל מסיבה כלשהי.",
-	"importofficefiles-ui-dialog-link-imported-page-text": "הקובץ יובא לאוסף $1",
-	"importofficefiles-ui-dialog-page-collection-protected-namespace": "לתשומת ליבך: דף \"אוסף דפים\" לא נוצר מכיוון שמרחב השמות \"$1\" מוגן"
+	"importofficefiles-ui-action-import-msword-label": "יבוא קובץ וורד חדש",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-fallback": "אי אפשר להשתמש בכותרת הזאת.",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-characters": "לא ניתן להשתמש בכותרת הזאת. היא מכילה תו אסור (\"$1\").",
+	"importofficefiles-ui-dialog-preview-action-close": "סגירה",
+	"importofficefiles-ui-dialog-preview-btn-title": "תצוגה מקדימה"
 }

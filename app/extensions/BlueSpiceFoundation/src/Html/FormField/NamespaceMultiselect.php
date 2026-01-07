@@ -2,9 +2,12 @@
 
 namespace BlueSpice\Html\FormField;
 
+use MediaWiki\Html\Html;
+use MediaWiki\HTMLForm\HTMLFormField;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
 
-class NamespaceMultiselect extends \HTMLFormField {
+class NamespaceMultiselect extends HTMLFormField {
 	public const OPTION_HIDE_TALK = 'hide-talk';
 	public const OPTION_HIDE_PSEUDO = 'hide-pseudo';
 	public const OPTION_ONLY_CUSTOM = 'only-custom-namespaces';
@@ -18,7 +21,7 @@ class NamespaceMultiselect extends \HTMLFormField {
 	public function getInputHTML( $value ) {
 		$this->mParent->getOutput()->addModules( 'ext.bluespice.html.formfields' );
 
-		$container = \Html::element(
+		$container = Html::element(
 			'div',
 			[
 				'class' => $this->getClassString(),
@@ -26,7 +29,7 @@ class NamespaceMultiselect extends \HTMLFormField {
 			]
 		);
 
-		$assocField = \Html::input(
+		$assocField = Html::input(
 			$this->mName,
 			$value,
 			'text',
@@ -111,13 +114,13 @@ class NamespaceMultiselect extends \HTMLFormField {
 			];
 
 			if ( $namespaceId === NS_MAIN ) {
-				$dataSet['namespaceName'] = wfMessage( 'bs-ns_main' )->plain();
+				$dataSet['namespaceName'] = wfMessage( 'bs-ns_main' )->text();
 			}
 
 			$availableNamespaces[] = $dataSet;
 		}
 
-		return \FormatJson::encode( $availableNamespaces );
+		return FormatJson::encode( $availableNamespaces );
 	}
 
 	/**

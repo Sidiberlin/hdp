@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface\Component;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MWStake\MediaWiki\Component\CommonUserInterface\IComponent;
 
 abstract class ComponentBase implements IComponent {

@@ -5,11 +5,11 @@ namespace BlueSpice\CategoryManager\Data\Page;
 use BlueSpice\Data\Page\PrimaryDataProvider as PageDataProvider;
 use BsStringHelper;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\Filter\StringValue;
 use MWStake\MediaWiki\Component\DataStore\FilterFinder;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
-use Title;
 
 class PrimaryDataProvider extends PageDataProvider {
 

@@ -2,15 +2,16 @@
 
 namespace SMW\MediaWiki\Specials;
 
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Skin\SkinComponentUtils;
+use MediaWiki\SpecialPage\SpecialPage;
 use SMW\Exporter\Escaper;
-use SpecialPage;
-use Title;
 
 /**
  * Resolve (redirect) pretty URIs (or "short URIs") to the equivalent full MediaWiki
  * representation.
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 1.0
  *
  * @author Denny Vrandecic
@@ -46,7 +47,7 @@ class SpecialURIResolver extends SpecialPage {
 				$this->setHeaders();
 				$out->addHTML(
 					'<p>' .
-						wfMessage( 'smw_uri_doc', 'https://www.w3.org/2001/tag/issues.html#httpRange-14' )->parse() .
+						$this->msg( 'smw_uri_doc', 'https://www.w3.org/2001/tag/issues.html#httpRange-14' )->parse() .
 					'</p>'
 				);
 			}
@@ -54,14 +55,14 @@ class SpecialURIResolver extends SpecialPage {
 			$query = Escaper::decodeUri( $query );
 			$query = str_replace( '_', '%20', $query );
 			$query = urldecode( $query );
-			$title = Title::newFromText( $query );
+			$title = MediaWikiServices::getInstance()->getTitleFactory()->newFromText( $query );
 
 			// In case the title doesn't exist throw an error page
 			if ( $title === null ) {
 				$out->showErrorPage( 'badtitle', 'badtitletext' );
 			} elseif ( stristr( $_SERVER['HTTP_ACCEPT'], 'RDF' ) ) {
 				$out->redirect(
-					SpecialPage::getTitleFor( 'ExportRDF', $title->getPrefixedText() )->getFullURL( [ 'xmlmime' => 'rdf' ] )
+					SkinComponentUtils::makeSpecialUrl( 'ExportRDF', [ 'xmlmime' => 'rdf' ] )
 				);
 			} else {
 				$out->redirect( $title->getFullURL(), '303' );

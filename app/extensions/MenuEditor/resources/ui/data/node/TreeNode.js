@@ -26,14 +26,14 @@ ext.menueditor.ui.data.node.TreeNode.prototype.getIcon = function ( data ) {
 };
 
 ext.menueditor.ui.data.node.TreeNode.prototype.getForm = function ( dialog ) {
-	var dfd = $.Deferred();
-	mw.loader.using( [ 'ext.forms.standalone' ], function () {
+	const dfd = $.Deferred();
+	mw.loader.using( [ 'ext.forms.standalone' ], () => {
 		// The following messages are used here
 		// * menueditor-ui-menu-wiki-link-label
 		// * menueditor-ui-menu-two-fold-link-spec-label
 		// * menueditor-ui-menu-raw-text-label
 		// * menueditor-ui-menu-keyword-label
-		var msg = mw.message( 'menueditor-ui-' + this.nodeData.type + '-label-edit' );
+		let msg = mw.message( 'menueditor-ui-' + this.nodeData.type + '-label-edit' );
 
 		// Allow other extensions to show a readable name
 		// without using message prefix 'menueditor-ui-'
@@ -42,9 +42,9 @@ ext.menueditor.ui.data.node.TreeNode.prototype.getForm = function ( dialog ) {
 			msg = mw.message( this.nodeData.type + '-label-edit' );
 		}
 
-		var labelText = msg.text();
+		const labelText = msg.text();
 
-		var form = new mw.ext.forms.standalone.Form( $.extend( {
+		const form = new mw.ext.forms.standalone.Form( Object.assign( {
 			data: this.getNodeData(),
 			definition: {
 				items: [
@@ -67,7 +67,7 @@ ext.menueditor.ui.data.node.TreeNode.prototype.getForm = function ( dialog ) {
 		form.$element.addClass( 'menueditor-menu-node-form' );
 
 		dfd.resolve( form );
-	}.bind( this ), function () {
+	}, () => {
 		// eslint-disable-next-line no-console
 		console.error( 'Cannot load Forms framework' );
 		dfd.reject();
@@ -93,7 +93,7 @@ ext.menueditor.ui.data.node.TreeNode.prototype.possiblyAddOptions = function () 
 	if ( !this.allowEdits ) {
 		return;
 	}
-	var editButton = new OO.ui.ButtonWidget( {
+	const editButton = new OO.ui.ButtonWidget( {
 		framed: false,
 		label: mw.message( 'menueditor-ui-edit-label' ).text(),
 		icon: 'edit'
@@ -111,14 +111,15 @@ ext.menueditor.ui.data.node.TreeNode.prototype.onEdit = function () {
 };
 
 ext.menueditor.ui.data.node.TreeNode.prototype.getNodeData = function () {
-	var node = $.extend( {}, this.nodeData );
+	const node = Object.assign( {}, this.nodeData );
 	delete ( node.items );
 	delete ( node.name );
 	return node;
 };
 
 ext.menueditor.ui.data.node.TreeNode.prototype.updateData = function ( data ) {
-	this.nodeData = $.extend( this.nodeData, data );
+
+	this.nodeData = Object.assign( this.nodeData, data );
 	this.label = this.labelFromData( this.nodeData );
 	this.labelWidget.setLabel( this.label );
 	this.$element.attr( 'data-type', this.nodeData.type );
@@ -130,7 +131,7 @@ ext.menueditor.ui.data.node.TreeNode.prototype.shouldRender = function () {
 
 ext.menueditor.ui.data.node.TreeNode.prototype.addLabel = function () {
 	this.labelWidget = new OOJSPlus.ui.widget.LabelWidget(
-		$.extend( {},
+		Object.assign( {},
 			{
 				icon: this.getIcon()
 			}, this.buttonCfg

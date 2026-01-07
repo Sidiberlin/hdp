@@ -8,7 +8,7 @@ use BlueSpice\RunJobsTriggerHandler\Interval\OnceADay;
 use BlueSpice\Timestamp;
 use DateTime;
 use Exception;
-use Status;
+use MediaWiki\Status\Status;
 
 class DeleteOldEntries extends RunJobsTriggerHandler {
 

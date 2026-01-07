@@ -28,10 +28,10 @@ namespace BlueSpice;
 
 use BlueSpice\Content\Entity as EntityContent;
 use BlueSpice\Data\Entity\IStore;
-use Config;
+use MediaWiki\Config\Config;
+use MediaWiki\Content\TextContent;
 use MediaWiki\MediaWikiServices;
-use TextContent;
-use Title;
+use MediaWiki\Title\Title;
 
 class EntityFactory {
 	protected $storedById = [];
@@ -72,8 +72,8 @@ class EntityFactory {
 	 * @return Entity
 	 * @throws MWException
 	 */
-	protected function factory( $type, $data, EntityConfig $entityConfig = null,
-		IStore $store = null ) {
+	protected function factory( $type, $data, ?EntityConfig $entityConfig = null,
+		?IStore $store = null ) {
 		if ( !$entityConfig ) {
 			$entityConfig = $this->makeConfig( $type );
 		}
@@ -109,7 +109,7 @@ class EntityFactory {
 	 * @param stdClass|null $object
 	 * @return Entity|null
 	 */
-	public function newFromObject( \stdClass $object = null ) {
+	public function newFromObject( ?\stdClass $object = null ) {
 		if ( !$object ) {
 			return null;
 		}
@@ -207,7 +207,7 @@ class EntityFactory {
 	 * @param EntityConfig|null $entityConfig
 	 * @return IStore|null
 	 */
-	protected function makeStore( $type, EntityConfig $entityConfig = null ) {
+	protected function makeStore( $type, ?EntityConfig $entityConfig = null ) {
 		if ( !$entityConfig ) {
 			$entityConfig = $this->makeConfig( $type );
 		}
@@ -229,7 +229,7 @@ class EntityFactory {
 	 * @param bool $reload
 	 * @return Entity|null
 	 */
-	public function newFromSourceTitle( Title $title = null, $reload = false ) {
+	public function newFromSourceTitle( ?Title $title = null, $reload = false ) {
 		if ( !$title ) {
 			return null;
 		}

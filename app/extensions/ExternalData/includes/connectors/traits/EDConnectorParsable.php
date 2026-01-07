@@ -74,8 +74,8 @@ trait EDConnectorParsable {
 	 *      also contains 'start' and 'end' fields].
 	 */
 	private function ranges( $total ): array {
-		$start = $this->startAbsolute !== null ? $this->startAbsolute : (int)round( $this->startPercent * $total );
-		$end = $this->endAbsolute !== null ? $this->endAbsolute : (int)round( $this->endPercent * $total );
+		$start = $this->startAbsolute ?? (int)round( $this->startPercent * $total );
+		$end = $this->endAbsolute ?? (int)round( $this->endPercent * $total );
 		if ( $start < 0 ) {
 			$start = $total + $start;
 		}
@@ -87,13 +87,13 @@ trait EDConnectorParsable {
 		if ( $this->headerLines ) {
 			if ( $this->headerLines < $start ) {
 				// Need to add a new range.
-				array_unshift( $ranges, [ 'start line' => 0, 'end line' => $this->headerLines ] );
+				array_unshift( $ranges, [ 'start line' => 0, 'end line' => $this->headerLines - 1 ] );
 			} elseif ( $this->headerLines < $end ) {
 				// Header and the range intersect.
 				$ranges[0]['start line'] = 0;
 			} else {
 				// Header overlaps the whole range.
-				$ranges[0]['end line'] = $this->headerLines;
+				$ranges[0]['end line'] = $this->headerLines - 1;
 			}
 		}
 		if ( $this->footerLines ) {

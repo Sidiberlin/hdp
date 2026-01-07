@@ -2,12 +2,10 @@
 
 namespace BlueSpice\RSSFeeder\RSSFeed;
 
-use ConfigException;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Title\Title;
 use RSSCreator;
-use SpecialPage;
-use Title;
-use ViewFormElementSelectbox;
 
 class Watchlist extends RecentChanges {
 
@@ -35,34 +33,6 @@ class Watchlist extends RecentChanges {
 	/**
 	 * @inheritDoc
 	 */
-	public function getViewElement() {
-		$watchlistDays = [ 1, 3, 5, 7, 14, 30, 60, 90, 180, 365 ];
-
-		$set = $this->getViewElementFieldset();
-
-		$select = new ViewFormElementSelectbox();
-		$select->setId( 'selFeedWatch' );
-		$select->setName( 'selFeedWatch' );
-		$select->setLabel( $this->getDisplayName()->plain() );
-
-		foreach ( $watchlistDays as $day ) {
-			$select->addData( [
-				'value' => $this->getFeedURL( [ 'days' => $day ] ),
-				'label' => $this->context->msg( 'bs-rssstandards-link-text-watch' )
-					->params( $day )->text()
-			] );
-		}
-
-		$set->addItem( $select );
-		$set->addItem( $this->getSubmitButton() );
-		$set->addItem( $this->getRCUniqueCheckbox() );
-
-		return $set;
-	}
-
-	/**
-	 * @inheritDoc
-	 */
 	public function getRss() {
 		$channel = $this->getChannel();
 		if ( $this->user->isAnon() ) {
@@ -72,16 +42,33 @@ class Watchlist extends RecentChanges {
 		$prefix = $this->context->getConfig()->get( 'DBprefix' );
 		$conditions = $this->getConditions();
 
-		// phpcs:ignore MediaWiki.Usage.DbrQueryUsage.DbrQueryFound
-		$rc = $dbr->query(
-			"SELECT r.*, c.* FROM {$prefix}watchlist AS w "
-			. "INNER JOIN {$prefix}recentchanges AS r "
-			. "ON w.wl_namespace = r.rc_namespace AND w.wl_title = r.rc_title "
-			. "INNER JOIN {$prefix}comment AS c "
-			. "ON r.rc_comment_id = c.comment_id "
-			. 'WHERE ' . implode( ' AND ', $conditions )
-			. ' ORDER BY r.rc_timestamp DESC;'
-		);
+		$rc = $dbr->newSelectQueryBuilder()
+			->select( [
+				'r.*',
+				'rc_comment_text' => 'c.comment_text',
+				'rc_comment_data' => 'c.comment_data'
+			] )
+			->from(
+				$prefix . 'watchlist',
+				'w'
+			)
+			->join(
+				$prefix . 'recentchanges',
+				'r',
+				[
+					'w.wl_namespace = r.rc_namespace',
+					'w.wl_title = r.rc_title'
+				]
+			)
+			->join(
+				$prefix . 'comment',
+				'c',
+				'r.rc_comment_id = c.comment_id'
+			)
+			->where( $conditions )
+			->orderBy( 'r.rc_timestamp', 'DESC' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
 
 		foreach ( $rc as $row ) {
 			$title = Title::makeTitle( $row->rc_namespace, $row->rc_title );
@@ -89,7 +76,7 @@ class Watchlist extends RecentChanges {
 				continue;
 			}
 			$entry = $this->getEntry( $title, $row );
-			$talkPageTarget = MediaWikiServices::getInstance()->getNamespaceInfo()
+			$talkPageTarget = $this->services->getNamespaceInfo()
 				->getTalkPage( $title );
 			$talkPage = Title::newFromLinkTarget( $talkPageTarget );
 			$entry->setComments( $talkPage->getFullURL() );
@@ -110,10 +97,10 @@ class Watchlist extends RecentChanges {
 		$rcUnique = $this->context->getRequest()->getVal( 'rc_unique', false );
 		if ( $rcUnique ) {
 			$rcUniqueIds = $this->getUniqueRecentChangesIds( [ 'rc_timestamp > ' . $rcTimestamp ] );
-			$conditions = [
-				'w.wl_user = ' . $this->user->getId(),
-				'r.rc_id IN (' . implode( ',', $rcUniqueIds ) . ')'
-			];
+			$conditions = [ 'w.wl_user = ' . $this->user->getId() ];
+			if ( !empty( $rcUniqueIds ) ) {
+				$conditions[] = 'rc_id IN (' . implode( ',', $rcUniqueIds ) . ')';
+			}
 		} else {
 			$conditions = [
 				'w.wl_user = ' . $this->user->getId(),
@@ -121,7 +108,7 @@ class Watchlist extends RecentChanges {
 			];
 		}
 
-		MediaWikiServices::getInstance()->getHookContainer()->run(
+		$this->services->getHookContainer()->run(
 			'BSRSSFeederBeforeGetRecentChanges',
 			[
 				&$conditions,
@@ -141,7 +128,7 @@ class Watchlist extends RecentChanges {
 		return RSSCreator::createChannel(
 			SpecialPage::getTitleFor( 'Watchlist' ) . ' (' . $this->user->getName() . ')',
 			'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'],
-			$this->getDescription()->plain()
+			$this->getDescription()->text()
 		);
 	}
 
@@ -150,12 +137,5 @@ class Watchlist extends RecentChanges {
 	 */
 	protected function getItemTitle( $title, $row ) {
 		return $title->getPrefixedText();
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getJSHandler() {
-		return 'bs.rssfeeder.handler.watchlist';
 	}
 }

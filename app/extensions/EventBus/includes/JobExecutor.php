@@ -7,19 +7,15 @@
 
 namespace MediaWiki\Extension\EventBus;
 
-use Config;
-use DeferredUpdates;
 use Exception;
-use Job;
 use Liuggio\StatsdClient\Factory\StatsdDataFactoryInterface;
+use MediaWiki\Config\Config;
+use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Http\Telemetry;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MWExceptionHandler;
 use Psr\Log\LoggerInterface;
-use WebRequest;
-use Wikimedia\Rdbms\DBError;
-use Wikimedia\Rdbms\ILBFactory;
-use Wikimedia\ScopedCallback;
 
 class JobExecutor {
 
@@ -61,8 +57,13 @@ class JobExecutor {
 		] );
 
 		$lbFactory = MediaWikiServices::getInstance()->getDBLoadBalancerFactory();
+		$telemetry = Telemetry::getInstance();
 
-		WebRequest::overrideRequestId( $job->getRequestId() );
+		if ( $job->getRequestId() !== null ) {
+			$telemetry->overrideRequestId( $job->getRequestId() );
+		} else {
+			$telemetry->regenerateRequestId();
+		}
 		// Clear out title cache data from prior snapshots
 		MediaWikiServices::getInstance()->getLinkCache()->clear();
 
@@ -78,7 +79,11 @@ class JobExecutor {
 			// Clear any stale REPEATABLE-READ snapshots from replica DB connections
 			$status = $job->run();
 			// Commit all pending changes from this job
-			$this->commitPrimaryChanges( $lbFactory, $fnameTrxOwner );
+			$lbFactory->commitPrimaryChanges(
+				$fnameTrxOwner,
+				// Abort if any transaction was too big
+				$this->config()->get( 'MaxJobDBWriteDuration' )
+			);
 
 			if ( $status === false ) {
 				$message = $job->getLastError();
@@ -185,7 +190,8 @@ class JobExecutor {
 		$params = $jobEvent['params'];
 
 		try {
-			$job = Job::factory( $jobType, $params );
+			$jobFactory = MediaWikiServices::getInstance()->getJobFactory();
+			$job = $jobFactory->newJob( $jobType, $params );
 		} catch ( Exception $e ) {
 			return [
 				'status'  => false,
@@ -193,6 +199,7 @@ class JobExecutor {
 			];
 		}
 
+		// @phan-suppress-next-line PhanImpossibleTypeComparison
 		if ( $job === null ) {
 			return [
 				'status'  => false,
@@ -242,75 +249,5 @@ class JobExecutor {
 			self::$stats = MediaWikiServices::getInstance()->getStatsdDataFactory();
 		}
 		return self::$stats;
-	}
-
-	/**
-	 * Issue a commit on all primary DBs who are currently in a transaction and have
-	 * made changes to the database. It also supports sometimes waiting for the
-	 * local wiki's replica DBs to catch up. See the documentation for
-	 * $wgJobSerialCommitThreshold for more.
-	 *
-	 * The implementation resembles the JobRunner::commitPrimaryChanges and will
-	 * be merged with it once the kafka-based JobQueue will be moved to use
-	 * the SpecialRunSingleJob and moved to the core.
-	 *
-	 * @param ILBFactory $lbFactory
-	 * @param string $fnameTrxOwner
-	 * @throws DBError
-	 */
-	private function commitPrimaryChanges( ILBFactory $lbFactory, $fnameTrxOwner ) {
-		$syncThreshold = $this->config()->get( 'JobSerialCommitThreshold' );
-		$maxWriteDuration = $this->config()->get( 'MaxJobDBWriteDuration' );
-
-		$lb = $lbFactory->getMainLB();
-		if ( $syncThreshold !== false && $lb->getServerCount() > 1 ) {
-			// Generally, there is one primary connection to the local DB
-			$dbwSerial = $lb->getAnyOpenConnection( $lb->getWriterIndex() );
-			// We need natively blocking fast locks
-			if ( $dbwSerial && $dbwSerial->namedLocksEnqueue() ) {
-				$time = $dbwSerial->pendingWriteQueryDuration( $dbwSerial::ESTIMATE_DB_APPLY );
-				if ( $time < $syncThreshold ) {
-					$dbwSerial = false;
-				}
-			} else {
-				$dbwSerial = false;
-			}
-		} else {
-			// There are no replica DBs or writes are all to foreign DB (we don't handle that)
-			$dbwSerial = false;
-		}
-
-		if ( !$dbwSerial ) {
-			$lbFactory->commitPrimaryChanges(
-				$fnameTrxOwner,
-				// Abort if any transaction was too big
-				[ 'maxWriteDuration' => $maxWriteDuration ]
-			);
-
-			return;
-		}
-
-		// Wait for an exclusive lock to commit
-		if ( !$dbwSerial->lock( 'jobexecutor-serial-commit', $fnameTrxOwner, 30 ) ) {
-			// This will trigger a rollback in the main loop
-			throw new DBError( $dbwSerial, "Timed out waiting on commit queue." );
-		}
-		$unlocker = new ScopedCallback( static function () use ( $dbwSerial, $fnameTrxOwner ) {
-			$dbwSerial->unlock( 'jobexecutor-serial-commit', $fnameTrxOwner );
-		} );
-
-		// Wait for the replica DBs to catch up
-		$pos = $lb->getPrimaryPos();
-		if ( $pos ) {
-			$lb->waitForAll( $pos );
-		}
-
-		// Actually commit the DB primary changes
-		$lbFactory->commitPrimaryChanges(
-			$fnameTrxOwner,
-			// Abort if any transaction was too big
-			[ 'maxWriteDuration' => $maxWriteDuration ]
-		);
-		ScopedCallback::consume( $unlocker );
 	}
 }

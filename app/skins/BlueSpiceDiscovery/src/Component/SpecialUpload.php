@@ -2,12 +2,11 @@
 
 namespace BlueSpice\Discovery\Component;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
-use RawMessage;
-use SpecialPage;
 
 class SpecialUpload extends RestrictedTextLink {
 
@@ -56,7 +55,7 @@ class SpecialUpload extends RestrictedTextLink {
 	 * @return Message
 	 */
 	public function getText(): Message {
-		return new RawMessage( $this->specialPage->getDescription() );
+		return $this->ensureMessageObject( $this->specialPage->getDescription() );
 	}
 
 	/**
@@ -64,7 +63,7 @@ class SpecialUpload extends RestrictedTextLink {
 	 * @return Message
 	 */
 	public function getTitle(): Message {
-		return new RawMessage( $this->specialPage->getDescription() );
+		return $this->ensureMessageObject( $this->specialPage->getDescription() );
 	}
 
 	/**
@@ -72,6 +71,6 @@ class SpecialUpload extends RestrictedTextLink {
 	 * @return Message
 	 */
 	public function getAriaLabel(): Message {
-		return new RawMessage( $this->specialPage->getDescription() );
+		return $this->ensureMessageObject( $this->specialPage->getDescription() );
 	}
 }

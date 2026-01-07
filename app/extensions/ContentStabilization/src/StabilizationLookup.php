@@ -2,21 +2,23 @@
 
 namespace MediaWiki\Extension\ContentStabilization;
 
-use Config;
+use Exception;
 use File;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Content\WikitextContent;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\ContentStabilization\Storage\StablePointStore;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Page\PageIdentity;
+use MediaWiki\Request\WebRequest;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserGroupManager;
 use MediaWiki\User\UserIdentity;
-use Title;
-use WebRequest;
-use WikitextContent;
+use ObjectCacheFactory;
 
 class StabilizationLookup {
 	/** @var StablePointStore */
@@ -43,6 +45,9 @@ class StabilizationLookup {
 	/** @var HookContainer */
 	private $hookContainer;
 
+	/** @var ObjectCacheFactory */
+	private $objectCacheFactory;
+
 	/**
 	 * @param StablePointStore $store
 	 * @param InclusionManager $inclusionManager
@@ -50,10 +55,12 @@ class StabilizationLookup {
 	 * @param UserGroupManager $userGroupManager
 	 * @param Config $config
 	 * @param HookContainer $hookContainer
+	 * @param ObjectCacheFactory $objectCacheFactory
 	 */
 	public function __construct(
 		StablePointStore $store, InclusionManager $inclusionManager, RevisionStore $revisionStore,
-		UserGroupManager $userGroupManager, Config $config, HookContainer $hookContainer
+		UserGroupManager $userGroupManager, Config $config, HookContainer $hookContainer,
+		ObjectCacheFactory $objectCacheFactory
 	) {
 		$this->store = $store;
 		$this->inclusionManager = $inclusionManager;
@@ -61,6 +68,7 @@ class StabilizationLookup {
 		$this->userGroupManager = $userGroupManager;
 		$this->config = $config;
 		$this->hookContainer = $hookContainer;
+		$this->objectCacheFactory = $objectCacheFactory;
 	}
 
 	/**
@@ -85,7 +93,7 @@ class StabilizationLookup {
 	 * @return StablePoint[]
 	 */
 	public function getStablePointsForPage( PageIdentity $page ): array {
-		$points = $this->store->query( [ 'sp_page' => $page->getId() ] );
+		$points = $this->store->query( [ 'sp_page' => $page->getId() ], __METHOD__ );
 		return array_map( [ $this, 'decorateWithInclusions' ], $points );
 	}
 
@@ -102,9 +110,10 @@ class StabilizationLookup {
 	 * @param int $revisionId
 	 *
 	 * @return StablePoint|null
+	 * @throws Exception
 	 */
 	public function getStablePointForRevisionId( int $revisionId ): ?StablePoint {
-		$point = $this->store->getLatestMatchingPoint( [ 'sp_revision' => $revisionId ] );
+		$point = $this->store->getLatestMatchingPoint( [ 'sp_revision' => $revisionId ], __METHOD__ );
 		return $this->decorateWithInclusions( $point );
 	}
 
@@ -113,11 +122,39 @@ class StabilizationLookup {
 	 * @param RevisionRecord|int|null $upToRevision RevisionRecord object or id, or null for latest
 	 *
 	 * @return StablePoint|null
+	 * @throws Exception
 	 */
 	public function getLastStablePoint( PageIdentity $page, $upToRevision = null ): ?StablePoint {
+		$point = $this->getLastRawStablePoint( $page, $upToRevision );
+		return $this->decorateWithInclusions( $point );
+	}
+
+	/**
+	 * @param PageIdentity $page
+	 * @param RevisionRecord|int|null $upToRevision
+	 * @return StablePoint|null
+	 * @throws Exception
+	 */
+	public function getLastRawStablePoint( PageIdentity $page, $upToRevision = null ): ?StablePoint {
 		$conditions = [ 'sp_page' => $page->getId() ];
-		$this->addUpToRevisionCondition( $conditions, $upToRevision );
-		return $this->decorateWithInclusions( $this->store->getLatestMatchingPoint( $conditions ) );
+		$isCacheable = !$this->addUpToRevisionCondition( $conditions, $upToRevision );
+		return $isCacheable ?
+			$this->store->getLatestMatchingWithCache( $conditions, $page, __METHOD__ ) :
+			$this->store->getLatestMatchingPoint( $conditions, __METHOD__ );
+	}
+
+	/**
+	 * @param PageIdentity $page
+	 * @param RevisionRecord|int|null $upToRevision
+	 * @return RevisionRecord|null
+	 * @throws Exception
+	 */
+	public function getLastStableRevision( PageIdentity $page, $upToRevision = null ): ?RevisionRecord {
+		$point = $this->getLastRawStablePoint( $page, $upToRevision );
+		if ( !$point ) {
+			return null;
+		}
+		return $point->getRevision();
 	}
 
 	/**
@@ -126,7 +163,7 @@ class StabilizationLookup {
 	 * @return bool
 	 */
 	public function isStableRevision( RevisionRecord $revisionRecord ): bool {
-		$stablePoint = $this->getLastStablePoint( $revisionRecord->getPage(), $revisionRecord );
+		$stablePoint = $this->getLastRawStablePoint( $revisionRecord->getPage(), $revisionRecord );
 		if ( !$stablePoint ) {
 			return false;
 		}
@@ -140,7 +177,7 @@ class StabilizationLookup {
 	public function getPendingUnstableRevisions( PageIdentity $page ): array {
 		$unstable = [];
 		if ( $this->hasStable( $page ) ) {
-			$rev = $this->getLastStablePoint( $page )->getRevision();
+			$rev = $this->getLastStableRevision( $page );
 		} else {
 			$rev = $this->revisionStore->getFirstRevision( $page );
 			$unstable[] = $rev;
@@ -227,7 +264,9 @@ class StabilizationLookup {
 				$explicitlyRequestedRev = true;
 			}
 			$forceStable = true;
-			if ( isset( $options['forceUnstable'] ) && $options['forceUnstable'] ) {
+			// Check if stable or draft is explicitly requested
+			$explicitStableState = isset( $options['forceUnstable'] );
+			if ( $explicitStableState && $options['forceUnstable'] ) {
 				$forceStable = false;
 			}
 			if ( !$this->hasStable( $page ) ) {
@@ -241,9 +280,10 @@ class StabilizationLookup {
 				$this->stableViewCache[$cacheKey] = null;
 				return null;
 			}
+
 			if ( !$selected->isCurrent() || $explicitlyRequestedRev ) {
 				// Requesting old revision, show that if possible
-				$forceStable = false;
+				$forceStable = $explicitStableState ? $forceStable : false;
 				$showingOld = true;
 			}
 			$lastStable = $this->getLastStablePoint( $page, $selected );
@@ -361,7 +401,7 @@ class StabilizationLookup {
 	 * @return bool
 	 */
 	public function isStabilizationEnabled( ?PageIdentity $page ): bool {
-		if ( $page === null || !$page->canExist() ) {
+		if ( !$page || !$page->canExist() ) {
 			return false;
 		}
 		$namespace = $page->getNamespace();
@@ -369,14 +409,29 @@ class StabilizationLookup {
 			$namespace = NS_FILE;
 		}
 
+		$unavailable = $this->config->get( 'UnavailableNamespaces' );
+		if ( in_array( $namespace, $unavailable ) ) {
+			return false;
+		}
+
 		$result = in_array( $page->getNamespace(), $this->config->get( 'EnabledNamespaces' ) );
-		if ( $namespace === NS_MEDIAWIKI || $namespace === NS_SPECIAL ) {
-			$result = false;
-		} elseif ( $namespace !== NS_FILE ) {
-			$rev = $this->revisionStore->getRevisionByPageId( $page->getId() );
-			if ( !$rev ) {
-				$result = false;
-			} elseif ( !( $rev->getContent( SlotRecord::MAIN ) instanceof WikitextContent ) ) {
+		if ( $namespace !== NS_FILE ) {
+			$objectCache = $this->objectCacheFactory->getLocalServerInstance();
+
+			$checkResult = $objectCache->getWithSetCallback(
+				$objectCache->makeKey( 'contentstabilization-isstabilizationenabled', $page->getId() ),
+				$objectCache::TTL_SECOND,
+				function () use ( $page ) {
+					$rev = $this->revisionStore->getRevisionByPageId( $page->getId() );
+					if ( !$rev ) {
+						return false;
+					} elseif ( !( $rev->getContent( SlotRecord::MAIN ) instanceof WikitextContent ) ) {
+						return false;
+					}
+				}
+			);
+
+			if ( $checkResult === false ) {
 				$result = false;
 			}
 		}
@@ -398,10 +453,11 @@ class StabilizationLookup {
 	 * @param File $file
 	 *
 	 * @return StablePoint|null
+	 * @throws Exception
 	 */
 	public function getStablePointForFile( File $file ): ?StablePoint {
 		$conditions = [ 'sp_page' => $file->getTitle()->getArticleID(), 'sfp_file_timestamp' => $file->getTimestamp() ];
-		return $this->store->getLatestMatchingPoint( $conditions );
+		return $this->store->getLatestMatchingPoint( $conditions, __METHOD__ );
 	}
 
 	/**
@@ -410,15 +466,20 @@ class StabilizationLookup {
 	 * @param array &$conds
 	 * @param int|RevisionRecord|null $upToRevision
 	 *
-	 * @return void
+	 * @return bool
 	 */
-	private function addUpToRevisionCondition( array &$conds, $upToRevision ) {
-		if ( $upToRevision instanceof RevisionRecord ) {
+	private function addUpToRevisionCondition( array &$conds, $upToRevision ): bool {
+		// If passed revision is current, no need to add condition, as that is the default
+		// Not setting the condition helps with caching
+		if ( $upToRevision instanceof RevisionRecord && !$upToRevision->isCurrent() ) {
 			$conds[] = 'sp_revision <= ' . $upToRevision->getId();
+			return true;
 		}
 		if ( is_int( $upToRevision ) ) {
 			$conds[] = 'sp_revision <= ' . $upToRevision;
+			return true;
 		}
+		return false;
 	}
 
 	/**

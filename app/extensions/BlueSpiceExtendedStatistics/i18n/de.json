@@ -66,17 +66,13 @@
 	"bs-statistics-portlet-numberofpagesdesc": "Statistik der Anzahl der Seiten.",
 	"bs-statistics-portlet-numberofarticlesdesc": "Statistik der Anzahl der Inhaltsseiten.",
 	"bs-statistics-portletconfig-periodday": "Gestern",
-	"apihelp-bs-statistics-tasks-description": "Bietet allgemeine Aufgaben für Statistiken",
 	"apihelp-bs-statistics-tasks-summary": "Stellt allgemeine Aufgaben für Statistiken bereit",
-	"apihelp-bs-statistics-available-diagrams-store-description": "Bietet einen Speicher mit verfügbaren Diagrammen",
 	"apihelp-bs-statistics-available-diagrams-store-summary": "Bietet einen Speicher mit verfügbaren Diagrammen",
-	"apihelp-bs-statistics-search-options-store-description": "Bietet einen Speicher mit verfügbaren Suchoptionen",
 	"apihelp-bs-statistics-search-options-store-summary": "Stellt einen Speicher mit verfügbaren Suchoptionen zur Verfügung",
 	"action-statistic-viewspecialpage": "auf erweiterte Statistiken zuzugreifen",
 	"right-statistic-viewspecialpage": "Zugriff auf erweiterte Statistiken",
 	"bs-statistics-button-label-export": "Export",
 	"bs-statistics-panel-title-result": "Ergebnis",
-	"apihelp-bs-extendedstatistics-collection-store-description": "Stellt einen Suchspeicher für Statistiken bereit, die abgefragt, gefiltert und aggregiert werden können.",
 	"apihelp-bs-extendedstatistics-collection-store-summary": "Stellt einen Suchspeicher für Statistiken bereit, die abgefragt, gefiltert und aggregiert werden können.",
 	"apihelp-bs-extendedstatistics-collection-store-param-aggregate": "Zeichenfolge im JSON-Format mit beliebigen Daten für eine Aggregation.",
 	"aggregatedstatistic": "Aggregierte Statistik",
@@ -116,6 +112,7 @@
 	"bs-statistics-aggregated-report-loading": "Daten werden geladen …",
 	"bs-statistics-pref-excludeusers-help": "Manche Benutzer, z.B. mit Admin-Rechten, können die Statistik auf der Seite Spezial:ExtendedStatistics verzerren. Sie können hier von den statistischen Ergebnissen ausgeschlossen werden.",
 	"bs-statistics-tag-progress-desc": "Generiert eine Fortschrittsanzeige. Der Wert hängt vom Auftreten eines gegebenen Textes im Textkörper und einer vom Benutzer bestimmten Obergrenze ab.",
+	"bs-statistics-tag-progress-label-text": "<span class='visually-hidden'>Fortschrittsbalken bei</span> $1",
 	"bs-statistics-ve-progressinspector-title": "Fortschritt",
 	"bs-statistics-ve-progress-attr-basecount-label": "Basiszahl",
 	"bs-statistics-ve-progress-attr-basecount-help": "Gibt die Obergrenze an, wie oft das gegebene Fortschrittselement auf der Seite auftreten muss, damit der Fortschrittsbalken vollständig gefüllt ist",
@@ -126,6 +123,5 @@
 	"bs-statistics-ve-progress-attr-width-label": "Breite",
 	"bs-statistics-ve-progress-attr-width-help": "Breite des Fortschrittsbalkens in Pixel",
 	"bs-statistics-droplet-progress-name": "Fortschritt",
-	"bs-statistics-droplet-progress-description": "Visualisiert den Fortschritt anhand gegebener Messvariablen",
-	"bs-statistics-tag-progress-label-text": "<span class='visually-hidden'>Fortschrittsbalken bei</span> $1"
+	"bs-statistics-droplet-progress-description": "Visualisiert den Fortschritt anhand gegebener Messvariablen"
 }

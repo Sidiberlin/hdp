@@ -5,7 +5,7 @@
  *
  * @constructor
  */
-var CookieHandler = function() {
+var CookieHandler = function () { // eslint-disable-line no-implicit-globals, no-var
 	// This name has to be kept in sync with \BlueSpice\Discovery\CookieHandler::$cookieName
 	this.cookieName = 'BlueSpiceDiscovery';
 };
@@ -14,12 +14,12 @@ var CookieHandler = function() {
  * Get a single cookie value from the unified cookie
  *
  * @param {string} name
- * @returns {null|*}
+ * @return {null|*}
  */
-CookieHandler.prototype.get = function( name ) {
-	var parsed = this.parse();
+CookieHandler.prototype.get = function ( name ) {
+	const parsed = this.parse();
 	if ( parsed.hasOwnProperty( name ) ) {
-		return parsed[name];
+		return parsed[ name ];
 	}
 
 	return null;
@@ -31,9 +31,9 @@ CookieHandler.prototype.get = function( name ) {
  * @param {string} name
  * @param {*} value
  */
-CookieHandler.prototype.set = function( name, value ) {
-	var parsed = this.parse();
-	parsed[name] = value;
+CookieHandler.prototype.set = function ( name, value ) {
+	const parsed = this.parse();
+	parsed[ name ] = value;
 
 	this.setInternally( parsed );
 };
@@ -43,17 +43,17 @@ CookieHandler.prototype.set = function( name, value ) {
  *
  * @param {*} values
  */
-CookieHandler.prototype.setInternally = function( values ) {
+CookieHandler.prototype.setInternally = function ( values ) {
 	mw.cookie.set( this.cookieName, JSON.stringify( values ) );
 };
 
 /**
  * Get single-cookie values from the unified cookie
  *
- * @returns {array}
+ * @return {Array}
  */
-CookieHandler.prototype.parse = function() {
-	var value = mw.cookie.get( this.cookieName );
+CookieHandler.prototype.parse = function () {
+	const value = mw.cookie.get( this.cookieName );
 	if ( !value ) {
 		return {};
 	}
@@ -61,6 +61,6 @@ CookieHandler.prototype.parse = function() {
 	return JSON.parse( value );
 };
 
-( function( mw, $ ) {
+( function () {
 	discovery_cookie = new CookieHandler();
-})( mediaWiki, jQuery );
+}() );

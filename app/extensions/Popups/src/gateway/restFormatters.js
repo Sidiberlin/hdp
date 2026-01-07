@@ -1,3 +1,8 @@
+/**
+ * @module restFormatters
+ * @private
+ */
+
 import * as formatter from '../formatter';
 
 /**
@@ -8,8 +13,9 @@ import * as formatter from '../formatter';
  */
 export function parseHTMLResponse( page ) {
 	const extract = page.extract_html;
-
-	return extract.length === 0 ? [] : $.parseHTML( extract );
+	const extractNode = document.createElement( 'div' );
+	extractNode.innerHTML = extract;
+	return extract.length === 0 ? [] : extractNode.childNodes;
 }
 
 /**

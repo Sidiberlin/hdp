@@ -10,8 +10,6 @@
 		]
 	},
 	"bs-qr-code-extension-description": "在工具栏中显示链接至当前页面的二维码。",
-	"bs-qr-code-title": "二维码",
-	"bs-qr-code-text": "在手机上扫描二维码以打开此页",
 	"bs-qr-code-action-qr-code-title": "打开二维码对话框",
 	"bs-qr-code-action-qr-code-text": "二维码",
 	"bs-qr-code-action-qr-code-dialog-title": "二维码",

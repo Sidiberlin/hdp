@@ -2,15 +2,18 @@
 
 namespace MediaWiki\Extension\LDAPGroups\SyncMechanism;
 
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\LDAPGroups\ISyncMechanism;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 use MediaWiki\User\UserGroupManager;
 
 abstract class Base implements ISyncMechanism {
 
 	/**
 	 *
-	 * @var \User
+	 * @var User
 	 */
 	protected $user = null;
 
@@ -22,13 +25,13 @@ abstract class Base implements ISyncMechanism {
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $config = null;
 
 	/**
 	 *
-	 * @var \Status
+	 * @var Status
 	 */
 	protected $status = null;
 
@@ -53,7 +56,7 @@ abstract class Base implements ISyncMechanism {
 
 	/**
 	 *
-	 * @param \Config $domainConfig
+	 * @param Config $domainConfig
 	 * @param \Psr\Log\LoggerInterface $logger
 	 * @return ISyncMechanism
 	 */
@@ -64,17 +67,17 @@ abstract class Base implements ISyncMechanism {
 
 	/**
 	 *
-	 * @param \User $user
+	 * @param User $user
 	 * @param \MediaWiki\Extension\LDAPProvider\GroupList $groupList
-	 * @param \Config $config
-	 * @return \Status
+	 * @param Config $config
+	 * @return Status
 	 */
 	public function sync( $user, $groupList, $config ) {
 		$this->user = $user;
 		$this->groupList = $groupList;
 		$this->config = $config;
 
-		$this->status = \Status::newGood();
+		$this->status = Status::newGood();
 
 		$this->doSync();
 

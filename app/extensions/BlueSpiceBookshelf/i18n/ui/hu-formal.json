@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Krisztina"
+		]
+	},
+	"bs-bookshelfui-delete-book-text": "Biztosan törölni szeretné ezt a könyvet? A „könyvespolc” címkék <em>nem</em> lesznek automatikusan eltávolítva a hivatkozott wikioldalakról!",
+	"bs-bookshelfui-flyout-intro": "Itt található az összes elérhető könyv. Új könyv hozzáadásához menjen a [[Special:Bookmanager|könyvkezelő]] menüpontra.",
+	"bs-bookshelfui-intro": "Itt található az összes elérhető könyv. Új könyv hozzáadásához menjen a [[Special:Bookmanager|könyvkezelő]] menüpontra.",
+	"bs-bookshelfui-bookmanager-deletion-error-permission": "Nincs megfelelő jogosultsága a művelet végrehajtásához.",
+	"bs-bookshelfui-bookmanager-deletion-error-unkown": "Ismeretlen hiba történt. Kérjük, vegye fel a kapcsolatot a rendszergazdával."
+}

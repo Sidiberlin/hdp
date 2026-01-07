@@ -3,7 +3,7 @@
 namespace BlueSpice\ProDistributionConnector\ContentDroplets;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\TagDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class PDFEmbedDroplet extends TagDroplet {
 

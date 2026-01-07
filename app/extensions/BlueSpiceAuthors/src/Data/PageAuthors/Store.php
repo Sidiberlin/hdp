@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Authors\Data\PageAuthors;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
 use MWStake\MediaWiki\Component\DataStore\IStore;
 use MWStake\MediaWiki\Component\DataStore\NoWriterException;

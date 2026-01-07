@@ -11,14 +11,14 @@ use MediaWiki\Extension\Workflows\Activity\GenericActivity;
 use MediaWiki\Extension\Workflows\Definition\ITask;
 use MediaWiki\Extension\Workflows\Exception\WorkflowExecutionException;
 use MediaWiki\Extension\Workflows\WorkflowContext;
+use MediaWiki\Message\Message;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
-use Message;
-use MWTimestamp;
-use Title;
-use TitleFactory;
-use User;
+use MediaWiki\Utils\MWTimestamp;
 
 /**
  * Required data:
@@ -96,7 +96,7 @@ class ApprovePageActivity extends GenericActivity {
 			throw new WorkflowExecutionException(
 				Message::newFromKey(
 					'content-stabilization-integration-activity-error-context-data-missing'
-				)->text(),  $this->getTask()
+				)->text(), $this->getTask()
 			);
 		}
 
@@ -109,7 +109,7 @@ class ApprovePageActivity extends GenericActivity {
 			throw new WorkflowExecutionException(
 				Message::newFromKey(
 					'content-stabilization-integration-activity-error-context-invalid-title'
-				)->text(),  $this->getTask()
+				)->text(), $this->getTask()
 			);
 		}
 		$this->title = $title;
@@ -122,12 +122,12 @@ class ApprovePageActivity extends GenericActivity {
 			throw new WorkflowExecutionException(
 				Message::newFromKey(
 					'content-stabilization-integration-activity-error-title-rev-mismatch'
-				)->text(),  $this->getTask()
+				)->text(), $this->getTask()
 			);
 		}
 		$this->revision = $revision;
 
-		if ( isset( $data['user'] ) ) {
+		if ( !empty( $data['user'] ) ) {
 			// If user is explicitly set, use that. Definition is responsible
 			// to make sure this user can approve pages (use propertyValidator)
 			$this->user = $this->userFactory->newFromName( $data['user'] );
@@ -135,7 +135,7 @@ class ApprovePageActivity extends GenericActivity {
 				throw new WorkflowExecutionException(
 					Message::newFromKey(
 						'content-stabilization-integration-activity-error-provided-user', $data['user']
-					)->text(),  $this->getTask()
+					)->text(), $this->getTask()
 				);
 			}
 		} elseif ( $context->isRunningAsBot() ) {
@@ -147,7 +147,7 @@ class ApprovePageActivity extends GenericActivity {
 			throw new WorkflowExecutionException(
 				Message::newFromKey(
 					'content-stabilization-integration-activity-error-no-user'
-				)->text(),  $this->getTask()
+				)->text(), $this->getTask()
 			);
 		}
 	}

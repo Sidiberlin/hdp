@@ -32,17 +32,15 @@
 	margin-top: 10px;
 }
 
-li > ul.tree-node-list li:last-child:before {
+li > ul.tree-node-list li:last-child::before {
 	height: 50%;
 }
 
-/* stylelint-disable unit-disallowed-list */
 /* stylelint-disable selector-max-id */
 #menuEditor-container .oojsplus-data-tree-label .oo-ui-iconElement-icon {
 	font-size: 0.8rem;
 	margin-left: 6px;
 }
-/* stylelint-enable unit-disallowed-list */
 
 #menuEditor-container .oojsplus-data-tree-expander .oo-ui-iconElement-icon {
 	opacity: 0.6;
@@ -56,8 +54,8 @@ li > ul.tree-node-list li:last-child:before {
 	color: #e3e3e3;
 }
 
-.in-drag li > ul.tree-node-list li:after,
-.in-drag li > ul.tree-node-list li:before {
+.in-drag li > ul.tree-node-list li::after,
+.in-drag li > ul.tree-node-list li::before {
 	display: none;
 }
 
@@ -71,21 +69,15 @@ li > ul.tree-node-list li:last-child:before {
 
 .oo-ui-tool-name-cancel {
 	width: 45px;
-	background-color: #eaecf0;
+	border-right: 1px solid #eaecf0;
 }
 
-#menuEditor-container .tree-node-list {
-	margin-left: 0;
+#menuEditor-container .oojsplus-data-tree-expander a .oo-ui-iconElement-icon {
+	background-size: 80%;
 }
-
-/* stylelint-disable declaration-no-important */
-#menuEditor-container .oojsplus-data-tree-expander a {
-	padding: 22px 10px 10px !important;
-}
-/* stylelint-enable declaration-no-important */
 
 #mw-content-text .oo-ui-tool-name-cancel a:hover {
-	background-color: #c8ccd1;
+	background-color: #eaecf0;
 }
 
 .oo-ui-barToolGroup-tools > .oo-ui-tool + .oo-ui-tool {
@@ -113,8 +105,10 @@ li > ul.tree-node-list li:last-child:before {
 }
 
 #menuEditor-container li > :not( ul ) {
-	padding: 2px 4px;
-	margin: 5px 0;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	margin-top: 5px;
+	margin-bottom: 5px;
 	background-color: #f8f9fa;
 	border-radius: 2px;
 }
@@ -135,16 +129,10 @@ li > ul.tree-node-list li:last-child:before {
 	margin-left: 5px;
 }
 
-#menuEditor-container .oojs-ui-data-tree-item {
-	padding-left: 20px;
-}
-
-/* stylelint-disable unit-disallowed-list */
 #menuEditor-container .oojsplus-data-tree-expander {
 	top: 0;
-	margin-left: 20px;
+	margin-left: 5px;
 }
-/* stylelint-enable unit-disallowed-list */
 
 #menuEditor-container .oo-ui-buttonElement-button > span {
 	font-weight: normal;
@@ -153,6 +141,5 @@ li > ul.tree-node-list li:last-child:before {
 
 #menuEditor-container .oojsplus-data-tree-expander + div {
 	margin-bottom: 10px;
-	padding-left: 20px;
 }
 /* stylelint-enable selector-max-id */

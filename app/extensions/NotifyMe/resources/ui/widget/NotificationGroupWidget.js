@@ -67,7 +67,7 @@ ext.notifyme.ui.widget.NotificationGroupWidget.prototype.alterBody = function ( 
 	return $body;
 };
 
-ext.notifyme.ui.widget.NotificationGroupWidget.prototype.toggle = function ( target ) {
+ext.notifyme.ui.widget.NotificationGroupWidget.prototype.toggle = function ( target ) { // eslint-disable-line no-unused-vars
 	this.expanded = !this.expanded;
 
 	let expandedLabelMessage;
@@ -89,7 +89,7 @@ ext.notifyme.ui.widget.NotificationGroupWidget.prototype.addNotifications = func
 	this.$expandedNotificationsWrapper = $( '<div>' ).addClass( 'notifications-ui-widget-NotificationGroupWidget-notifications' );
 
 	for ( let i = 1; i < notifications.length; i++ ) {
-		var agent;
+		let agent;
 		if ( this.notifications[ i ].agent_is_bot ) {
 			agent = null;
 		} else {
@@ -97,19 +97,19 @@ ext.notifyme.ui.widget.NotificationGroupWidget.prototype.addNotifications = func
 		}
 
 		const notificationData = {
-				id: notifications[ i ].id,
-				icon: 'article',
-				// TODO: #icon
-				// icon: notifications[i].icon,
-				agent: agent,
-				message: notifications[ i ].message,
-				unread: notifications[ i ].status === 'pending',
-				timestamp: notifications[ i ].timestamp,
-				links: notifications[ i ].links,
-				isInGroup: true
-			},
+			id: notifications[ i ].id,
+			icon: 'article',
+			// TODO: #icon
+			// icon: notifications[i].icon,
+			agent: agent,
+			message: notifications[ i ].message,
+			unread: notifications[ i ].status === 'pending',
+			timestamp: notifications[ i ].timestamp,
+			links: notifications[ i ].links,
+			isInGroup: true
+		};
 
-		 notification = new ext.notifyme.ui.widget.NotificationItemWidget( notificationData );
+		const notification = new ext.notifyme.ui.widget.NotificationItemWidget( notificationData );
 		notification.connect( this, {
 			itemMarked: 'groupItemMarked'
 		} );

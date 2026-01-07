@@ -24,7 +24,6 @@
 	"menueditor-ui-dialog-title": "요소 편집",
 	"menueditor-ui-mediawiki-sidebar-keyword-label-edit": "키워드 편집",
 	"menueditor-ui-mediawiki-sidebar-keyword-label": "키워드",
-	"menueditor-toolbar-submit": "변경사항 저장",
 	"menueditor-toolbar-cancel": "편집 취소",
-	"menueditor-toolbar-add": "새 요소 추가"
+	"menueditor-toolbar-save": "저장"
 }

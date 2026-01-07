@@ -9,6 +9,7 @@
 	text-align: right;
 	text-decoration: underline;
 }
+
 .enhanced-sidebar:hover .enhanced-sidebar-edit-link-footer {
 	visibility: visible;
 }

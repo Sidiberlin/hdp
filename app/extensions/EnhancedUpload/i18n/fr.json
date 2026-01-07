@@ -2,9 +2,12 @@
 	"@metadata": {
 		"authors": [
 			"BlueCamille",
+			"Derugon",
 			"Eihel",
 			"Gomoko",
 			"Goombiis",
+			"JLTRY",
+			"Mahabarata",
 			"SleaY",
 			"Verdy p",
 			"Wladek92"
@@ -90,7 +93,14 @@
 	"enhancedupload-upload-warning-exists": "Ce nom de fichier existe déjà",
 	"enhancedupload-upload-warning-duplicate": "Ce fichier est un doublon",
 	"enhancedupload-upload-warning-was-deleted": "Ce nom de fichier a été précédemment supprimé.",
+	"enhancedupload-upload-error-duplicate": "Un fichier identique à ce fichier ($1) a été précédemment supprimé.",
+	"enhancedupload-upload-error-badfilename": "Le nom de fichier $1 contient des caractères invalides.",
+	"enhancedupload-upload-error-unhandled": "Une exception non gérée s'est produite.",
 	"enhancedupload-single-file-dlg-title": "Nouvelle version de « $1 »",
 	"enhancedupload-toggle-details-button-hide-label": "Masquer les détails",
-	"enhancedupload-toggle-details-button-show-label": "Afficher les détails"
+	"enhancedupload-toggle-details-button-show-label": "Afficher les détails",
+	"enhancedupload-preview-widget-remove-label": "Supprimer $1",
+	"enhancedupload-reset-button-label": "Réinitialiser",
+	"enhancedupload-ve-file-dialog-title": "Fichier",
+	"enhancedupload-ve-file-dialog-filename-label": "Nom de fichier"
 }

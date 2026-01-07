@@ -24,8 +24,6 @@
 	"bs-countthings-tag-countarticles-desc": "Prikazuje broj članaka na vikiju.",
 	"bs-countthings-tag-countusers-desc": "Prikazuje broj registrovanih korisnika.",
 	"bs-countthings-tag-countfiles-desc": "Prikazuje broj datoteka na vikiju.",
-	"bs-countthings-tag-countcharacters-example-1": "Broj reči",
-	"bs-countthings-tag-countcharacters-example-2": "Broj znakova",
 	"bs-countthings-droplet-articles-name": "Broj stranica",
 	"bs-countthings-droplet-articles-description": "Prikazuje broj stranica",
 	"bs-countthings-droplet-characters-name": "Broj znakova",

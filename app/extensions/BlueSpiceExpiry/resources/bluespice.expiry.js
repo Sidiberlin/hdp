@@ -1,28 +1,28 @@
-(function( mw, $, d, bs, undefined ){
+( function ( mw, $, d, bs ) {
 	bs.util.registerNamespace( 'bs.expiry.ui' );
 
-	bs.expiry.isReminderEnabled = function() {
-		var reminderTypes = mw.config.get( 'bsgReminderRegisteredTypes', null );
+	bs.expiry.isReminderEnabled = function () {
+		const reminderTypes = mw.config.get( 'bsgReminderRegisteredTypes', null );
 		return reminderTypes && reminderTypes.hasOwnProperty( 'expiry' );
 	};
 
-	bs.expiry.getDialogPages = function( cfg, data ) {
-		var dfd = $.Deferred();
+	bs.expiry.getDialogPages = function ( cfg, data ) {
+		const dfd = $.Deferred();
 
 		cfg = cfg || {};
 		data = data || {};
 
 		cfg.reminderEnabled = bs.expiry.isReminderEnabled();
 
-		var pages = [
-			new bs.expiry.ui.ExpiryPage( $.extend( {
+		const pages = [
+			new bs.expiry.ui.ExpiryPage( Object.assign( {
 				data: data
 			}, cfg ) ),
 			new bs.expiry.ui.DeleteExpiryPage()
 		];
 
 		if ( bs.expiry.isReminderEnabled() && !data.hasOwnProperty( 'id' ) ) {
-			mw.loader.using( "ext.bluespice.reminder.dialog.pages", function() {
+			mw.loader.using( 'ext.bluespice.reminder.dialog.pages', () => {
 				pages.push( new bs.expiry.ui.CreateReminderPromptPage() );
 				pages.push( new bs.reminder.ui.CreateReminderForPage() );
 				dfd.resolve( pages );
@@ -31,23 +31,21 @@
 			dfd.resolve( pages );
 		}
 
-
-
 		return dfd.promise();
 	};
 
-	bs.expiry.getExpiryForPage = function( pageId ) {
-		var dfd = $.Deferred();
+	bs.expiry.getExpiryForPage = function ( pageId ) {
+		const dfd = $.Deferred();
 		blueSpice.api.tasks.exec(
 			'expiry',
 			'getDetailsForExpiry',
 			{
 				articleId: pageId
 			}, {
-				success: function( response ) {
+				success: function ( response ) {
 					dfd.resolve( response.payload );
 				},
-				failure: function() {
+				failure: function () {
 					dfd.reject();
 				}
 			}
@@ -56,66 +54,66 @@
 		return dfd.promise();
 	};
 
-	$( d ).on( 'click', 'a.bs-expiry-unexpire', function() {
-		var exp_id = $( this ).data( 'expid' );
+	$( d ).on( 'click', 'a.bs-expiry-unexpire', function () {
+		const exp_id = $( this ).data( 'expid' ); // eslint-disable-line camelcase
 		bs.api.tasks.exec(
 			'expiry',
 			'deleteExpiry',
 			{
-				expiryId: exp_id || 0,
+				expiryId: exp_id || 0, // eslint-disable-line camelcase
 				articleId: mw.config.get( 'wgArticleId' ) || 0
 			}
 		)
-		.done( function(){
-			window.location.reload();
-		} );
-	});
+			.done( () => {
+				window.location.reload();
+			} );
+	} );
 
-	$( d ).on( 'click', 'a.bs-expiry-updateexpirydate', function() {
-		var expiry = $(this).data( 'expiry' ) || {};
-		var changeDateDialog = new OOJSPlus.ui.dialog.BookletDialog( {
+	$( d ).on( 'click', 'a.bs-expiry-updateexpirydate', function () {
+		const expiry = $( this ).data( 'expiry' ) || {};
+		const changeDateDialog = new OOJSPlus.ui.dialog.BookletDialog( {
 			id: 'bs-expiry-dlg-change-date',
-			pages: function() {
-				var dfd = $.Deferred();
-				mw.loader.using( "ext.bluespice.expiry.dialog.pages", function() {
+			pages: function () {
+				const dfd = $.Deferred();
+				mw.loader.using( 'ext.bluespice.expiry.dialog.pages', () => {
 					dfd.resolve( [ new bs.expiry.ui.ChangeDatePage( { ids: [ expiry.id ] } ) ] );
 
-				}, function( e ) {
+				}, ( e ) => {
 					dfd.reject( e );
 				} );
 				return dfd.promise();
 			}
 		} );
 
-		changeDateDialog.show().closed.then( function( data ) {
+		changeDateDialog.show().closed.then( ( data ) => {
 			if ( data.success ) {
 				window.location.reload();
 			}
-		}.bind( this ) );
-	});
+		} );
+	} );
 
-	$( d ).on( 'click', "#ca-expiryCreate, .ca-expiryCreate", function ( e ) {
+	$( d ).on( 'click', '#ca-expiryCreate, .ca-expiryCreate', ( e ) => {
 		e.preventDefault();
-		mw.loader.using( [ "ext.bluespice.expiry.dialog.pages" ] ).done( function () {
-			var dialog = new OOJSPlus.ui.dialog.BookletDialog( {
+		mw.loader.using( [ 'ext.bluespice.expiry.dialog.pages' ] ).done( () => {
+			const dialog = new OOJSPlus.ui.dialog.BookletDialog( {
 				id: 'bs-expiry-dialog-set',
-				pages: function() {
-					var dfd = $.Deferred();
+				pages: function () {
+					const dfd = $.Deferred();
 					bs.expiry.getExpiryForPage( mw.config.get( 'wgArticleId' ) )
-						.done( function( data ) {
+						.done( ( data ) => {
 							bs.expiry.getDialogPages(
-								{ forcePage: true }, $.extend( { page: mw.config.get( 'wgPageName' ) }, data )
-							).done( function( pages ) {
+								{ forcePage: true }, Object.assign( { page: mw.config.get( 'wgPageName' ) }, data )
+							).done( ( pages ) => {
 								dfd.resolve( pages );
-							} ).fail( function( e ) {
+							} ).fail( ( e ) => { // eslint-disable-line no-shadow
 								dfd.reject( e );
 							} );
-						} ).fail( function() {
+						} ).fail( () => {
 							bs.expiry.getDialogPages(
 								{ forcePage: true }, { page: mw.config.get( 'wgPageName' ) }
-							).done( function( pages ) {
+							).done( ( pages ) => {
 								dfd.resolve( pages );
-							} ).fail( function( e ) {
+							} ).fail( ( e ) => { // eslint-disable-line no-shadow
 								dfd.reject( e );
 							} );
 						} );
@@ -123,11 +121,11 @@
 				}
 			} );
 
-			dialog.show().closed.then( function( data ) {
-				if( data.success ) {
+			dialog.show().closed.then( ( data ) => {
+				if ( data.success ) {
 					window.location.reload();
 				}
 			} );
 		} );
 	} );
-})( mediaWiki, jQuery, document, blueSpice );
+}( mediaWiki, jQuery, document, blueSpice ) );

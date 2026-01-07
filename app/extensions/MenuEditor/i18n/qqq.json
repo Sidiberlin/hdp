@@ -34,10 +34,11 @@
 	"menueditor-ui-dialog-title": "Title for dialog to edit nodes",
 	"menueditor-ui-mediawiki-sidebar-keyword-label-edit": "Form field label",
 	"menueditor-ui-mediawiki-sidebar-keyword-label": "Node label",
-	"menueditor-toolbar-submit": "Title for toolbar action save\n{{identical|savechanges}}",
 	"menueditor-toolbar-cancel": "Title for toolbar action cancel",
 	"menueditor-toolbar-add-label": "Title for toolbar action new item",
 	"menueditor-ui-edit-label": "Button label for edit node element\n{{identical|Edit}}",
 	"menueditor-ui-add-sub-element-label": "Label for action add sub element",
-	"menueditor-footerlinks-banner-text": "Label for banner on [MediaWiki:FooterLinks]"
+	"menueditor-footerlinks-banner-text": "Label for banner on [MediaWiki:FooterLinks]",
+	"menueditor-toolbar-save": "Title for toolbar action save\n{{Identical|Save}}",
+	"menueditor-ui-cancel-confirmation": "Confirmation message for cancel action"
 }

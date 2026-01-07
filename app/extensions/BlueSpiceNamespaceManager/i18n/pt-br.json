@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"EGobi",
 			"Eduardo Addad de Oliveira",
 			"Eduardoaddad",
 			"Felipe L. Ewald",
@@ -54,17 +55,15 @@
 	"logentry-bs-namespace-manager-rename": "$1 {{GENDER:$2|renomeou}} o espaço nominal  $4 para $5",
 	"logentry-bs-namespace-manager-remove": "$1 {{GENDER:$2|removeu}} o espaço nominal $4",
 	"bs-namespacemanager-ns-config-saved": "A configuração do espaço nominal foi salva.",
-	"apihelp-bs-namespace-store-description": "Lista todas as espaços nominais e configuração arbitrária. Permite classificar, filtrar e paginação. Implementa os parâmetros ExtJS Store.",
 	"apihelp-bs-namespace-store-summary": "Lista todas as espaços nominais e configuração arbitrária. Permite classificar, filtrar e paginação. Implementa os parâmetros ExtJS Store.",
-	"apihelp-bs-namespace-tasks-description": "Permite a modificação da configuração do espaço nominal.",
 	"apihelp-bs-namespace-tasks-summary": "Permite a modificação da configuração do espaço nominal.",
 	"action-namespacemanager-viewspecialpage": "ver a página especial do gerenciador de espaço nominal",
 	"namespacemanager": "Gerenciador do espaço nominal",
 	"bs-namespacemanager-nodeletetalk": "O espaço nominal de discussão não pode ser eliminado",
 	"bs-namespacemanager-label-istalk": "Discussão",
 	"right-namespacemanager-viewspecialpage": "Acesso à página especial [[Special:NamespaceManager]].",
-	"bs-namespacemanager-hide-talk-label": "Ocultar espaços nominais de discussão",
 	"bs-namespacemanager-labelnsalias": "Nome alternativo",
 	"bs-namespacemanager-invalid-namespace": "O espaço nominal que está a ser editado é inválido",
-	"bs-namespacemanager-icon-tristate-disabled-aria-label": "desabilitado"
+	"bs-namespacemanager-icon-tristate-disabled-aria-label": "desabilitado",
+	"bs-namespacemanager-hide-talk-label": "Ocultar espaços nominais de discussão"
 }

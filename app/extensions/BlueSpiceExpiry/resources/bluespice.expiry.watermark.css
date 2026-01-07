@@ -1,18 +1,14 @@
-
-:lang(en) #mw-content-text {
-	/*@embed*/
-	background-image: url('images/bg-expired-en.png');
+/* Use English watermark as fallback for all languages */
+#mw-content-text {
+	/* @embed */
+	background-image: url( images/bg-expired-en.png );
 	background-repeat: repeat;
 	background-position: top left;
 	background-size: auto 9cm;
 	min-height: 250px;
 }
 
-:lang(de) #mw-content-text {
-	/*@embed*/
-	background-image: url('images/bg-expired-de.png');
-	background-repeat: repeat;
-	background-position: top left;
-	background-size: auto 9cm;
-	min-height: 250px;
+:lang( de ) #mw-content-text {
+	/* @embed */
+	background-image: url( images/bg-expired-de.png );
 }

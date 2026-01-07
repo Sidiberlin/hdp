@@ -4,7 +4,7 @@ namespace MediaWiki\Extension\ImportOfficeFiles\Reader\Tag;
 
 use DOMElement;
 use DOMNode;
-use FormatJson;
+use MediaWiki\Json\FormatJson;
 
 class Drawing extends TagProcessorBase {
 
@@ -61,7 +61,7 @@ class Drawing extends TagProcessorBase {
 
 		$ptSize = $emuSize / $emuInPt;
 
-		$pxSize = intval( $ptSize * 0.75 );
+		$pxSize = intval( $ptSize / 0.75 );
 
 		return $pxSize;
 	}

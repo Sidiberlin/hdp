@@ -2,7 +2,7 @@
 
 namespace BS\ExtendedSearch;
 
-use ConfigException;
+use MediaWiki\Config\ConfigException;
 use MediaWiki\MediaWikiServices;
 
 class Wildcarder {
@@ -139,7 +139,7 @@ class Wildcarder {
 		}
 
 		$this->removeUnsupportedChars();
-		$this->escapeColons();
+		$this->escape();
 		$this->doWildcarding();
 		$this->done = true;
 	}
@@ -181,7 +181,7 @@ class Wildcarder {
 			if ( $term == '' ) {
 				continue;
 			}
-			$term = "(*$term OR $term* OR *$term*)";
+			$term = "($term OR *$term OR $term* OR *$term*)";
 		}
 		return implode( ' ', $terms );
 	}
@@ -196,7 +196,8 @@ class Wildcarder {
 		return $quoted[1];
 	}
 
-	protected function escapeColons() {
+	protected function escape() {
 		$this->wildcarded = str_replace( ':', '\\:', $this->wildcarded );
+		$this->wildcarded = str_replace( '/', '\\/', $this->wildcarded );
 	}
 }

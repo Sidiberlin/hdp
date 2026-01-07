@@ -4,10 +4,10 @@ namespace MediaWiki\Extension\OATHAuth\HTMLForm;
 
 use MediaWiki\Extension\OATHAuth\Module\TOTP;
 use MediaWiki\Logger\LoggerFactory;
-use Message;
+use MediaWiki\Message\Message;
 use MWException;
 
-class TOTPDisableForm extends OATHAuthOOUIHTMLForm implements IManageForm {
+class TOTPDisableForm extends OATHAuthOOUIHTMLForm {
 	/**
 	 * Add content to output when operation was successful
 	 */
@@ -40,8 +40,8 @@ class TOTPDisableForm extends OATHAuthOOUIHTMLForm implements IManageForm {
 	 * @throws MWException
 	 */
 	public function onSubmit( array $formData ) {
-		// Don't increase pingLimiter, just check for limit exceeded.
-		if ( $this->oathUser->getUser()->pingLimiter( 'badoath', 0 ) ) {
+		// Don't increase pingLimiter, instead check for the limit being exceeded.
+		if ( $this->getUser()->pingLimiter( 'badoath', 0 ) ) {
 			// Arbitrary duration given here
 			LoggerFactory::getInstance( 'authentication' )->info(
 				'OATHAuth {user} rate limited while disabling 2FA from {clientip}', [
@@ -52,22 +52,31 @@ class TOTPDisableForm extends OATHAuthOOUIHTMLForm implements IManageForm {
 			return [ 'oathauth-throttled', Message::durationParam( 60 ) ];
 		}
 
-		$module = $this->oathUser->getModule();
-		if ( $module instanceof TOTP ) {
-			if ( !$module->verify( $this->oathUser, [ 'token' => $formData['token'] ] ) ) {
-				LoggerFactory::getInstance( 'authentication' )->info(
-					'OATHAuth {user} failed to provide a correct token while disabling 2FA from {clientip}', [
-						'user' => $this->getUser()->getName(),
-						'clientip' => $this->getRequest()->getIP(),
-					]
-				);
-				return [ 'oathauth-failedtovalidateoath' ];
+		foreach ( TOTP::getTOTPKeys( $this->oathUser ) as $key ) {
+			if ( !$key->verify( [ 'token' => $formData['token'] ], $this->oathUser ) ) {
+				continue;
 			}
+
+			$this->oathRepo->removeKey(
+				$this->oathUser,
+				$key,
+				$this->getRequest()->getIP(),
+				true
+			);
+
+			return true;
 		}
 
-		$this->oathUser->setKeys();
-		$this->oathRepo->remove( $this->oathUser, $this->getRequest()->getIP(), true );
+		LoggerFactory::getInstance( 'authentication' )->info(
+			'OATHAuth {user} failed to provide a correct token while disabling 2FA from {clientip}', [
+				'user' => $this->getUser()->getName(),
+				'clientip' => $this->getRequest()->getIP(),
+			]
+		);
 
-		return true;
+		// Increase rate limit counter for failed request
+		$this->getUser()->pingLimiter( 'badoath' );
+
+		return [ 'oathauth-failedtovalidateoath' ];
 	}
 }

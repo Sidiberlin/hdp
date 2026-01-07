@@ -6,20 +6,20 @@ ext.bookshelf.api.Api = function () {
 
 ext.bookshelf.api.Api.prototype.ajax = function ( path, data, method ) {
 	data = data || {};
-	var dfd = $.Deferred();
+	const dfd = $.Deferred();
 	$.ajax( {
 		method: method,
 		url: this.makeUrl( path ),
 		data: data,
 		contentType: 'application/json',
 		dataType: 'json'
-	} ).done( function ( response ) {
+	} ).done( ( response ) => {
 		if ( typeof response === 'object' && response.success === false ) {
 			dfd.reject();
 			return;
 		}
 		dfd.resolve( response );
-	} ).fail( function ( jgXHR, type, status ) {
+	} ).fail( ( jgXHR, type, status ) => {
 		if ( type === 'error' ) {
 			dfd.reject( {
 				error: jgXHR.responseJSON || jgXHR.responseText
@@ -54,4 +54,8 @@ ext.bookshelf.api.Api.prototype.getBookMetadata = function ( bookTitle ) {
 
 ext.bookshelf.api.Api.prototype.saveBookMetadata = function ( bookTitle, data ) {
 	return this.post( 'metadata/' + encodeURIComponent( bookTitle ), data );
+};
+
+ext.bookshelf.api.Api.prototype.getBookTemplateForBook = function ( bookTitle ) {
+	return this.get( 'template/' + encodeURIComponent( bookTitle ) );
 };

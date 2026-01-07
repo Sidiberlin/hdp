@@ -2,18 +2,18 @@
 
 namespace MediaWiki\Extension\ContentProvisioning\Data;
 
-use ExtensionRegistry;
-use Language;
+use MediaWiki\Content\TextContent;
+use MediaWiki\Language\Language;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Page\WikiPageFactory;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\ContentProvisioner\ImportLanguage;
 use MWStake\MediaWiki\Component\ContentProvisioner\ManifestListProvider\StaticManifestProvider;
 use MWStake\MediaWiki\Component\DataStore\IPrimaryDataProvider;
-use TextContent;
-use Title;
-use TitleFactory;
-use User;
 
 class PrimaryDataProvider implements IPrimaryDataProvider {
 

@@ -11,10 +11,9 @@
 	"bs-bookshelf-pref-chapterpagerbeforecontent-help": "Tambah kelui bab di atas laman.",
 	"bs-bookshelf-pref-chapterpageraftercontent": "Tunjuk kelui bab buku selepas kandungan",
 	"bs-bookshelf-pref-chapterpageraftercontent-help": "Tambah kelui bab di bawah laman.",
-	"bs-bookshelf-prof-defaultview": "Paparan lalai",
-	"bs-bookshelf-droplet-name": "Senarai buku",
 	"bs-bookshelf-ve-bookmeta-attr-author-label": "Pengarang",
-	"bs-bookshelf-actionmenuentry-create-new-book": "Cipta buku baharu",
+	"bs-bookshelf-droplet-name": "Senarai buku",
 	"bs-bookshelf-newbook-dlg-title": "Cipta buku baharu",
-	"bs-bookshelf-newbook-dlg-input-title-placeholder": "Cipta tajuk buku"
+	"bs-bookshelf-newbook-dlg-input-title-placeholder": "Cipta tajuk buku",
+	"bs-bookshelf-actionmenuentry-create-new-book": "Cipta buku baharu"
 }

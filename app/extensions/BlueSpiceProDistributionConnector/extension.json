@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceProDistributionConnector",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[https://www.hallowelt.com Hallo Welt! GmbH]"
@@ -9,9 +9,9 @@
 	"descriptionmsg": "bs-prodistributionconnector-desc",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"attributes": {
@@ -36,6 +36,24 @@
 				},
 				"decision": {
 					"class": "\\BlueSpice\\ProDistributionConnector\\ContentDroplets\\DecisionDroplet"
+				},
+				"pdf-embed": {
+					"class": "\\BlueSpice\\ProDistributionConnector\\ContentDroplets\\PDFEmbedDroplet",
+					"requires": {
+						"PDFEmbed": "*"
+					}
+				},
+				"math-form": {
+					"class": "\\BlueSpice\\ProDistributionConnector\\ContentDroplets\\MathFormDroplet",
+					"requires": {
+						"Math": "*"
+					}
+				},
+				"chem-form": {
+					"class": "\\BlueSpice\\ProDistributionConnector\\ContentDroplets\\ChemFormDroplet",
+					"requires": {
+						"Math": "*"
+					}
 				}
 			}
 		},
@@ -61,14 +79,56 @@
 			"PluginModules": [
 				"ext.prodistributionconnector.droplet.pdfembed"
 			]
+		},
+		"PDFCreator": {
+			"Processors": {
+				"math": {
+					"class": "BlueSpice\\ProDistributionConnector\\PDFCreator\\Processor\\Math",
+					"services": [ "UrlUtils", "Math.RendererFactory", "MainConfig" ]
+				},
+				"pdfembed": {
+					"class": "BlueSpice\\ProDistributionConnector\\PDFCreator\\Processor\\PDFEmbed",
+					"services": [ "TitleFactory", "MainConfig", "RepoGroup" ]
+				}
+			}
+		},
+		"BlueSpiceDistributionConnector": {
+			"EchoEventsCompatibilityMapping": {
+				"login-success": "login-notify-success",
+				"login-fail-known": "login-notify-fail-known",
+				"login-fail-new": "login-notify-fail-new"
+			}
+		},
+		"NotifyMe": {
+			"Events": {
+				"login-notify-success": {
+					"spec": {
+						"class": "\\BlueSpice\\ProDistributionConnector\\Event\\LoginNotifySuccess"
+					},
+					"buckets": [ "personal" ]
+				},
+				"login-notify-fail-known": {
+					"spec": {
+						"class": "\\BlueSpice\\ProDistributionConnector\\Event\\LoginNotifyFailKnown"
+					},
+					"buckets": [ "personal" ]
+				},
+				"login-notify-fail-new": {
+					"spec": {
+						"class": "\\BlueSpice\\ProDistributionConnector\\Event\\LoginNotifyFailNew"
+					},
+					"buckets": [ "personal" ]
+				}
+			}
 		}
 	},
-	"callback": "\\BlueSpice\\ProDistributionConnector\\Extension::onRegistration",
 	"MessagesDirs": {
 		"BlueSpiceProDistributionConnector": "i18n"
 	},
 	"AutoloadNamespaces": {
-		"BlueSpice\\ProDistributionConnector\\": "src/",
+		"BlueSpice\\ProDistributionConnector\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
 		"BlueSpice\\ProDistributionConnector\\Tests\\": "tests/phpunit"
 	},
 	"ResourceModules": {
@@ -161,34 +221,42 @@
 		"remoteExtPath": "BlueSpiceProDistributionConnector/resources"
 	},
 	"HookHandlers": {
-		"pdfexport-convert-math-svg-to-png": {
-			"factory": "BlueSpice\\ProDistributionConnector\\HookHandler\\PdfExportConvertMathSVGtoPNG::factory",
-			"services": [ "MediaHandlerFactory" ]
-		},
 		"applyUserQuota": {
 			"class": "\\BlueSpice\\ProDistributionConnector\\HookHandler\\ApplyUserQuota",
 			"services": [ "BlueSpiceUserCounter" ]
 		},
 		"addResources": {
 			"class": "\\BlueSpice\\ProDistributionConnector\\HookHandler\\AddResources"
+		},
+		"namespaceManagerCommentStreams": {
+			"class": "\\BlueSpice\\ProDistributionConnector\\HookHandler\\NamespaceManagerCommentStreams",
+			"services": [ "MainConfig", "NamespaceInfo" ]
+		},
+		"runDatabaseUpdates": {
+			"class": "\\BlueSpice\\ProDistributionConnector\\HookHandler\\RunDatabaseUpdates"
 		}
 	},
 	"AuthManagerAutoConfig": {
 		"preauth": {
 			"UserLimitedAuthenticationProvider": {
 				"class": "BlueSpice\\ProDistributionConnector\\UserLimitedAuthenticationProvider",
+				"services": [ "BlueSpiceUserCounter" ],
 				"sort": 25
 			}
 		}
 	},
 	"Hooks": {
-		"BSUEModulePDFFindFiles": "pdfexport-convert-math-svg-to-png",
 		"BSUsageTrackerRegisterCollectors": "BlueSpice\\ProDistributionConnector\\Hook\\BSUsageTrackerRegisterCollectors\\NumberOfNamespaces::callback",
 		"BeforePageDisplay": [
 			"applyUserQuota",
 			"addResources"
 		],
-		"UnblockUser":  "applyUserQuota"
+		"UnblockUser": "applyUserQuota",
+		"NamespaceManager::getMetaFields": "namespaceManagerCommentStreams",
+		"BSApiNamespaceStoreMakeData": "namespaceManagerCommentStreams",
+		"NamespaceManager::editNamespace": "namespaceManagerCommentStreams",
+		"NamespaceManagerBeforePersistSettings": "namespaceManagerCommentStreams",
+		"LoadExtensionSchemaUpdates": "runDatabaseUpdates"
 	},
 	"config_prefix": "bsg",
 	"config": {

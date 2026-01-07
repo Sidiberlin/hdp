@@ -4,6 +4,7 @@
  * @ingroup PF
  */
 
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
 
 /**
@@ -99,7 +100,7 @@ class PFComboBoxInput extends PFFormInput {
 			}
 		} else {
 			[ $autocompleteSettings, $remoteDataType, $delimiter ] = PFValuesUtils::setAutocompleteValues( $other_args, false );
-			$autocompleteSettings = str_replace( "'", "\'", $autocompleteSettings );
+			$autocompleteSettings = str_replace( "'", "\'", $autocompleteSettings ?? '' );
 		}
 
 		$input_id = 'input_' . $wgPageFormsFieldNum;

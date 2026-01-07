@@ -1,0 +1,224 @@
+{
+	"name": "ContentTransfer",
+	"author": [
+		"[https://www.hallowelt.com Hallo Welt! GmbH]",
+		"Dejan Savuljesku <savuljesku@hallowelt.com>"
+	],
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:ContentTransfer",
+	"license-name": "GPL-3.0-only",
+	"version": "3.0.5",
+	"descriptionmsg": "contenttransfer-extension-description",
+	"requires": {
+		"MediaWiki": ">= 1.43.0"
+	},
+	"MessagesDirs": {
+		"ContentTransfer": "i18n"
+	},
+	"ExtensionMessagesFiles": {
+		"ContentTransferAlias": "languages/ContentTransfer.alias.php"
+	},
+	"attributes": {
+		"BlueSpiceFoundation": {
+			"PermissionRegistry": {
+				"content-transfer": {
+					"type": "global",
+					"roles": [ "admin" ]
+				}
+			}
+		},
+		"ContentTransfer": {
+			"PageFilters": {
+				"term": {
+					"class": "\\ContentTransfer\\PageFilter\\PageName",
+					"services": [ "DBLoadBalancer" ]
+				},
+				"category": {
+					"class": "\\ContentTransfer\\PageFilter\\Category",
+					"services": [ "DBLoadBalancer" ]
+				},
+				"namespace": {
+					"class": "\\ContentTransfer\\PageFilter\\NamespaceFilter",
+					"services": [
+						"DBLoadBalancer",
+						"ContentLanguage",
+						"MainConfig",
+						"NamespaceInfo"
+					]
+				}
+			}
+		}
+	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
+	"ResourceFileModulePaths": {
+		"localBasePath": "resources",
+		"remoteExtPath": "ContentTransfer/resources"
+	},
+	"SpecialPages": {
+		"ContentTransfer": "\\ContentTransfer\\Special\\Push"
+	},
+	"AutoloadNamespaces": {
+		"ContentTransfer\\": "src/"
+	},
+	"APIModules": {
+		"content-transfer-get-pages": {
+			"class": "\\ContentTransfer\\Api\\GetPages",
+			"services": [
+				"ContentTransferPageProvider",
+				"ContentTransferPageFilterFactory",
+				"HookContainer"
+			]
+		},
+		"content-transfer-push-info": {
+			"class": "\\ContentTransfer\\Api\\PushInfo",
+			"services": [
+				"ContentTransferPageContentProviderFactory"
+			]
+		},
+		"content-transfer-do-push-single": {
+			"class": "\\ContentTransfer\\Api\\PushSingle",
+			"services": [
+				"ContentTransferAuthenticatedRequestHandlerFactory",
+				"ContentTransferTargetManager",
+				"TitleFactory",
+				"ContentTransfer.PagePusherFactory"
+			]
+		},
+		"content-transfer-purge-pages": {
+			"class": "\\ContentTransfer\\Api\\PurgePages",
+			"services": [
+				"ContentTransferAuthenticatedRequestHandlerFactory",
+				"ContentTransferTargetManager",
+				"TitleFactory",
+				"ContentTransfer.PagePusherFactory"
+			]
+		}
+	},
+	"AvailableRights": [
+		"content-transfer"
+	],
+	"GroupPermissions": {
+		"*": {
+			"content-transfer": false
+		},
+		"user": {
+			"content-transfer": false
+		},
+		"sysop": {
+			"content-transfer": true
+		}
+	},
+	"ResourceModules": {
+		"ext.contenttransfer": {
+			"scripts": [
+				"PageSelectorWidget.js",
+				"ext.contenttransfer.js",
+				"dialog/Push.js",
+				"layout/PushLayout.js"
+			],
+			"styles": [
+				"ext.contenttransfer.less"
+			],
+			"dependencies": [
+				"mediawiki.api",
+				"mediawiki.widgets.DateInputWidget",
+				"oojs-ui.styles.icons-media",
+				"oojs",
+				"oojs-ui"
+			],
+			"messages": [
+				"contenttransfer-pages-header",
+				"contenttransfer-push-pages-button-label",
+				"contenttransfer-pages-header-count",
+				"contenttransfer-dialog-push-title",
+				"contenttransfer-dialog-push-action-do-push-label",
+				"contenttransfer-dialog-push-action-cancel-label",
+				"contenttransfer-dialog-push-preview-layout-label",
+				"contenttransfer-dialog-push-progress-layout-label",
+				"contenttransfer-dialog-push-report-layout-label",
+				"contenttransfer-dialog-push-preview-page-group-label-wikipage",
+				"contenttransfer-dialog-push-preview-page-group-label-file",
+				"contenttransfer-dialog-push-preview-page-group-label-category",
+				"contenttransfer-dialog-push-preview-page-group-label-template",
+				"contenttransfer-progress-current-operation",
+				"contenttransfer-dialog-push-action-done-label",
+				"contenttransfer-report-success-count",
+				"contenttransfer-report-failure-label",
+				"contenttransfer-target-picker-label",
+				"contenttransfer-progress-push-target-label",
+				"contenttransfer-report-interrupted",
+				"contenttransfer-progress-purge-pages",
+				"contenttransfer-only-modified-label",
+				"contenttransfer-only-modified-help",
+				"contenttransfer-no-pages-label",
+				"contenttransfer-dialog-preview-target-info",
+				"contenttransfer-dialog-preview-target-draft",
+				"contenttransfer-too-many-pages-warning",
+				"contenttransfer-text-filter-input-label",
+				"contenttransfer-namespace-filter-input-label",
+				"contenttransfer-category-filter-input-label",
+				"contenttransfer-generic-error",
+				"contenttransfer-include-related",
+				"contenttransfer-modified-since-label",
+				"contenttransfer-modified-since-ph",
+				"contenttransfer-dialog-push-preview-page-group-label-original",
+				"content-transfer-push-related-pages",
+				"contenttransfer-dialog-push-subgroup-label-linked",
+				"contenttransfer-dialog-push-subgroup-label-transcluded",
+				"contenttransfer-user-picker-label",
+				"contenttransfer-progress-user-action-skip",
+				"contenttransfer-progress-user-action-stop",
+				"contenttransfer-progress-user-action-force",
+				"contenttransfer-filter-panel-label",
+				"contenttransfer-filter-toggle-btn-hide",
+				"contenttransfer-filter-toggle-btn-show",
+				"contenttransfer-selection-toggle-btn-label",
+				"contenttransfer-transfer-wiki-heading-label"
+			]
+		},
+		"ext.contenttransfer.filters": {
+			"scripts": [
+				"pageFilter/ComboBoxFilter.js",
+				"pageFilter/PageName.js",
+				"pageFilter/Category.js",
+				"pageFilter/Namespace.js"
+			],
+			"dependencies": [
+				"oojs",
+				"oojs-ui"
+			]
+		}
+	},
+	"HookHandlers": {
+		"runDatabaseUpdates": {
+			"class": "\\ContentTransfer\\Hook\\RunDatabaseUpdates"
+		}
+	},
+	"Hooks": {
+		"LoadExtensionSchemaUpdates": "runDatabaseUpdates"
+	},
+	"config": {
+		"ContentTransferTargets": {
+			"value": []
+		},
+		"ContentTransferIgnoreInsecureSSL": {
+			"value": false
+		},
+		"ContentTransferPageLimit": {
+			"value": 200
+		},
+		"ContentTransferOnlyContentNamespaces": {
+			"value": false
+		},
+		"ContentTransferAllowTalkNamespaces": {
+			"value": false
+		},
+		"ContentTransferEnableBetaFeatures": {
+			"description": "Enable experimental features. These features might be buggy",
+			"value": false
+		}
+	},
+	"load_composer_autoloader": true,
+	"manifest_version": 2
+}

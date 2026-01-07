@@ -2,20 +2,20 @@
 
 namespace MediaWiki\Extension\WebAuthn\HTMLForm;
 
-use ConfigException;
-use IContextSource;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\OATHAuth\HTMLForm\OATHAuthOOUIHTMLForm;
 use MediaWiki\Extension\OATHAuth\IModule;
+use MediaWiki\Extension\OATHAuth\OATHAuthServices;
 use MediaWiki\Extension\OATHAuth\OATHUser;
 use MediaWiki\Extension\OATHAuth\OATHUserRepository;
 use MediaWiki\Extension\WebAuthn\Authenticator;
+use MediaWiki\Extension\WebAuthn\HTMLField\NoJsInfoField;
 use MediaWiki\Extension\WebAuthn\HTMLField\RegisteredKeyLayout;
-use MediaWiki\Extension\WebAuthn\Key\WebAuthnKey;
 use MediaWiki\Extension\WebAuthn\Module\WebAuthn;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\SpecialPage\SpecialPage;
 use MWException;
 use OOUI\ButtonWidget;
-use SpecialPage;
 
 class WebAuthnManageForm extends OATHAuthOOUIHTMLForm {
 
@@ -64,7 +64,7 @@ class WebAuthnManageForm extends OATHAuthOOUIHTMLForm {
 	 */
 	public function getButtons() {
 		$moduleConfig = $this->module->getConfig()->get( 'maxKeysPerUser' );
-		if ( count( $this->oathUser->getKeys() ) >= (int)$moduleConfig ) {
+		if ( count( WebAuthn::getWebAuthnKeys( $this->oathUser ) ) >= (int)$moduleConfig ) {
 			return '';
 		}
 		return new ButtonWidget( [
@@ -96,11 +96,7 @@ class WebAuthnManageForm extends OATHAuthOOUIHTMLForm {
 	 * @throws MWException
 	 */
 	public function onSubmit( array $formData ) {
-		if ( !isset( $formData['credential'] ) ) {
-			return [ 'oathauth-failedtovalidateoath' ];
-		}
-
-		if ( !$this->authenticate( $formData['credential'] ) ) {
+		if ( !isset( $formData['credential'] ) || !$this->authenticate( $formData['credential'] ) ) {
 			return [ 'oathauth-failedtovalidateoath' ];
 		}
 		if ( isset( $formData['remove_key'] ) ) {
@@ -115,12 +111,9 @@ class WebAuthnManageForm extends OATHAuthOOUIHTMLForm {
 	 * @throws MWException
 	 */
 	protected function getDescriptors() {
-		/** @var OATHUserRepository $userRepo */
-		$userRepo = MediaWikiServices::getInstance()->getService( 'OATHUserRepository' );
-		/** @var OATHUser $oathUser */
+		$userRepo = OATHAuthServices::getInstance()->getUserRepository();
 		$oathUser = $userRepo->findByUser( $this->getUser() );
-		/** @var WebAuthnKey[] $keys */
-		$keys = $oathUser->getKeys();
+		$keys = WebAuthn::getWebAuthnKeys( $oathUser );
 
 		$registeredKeys = [];
 		foreach ( $keys as $idx => $key ) {
@@ -136,7 +129,12 @@ class WebAuthnManageForm extends OATHAuthOOUIHTMLForm {
 			];
 		}
 
-		return $registeredKeys + [
+		return [
+			'nojs' => [
+				'class' => NoJsInfoField::class,
+				'section' => 'webauthn-registered-keys-section-name',
+			],
+		] + $registeredKeys + [
 			'edit_key' => [
 				'type' => 'hidden',
 				'name' => 'edit_key'
@@ -159,37 +157,30 @@ class WebAuthnManageForm extends OATHAuthOOUIHTMLForm {
 	 * @throws ConfigException
 	 */
 	private function removeKey( $key ) {
-		$removed = $this->module->removeKeyByFriendlyName( $key, $this->oathUser );
-		if ( !$removed ) {
+		$key = $this->module->getKeyByFriendlyName( $key, $this->oathUser );
+		if ( !$key ) {
 			return [ 'webauthn-error-cannot-remove-key' ];
 		}
 
-		if ( $this->oathUser->getFirstKey() === null ) {
-			// User removed all keys
-			$this->oathRepo->remove( $this->oathUser, $this->getRequest()->getIP(), true );
-		} else {
-			$this->oathRepo->persist( $this->oathUser, $this->getRequest()->getIP() );
-		}
+		$this->oathRepo->removeKey( $this->oathUser, $key, $this->getRequest()->getIP(), true );
 		return true;
 	}
 
 	/**
-	 * @param array $credential
+	 * @param string $credential
 	 * @return bool
 	 * @throws ConfigException
 	 */
 	private function authenticate( $credential ) {
-		$verificationData = [
-			'credential' => $credential
-		];
 		$authenticator = Authenticator::factory( $this->getUser(), $this->getRequest() );
 		if ( !$authenticator->isEnabled() ) {
 			return false;
 		}
-		$authenticationResult = $authenticator->continueAuthentication( $verificationData );
-		if ( $authenticationResult->isGood() ) {
-			return true;
-		}
-		return false;
+
+		$authenticationResult = $authenticator->continueAuthentication( [
+			'credential' => $credential
+		] );
+
+		return $authenticationResult->isGood();
 	}
 }

@@ -4,8 +4,8 @@ namespace ChatBot\AdminModule;
 
 use ChatBot\DeepsetApi\FeedbackApi;
 use ChatBot\IAdminModule;
-use Html;
-use Message;
+use MediaWiki\Html\Html;
+use MediaWiki\Message\Message;
 use OOUI\HorizontalLayout;
 use OOUI\IconWidget;
 use OOUI\LabelWidget;

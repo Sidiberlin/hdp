@@ -7,20 +7,5 @@
 		]
 	},
 	"bs-usagetracker-desc": "Bevat statistische gegevens over het gebruik van uitbreidingen",
-	"prefs-usagetracker": "Gebruikstracker",
-	"usagetracker": "Gebruikstracker",
-	"bs-usagetracker-startjobs": "Nu bijwerken",
-	"bs-usagetracker-create-statistics": "Gebruiksstatistieken bijwerken",
-	"bs-usagetracker-col-identifier": "Identificatiecode",
-	"bs-usagetracker-col-desc": "Beschrijving",
-	"bs-usagetracker-col-count": "Aantal",
-	"bs-usagetracker-col-last-updated": "Laatst bijgewerkt",
-	"bs-usagetracker-caution": "Let op: Het bijwerken van gebruiksstatistieken kan nogal wat tijd en middelen vergen. Start de update daarom alleen als u de meest actuele gegevens écht nodig hebt. Het bijwerken gebeurt via uitgestelde taken, dus wellicht moet u meermaals herladen tot de gegevens volledig zijn verzameld.",
-	"bs-usagetracker-base-collector-desc": "Aantal pagina's die $1 gebruiken",
-	"bs-usagetracker-tag-collector-desc": "Aantal pagina's met de tag <$1>",
-	"bs-usagetracker-db-collector-desc": "Aantal $1",
-	"bs-usagetracker-open-tasks": "Website analyse is momenteel bezig. {{PLURAL:$1|Één analyse is|$1 analyses zijn}} nog steeds bezig. <a href=\"$2\">(Vernieuwen)</a>",
-	"apihelp-bs-usagetracker-store-summary": "Bevat statistische gegevens over het gebruik van uitbreidingen",
-	"action-usagetracker-update": "het bijwerkingsproces opnieuw uit te voeren dat alle bijgehouden gegevens verzamelt op de speciale pagina [[Special:UsageTracker]]",
-	"right-usagetracker-update": "Het bijwerkingsproces opnieuw uitvoeren dat alle bijgehouden gegevens verzamelt op de speciale pagina [[Special:UsageTracker]]"
+	"apihelp-bs-usagetracker-store-summary": "Bevat statistische gegevens over het gebruik van uitbreidingen"
 }

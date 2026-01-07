@@ -3,13 +3,14 @@
 namespace BlueSpice\Data\Watchlist;
 
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\FilterFinder;
 use MWStake\MediaWiki\Component\DataStore\IPrimaryDataProvider;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use MWStake\MediaWiki\Component\DataStore\Record as DataStoreRecord;
-use User;
 
 class PrimaryDataProvider implements IPrimaryDataProvider {
 
@@ -70,7 +71,8 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 		$res = $this->db->select(
 			'watchlist',
 			'*',
-			$this->makePreFilterConds( $params->getFilter() )
+			$this->makePreFilterConds( $params->getFilter() ),
+			__METHOD__
 		);
 
 		$distinctUserIds = [];
@@ -126,7 +128,7 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 	 * @param \stdClass $row
 	 */
 	protected function appendRowToData( $row ) {
-		$title = \Title::makeTitle( $row->wl_namespace, $row->wl_title );
+		$title = Title::makeTitle( $row->wl_namespace, $row->wl_title );
 		if ( !$title->isValid() ) {
 			return;
 		}
@@ -153,7 +155,8 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 		$res = $this->db->select(
 			'user',
 			[ 'user_id', 'user_name', 'user_real_name' ],
-			[ 'user_id' => $this->userIds ]
+			[ 'user_id' => $this->userIds ],
+			__METHOD__
 		);
 
 		$userDisplayNames = [];
@@ -179,12 +182,13 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 			'page',
 			[ 'page_id', 'page_title', 'page_namespace' ],
 			// TODO maybe also add a collection of "page_title"s to narrow result
-			[ 'page_namespace' => $this->namespaceIds ]
+			[ 'page_namespace' => $this->namespaceIds ],
+			__METHOD__
 		);
 
 		$pageIds = [];
 		foreach ( $res as $row ) {
-			$title = \Title::makeTitle( $row->page_namespace, $row->page_title );
+			$title = Title::makeTitle( $row->page_namespace, $row->page_title );
 			$pageIds[$title->getPrefixedText()] = $row->page_id;
 		}
 

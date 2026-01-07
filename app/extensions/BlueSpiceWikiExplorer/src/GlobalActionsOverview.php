@@ -2,9 +2,9 @@
 
 namespace BlueSpice\WikiExplorer;
 
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
-use SpecialPage;
 
 class GlobalActionsOverview extends RestrictedTextLink {
 
@@ -13,7 +13,6 @@ class GlobalActionsOverview extends RestrictedTextLink {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getId(): string {
@@ -21,7 +20,6 @@ class GlobalActionsOverview extends RestrictedTextLink {
 	}
 
 	/**
-	 *
 	 * @return array
 	 */
 	public function getPermissions(): array {
@@ -29,7 +27,6 @@ class GlobalActionsOverview extends RestrictedTextLink {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getHref(): string {
@@ -38,7 +35,6 @@ class GlobalActionsOverview extends RestrictedTextLink {
 	}
 
 	/**
-	 *
 	 * @return Message
 	 */
 	public function getText(): Message {
@@ -46,7 +42,6 @@ class GlobalActionsOverview extends RestrictedTextLink {
 	}
 
 	/**
-	 *
 	 * @return Message
 	 */
 	public function getTitle(): Message {
@@ -54,7 +49,6 @@ class GlobalActionsOverview extends RestrictedTextLink {
 	}
 
 	/**
-	 *
 	 * @return Message
 	 */
 	public function getAriaLabel(): Message {

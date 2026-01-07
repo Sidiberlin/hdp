@@ -4,7 +4,7 @@ namespace BlueSpice\ArticleInfo\Hook\BsAdapterAjaxPingResult;
 
 use BlueSpice\Hook\BsAdapterAjaxPingResult;
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 
 class HandleArticleInfo extends BsAdapterAjaxPingResult {
 

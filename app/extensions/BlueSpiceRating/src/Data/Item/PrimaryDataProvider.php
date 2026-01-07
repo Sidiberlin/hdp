@@ -2,10 +2,12 @@
 
 namespace BlueSpice\Rating\Data\Item;
 
-use Config;
 use ContextSource;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\Record as DataStoreRecord;
 use Wikimedia\Rdbms\IDatabase;
 
@@ -46,7 +48,7 @@ abstract class PrimaryDataProvider extends \BlueSpice\Rating\Data\PrimaryDataPro
 	 * @param \stdClass $row
 	 */
 	protected function appendRowToData( $row ) {
-		$title = \Title::newFromID( $row->page_id );
+		$title = Title::newFromID( $row->page_id );
 		if ( !$title ) {
 			return;
 		}
@@ -74,7 +76,7 @@ abstract class PrimaryDataProvider extends \BlueSpice\Rating\Data\PrimaryDataPro
 			Record::REFTYPE => $row->{Record::REFTYPE},
 			Record::REF => $row->{Record::REF},
 			Record::SUBTYPE => $row->{Record::SUBTYPE},
-			Record::ITEM => \FormatJson::encode( $rating ),
+			Record::ITEM => FormatJson::encode( $rating ),
 			Record::CONTENT => $rating->getTag(),
 		];
 	}

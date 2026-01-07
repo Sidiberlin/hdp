@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceCustomMenu",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceCustomMenu",
 	"license-name": "GPL-3.0-only",
 	"author": [
@@ -9,9 +9,9 @@
 	"descriptionmsg": "bs-custommenu-desc",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"attributes": {
@@ -27,6 +27,9 @@
 				"custommenuitem": "\\BlueSpice\\CustomMenu\\Renderer\\Menu\\Item::factory",
 				"custommenuheader": "\\BlueSpice\\CustomMenu\\Renderer\\Menu\\Header::factory",
 				"custommenuheaderitem": "\\BlueSpice\\CustomMenu\\Renderer\\Menu\\Header\\Item::factory"
+			},
+			"ConfigDefinitionRegistry": {
+				"ShowCustomMenuHeader": "\\BlueSpice\\CustomMenu\\ConfigDefinition\\ShowCustomMenuHeader::getInstance"
 			}
 		},
 		"BlueSpiceCustomMenu": {
@@ -58,9 +61,9 @@
 	},
 	"ResourceModules": {
 		"ext.bluespice.custom-menu.styles": {
-			"styles": [
-				"bluespice.custom-menu.styles.css"
-			]
+			"styles": {
+				"bluespice.custom-menu.styles.css": { "media": "all and ( min-width: 768px )" }
+			}
 		},
 		"ext.bluespice.custom-menu.menueditor": {
 			"scripts": [
@@ -89,11 +92,17 @@
 		},
 		"CustomMenuHeaderNumberOfSubEntries": {
 			"value": 10
+		},
+		"ShowCustomMenuHeader": {
+			"value": true
 		}
 	},
 	"HookHandlers": {
 		"common-user-interface": {
-			"class": "\\BlueSpice\\CustomMenu\\HookHandler\\CommonUserInterface"
+			"class": "\\BlueSpice\\CustomMenu\\HookHandler\\CommonUserInterface",
+			"services": [
+				"BSCustomMenuFactory", "ConfigFactory"
+			]
 		}
 	},
 	"Hooks": {

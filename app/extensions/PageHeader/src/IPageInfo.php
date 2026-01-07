@@ -2,8 +2,8 @@
 
 namespace PageHeader;
 
-use IContextSource;
-use Message;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Message\Message;
 
 interface IPageInfo {
 	public const TYPE_TEXT = 'text';

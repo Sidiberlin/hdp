@@ -5,6 +5,6 @@
 			"McDutchie"
 		]
 	},
-	"filterspecialpages-hint-label": "Pagina zoeken",
-	"filterspecialpages-desc": "Voegt een veld in om vermeldingen in [{{canonicalurl:Special:SpecialPages}} Speciaal:SpecialePaginas] te filteren."
+	"filterspecialpages-desc": "Voegt een veld in om vermeldingen in [{{canonicalurl:Special:SpecialPages}} Speciaal:SpecialePaginas] te filteren.",
+	"filterspecialpages-hint-label": "Pagina zoeken"
 }

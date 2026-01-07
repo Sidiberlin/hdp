@@ -10,7 +10,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Originalus",
 	"bs-visualeditorconnector-upload-type-simple": "Paprastas",
 	"bs-visualeditorconnector-upload-type-one-click": "Vienas paspaudimas",
-	"bs-visualeditorconnector-upload-type": "Įkėlimo tipas",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Atšaukti redagavimą",
 	"bs-visualeditorconnector-cancel-edit": "Atšaukti redagavimą. Neišsaugoti pakeitimai bus atmesti",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Ar tikrai norite atšaukti redagavimą? Jūsų neišsaugoti pakeitimai bus atmesti.",
@@ -78,5 +77,6 @@
 	"bs-visualeditorconnector-text-style-tool-align-center-label": "Lygiuoti centre",
 	"bs-visualeditorconnector-align-center-annotation-desc": "Sucentruoja pasirinktą tekstą",
 	"bs-visualeditorconnector-text-style-indent-label": "Įtrauka",
-	"bs-visualeditorconnector-indent-annotation-desc": "Įtraukia pasirinktą tekstą"
+	"bs-visualeditorconnector-indent-annotation-desc": "Įtraukia pasirinktą tekstą",
+	"bs-visualeditorconnector-upload-type": "Įkėlimo tipas"
 }

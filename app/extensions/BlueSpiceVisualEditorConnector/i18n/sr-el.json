@@ -5,7 +5,6 @@
 	"bs-visualeditorconnector-desc": "Povezuje Parsoid sa Vizelnim uređivačem",
 	"bs-visualeditorconnector-enable-visualeditor": "Omogući vizuelni uređivač za dodatke BlueSpice-a",
 	"bs-visualeditorconnector-upload-type-one-click": "Jedan klik",
-	"bs-visualeditorconnector-upload-type": "Vrsta otpremanja",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Otkaži uređivanje",
 	"bs-visualeditorconnector-cancel-edit": "Otkaži uređivanje. Nesačuvane izmene će biti odbačene",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Želite li zaista da otkažete uređivanje? Nesačuvane izmene će biti odbačene.",
@@ -32,5 +31,7 @@
 	"bs-vec-table-border-top": "Vrh",
 	"bs-vec-table-border-right": "Desno",
 	"bs-vec-table-border-bottom": "Dno",
-	"bs-vec-table-border-all": "Sve"
+	"bs-vec-table-border-all": "Sve",
+	"bs-visualeditorconnector-upload-type": "Vrsta otpremanja",
+	"bs-visualeditor-save-label": "Sačuvaj"
 }

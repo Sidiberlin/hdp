@@ -2,14 +2,14 @@
 
 namespace MediaWiki\Extension\ContentProvisioning\Rest;
 
-use Language;
 use MediaWiki\Extension\ContentProvisioning\Data\Store;
 use MediaWiki\HookContainer\HookContainer;
+use MediaWiki\Language\Language;
 use MediaWiki\Languages\LanguageFallback;
 use MediaWiki\Page\WikiPageFactory;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Rest\QueryStore;
 use MWStake\MediaWiki\Component\DataStore\IStore;
-use TitleFactory;
 
 class ListHandler extends QueryStore {
 

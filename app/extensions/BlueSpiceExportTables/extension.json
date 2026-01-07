@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceExportTables",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceExportTables",
 	"author": [
@@ -9,10 +9,10 @@
 	],
 	"descriptionmsg": "bs-exporttables-extension-description",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3",
-			"BlueSpiceUEModuleTable2Excel": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0",
+			"BlueSpiceUEModuleTable2Excel": ">= 5.0.0"
 		}
 	},
 	"type": "bluespice",
@@ -46,6 +46,9 @@
 	"AutoloadNamespaces": {
 		"BlueSpice\\ExportTables\\": "src/"
 	},
+	"TestAutoloadNamespaces": {
+		"BlueSpice\\ExportTables\\Tests\\": "tests/phpunit/"
+	},
 	"ResourceModules": {
 		"ext.bluespice.exportTables.contentTables.styles": {
 			"styles": [
@@ -60,6 +63,7 @@
 			],
 			"scripts": [
 				"widget/ExportMenu.js",
+				"widget/GridExportMenu.js",
 				"bluespice.exportTables.oojs.js",
 				"bluespice.exportTables.contentTables.js"
 			],
@@ -71,25 +75,9 @@
 				"bs-exporttables-oojs-btn-aria-label"
 			]
 		},
-		"ext.bluespice.exportTables.CRUDGridPanel.button": {
-			"dependencies": [
-				"mediawiki.util"
-			],
-			"scripts": [
-				"bluespice.exportTables.CRUDGridPanel.button.js"
-			],
-			"messages": [
-				"bs-exporttables-menu",
-				"bs-exporttables-menu-csv",
-				"bs-exporttables-menu-xls",
-				"bs-exporttables-menu-xlsx",
-				"bs-exporttables-loading-text",
-				"bs-exporttables-loading-title"
-			]
-		},
 		"ext.bluespice.exportTables.visualEditorPlugin": {
 			"scripts": [
-				"visualEditor/ui/plugin/ExportableOption.js"
+				"bs.exptbl/ui/plugin/ExportableOption.js"
 			],
 			"messages": [
 				"bs-exporttables-ve-exportable-option"
@@ -118,7 +106,13 @@
 		}
 	},
 	"Hooks": {
-		"BeforePageDisplay": "\\BlueSpice\\ExportTables\\Hook\\BeforePageDisplay\\AddResources::callback"
+		"BeforePageDisplay": "addResources"
+	},
+	"HookHandlers": {
+		"addResources": {
+			"class": "BlueSpice\\ExportTables\\HookHandlers\\BeforePageDisplay\\AddResources",
+			"services": [ "ConfigFactory" ]
+		}
 	},
 	"manifest_version": 2
 }

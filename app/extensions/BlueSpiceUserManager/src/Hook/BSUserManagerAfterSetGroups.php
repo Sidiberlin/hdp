@@ -30,11 +30,15 @@
 namespace BlueSpice\UserManager\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 
 abstract class BSUserManagerAfterSetGroups extends Hook {
 
 	/**
-	 * @var \User
+	 * @var User
 	 */
 	protected $user;
 
@@ -59,18 +63,18 @@ abstract class BSUserManagerAfterSetGroups extends Hook {
 	protected $excludeGroups;
 
 	/**
-	 * @var \Status
+	 * @var Status
 	 */
 	protected $status;
 
 	/**
 	 *
-	 * @param \User $user
+	 * @param User $user
 	 * @param array $groups
 	 * @param array $addGroups
 	 * @param array $removeGroups
 	 * @param array $excludeGroups
-	 * @param \Status &$status
+	 * @param Status &$status
 	 * @return bool
 	 */
 	public static function callback( $user, $groups, $addGroups, $removeGroups,
@@ -85,14 +89,14 @@ abstract class BSUserManagerAfterSetGroups extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
-	 * @param \User $user
+	 * @param IContextSource $context
+	 * @param Config $config
+	 * @param User $user
 	 * @param array $groups
 	 * @param array $addGroups
 	 * @param array $removeGroups
 	 * @param array $excludeGroups
-	 * @param \Status &$status
+	 * @param Status &$status
 	 */
 	public function __construct( $context, $config, $user, $groups, $addGroups,
 		$removeGroups, $excludeGroups, &$status ) {

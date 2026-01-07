@@ -5,11 +5,11 @@
 	height: auto;
 	margin-left: 0;
 	border-radius: 3px;
-	border: 1px solid #BBB;
-	padding: 1px 0px;
+	border: 1px solid #bbb;
+	padding: 1px 0;
 	border-collapse: separate;
 	border-spacing: 2px;
-	background-color: #FFFFFF;
+	background-color: #fff;
 }
 
 .x-ie11 .ve-init-sa-desktopTarget {
@@ -18,7 +18,7 @@
 }
 
 .ve-init-sa-desktopTarget form {
-	background-color: #FFFFFF;
+	background-color: #fff;
 	padding: 0;
 }
 
@@ -44,18 +44,27 @@
 	padding-top: 5px;
 	height: 42px;
 	width: 42px;
-	text-align:center;
-	background-color: #eaecf0;
+	text-align: center;
 }
 
 article#content .bs-visualeditorconnector-cancel-edit {
 	/* fix height for discovery skin */
 	height: 45px;
 	width: 45px;
+	margin-left: 0;
+	border-right: 1px solid #eaecf0;
 }
 
 .bs-visualeditorconnector-cancel-edit:hover {
-	background-color: #c8ccd1;
+	background-color: #eaecf0;
+}
+
+.bs-visualeditorconnector-cancel-edit.oo-ui-buttonElement-frameless.oo-ui-widget-enabled > .oo-ui-buttonElement-button:hover {
+	background-color: transparent;
+}
+
+.bs-visualeditorconnector-cancel-edit .oo-ui-icon-Element {
+	opacity: 0.87;
 }
 
 .bs-vec-color-widget {
@@ -85,7 +94,7 @@ article#content .bs-visualeditorconnector-cancel-edit {
 	display: inline;
 }
 
-.bs-vec-command-widget.bs-vec-number-widget:not( .bs-vec-unit-selectable ) .oo-ui-numberInputWidget{
+.bs-vec-command-widget.bs-vec-number-widget:not( .bs-vec-unit-selectable ) .oo-ui-numberInputWidget {
 	width: 120px;
 }
 
@@ -122,7 +131,7 @@ article#content .bs-visualeditorconnector-cancel-edit {
 	padding: 10px;
 }
 
-.bs-vec-table-options-dialog-item label{
+.bs-vec-table-options-dialog-item label {
 	display: inline-block;
 }
 
@@ -181,12 +190,12 @@ at unknown times */
 	top: 0 !important;
 }
 
-.oo-ui-processDialog-content .ve-ui-mwTargetWidget .ve-ui-surface:after {
+.oo-ui-processDialog-content .ve-ui-mwTargetWidget .ve-ui-surface::after {
 	min-height: 40px;
 }
 
-.oo-ui-popupWidget-anchored:not(.bs-vec-styleInspector) .oo-ui-popupWidget-popup {
-	margin-left: 0px;
+.oo-ui-popupWidget-anchored:not( .bs-vec-styleInspector ) .oo-ui-popupWidget-popup {
+	margin-left: 0;
 }
 
 /* hide warning text from mediawiki core in save dialog */

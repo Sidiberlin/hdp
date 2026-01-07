@@ -2,9 +2,9 @@
 
 namespace MediaWiki\Extension\ContentStabilization\Integration;
 
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
-use SpecialPage;
 
 class OverviewGlobalAction extends RestrictedTextLink {
 

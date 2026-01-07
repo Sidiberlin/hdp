@@ -1,34 +1,36 @@
 {
 	"@metadata": {
 		"authors": [
+			"Aca",
 			"BadDog",
 			"Kizule",
+			"Milicevic01",
 			"Zoranzoki21"
 		]
 	},
 	"bluespicecategorymanager": "Менаџер категорија",
 	"bluespicecategorymanager-desc": "Визуелна алатка за управљање категоријама",
 	"action-categorymanager-viewspecialpage": "види управитеља категорија",
-	"bs-categorymanager-draganddrop-text": "Превуците и испустите да бисте реорганизовали",
+	"bs-categorymanager-text": "Категорије",
 	"bs-categorymanager-label": "Менаџер категорија",
 	"bs-categorymanager-dlg-new-title": "Прављење категорија",
-	"bs-categorymanager-dlg-new-prompt": "Молимо унесите име:",
 	"bs-categorymanager-removecategoryconfirm-text": "Да ли сте сигурни да желите да обришете ову категорију?",
 	"bs-categorymanager-removecategoryconfirm-title": "Уклони категорију",
 	"bs-categorymanager-addcategory-dialog-error-title": "Креирање категорије није успело",
-	"bs-categorymanager-action-show-category": "Прикажи категорију",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-title": "Категорија већ постоји",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Покушајте са другим називом категорије",
 	"right-categorymanager-viewspecialpage": "приступ посебној страници [[Special:BlueSpiceCategoryManager]]",
 	"bs-categorymanager-collection-type-categorizedpages": "Додела категорија",
 	"bs-categorymanager-collection-var-namespacename": "Именски простор",
 	"bs-categorymanager-collection-var-categorizedpages": "Странице са категоријама",
 	"bs-categorymanager-collection-var-uncategorizedpages": "Странице без категорија",
-	"bs-categorymanager-text": "Категорије",
-	"bs-categorymanager-addcategory-dialog-error-duplicate-title": "Категорија већ постоји",
-	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Покушајте са другим називом категорије",
 	"bs-categorymanager-rename-category": "Преименуј категорију",
-	"bs-categorymanager-rename-category-new-name": "Нови назив категорије:",
-	"bs-categorymanager-move-new-name": "Постављање новог назива категорије. Нови назив:",
-	"bs-categorymanager-replace-in-pages": "Преименовање на страници:",
+	"bs-categorymanager-rename-category-new-name": "Нови назив категорије",
 	"bs-categorymanager-statistics-report-category-pages": "Странице у категоријама",
-	"bs-categorymanager-statistics-report-category-pages-axis-value": "Број страница"
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "Број страница",
+	"bs-categorymanager-removecategory-confirm": "Категорија $1 је обрисана",
+	"bs-categorymanager-category-item-delete-label": "Обриши",
+	"bs-categorymanager-dialog-action-add-label": "Додај",
+	"bs-categorymanager-dialog-action-rename-label": "Преименуј",
+	"bs-categorymanager-category-item-rename-label": "Преименуј"
 }

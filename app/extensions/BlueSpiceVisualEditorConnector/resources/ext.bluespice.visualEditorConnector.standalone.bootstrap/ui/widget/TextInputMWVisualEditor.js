@@ -1,6 +1,4 @@
-bs = bs || {};
-bs.ui = bs.ui || {};
-bs.ui.widget = bs.ui.widget || {};
+bs.util.registerNamespace( 'bs.ui.widget' );
 
 bs.ui.widget.TextInputMWVisualEditor = function ( config ) {
 	bs.ui.widget.TextInputMWVisualEditor.parent.call( this, config );
@@ -15,8 +13,8 @@ bs.ui.widget.TextInputMWVisualEditor = function ( config ) {
 
 OO.inheritClass( bs.ui.widget.TextInputMWVisualEditor, OO.ui.MultilineTextInputWidget );
 
-bs.ui.widget.TextInputMWVisualEditor.prototype.onFocus = function() {
-	if( this.loading || this.visualEditor ) {
+bs.ui.widget.TextInputMWVisualEditor.prototype.onFocus = function () {
+	if ( this.loading || this.visualEditor ) {
 		return;
 	}
 
@@ -26,29 +24,26 @@ bs.ui.widget.TextInputMWVisualEditor.prototype.onFocus = function() {
 };
 
 /**
- *
- * @returns {string}
+ * @return {string}
  */
-bs.ui.widget.TextInputMWVisualEditor.prototype.getValue = function() {
+bs.ui.widget.TextInputMWVisualEditor.prototype.getValue = function () {
 	if ( !this.visualEditor ) {
 		return this.currentValue;
 	}
-	var promise = this.visualEditor.getWikiText();
-	var me = this;
-	promise.done( function ( value ) {
+	const promise = this.visualEditor.getWikiText();
+	promise.done( ( value ) => {
 		// keep track of actual value anyway to be on the safe side
-		me.currentValue = value;
+		this.currentValue = value;
 	} );
 	return promise;
 };
 
 /**
- *
  * @param {string} value
- * @returns {undefined}
+ * @return {undefined}
  */
-bs.ui.widget.TextInputMWVisualEditor.prototype.setValue = function( value ) {
-	if( !this.visualEditor ) {
+bs.ui.widget.TextInputMWVisualEditor.prototype.setValue = function ( value ) {
+	if ( !this.visualEditor ) {
 		this.currentValue = value;
 		return;
 	}
@@ -61,39 +56,38 @@ bs.ui.widget.TextInputMWVisualEditor.prototype.setValue = function( value ) {
 	);
 };
 
-bs.ui.widget.TextInputMWVisualEditor.prototype.makeVisualEditor = function( config ) {
-	var me = this;
-	config = config || me.config;
+bs.ui.widget.TextInputMWVisualEditor.prototype.makeVisualEditor = function ( config ) {
+	config = config || this.config;
 
 	this.loading = true;
-		var modules = [
+	const modules = [
 		'ext.bluespice.visualEditorConnector.standalone'
 	].concat( this.bsVecConfig.StandalonePluginModules || [] );
 
-	mw.loader.using( modules ).done( function() {
-		me.emit( 'editorStartup', me );
+	mw.loader.using( modules ).done( () => {
+		this.emit( 'editorStartup', this );
 		bs.vec.createEditor( config.id, {
 			renderTo: config.selector,
-			value: me.currentValue,
+			value: this.currentValue,
 			format: config.format
-		} ).done( function( target ){
-			me.visualEditor = target;
-			me.visualEditor.getSurface().getModel().on( 'history', me.onHistoryChange, [], me );
-		} ).then( function() {
-			me.emit( 'editorStartupComplete', me );
-			me.loading = false;
+		} ).done( ( target ) => {
+			this.visualEditor = target;
+			this.visualEditor.getSurface().getModel().on( 'history', this.onHistoryChange, [], this );
+		} ).then( () => {
+			this.emit( 'editorStartupComplete', this );
+			this.loading = false;
 		} );
 	} );
 };
 
-bs.ui.widget.TextInputMWVisualEditor.prototype.onHistoryChange = function() {
+bs.ui.widget.TextInputMWVisualEditor.prototype.onHistoryChange = function () {
 	// we do not need to track the actual value, just that there was a change
 	this.emit( 'change', this.currentValue );
 };
 
-bs.ui.widget.TextInputMWVisualEditor.prototype.getValidity = function() {
+bs.ui.widget.TextInputMWVisualEditor.prototype.getValidity = function () {
 	// visual editor is always valid
-	var $dfd = $.Deferred();
+	const $dfd = $.Deferred();
 	$dfd.resolve();
 	return $dfd.promise( this );
 };

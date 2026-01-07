@@ -2,9 +2,9 @@
 
 namespace BlueSpice\Bookshelf;
 
-use Html;
-use Title;
-use TitleFactory;
+use MediaWiki\Html\Html;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 
 class ChapterPager {
 	/** @var Title */
@@ -177,46 +177,46 @@ class ChapterPager {
 		}
 
 		$btnTitle = null;
-	   if ( isset( $pageData['chapter_namespace'] ) && isset( $pageData['chapter_title'] )
+		if ( isset( $pageData['chapter_namespace'] ) && isset( $pageData['chapter_title'] )
 		) {
-		   $btnTitle = $this->titleFactory->makeTitle(
+			$btnTitle = $this->titleFactory->makeTitle(
 				$pageData['chapter_namespace'],
 				$pageData['chapter_title']
-		   );
+			);
 
-		   if ( $label === '' ) {
-				$label = $btnTitle->getText();
-		   }
-	   }
+			if ( $label === '' ) {
+				 $label = $btnTitle->getText();
+			}
+		}
 
-	   $btnData = [];
-	   if ( $btnTitle ) {
-		   $btnData = [
+		$btnData = [];
+		if ( $btnTitle ) {
+			$btnData = [
 			   'class' => "$type-chapter",
 			   'href' => $btnTitle->getFullURL(),
 			   'title' => $pageData['chapter_name']
-		   ];
-	   } else {
-		   $btnData = [
+			];
+		} else {
+			$btnData = [
 			   'class' => "disabled $type-chapter",
 			   'disabled' => 'true'
-		   ];
-	   }
+			];
+		}
 
-	   $html = Html::openElement( 'a', $btnData );
-	   /**
-		* Message keys:
-		* bs-bookshelfui-chapterpager-next
-		* bs-bookshelfui-chapterpager-previous
-		*/
-	   $html .= Html::element(
+		$html = Html::openElement( 'a', $btnData );
+		/**
+		 * Message keys:
+		 * bs-bookshelfui-chapterpager-next
+		 * bs-bookshelfui-chapterpager-previous
+		 */
+		$html .= Html::element(
 			   'span',
 			   [],
-			   wfMessage( "bs-bookshelfui-chapterpager-$type" )->plain()
+			   wfMessage( "bs-bookshelfui-chapterpager-$type" )->text()
 		   );
-	   $html .= Html::closeElement( 'a' );
+		$html .= Html::closeElement( 'a' );
 
-	   return $html;
+		return $html;
 	}
 
 	/**

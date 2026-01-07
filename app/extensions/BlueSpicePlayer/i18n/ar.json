@@ -8,7 +8,6 @@
 	"bs-player-extension-description": "تضمين مشغل وسائط على الصفحة.",
 	"bs-player-pref-autostart": "ابدأ الفيديو تلقائيًا",
 	"bs-player-file-does-not-exist": "الملف غير موجود.",
-	"bs-player-tag-showtime-desc": "تسمح لك هذه العلامة بتضمين مقطع فيديو.",
 	"bs-player-unsupported-type": "نوع الملف هذا غير مدعوم.",
 	"bs-player-config-prefwidth": "العرض الافتراضي لمقاطع الفيديو",
 	"bs-player-config-prefheight": "الارتفاع الافتراضي لمقاطع الفيديو",

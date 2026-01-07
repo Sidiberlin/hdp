@@ -2,11 +2,11 @@
 
 namespace BS\ExtendedSearch\Data\SearchHistory;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
 use MWStake\MediaWiki\Component\DataStore\IStore;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
-use RequestContext;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class Store implements IStore {
@@ -27,7 +27,7 @@ class Store implements IStore {
 	 *
 	 * @param IContextSource|null $context
 	 */
-	public function __construct( IContextSource $context = null ) {
+	public function __construct( ?IContextSource $context = null ) {
 		if ( !$context ) {
 			$context = RequestContext::getMain();
 		}

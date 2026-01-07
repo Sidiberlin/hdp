@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\Events;
 
-use Message;
+use MediaWiki\Message\Message;
 
 class EventLink {
 	/** @var string */

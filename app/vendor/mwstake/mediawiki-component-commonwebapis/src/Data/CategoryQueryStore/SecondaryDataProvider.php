@@ -2,10 +2,10 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs\Data\CategoryQueryStore;
 
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore\SecondaryDataProvider as TitleSecondaryDataProvider;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore\TitleRecord;
 use MWStake\MediaWiki\Component\DataStore\Record;
-use Title;
 
 class SecondaryDataProvider extends TitleSecondaryDataProvider {
 

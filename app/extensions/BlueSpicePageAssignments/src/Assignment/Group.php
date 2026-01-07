@@ -2,6 +2,8 @@
 namespace BlueSpice\PageAssignments\Assignment;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 
 class Group extends \BlueSpice\PageAssignments\Assignment {
 
@@ -17,7 +19,7 @@ class Group extends \BlueSpice\PageAssignments\Assignment {
 	 */
 	protected function makeAnchor() {
 		return $this->linkRenderer->makeLink(
-			\Title::makeTitle( NS_PROJECT, $this->getText() ),
+			Title::makeTitle( NS_PROJECT, $this->getText() ),
 			new \HtmlArmor( $this->getText() )
 		);
 	}
@@ -27,8 +29,8 @@ class Group extends \BlueSpice\PageAssignments\Assignment {
 	 * @return string
 	 */
 	public function getText() {
-		return \Message::newFromKey( "group-{$this->getKey()}" )->exists()
-			? \Message::newFromKey( "group-{$this->getKey()}" )->plain()
+		return Message::newFromKey( "group-{$this->getKey()}" )->exists()
+			? Message::newFromKey( "group-{$this->getKey()}" )->text()
 			: $this->getKey();
 	}
 
@@ -49,7 +51,8 @@ class Group extends \BlueSpice\PageAssignments\Assignment {
 			'ug_user',
 			[
 				'ug_group' => $this->getKey()
-			]
+			],
+			__METHOD__
 		);
 		$pm = $services->getPermissionManager();
 		$userFactory = $services->getUserFactory();

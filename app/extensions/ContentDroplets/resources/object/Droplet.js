@@ -1,11 +1,13 @@
 ext.contentdroplets.object.Droplet = function ( cfg ) {
 	this.key = cfg.key;
-	this.name = cfg.name;
-	this.description = cfg.description;
+	this.name = cfg.name || '';
+	this.description = cfg.description || '';
 	this.icon = cfg.icon;
 	this.categories = cfg.categories || [];
 	this.content = cfg.content;
 	this.veCommand = cfg.veCommand;
+
+	this.preload = cfg.preload || false;
 };
 
 OO.initClass( ext.contentdroplets.object.Droplet );

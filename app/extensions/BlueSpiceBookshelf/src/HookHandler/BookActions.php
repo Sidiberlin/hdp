@@ -8,8 +8,8 @@ use BlueSpice\Bookshelf\BookSourceParser;
 use BlueSpice\Bookshelf\ChapterUpdater;
 use BlueSpice\Bookshelf\Content\BookContent;
 use Exception;
-use JsonContent;
 use ManualLogEntry;
+use MediaWiki\Content\JsonContent;
 use MediaWiki\Hook\PageMoveCompleteHook;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\Page\Hook\PageDeleteCompleteHook;
@@ -18,11 +18,11 @@ use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Storage\Hook\MultiContentSaveHook;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\UserFactory;
 use MWStake\MediaWiki\Component\Wikitext\ParserFactory;
 use Psr\Log\LoggerInterface;
-use Title;
-use TitleFactory;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\LoadBalancer;
 
@@ -121,23 +121,20 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 		$db = $this->loadBalancer->getConnection( DB_PRIMARY );
 		$db->delete(
 			'bs_book_chapters',
-			[
-				'chapter_book_id' => $bookID
-			]
+			[ 'chapter_book_id' => $bookID ],
+			__METHOD__
 		);
 
 		$db->delete(
 			'bs_book_meta',
-			[
-				'm_book_id' => $bookID
-			]
+			[ 'm_book_id' => $bookID ],
+			__METHOD__
 		);
 
 		$db->delete(
 			'bs_books',
-			[
-				'book_id' => $bookID
-			]
+			[ 'book_id' => $bookID ],
+			__METHOD__
 		);
 
 		return true;
@@ -181,9 +178,8 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 				'book_namespace' => $newBook->getNamespace(),
 				'book_title' => $newBook->getDBkey(),
 			],
-			[
-				'book_id' => $oldBookInfo->getId()
-			]
+			[ 'book_id' => $oldBookInfo->getId() ],
+			__METHOD__
 		);
 	}
 
@@ -200,7 +196,8 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 				'book_title' => $newBook->getDBkey(),
 				'book_name' => $newBook->getText(),
 				'book_type' => 'public'
-			]
+			],
+			__METHOD__
 		);
 
 		$content = $revisionRecord->getContent( SlotRecord::MAIN );
@@ -260,20 +257,17 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 		if ( isset( $meta['title'] ) && $meta['title'] !== $bookInfo->getName() ) {
 			$db->update(
 				'bs_books',
-				[
-					'book_name' => $meta['title']
-				], [
-					'book_id' => $bookInfo->getId()
-				]
+				[ 'book_name' => $meta['title'] ],
+				[ 'book_id' => $bookInfo->getId() ],
+				__METHOD__
 			);
 		}
 
 		// write all metadata as key => value in bs_book_meta table
 		$db->delete(
 			'bs_book_meta',
-			[
-				'm_book_id' => $bookInfo->getId()
-			]
+			[ 'm_book_id' => $bookInfo->getId() ],
+			__METHOD__
 		);
 
 		foreach ( $meta as $key => $value ) {
@@ -283,7 +277,8 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 					'm_book_id' => $bookInfo->getId(),
 					'm_key' => trim( $key ),
 					'm_value' => trim( $value )
-				]
+				],
+				__METHOD__
 			);
 		}
 	}
@@ -315,7 +310,8 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 				'book_title' => $book->getDBKey(),
 				'book_name' => $book->getText(),
 				'book_type' => 'public',
-			]
+			],
+			__METHOD__
 		);
 
 		if ( !$status ) {

@@ -48,7 +48,7 @@ namespace Lingo;
  */
 class Tree {
 
-	public const TREE_VERSION = 2;
+	public const TREE_VERSION = 3.23;
 
 	/** @var array */
 	private $mTree = [];
@@ -141,7 +141,7 @@ class Tree {
 
 			// Did we find the start of a term?
 			if ( array_key_exists( $currLex, $this->mTree ) ) {
-				list( $lastindex, $definition ) = $this->findNextTermNoSkip( $this->mTree[ $currLex ], $lexemes, $index, $countLexemes );
+				[ $lastindex, $definition ] = $this->findNextTermNoSkip( $this->mTree[ $currLex ], $lexemes, $index, $countLexemes );
 			}
 
 			// this will increase the index even if we found something;

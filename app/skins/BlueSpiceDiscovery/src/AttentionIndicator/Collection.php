@@ -5,9 +5,9 @@ namespace BlueSpice\Discovery\AttentionIndicator;
 use BlueSpice\Discovery\AttentionIndicator;
 use BlueSpice\Discovery\AttentionIndicatorFactory;
 use BlueSpice\Discovery\IAttentionIndicator;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
-use User;
+use MediaWiki\User\User;
 
 abstract class Collection extends AttentionIndicator {
 
@@ -37,7 +37,7 @@ abstract class Collection extends AttentionIndicator {
 	 * @return IAttentionIndicator
 	 */
 	public static function factory( string $key, Config $config, User $user,
-		MediaWikiServices $services, AttentionIndicatorFactory $attentionIndicatorFactory = null ) {
+		MediaWikiServices $services, ?AttentionIndicatorFactory $attentionIndicatorFactory = null ) {
 		if ( !$attentionIndicatorFactory ) {
 			$attentionIndicatorFactory = $services->getService( 'BSAttentionIndicatorFactory' );
 		}

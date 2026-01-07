@@ -5,8 +5,8 @@ namespace BlueSpice\Bookshelf\Tag;
 use BlueSpice\Tag\MarkerType;
 use BlueSpice\Tag\MarkerType\NoWiki;
 use BlueSpice\Tag\Tag;
-use Parser;
-use PPFrame;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class BookshelfMeta extends Tag {
 

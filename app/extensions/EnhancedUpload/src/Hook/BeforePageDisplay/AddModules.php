@@ -2,7 +2,8 @@
 
 namespace MediaWiki\Extension\EnhancedUpload\Hook\BeforePageDisplay;
 
-use MediaWiki\Hook\BeforePageDisplayHook;
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
+use MediaWiki\Output\OutputPage;
 
 class AddModules implements BeforePageDisplayHook {
 
@@ -13,7 +14,6 @@ class AddModules implements BeforePageDisplayHook {
 	 * @return void
 	 */
 	public function onBeforePageDisplay( $out, $skin ): void {
-		$out->addModules( 'ext.enhancedUpload.ve.bootstrap' );
 		$out->addModules( 'ext.enhancedUpload.uploadDialog.bootstrap' );
 	}
 }

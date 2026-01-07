@@ -1,5 +1,7 @@
 <?php
 
+use MediaWiki\Html\TemplateParser;
+
 /**
  * Renders the BlueSpice About special page.
  *
@@ -43,20 +45,20 @@ class SpecialBlueSpiceAbout extends \BlueSpice\SpecialPage {
 		global $wgExtensionAssetsPath;
 
 		$oOutputPage = $this->getOutput();
-		$oOutputPage->addHTML( 
+		$oOutputPage->addHTML(
 			$templateParser->processTemplate(
 				'AboutBlueSpice' . $sLangKey,
 				[
-					'srcMainPic' => $wgExtensionAssetsPath . 
+					'srcMainPic' => $wgExtensionAssetsPath .
 						'/BlueSpiceAbout/resources/images/' .
 						'BlueSpice_MediaWiki_Screen_' . $sLangKey . '.png',
-					'srcFigurePic' => $wgExtensionAssetsPath . 
+					'srcFigurePic' => $wgExtensionAssetsPath .
 						'/BlueSpiceAbout/resources/images/' .
 						'BlueSpice_Frank_Florian.png',
-					'srcWebinarPic' => $wgExtensionAssetsPath . 
+					'srcWebinarPic' => $wgExtensionAssetsPath .
 						'/BlueSpiceAbout/resources/images/' .
 						'Webinar_button.png',
-					'srcHelpdeskPic' => $wgExtensionAssetsPath . 
+					'srcHelpdeskPic' => $wgExtensionAssetsPath .
 						'/BlueSpiceAbout/resources/images/' .
 						'Helpdesk_button_' . $sLangKey . '.png',
 				]

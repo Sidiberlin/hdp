@@ -1,4 +1,4 @@
-( function( mw, $, bs ) {
+( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.aggregatedStatistics.filter' );
 
 	bs.aggregatedStatistics.filter.DateFilter = function ( cfg ) {
@@ -18,14 +18,14 @@
 			change: 'onFilter'
 		} );
 
-		var datePickerLayout = new OO.ui.HorizontalLayout( {
+		const datePickerLayout = new OO.ui.HorizontalLayout( {
 			items: [
 				new OO.ui.FieldLayout( this.datePickerStart, {
-					label: mw.message( "bs-statistics-aggregated-report-filter-date-start" ).text(),
+					label: mw.message( 'bs-statistics-aggregated-report-filter-date-start' ).text(),
 					align: 'top'
 				} ),
 				new OO.ui.FieldLayout( this.datePickerEnd, {
-					label: mw.message( "bs-statistics-aggregated-report-filter-date-end" ).text(),
+					label: mw.message( 'bs-statistics-aggregated-report-filter-date-end' ).text(),
 					align: 'top'
 				} )
 			]
@@ -34,7 +34,7 @@
 	};
 
 	bs.aggregatedStatistics.filter.DateFilter.prototype.onFilter = function () {
-		this.emit( 'change', this.getValue());
+		this.emit( 'change', this.getValue() );
 	};
 
 	bs.aggregatedStatistics.filter.DateFilter.prototype.getValue = function () {
@@ -61,4 +61,4 @@
 	bs.aggregatedStatistics.filter.DateFilter.prototype.getName = function () {
 		return 'date';
 	};
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

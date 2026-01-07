@@ -3,22 +3,25 @@
 namespace MediaWiki\Extension\LDAPUserInfo;
 
 use Exception;
+use MediaWiki\Config\Config as MediaWikiConfig;
+use MediaWiki\Config\ConfigException;
 use MediaWiki\Extension\LDAPProvider\Client;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 use MWException;
-use Status;
 
 class UserInfoSyncProcess {
 
 	/**
 	 *
-	 * @var \User
+	 * @var User
 	 */
 	private $user = null;
 
 	/**
 	 *
-	 * @var \Config
+	 * @var MediaWikiConfig
 	 */
 	private $domainConfig = null;
 
@@ -42,8 +45,8 @@ class UserInfoSyncProcess {
 
 	/**
 	 * UserInfoSyncProcess constructor.
-	 * @param \User $user
-	 * @param \Config $domainConfig
+	 * @param User $user
+	 * @param MediaWikiConfig $domainConfig
 	 * @param \MediaWiki\Extension\LDAPProvider\Client $client
 	 * @param array $callbackRegistry
 	 */
@@ -79,7 +82,7 @@ class UserInfoSyncProcess {
 
 	/**
 	 * @return bool
-	 * @throws \ConfigException
+	 * @throws ConfigException
 	 * @throws MWException
 	 */
 	private function doSync() {

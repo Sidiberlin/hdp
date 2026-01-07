@@ -27,7 +27,12 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Content\Content;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 
 abstract class PageContentInsertComplete extends Hook {
 
@@ -39,13 +44,13 @@ abstract class PageContentInsertComplete extends Hook {
 
 	/**
 	 *
-	 * @var \User
+	 * @var User
 	 */
 	protected $user = null;
 
 	/**
 	 *
-	 * @var \Content
+	 * @var Content
 	 */
 	protected $content = null;
 
@@ -87,7 +92,7 @@ abstract class PageContentInsertComplete extends Hook {
 
 	/**
 	 *
-	 * @var \Status
+	 * @var Status
 	 */
 	protected $status = null;
 
@@ -100,15 +105,15 @@ abstract class PageContentInsertComplete extends Hook {
 	/**
 	 *
 	 * @param \WikiPage &$wikipage
-	 * @param \User &$user
-	 * @param \Content $content
+	 * @param User &$user
+	 * @param Content $content
 	 * @param string $summary
 	 * @param bool $isMinor
 	 * @param bool $isWatch
 	 * @param int $section
 	 * @param int &$flags
 	 * @param RevisionRecord $revision
-	 * @param \Status &$status
+	 * @param Status &$status
 	 * @param int $baseRevId
 	 * @return bool
 	 */
@@ -135,18 +140,18 @@ abstract class PageContentInsertComplete extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param \WikiPage &$wikipage
-	 * @param \User &$user
-	 * @param \Content $content
+	 * @param User &$user
+	 * @param Content $content
 	 * @param string $summary
 	 * @param bool $isMinor
 	 * @param bool $isWatch
 	 * @param int $section
 	 * @param int &$flags
 	 * @param RevisionRecord $revision
-	 * @param \Status &$status
+	 * @param Status &$status
 	 * @param int $baseRevId
 	 */
 	public function __construct( $context, $config, &$wikipage, &$user, $content, $summary, $isMinor,

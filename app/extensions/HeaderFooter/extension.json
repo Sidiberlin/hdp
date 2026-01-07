@@ -1,36 +1,55 @@
 {
 	"name": "HeaderFooter",
-	"version": "4.0.0",
-	"author": "Jean-Lou Dupont, James Montalvo, Douglas Mason",
+	"version": "4.0.6",
+	"author": [
+		"Jean-Lou Dupont",
+		"James Montalvo",
+		"Douglas Mason",
+		"[https://www.hallowelt.com Hallo Welt! GmbH]"
+	],
 	"url": "https://www.mediawiki.org/wiki/Extension:HeaderFooter",
 	"descriptionmsg": "headerfooter-desc",
 	"type": "other",
 	"requires": {
-		"MediaWiki": ">= 1.35.0"
+		"MediaWiki": ">= 1.43.0"
+	},
+	"AutoloadNamespaces": {
+		"MediaWiki\\Extension\\HeaderFooter\\": "src/"
 	},
 	"AutoloadClasses": {
-		"HeaderFooter": "HeaderFooter.class.php",
-		"ApiGetHeaderFooter": "ApiGetHeaderFooter.php"
+		"ApiGetHeaderFooter": "includes/api/ApiGetHeaderFooter.php"
 	},
 	"APIModules": {
 		"getheaderfooter": "ApiGetHeaderFooter"
 	},
+	"HookHandlers": {
+		"addHeaderFooter": {
+			"class": "MediaWiki\\Extension\\HeaderFooter\\HookHandler\\AddHeaderFooter"
+		},
+		"addMagicWords": {
+			"class": "MediaWiki\\Extension\\HeaderFooter\\HookHandler\\AddMagicWords"
+		},
+		"addConfigVars": {
+			"class": "MediaWiki\\Extension\\HeaderFooter\\HookHandler\\AddConfigVars"
+		}
+	},
 	"Hooks": {
-		"OutputPageParserOutput": "HeaderFooter::hOutputPageParserOutput",
-		"ResourceLoaderGetConfigVars": "HeaderFooter::onResourceLoaderGetConfigVars",
-		"GetDoubleUnderscoreIDs": "HeaderFooter::onGetDoubleUnderscoreIDs"
+		"ContentAlterParserOutput": "addHeaderFooter",
+		"GetDoubleUnderscoreIDs": "addMagicWords",
+		"ResourceLoaderGetConfigVars": "addConfigVars"
 	},
 	"MessagesDirs": {
 		"HeaderFooter": [
-			"i18n"
+			"i18n",
+			"i18n/api"
 		]
 	},
 	"ExtensionMessagesFiles": {
 		"HeaderFooterMagic": "languages/HeaderFooter.i18n.magic.php"
 	},
 	"ResourceFileModulePaths": {
-		"localBasePath": "modules",
-		"remoteExtPath": "HeaderFooter/modules"
+		"localBasePath": "resources",
+		"remoteExtPath": "HeaderFooter/resources"
 	},
 	"ResourceModules": {
 		"ext.headerfooter.dynamicload": {
@@ -44,7 +63,7 @@
 		"EnableAsyncHeader": {
 			"value": false
 		},
-		"EnableAsyncFooter":  {
+		"EnableAsyncFooter": {
 			"value": false
 		}
 	},

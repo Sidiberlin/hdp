@@ -4,9 +4,9 @@ namespace BlueSpice\Discovery\Structure;
 
 use BlueSpice\Discovery\ISkinLayout;
 use BlueSpice\Discovery\ISkinLayoutAware;
-use ExtensionRegistry;
-use IContextSource;
-use Message;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Message\Message;
+use MediaWiki\Registration\ExtensionRegistry;
 
 class SkipTo extends SkinStructureBase implements ISkinLayoutAware {
 
@@ -47,7 +47,7 @@ class SkipTo extends SkinStructureBase implements ISkinLayoutAware {
 	 */
 	public function getParams(): array {
 		return [
-			'aria-label' => Message::newFromKey( 'bs-discovery-skip-links-navigation-aria-label' )->text(),
+			'aria-label' => Message::newFromKey( 'bs-discovery-skip-links-nav-aria-label' )->text(),
 			'body' => $this->buildList()
 		];
 	}

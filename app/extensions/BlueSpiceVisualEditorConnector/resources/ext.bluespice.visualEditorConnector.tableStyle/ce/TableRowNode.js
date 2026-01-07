@@ -4,7 +4,7 @@ bs.vec.ce.TableRowNode = function VeCeTableRowNode( options ) {
 	// Parent constructor
 	bs.vec.ce.TableRowNode.super.apply( this, arguments );
 
-	var applicator = new bs.vec.ui.TableStyleApplicator( {
+	const applicator = new bs.vec.ui.TableStyleApplicator( {
 		domEl: this.$element
 	} );
 	applicator.apply( options.element );

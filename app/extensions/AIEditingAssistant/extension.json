@@ -1,14 +1,14 @@
 {
 	"name": "AIEditingAssistant",
-	"version": "1.0.2",
+	"version": "2.0.6",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[http://www.hallowelt.com Hallo Welt! GmbH]"
 	],
-	"url": "http://www.hallowelt.com",
+	"url": "https://www.mediawiki.org/wiki/Extension:AIEditingAssistant",
 	"descriptionmsg": "aieditingassistant-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
 			"VisualEditor": "*",
 			"VisualEditorPlus": "*"
@@ -18,8 +18,7 @@
 		"AIEditingAssistant": "i18n"
 	},
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\AIEditingAssistant\\": "src/",
-		"MediaWiki\\Extension\\AIEditingAssistant\\Tests\\": "tests/phpunit"
+		"MediaWiki\\Extension\\AIEditingAssistant\\": "src/"
 	},
 	"attributes": {
 		"VisualEditor": {

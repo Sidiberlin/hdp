@@ -5,8 +5,8 @@ namespace MediaWiki\Extension\Workflows\Rest;
 use MediaWiki\Extension\Workflows\Trigger\PageRelatedTrigger;
 use MediaWiki\Extension\Workflows\TriggerRepo;
 use MediaWiki\Rest\HttpException;
-use Title;
-use TitleFactory;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class RetrieveTriggersHandler extends TriggerHandler {

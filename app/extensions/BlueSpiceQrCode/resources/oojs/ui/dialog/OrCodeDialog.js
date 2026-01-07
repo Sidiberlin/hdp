@@ -8,18 +8,18 @@ bs.ui.dialog.QrCodeDialog = function ( config ) {
 	this.name = config.name || 'QrCodeDialog';
 	this.id = config.id || 'bs-qr-code-dlg';
 	this.data = config.data || '';
-	var altMsg = config.altMsg;
-	var page = config.page || '';
+	const altMsg = config.altMsg;
+	const page = config.page || '';
 	if ( altMsg !== '' ) {
 		// eslint-disable-next-line mediawiki/msg-doc
-		var alt = mw.message( altMsg, page ).text();
+		const alt = mw.message( altMsg, page ).text();
 		this.alt = ' alt="' + alt + '"';
 	}
 
 	this.$element.attr( 'id', this.id );
 
 	bs.ui.dialog.SimpleMessageDialog.prototype.makeActionAccept = function () {
-		var params = {
+		const params = {
 			action: 'ok',
 			label: mw.message( 'ooui-dialog-message-accept' ).plain()
 		};

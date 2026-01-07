@@ -1,0 +1,10 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"datetimetools-desc": "Pruža alatke za datume u Vizuelnom uređivaču",
+	"datetimetools-ve-inspector-title": "Uredi datum",
+	"datetimetools-ve-inspector-date-picker-label": "Izaberite datum",
+	"datetimetools-droplet-date-name": "Datum",
+	"datetimetools-droplet-date-description": "Unošenje datuma"
+}

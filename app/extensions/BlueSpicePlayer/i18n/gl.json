@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"bs-player-extension-description": "Incrusta un reprodutor multimedia nunha páxina.",
+	"bs-player-pref-autostart": "Iniciar o vídeo automaticamente",
+	"bs-player-file-does-not-exist": "O ficheiro non existe.",
+	"bs-player-unsupported-type": "Non se admite este tipo de ficheiro.",
+	"bs-player-config-prefwidth": "Ancho predeterminado dos vídeos",
+	"bs-player-config-prefheight": "Altura predeterminada dos vídeos",
+	"prefs-videoplayer": "Reproductor de vídeo"
+}

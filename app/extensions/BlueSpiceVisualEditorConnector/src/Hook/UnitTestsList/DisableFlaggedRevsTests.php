@@ -12,8 +12,8 @@
 namespace BlueSpice\VisualEditorConnector\Hook\UnitTestsList;
 
 use BlueSpice\Hook;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 class DisableFlaggedRevsTests extends Hook {
 

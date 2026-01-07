@@ -2,7 +2,7 @@
 
 namespace BlueSpice\VisualEditorConnector\ClientConfig;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
 
 abstract class ConfigVariable extends ConfigBase {

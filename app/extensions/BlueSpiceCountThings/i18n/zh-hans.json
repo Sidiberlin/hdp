@@ -34,14 +34,12 @@
 	"bs-countthings-tag-countfiles-desc": "显示wiki的条目数量。",
 	"bs-countthings-tag-countcharacters-desc": "在显示条目的内容上生成元数据。输出内容是可集成到条目中的信息框。通过参数“mode”，可显示不同的信息类型。",
 	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>：什么<code>chars</code>（字符）、<code>words</code>（文字）或<code>pages</code>（页面）应该统计。",
-	"bs-countthings-tag-countcharacters-example-1": "单词数",
-	"bs-countthings-tag-countcharacters-example-2": "字符数",
-	"bs-countthings-droplet-characters-name": "字符数",
-	"bs-countthings-droplet-user-name": "用户人数",
 	"bs-countthings-droplet-articles-name": "页面数",
 	"bs-countthings-droplet-articles-description": "显示页数",
+	"bs-countthings-droplet-characters-name": "字符数",
 	"bs-countthings-droplet-characters-description": "显示一个维基页面中的字符数或单词数",
 	"bs-countthings-droplet-files-name": "文件数",
 	"bs-countthings-droplet-files-description": "显示所有上传文件的数量",
+	"bs-countthings-droplet-user-name": "用户人数",
 	"bs-countthings-droplet-user-description": "显示所有用户的数量"
 }

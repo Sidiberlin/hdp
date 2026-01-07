@@ -30,10 +30,9 @@ ve.ce.MWTabberNode.static.tagName = 'div';
 
 ve.ce.MWTabberNode.static.primaryCommandName = 'mwTabber';
 
-/* Methods */
-// eslint-disable-next-line no-var
-var lastHeader;
+ve.ce.MWTabberNode.static.lastHeader = null;
 
+/* Methods */
 /**
  * @inheritdoc
  */
@@ -42,13 +41,11 @@ ve.ce.MWTabberNode.prototype.onSetup = function () {
 	ve.ce.MWTabberNode.super.prototype.onSetup.call( this );
 
 	const tabber = this.$element[ 0 ];
+	const needsInit = tabber.classList.contains( 'tabber--init' );
+	const isNewHeader = tabber.firstElementChild !== ve.ce.MWTabberNode.static.lastHeader;
 
 	// Do not render header if it is already rendered
-	if (
-		tabber.firstElementChild &&
-        tabber.firstElementChild !== lastHeader &&
-        !tabber.classList.contains( 'tabber--live' ) &&
-        tabber.classList.contains( 'tabber' )
+	if ( needsInit && isNewHeader
 	) {
 		this.renderHeader( tabber );
 	}
@@ -64,50 +61,21 @@ ve.ce.MWTabberNode.prototype.onSetup = function () {
  */
 ve.ce.MWTabberNode.prototype.renderHeader = function ( tabber ) {
 	const nestedTabbers = tabber.querySelectorAll( '.tabber__panel:first-child .tabber' );
-
 	const renderSingleHeader = function ( element ) {
-		const
-			tabPanels = element.querySelectorAll( ':scope > .tabber__section > .tabber__panel' ),
-			header = element.querySelector( ':scope > .tabber__header' ),
-			tabList = document.createElement( 'nav' ),
-			indicator = document.createElement( 'div' ),
-			fragment = new DocumentFragment();
-
-		Array.prototype.forEach.call( tabPanels, function ( tabPanel, index ) {
-			const tab = document.createElement( 'a' );
-
-			tab.innerText = tabPanel.getAttribute( 'data-mw-tabber-title' );
-			tab.classList.add( 'tabber__tab' );
-
-			// Make first tab active
-			if ( index === 0 ) {
-				tab.setAttribute( 'aria-selected', true );
-			}
-
-			fragment.append( tab );
-		} );
-
-		tabList.append( fragment );
-
-		tabList.classList.add( 'tabber__tabs' );
-		indicator.classList.add( 'tabber__indicator' );
-
-		header.append( tabList, indicator );
-
-		indicator.style.width = tabList.firstElementChild.offsetWidth + 'px';
-
-		element.classList.add( 'tabber--live' );
+		const firstTab = element.querySelector( ':scope > .tabber__header > .tabber__tabs > .tabber__tab' );
+		if ( firstTab ) {
+			firstTab.setAttribute( 'aria-selected', 'true' );
+		}
 	};
 
 	if ( nestedTabbers.length > 0 ) {
-		Array.prototype.forEach.call( nestedTabbers, function ( nestedTabber ) {
+		Array.prototype.forEach.call( nestedTabbers, ( nestedTabber ) => {
 			renderSingleHeader( nestedTabber );
 		} );
 	}
 
 	renderSingleHeader( tabber );
-
-	lastHeader = tabber.firstElementChild;
+	ve.ce.MWTabberNode.static.lastHeader = tabber.firstElementChild;
 };
 
 /* Registration */

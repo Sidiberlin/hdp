@@ -11,9 +11,9 @@
 	"bs-expiry-article-label": "ورقہ",
 	"bs-expiry-comment-label": "رائے",
 	"bs-expiry-menu-entry-create": "مُکسی",
-	"bs-expiry-nav-link-title-expiry": "مُکسی",
 	"bs-expiry-edit-grid-header-username": "ورتݨ آلا",
 	"bs-expiry-edit-grid-header-date": "تریخ",
 	"bs-expiry-edit-grid-header-comment": "رائے",
-	"bs-expiry-pageinfoelement-expired-label": "مُک ڳیا"
+	"bs-expiry-pageinfoelement-expired-label": "مُک ڳیا",
+	"bs-expiry-header-action-delete": "مٹاؤ"
 }

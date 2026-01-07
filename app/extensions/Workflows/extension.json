@@ -1,17 +1,17 @@
 {
 	"name": "Workflows",
-	"version": "2.1.3",
+	"version": "3.1.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
-		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+		"[https://www.hallowelt.com Hallo Welt! GmbH]"
 	],
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:Workflows",
 	"descriptionmsg": "workflows-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"Forms": ">= 1.2.0",
-			"OOJSPlus": ">= 2.0.0"
+			"Forms": ">= 2.0.0",
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"attributes": {
@@ -63,7 +63,7 @@
 						"class": "\\MediaWiki\\Extension\\Workflows\\Activity\\CustomForm\\CustomFormActivity"
 					},
 					"edit_request": {
-						"class":"\\MediaWiki\\Extension\\Workflows\\Activity\\EditRequest\\EditRequestActivity"
+						"class": "\\MediaWiki\\Extension\\Workflows\\Activity\\EditRequest\\EditRequestActivity"
 					},
 					"edit_page": {
 						"class": "\\MediaWiki\\Extension\\Workflows\\Activity\\EditPageActivity",
@@ -355,7 +355,9 @@
 				"workflows-ui-overview-grid-filter-state-active",
 				"workflows-error-generic",
 				"workflows-ui-overview-details-section-assignee",
-				"workflows-ui-overview-details-has-notice-label"
+				"workflows-ui-overview-details-has-notice-label",
+				"workflows-ui-overview-details-start-time-raw-column",
+				"workflows-ui-overview-details-last-time-raw-column"
 			],
 			"dependencies": [
 				"ext.oOJSPlus.data",
@@ -575,9 +577,10 @@
 				"oojs-ui"
 			]
 		},
-		"ext.workflows.trigger.editor.panel": {
+		"ext.workflows.trigger.panel": {
 			"scripts": [
 				"ui/widget/TriggerEntity.js",
+				"ui/panel/TriggerOverview.js",
 				"ui/panel/TriggerEditor.js"
 			],
 			"styles": [
@@ -587,13 +590,18 @@
 				"workflows-ui-trigger-item-inactive"
 			],
 			"dependencies": [
+				"oojs-ui",
 				"ext.workflows.trigger.editor.dialog",
 				"oojs-ui.styles.icons-editing-core"
 			]
 		},
 		"ext.workflows.triggers": {
 			"scripts": [
-				"triggerEditor.js"
+				"triggers.js"
+			],
+			"dependencies": [
+				"ext.workflows.trigger.panel",
+				"ext.oOJSPlus.managerPanel"
 			]
 		},
 		"ext.workflows.editor.bpmn-js.viewer": {
@@ -629,7 +637,14 @@
 				"workflows-ui-editor-inspector-process-title",
 				"workflows-editor-editor-dialog-save-title",
 				"workflows-editor-editor-dialog-save-action-save",
-				"workflows-editor-editor-dialog-save-action-cancel"
+				"workflows-editor-editor-dialog-save-action-cancel",
+				"workflows-ui-editor-toolbar-lasso-tool",
+				"workflows-ui-editor-toolbar-hand-tool",
+				"workflows-ui-editor-toolbar-space-tool",
+				"workflows-ui-editor-toolbar-global-connect-tool",
+				"workflows-ui-editor-toolbar-create-start-event",
+				"workflows-ui-editor-toolbar-create-end-event",
+				"workflows-ui-editor-toolbar-create-exclusive-gateway"
 			]
 		},
 		"ext.workflows.editor.customElements": {
@@ -792,10 +807,11 @@
 		"UnifiedTaskOverviewGetTaskDescriptors": "addUTOUserActivities",
 		"MWStakeRunJobsTriggerRegisterHandlers": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\MWStakeRunJobsTriggerRegisterHandlers\\AddBackgroundProcess::callback",
 		"BlueSpiceDiscoveryTemplateDataProviderAfterInit": "discovery-skin",
-		"PageDeleteComplete": "abortWorkflows",
+		"PageDelete": "abortWorkflows",
 		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface",
 		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\IntegrateCodeEditor::onCodeEditorGetPageLanguage",
-		"PageSaveComplete": "triggerWorkflows"
+		"PageSaveComplete": "triggerWorkflows",
+		"MovePageIsValidMove": "preventChangesToDefinitions"
 	},
 	"HookHandlers": {
 		"runDatabaseUpdates": {
@@ -806,7 +822,7 @@
 		},
 		"setContentModels": {
 			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\SetContentModels",
-			"services":  [ "WorkflowTriggerRepo" ]
+			"services": [ "WorkflowTriggerRepo" ]
 		},
 		"addActions": {
 			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\AddActions",
@@ -832,6 +848,10 @@
 		"triggerWorkflows": {
 			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\TriggerWorkflows",
 			"services": [ "WorkflowTriggerRunner", "WorkflowLogger" ]
+		},
+		"preventChangesToDefinitions": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\PreventChangesToDefinitions",
+			"services": [ "WorkflowsStateStore" ]
 		}
 	},
 	"ContentHandlers": {
@@ -980,6 +1000,9 @@
 	"SpecialPages": {
 		"WorkflowsOverview": {
 			"class": "\\MediaWiki\\Extension\\Workflows\\MediaWiki\\Special\\WorkflowOverview"
+		},
+		"WorkflowTriggers": {
+			"class": "\\MediaWiki\\Extension\\Workflows\\MediaWiki\\Special\\WorkflowTriggers"
 		}
 	},
 	"ExtensionMessagesFiles": {

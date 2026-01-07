@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.registry' );
 
-bs.vec.TableStyleRegistry = function() {
+bs.vec.TableStyleRegistry = function () {
 	OO.Registry.call( this );
 };
 

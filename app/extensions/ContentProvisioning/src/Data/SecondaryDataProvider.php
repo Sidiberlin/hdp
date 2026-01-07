@@ -2,9 +2,9 @@
 
 namespace MediaWiki\Extension\ContentProvisioning\Data;
 
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\ISecondaryDataProvider;
-use RequestContext;
-use Title;
 
 class SecondaryDataProvider implements ISecondaryDataProvider {
 

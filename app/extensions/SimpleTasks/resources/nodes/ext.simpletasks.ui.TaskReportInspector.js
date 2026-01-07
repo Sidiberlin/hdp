@@ -109,7 +109,7 @@ ext.simpletasks.ui.TaskReportInspector.prototype.setLayouts = function () {
 ext.simpletasks.ui.TaskReportInspector.prototype.getSetupProcess = function ( data ) {
 	return ext.simpletasks.ui.TaskReportInspector.super.prototype.getSetupProcess.call( this, data )
 		.next( function () {
-			var attributes = this.selectedNode.getAttribute( 'mw' ).attrs;
+			const attributes = this.selectedNode.getAttribute( 'mw' ).attrs;
 			if ( attributes.user ) {
 				this.setSelectedUserTags( attributes.user );
 			} else {
@@ -117,10 +117,10 @@ ext.simpletasks.ui.TaskReportInspector.prototype.getSetupProcess = function ( da
 			}
 
 			if ( attributes.namespaces ) {
-				var namespaceData = attributes.namespaces.split( '|' );
+				const namespaceData = attributes.namespaces.split( '|' );
 				this.namespacesMultiSelect.clearItems();
-				for ( var namespace in namespaceData ) {
-					var namespaceItem = this.namespacesMultiSelect.menu.findItemFromData(
+				for ( const namespace in namespaceData ) {
+					const namespaceItem = this.namespacesMultiSelect.menu.findItemFromData(
 						namespaceData[ namespace ]
 					);
 					this.namespacesMultiSelect.addTag(
@@ -132,17 +132,17 @@ ext.simpletasks.ui.TaskReportInspector.prototype.getSetupProcess = function ( da
 			}
 
 			if ( attributes.date ) {
-				var date = attributes.date;
+				const date = attributes.date;
 				this.dateInput.setValue( date );
 			} else {
 				this.dateInput.setValue( '' );
 			}
 
 			if ( attributes.status ) {
-				var stateData = attributes.status.split( '|' );
+				const stateData = attributes.status.split( '|' );
 				this.stateInput.clearItems();
-				for ( var state in stateData ) {
-					var stateItem = this.stateInput.menu.findItemFromData( stateData[ state ] );
+				for ( const state in stateData ) {
+					const stateItem = this.stateInput.menu.findItemFromData( stateData[ state ] );
 					this.stateInput.addTag( stateItem.getData(), stateItem.getLabel() );
 				}
 			} else {
@@ -200,11 +200,11 @@ ext.simpletasks.ui.TaskReportInspector.prototype.onTabPanelSet = function () {
 };
 
 ext.simpletasks.ui.TaskReportInspector.prototype.setSelectedUserTags = function ( userNames ) {
-	var user = userNames.split( '|' );
-	var userTags = [];
+	const user = userNames.split( '|' );
+	const userTags = [];
 	this.userMultiSelect.clearItems();
 
-	for ( var userName in user ) {
+	for ( const userName in user ) {
 		userTags.push( this.userMultiSelect.createTagItemWidget(
 			user[ userName ], user[ userName ]
 		) );

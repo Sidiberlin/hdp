@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"numberheadings-desc": "Numerar le titulos in le spatios de nomines de contento",
+	"numberheadings-conf-exlude-namespaces": "Excluder spatios de nomines del numeration de titulos",
+	"numberheadings-conf-enable-numbering": "Monstrar le numeration de titulos de section",
+	"numberheadings-conf-enable-numbering-help": "Adde le numeros del tabula de contento al titulos de section del pagina"
+}

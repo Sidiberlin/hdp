@@ -28,7 +28,7 @@ class ListApi extends Connector {
 	 *
 	 * @param array $titles
 	 *
-	 * @return array|null
+	 * @return string
 	 */
 	private function getFilter( array $titles ): string {
 		$wrappedTitles = array_map( fn( $title ) => "'" . $title . "'", $titles );

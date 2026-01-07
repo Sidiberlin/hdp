@@ -2,8 +2,9 @@
 
 namespace BlueSpice\Bookshelf;
 
-use Title;
-use TitleFactory;
+use HtmlArmor;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 
 class TreeDataProvider {
 
@@ -139,7 +140,8 @@ class TreeDataProvider {
 			'namespace' => $item['chapter_namespace'],
 			'title' => $item['chapter_title'],
 			'name' => $item['chapter_name'],
-			'text' => $item['chapter_number'] . ' ' . $item['chapter_name'],
+			'text' => $item['chapter_name'],
+			'preHtml' => new HtmlArmor( '<span class="bs-chapter-number">' . $item['chapter_number'] . '</span> ' ),
 			'path' => trim( $path, '/' ),
 			'items' => []
 		];
@@ -189,6 +191,7 @@ class TreeDataProvider {
 	private function getClasses( Title $title, array $classes = [] ): array {
 		if ( $this->isActiveTitle( $title ) ) {
 			$classes[] = 'acitve';
+			$classes[] = 'active';
 		}
 
 		return $classes;

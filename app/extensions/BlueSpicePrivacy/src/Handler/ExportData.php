@@ -4,7 +4,12 @@ namespace BlueSpice\Privacy\Handler;
 
 use BlueSpice\Privacy\IPrivacyHandler;
 use BlueSpice\Privacy\Module\Transparency;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 use Wikimedia\Rdbms\IDatabase;
 
 class ExportData implements IPrivacyHandler {
@@ -14,7 +19,7 @@ class ExportData implements IPrivacyHandler {
 	protected $data = [];
 
 	/**
-	 * @var \User
+	 * @var User
 	 */
 	protected $user;
 
@@ -29,7 +34,7 @@ class ExportData implements IPrivacyHandler {
 	protected $db;
 
 	/**
-	 * @var \IContextSource
+	 * @var IContextSource
 	 */
 	protected $context;
 
@@ -39,36 +44,36 @@ class ExportData implements IPrivacyHandler {
 	 */
 	public function __construct( IDatabase $db ) {
 		$this->db = $db;
-		$this->context = \RequestContext::getMain();
+		$this->context = RequestContext::getMain();
 	}
 
 	/**
 	 * @param string $oldUsername
 	 * @param string $newUsername
-	 * @return \Status
+	 * @return Status
 	 */
 	public function anonymize( $oldUsername, $newUsername ) {
-		return \Status::newGood();
+		return Status::newGood();
 	}
 
 	/**
 	 *
-	 * @param \User $userToDelete
-	 * @param \User $deletedUser
-	 * @return \Status
+	 * @param User $userToDelete
+	 * @param User $deletedUser
+	 * @return Status
 	 */
-	public function delete( \User $userToDelete, \User $deletedUser ) {
-		return \Status::newGood();
+	public function delete( User $userToDelete, User $deletedUser ) {
+		return Status::newGood();
 	}
 
 	/**
 	 *
 	 * @param array $types
 	 * @param string $format
-	 * @param \User $user
-	 * @return \Status
+	 * @param User $user
+	 * @return Status
 	 */
-	public function exportData( array $types, $format, \User $user ) {
+	public function exportData( array $types, $format, User $user ) {
 		$this->user = $user;
 		$this->format = $format;
 
@@ -85,7 +90,7 @@ class ExportData implements IPrivacyHandler {
 			$this->getContentData();
 		}
 
-		return \Status::newGood( $this->data );
+		return Status::newGood( $this->data );
 	}
 
 	/**
@@ -97,9 +102,9 @@ class ExportData implements IPrivacyHandler {
 		$data[] = wfMessage(
 			'bs-privacy-transparency-private-username',
 			$this->user->getName()
-		)->plain();
+		)->text();
 		$realname = $this->user->getRealName();
-		$data[] = wfMessage( 'bs-privacy-transparency-private-realname', $realname )->plain();
+		$data[] = wfMessage( 'bs-privacy-transparency-private-realname', $realname )->text();
 		$registration = $this->user->getRegistration();
 		if ( $registration ) {
 			$registrationTS = $this->context->getLanguage()->userTimeAndDate(
@@ -109,16 +114,16 @@ class ExportData implements IPrivacyHandler {
 			$data[] = wfMessage(
 				'bs-privacy-transparency-private-registration',
 				$registrationTS
-			)->plain();
+			)->text();
 		}
 		$block = $this->user->getBlock();
 		if ( $block === null ) {
-			$data[] = wfMessage( 'bs-privacy-transparency-private-not-blocked' )->plain();
+			$data[] = wfMessage( 'bs-privacy-transparency-private-not-blocked' )->text();
 		} else {
 			$data[] = wfMessage(
 				'bs-privacy-transparency-private-blocked',
 				$block->getByName()
-			)->plain();
+			)->text();
 		}
 		$email = $this->user->getEmail();
 		$emailAuthentication = $this->user->getEmailAuthenticationTimestamp();
@@ -130,20 +135,20 @@ class ExportData implements IPrivacyHandler {
 					$emailAuthentication,
 					$this->user
 				)
-			)->plain();
+			)->text();
 		} else {
 			$data[] = wfMessage(
 				'bs-privacy-transparency-private-email-not-authenticated',
-				$email )->plain();
+				$email )->text();
 		}
 		$data[] = wfMessage(
 			'bs-privacy-transparency-private-edit-count',
 			$this->user->getEditCount()
-		)->plain();
+		)->text();
 		$data[] = wfMessage(
 			'bs-privacy-transparency-private-experience',
 			$this->user->getExperienceLevel()
-		)->plain();
+		)->text();
 
 		$groups = MediaWikiServices::getInstance()
 			->getUserGroupManager()
@@ -151,7 +156,7 @@ class ExportData implements IPrivacyHandler {
 		$data[] = wfMessage(
 			'bs-privacy-transparency-private-groups',
 			implode( ', ', $groups )
-		)->plain();
+		)->text();
 
 		$formerGroups = MediaWikiServices::getInstance()
 			->getUserGroupManager()
@@ -159,17 +164,17 @@ class ExportData implements IPrivacyHandler {
 		$data[] = wfMessage(
 			'bs-privacy-transparency-private-former-groups',
 			implode( ', ', $formerGroups )
-		)->plain();
+		)->text();
 		$rights = MediaWikiServices::getInstance()->getPermissionManager()
 			->getUserPermissions( $this->user );
 		$data[] = wfMessage(
 			'bs-privacy-transparency-private-rights',
 			implode( ', ', $rights )
-		)->plain();
+		)->text();
 		$data[] = wfMessage(
 			'bs-privacy-transparency-private-user-page-url',
 			$this->user->getUserPage()->getFullURL()
-		)->plain();
+		)->text();
 
 		$this->data[Transparency::DATA_TYPE_PERSONAL] = $data;
 	}
@@ -203,13 +208,13 @@ class ExportData implements IPrivacyHandler {
 						$timestamp,
 						$this->user
 					)
-				)->plain();
+				)->text();
 
 			if ( $this->format === Transparency::DATA_FORMAT_HTML ) {
-				$html = \Html::openElement( 'span' );
+				$html = Html::openElement( 'span' );
 				$html .= $formattedTS;
 				$html .= $formatter->getActionText();
-				$html .= \Html::closeElement( 'span' );
+				$html .= Html::closeElement( 'span' );
 
 				$data[] = $html;
 			} else {

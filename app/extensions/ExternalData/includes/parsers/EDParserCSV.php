@@ -10,7 +10,7 @@ class EDParserCSV extends EDParserBase {
 	/** @const string NAME The name of this format. */
 	public const NAME = 'CSV';
 	/** @const array EXT The usual file extensions of this format. */
-	protected const EXT = [ 'csv' ];
+	protected const EXT = [ 'csv', 'tsv' ];
 	/** @const int GENERICITY The greater, the more this format is likely to succeed on a random input. */
 	public const GENERICITY = 15;
 
@@ -48,7 +48,7 @@ class EDParserCSV extends EDParserBase {
 		if (
 			strtolower( $params['format'] ) === 'csv with header' ||
 			array_key_exists( 'with header', $params ) ||
-			array_key_exists( 'header', $params ) && $params['header'] === 'yes'
+			( array_key_exists( 'header', $params ) && $params['header'] === 'yes' )
 		) {
 			$this->header = self::HEADER;
 		} elseif ( array_key_exists( 'header', $params ) && (
@@ -129,9 +129,8 @@ class EDParserCSV extends EDParserBase {
 		}
 
 		// Get header values, if this is 'csv with header'
-		$header = $this->header === self::HEADER ||
-				$this->header === self::DETECT_HEADER &&
-				self::headerDetected( $table[0], isset( $table[1] ) ? $table[1] : null );
+		$header = $this->header === self::HEADER
+			|| ( $this->header === self::DETECT_HEADER && self::headerDetected( $table[0], $table[1] ?? null ) );
 		$header_vals = null;
 		if ( $header ) {
 			$header_vals = array_shift( $table );

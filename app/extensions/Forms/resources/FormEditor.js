@@ -1,4 +1,4 @@
-mw.ext.forms.widget.FormEditor = function( cfg ) {
+mw.ext.forms.widget.FormEditor = function ( cfg ) {
 	cfg.expanded = false;
 	cfg.padded = true;
 	mw.ext.forms.widget.FormEditor.parent.call( this, cfg );
@@ -20,7 +20,7 @@ mw.ext.forms.widget.FormEditor.prototype.addToolbar = function () {
 };
 
 mw.ext.forms.widget.FormEditor.prototype.addItems = function () {
-	var config = {};
+	const config = {};
 	if ( !$.isEmptyObject( this.formData ) ) {
 		config.data = this.formData;
 	}
@@ -29,7 +29,8 @@ mw.ext.forms.widget.FormEditor.prototype.addItems = function () {
 	this.$element.append( this.itemsForm.$element );
 
 	this.propertiesForm = new mw.ext.forms.form.FormProperties( {
-		data: this.formData
+		data: this.formData,
+		itemsForm: this.itemsForm
 	} );
 	this.propertiesForm.render();
 };
@@ -41,9 +42,9 @@ mw.ext.forms.widget.FormEditor.prototype.openSettingsDialog = function () {
 };
 
 mw.ext.forms.widget.FormEditor.prototype.openElementsDrawer = function ( tool ) {
-	this.elementPicker.$element.slideToggle( 200, function() {
-		tool.setActive( this.elementPicker.$element.is( ':visible' ) );
-	}.bind( this ) );
+	this.elementPicker.$element.slideToggle( 200, () => { // eslint-disable-line no-jquery/no-slide
+		tool.setActive( this.elementPicker.$element.is( ':visible' ) ); // eslint-disable-line no-jquery/no-sizzle
+	} );
 };
 
 mw.ext.forms.widget.FormEditor.prototype.addPicker = function () {
@@ -68,7 +69,7 @@ mw.ext.forms.widget.FormEditor.prototype.openSaveDialog = function () {
 			propertiesForm: this.propertiesForm,
 			targetPage: this.targetPage
 		} ),
-		function( res ) {
+		function ( res ) {
 			if ( res && res.action === 'save' ) {
 				window.location.href = res.data.result.fullURL || this.successRedirect;
 			}
@@ -77,28 +78,28 @@ mw.ext.forms.widget.FormEditor.prototype.openSaveDialog = function () {
 };
 
 mw.ext.forms.widget.FormEditor.prototype.makeToolbar = function () {
-	var editor = this,
+	const editor = this,
 		toolFactory = new OO.ui.ToolFactory(),
 		toolGroupFactory = new OO.ui.ToolGroupFactory(),
 		toolbar = new OO.ui.Toolbar( toolFactory, toolGroupFactory );
 	toolbar.$element.addClass( 'form-editor-toolbar' );
 	this.$element.append( toolbar.$element );
 
-	var settingsTool = function() {
+	const settingsTool = function () {
 		settingsTool.super.apply( this, arguments );
 	};
 	OO.inheritClass( settingsTool, OO.ui.Tool );
 	settingsTool.static.name = 'settings';
 	settingsTool.static.icon = 'settings';
 	settingsTool.static.title = mw.msg( 'forms-form-editor-form-props-label' );
-	settingsTool.prototype.onSelect = function() {
+	settingsTool.prototype.onSelect = function () {
 		this.setActive( false );
 		editor.openSettingsDialog();
 	};
 	settingsTool.prototype.onUpdateState = function () {};
 	toolFactory.register( settingsTool );
 
-	var elementsPicker = function() {
+	const elementsPicker = function () {
 		elementsPicker.super.apply( this, arguments );
 	};
 	OO.inheritClass( elementsPicker, OO.ui.Tool );
@@ -106,34 +107,34 @@ mw.ext.forms.widget.FormEditor.prototype.makeToolbar = function () {
 	elementsPicker.static.icon = 'puzzle';
 	elementsPicker.static.displayBothIconAndLabel = true;
 	elementsPicker.static.title = mw.msg( 'forms-form-editor-form-items-label' );
-	elementsPicker.prototype.onSelect = function() {
+	elementsPicker.prototype.onSelect = function () {
 		editor.openElementsDrawer( this );
 	};
 	elementsPicker.prototype.onUpdateState = function () {};
 	toolFactory.register( elementsPicker );
 
-	var cancelTool = function() {
+	const cancelTool = function () {
 		cancelTool.super.apply( this, arguments );
 	};
 	OO.inheritClass( cancelTool, OO.ui.Tool );
 	cancelTool.static.name = 'cancel';
-	cancelTool.static.icon = 'cancel';
-	cancelTool.static.flags = [ 'destructive' ];
+	cancelTool.static.icon = 'close';
+	cancelTool.static.flags = [];
 	cancelTool.static.title = mw.msg( 'forms-editor-toolbar-cancel' );
-	cancelTool.prototype.onSelect = function() {
+	cancelTool.prototype.onSelect = function () {
 		editor.cancelEditing();
 	};
 	cancelTool.prototype.onUpdateState = function () {};
 	toolFactory.register( cancelTool );
 
-	var saveTool = function() {
+	const saveTool = function () {
 		saveTool.super.apply( this, arguments );
 	};
 	OO.inheritClass( saveTool, OO.ui.Tool );
 	saveTool.static.name = 'save';
-	saveTool.static.title = mw.msg( 'forms-editor-toolbar-save' );
+	saveTool.static.title = mw.msg( 'forms-editor-toolbar-save-label' );
 	saveTool.static.flags = [ 'primary', 'progressive' ];
-	saveTool.prototype.onSelect = function() {
+	saveTool.prototype.onSelect = function () {
 		this.setActive( false );
 		editor.openSaveDialog();
 	};
@@ -143,13 +144,18 @@ mw.ext.forms.widget.FormEditor.prototype.makeToolbar = function () {
 	toolbar.setup( [
 		{
 			type: 'bar',
+			include: [ 'cancel' ],
+			align: 'before'
+		},
+		{
+			type: 'bar',
 			include: [ 'elements' ]
 		},
 		{
 			name: 'actions',
 			classes: [ 'actions' ],
 			type: 'bar',
-			include: [ 'settings', 'cancel', 'save' ]
+			include: [ 'settings', 'save' ]
 		}
 	] );
 	toolbar.initialize();
@@ -158,12 +164,12 @@ mw.ext.forms.widget.FormEditor.prototype.makeToolbar = function () {
 };
 
 mw.ext.forms.widget.FormEditor.static.getElementPickerItems = function () {
-	var grouped = {};
-	for( var name in mw.ext.forms.registry.Type.registry ) {
+	const grouped = {};
+	for ( const name in mw.ext.forms.registry.Type.registry ) {
 		if ( !mw.ext.forms.registry.Type.registry.hasOwnProperty( name ) ) {
 			continue;
 		}
-		var element =  mw.ext.forms.registry.Type.registry[name];
+		const element = mw.ext.forms.registry.Type.registry[ name ];
 		if ( name === '_default' ) {
 			continue;
 		}
@@ -173,17 +179,16 @@ mw.ext.forms.widget.FormEditor.static.getElementPickerItems = function () {
 		if ( element.isHidden() ) {
 			continue;
 		}
-		var group = element.getGroup(),
-			groupObject = mw.ext.forms.registry.ElementGroup.registry[group];
+		const group = element.getGroup(),
+			groupObject = mw.ext.forms.registry.ElementGroup.registry[ group ];
 		if ( !grouped.hasOwnProperty( group ) ) {
-			grouped[group] = {
+			grouped[ group ] = {
 				group: groupObject,
 				items: []
 			};
 		}
 
-
-		grouped[group].items.push( {
+		grouped[ group ].items.push( {
 			data: name,
 			label: element.getDisplayName(),
 			icon: element.getIcon(),
@@ -194,8 +199,8 @@ mw.ext.forms.widget.FormEditor.static.getElementPickerItems = function () {
 	return grouped;
 };
 
-mw.ext.forms.widget.FormEditor.prototype.openWindow = function( window, callback ) {
-	var windowManager = new OO.ui.WindowManager();
+mw.ext.forms.widget.FormEditor.prototype.openWindow = function ( window, callback ) {
+	const windowManager = new OO.ui.WindowManager();
 	$( 'body' ).append( windowManager.$element );
 	windowManager.addWindows( [ window ] );
 	if ( callback ) {

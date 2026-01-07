@@ -3,17 +3,20 @@
 		"lang": "en",
 		"target_title": "Template:Textbox",
 		"content_path": "/pages/Template/Textbox.wiki",
-		"sha1": "83565108195f6e6d11c5be0fac06a72ae2b8f029",
+		"sha1": "2906908ee8cfb1eff6f1fb919fd2159f57ac8d87",
 		"old_sha1": [
-			"ef0c4f677f4040c2aca884e13bc13b619bcaba13"
+			"ef0c4f677f4040c2aca884e13bc13b619bcaba13",
+			"83565108195f6e6d11c5be0fac06a72ae2b8f029"
 		]
 	},
 	"Template:Textbox/styles.css": {
 		"lang": "en",
 		"target_title": "Template:Textbox/styles.css",
 		"content_path": "/pages/Template/Textboxstyles.css.wiki",
-		"sha1": "331cd30d063747b523489c3b7b764f62b027caff",
-		"old_sha1": []
+		"sha1": "0a6310b5bb3a998499747a9688bb9cc34e8524d4",
+		"old_sha1": [
+			"331cd30d063747b523489c3b7b764f62b027caff"
+		]
 	},
 	"Template:Icon": {
 		"lang": "en",

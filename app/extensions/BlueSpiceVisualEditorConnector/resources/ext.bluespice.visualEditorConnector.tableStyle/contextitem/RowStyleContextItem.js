@@ -39,7 +39,7 @@ bs.vec.ui.RowStyleContextItem = function ( context, model, config ) {
 	bs.vec.ui.RowStyleContextItem.super.call( this, context, model, config );
 };
 
-OO.inheritClass( bs.vec.ui.RowStyleContextItem, bs.vec.ui.TableContextItem  );
+OO.inheritClass( bs.vec.ui.RowStyleContextItem, bs.vec.ui.TableContextItem );
 
 bs.vec.ui.RowStyleContextItem.static.name = 'rowStyle';
 

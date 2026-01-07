@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yupik"
+		]
+	},
+	"collabpads-save-dialog-title": "Tallenna muokkaukset",
+	"collabpads-save-dialog-summary": "Yhteenveto:",
+	"collabpads-save-dialog-minor-edit": "Tämä on pieni muutos",
+	"collabpads-save-dialog-watch-page": "Tarkkaile tätä sivua",
+	"collabpads-dialog-cancel-button": "Peruuta",
+	"collabpads-save-complete-notif": "Sivu tallennettu",
+	"collabpads-invalid-change-dialog-save-button": "Tallenna"
+}

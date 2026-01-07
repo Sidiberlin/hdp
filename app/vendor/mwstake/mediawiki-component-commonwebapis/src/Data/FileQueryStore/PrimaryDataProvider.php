@@ -2,17 +2,19 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs\Data\FileQueryStore;
 
-use MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore\PrimaryDataProvider
-	as TitlePrimaryDataProvider;
+use MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore\PrimaryDataProvider as TitlePrimaryDataProvider;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleQueryStore\TitleRecord;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 
 class PrimaryDataProvider extends TitlePrimaryDataProvider {
 
+	/** @var array */
 	private $dbFieldMapping = [
 		'timestamp' => 'img_timestamp',
-		'title' => 'mti_title'
+		'title' => 'mti_title',
+		'file_size' => 'img_size',
+		'file_extension' => 'img_minor_mime',
 	];
 
 	/**
@@ -32,10 +34,25 @@ class PrimaryDataProvider extends TitlePrimaryDataProvider {
 				}
 				$nsConds = [];
 				foreach ( $filterValue as $value ) {
-					// Special case for NSFR:
-					// Filtering by namespace is a bit tricky, as NSFR stores namespaces as part of title
-					$value = mb_strtolower( str_replace( '_', ' ', $value ) );
-					$nsConds[] = 'mti_title LIKE "' . $value . ':%"';
+					$value = mb_strtolower( $value );
+					$nsIndex = $this->nsInfo->getCanonicalIndex( $value );
+					// Main = null
+					if ( !$nsIndex ) {
+						$nsConds[] = 'mti_title NOT' . $this->db->buildLike( [
+							$this->db->anyString(),
+							':',
+							$this->db->anyString()
+						] );
+					} else {
+						// Special case for NSFR:
+						// Filtering by namespace is a bit tricky, as NSFR stores namespaces as part of title
+						$value = str_replace( '_', ' ', $value );
+						$nsConds[] = 'mti_title' . $this->db->buildLike( [
+							$value,
+							':',
+							$this->db->anyString()
+						] );
+					}
 				}
 				$conds[] = implode( ' OR ', $nsConds );
 				$filter->setApplied( true );
@@ -48,6 +65,13 @@ class PrimaryDataProvider extends TitlePrimaryDataProvider {
 				$conds[] = $this->db->makeList( array_map( static function ( $extension ) {
 					return 'mti_title LIKE "%.' . trim( strtolower( $extension ) ) . '"';
 				}, $extensions ), LIST_OR );
+				$filter->setApplied( true );
+			}
+			if ( $filter->getField() === FileRecord::FILE_SIZE ) {
+				$filterValue = $filter->getValue();
+				if ( !is_array( $filterValue ) ) {
+					$filterValue = [ $filterValue ];
+				}
 				$filter->setApplied( true );
 			}
 		}
@@ -104,6 +128,14 @@ class PrimaryDataProvider extends TitlePrimaryDataProvider {
 				'comparison' => Filter\ListValue::COMPARISON_IN
 			] );
 		}
+		if ( $filter->getField() === FileRecord::FILE_SIZE ) {
+			$filterValue = $filter->getValue();
+			$filter = new Filter\NumericValue( [
+				Filter::KEY_FIELD => 'img_size',
+				Filter::KEY_VALUE => $filterValue,
+				Filter::KEY_COMPARISON => $filter->getComparison()
+			] );
+		}
 		parent::appendPreFilterCond( $conds, $filter );
 	}
 
@@ -114,7 +146,8 @@ class PrimaryDataProvider extends TitlePrimaryDataProvider {
 		return array_merge(
 			parent::getFields(), [
 				'img_actor', 'img_major_mime', 'img_minor_mime', 'actor_name',
-				'comment_text', "GROUP_CONCAT( cl_to SEPARATOR '|') categories", 'img_timestamp'
+				'comment_text', "GROUP_CONCAT( cl_to SEPARATOR '|') categories",
+				'img_timestamp', 'img_size'
 			] );
 	}
 
@@ -144,12 +177,13 @@ class PrimaryDataProvider extends TitlePrimaryDataProvider {
 			TitleRecord::IS_CONTENT_PAGE => in_array( $row->page_namespace, $this->contentNamespaces ),
 			FileRecord::FILE_TIMESTAMP => $row->img_timestamp,
 			FileRecord::FILE_EXTENSION => $this->getExtension( $row->page_title ),
+			FileRecord::FILE_SIZE => $row->img_size,
 			FileRecord::MIME_MAJOR => $row->img_major_mime,
 			FileRecord::MIME_MINOR => $row->img_minor_mime,
 			FileRecord::FILE_AUTHOR_ID => $row->img_actor,
 			FileRecord::FILE_AUTHOR_NAME => $row->actor_name ?? '',
 			FileRecord::FILE_COMMENT => $row->comment_text,
-			FileRecord::FILE_CATEGORIES =>  $row->categories
+			FileRecord::FILE_CATEGORIES => $row->categories
 		] );
 	}
 

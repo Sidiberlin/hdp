@@ -3,7 +3,9 @@
 namespace BlueSpice\Discovery\Component;
 
 use BlueSpice\Discovery\CookieHandler;
-use Message;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleLink;
 
 class FullscreenButton extends SimpleLink {
@@ -104,5 +106,22 @@ class FullscreenButton extends SimpleLink {
 		}
 
 		return $classes;
+	}
+
+	/**
+	 *
+	 * @param IContextSource $context
+	 * @return bool
+	 */
+	public function shouldRender( IContextSource $context ): bool {
+		if ( !parent::shouldRender( $context ) ) {
+			return false;
+		}
+		$specialUserLogin = SpecialPage::getSafeTitleFor( 'Userlogin' );
+		$title = $context->getTitle();
+		if ( $specialUserLogin->equals( $title ) ) {
+			return false;
+		}
+		return true;
 	}
 }

@@ -1,7 +1,7 @@
 /*!
  * Enable double-click-to-edit functionality.
  */
-( function( mw, $, d ){
+( function ( mw, $ ) {
 	if ( Number( mw.user.options.get( 'editondblclick' ) ) !== 1 ) {
 		return;
 	}
@@ -10,9 +10,9 @@
 		return;
 	}
 
-	$( '#mw-content-text' ).on( 'dblclick', function ( e ) {
-		var $visualEdit = $( '#ca-ve-edit' );
-		var $sourceEdit = $( '#ca-edit' );
+	$( '#mw-content-text' ).on( 'dblclick', ( e ) => {
+		const $visualEdit = $( '#ca-ve-edit' );
+		const $sourceEdit = $( '#ca-edit' );
 
 		if ( $visualEdit.length ) {
 			e.preventDefault();
@@ -22,4 +22,4 @@
 			$visualEdit.get( 0 ).click();
 		}
 	} );
-} )( mediaWiki, jQuery, document );
+}( mediaWiki, jQuery ) );

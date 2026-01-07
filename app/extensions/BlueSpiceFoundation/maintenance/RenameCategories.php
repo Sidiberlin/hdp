@@ -3,8 +3,13 @@
 # ini_set('display_errors', 1);
 # if (PHP_OS == "WINNT") exec("chcp 65001"); # doesn't seem to work - do it manually
 
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Content\ContentHandler;
+use MediaWiki\Content\TextContent;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 if ( $argc != 2 ) {
 	exit( "Syntax: {$argv[0]} filename" );
@@ -244,7 +249,7 @@ $res = $dbr->select(
 	'page',
 	'page_title, page_namespace, page_id',
 	$qry_ns,
-	'Database::select',
+	__METHOD__,
 	[ 'order by' => 'page_title' ]
 );
 
@@ -323,7 +328,7 @@ foreach ( $res as $row ) {
 	}
 
 	// this part is for text modification only (append, prefix, delete, replace)
-	if ( in_array( $mode, [ 'append','prefix','delete','replace' ] ) ) {
+	if ( in_array( $mode, [ 'append', 'prefix', 'delete', 'replace' ] ) ) {
 		# Modify the text
 		$old_text = $text;
 
@@ -437,7 +442,7 @@ $res = $dbr->select(
 	'page',
 	'page_id, page_title',
 	[ 'page_namespace' => NS_CATEGORY ],
-	'Database::select',
+	__METHOD__,
 	[ 'order by' => 'page_title' ]
 );
 echo $res->numRows() . " articles in category namespace\n";

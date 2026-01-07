@@ -1,11 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80"
+			"Amire80",
+			"Neriah"
 		]
 	},
-	"pagecheckout-error-no-title": "כותרת בלתי־תקינה",
 	"pagecheckout-desc": "אפשרות לתת הרשאות בלעדיות על דף למשתמש",
+	"pagecheckout-error-no-title": "כותרת בלתי־תקינה",
 	"pagecheckout-error-no-user": "ניתן משתמש בלתי־תקין",
 	"pagecheckout-error-has-checkout": "הדף כבר הושאל",
 	"pagecheckout-error-save-failed": "השאלת הדף לא הצליחה",
@@ -31,14 +32,14 @@
 	"page-checkout-workflow-activity-checkout-reason": "הדף הזה מושאל כעת עקב זרימת עבודה פועלת",
 	"page-checkout-workflow-activity-checkout-non-generic-reason": "הושאל במהלך ביצוע זרימת העבודה",
 	"page-checkout-workflow-clear-checkout": "ההשאלה נוקתה עקב הפסקת זרימת עבודה",
-	"pagecheckout-ui-workflows-inspector-activity-page-checkout-title": "פעילות השאלת דף",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-title": "פעילות \"השאלת דף\"",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "משתמש",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user-help": "למי הדף יושאל",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename": "שם הדף",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename-help": "אם זה לא צוין, ייעשה שימוש בדף ההקשר של זרימת העבודה",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-force": "לכפות?",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-force-help": "אם זה מופעל, זה יסיר יסיר כל השאלה קיימת (למשתמשים אחרים) וייצור השאלה חדשה",
-	"pagecheckout-ui-workflows-inspector-activity-page-checkin-title": "פעילות החזרת דף מושאל",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-title": "פעילות \"החזרת דף מושאל\"",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "משתמש",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user-help": "למי הדף יושאל",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "שם הדף",

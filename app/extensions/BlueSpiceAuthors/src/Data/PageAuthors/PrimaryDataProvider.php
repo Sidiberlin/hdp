@@ -4,9 +4,10 @@ namespace BlueSpice\Authors\Data\PageAuthors;
 
 use BlueSpice\Authors\AuthorsList;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\DataStore\IPrimaryDataProvider;
 use ReaderParams;
-use Title;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class PrimaryDataProvider implements IPrimaryDataProvider {
@@ -65,7 +66,7 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 
 		if ( $originator !== '' ) {
 			$user = $userFactory->newFromName( $originator );
-			if ( $user instanceof \User ) {
+			if ( $user instanceof User ) {
 				$this->appendRowToData( [
 					'user_name' => $user->getName(),
 					'author_type' => 'originator',
@@ -76,7 +77,7 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 
 		foreach ( $editors as $editor ) {
 			$user = $userFactory->newFromName( $editor );
-			if ( $user instanceof \User === false ) {
+			if ( $user instanceof User === false ) {
 				continue;
 			}
 			$this->appendRowToData( [

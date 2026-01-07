@@ -2,7 +2,7 @@
 
 namespace BlueSpice\WhoIsOnline\Hook\BeforePageDisplay;
 
-use DeferredUpdates;
+use MediaWiki\Deferred\DeferredUpdates;
 
 class InsertTrace extends \BlueSpice\Hook\BeforePageDisplay {
 

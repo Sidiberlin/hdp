@@ -33,10 +33,11 @@
 	"menueditor-ui-dialog-title": "Element bewerken",
 	"menueditor-ui-mediawiki-sidebar-keyword-label-edit": "Sleutelwoord bewerken",
 	"menueditor-ui-mediawiki-sidebar-keyword-label": "Trefwoord",
-	"menueditor-toolbar-submit": "Wijzigingen opslaan",
 	"menueditor-toolbar-cancel": "Bewerking annuleren",
 	"menueditor-toolbar-add-label": "Element toevoegen",
 	"menueditor-ui-edit-label": "Bewerken",
 	"menueditor-ui-add-sub-element-label": "Subelement toevoegen",
-	"menueditor-footerlinks-banner-text": "Sommige koppelingen kunnen automatisch door uitbreidingen worden toegevoegd. Bekijk de instellingen van de uitbreiding om meer te weten te komen."
+	"menueditor-footerlinks-banner-text": "Sommige koppelingen kunnen automatisch door uitbreidingen worden toegevoegd. Bekijk de instellingen van de uitbreiding om meer te weten te komen.",
+	"menueditor-toolbar-save": "Opslaan",
+	"menueditor-ui-cancel-confirmation": "Weet u zeker dat u de bewerking wilt annuleren? Alle niet-opgeslagen wijzigingen gaan verloren."
 }

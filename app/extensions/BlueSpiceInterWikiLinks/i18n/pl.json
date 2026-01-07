@@ -20,9 +20,6 @@
 	"bs-interwikilinks-labelprefix": "Przedrostek",
 	"bs-interwikilinks-titledeleteinterwikilink": "Usuń link interwiki",
 	"bs-interwikilinks-confirmdeleteinterwikilink": "Czy na pewno chcesz usunąć ten link interwiki?",
-	"bs-interwikilinks-insertlink-tabtitle": "Link do innej wiki",
-	"bs-interwikilinks-insertlink-labelprefix": "Przedrostek",
-	"bs-interwikilink-select-a-prefix": "Wybierz przedrostek",
 	"action-interwikilinks-viewspecialpage": "wyświetlania strony specjalnej „{{int:bs-interwikilinks-label}}”",
 	"interwikilinks": "Linki interwiki",
 	"right-interwikilinks-viewspecialpage": "Dostęp do strony specjalnej [[Special:InterWikiLinks]]."

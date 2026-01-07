@@ -4,11 +4,11 @@ namespace BlueSpice\Discovery\Component;
 
 use BlueSpice\Discovery\ITitleActionPrimaryActionModifier;
 use Exception;
-use ExtensionRegistry;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
 use MediaWiki\Permissions\PermissionManager;
-use Message;
+use MediaWiki\Registration\ExtensionRegistry;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleDropdownIconSplitButton;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleDropdownItemlistFromArray;
 use MWStake\MediaWiki\Component\CommonUserInterface\LinkFormatter;

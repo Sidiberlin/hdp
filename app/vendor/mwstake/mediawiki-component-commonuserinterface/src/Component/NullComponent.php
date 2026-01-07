@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface\Component;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 
 class NullComponent extends ComponentBase {
 

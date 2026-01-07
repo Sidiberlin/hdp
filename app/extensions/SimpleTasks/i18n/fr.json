@@ -2,18 +2,34 @@
 	"@metadata": {
 		"authors": [
 			"BlueCamille",
-			"MacOS Weed"
+			"Escargot bleu",
+			"MacOS Weed",
+			"Mahabarata"
 		]
 	},
+	"simple-tasks-desc": "Créer des tâches pour les utilisateurs",
+	"simple-tasks-task-duedate": "Date d'échéance : $1",
+	"simple-tasks-task-desc": "Tâche créée dans le contenu de la page",
+	"simple-tasks-notif-key": "Affectation de la tâche",
 	"simple-tasks-notif-message": "vous a {{GENDER:$1|}} attribué une tâche : « $1 »",
 	"simple-tasks-taskreport-no-results": "Aucune tâche trouvée avec les filtres sélectionnés",
 	"simple-tasks-taskreport-header-task": "Tâche",
+	"simple-tasks-taskreport-header-assignee": "Affecté à",
 	"simple-tasks-taskreport-header-page": "Apparaît sur la page",
+	"simple-tasks-taskreport-header-due-to": "Date d’échéance",
+	"simple-tasks-taskreport-header-state": "État",
+	"simple-tasks-droplet-taskreport-name": "Rapport de tâche",
 	"simple-tasks-droplet-taskreport-description": "Crée une vue d'ensemble des tâches",
+	"simple-tasks-taskreport-inspector-title": "Rapport de tâche",
 	"simple-tasks-taskreport-inspector-state-done": "terminé",
 	"simple-tasks-taskreport-inspector-state-open": "ouvert",
+	"simple-tasks-taskreport-inspector-label-user": "L'affecter à",
+	"simple-tasks-taskreport-inspector-label-namespaces": "Espaces de noms",
+	"simple-tasks-taskreport-inspector-label-due-date": "Date d'échéance",
 	"simple-tasks-taskreport-inspector-label-state": "État",
+	"simple-tasks-taskreport-state-title-open": "La tâche est ouverte",
 	"simple-tasks-taskreport-state-title-done": "La tâche est terminée",
 	"simple-tasks-taskreport-state-filter-done": "Terminé",
-	"simple-tasks-taskreport-state-filter-open": "Ouvert"
+	"simple-tasks-taskreport-state-filter-open": "Ouvert",
+	"simple-tasks-notif-message-with-due-date": "{{GENDER:$1|}}vous a assigné une tâche : « $1 ». La tâche est due le $2"
 }

@@ -1,10 +1,12 @@
 <?php
 
+use MWStake\MediaWiki\Component\AlertBanners\Hook\SiteNoticeAfter\AddAlerts;
+
 if ( defined( 'MWSTAKE_MEDIAWIKI_COMPONENT_ALERTBANNERS_VERSION' ) ) {
 	return;
 }
 
-define( 'MWSTAKE_MEDIAWIKI_COMPONENT_ALERTBANNERS_VERSION', '2.0.5' );
+define( 'MWSTAKE_MEDIAWIKI_COMPONENT_ALERTBANNERS_VERSION', '2.0.7' );
 
 MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 ->register( 'alertbanners', static function () {
@@ -21,8 +23,10 @@ MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 		]
 	];
 
-	$GLOBALS['wgHooks']['SiteNoticeAfter'][] =
-		'MWStake\\MediaWiki\\Component\\AlertBanners\\Hook\\SiteNoticeAfter\\AddAlerts::callback';
+	$GLOBALS['wgExtensionFunctions'][] = static function() {
+		$hookContainer = \MediaWiki\MediaWikiServices::getInstance()->getHookContainer();
+		$hookContainer->register( 'SiteNoticeAfter', [ AddAlerts::class, 'callback' ] );
+	};
 
 	$GLOBALS['wgResourceModules']['mwstake.component.alertbanners'] = [
 		'scripts' => [

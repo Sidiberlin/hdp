@@ -2,13 +2,16 @@
 
 namespace BlueSpice;
 
+use MediaWiki\Config\Config;
+use MediaWiki\Context\RequestContext;
+
 class ConfigDefinitionFactory {
 
 	protected $configDefinitions = null;
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $config = null;
 
@@ -19,7 +22,7 @@ class ConfigDefinitionFactory {
 	protected $registry = null;
 
 	/**
-	 * @param \Config $config
+	 * @param Config $config
 	 * @param ExtensionAttributeBasedRegistry $registry
 	 */
 	public function __construct( $config, ExtensionAttributeBasedRegistry $registry ) {
@@ -44,7 +47,7 @@ class ConfigDefinitionFactory {
 			return false;
 		}
 		return call_user_func_array( $definitions[$name], [
-			\RequestContext::getMain(),
+			RequestContext::getMain(),
 			$this->config,
 			$name,
 		] );

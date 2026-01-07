@@ -1,22 +1,24 @@
-#bs-categorymanager-grid tr.x-grid-row .bs-extjs-actioncolumn-icon {
-	display: none;
+.tree-item-options-btn {
+	float: right;
 }
 
-#bs-categorymanager-grid tr.x-grid-row:hover .bs-extjs-actioncolumn-icon {
-	display: inline-block;
-}
-#bs-categorymanager-grid .x-tree-icon {
-	display: none;
+.bs-categorymanager-tree .oojsplus-data-tree-items .oojs-ui-data-tree-item > div {
+	clear: both;
+	background-color: #f1f3f4;
 }
 
-#bs-categorymanager-grid .x-tree-node-text > span.bs-icon-tags:before {
-	content: "\f02c";
-	font-family: "fontawesome" !important;
-	color: #AFAFAF;
-	padding-right: 0.5em;
+.bs-categorymanager-tree ul:empty {
+	margin: 0;
 }
 
-#bs-categorymanager-grid .x-tree-node-text > span.bs-icon-tag::before {
-	color: #AFAFAF;
-	padding-right: 0.5em;
+.bs-categorymanager-tree .tree-root > li {
+	margin: 0.3em 0;
+}
+
+.bs-categorymanager-tree .oojsplus-data-tree-expander.oo-ui-buttonElement-frameless.oo-ui-iconElement:first-child {
+	margin-left: 0;
+}
+
+.bs-categorymanager-tree .tree-item-options-btn .tree-item-options-popup .oo-ui-buttonElement-button > .oo-ui-iconElement-icon {
+	opacity: 1;
 }

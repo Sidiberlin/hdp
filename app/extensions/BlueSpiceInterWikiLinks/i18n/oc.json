@@ -9,7 +9,5 @@
 	"bs-interwikilinks-titleaddinterwikilink": "Apondre un ligam interwiki",
 	"bs-interwikilinks-titleeditinterwikilink": "Modificar un ligam interwiki",
 	"bs-interwikilinks-labelprefix": "Prefix",
-	"bs-interwikilinks-titledeleteinterwikilink": "Suprimir un ligam interwiki",
-	"bs-interwikilinks-insertlink-labelprefix": "Prefix",
-	"bs-interwikilink-select-a-prefix": "Causir un prefix"
+	"bs-interwikilinks-titledeleteinterwikilink": "Suprimir un ligam interwiki"
 }

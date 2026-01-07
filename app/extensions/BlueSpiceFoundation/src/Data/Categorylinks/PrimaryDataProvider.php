@@ -2,14 +2,14 @@
 
 namespace BlueSpice\Data\Categorylinks;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\FilterFinder;
 use MWStake\MediaWiki\Component\DataStore\IPrimaryDataProvider;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
-use Title;
-use User;
 
 class PrimaryDataProvider implements IPrimaryDataProvider {
 
@@ -60,7 +60,8 @@ class PrimaryDataProvider implements IPrimaryDataProvider {
 		$res = $this->db->select(
 			'categorylinks',
 			'*',
-			$filterConds
+			$filterConds,
+			__METHOD__
 		);
 
 		foreach ( $res as $row ) {

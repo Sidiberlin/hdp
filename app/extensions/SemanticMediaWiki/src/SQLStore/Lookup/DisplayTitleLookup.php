@@ -2,13 +2,13 @@
 
 namespace SMW\SQLStore\Lookup;
 
+use RuntimeException;
+use SMW\DIProperty;
 use SMW\SQLStore\SQLStore;
 use SMW\Store;
-use SMW\DIProperty;
-use RuntimeException;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.1
  *
  * @author mwjames
@@ -38,7 +38,6 @@ class DisplayTitleLookup {
 	 * @return Iterator|array
 	 */
 	public function prefetchFromList( array $dataItems ) {
-
 		$list = [];
 		$prefetch = [];
 		$connection = $this->store->getConnection( 'mw.db' );
@@ -107,7 +106,6 @@ class DisplayTitleLookup {
 	}
 
 	private function fetchFromTable( $list ) {
-
 		$property = new DIProperty( '_DTITLE' );
 		$connection = $this->store->getConnection( 'mw.db' );
 
@@ -124,7 +122,7 @@ class DisplayTitleLookup {
 		$propTable = $propTables[$propTableId];
 
 		$rows = $connection->select(
-			$connection->tablename( $propTable->getName() ),
+			$propTable->getName(),
 			[
 				's_id',
 				'o_hash',

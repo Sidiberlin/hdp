@@ -7,10 +7,10 @@
 			"Moj",
 			"Nike",
 			"Pyscowicz",
+			"Samoasambia",
 			"Stryn",
 			"Surjection",
-			"Valtlait",
-			"Samoasambia"
+			"Valtlait"
 		]
 	},
 	"twocolconflict": "Kappalepohjainen päällekkäisten muokkausten näkymä",
@@ -27,11 +27,13 @@
 	"twocolconflict-core-ui-hint-close": "Älä näytä tätä uudelleen",
 	"twocolconflict-preference-enabled": "Ota [[mw:Special:MyLanguage/Help:Paragraph-based Edit Conflict Interface|kappalepohjainen päällekkäisten muokkausten näkymä]] käyttöön ratkaistaksesi päällekkäiset muokkaukset.",
 	"twocolconflict-special-footer-hint": "Sulje nykyinen sivu palataksesi päällekkäisten muokkausten näkymään.",
-	"twocolconflict-special-header-overview": "Valitettavasti muokatessasi myös joku toinen käyttäjä muokkasi samaa sivua ja julkaisi ennen sinua. Katseltavissa oleva kopio versiostasi on saatavilla alempana. Päällekkäisten muokkausten näkymässä tehdyt muokkaukset eivät näy. Yhdistääksesi muutokset ja ratkaistaksesi ongelman käyttäen  muokkausristiriitakäyttöliittymää, palaa edelliselle sivulle.",
+	"twocolconflict-special-header-overview": "Valitettavasti muokatessasi myös joku toinen käyttäjä muokkasi samaa sivua ja julkaisi ennen sinua. Katseltavissa oleva kopio versiostasi on saatavilla alempana. Päällekkäisten muokkausten näkymässä tehdyt muokkaukset eivät näy. Yhdistääksesi muutokset ja ratkaistaksesi ongelman käyttäen muokkausristiriitakäyttöliittymää, palaa edelliselle sivulle.",
 	"twocolconflict-special-not-saved": "Ei julkaistu",
 	"twocolconflict-special-textarea-hint": "Voit katsella ja kopioida versiosi wikitekstiä:",
 	"twocolconflict-special-malformed-title": "Puuttuva tai virheellinen otsikko.",
 	"twocolconflict-special-expired": "Täällä ei ole mitään nähtävää. Tämä luultavasti tarkoittaa sitä, että törmäsit päällekkäiseen muokkaukseen aiemmin, mutta siitä on aikaa ja väliaikaisesti tallennettu tekstisi on jo vanhentunut.",
+	"twocolconflict-split-header-hint": "Voit auttaa tämän ominaisuuden parantamisessa jättämällä palautetta [//www.mediawiki.org/wiki/Help_talk:Paragraph-based_Edit_Conflict_Interface projektin keskustelusivulle].",
+	"twocolconflict-split-header-hint-beta": "Kiitos, kun käytät tätä beetaominaisuutta. Voit auttaa sen parantamisessa jättämällä palautetta [//www.mediawiki.org/wiki/Help_talk:Paragraph-based_Edit_Conflict_Interface projektin keskustelusivulle].",
 	"twocolconflict-split-header-overview": "Muokatessasi myös joku toinen käyttäjä muokkasi samaa sivua ja julkaisi ennen sinua. Tarkasta kumpikin versio ja yhdistä ne toisiinsa. Vain valituissa ruuduissa olevat tekstit tallennetaan, kun painat ”{{int:publishchanges}}”.",
 	"twocolconflict-split-your-version-header": "Oma versiosi",
 	"twocolconflict-split-current-version-header": "Viimeisin versio $1",

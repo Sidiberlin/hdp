@@ -10,8 +10,8 @@ use MediaWiki\Extension\Workflows\Exception\WorkflowExecutionException;
 use MediaWiki\Extension\Workflows\Exception\WorkflowPropertyValidationException;
 use MediaWiki\Extension\Workflows\Util\DataPreprocessor;
 use MediaWiki\Extension\Workflows\Util\DataPreprocessorContext;
+use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
-use User;
 
 final class ActivityManager {
 
@@ -158,8 +158,9 @@ final class ActivityManager {
 	 * @throws WorkflowExecutionException
 	 */
 	public function completeActivity( IActivity $activity, $data, WorkflowContext $context ) {
+		$data = $this->getValidatedData( $activity, $this->parseValues( $data ) );
 		$this->assertMembers( $activity );
-		$this->updateActivityProperties( $activity, $this->parseValues( $data ) );
+		$this->updateActivityProperties( $activity, $data );
 		$status = $activity->execute( $this->getActivityProperties( $activity ), $context );
 		if ( !$status instanceof ExecutionStatus ) {
 			throw new WorkflowExecutionException(

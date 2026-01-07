@@ -1,5 +1,6 @@
 <?php
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\Workflows\ActivityManagerFactory;
 use MediaWiki\Extension\Workflows\Definition\Repository\DefinitionRepositoryFactory;
 use MediaWiki\Extension\Workflows\Logger\GenericSpecialLogLogger;
@@ -15,6 +16,7 @@ use MediaWiki\Extension\Workflows\WorkflowNotifierFactory;
 use MediaWiki\Extension\Workflows\WorkflowSerializer;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 
 return [
 	'DefinitionRepositoryFactory' => static function ( MediaWikiServices $services ) {
@@ -86,6 +88,7 @@ return [
 
 		return new \MediaWiki\Extension\Workflows\TriggerRepo(
 			$services->getService( 'WorkflowFactory' ),
+			$services->getService( 'WorkflowsStateStore' ),
 			$services->getTitleFactory(),
 			$services->getService( 'WorkflowLogger' ),
 			$services->getObjectFactory(),

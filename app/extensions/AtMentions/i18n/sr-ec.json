@@ -13,18 +13,10 @@
 	"at-mentions-tag-item-actor": "{{GENDER:$1|[[User:$1|$1]]}}",
 	"at-mentions-tag-item-time": "у $1",
 	"at-mentions-mentionslist-header-mine-all": "Споменути сте на овој страници",
+	"at-mentions-mentionslist-header-all": "{{GENDER:$2|Корисник [[User:$2|$2]] је споменут|Корисница [[User:$2|$2]] је споменута}} на следећим страницама:",
 	"at-mentions-mention-notification-message": "{{GENDER:$1|споменуо|споменула}} Вас је на страници $2",
 	"at-mentions-mention-notification-key": "Споменути сте",
 	"at-mentions-mention-in-entity-notification-key": "Споменути сте у коментару или објави",
 	"at-mentions-mention-in-entity-notification-message": "{{GENDER:$1|споменуо|споменула}} Вас је у коментару или објави „$3” на страници $2",
-	"at-mentions-mention-in-entity-notification-post-link": "Иди на објаву",
-	"at-mentions-toolbar-tool-title": "Додај спомињање",
-	"at-mentions-echo-mention-notification-summary": "Споменути сте на страници $1",
-	"at-mentions-echo-mention-notification-web-body": "$3 Вас је {{GENDER:$2|споменуо|споменула}}",
-	"at-mentions-echo-mention-notification-subject": "$3 Вас је {{GENDER:$2|споменуо|споменула}} на страници $1",
-	"at-mentions-echo-mention-notification-email-body": "Споменути сте на страници $1",
-	"at-mentions-echo-mention-entity-notification-summary": "Споменути сте у коментару или објави на страници $1",
-	"at-mentions-echo-mention-entity-notification-subject": "$3 Вас је {{GENDER:$2|споменуо|споменула}} у коментару или објави на страници $1",
-	"at-mentions-echo-mention-entity-notification-email-body": "Споменути сте у коментару или објави на страници $1",
-	"at-mentions-mentionslist-header-all": "{{GENDER:$2|Корисник [[User:$2|$2]] је споменут|Корисница [[User:$2|$2]] је споменута}} на следећим страницама:"
+	"at-mentions-toolbar-tool-title": "Додај спомињање"
 }

@@ -3,8 +3,8 @@
 namespace BlueSpice\Renderer;
 
 use BlueSpice\Renderer\SimpleList\Item;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Linker\LinkRenderer;
 
 class SimpleList extends \BlueSpice\Renderer {
@@ -19,7 +19,7 @@ class SimpleList extends \BlueSpice\Renderer {
 	 * @param string $name
 	 */
 	public function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
+		?LinkRenderer $linkRenderer = null, ?IContextSource $context = null,
 		$name = '' ) {
 		parent::__construct( $config, $params, $linkRenderer, $context );
 		$this->args[static::PARAM_ITEMS] = $params->get(

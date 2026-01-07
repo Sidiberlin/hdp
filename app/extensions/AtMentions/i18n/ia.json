@@ -19,13 +19,5 @@
 	"at-mentions-mention-notification-key": "Tu ha essite mentionate",
 	"at-mentions-mention-in-entity-notification-key": "Tu ha essite mentionate in un commento o un message",
 	"at-mentions-mention-in-entity-notification-message": "{{GENDER:$1|te ha mentionate}} in un commento o un message “$3” sur le pagina $2",
-	"at-mentions-mention-in-entity-notification-post-link": "Ir directemente al message",
-	"at-mentions-toolbar-tool-title": "Adder mention",
-	"at-mentions-echo-mention-notification-summary": "Tu ha essite mentionate sur le pagina $1",
-	"at-mentions-echo-mention-notification-web-body": "{{GENDER:$2|$3 te ha mentionate}}",
-	"at-mentions-echo-mention-notification-subject": "{{GENDER:$2|$3 te ha mentionate}} sur le pagina $1",
-	"at-mentions-echo-mention-notification-email-body": "Tu ha essite mentionate sur le pagina $1",
-	"at-mentions-echo-mention-entity-notification-summary": "Tu ha essite mentionate in un commento o un message sur $1",
-	"at-mentions-echo-mention-entity-notification-subject": "{{GENDER:$2|$3 te ha mentionate}} in un commento o message sur le pagina $1",
-	"at-mentions-echo-mention-entity-notification-email-body": "Tu ha essite mentionate in un commento o un message sur le pagina $1"
+	"at-mentions-toolbar-tool-title": "Adder mention"
 }

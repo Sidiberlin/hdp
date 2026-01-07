@@ -27,12 +27,15 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\User\User;
 
 abstract class UserSaveOptions extends Hook {
 
 	/**
 	 *
-	 * @var \User
+	 * @var User
 	 */
 	protected $user = null;
 
@@ -44,7 +47,7 @@ abstract class UserSaveOptions extends Hook {
 
 	/**
 	 *
-	 * @param \User $user
+	 * @param User $user
 	 * @param array &$options
 	 * @return mixed
 	 */
@@ -61,9 +64,9 @@ abstract class UserSaveOptions extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
-	 * @param \User $user
+	 * @param IContextSource $context
+	 * @param Config $config
+	 * @param User $user
 	 * @param array &$options
 	 */
 	public function __construct( $context, $config, $user, &$options ) {

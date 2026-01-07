@@ -3,6 +3,8 @@
 		"authors": [
 			"Derugon",
 			"Gomoko",
+			"JLTRY",
+			"Mahabarata",
 			"Thibaut120094",
 			"Urhixidur",
 			"Verdy p",
@@ -14,7 +16,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Original",
 	"bs-visualeditorconnector-upload-type-simple": "Simple",
 	"bs-visualeditorconnector-upload-type-one-click": "En un clic",
-	"bs-visualeditorconnector-upload-type": "Type de téléversement",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Annuler la modification",
 	"bs-visualeditorconnector-cancel-edit": "Annuler la modification. Les modifications non enregistrées seront perdues",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Voulez-vous vraiment annuler la modification ? Vos modifications non enregistrées seront perdues.",
@@ -83,10 +84,16 @@
 	"bs-vec-table-border-dotted": "Pointillés",
 	"bs-vec-table-border-double": "Double",
 	"bs-vec-insert-softhyphen-title": "Tiret de césure conditionnel",
-	"bs-visualeditorconnector-upload-type-help": "D’origine : le droit de téléchargement est vérifié. Le nom de fichier, l’espace de noms et la catégorie sont modifiables. La description est obligatoire.\nSimple : le droit de téléchargement n’est pas vérifié. Le nom de fichier, l’espace de noms et la catégorie sont modifiables. La description est facultative.\nUn clic : le droit de téléchargement n’est pas vérifié. Le nom de fichier et la catégorie ne sont pas modifiables. L’espace de noms est modifiable.",
 	"bs-vec-insert-line-break-title": "Saut de ligne (<br />)",
 	"bs-visualeditorconnector-text-style-tool-align-center-label": "Centrer",
 	"bs-visualeditorconnector-align-center-annotation-desc": "Centre le texte sélectionné",
 	"bs-visualeditorconnector-text-style-indent-label": "Indenter",
-	"bs-visualeditorconnector-indent-annotation-desc": "Indente le texte sélectionné"
+	"bs-visualeditorconnector-indent-annotation-desc": "Indente le texte sélectionné",
+	"bs-visualeditor-save-label": "Enregistrer",
+	"bs-visualeditorconnector-upload-type": "Type de téléversement",
+	"bs-visualeditorconnector-upload-type-help": "D’origine : le droit de téléchargement est vérifié. Le nom de fichier, l’espace de noms et la catégorie sont modifiables. La description est obligatoire.\nSimple : le droit de téléchargement n’est pas vérifié. Le nom de fichier, l’espace de noms et la catégorie sont modifiables. La description est facultative.\nUn clic : le droit de téléchargement n’est pas vérifié. Le nom de fichier et la catégorie ne sont pas modifiables. L’espace de noms est modifiable.",
+	"bs-visualeditorconnector-tab-file": "Lien vers le fichier",
+	"bs-visualeditor-request-entity-too-large": "Le fichier est trop volumineux pour être téléchargé.",
+	"bs-visualeditorconnector-dialog-table-title": "Tableau",
+	"bs-visualeditorconnector-dialog-action-insert": "Insérer"
 }

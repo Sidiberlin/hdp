@@ -2,7 +2,7 @@
 
 namespace BlueSpice\InstanceStatus\InstanceStatusProvider;
 
-use Message;
+use MediaWiki\Message\Message;
 
 class LastUpdate extends Created {
 

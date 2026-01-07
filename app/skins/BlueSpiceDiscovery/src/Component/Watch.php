@@ -2,9 +2,9 @@
 
 namespace BlueSpice\Discovery\Component;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleLink;
 use MWStake\MediaWiki\Component\CommonUserInterface\LinkFormatter;
 

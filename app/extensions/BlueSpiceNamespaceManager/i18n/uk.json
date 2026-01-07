@@ -54,17 +54,14 @@
 	"logentry-bs-namespace-manager-rename": "$1 {{GENDER:$2|перейменував|перейменувала}} простір назв $4 на $5",
 	"logentry-bs-namespace-manager-remove": "$1 {{GENDER:$2|вилучив|вилучила}} простір назв $4",
 	"bs-namespacemanager-ns-config-saved": "Налаштування простору назв було збережено.",
-	"bs-namespacemanager-error-ns-config-not-saved": "Налаштування простору назв не вдалося зберегти до $1.",
-	"apihelp-bs-namespace-store-description": "Виводить всі простори назв та допоміжні налаштування. Надає можливість сортування, фільтрування та пагінації. Застосовує параметри ExtJS Store.",
 	"apihelp-bs-namespace-store-summary": "Виводить всі простори назв та допоміжні налаштування. Надає можливість сортування, фільтрування та пагінації. Застосовує параметри ExtJS Store.",
-	"apihelp-bs-namespace-tasks-description": "Дозволяє змінити налаштування простору назв.",
 	"apihelp-bs-namespace-tasks-summary": "Дозволяє змінити налаштування простору назв.",
 	"action-namespacemanager-viewspecialpage": "перегляд спеціальної сторінки управління просторів назв",
 	"namespacemanager": "Управління просторів назв",
 	"bs-namespacemanager-nodeletetalk": "Простір назв Обговорення вилучити неможливо",
 	"bs-namespacemanager-label-istalk": "Обговорення",
 	"right-namespacemanager-viewspecialpage": "Доступ до спеціальної сторінки [[Special:NamespaceManager]]",
-	"bs-namespacemanager-hide-talk-label": "Приховати простори назв обговорень",
 	"bs-namespacemanager-labelnsalias": "Псевдонім",
-	"bs-namespacemanager-invalid-namespace": "Простір назв, який редагується, є недійсним"
+	"bs-namespacemanager-invalid-namespace": "Простір назв, який редагується, є недійсним",
+	"bs-namespacemanager-hide-talk-label": "Приховати простори назв обговорень"
 }

@@ -27,6 +27,10 @@
 
 namespace BlueSpice\ContextMenu\Hook;
 
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\Title;
+
 abstract class BsContextMenuGetItems extends \BlueSpice\Hook {
 
 	/**
@@ -37,7 +41,7 @@ abstract class BsContextMenuGetItems extends \BlueSpice\Hook {
 
 	/**
 	 *
-	 * @var \Title
+	 * @var Title
 	 */
 	protected $title = null;
 
@@ -45,7 +49,7 @@ abstract class BsContextMenuGetItems extends \BlueSpice\Hook {
 	 * Located in BSApiContextMenuTasks::task_getMenuItems. Before items are
 	 * returned
 	 * @param array &$items
-	 * @param \Title $title
+	 * @param Title $title
 	 * @return bool
 	 */
 	public static function callback( &$items, $title ) {
@@ -60,10 +64,10 @@ abstract class BsContextMenuGetItems extends \BlueSpice\Hook {
 	}
 
 	/**
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param array &$items
-	 * @param \Title $title
+	 * @param Title $title
 	 */
 	public function __construct( $context, $config, &$items, $title ) {
 		parent::__construct( $context, $config );

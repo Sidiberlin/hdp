@@ -1,4 +1,4 @@
-OOJSPlus.ui.widget.UserPickerWidget = function( cfg ) {
+OOJSPlus.ui.widget.UserPickerWidget = function ( cfg ) {
 	cfg = cfg || {};
 	this.selectedUser = null;
 	this.ignoreChange = false;
@@ -6,7 +6,7 @@ OOJSPlus.ui.widget.UserPickerWidget = function( cfg ) {
 	this.excludeGroups = cfg.excludeGroups || null;
 	this.menuItemConfig = cfg.menuItemConfig || {};
 
-	OOJSPlus.ui.widget.UserPickerWidget.parent.call( this, $.extend( {}, cfg, {
+	OOJSPlus.ui.widget.UserPickerWidget.parent.call( this, Object.assign( {}, cfg, {
 		autocomplete: false
 	} ) );
 
@@ -39,7 +39,7 @@ OOJSPlus.ui.widget.UserPickerWidget.prototype.abortRequest = function () {
 	// DO NOTHING
 };
 
-OOJSPlus.ui.widget.UserPickerWidget.prototype.onLookupMenuToggle = function ( visible ) {
+OOJSPlus.ui.widget.UserPickerWidget.prototype.onLookupMenuToggle = function ( visible ) { // eslint-disable-line no-unused-vars
 	if ( this.lookupInputFocused ) {
 		this.focus();
 	}
@@ -54,7 +54,7 @@ OOJSPlus.ui.widget.UserPickerWidget.prototype.onLookupInputFocus = function () {
 };
 
 OOJSPlus.ui.widget.UserPickerWidget.prototype.focus = function () {
-	this.$input.focus();
+	this.$input.trigger( 'focus' );
 };
 
 OOJSPlus.ui.widget.UserPickerWidget.prototype.getLookupCacheDataFromResponse = function ( response ) {
@@ -68,7 +68,7 @@ OOJSPlus.ui.widget.UserPickerWidget.prototype.getLookupCacheDataFromResponse = f
 OOJSPlus.ui.widget.UserPickerWidget.prototype.getValidity = function () {
 	if ( this.selectedUser ) {
 		return $.Deferred().resolve().promise();
-	} else if ( this.required ) {
+	} else if ( this.isRequired() ) {
 		return $.Deferred().reject().promise();
 	}
 	return $.Deferred().resolve().promise();
@@ -85,7 +85,7 @@ OOJSPlus.ui.widget.UserPickerWidget.prototype.onLookupMenuChoose = function ( it
 };
 
 OOJSPlus.ui.widget.UserPickerWidget.prototype.onEdit = function () {
-	var value = this.$input.val();
+	const value = this.$input.val();
 	if ( value !== this.value ) {
 		this.value = value;
 		this.emit( 'change', value );
@@ -102,24 +102,27 @@ OOJSPlus.ui.widget.UserPickerWidget.prototype.setValue = function ( item ) {
 		}
 		this.setDisabled( true );
 		this.pushPending();
-		mws.commonwebapis.user.getByUsername( item ).done( function ( user ) {
-			if ( !user ) {
+		mws.commonwebapis.user.getByUsername( item ).done( ( user ) => {
+			if ( !user || $.isEmptyObject( user ) ) {
 				// Cannot find user, just set value as-is
 				this.setDisabled( false );
 				this.popPending();
-				this.$input.val( item );
+				OOJSPlus.ui.widget.UserPickerWidget.parent.prototype.setValue.call( this, item );
+				this.selectedUser = null;
 				this.onEdit();
 				return;
 			}
 			this.ignoreChange = true;
-			this.setValue(  new OOJSPlus.ui.widget.UserMenuOptionWidget( user ) );
+			this.setValue( new OOJSPlus.ui.widget.UserMenuOptionWidget( user ) );
 			this.ignoreChange = false;
 			this.setDisabled( false );
 			this.popPending();
-		}.bind( this ) ).fail( function () {
+		} ).fail( () => {
 			this.popPending();
 			this.setDisabled( false );
-		}.bind( this ) );
+			OOJSPlus.ui.widget.UserPickerWidget.parent.prototype.setValue.call( this, item );
+			this.selectedUser = null;
+		} );
 	} else {
 		OOJSPlus.ui.widget.UserPickerWidget.parent.prototype.setValue.call( this, item.getDisplayName() );
 		this.selectedUser = item;
@@ -134,12 +137,12 @@ OOJSPlus.ui.widget.UserPickerWidget.prototype.getValue = function () {
 };
 
 OOJSPlus.ui.widget.UserPickerWidget.prototype.getLookupRequest = function () {
-	var inputValue = this.value,
+	const inputValue = this.value,
 		filters = [ {
 			type: 'boolean',
 			value: true,
 			operator: '==',
-			property: 'enabled',
+			property: 'enabled'
 		} ];
 
 	if ( this.excludeGroups ) {
@@ -147,7 +150,7 @@ OOJSPlus.ui.widget.UserPickerWidget.prototype.getLookupRequest = function () {
 			type: 'list',
 			value: this.excludeGroups,
 			operator: 'nct',
-			property: 'groups',
+			property: 'groups'
 		} );
 	}
 	if ( this.groups ) {
@@ -155,7 +158,7 @@ OOJSPlus.ui.widget.UserPickerWidget.prototype.getLookupRequest = function () {
 			type: 'list',
 			value: this.groups,
 			operator: 'in',
-			property: 'groups',
+			property: 'groups'
 		} );
 	}
 
@@ -171,11 +174,12 @@ OOJSPlus.ui.widget.UserPickerWidget.prototype.makeLookup = function ( data ) {
 };
 
 OOJSPlus.ui.widget.UserPickerWidget.prototype.getLookupMenuOptionsFromData = function ( data ) {
-	var len, i, user, items = [];
+	const items = [];
+	let len, i, user;
 
 	for ( i = 0, len = data.length; i < len; i++ ) {
 		user = data[ i ] || {};
-		items.push( new OOJSPlus.ui.widget.UserMenuOptionWidget( $.extend( {}, this.menuItemConfig, user ) ) );
+		items.push( new OOJSPlus.ui.widget.UserMenuOptionWidget( Object.assign( {}, this.menuItemConfig, user ) ) );
 	}
 	return items;
 };

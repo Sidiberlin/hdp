@@ -6,8 +6,8 @@ use LogEntry;
 use LogFormatter;
 use LogPage;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
 use MediaWiki\Revision\RevisionRecord;
-use Message;
 
 class ConfirmFormatter extends LogFormatter {
 
@@ -19,7 +19,7 @@ class ConfirmFormatter extends LogFormatter {
 	/**
 	 * @inheritDoc
 	 */
-	protected function __construct( LogEntry $entry ) {
+	public function __construct( LogEntry $entry ) {
 		parent::__construct( $entry );
 		$this->initRevId();
 	}

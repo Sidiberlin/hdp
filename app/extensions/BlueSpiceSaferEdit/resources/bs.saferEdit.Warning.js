@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.saferEdit' );
 
-bs.saferEdit.Warning = function( cfg ) {
+bs.saferEdit.Warning = function ( cfg ) {
 	cfg = cfg || {};
 	this.interval = cfg.interval || 0;
 
@@ -9,8 +9,9 @@ bs.saferEdit.Warning = function( cfg ) {
 
 OO.initClass( bs.saferEdit.Warning );
 
-bs.saferEdit.Warning.prototype.someoneIsEditingListener = function( result, listener ) {
-	if( result.success !== true ) {
+bs.saferEdit.Warning.prototype.someoneIsEditingListener = function ( result, listener ) { // eslint-disable-line no-unused-vars
+	if ( result.success !== true ) {
+		this.registerListener();
 		return;
 	}
 
@@ -18,7 +19,7 @@ bs.saferEdit.Warning.prototype.someoneIsEditingListener = function( result, list
 	this.registerListener();
 };
 
-bs.saferEdit.Warning.prototype.registerListener = function() {
+bs.saferEdit.Warning.prototype.registerListener = function () {
 	BSPing.registerListener(
 		'SaferEditIsSomeoneEditing',
 		this.interval,
@@ -27,15 +28,13 @@ bs.saferEdit.Warning.prototype.registerListener = function() {
 	);
 };
 
-bs.saferEdit.Warning.prototype.updateUI = function( result ) {
-	var $elem;
-
-	if( !result.hasOwnProperty( 'someoneEditingView' ) || result.someoneEditingView === '' ) {
+bs.saferEdit.Warning.prototype.updateUI = function ( result ) {
+	if ( !result.hasOwnProperty( 'someoneEditingView' ) || result.someoneEditingView === '' ) {
 		bs.alerts.remove( 'bs-saferedit-warning' );
 		return;
 	}
 
-	$elem = $( '<div>' ).append( result.someoneEditingView );
+	const $elem = $( '<div>' ).append( result.someoneEditingView );
 
 	bs.alerts.add(
 		'bs-saferedit-warning',

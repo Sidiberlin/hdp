@@ -33,7 +33,7 @@ ext.enhancedUI.booklet.FileInfoBooklet.prototype.makePages = function () {
 		} )
 	];
 
-	for ( var page in this.pages ) {
+	for ( const page in this.pages ) {
 		this.pages[ page ].connect( this, {
 			update: function () {
 				this.emit( 'update' );

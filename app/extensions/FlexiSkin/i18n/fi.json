@@ -7,6 +7,7 @@
 		]
 	},
 	"flexiskin-label": "Ulkoasu",
+	"flexiskin-ui-plugin-content-header-color-label": "Väri",
 	"flexiskin-ui-plugin-color-settings-label": "Ulkoasun värit",
 	"flexiskin-ui-plugin-navbar-colors-label": "Otsikon väri",
 	"flexiskin-ui-plugin-colors-background-navbar-label": "Ylätunnisteen tausta",
@@ -16,6 +17,5 @@
 	"flexiskin-ui-plugin-colors-foreground-sidebar-primary-label": "Sivupalkin etuala",
 	"flexiskin-ui-plugin-footer-colors-label": "Alapalkin värit",
 	"flexiskin-ui-plugin-colors-background-footer-label": "Alaviitteen tausta",
-	"flexiskin-ui-plugin-colors-foreground-footer-label": "Alaviitteen etuala",
-	"flexiskin-ui-plugin-content-header-color-label": "Väri"
+	"flexiskin-ui-plugin-colors-foreground-footer-label": "Alaviitteen etuala"
 }

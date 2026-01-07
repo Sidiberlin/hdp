@@ -2,15 +2,17 @@
 
 namespace SMW\DataValues;
 
-use Linker;
-use SMW\Localizer;
-use SMW\Message;
+use MediaWiki\Html\Html;
+use MediaWiki\Linker\Linker;
+use MediaWiki\MediaWikiServices;
+use SMW\Localizer\Localizer;
+use SMW\Localizer\Message;
 
 /**
  * To support regular expressions in connection with the `Allows pattern`
  * property.
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.4
  *
  * @author mwjames
@@ -40,7 +42,6 @@ class AllowsPatternValue extends StringValue {
 	 * @param string $value
 	 */
 	protected function parseUserValue( $value ) {
-
 		if ( $value === '' ) {
 			$this->addErrorMsg( 'smw_emptystring' );
 		}
@@ -70,7 +71,6 @@ class AllowsPatternValue extends StringValue {
 	 * @return string
 	 */
 	public function getShortWikiText( $linker = null ) {
-
 		if ( !$this->isValid() ) {
 			return '';
 		}
@@ -99,15 +99,14 @@ class AllowsPatternValue extends StringValue {
 	 * @return string
 	 */
 	public function getShortHtmlText( $linker = null ) {
-
 		if ( !$this->isValid() ) {
 			return '';
 		}
 
 		$id = $this->getDataItem()->getString();
-		$title = \Title::newFromText( self::REFERENCE_PAGE_ID, NS_MEDIAWIKI );
+		$title = MediaWikiServices::getInstance()->getTitleFactory()->newFromText( self::REFERENCE_PAGE_ID, NS_MEDIAWIKI );
 
-		return \Html::rawElement(
+		return Html::rawElement(
 			'a',
 			[
 				'href'   => $title->getLocalUrl(),

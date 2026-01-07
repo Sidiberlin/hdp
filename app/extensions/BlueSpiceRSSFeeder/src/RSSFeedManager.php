@@ -3,10 +3,10 @@
 namespace BlueSpice\RSSFeeder;
 
 use BlueSpice\ExtensionAttributeBasedRegistry;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\User\User;
 use Psr\Log\LoggerInterface;
-use User;
 
 class RSSFeedManager {
 	/** @var array */

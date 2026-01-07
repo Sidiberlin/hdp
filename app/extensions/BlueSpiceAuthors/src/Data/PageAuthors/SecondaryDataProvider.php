@@ -5,7 +5,7 @@ namespace BlueSpice\Authors\Data\PageAuthors;
 use BlueSpice\Renderer\Params;
 use BlueSpice\RendererFactory;
 use MediaWiki\MediaWikiServices;
-use User;
+use MediaWiki\User\User;
 
 class SecondaryDataProvider extends \MWStake\MediaWiki\Component\DataStore\SecondaryDataProvider {
 

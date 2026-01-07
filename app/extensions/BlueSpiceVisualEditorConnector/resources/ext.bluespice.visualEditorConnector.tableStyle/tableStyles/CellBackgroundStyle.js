@@ -1,30 +1,30 @@
 bs.util.registerNamespace( 'bs.vec.ui' );
 
-bs.vec.ui.CellBackgroundStyle = function() {
+bs.vec.ui.CellBackgroundStyle = function () {
 	bs.vec.ui.CellBackgroundStyle.super.apply( this );
 	this.section = bs.vec.ui.TableStyle.static.SECTION_CELL;
 	this.applyTo = bs.vec.ui.TableStyle.static.ELEMENT_CELL;
 };
 
-OO.inheritClass( bs.vec.ui.CellBackgroundStyle , bs.vec.ui.TableStyle );
+OO.inheritClass( bs.vec.ui.CellBackgroundStyle, bs.vec.ui.TableStyle );
 
-bs.vec.ui.CellBackgroundStyle.prototype.getAttribute = function() {
+bs.vec.ui.CellBackgroundStyle.prototype.getAttribute = function () {
 	return 'background-color';
 };
 
-bs.vec.ui.CellBackgroundStyle.prototype.getUnit = function() {
+bs.vec.ui.CellBackgroundStyle.prototype.getUnit = function () {
 	return bs.vec.ui.TableStyle.static.UNIT_NONE;
 };
 
 bs.vec.ui.CellBackgroundStyle.prototype.clearColor = function ( $element ) {
-	var classes = $element[0].classList.values();
-	for (const cellClass of classes) {
-		if (cellClass.match(/col-\S+/)) {
-			$element[0].classList.remove(cellClass);
+	const classes = $element[ 0 ].classList.values();
+	for ( const cellClass of classes ) {
+		if ( cellClass.match( /col-\S+/ ) ) {
+			$element[ 0 ].classList.remove( cellClass ); // eslint-disable-line mediawiki/class-doc
 		}
 	}
-	$element[0].style.backgroundColor = "";
-	$element[0].removeAttribute('style');
+	$element[ 0 ].style.backgroundColor = '';
+	$element[ 0 ].removeAttribute( 'style' );
 	return $element;
 };
 
@@ -33,27 +33,27 @@ bs.vec.ui.CellBackgroundStyle.prototype.decorate = function ( $element ) {
 	if ( this.value.hasOwnProperty( 'code' ) ) {
 		return $element.css( this.getAttribute(), this.value.code );
 	} else if ( this.value.hasOwnProperty( 'class' ) ) {
-		return $element.addClass( this.value['class'] );
+		return $element.addClass( this.value.class ); // eslint-disable-line mediawiki/class-doc
 	}
 };
 
-bs.vec.ui.CellBackgroundStyle.prototype.getTool = function() {
+bs.vec.ui.CellBackgroundStyle.prototype.getTool = function () {
 	return {
 		widget: bs.vec.ui.widget.CellBackgroundWidget,
 		displaySection: bs.vec.ui.TableStyle.static.TYPE_QUICK
 	};
 };
 
-bs.vec.ui.CellBackgroundStyle.prototype.getModelProperty = function() {
+bs.vec.ui.CellBackgroundStyle.prototype.getModelProperty = function () {
 	return 'cellBackgroundColor';
 };
 
-bs.vec.ui.CellBackgroundStyle.prototype.toDataElement = function( section, domElement, result ) {
-	var style, styleParser, classes;
+bs.vec.ui.CellBackgroundStyle.prototype.toDataElement = function ( section, domElement, result ) {
+	let styleParser, classes;
 	if ( !this.applies( section ) ) {
 		return;
 	}
-	style = domElement.getAttribute( 'style' );
+	const style = domElement.getAttribute( 'style' );
 	if ( style ) {
 		styleParser = new bs.vec.util.StyleAttributeParser( style );
 		if ( styleParser.getValueForAttr( this.getAttribute() ) ) {
@@ -72,13 +72,13 @@ bs.vec.ui.CellBackgroundStyle.prototype.toDataElement = function( section, domEl
 		}
 
 		result.cellBackgroundColor = {
-			'class': classes[0]
+			class: classes[ 0 ]
 		};
 	}
 };
 
-bs.vec.ui.CellBackgroundStyle.prototype.toDomElements = function( section, dataElement, domElement, attributes ) {
-	var value, style, styleParser;
+bs.vec.ui.CellBackgroundStyle.prototype.toDomElements = function ( section, dataElement, domElement, attributes ) { // eslint-disable-line no-unused-vars
+	let style;
 
 	if ( !this.applies( section ) ) {
 		return;
@@ -88,18 +88,18 @@ bs.vec.ui.CellBackgroundStyle.prototype.toDomElements = function( section, dataE
 		return;
 	}
 
-	value = dataElement.attributes.cellBackgroundColor;
+	const value = dataElement.attributes.cellBackgroundColor;
 	style = domElement.getAttribute( 'style' );
 	if ( !style ) {
 		style = '';
 	}
-	styleParser = new bs.vec.util.StyleAttributeParser( style );
+	const styleParser = new bs.vec.util.StyleAttributeParser( style );
 
 	// clearing background style and colors from domElement
 	// if bg-color was fully cleared from cell value will be an empty object
-	styleParser.addToStyle( this.getAttribute(), "" );
+	styleParser.addToStyle( this.getAttribute(), '' );
 	domElement.setAttribute( 'style', styleParser.toString() );
-	domElement.setAttribute( 'class', "" );
+	domElement.setAttribute( 'class', '' );
 
 	if ( $.isEmptyObject( value ) ) {
 		return domElement;
@@ -108,9 +108,9 @@ bs.vec.ui.CellBackgroundStyle.prototype.toDomElements = function( section, dataE
 		styleParser.addToStyle( this.getAttribute(), value.code );
 		domElement.setAttribute( 'style', styleParser.toString() );
 	} else if ( value.hasOwnProperty( 'class' ) ) {
-		domElement.setAttribute( 'class', value['class'] );
+		domElement.setAttribute( 'class', value.class );
 	}
 	return domElement;
 };
 
-bs.vec.registry.TableStyle.register( "cellBackgroundColor", new bs.vec.ui.CellBackgroundStyle() );
+bs.vec.registry.TableStyle.register( 'cellBackgroundColor', new bs.vec.ui.CellBackgroundStyle() );

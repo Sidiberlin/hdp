@@ -2,13 +2,13 @@
 
 namespace BS\ExtendedSearch\Source\Crawler;
 
-use Config;
-use ConfigFactory;
 use JobQueueGroup;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigFactory;
+use MediaWiki\Title\TitleFactory;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
 use SplFileInfo;
-use TitleFactory;
 use UnexpectedValueException;
 use Wikimedia\Rdbms\ILoadBalancer;
 

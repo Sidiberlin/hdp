@@ -5,7 +5,7 @@ namespace BS\ExtendedSearch\Data;
 use BS\ExtendedSearch\Backend;
 use BS\ExtendedSearch\SearchResult;
 use Exception;
-use FormatJson;
+use MediaWiki\Json\FormatJson;
 use MWStake\MediaWiki\Component\DataStore\FieldType;
 use MWStake\MediaWiki\Component\DataStore\Filter\Boolean;
 use MWStake\MediaWiki\Component\DataStore\Filter\Date;
@@ -123,8 +123,10 @@ abstract class PrimaryDataProvider implements IPrimaryDataProvider {
 			if ( $result->getTotalHits() < 1 ) {
 				return $this->data;
 			}
+			$lastRow = null;
 			foreach ( $result->getResults() as $row ) {
 				$this->appendRowToData( $row );
+				$lastRow = $row;
 				if ( $params->getLimit() === $params::LIMIT_INFINITE ) {
 					continue;
 				}
@@ -134,7 +136,7 @@ abstract class PrimaryDataProvider implements IPrimaryDataProvider {
 			}
 			// Because OS search can't handle from + size larger than 10000
 			// see: https://opensearch.org/docs/2.11/search-plugins/searching-data/paginate/#scroll-search
-			$searchAfter = $row->getParam( 'sort' ) ?? '';
+			$searchAfter = $lastRow ? $lastRow->getParam( 'sort' ) : '';
 			if ( is_array( $searchAfter ) ) {
 				$firstKey = array_key_first( $searchAfter );
 				$searchAfter = $searchAfter[$firstKey];

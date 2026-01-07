@@ -3,10 +3,12 @@
 namespace BS\ExtendedSearch\MediaWiki\Api;
 
 use BS\ExtendedSearch\Backend;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class Stats extends \ApiBase {
+class Stats extends ApiBase {
 
 	/**
 	 *
@@ -20,8 +22,7 @@ class Stats extends \ApiBase {
 
 		try {
 			$stats = $this->makeBackendStats( $this->backend );
-		}
-		catch ( \Exception $ex ) {
+		} catch ( \Exception $ex ) {
 			$stats = [
 				'error' => $ex->getMessage()
 			];
@@ -40,7 +41,7 @@ class Stats extends \ApiBase {
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => false,
 				ParamValidator::PARAM_DEFAULT => '[]',
-				\ApiBase::PARAM_HELP_MSG => 'apihelp-bs-extendedsearch-stats-param-stats',
+				ApiBase::PARAM_HELP_MSG => 'apihelp-bs-extendedsearch-stats-param-stats',
 			]
 		];
 	}
@@ -56,7 +57,7 @@ class Stats extends \ApiBase {
 	protected function getParameterFromSettings( $paramName, $paramSettings, $parseLimit ) {
 		$value = parent::getParameterFromSettings( $paramName, $paramSettings, $parseLimit );
 		if ( $paramName === 'stats' ) {
-			$value = \FormatJson::decode( $value, true );
+			$value = FormatJson::decode( $value, true );
 			if ( empty( $value ) ) {
 				return [];
 			}
@@ -88,7 +89,7 @@ class Stats extends \ApiBase {
 				// bs-extendedsearch-source-label-specialpage
 				// bs-extendedsearch-source-label-external
 				// bs-extendedsearch-source-label-repofile
-				'label' => wfMessage( 'bs-extendedsearch-source-label-' . $typeKey )->plain(),
+				'label' => $this->msg( 'bs-extendedsearch-source-label-' . $typeKey )->text(),
 				'pending_update_jobs' => $source->getCrawler()->getNumberOfPendingJobs(),
 				'documents_count' => $this->getCountStats( $backend->getIndexName( $typeKey ), $backend )['count'] ?? -1
 			];

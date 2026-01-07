@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.ui.widget' );
 
-bs.vec.ui.widget.RowHeightWidget = function( contextItem ) {
+bs.vec.ui.widget.RowHeightWidget = function ( contextItem ) {
 
 	bs.vec.ui.widget.RowHeightWidget.parent.call( this, contextItem );
 

@@ -7,8 +7,8 @@
 				class="enhanced-files-file-card"
 				:thumbnail="card.thumbnail"
 				tabindex="0"
-				@click="onImageClick( $event,card )"
-				@keyup.enter="onImageClick( $event,card )">
+				@click="onImageClick( $event, card )"
+				@keyup.enter="onImageClick( $event, card )">
 				<template #title>
 					{{ card.title }}
 					<cdx-button
@@ -88,16 +88,19 @@ module.exports = defineComponent( {
 		&:hover {
 			background-color: #fff;
 		}
+
 		&:focus-visible {
 			background-color: #fff;
 			border: 1px solid #36c;
 		}
 
-		.cdx-thumbnail__image {
-			width: 120px;
-			height: 120px;
-			border-color: transparent;
-			background-size: auto;
+		.cdx-card__thumbnail.cdx-thumbnail {
+			.cdx-thumbnail__image {
+				width: 120px;
+				height: 120px;
+				border-color: transparent;
+				background-size: auto;
+			}
 		}
 
 		.cdx-card__text__title > button {

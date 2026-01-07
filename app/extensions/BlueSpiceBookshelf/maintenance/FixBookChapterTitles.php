@@ -1,6 +1,8 @@
 <?php
 
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\TitleFactory;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\LoadBalancer;
 
@@ -56,7 +58,9 @@ class FixBookChapterTitles extends LoggedUpdateMaintenance {
 	private function fetchChapters() {
 		$res = $this->db->select(
 			'bs_book_chapters',
-			'*'
+			'*',
+			'',
+			__METHOD__
 		);
 
 		if ( $res->numRows() < 1 ) {
@@ -78,11 +82,9 @@ class FixBookChapterTitles extends LoggedUpdateMaintenance {
 			$this->output( "Update " . $chapter->getText() . " into 'bs_book_chapters' ..." );
 			$this->db->update(
 				'bs_book_chapters',
-				[
-					'chapter_title' => $chapter->getDBKey()
-				], [
-					'chapter_id' => $id
-				]
+				[ 'chapter_title' => $chapter->getDBKey() ],
+				[ 'chapter_id' => $id ],
+				__METHOD__
 			);
 			$this->output( "\033[32m  done\n\033[39m" );
 		}

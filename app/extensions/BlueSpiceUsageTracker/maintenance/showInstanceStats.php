@@ -29,7 +29,10 @@
  * @license GPL-2.0-or-later
  */
 
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\WikiMap\WikiMap;
 
 $IP = realpath( dirname( dirname( __DIR__ ) ) );
 
@@ -57,7 +60,7 @@ class ShowInstanceStats extends Maintenance {
 		];
 
 		// Get cached stats from a replica DB
-		$dbr = $this->getDB( DB_REPLICA );
+		$dbr = $this->getReplicaDB();
 		$stats = $dbr->selectRow( 'site_stats', '*', '', __METHOD__ );
 
 		// Get maximum size for each column
@@ -71,17 +74,11 @@ class ShowInstanceStats extends Maintenance {
 			array_push( $sitestats, [ $desc => $stats->$field ]
 			);
 		}
-		$numberOfEnabledUsers = $this->getNumberOfEnabledUsers();
+		$numberOfEnabledUsers = $this->countEnabledUsers();
 		array_push( $sitestats, [ "Enabled users" => $numberOfEnabledUsers ] );
 
 		$em = MediaWikiServices::getInstance()->getService( 'BSExtensionFactory' );
 		$usagetrackerdata = $em->getExtension( 'BlueSpiceUsageTracker' )->getUsageDataFromDB();
-		$bsextensioninfo = MediaWikiServices::getInstance()
-			->getConfigFactory()
-			->makeConfig( 'bsg' )
-			->get( 'BlueSpiceExtInfo' );
-		$mwversionobj = new MediaWikiVersionFetcher;
-		$mwversion = $mwversionobj->fetchVersion();
 		$usagetracker = [];
 
 		foreach ( $usagetrackerdata as $data ) {
@@ -97,9 +94,9 @@ class ShowInstanceStats extends Maintenance {
 		$instanceStats = [
 			"instance" => sha1( WikiMap::getCurrentWikiId() ),
 			"timestamp" => date( DATE_ISO8601 ),
-			"bluespice-version" => $bsextensioninfo['version'],
-			"bluespice-edition" => $bsextensioninfo['package'],
-			"mediawiki-version" => $mwversion,
+			"bluespice-version" => $this->getVersion(),
+			"bluespice-edition" => $this->getEdition(),
+			"mediawiki-version" => MW_VERSION,
 			"sitestats" => call_user_func_array( 'array_merge', $sitestats ),
 			"usagetracker" => call_user_func_array( 'array_merge', $usagetracker )
 		];
@@ -107,47 +104,90 @@ class ShowInstanceStats extends Maintenance {
 	}
 
 	/**
-	 * Give the number of active Users back, subtract the number of getDeactivatedUserNumber from getUserNuḿber.
+	 * Get the number of enabled (not blocked) users.
 	 *
 	 * @return int
 	 */
-	public function getNumberOfEnabledUsers() {
-		$res1 = $this->getUserNumber();
-		$res2 = $this->getDeactivatedUserNumber();
-		$sum = $res1 - $res2;
+	private function countEnabledUsers(): int {
+		$total = $this->countTotalUsers();
+		$blocked = $this->countBlockedUsers();
 
-		return $sum;
+		return $total - $blocked;
 	}
 
 	/**
-	 * Count the list of Users.
+	 * Count all users.
 	 *
 	 * @return int
 	 */
-	public function getUserNumber() {
-		$dbr = $this->getDB( DB_REPLICA );
-		$res = $dbr->newSelectQueryBuilder()
-					->select( 'user_id' )
-					->from( 'user' )
-					->caller( __METHOD__ )
-					->fetchRowCount();
-		return $res;
+	private function countTotalUsers(): int {
+		$dbr = $this->getReplicaDB();
+		$count = $dbr->newSelectQueryBuilder()
+			->select( 'user_id' )
+			->from( 'user' )
+			->caller( __METHOD__ )
+			->fetchRowCount();
+
+		return $count;
 	}
 
 	/**
-	 * Count all Users on the Blocklist witch attribute ipb.sitewide is 1 (deactivated Users or blocked).
+	 * Count all currently sitewide blocked users.
 	 *
 	 * @return int
 	 */
-	public function getDeactivatedUserNumber() {
-		$dbr = $this->getDB( DB_REPLICA );
-		$res = $dbr->newSelectQueryBuilder()
-					->select( 'ipb_user' )
-					->from( 'ipblocks' )
-					->where( 'ipb_sitewide IS NOT NULL' )
-					->caller( __METHOD__ )
-					->fetchRowCount();
-		return $res;
+	private function countBlockedUsers(): int {
+		$dbr = $this->getReplicaDB();
+		$count = $dbr->newSelectQueryBuilder()
+			->table( 'block_target' )
+			->join( 'block', null, 'bt_id = bl_target' )
+			->field( 'bt_user' )
+			->where( [
+				'bt_user IS NOT NULL',
+				'bl_sitewide' => 1,
+				$dbr->makeList(
+					[
+						$dbr->expr( 'bl_expiry', '=', 'infinity' ),
+						$dbr->expr( 'bl_expiry', '>=', $dbr->timestamp() )
+					],
+					LIST_OR
+				)
+			] )
+			->caller( __METHOD__ )
+			->fetchRowCount();
+
+		return $count;
+	}
+
+	/**
+	 * @return string
+	 */
+	private function getVersion(): string {
+		return $this->getFileContent( $GLOBALS['IP'] . '/BLUESPICE-VERSION' );
+	}
+
+	/**
+	 * @return string
+	 */
+	private function getEdition(): string {
+		return $this->getFileContent( $GLOBALS['IP'] . '/BLUESPICE-EDITION' );
+	}
+
+	/**
+	 * Reads a file, sanitises its contents, and trims whitespace.
+	 *
+	 * @param string $filePath
+	 * @return string
+	 */
+	private function getFileContent( string $filePath ): string {
+		$content = '';
+		if ( file_exists( $filePath ) ) {
+			$fileContent = file_get_contents( $filePath );
+			$content = Sanitizer::stripAllTags( $fileContent );
+			$content = trim( $content );
+		}
+
+		return $content;
 	}
 }
 

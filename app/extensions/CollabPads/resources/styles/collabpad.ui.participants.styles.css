@@ -1,12 +1,11 @@
-
-.collabpads-participants > span:before {
+.collabpads-participants > span::before {
 	content: '(';
 }
 
-.collabpads-participants > span:not( :first-child ):before {
+.collabpads-participants > span:not( :first-child )::before {
 	content: ',\ ';
 }
 
-.collabpads-participants > span:last-child:after {
+.collabpads-participants > span:last-child::after {
 	content: ')';
 }

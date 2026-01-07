@@ -4,18 +4,19 @@ namespace BlueSpice\Bookshelf\MenuEditor\NodeProcessor;
 
 use BlueSpice\Bookshelf\MenuEditor\Node\ChapterWikiLinkWithAlias;
 use MediaWiki\Extension\MenuEditor\NodeProcessor\MenuNodeProcessor;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\Wikitext\NodeSource\WikitextSource;
 use MWStake\MediaWiki\Lib\Nodes\INode;
 use MWStake\MediaWiki\Lib\Nodes\INodeSource;
 
 class ChapterWikiLinkWithAliasProcessor extends MenuNodeProcessor {
-	/** @var \TitleFactory */
+	/** @var TitleFactory */
 	private $titleFactory;
 
 	/**
-	 * @param \TitleFactory $titleFactory
+	 * @param TitleFactory $titleFactory
 	 */
-	public function __construct( \TitleFactory $titleFactory ) {
+	public function __construct( TitleFactory $titleFactory ) {
 		$this->titleFactory = $titleFactory;
 	}
 

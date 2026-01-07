@@ -27,10 +27,10 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
-use Config;
-use IContextSource;
-use Parser;
-use Title;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Title\Title;
 
 abstract class BeforeParserFetchTemplateAndTitle extends Hook {
 

@@ -1,11 +1,11 @@
-bs.expiry.ui.DeleteExpiryPage = function( cfg ) {
+bs.expiry.ui.DeleteExpiryPage = function ( cfg ) {
 	bs.expiry.ui.DeleteExpiryPage.parent.call( this, 'delete-expiry', cfg );
 	this.reminderEnabled = false;
 };
 
 OO.inheritClass( bs.expiry.ui.DeleteExpiryPage, OOJSPlus.ui.booklet.DialogBookletPage );
 
-bs.expiry.ui.DeleteExpiryPage.prototype.getItems = function() {
+bs.expiry.ui.DeleteExpiryPage.prototype.getItems = function () {
 	return [
 		new OO.ui.LabelWidget( {
 			label: mw.message( 'bs-expiry-dialog-delete-prompt' ).text()
@@ -13,35 +13,35 @@ bs.expiry.ui.DeleteExpiryPage.prototype.getItems = function() {
 	];
 };
 
-bs.expiry.ui.DeleteExpiryPage.prototype.getTitle = function() {
-	return mw.message( 'bs-expiry-dialog-title' ).plain();
+bs.expiry.ui.DeleteExpiryPage.prototype.getTitle = function () {
+	return mw.message( 'bs-expiry-dialog-title' ).text();
 };
 
-bs.expiry.ui.DeleteExpiryPage.prototype.getSize = function() {
+bs.expiry.ui.DeleteExpiryPage.prototype.getSize = function () {
 	return 'medium';
 };
 
-bs.expiry.ui.DeleteExpiryPage.prototype.setData = function( data ) {
+bs.expiry.ui.DeleteExpiryPage.prototype.setData = function ( data ) {
 	this.id = data.id;
 	this.page = data.page;
 	this.reminderEnabled = data.reminderEnabled;
 };
 
-bs.expiry.ui.DeleteExpiryPage.prototype.getActionKeys = function() {
+bs.expiry.ui.DeleteExpiryPage.prototype.getActionKeys = function () {
 	return [ 'cancel', 'delete' ];
 };
 
-bs.expiry.ui.DeleteExpiryPage.prototype.getAbilities = function() {
+bs.expiry.ui.DeleteExpiryPage.prototype.getAbilities = function () {
 	return { cancel: true, delete: true };
 };
 
-bs.expiry.ui.DeleteExpiryPage.prototype.onAction = function( action ) {
-	var dfd = $.Deferred();
+bs.expiry.ui.DeleteExpiryPage.prototype.onAction = function ( action ) {
+	const dfd = $.Deferred();
 
 	if ( action === 'delete' ) {
-		this.deleteExpiry().done( function() {
+		this.deleteExpiry().done( () => {
 			dfd.resolve( { action: 'close', data: { success: true } } );
-		}.bind( this ) ).fail( function( error ) {
+		} ).fail( ( error ) => {
 			dfd.reject( error );
 		} );
 	} else {
@@ -51,9 +51,8 @@ bs.expiry.ui.DeleteExpiryPage.prototype.onAction = function( action ) {
 	return dfd.promise();
 };
 
-
-bs.expiry.ui.DeleteExpiryPage.prototype.deleteExpiry = function() {
-	var dfd = $.Deferred();
+bs.expiry.ui.DeleteExpiryPage.prototype.deleteExpiry = function () {
+	const dfd = $.Deferred();
 
 	blueSpice.api.tasks.exec(
 		'expiry',
@@ -63,18 +62,18 @@ bs.expiry.ui.DeleteExpiryPage.prototype.deleteExpiry = function() {
 			pageName: this.page
 		},
 		{
-			success: function() {
+			success: function () {
 				if ( this.reminderEnabled ) {
-					this.deleteReminder().done( function() {
+					this.deleteReminder().done( () => {
 						dfd.resolve();
-					} ).fail( function( e ) {
+					} ).fail( ( e ) => {
 						dfd.reject( e );
 					} );
 				} else {
 					dfd.resolve();
 				}
 			}.bind( this ),
-			failure: function( response ) {
+			failure: function ( response ) {
 				dfd.reject( response.message );
 			}
 		}
@@ -86,9 +85,10 @@ bs.expiry.ui.DeleteExpiryPage.prototype.deleteExpiry = function() {
 /**
  * This is horrible, not a good way to integrate other extensions -.-
  *
+ * @return {Promise}
  */
-bs.expiry.ui.DeleteExpiryPage.prototype.deleteReminder = function() {
-	var dfd = $.Deferred();
+bs.expiry.ui.DeleteExpiryPage.prototype.deleteReminder = function () {
+	const dfd = $.Deferred();
 
 	blueSpice.api.tasks.exec(
 		'reminder',
@@ -98,10 +98,10 @@ bs.expiry.ui.DeleteExpiryPage.prototype.deleteReminder = function() {
 			page: this.page
 		},
 		{
-			success: function() {
+			success: function () {
 				dfd.resolve();
 			},
-			failure: function() {
+			failure: function () {
 				dfd.resolve();
 			}
 		}

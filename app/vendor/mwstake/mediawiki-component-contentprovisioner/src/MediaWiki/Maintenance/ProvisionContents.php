@@ -2,10 +2,10 @@
 
 namespace MWStake\MediaWiki\Component\ContentProvisioner\MediaWiki\Maintenance;
 
-use ExtensionRegistry;
-use LoggedUpdateMaintenance;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 use MWStake\MediaWiki\Component\ContentProvisioner\ContentProvisionerPipeline;
 use MWStake\MediaWiki\Component\ContentProvisioner\ContentProvisionerRegistry\FileBasedRegistry;
 use MWStake\MediaWiki\Component\ContentProvisioner\Output\PrintOutput;
@@ -16,10 +16,12 @@ class ProvisionContents extends LoggedUpdateMaintenance {
 	 * @inheritDoc
 	 */
 	protected function doDBUpdates() {
+		if ( defined( 'MW_QUIBBLE_CI' ) ) {
+			return true;
+		}
+
 		$enabledExtensions = array_keys( ExtensionRegistry::getInstance()->getAllThings() );
-
 		$contentProvisionerRegistry = new FileBasedRegistry( $enabledExtensions, $GLOBALS['IP'] );
-
 		$objectFactory = MediaWikiServices::getInstance()->getObjectFactory();
 
 		$contentProvisionerPipeline = new ContentProvisionerPipeline(

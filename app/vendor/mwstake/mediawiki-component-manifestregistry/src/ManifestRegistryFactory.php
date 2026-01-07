@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\ManifestRegistry;
 
-use ExtensionRegistry;
+use MediaWiki\Registration\ExtensionRegistry;
 
 class ManifestRegistryFactory {
 
@@ -33,7 +33,7 @@ class ManifestRegistryFactory {
 	 * @param string $manifestAttributeKey
 	 * @return IRegistry
 	 */
-	public function get( $manifestAttributeKey ) : IRegistry {
+	public function get( $manifestAttributeKey ): IRegistry {
 		$registry = new ManifestAttributeBasedRegistry(
 			$manifestAttributeKey,
 			$this->extensionRegistry,

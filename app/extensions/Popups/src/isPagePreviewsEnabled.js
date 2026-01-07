@@ -1,6 +1,9 @@
 /**
  * @module isPagePreviewsEnabled
+ * @private
  */
+import { previewTypes } from './preview/model';
+const canSaveToUserPreferences = require( './canSaveToUserPreferences.js' );
 
 /**
  * Given the global state of the application, creates a function that gets
@@ -12,7 +15,7 @@
  * either be logged in and have enabled the preference or be logged out and have
  * not disabled previews via the settings modal.
  *
- * @param {mw.user} user The `mw.user` singleton instance
+ * @param {mw.User} user The `mw.user` singleton instance
  * @param {Object} userSettings An object returned by `userSettings.js`
  * @param {mw.Map} config
  *
@@ -24,10 +27,10 @@ export default function isPagePreviewsEnabled( user, userSettings, config ) {
 		return null;
 	}
 
-	// For anonymous users, the code loads always, but the feature can be toggled at run-time via
-	// local storage.
-	if ( user.isAnon() ) {
-		return userSettings.isPagePreviewsEnabled();
+	// For anonymous users, and for IP masked usersm the code loads always,
+	// but the feature can be toggled at run-time via local storage.
+	if ( !canSaveToUserPreferences( user ) ) {
+		return userSettings.isPreviewTypeEnabled( previewTypes.TYPE_PAGE );
 	}
 
 	// Registered users never can enable popup types at run-time.

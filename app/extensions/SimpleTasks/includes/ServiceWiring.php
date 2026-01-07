@@ -11,7 +11,8 @@ return [
 			$services->getUserFactory(),
 			$services->getService( 'AtMentionsParser' ),
 			$services->getService( 'DateTimeToolParser' ),
-			$services->getService( 'MWStake.Notifier' )
+			$services->getService( 'MWStake.Notifier' ),
+			$services->getContentLanguage()
 		);
 	},
 ];

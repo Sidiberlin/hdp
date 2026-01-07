@@ -2,7 +2,7 @@
 
 ( function ( mw, $, d, undefined ) {
     const Vue = require( 'vue' );
-    const GridApp = require( 'ext.vuejsplus-data-grid.vue' );
+    const GridApp = require( './components/DataTable.vue' );
 
     var tables = $( '.datagrid, .data-grid' );
     for ( tableIndex = 0; tableIndex < tables.length; tableIndex++ ) {
@@ -17,7 +17,7 @@
         }
 
         var spec = {
-            class: tableClassName,
+            className: tableClassName,
             cols: [],
             rows: []
         };

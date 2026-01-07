@@ -18,11 +18,11 @@
 
 namespace MediaWiki\Extension\WebAuthn\Api;
 
-use ApiBase;
-use ApiUsageException;
-use ConfigException;
-use FormatJson;
-use MediaWiki\Extension\OATHAuth\OATHAuth;
+use InvalidArgumentException;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiUsageException;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Extension\OATHAuth\OATHAuthModuleRegistry;
 use MediaWiki\Extension\WebAuthn\Authenticator;
 use MediaWiki\Extension\WebAuthn\Module\WebAuthn as WebAuthnModule;
 use MediaWiki\MediaWikiServices;
@@ -33,25 +33,33 @@ use Wikimedia\ParamValidator\ParamValidator;
  * This class provides an endpoint for all WebAuthn actions.
  */
 class WebAuthn extends ApiBase {
-	private const ACTION_GET_REGISTER_INFO = 'getRegisterInfo';
-	private const ACTION_REGISTER = 'register';
+
 	private const ACTION_GET_AUTH_INFO = 'getAuthInfo';
-	private const ACTION_AUTHENTICATE = 'authenticate';
+	private const ACTION_GET_REGISTER_INFO = 'getRegisterInfo';
 
 	/**
 	 * @throws ApiUsageException
 	 */
 	public function execute() {
-		$func = $this->getFunction();
-		$this->verifyFunction( $func );
+		$func = $this->getParameter( 'func' );
 
 		$this->checkPermissions( $func );
-		$data = $this->getData();
 		$this->checkModule();
 
-		$funcRes = call_user_func_array( [ $this, $func ], [ $data ] );
+		switch ( $func ) {
+			case self::ACTION_GET_REGISTER_INFO:
+				$result = $this->getRegisterInfo();
+				break;
 
-		$this->getResult()->addValue( null, $this->getModuleName(), $funcRes );
+			case self::ACTION_GET_AUTH_INFO:
+				$result = $this->getAuthInfo();
+				break;
+
+			default:
+				throw new InvalidArgumentException();
+		}
+
+		$this->getResult()->addValue( null, $this->getModuleName(), $result );
 	}
 
 	/**
@@ -60,129 +68,66 @@ class WebAuthn extends ApiBase {
 	public function getAllowedParams() {
 		return [
 			'func' => [
-				ParamValidator::PARAM_TYPE => 'string',
-				ParamValidator::PARAM_REQUIRED => true
+				ParamValidator::PARAM_TYPE => array_keys( $this->getRegisteredFunctions() ),
+				ParamValidator::PARAM_REQUIRED => true,
+				ApiBase::PARAM_HELP_MSG_PER_VALUE => [
+					'getAuthInfo' => 'apihelp-webauthn-paramvalue-func-getauthinfo',
+					'getRegisterInfo' => 'apihelp-webauthn-paramvalue-func-getregisterinfo',
+				],
 			],
-			'data' => [
-				ParamValidator::PARAM_TYPE => 'string',
-			]
 		];
 	}
 
 	/**
-	 * @return mixed
-	 * @throws ApiUsageException
-	 */
-	protected function getFunction() {
-		return $this->getParameter( 'func' );
-	}
-
-	/**
-	 * @param string $func
-	 * @return string
-	 * @throws ApiUsageException
-	 */
-	protected function verifyFunction( $func ) {
-		$registered = $this->getRegisteredFunctions();
-		if ( !isset( $registered[$func] ) ) {
-			$this->dieWithError( 'oathauth-apierror-func-value-not-registered' );
-		}
-		$config = $registered[$func];
-		if ( isset( $config['mustBePosted'] ) && $config['mustBePosted'] === true ) {
-			if ( !$this->getRequest()->wasPosted() ) {
-				$this->dieWithError( 'apierror-mustbeposted' );
-			}
-		}
-		return $func;
-	}
-
-	/**
-	 * @return array
-	 * @throws ApiUsageException
-	 */
-	protected function getData() {
-		$params = $this->extractRequestParams();
-		if ( isset( $params['data'] ) ) {
-			$decoded = FormatJson::decode( $params['data'] );
-			if ( $decoded !== null ) {
-				return $decoded;
-			}
-		}
-		return [];
-	}
-
-	/**
-	 * Array of all functions that are allowed to be called
-	 * Each key must have appropriate configuration that
-	 * defines user requirements for the action
+	 * Array of all functions that are allowed to be called.
+	 * Each key must have the appropriate configuration that
+	 * defines user requirements for the action.
 	 *
 	 * @return array
 	 */
 	protected function getRegisteredFunctions() {
 		return [
-			static::ACTION_GET_REGISTER_INFO => [
-				'permissions' => [ 'oathauth-enable' ],
-				'mustBePosted' => false,
-				'mustBeLoggedIn' => true
-			],
-			static::ACTION_REGISTER => [
-				'permissions' => [ 'oathauth-enable' ],
-				'mustBePosted' => false,
-				'mustBeLoggedIn' => true
-			],
 			static::ACTION_GET_AUTH_INFO => [
 				'permissions' => [],
-				'mustBePosted' => false,
-				'mustBeLoggedIn' => false
+				'mustBeLoggedIn' => false,
 			],
-			static::ACTION_AUTHENTICATE => [
-				'permissions' => [],
-				'mustBePosted' => true,
-				'mustBeLoggedIn' => false
-			]
+			static::ACTION_GET_REGISTER_INFO => [
+				'permissions' => [ 'oathauth-enable' ],
+				'mustBeLoggedIn' => true,
+			],
 		];
-	}
-
-	/**
-	 * @param string $func
-	 * @return array
-	 */
-	protected function getFunctionPermissions( $func ) {
-		$registered = $this->getRegisteredFunctions();
-		$functionConfig = $registered[$func];
-		if ( isset( $functionConfig['permissions'] ) ) {
-			return $functionConfig['permissions'];
-		}
-		return [];
 	}
 
 	/**
 	 * @param string $func
 	 * @throws ApiUsageException
 	 */
-	protected function checkPermissions( $func ) {
-		$funcPermissions = $this->getFunctionPermissions( $func );
-		if ( empty( $funcPermissions ) ) {
-			return;
-		}
-		$mustBeLoggedIn = $funcPermissions['mustBeLoggedIn'] ?? false;
+	protected function checkPermissions( string $func ): void {
+		$registered = $this->getRegisteredFunctions();
+		$functionConfig = $registered[$func];
+
+		$mustBeLoggedIn = $functionConfig['mustBeLoggedIn'];
 		if ( $mustBeLoggedIn === true ) {
 			$user = $this->getUser();
-			if ( !$user->isRegistered() ) {
-				$this->dieWithError( 'apierror-mustbeloggedin' );
+			if ( !$user->isNamed() ) {
+				$this->dieWithError( [ 'apierror-mustbeloggedin', $this->msg( 'action-oathauth-enable' ) ] );
 			}
 		}
-		$this->checkUserRightsAny( $funcPermissions );
+
+		$funcPermissions = $functionConfig['permissions'];
+		if ( $funcPermissions ) {
+			$this->checkUserRightsAny( $funcPermissions );
+		}
 	}
 
 	/**
 	 * @throws ApiUsageException
 	 */
 	protected function checkModule() {
-		/** @var OATHAuth $oath */
-		$oath = MediaWikiServices::getInstance()->getService( 'OATHAuth' );
-		$module = $oath->getModuleByKey( 'webauthn' );
-		if ( $module === null || !( $module instanceof WebAuthnModule ) ) {
+		/** @var OATHAuthModuleRegistry $moduleRegistry */
+		$moduleRegistry = MediaWikiServices::getInstance()->getService( 'OATHAuthModuleRegistry' );
+		$module = $moduleRegistry->getModuleByKey( 'webauthn' );
+		if ( !( $module instanceof WebAuthnModule ) ) {
 			$this->dieWithError( 'apierror-webauthn-module-missing' );
 		}
 	}

@@ -3,6 +3,8 @@
 namespace BlueSpice\NamespaceManager\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 abstract class NamespaceManagerWriteNamespaceConfiguration extends Hook {
 	/**
@@ -52,8 +54,8 @@ abstract class NamespaceManagerWriteNamespaceConfiguration extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param string &$saveContent
 	 * @param string $constName
 	 * @param int $ns

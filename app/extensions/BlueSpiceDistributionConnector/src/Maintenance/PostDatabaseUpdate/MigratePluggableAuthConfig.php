@@ -3,7 +3,7 @@
 namespace BlueSpice\DistributionConnector\Maintenance\PostDatabaseUpdate;
 
 use BlueSpice\DistributionConnector\ConfigDefinitionMigrate\PluggableAuthMigrator;
-use LoggedUpdateMaintenance;
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
 
 require_once dirname( __DIR__, 5 ) . "/maintenance/Maintenance.php";
@@ -83,7 +83,7 @@ class MigratePluggableAuthConfig extends LoggedUpdateMaintenance {
 	public function doDBUpdates() {
 		$this->db = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_PRIMARY );
 
-		list( $currentPluggableAuthConfig, $configExists ) = $this->getCurrentPluggableAuthConfig();
+		[ $currentPluggableAuthConfig, $configExists ] = $this->getCurrentPluggableAuthConfig();
 
 		// If some keys already exist in "$pluggableAuthConfig", they'll be silently overridden
 		// It should be okay since that script will be executed just after update
@@ -113,7 +113,8 @@ class MigratePluggableAuthConfig extends LoggedUpdateMaintenance {
 		$currentPluggableAuthConfig = $this->db->selectField(
 			$this->configTable,
 			's_value',
-			"s_name = '{$this->pluggableAuthConfigKey}'"
+			"s_name = '{$this->pluggableAuthConfigKey}'",
+			__METHOD__
 		);
 		if ( $currentPluggableAuthConfig ) {
 			$configExists = true;
@@ -140,10 +141,9 @@ class MigratePluggableAuthConfig extends LoggedUpdateMaintenance {
 		if ( $configExists ) {
 			$this->db->update(
 				$this->configTable,
-				[
-					's_value' => $newConfigValue
-				],
-				"s_name = '{$this->pluggableAuthConfigKey}'"
+				[ 's_value' => $newConfigValue ],
+				"s_name = '{$this->pluggableAuthConfigKey}'",
+				__METHOD__
 			);
 
 			$this->output( "Config '{$this->pluggableAuthConfigKey}' updated.\n" );
@@ -153,7 +153,8 @@ class MigratePluggableAuthConfig extends LoggedUpdateMaintenance {
 				[
 					's_name' => $this->pluggableAuthConfigKey,
 					's_value' => $newConfigValue
-				]
+				],
+				__METHOD__
 			);
 
 			$this->output( "Config '{$this->pluggableAuthConfigKey}' added.\n" );
@@ -181,9 +182,8 @@ class MigratePluggableAuthConfig extends LoggedUpdateMaintenance {
 
 		$this->db->delete(
 			$this->configTable,
-			[
-				's_name' => $configsToDelete
-			]
+			[ 's_name' => $configsToDelete ],
+			__METHOD__
 		);
 	}
 

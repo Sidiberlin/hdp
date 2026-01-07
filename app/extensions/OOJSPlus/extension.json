@@ -1,6 +1,6 @@
 {
 	"name": "OOJSPlus",
-	"version": "2.1.2",
+	"version": "3.1.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[https://www.hallowelt.com Hallo Welt! GmbH]"
@@ -8,7 +8,7 @@
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:OOJSPlus",
 	"descriptionmsg": "oojsplus-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"callback": "OOJSPlus\\Extension::callback",
 	"MessagesDirs": {
@@ -63,6 +63,7 @@
 				"ui/widget/ToggleMultiSelectInputWidget.js",
 				"ui/widget/MenuOptionWithDescription.js",
 				"ui/mixin/TitleQuery.js",
+				"ui/mixin/NamespaceOptions.js",
 				"ui/widget/TitleInputWidget.js",
 				"ui/widget/TitleMultiselectWidget.js",
 				"ui/widget/FileSearchWidget.js",
@@ -72,7 +73,12 @@
 				"ui/widget/CategoryMultiSelectWidget.js",
 				"ui/widget/CategoryInputWidget.js",
 				"ui/widget/NamespaceInputWidget.js",
-				"ui/widget/ImageWidget.js"
+				"ui/widget/NamespaceMultiselectWidget.js",
+				"ui/widget/ImageWidget.js",
+				"ui/widget/ContributionWidget.js",
+				"ui/widget/HeadingLabel.js",
+				"ui/widget/NoContentPlaceholderWidget.js",
+				"ui/widget/OutlineSelectWidget.js"
 			],
 			"messages": [
 				"oojsplus-namespace-content",
@@ -151,6 +157,7 @@
 				"ui/data/filter/Number.js",
 				"ui/data/filter/Boolean.js",
 				"ui/data/filter/List.js",
+				"ui/data/filter/TagList.js",
 				"ui/data/filter/User.js",
 				"ui/data/filter/Date.js",
 				"ui/data/column/Column.js",
@@ -161,6 +168,7 @@
 				"ui/data/column/Date.js",
 				"ui/data/column/Icon.js",
 				"ui/data/column/Action.js",
+				"ui/data/column/SecondaryActions.js",
 				"ui/data/column/User.js",
 				"ui/data/column/Selection.js",
 				"ui/data/column/Image.js",
@@ -169,7 +177,10 @@
 				"ui/data/grid/Toolbar.js",
 				"ui/data/tree/Item.js",
 				"ui/data/Tree.js",
-				"ui/data/StoreTree.js"
+				"ui/data/StoreTree.js",
+				"ui/data/store/NavigationTreeStore.js",
+				"ui/data/tree/NavigationTreeItem.js",
+				"ui/data/NavigationTree.js"
 			],
 			"styles": [
 				"stylesheet/data/main.less",
@@ -226,7 +237,16 @@
 				"oojsplus-data-grid-date-filter-announce-gt",
 				"oojsplus-data-grid-date-filter-announce-eq",
 				"oojsplus-data-grid-filter-boolean-true",
-				"oojsplus-data-grid-filter-boolean-false"
+				"oojsplus-data-grid-filter-boolean-false",
+				"oojsplus-data-grid-collapse-expand",
+				"oojsplus-data-grid-collapse-collapse",
+				"oojsplus-data-grid-filter-date-on",
+				"oojsplus-data-grid-filter-date-after",
+				"oojsplus-data-grid-filter-date-before",
+				"oojsplus-data-grid-no-results",
+				"oojsplus-field-label-query",
+				"oojsplus-data-navigation-tree-expander-label",
+				"oojsplus-data-tree-expander-label"
 			]
 		},
 		"ext.oOJSPlus.icons": {
@@ -285,6 +305,45 @@
 			"dependencies": [
 				"oojs-ui",
 				"ext.oOJSPlus"
+			]
+		},
+		"ext.oOJSPlus.managerPanel": {
+			"scripts": [
+				"ui/toolbar/tool/List.js",
+				"ui/toolbar/tool/ToolbarTool.js",
+				"ui/toolbar/ManagerToolbar.js",
+				"ui/panel/ManagerGrid.js"
+			],
+			"styles": [
+				"stylesheet/managerPanel.less"
+			],
+			"messages": [
+				"oojsplus-toolbar-cancel",
+				"oojsplus-toolbar-save",
+				"oojsplus-toolbar-delete",
+				"oojsplus-toolbar-edit",
+				"oojsplus-toolbar-add"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"ext.oOJSPlus",
+				"oojs-ui.styles.icons-editing-core",
+				"oojs-ui.styles.icons-moderation",
+				"ext.oOJSPlus.data"
+			]
+		},
+		"ext.oojsplus.special.skeleton.styles": {
+			"styles": [
+				"stylesheet/skeleton.less"
+			]
+		},
+		"ext.oojsplus.navigation.treePanel": {
+			"scripts": [
+				"ui/panel/NavigationTreePanel.js"
+			],
+			"dependencies": [
+				"oojs-ui",
+				"ext.oOJSPlus.data"
 			]
 		}
 	},

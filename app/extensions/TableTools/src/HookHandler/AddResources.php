@@ -2,6 +2,8 @@
 
 namespace MediaWiki\Extension\TableTools\HookHandler;
 
+use MediaWiki\Output\OutputPage;
+
 class AddResources {
 
 	 /**

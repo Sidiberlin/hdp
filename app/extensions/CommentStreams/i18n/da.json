@@ -1,0 +1,21 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saederup92"
+		]
+	},
+	"commentstreams-author-anonymous": "anonym",
+	"apihelp-csvote-param-vote": "stem (1, -1 eller 0).",
+	"commentstreams-buttontext-add": "Tilføj kommentar",
+	"commentstreams-buttontext-reply": "Svar",
+	"commentstreams-buttontooltip-add": "tilføj kommentar",
+	"commentstreams-buttontooltip-reply": "svar",
+	"commentstreams-buttontooltip-edit": "rediger",
+	"commentstreams-buttontooltip-delete": "slet",
+	"commentstreams-dialog-buttontext-ok": "OK",
+	"commentstreams-dialog-buttontext-yes": "Ja",
+	"commentstreams-dialog-buttontext-no": "Nej",
+	"commentstreams-title-field-placeholder": "Indtast titel...",
+	"logentry-commentstreams-comment-delete": "$1 {{GENDER:$2|slettede}} kommentaren $3",
+	"commentstreams-history-actor": "Forfatter"
+}

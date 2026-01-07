@@ -3,12 +3,12 @@
 namespace BlueSpice\Privacy\CookieConsentProvider;
 
 use BlueSpice\Privacy\ICookieConsentProvider;
-use Config;
-use ConfigException;
 use Exception;
-use HashConfig;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Config\HashConfig;
 use MediaWiki\MediaWikiServices;
-use WebRequest;
+use MediaWiki\Request\WebRequest;
 
 abstract class Base implements ICookieConsentProvider {
 	/**

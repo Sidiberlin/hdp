@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceConfigManager",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceConfigManager",
 	"author": [
 		"Patric Wirth"
@@ -16,9 +16,6 @@
 					"extPath": "/BlueSpiceConfigManager"
 				}
 			},
-			"AdminToolRegistry": {
-				"bs-config-manager": "BlueSpice\\ConfigManager\\AdminTool"
-			},
 			"PermissionRegistry": {
 				"bluespiceconfigmanager-viewspecialpage": {
 					"type": "global",
@@ -32,9 +29,9 @@
 		}
 	},
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"MessagesDirs": {
@@ -80,19 +77,37 @@
 	},
 	"ResourceModules": {
 		"ext.bluespice.configmanager": {
-			"scripts": "bluespice.configmanager.js",
-			"dependencies": [
-				"ext.bluespice",
-				"ext.bluespice.extjs",
-				"ext.bluespice.oojs",
-				"ext.bluespice.configmanager.messages",
-				"oojs-ui-core"
+			"packageFiles": [
+				"bluespice.configmanager.js",
+				{
+					"name": "pathNames.json",
+					"callback": "\\BlueSpice\\ConfigManager\\ClientConfig::getPathNames"
+				},
+				{
+					"name": "offset.json",
+					"callback": "\\BlueSpice\\ConfigManager\\ClientConfig::getToolbarOffset"
+				},
+				"ui/panel/ConfigManager.js",
+				"ui/pages/ConfigPage.js",
+				"ui/toolbar/ConfigToolbar.js",
+				"ui/booklet/ConfigBooklet.js",
+				"ui/widget/OutlineSelectWidget.js"
 			],
 			"messages": [
-				"bs-configmanager-discardchanges",
 				"bs-configmanager-noentry",
 				"bs-configmanager-mainpath",
-				"bs-configmanager-search"
+				"bs-configmanager-search",
+				"bs-configmanager-discard-open-changes",
+				"bs-configmanager-notify-configuration-saved",
+				"bs-configmanager-toolbar-action-save-label",
+				"bs-configmanager-toolbar-action-discard-label"
+			],
+			"dependencies": [
+				"ext.bluespice",
+				"ext.bluespice.oojs",
+				"ext.bluespice.configmanager.messages",
+				"oojs-ui-core",
+				"ext.oOJSPlus.data"
 			]
 		},
 		"ext.bluespice.configmanager.styles": {
@@ -100,6 +115,9 @@
 		},
 		"ext.bluespice.configmanager.messages": {
 			"class": "\\BlueSpice\\ConfigManager\\ResourceLoader\\Messages"
+		},
+		"ext.bluespice.configManager.skeleton": {
+			"styles": "bluespice.configmanager.skeleton.css"
 		}
 	},
 	"ResourceFileModulePaths": {
@@ -120,6 +138,9 @@
 			"value": [
 				"DistributionConnectorEventBusEventServices"
 			]
+		},
+		"ConfigManagerToolbarOffset": {
+			"value": 64
 		}
 	},
 	"manifest_version": 2,

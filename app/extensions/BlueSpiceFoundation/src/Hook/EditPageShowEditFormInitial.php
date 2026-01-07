@@ -27,10 +27,10 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
-use Config;
-use EditPage;
-use IContextSource;
-use OutputPage;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\EditPage\EditPage;
+use MediaWiki\Output\OutputPage;
 
 abstract class EditPageShowEditFormInitial extends Hook {
 

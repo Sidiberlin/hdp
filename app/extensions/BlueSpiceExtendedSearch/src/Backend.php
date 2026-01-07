@@ -4,27 +4,28 @@ namespace BS\ExtendedSearch;
 
 use BS\ExtendedSearch\Plugin\IFilterModifier;
 use BS\ExtendedSearch\Plugin\IFormattingModifier;
+use BS\ExtendedSearch\Plugin\IIndexProvider;
 use BS\ExtendedSearch\Plugin\ILookupModifier;
 use BS\ExtendedSearch\Plugin\IMappingModifier;
 use BS\ExtendedSearch\Plugin\ISearchPlugin;
-use BS\ExtendedSearch\Source\WikiPages;
-use Config;
 use Exception;
-use FormatJson;
-use HashConfig;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\HashConfig;
+use MediaWiki\Config\MultiConfig;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\HookContainer\HookContainer;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
-use MultiConfig;
+use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\WikiMap\WikiMap;
 use MWException;
 use MWStake\MediaWiki\Component\ManifestRegistry\ManifestRegistryFactory;
 use OpenSearch\Client;
 use OpenSearch\ClientBuilder;
-use RequestContext;
 use RuntimeException;
 use stdClass;
 use Throwable;
-use Title;
-use WikiMap;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class Backend {
@@ -47,8 +48,8 @@ class Backend {
 	/** @var SourceFactory */
 	protected $sourceFactory;
 
-	/** @var array */
-	protected $plugins;
+	/** @var PluginManager */
+	protected $pluginManager;
 
 	/** @var array */
 	protected $sources = [];
@@ -61,11 +62,11 @@ class Backend {
 	 * @param ILoadBalancer $lb
 	 * @param HookContainer $hookContainer
 	 * @param SourceFactory $sourceFactory
-	 * @param array $plugins
+	 * @param PluginManager $pluginManager
 	 */
 	public function __construct(
 		Config $config, ILoadBalancer $lb, HookContainer $hookContainer,
-		SourceFactory $sourceFactory, array $plugins
+		SourceFactory $sourceFactory, PluginManager $pluginManager
 	) {
 		$indexPrefix = $config->get( 'ESIndexPrefix' );
 		if ( empty( $indexPrefix ) ) {
@@ -76,7 +77,7 @@ class Backend {
 		$this->lb = $lb;
 		$this->hookContainer = $hookContainer;
 		$this->sourceFactory = $sourceFactory;
-		$this->plugins = $plugins;
+		$this->pluginManager = $pluginManager;
 	}
 
 	/**
@@ -198,7 +199,7 @@ class Backend {
 			$mappingProperties['_source'] = $providerSource;
 		}
 
-		$plugins = $this->getPluginsForInterface( IMappingModifier::class );
+		$plugins = $this->pluginManager->getPluginsImplementing( IMappingModifier::class );
 		/** @var IMappingModifier $plugin */
 		foreach ( $plugins as $plugin ) {
 			$plugin->modifyMapping( $source, $indexSettings, $mappingProperties );
@@ -226,7 +227,7 @@ class Backend {
 
 	/**
 	 *
-	 * @return \IContextSource
+	 * @return IContextSource
 	 */
 	public function getContext() {
 		return RequestContext::getMain();
@@ -234,7 +235,7 @@ class Backend {
 
 	/**
 	 *
-	 * @return \Config
+	 * @return Config
 	 */
 	public function getConfig() {
 		return $this->config;
@@ -255,7 +256,7 @@ class Backend {
 				$lookupModifiers, $source->getLookupModifiers( $lookup, $this->getContext() )
 			);
 		}
-		$plugins = $this->getPluginsForInterface( ILookupModifierProvider::class );
+		$plugins = $this->pluginManager->getPluginsImplementing( ILookupModifierProvider::class );
 		/** @var ILookupModifierProvider $plugin */
 		foreach ( $plugins as $plugin ) {
 			$lookupModifiers = array_merge(
@@ -272,6 +273,11 @@ class Backend {
 		$lookupModifiers = array_filter( $lookupModifiers, static function ( $lookupModifier ) use ( $type ) {
 			return in_array( $type, $lookupModifier->getSearchTypes() );
 		} );
+
+		$this->hookContainer->run(
+			'BSExtendedSearchGetLookupModifiers',
+			[ &$lookupModifiers, $lookup, $type ]
+		);
 
 		usort( $lookupModifiers, static function ( $a, $b ) {
 			if ( $a->getPriority() === $b->getPriority() ) {
@@ -348,8 +354,7 @@ class Backend {
 			// when results are ranked based on original data, it can be modified
 			$source->getFormatter()->formatAutocompleteResults( $results, $searchData );
 		}
-
-		$plugins = $this->getPluginsForInterface( IFormattingModifier::class );
+		$plugins = $this->pluginManager->getPluginsImplementing( IFormattingModifier::class );
 		/** @var IFormattingModifier $plugin */
 		foreach ( $plugins as $plugin ) {
 			$plugin->formatAutocompleteResults( $results, $searchData );
@@ -375,6 +380,7 @@ class Backend {
 		foreach ( $results as $suggestion ) {
 			$item = [
 				"_id" => $suggestion->getId(),
+				"_index" => $suggestion->getIndex(),
 				"type" => $suggestion->getType(),
 				"score" => $suggestion->getScore(),
 				"rank" => false,
@@ -403,6 +409,12 @@ class Backend {
 		if ( !empty( $excludeTypes ) ) {
 			$indices = array_diff( $indices, $this->getAllIndicesForQuery( $excludeTypes ) );
 		}
+		if ( empty( $indices ) ) {
+			// If indices to search in are empty, it will search in ALL indices available on server
+			// which is a nuisance at best, and security issue at worst, in farms and shared OS instances.
+			// Should never happen, but this is a safety net.
+			return new SearchResultSet( [], $this );
+		}
 
 		$query = $lookup->getQueryDSL();
 		if ( isset( $query['indices_boost'] ) ) {
@@ -415,6 +427,7 @@ class Backend {
 			}
 			$query['indices_boost'] = $replaced;
 		}
+
 		return $this->runRawQueryFromData( [
 			'index' => implode( ',', $indices ),
 			'body' => $query,
@@ -431,6 +444,8 @@ class Backend {
 	 */
 	public function runRawQueryFromData( array $data ): SearchResultSet {
 		$raw = $this->getClient()->search( $data );
+		wfDebugLog( 'BSExtendedSearch', 'Raw Query: ' . FormatJson::encode( $data, true ) );
+		wfDebugLog( 'BSExtendedSearch', 'Raw Result: ' . FormatJson::encode( $raw, true ) );
 		return new SearchResultSet( $raw, $this );
 	}
 
@@ -604,8 +619,12 @@ class Backend {
 		// How many results would our best alternative yield
 		$suggestLookup = clone $origTermLookup;
 		$suggestQueryString = $origTermLookup->getQueryString();
-		$escapedOrigTerm = str_replace( '/', '\/', $origTerm );
-		$suggestQueryString['query'] = preg_replace( '/' . $escapedOrigTerm . '/', $suggestedTerm, $suggestQueryString['query'] );
+		$escapedTerm = preg_quote( $origTerm, '/' );
+		$suggestQueryString['query'] = preg_replace(
+			'/' . $escapedTerm . '/',
+			$suggestedTerm,
+			$suggestQueryString['query']
+		);
 		$suggestLookup->setQueryString( $suggestQueryString );
 		$query = $suggestLookup->getQueryDSL();
 		unset( $query['from'] );
@@ -681,7 +700,7 @@ class Backend {
 				$formatter = $source->getFormatter();
 				$formatter->setLookup( $lookup );
 				$formatter->format( $result, $resultObject );
-				$plugins = $this->getPluginsForInterface( IFormattingModifier::class );
+				$plugins = $this->pluginManager->getPluginsImplementing( IFormattingModifier::class );
 				/** @var IFormattingModifier $plugin */
 				foreach ( $plugins as $plugin ) {
 					$plugin->formatFulltextResult( $result, $resultObject, $source, $lookup );
@@ -706,11 +725,11 @@ class Backend {
 		// be retrieved from mapping, but since ES assigns types dynamically, it's not possible.
 		// It could also be inferred from results, but we need filter cfg even when no
 		// results are retrieved. Basically, this are all the fields of type array
-		$fieldsWithANDEnabled = \ExtensionRegistry::getInstance()
+		$fieldsWithANDEnabled = ExtensionRegistry::getInstance()
 			->getAttribute( 'BlueSpiceExtendedSearchFieldsWithANDFilterEnabled' );
 
 		// Filters that can only have one option selected at a time
-		$singleSelectFitlers = \ExtensionRegistry::getInstance()
+		$singleSelectFitlers = ExtensionRegistry::getInstance()
 			->getAttribute( 'BlueSpiceExtendedSearchSingleSelectFilters' );
 
 		$aggs = $results->getAggregations();
@@ -739,7 +758,7 @@ class Backend {
 		foreach ( $this->getSources() as $source ) {
 			$formatter = $source->getFormatter();
 			$formatter->formatFilters( $aggs, $filterCfg, $fieldsWithANDEnabled );
-			$plugins = $this->getPluginsForInterface( IFilterModifier::class );
+			$plugins = $this->pluginManager->getPluginsImplementing( IFilterModifier::class );
 			/** @var IFilterModifier $plugin */
 			foreach ( $plugins as $plugin ) {
 				$plugin->modifyFilters( $aggs, $filterCfg, $fieldsWithANDEnabled, $source );
@@ -755,7 +774,7 @@ class Backend {
 	 * @return array
 	 */
 	public function getDefaultResultStructure() {
-		$defaultStructure = \ExtensionRegistry::getInstance()
+		$defaultStructure = ExtensionRegistry::getInstance()
 			->getAttribute( 'BlueSpiceExtendedSearchDefaultResultStructure' );
 
 		return $defaultStructure;
@@ -767,7 +786,7 @@ class Backend {
 	 * @return array
 	 */
 	public function getAutocompleteConfig() {
-		$autocompleteConfig = \ExtensionRegistry::getInstance()
+		$autocompleteConfig = ExtensionRegistry::getInstance()
 			->getAttribute( 'BlueSpiceExtendedSearchAutocomplete' );
 
 		return $autocompleteConfig;
@@ -825,113 +844,15 @@ class Backend {
 				'esh_timestamp' => $data['timestamp'],
 				'esh_autocorrected' => $data['autocorrected'] ? 1 : 0,
 				'esh_lookup' => serialize( $data['lookup'] )
-			]
-		);
-	}
-
-	/**
-	 * Gets pages similar to given page
-	 *
-	 * TODO: Whether hard-coded values here should go to configs
-	 * depends on fine-tuning, then we will know if it makes sense
-	 *
-	 * @param Title $title
-	 * @return array
-	 */
-	public function getSimilarPages( Title $title ) {
-		$wikipageSource = $this->getSource( 'wikipage' );
-		if ( $wikipageSource instanceof WikiPages === false ) {
-			return [];
-		}
-
-		// Searching "like" certain _id showed to yield best results
-		$docId = $this->getDocIdForTitle( $title );
-		if ( $docId === null ) {
-			return [];
-		}
-
-		$lookup = new Lookup();
-		$lookup->setMLTQuery(
-			$docId,
-			[ 'prefixed_title', 'source_content' ],
-			[
-				// This is very important config. It is the minimal number of docs that need to be similar.
-				// If it cannot find enough similar docs, it will return basically random results.
-				"min_doc_freq" => 1
 			],
-			$this->getIndexName( 'wikipage' )
+			__METHOD__
 		);
-		$lookup->addSourceField( 'prefixed_title' );
-		$lookup->setSize( 10 );
-		$lookup->addSearchInTypes( [ 'wikipage' ] );
-		$results = $this->runRawQuery( $lookup );
-
-		$results = $results->getResults();
-		$topScore = 0;
-		foreach ( $results as $result ) {
-			if ( $result->getScore() > $topScore ) {
-				$topScore = $result->getScore();
-			}
-		}
-
-		$pages = [];
-		foreach ( $results as $result ) {
-			$score = $result->getScore();
-			if ( $topScore > 0 ) {
-				$percentOfTopScore = $score * 100 / $topScore;
-				if ( $percentOfTopScore < 50 ) {
-					// Results that score less than 50% of top score
-					// are usually useless
-					continue;
-				}
-			}
-
-			$data = $result->getData();
-			$title = \Title::newFromText( $data['prefixed_title'] );
-			if ( $title instanceof \Title === false || $title->exists() === false ) {
-				continue;
-			}
-			$pages[$title->getPrefixedText()] = $title;
-		}
-
-		return $pages;
-	}
-
-	/**
-	 * Get indexed _id of the given Title
-	 *
-	 * @param Title $title
-	 *
-	 * @return string|null if page not indexed
-	 * @throws Exception
-	 */
-	protected function getDocIdForTitle( Title $title ) {
-		$lookup = new Lookup( [
-			"query" => [
-				"term" => [
-					"prefixed_title_exact" => $title->getPrefixedText()
-				]
-			]
-		] );
-		$lookup->setSize( 1 );
-		$lookup->addSourceField( "prefixed_title" );
-
-		$results = $this->runRawQuery( $lookup, [ 'wikipage' ] );
-
-		if ( $results->getTotalHits() === 0 ) {
-			return null;
-		}
-
-		foreach ( $results->getResults() as $result ) {
-			return $result->getId();
-		}
-
-		return null;
 	}
 
 	/**
 	 * @param string $searchType
 	 * @return PostProcessor
+	 * @throws Exception
 	 */
 	private function getPostProcessor( $searchType ) {
 		$backend = $this;
@@ -953,41 +874,12 @@ class Backend {
 				continue;
 			}
 			$indices[] = $this->getIndexName( $key );
-			$this->maybeAddSharedIndex( $indices, $key );
+		}
+		$indexProviders = $this->pluginManager->getPluginsImplementing( IIndexProvider::class );
+		foreach ( $indexProviders as $indexProvider ) {
+			$indexProvider->setIndices( $this, $limitToSources, $indices );
 		}
 		return $indices;
-	}
-
-	/**
-	 * @param array &$indices
-	 * @param string $key
-	 * @param array|null $limitToSources
-	 *
-	 * @return void
-	 */
-	private function maybeAddSharedIndex( array &$indices, string $key, ?array $limitToSources = null ) {
-		$prefix = $this->getSharedUploadsIndexPrefix();
-		$available = [ 'wikifile', 'repofile' ];
-		if ( is_array( $limitToSources ) ) {
-			$available = array_intersect( $available, $limitToSources );
-		}
-		if ( !$prefix || !in_array( $key, $available ) ) {
-			return;
-		}
-		$indexName = $prefix . '_' . $key;
-		$indices[] = $indexName;
-	}
-
-	/**
-	 * @return string|null
-	 */
-	public function getSharedUploadsIndexPrefix(): ?string {
-		$useSharedUploads = $this->getConfig()->get( 'ESUseSharedUploads' );
-		$indexPrefix = $this->getConfig()->get( 'ESSharedUploadsIndexPrefix' );
-		if ( !$useSharedUploads || !$indexPrefix ) {
-			return null;
-		}
-		return $indexPrefix;
 	}
 
 	/**
@@ -995,12 +887,9 @@ class Backend {
 	 *
 	 * @return bool
 	 */
-	public function isSharedIndex( string $index ): bool {
-		$sharedIndex = $this->getSharedUploadsIndexPrefix();
-		if ( !$sharedIndex ) {
-			return false;
-		}
-		return strpos( $index, $this->getSharedUploadsIndexPrefix() ) === 0;
+	public function isForeignIndex( string $index ): bool {
+		$prefix = $this->getConfig()->get( 'index' ) . '_';
+		return !str_starts_with( $index, $prefix );
 	}
 
 	/**
@@ -1009,16 +898,17 @@ class Backend {
 	 * @return string
 	 */
 	public function typeFromIndexName( string $index ): string {
-		$prefix = [ $this->getConfig()->get( 'index' ) . '_' ];
-		$sharedPrefix = $this->getSharedUploadsIndexPrefix();
-		if ( $sharedPrefix ) {
-			$prefix[] = $sharedPrefix . '_';
-		}
-
-		foreach ( $prefix as $p ) {
-			if ( strpos( $index, $p ) === 0 ) {
-				return substr( $index, strlen( $p ) );
+		$plugins = $this->pluginManager->getPluginsImplementing( IIndexProvider::class );
+		/** @var IIndexProvider $plugin */
+		foreach ( $plugins as $plugin ) {
+			$pluginIndexType = $plugin->typeFromIndexName( $index, $this );
+			if ( $pluginIndexType ) {
+				return $pluginIndexType;
 			}
+		}
+		$prefix = $this->getConfig()->get( 'index' ) . '_';
+		if ( str_starts_with( $index, $prefix ) ) {
+			return substr( $index, strlen( $prefix ) );
 		}
 		return $index;
 	}
@@ -1029,13 +919,7 @@ class Backend {
 	 * @return ISearchPlugin[]
 	 */
 	public function getPluginsForInterface( string $class ): array {
-		$plugins = [];
-		foreach ( $this->plugins as $plugin ) {
-			if ( $plugin instanceof $class ) {
-				$plugins[] = $plugin;
-			}
-		}
-		return $plugins;
+		return $this->pluginManager->getPluginsImplementing( $class );
 	}
 
 	/**

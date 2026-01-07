@@ -5,8 +5,6 @@
 		]
 	},
 	"bs-bookshelfui-delete-book-title": "ⴽⴽⵙ ⴰⴷⵍⵉⵙ",
-	"bs-bookshelfui-ctxmnu-delete": "ⴽⴽⵙ ⵙⴳ ⵓⴷⵍⵉⵙ",
-	"bs-bookshelfui-ctxmnu-tag-edit": "ⵙⵏⴼⵍ ⵜⵉⵙⵖⴰⵍ",
 	"bs-bookshelfui-book-title-link-edit": "ⵙⵏⴼⵍ ⴰⴷⵍⵉⵙ",
 	"bs-bookshelfui-bookmanager-deletion-reason": "ⴽⴽⵙ ⵙⴳ BookManager"
 }

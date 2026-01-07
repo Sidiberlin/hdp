@@ -37,6 +37,7 @@ class TreeTextNode extends RendererBase {
 				'role' => $component->getRole(),
 				'text' => $component->getText()->text(),
 				'labelId' => "$id-label",
+				'preHtml' => $component->getPreHtml(),
 			];
 
 			$this->getClasses( $component, $templateData );

@@ -6,5 +6,6 @@
 	},
 	"numberheadings-desc": "Part of the \"NumberHeadings\" extension. It is a description message. Number headings in content namespaces",
 	"numberheadings-conf-exlude-namespaces": "It is a description message. Exclude namespaces from heading numbering",
-	"numberheadings-conf-enable": "Label for NumberHeadings config option"
+	"numberheadings-conf-enable-numbering": "Label for config \"NumberHeadingsEnable\" at [[Special:BlueSpiceConfigManager]]",
+	"numberheadings-conf-enable-numbering-help": "Description for config variable \"NumberHeadingsEnable\""
 }

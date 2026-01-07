@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.ui.widget' );
 
-bs.vec.ui.widget.NumberCommandWidget = function( contextItem ) {
+bs.vec.ui.widget.NumberCommandWidget = function ( contextItem ) {
 	bs.vec.ui.widget.NumberCommandWidget.parent.call( this, contextItem );
 
 	this.min = 0;
@@ -14,20 +14,20 @@ bs.vec.ui.widget.NumberCommandWidget = function( contextItem ) {
 
 OO.inheritClass( bs.vec.ui.widget.NumberCommandWidget, bs.vec.ui.widget.CommandWidget );
 
-bs.vec.ui.widget.NumberCommandWidget.prototype.executeAction = function() {
-	var data = {};
+bs.vec.ui.widget.NumberCommandWidget.prototype.executeAction = function () {
+	const data = {};
 	if ( !this.shouldExecute() ) {
 		return;
 	}
 	this.numberWidget.getValidity()
-		.done( function() {
-			data[this.property] = this.numberWidget.getValue();
+		.done( () => {
+			data[ this.property ] = this.numberWidget.getValue();
 			this.contextItem.execCommand( this.command, data );
-		}.bind( this ) );
+		} );
 
 };
 
-bs.vec.ui.widget.NumberCommandWidget.prototype.initWidget = function() {
+bs.vec.ui.widget.NumberCommandWidget.prototype.initWidget = function () {
 	this.numberWidget = new OO.ui.NumberInputWidget( {
 		value: this.value,
 		min: this.min,

@@ -3,10 +3,10 @@
 namespace BS\ExtendedSearch\Source\Crawler;
 
 use BS\ExtendedSearch\ISearchCrawler;
-use Config;
 use Job;
 use JobQueueGroup;
-use Title;
+use MediaWiki\Config\Config;
+use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class Base implements ISearchCrawler {
@@ -81,7 +81,8 @@ class Base implements ISearchCrawler {
 		$res = $dbr->selectRow(
 			'job',
 			'COUNT(*) AS count',
-			[ 'job_cmd' => $oDummyJob->getType() ]
+			[ 'job_cmd' => $oDummyJob->getType() ],
+			__METHOD__
 		);
 
 		return $res->count;
@@ -100,7 +101,8 @@ class Base implements ISearchCrawler {
 		$dbw = $this->lb->getConnection( DB_PRIMARY );
 		$res = $dbw->delete(
 			'job',
-			[ 'job_cmd' => $oDummyJob->getType() ]
+			[ 'job_cmd' => $oDummyJob->getType() ],
+			__METHOD__
 		);
 
 		return $res !== false;

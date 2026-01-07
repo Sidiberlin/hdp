@@ -3,12 +3,13 @@
 namespace BS\ExtendedSearch\MediaWiki\Rest;
 
 use BS\ExtendedSearch\SearchTracker;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Rest\Response;
 use MediaWiki\Rest\SimpleHandler;
-use RequestContext;
-use Title;
-use User;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class RecentlyFoundHandler extends SimpleHandler {
 	/**
@@ -79,7 +80,7 @@ class RecentlyFoundHandler extends SimpleHandler {
 			'url' => $title->getFullURL()
 		];
 
-		return \Html::element( 'a', [
+		return Html::element( 'a', [
 			'href' => $title->getLocalURL(),
 			'class' => 'bs-traceable-link bs-recently-found-suggestion',
 			'data-bs-traceable-page' => json_encode( $data ),

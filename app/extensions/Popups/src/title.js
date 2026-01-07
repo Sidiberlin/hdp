@@ -1,5 +1,6 @@
 /**
  * @module title
+ * @private
  */
 
 /**
@@ -44,6 +45,7 @@ export function getTitle( href, config ) {
 	// No query params (pretty URL)
 	if ( !queryLength ) {
 		const pattern = mw.util.escapeRegExp( config.get( 'wgArticlePath' ) ).replace( '\\$1', '([^?#]+)' ),
+			// eslint-disable-next-line security/detect-non-literal-regexp
 			matches = new RegExp( pattern ).exec( linkHref.path );
 
 		// We can't be sure decodeURIComponent() is able to parse every possible match
@@ -57,7 +59,7 @@ export function getTitle( href, config ) {
 		title = linkHref.query.title;
 	}
 
-	return title ? `${title}${linkHref.fragment ? `#${linkHref.fragment}` : ''}` : undefined;
+	return title ? `${ title }${ linkHref.fragment ? `#${ linkHref.fragment }` : '' }` : undefined;
 }
 
 /**
@@ -92,6 +94,9 @@ export function isValid( title, contentNamespaces ) {
  * @return {mw.Title|null}
  */
 export function fromElement( el, config ) {
+	if ( el.dataset.title ) {
+		return mw.Title.newFromText( el.dataset.title );
+	}
 	if ( isOwnPageAnchorLink( el ) ) {
 		// No need to check the namespace. A self-link can't point to different one.
 		try {

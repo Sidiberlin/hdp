@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Peterxy12"
+		]
+	},
+	"simple-tasks-desc": "替用户创建任务",
+	"simple-tasks-task-duedate": "到期日：$1",
+	"simple-tasks-task-desc": "在页面内容里创建的任务",
+	"simple-tasks-notif-key": "任务分配",
+	"simple-tasks-notif-message": "{{GENDER:$1|分配了}}一个任务给您：“$1”",
+	"simple-tasks-notif-message-with-due-date": "{{GENDER:$1|已分配}}一个任务给您：“$1”。任务截止于 $2",
+	"simple-tasks-taskreport-no-results": "所选定的过滤器找不到任务",
+	"simple-tasks-taskreport-header-task": "任务",
+	"simple-tasks-taskreport-header-assignee": "分配者",
+	"simple-tasks-taskreport-header-page": "出现在页面上",
+	"simple-tasks-taskreport-header-due-to": "到期日",
+	"simple-tasks-taskreport-header-state": "状态",
+	"simple-tasks-droplet-taskreport-name": "任务报告",
+	"simple-tasks-droplet-taskreport-description": "创建任务概要",
+	"simple-tasks-taskreport-inspector-title": "任务报告",
+	"simple-tasks-taskreport-inspector-state-done": "完成",
+	"simple-tasks-taskreport-inspector-state-open": "打开",
+	"simple-tasks-taskreport-inspector-label-user": "分配者",
+	"simple-tasks-taskreport-inspector-label-namespaces": "命名空间",
+	"simple-tasks-taskreport-inspector-label-due-date": "截止至",
+	"simple-tasks-taskreport-inspector-label-state": "状态",
+	"simple-tasks-taskreport-state-title-open": "任务已开放",
+	"simple-tasks-taskreport-state-title-done": "任务已完成",
+	"simple-tasks-taskreport-state-filter-done": "完成",
+	"simple-tasks-taskreport-state-filter-open": "开放"
+}

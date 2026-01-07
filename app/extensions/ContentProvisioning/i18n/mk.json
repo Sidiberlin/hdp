@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjankuloski06"
+		]
+	},
+	"contentprovisioning-desc": "Дава преглед на обезбедени страници и им овозможува на администраторите да усогласуваат содржини",
+	"contentprovisioning": "Обезбедување на содржина",
+	"right-contentprovisioning-viewspecialpage": "Гледање на службената страница за обезбедување на содржина",
+	"action-contentprovisioning-viewspecialpage": "гледање на службената страница за обезбедување на содржина",
+	"contentprovisioning-ui-overview-grid-section-page": "Страница",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "Усогласено?",
+	"contentprovisioning-ui-overview-grid-action-force-sync": "Присили усогласување",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "Прик. разлики",
+	"contentprovisioning-diff-no-change": "Нема разлики меѓу дадената верзија и верзијата на викистраницата",
+	"contentprovisioning-ui-content-diff-title": "Разлики во содржината",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "Вики",
+	"contentprovisioning-ui-content-diff-headline-provisioner-content": "Далечински"
+}

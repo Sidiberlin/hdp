@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\LDAPUserInfo;
 
-use Status;
-use User;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 
 interface IUserInfoModifier {
 

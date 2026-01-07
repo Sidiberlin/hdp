@@ -1,14 +1,14 @@
 {
 	"name": "VueJsPlus",
-	"version": "1.0.2",
+	"version": "2.0.5",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[http://www.hallowelt.com Hallo Welt! GmbH]"
 	],
-	"url": "https://www.hallowelt.com",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:VueJsPlus",
 	"descriptionmsg": "vuejsplus-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"MessagesDirs": {
 		"VueJsPlus": "i18n"
@@ -16,80 +16,10 @@
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\VueJsPlus\\": "src/"
 	},
-	"ResourceModules": {
-		"ext.vuejsplus-data-grid.vue": {
-			"es6": true,
-			"dependencies": [
-				"mediawiki.api",
-				"vue",
-				"@wikimedia/codex"
-			],
-			"packageFiles": [
-				"vuejs/components/grid/App.vue",
-				"vuejs/components/grid/ColCell.vue",
-				"vuejs/components/grid/ColOptions.vue",
-				"vuejs/components/grid/DataRow.vue",
-				"vuejs/components/grid/DataCell.vue",
-				"vuejs/components/grid/options/SortASC.vue",
-				"vuejs/components/grid/options/SortDESC.vue",
-				"vuejs/components/grid/options/StringFilter.vue",
-				"vuejs/components/grid/options/DateFilter.vue",
-				"vuejs/components/toolbar/App.vue",
-				"vuejs/components/toolbar/Item.vue"
-			],
-			"targets": [
-				"desktop",
-				"mobile"
-			],
-			"messages": [
-				"vuejsplus-data-grid-option-sort-string-asc",
-				"vuejsplus-data-grid-option-sort-string-desc",
-				"vuejsplus-data-grid-option-filter-string",
-				"vuejsplus-data-grid-aria-live-filtered-rows",
-				"vuejsplus-data-grid-option-button-aria-label",
-				"vuejsplus-data-grid-boolean-cell-image-alt-text-neutral",
-				"vuejsplus-data-grid-boolean-cell-image-alt-text-checked",
-				"vuejsplus-data-grid-boolean-cell-image-alt-text-unchecked",
-				"vuejsplus-data-grid-option-filter-date-from-label",
-				"vuejsplus-data-grid-option-filter-date-to-label"
-			]
-		},
-		"ext.vuejsplus-data-tree.vue": {
-			"es6": true,
-			"dependencies": [
-				"mediawiki.api",
-				"vue",
-				"@wikimedia/codex"
-			],
-			"packageFiles": [
-				"vuejs/components/tree/App.vue",
-				"vuejs/components/tree/Node.vue",
-				"vuejs/components/tree/ExpandableNode.vue",
-				"vuejs/components/tree/Leaf.vue",
-				"vuejs/components/toolbar/App.vue",
-				"vuejs/components/toolbar/Item.vue"
-			],
-			"targets": [
-				"desktop",
-				"mobile"
-			],
-			"messages": [
-				"vuejsplus-data-tree-expand-btn-expanded-aria-label",
-				"vuejsplus-data-tree-expand-btn-collapsed-aria-label"
-			]
-		}
-	},
+	"ResourceModules": {},
 	"ResourceFileModulePaths": {
 		"localBasePath": "resources",
 		"remoteExtPath": "VueJsPlus/resources"
-	},
-	"Hooks": {
-		"BeforePageDisplay": [ "add-resources" ]
-	},
-	"HookHandlers": {
-		"add-resources": {
-			"class": "MediaWiki\\Extension\\VueJsPlus\\HookHandlers\\AddResources"
-		}
 	},
 	"manifest_version": 2,
 	"load_composer_autoloader": true

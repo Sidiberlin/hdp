@@ -45,6 +45,17 @@
 		}
 	}
 
+	&.frame {
+		border: 1pt solid #c8ccd1;
+		padding: 0.5em;
+  }
+
+	// Use the same syntax used by <img> element in gallerybox (#94)
+	.gallerybox & {
+		margin: 0 auto;
+		display: block;
+	}
+
 	// From core
 	// We can safely remove this when Parsoid becomes default
 	&.mw-halign-right {
@@ -89,6 +100,33 @@
 		}
 	}
 
+	&.mw-valign {
+		&-middle {
+			vertical-align: middle;
+		}
+		&-baseline {
+			vertical-align: baseline;
+		}
+		&-sub {
+			vertical-align: sub;
+		}
+		&-super {
+			vertical-align: super;
+		}
+		&-top {
+			vertical-align: top;
+		}
+		&-text-top {
+			vertical-align: text-top;
+		}
+		&-bottom {
+			vertical-align: bottom;
+		}
+		&-text-bottom {
+			vertical-align: text-bottom;
+		}
+	}
+
 	figcaption {
 		// Same as skinning core
 		font-size: 88.4%;
@@ -103,13 +141,3 @@ audio {
 	}
 }
 
-a.vplink {
-	padding-left: 18px;
-	background-image: url( img/play.png );
-	background-repeat: no-repeat;
-	background-position: left center;
-
-	&:hover {
-		background-image: url( img/play-hover.png );
-	}
-}

@@ -3,24 +3,26 @@
 namespace BlueSpice\ContextMenu\MenuItem;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 abstract class BaseUserAction extends Base {
 
 	/**
 	 *
-	 * @var \Title
+	 * @var Title
 	 */
 	protected $title = null;
 
 	/**
 	 *
-	 * @var \User
+	 * @var User
 	 */
 	protected $targetUser = null;
 
 	/**
 	 *
-	 * @param \Title $title
+	 * @param Title $title
 	 */
 	public function __construct( $title ) {
 		parent::__construct( $title );

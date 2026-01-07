@@ -2,12 +2,12 @@
 
 namespace MediaWiki\Extension\EnhancedStandardUIs\HookHandler;
 
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\Watchlist\WatchlistManager;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Hook\MWStakeCommonWebAPIsQueryStoreResultHook;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Rest\TitleTreeStore;
 use MWStake\MediaWiki\Component\DataStore\ResultSet;
-use RequestContext;
-use TitleFactory;
 
 class AddTitleWatchInfo implements MWStakeCommonWebAPIsQueryStoreResultHook {
 
@@ -45,7 +45,7 @@ class AddTitleWatchInfo implements MWStakeCommonWebAPIsQueryStoreResultHook {
 				continue;
 			}
 			$isWatched = $this->watchlistManager->isWatched( $user, $title );
-			$record->set( 'watch',  $isWatched );
+			$record->set( 'watch', $isWatched );
 		}
 		$result = new ResultSet( $data, $result->getTotal() );
 	}

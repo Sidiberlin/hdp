@@ -16,14 +16,9 @@
 	"bs-authors-profileimage": "Изображение в профиле",
 	"bs-authors-profileimage-change": "Изменить изображение в профиле",
 	"bs-authors-show-all-authors": "Есть и другие авторы",
-	"bs-authors-pref-show": "Отображать авторов",
-	"bs-authors-switch-description": "Скрывает авторов этой страницы.",
 	"bs-authors-navigation-link-title": "Авторы этой страницы",
 	"bs-authors-navigation-link-text": "Авторы",
-	"bs-authors-flyout-title": "Авторы этой страницы",
-	"bs-authors-author-type-originator": "Оригинальный автор",
-	"bs-authors-author-type-editor": "Редактор",
-	"bs-authors-info-dialog": "Авторы этой страницы",
 	"apihelp-bs-pageauthors-store-summary": "Перечислить всех авторов страницы, указанной в контексте",
+	"bs-authors-info-dialog": "Авторы этой страницы",
 	"bs-authors-info-dialog-grid-column-author": "Автор"
 }

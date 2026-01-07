@@ -54,7 +54,6 @@
 	"bs-readconfirmation-dlg-label-page": "Potrditev branja za stran »$1«",
 	"bs-readconfirmation-view-confirmations": "Prikaži potrditve branja",
 	"bs-readconfirmation-api-confirmation-error-no-valid-title": "Ni veljavnega naslova strani",
-	"bs-readconfirmation-api-confirmation-error-no-read-confirmation-active": "Za ta naslov strani potrditev branja ni aktivirana",
 	"bs-readconfirmation-api-confirmation-error-no-assignment-title": "Ni razpložljivih veljavnih naslovov za dodelitve strani",
 	"bs-readconfirmation-api-confirmation-error-no-read-permission": "Ni dovoljenja za ogled potrditev branja",
 	"bs-readconfirmation-page-info-read-confirmations": "Potrditve branja",

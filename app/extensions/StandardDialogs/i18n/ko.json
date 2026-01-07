@@ -3,6 +3,7 @@
 		"authors": [
 			"Dr1t jg",
 			"Suleiman the Magnificent Television",
+			"YeBoy371",
 			"Ykhwong",
 			"렌즈"
 		]
@@ -36,6 +37,7 @@
 	"standarddialogs-page-info-page-images": "그림",
 	"standarddialogs-new-page-title": "새 문서 만들기",
 	"standarddialogs-new-page-label": "문서 이름",
+	"standarddialogs-new-page-not-exist-label": "페이지가 존재하지 않습니다",
 	"standarddialogs-new-subpage-title": "\"$1\"의 새 하위 문서 만들기",
 	"standarddialogs-new-subpage-label": "하위 문서 이름",
 	"standarddialogs-create-button-new-page-text": "새 문서",
@@ -49,13 +51,12 @@
 	"standarddialogs-protect-btn": "보호",
 	"standarddialogs-protect-title": "\"$1\" 문서 보호",
 	"standarddialogs-purge-btn": "새로 고침",
-	"standarddialogs-purge-title": "\"$1\" 문서 새로고침",
+	"standarddialogs-purge-title": "\"$1\" 문서 새로 고침",
 	"standarddialogs-btn-done": "완료",
 	"standarddialogs-btn-cancel": "취소",
 	"standarddialogs-protect-level-editor": "편집자와 관리자만 허용",
 	"standarddialogs-delete-subpages": "하위 문서 삭제",
-	"standarddialogs-new-page-not-exist-label": "페이지가 존재하지 않습니다",
-	"standarddialogs-confirm-mass-deletion": "이는 $1 {{PLURAL:$1|페이지|페이지들}}를 제거할 거야. 확실해?",
+	"standarddialogs-confirm-mass-deletion": "이는 $1 {{PLURAL:$1|문서}}를 삭제함. 확신합니까?",
 	"standarddialogs-page-info-page-no-images-label": "이 문서에는 이미지나 파일(오디오 및 비디오 파일 포함)이 없습니다",
 	"standarddialogs-page-info-page-no-templates-label": "이 문서에는 틀이 없습니다",
 	"standarddialogs-page-info-page-no-categories-label": "이 문서에는 분류가 없습니다",

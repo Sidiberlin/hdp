@@ -2,6 +2,7 @@
 	opacity: 0;
 }
 
+.enhanced-ui-filelist-panel .oojsplus-data-gridWidget-cell[ data-column='categories' ] span.oojsplus-ui-widget-linkwidget-label,
 .enhanced-ui-filelist-panel .oojsplus-data-gridWidget-cell[ data-column='categories' ] .oo-ui-fieldsetLayout-group > span {
 	padding: 3px 10px;
 	border: 1px solid #747474;
@@ -16,14 +17,6 @@
 	opacity: 1;
 }
 
-/* stylelint-disable declaration-no-important */
-#enhanced-ui-filelist-cnt .oojsplus-data-gridWidget-column-header[ data-field='upload' ],
-#enhanced-ui-filelist-cnt .oojsplus-data-gridWidget-column-header[ data-field='info' ] {
-	/* oojs style is added with important */
-	border-right: 0 !important;
-}
-/* stylelint-enable declaration-no-important */
-
 .enhancedUI-paginator .oo-ui-buttonSelectWidget {
 	margin-right: -1px;
 }
@@ -35,4 +28,18 @@
 
 .enhanced-filelist-tools-btn-select .oo-ui-fieldLayout-header {
 	display: none;
+}
+
+.fileinfo-dialog .wikitable {
+	width: 100%;
+}
+
+.fileinfo-dialog .wikitable tr > td:first-child {
+	width: 30%;
+}
+
+.metadata-langlist {
+	list-style: none;
+	margin: 0;
+	padding-left: 0;
 }

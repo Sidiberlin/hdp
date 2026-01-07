@@ -12,20 +12,15 @@
 	"bs-categorymanager-text": "رده‌ها",
 	"bs-categorymanager-label": "مدیر رده",
 	"bs-categorymanager-dlg-new-title": "ایجاد رده",
-	"bs-categorymanager-dlg-new-prompt": "لطفاً نام را وارد کنید:",
 	"bs-categorymanager-removecategoryconfirm-text": "آیا اطمینان دارید که می‌خواهید این رده را حذف کنید؟",
 	"bs-categorymanager-removecategoryconfirm-title": "حذف رده",
 	"bs-categorymanager-addcategory-dialog-error-title": "ایجاد رده ناموفق بود",
-	"bs-categorymanager-action-show-category": "نمایش رده",
 	"right-categorymanager-viewspecialpage": "دسترسی به صفحهٔ ویژهٔ [[Special:BlueSpiceCategoryManager]]",
 	"bs-categorymanager-collection-type-categorizedpages": "تخصیص رده",
 	"bs-categorymanager-collection-var-namespacename": "فضای نام",
 	"bs-categorymanager-collection-var-categorizedpages": "صفحه‌ها با این رده‌ها",
 	"bs-categorymanager-collection-var-uncategorizedpages": "صفحه‌های بدون رده",
-	"bs-categorymanager-rename-category": "نام‌گذاری مجدد رده",
-	"bs-categorymanager-rename-category-new-name": "نام جدید رده:",
-	"bs-categorymanager-move-new-name": "نام جدید رده را انتخاب کنید. نام جدید:",
-	"bs-categorymanager-replace-in-pages": "نام‌گذاری مجدد در صفحهٔ:",
-	"bs-categorymanager-statistics-report-category-pages": "صفحه‌های موجود در رده‌ها",
-	"bs-categorymanager-category-column-name": "نام رده"
+	"bs-categorymanager-rename-category": "نام‌گذاری دوبارهٔ رده",
+	"bs-categorymanager-rename-category-new-name": "نام جدید رده",
+	"bs-categorymanager-statistics-report-category-pages": "صفحه‌های موجود در رده‌ها"
 }

@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Lakejason0"
+		]
+	},
+	"numberheadings-desc": "在内容命名空间中为标题添加编号",
+	"numberheadings-conf-exlude-namespaces": "不添加标题编号的命名空间"
+}

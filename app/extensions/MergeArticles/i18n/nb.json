@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"EdoAug",
+			"Yupik"
+		]
+	},
+	"mergearticles": "Flett artikler",
+	"mergearticles-target-new-label": "Ny side",
+	"mergearticles-page-item-action-compare": "Sammenlign og flett",
+	"mergearticles-sp-review": "Flett sider – gå gjennom og flett",
+	"mergearticles-sp-compare": "Flett sider – sammenlign og flett",
+	"mergearticles-merge-fail-header": "Fletting feilet!",
+	"mergearticles-merge-new-help": "Siden «$1» eksisterer ikke enda, og denne flettingen kommer til å opprette den. Se over og, om nødvendig, rediger innholdet før fletting.",
+	"mergearticles-show-final-text-label": "Alle flettekonflikter har blitt løst, og den endelige teksten kan nå sees og, om nødvendig, rettes før flytting. Obs: Flettekonflikter kan ikke bli redigert lengre etter dette punktet.",
+	"apihelp-ma-merge-page-new-summary": "Fletter en kladd med en ny side",
+	"action-merge-articles": "flett denne artikkelen",
+	"mergearticles-file-info-size": "Størrelse: $1"
+}

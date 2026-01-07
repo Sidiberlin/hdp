@@ -14,7 +14,7 @@ ext.menueditor.ui.data.tree.Tree = function ( cfg ) {
 OO.inheritClass( ext.menueditor.ui.data.tree.Tree, OOJSPlus.ui.data.Tree );
 
 ext.menueditor.ui.data.tree.Tree.prototype.createItemWidget = function ( item, lvl, isLeaf ) {
-	var classname = ext.menueditor.registry.node.registry[ item.type ];
+	let classname = ext.menueditor.registry.node.registry[ item.type ];
 	if ( !classname ) {
 		// eslint-disable-next-line no-console
 		console.error( 'Node of type ' + item.type + ' is not registered' );
@@ -22,7 +22,7 @@ ext.menueditor.ui.data.tree.Tree.prototype.createItemWidget = function ( item, l
 	}
 
 	classname = ext.menueditor.util.callbackFromString( classname );
-	var maxLevels = this.getMaxLevels();
+	const maxLevels = this.getMaxLevels();
 	// eslint-disable-next-line new-cap
 	return new classname( {
 		name: this.randomName( item.type ),
@@ -30,7 +30,6 @@ ext.menueditor.ui.data.tree.Tree.prototype.createItemWidget = function ( item, l
 		tree: this,
 		nodeData: item,
 		leaf: isLeaf,
-		// eslint-disable-next-line max-len
 		allowAdditions: this.allowAdditions && ( maxLevels ? lvl + 1 < maxLevels : true ) && classname.static.canHaveChildren,
 		allowEdits: this.editable,
 		allowDeletions: this.allowDeletions
@@ -42,27 +41,27 @@ ext.menueditor.ui.data.tree.Tree.prototype.randomName = function ( type ) {
 };
 
 ext.menueditor.ui.data.tree.Tree.prototype.editNode = function ( node ) {
-	this.openNodeDialog( node ).closed.then( function ( data ) {
+	this.openNodeDialog( node ).closed.then( ( data ) => {
 		if ( data && data.action === 'done' ) {
 			this.onNodeEdited( data.data, data.node );
 		}
-	}.bind( this ) );
+	} );
 };
 
 ext.menueditor.ui.data.tree.Tree.prototype.openNodeDialog = function ( node, cfg ) {
-	var windowManager = new OO.ui.WindowManager();
+	const windowManager = new OO.ui.WindowManager();
 	$( document.body ).append( windowManager.$element );
 
-	var dialog = new ext.menueditor.ui.dialog.NodeDialog( $.extend( { size: 'large' }, cfg || {} ), node );
+	const dialog = new ext.menueditor.ui.dialog.NodeDialog( Object.assign( { size: 'large' }, cfg || {} ), node );
 	windowManager.addWindows( [ dialog ] );
 	return windowManager.openWindow( dialog );
 };
 
 ext.menueditor.ui.data.tree.Tree.prototype.getDataFromUser = function ( parentName ) {
-	var dfd = $.Deferred();
+	const dfd = $.Deferred();
 
-	var parent = this.getItem( parentName ),
-		lvl = 0;
+	const parent = this.getItem( parentName );
+	let lvl = 0;
 	if ( parent ) {
 		lvl = parent.getLevel() + 1;
 	}
@@ -71,7 +70,7 @@ ext.menueditor.ui.data.tree.Tree.prototype.getDataFromUser = function ( parentNa
 		allowedNodes: this.getPossibleNodesForLevel( lvl ),
 		size: 'large',
 		tree: this
-	} ).closed.then( function ( data ) {
+	} ).closed.then( ( data ) => {
 		if ( data && data.action === 'done' ) {
 			dfd.resolve( data.data );
 		}
@@ -81,8 +80,8 @@ ext.menueditor.ui.data.tree.Tree.prototype.getDataFromUser = function ( parentNa
 
 ext.menueditor.ui.data.tree.Tree.prototype.onDragStart = function ( item, $target, e, ui ) {
 	// Here we disable certain levels based on type of the node being dragged
-	this.$itemsContainer.find( 'ul.tree-sortable' ).each( function ( i, el ) {
-		var lvl = $( el ).data( 'level' ),
+	this.$itemsContainer.find( 'ul.tree-sortable' ).each( ( i, el ) => {
+		const lvl = $( el ).data( 'level' ),
 			allowed = this.getPossibleNodesForLevel( lvl );
 		if (
 			( allowed.length > 0 && allowed.indexOf( item.getNodeData().type ) === -1 ) ||
@@ -95,7 +94,7 @@ ext.menueditor.ui.data.tree.Tree.prototype.onDragStart = function ( item, $targe
 			$( el ).sortable( 'refresh' );
 			$target.sortable( 'refresh' );
 		}
-	}.bind( this ) );
+	} );
 };
 
 ext.menueditor.ui.data.tree.Tree.prototype.allowedNestedDrag = function ( item ) {
@@ -105,9 +104,9 @@ ext.menueditor.ui.data.tree.Tree.prototype.allowedNestedDrag = function ( item )
 };
 
 ext.menueditor.ui.data.tree.Tree.prototype.getMaxNestedLevelForItem = function ( item ) {
-	var children = item.getChildren();
-	var level = item.getLevel();
-	for ( var i = 0; i < children.length; i++ ) {
+	const children = item.getChildren();
+	let level = item.getLevel();
+	for ( let i = 0; i < children.length; i++ ) {
 		level = this.getMaxNestedLevelForItem( children[ i ] );
 	}
 	return level;
@@ -132,8 +131,6 @@ ext.menueditor.ui.data.tree.Tree.prototype.getMaxLevels = function () {
 };
 
 ext.menueditor.ui.data.tree.Tree.prototype.getNodes = function () {
-	var nodes = ext.menueditor.ui.data.tree.Tree.parent.prototype.getNodes.call( this );
-	return nodes.map( function ( e ) {
-		return $.extend( e.getNodeData(), { level: e.getLevel() + 1 } );
-	} );
+	const nodes = ext.menueditor.ui.data.tree.Tree.parent.prototype.getNodes.call( this );
+	return nodes.map( ( e ) => Object.assign( e.getNodeData(), { level: e.getLevel() + 1 } ) );
 };

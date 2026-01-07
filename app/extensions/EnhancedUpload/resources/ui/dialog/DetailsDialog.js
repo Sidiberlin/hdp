@@ -70,9 +70,9 @@ enhancedUpload.ui.dialog.DetailsDialog.prototype.show = function () {
 };
 
 enhancedUpload.ui.dialog.DetailsDialog.prototype.getActionProcess = function ( action ) {
-	var desc, cat, descAndCatText, args;
+	let desc, cat, descAndCatText, args;
 	if ( action === 'upload' ) {
-		return new OO.ui.Process( function () {
+		return new OO.ui.Process( () => {
 			desc = this.details.getDescription();
 			cat = this.details.getCategories();
 			descAndCatText = desc + ' ' + cat;
@@ -81,7 +81,7 @@ enhancedUpload.ui.dialog.DetailsDialog.prototype.getActionProcess = function ( a
 			this.emit.apply( this, args );
 			this.close();
 
-		}.bind( this ) );
+		} );
 	}
 	return enhancedUpload.ui.dialog.DetailsDialog.super.prototype.getActionProcess.call(
 		this, action

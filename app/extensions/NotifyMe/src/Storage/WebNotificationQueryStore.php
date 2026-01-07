@@ -3,19 +3,19 @@
 namespace MediaWiki\Extension\NotifyMe\Storage;
 
 use Exception;
-use Language;
 use MediaWiki\Extension\NotifyMe\BucketProvider;
 use MediaWiki\Extension\NotifyMe\Storage\FilterBucket\CategoryBucket;
 use MediaWiki\Extension\NotifyMe\Storage\FilterBucket\INotificationFilterBucket;
 use MediaWiki\Extension\NotifyMe\Storage\FilterBucket\NamespaceBucket;
 use MediaWiki\Extension\NotifyMe\Storage\FilterBucket\TitleBucket;
 use MediaWiki\HookContainer\HookContainer;
+use MediaWiki\Language\Language;
 use MediaWiki\Page\WikiPageFactory;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\UserIdentity;
 use MWStake\MediaWiki\Component\Events\ITitleEvent;
 use MWStake\MediaWiki\Component\Events\Notification;
-use Title;
-use TitleFactory;
 use Wikimedia\Rdbms\FakeResultWrapper;
 use Wikimedia\Rdbms\ILoadBalancer;
 use Wikimedia\Rdbms\IResultWrapper;
@@ -149,7 +149,7 @@ class WebNotificationQueryStore {
 			throw new Exception( 'This method can only be called from maintenance scripts' );
 		}
 		$db = $this->loadBalancer->getConnection( DB_PRIMARY );
-		$db->query( 'TRUNCATE TABLE notifications_web_query_store' );
+		$db->query( 'TRUNCATE TABLE notifications_web_query_store', __METHOD__ );
 	}
 
 	/**
@@ -273,7 +273,7 @@ class WebNotificationQueryStore {
 		if ( !$po ) {
 			return '';
 		}
-		$categories = array_keys( $po->getCategories() );
+		$categories = $po->getCategoryNames();
 
 		return implode( '|', $categories );
 	}

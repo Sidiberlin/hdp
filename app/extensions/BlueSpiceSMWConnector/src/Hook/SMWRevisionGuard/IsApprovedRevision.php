@@ -6,9 +6,9 @@
 namespace BlueSpice\SMWConnector\Hook\SMWRevisionGuard;
 
 use BlueSpice\Hook;
-use Config;
-use IContextSource;
-use Title;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\Title;
 
 abstract class IsApprovedRevision extends Hook {
 

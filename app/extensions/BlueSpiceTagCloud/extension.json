@@ -1,7 +1,7 @@
 {
 	"name": "BlueSpiceTagCloud",
 	"license-name": "GPL-3.0-only",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceTagCloud",
 	"author": [
 		"Patric Wirth"
@@ -48,12 +48,19 @@
 					"class": "\\BlueSpice\\TagCloud\\ContentDroplets\\TagCloudDroplet"
 				}
 			}
+		},
+		"PDFCreator": {
+			"Processors": {
+				"removeTagCloudStyle": {
+					"class": "\\BlueSpice\\TagCloud\\Integration\\PDFCreator\\Processor\\RemoveTagCloudStyle"
+				}
+			}
 		}
 	},
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"ServiceWiringFiles": [
@@ -118,15 +125,15 @@
 				"bs-tagcloud-tag-tagcloud-attr-maxsize-help",
 				"bs-tagcloud-tag-tagcloud-attr-exclude-label",
 				"bs-tagcloud-tag-tagcloud-attr-exclude-help"
+			],
+			"dependencies": [
+				"ext.bluespice.visualEditorConnector.tags.classes"
 			]
 		}
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "resources",
 		"remoteExtPath": "BlueSpiceTagCloud/resources"
-	},
-	"Hooks": {
-		"BSUEModulePDFgetPage": "\\BlueSpice\\TagCloud\\Hook\\BSUEModulePDFgetPage\\TagCloudText::callback"
 	},
 	"manifest_version": 2
 }

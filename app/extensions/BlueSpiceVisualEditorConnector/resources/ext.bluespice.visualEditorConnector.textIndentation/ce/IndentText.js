@@ -1,8 +1,8 @@
 bs.util.registerNamespace( 'bs.vec.ce' );
 
-bs.vec.ce.IndentText = function() {
+bs.vec.ce.IndentText = function () {
 	// Parent constructor
-	bs.vec.ce.IndentText.super.apply( this,  arguments );
+	bs.vec.ce.IndentText.super.apply( this, arguments );
 
 	// DOM changes
 	this.$element
@@ -13,7 +13,7 @@ bs.vec.ce.IndentText = function() {
 			title: this.constructor.static.getDescription( this.model )
 		} );
 
-	var $newElement = $( '<dd>' ).append( $( '<dl>' ) ).appendTo( this.$element );
+	const $newElement = $( '<dd>' ).append( $( '<dl>' ) ).appendTo( this.$element );
 	this.$element = $newElement;
 };
 
@@ -32,8 +32,8 @@ bs.vec.ce.IndentText.static.tagName = 'p';
 /**
  * @inheritdoc
  */
-bs.vec.ce.IndentText.static.getDescription = function ( model ) {
-	return OO.ui.deferMsg( "bs-visualeditorconnector-indent-annotation-desc" );
+bs.vec.ce.IndentText.static.getDescription = function ( model ) { // eslint-disable-line no-unused-vars
+	return OO.ui.deferMsg( 'bs-visualeditorconnector-indent-annotation-desc' );
 };
 
 /* Registration */

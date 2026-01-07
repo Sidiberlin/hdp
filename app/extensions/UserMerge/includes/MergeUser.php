@@ -1,8 +1,16 @@
 <?php
 
 use MediaWiki\Block\DatabaseBlock;
+use MediaWiki\Block\DatabaseBlockStore;
+use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Deferred\SiteStatsUpdate;
+use MediaWiki\Extension\UserMerge\Hooks\HookRunner;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use Wikimedia\Rdbms\IDatabase;
+use Wikimedia\Rdbms\IExpression;
+use Wikimedia\Rdbms\LikeValue;
 
 /**
  * Contains the actual database backend logic for merging users
@@ -22,6 +30,11 @@ class MergeUser {
 	 */
 	private $logger;
 
+	/**
+	 * @var DatabaseBlockStore
+	 */
+	private $blockStore;
+
 	/** @var int */
 	private $flags;
 
@@ -32,17 +45,20 @@ class MergeUser {
 	 * @param User $oldUser
 	 * @param User $newUser
 	 * @param IUserMergeLogger $logger
+	 * @param DatabaseBlockStore $blockStore
 	 * @param int $flags Bitfield (Supports MergeUser::USE_*)
 	 */
 	public function __construct(
 		User $oldUser,
 		User $newUser,
 		IUserMergeLogger $logger,
+		DatabaseBlockStore $blockStore,
 		$flags = 0
 	) {
 		$this->newUser = $newUser;
 		$this->oldUser = $oldUser;
 		$this->logger = $logger;
+		$this->blockStore = $blockStore;
 		$this->flags = $flags;
 	}
 
@@ -74,33 +90,37 @@ class MergeUser {
 	 * Adds edit count of both users
 	 */
 	private function mergeEditcount() {
-		$dbw = wfGetDB( DB_PRIMARY );
+		$dbw = MediaWikiServices::getInstance()
+			->getConnectionProvider()
+			->getPrimaryDatabase();
 		$dbw->startAtomic( __METHOD__ );
 
-		$totalEdits = $dbw->selectField(
-			'user',
-			'SUM(user_editcount)',
-			[ 'user_id' => [ $this->newUser->getId(), $this->oldUser->getId() ] ],
-			__METHOD__
-		);
+		$totalEdits = $dbw->newSelectQueryBuilder()
+			->select( 'SUM(user_editcount)' )
+			->from( 'user' )
+			->where( [ 'user_id' => [ $this->newUser->getId(), $this->oldUser->getId() ] ] )
+			->caller( __METHOD__ )
+			->fetchField();
 
 		$totalEdits = (int)$totalEdits;
 
 		# don't run queries if neither user has any edits
 		if ( $totalEdits > 0 ) {
 			# update new user with total edits
-			$dbw->update( 'user',
-				[ 'user_editcount' => $totalEdits ],
-				[ 'user_id' => $this->newUser->getId() ],
-				__METHOD__
-			);
+			$dbw->newUpdateQueryBuilder()
+				->update( 'user' )
+				->set( [ 'user_editcount' => $totalEdits ] )
+				->where( [ 'user_id' => $this->newUser->getId() ] )
+				->caller( __METHOD__ )
+				->execute();
 
 			# clear old user's edits
-			$dbw->update( 'user',
-				[ 'user_editcount' => 0 ],
-				[ 'user_id' => $this->oldUser->getId() ],
-				__METHOD__
-			);
+			$dbw->newUpdateQueryBuilder()
+				->update( 'user' )
+				->set( [ 'user_editcount' => 0 ] )
+				->where( [ 'user_id' => $this->oldUser->getId() ] )
+				->caller( __METHOD__ )
+				->execute();
 		}
 
 		$dbw->endAtomic( __METHOD__ );
@@ -114,51 +134,34 @@ class MergeUser {
 		$dbw->startAtomic( __METHOD__ );
 
 		// Pull blocks directly from primary
-		$qi = DatabaseBlock::getQueryInfo();
-		$rows = $dbw->select(
-			$qi['tables'],
-			array_merge( $qi['fields'], [ 'ipb_user' ] ),
-			[
-				'ipb_user' => [ $this->oldUser->getId(), $this->newUser->getId() ],
-			],
-			__METHOD__,
-			[],
-			$qi['joins']
+		$oldBlocks = $this->blockStore->newListFromConds(
+			[ 'bt_user' => $this->oldUser->getId() ],
+			true, true
+		);
+		$newBlocks = $this->blockStore->newListFromConds(
+			[ 'bt_user' => $this->newUser->getId() ],
+			true, true
 		);
 
-		$newBlock = null;
-		$oldBlock = null;
-		foreach ( $rows as $row ) {
-			if ( (int)$row->ipb_user === $this->oldUser->getId() ) {
-				$oldBlock = $row;
-			} elseif ( (int)$row->ipb_user === $this->newUser->getId() ) {
-				$newBlock = $row;
-			}
-		}
-
-		if ( !$oldBlock ) {
+		if ( !$oldBlocks ) {
 			// No one is blocked or
 			// Only the new user is blocked, so nothing to do.
 			$dbw->endAtomic( __METHOD__ );
 			return;
 		}
-		if ( !$newBlock ) {
-			// Just move the old block to the new username
-			$dbw->update(
-				'ipblocks',
-				[ 'ipb_user' => $this->newUser->getId() ],
-				[ 'ipb_id' => $oldBlock->ipb_id ],
-				__METHOD__
-			);
+		if ( !$newBlocks ) {
+			// Just move the old blocks to the new username
+			foreach ( $oldBlocks as $block ) {
+				$this->blockStore->updateTarget( $block, $this->newUser );
+			}
 			$dbw->endAtomic( __METHOD__ );
 			return;
 		}
 
 		// Okay, let's pick the "strongest" block, and re-apply it to
 		// the new user.
-		$oldBlockObj = DatabaseBlock::newFromRow( $oldBlock );
-		$newBlockObj = DatabaseBlock::newFromRow( $newBlock );
-
+		$oldBlockObj = reset( $oldBlocks );
+		$newBlockObj = reset( $newBlocks );
 		$winner = $this->chooseBlock( $oldBlockObj, $newBlockObj );
 		if ( $winner->getId() === $newBlockObj->getId() ) {
 			$oldBlockObj->delete();
@@ -166,12 +169,7 @@ class MergeUser {
 			// Old user block won
 			// Delete current new block
 			$newBlockObj->delete();
-			$dbw->update(
-				'ipblocks',
-				[ 'ipb_user' => $this->newUser->getId() ],
-				[ 'ipb_id' => $winner->getId() ],
-				__METHOD__
-			);
+			$this->blockStore->updateTarget( $oldBlockObj, $this->newUser );
 		}
 
 		$dbw->endAtomic( __METHOD__ );
@@ -284,7 +282,7 @@ class MergeUser {
 				'actorStage' => SCHEMA_COMPAT_NEW ],
 			[ 'logging', 'batchKey' => 'log_id', 'actorId' => 'log_actor',
 				'actorStage' => SCHEMA_COMPAT_NEW ],
-			[ 'ipblocks', 'batchKey' => 'ipb_id', 'actorId' => 'ipb_by_actor',
+			[ 'block', 'batchKey' => 'bl_id', 'actorId' => 'bl_by_actor',
 				'actorStage' => SCHEMA_COMPAT_NEW ],
 			[ 'watchlist', 'wl_user', 'batchKey' => 'wl_title' ],
 			[ 'user_groups', 'ug_user', 'options' => [ 'IGNORE' ] ],
@@ -294,10 +292,12 @@ class MergeUser {
 				'actorStage' => SCHEMA_COMPAT_TEMP ],
 		];
 
-		Hooks::run( 'UserMergeAccountFields', [ &$updateFields ] );
+		$services = MediaWikiServices::getInstance();
+		$hookRunner = new HookRunner( $services->getHookContainer() );
+		$hookRunner->onUserMergeAccountFields( $updateFields );
 
-		$dbw = wfGetDB( DB_PRIMARY );
-		$lbFactory = MediaWikiServices::getInstance()->getDBLoadBalancerFactory();
+		$lbFactory = $services->getDBLoadBalancerFactory();
+		$dbw = $lbFactory->getPrimaryDatabase();
 		$ticket = $lbFactory->getEmptyTransactionTicket( __METHOD__ );
 
 		$this->deduplicateWatchlistEntries( $dbw );
@@ -332,41 +332,41 @@ class MergeUser {
 
 			if ( $db->trxLevel() || $keyField === null ) {
 				// Can't batch/wait when in a transaction or when no batch key is given
-				$db->update(
-					$tableName,
-					[ $idField => $this->newUser->getId() ]
-						+ array_fill_keys( $fieldInfo, $this->newUser->getName() ),
-					[ $idField => $this->oldUser->getId() ],
-					__METHOD__,
-					$options
-				);
+				$db->newUpdateQueryBuilder()
+					->update( $tableName )
+					->set( [ $idField => $this->newUser->getId() ]
+						+ array_fill_keys( $fieldInfo, $this->newUser->getName() ) )
+					->where( [ $idField => $this->oldUser->getId() ] )
+					->options( $options )
+					->caller( __METHOD__ )
+					->execute();
 			} else {
 				$limit = 200;
 				do {
 					$checkSince = microtime( true );
 					// Note that UPDATE with ORDER BY + LIMIT is not well supported.
 					// Grab a batch of values on a mostly unique column for this user ID.
-					$res = $db->select(
-						$tableName,
-						[ $keyField ],
-						[ $idField => $this->oldUser->getId() ],
-						__METHOD__,
-						[ 'LIMIT' => $limit ]
-					);
+					$res = $db->newSelectQueryBuilder()
+						->select( $keyField )
+						->from( $tableName )
+						->where( [ $idField => $this->oldUser->getId() ] )
+						->limit( $limit )
+						->caller( __METHOD__ )
+						->fetchResultSet();
 					$keyValues = [];
 					foreach ( $res as $row ) {
 						$keyValues[] = $row->$keyField;
 					}
 					// Update only those rows with the given column values
 					if ( count( $keyValues ) ) {
-						$db->update(
-							$tableName,
-							[ $idField => $this->newUser->getId() ]
-								+ array_fill_keys( $fieldInfo, $this->newUser->getName() ),
-							[ $idField => $this->oldUser->getId(), $keyField => $keyValues ],
-							__METHOD__,
-							$options
-						);
+						$db->newUpdateQueryBuilder()
+							->update( $tableName )
+							->set( [ $idField => $this->newUser->getId() ]
+								+ array_fill_keys( $fieldInfo, $this->newUser->getName() ) )
+							->where( [ $idField => $this->oldUser->getId(), $keyField => $keyValues ] )
+							->options( $options )
+							->caller( __METHOD__ )
+							->execute();
 					}
 					// Wait for replication to catch up
 					$opts = [ 'ifWritesSince' => $checkSince ];
@@ -377,14 +377,9 @@ class MergeUser {
 
 		if ( $this->oldUser->getActorId() ) {
 			$oldActorId = $this->oldUser->getActorId();
-			if ( interface_exists( '\MediaWiki\User\ActorNormalization' ) ) {
-				// MW 1.36+
-				$newActorId = MediaWikiServices::getInstance()
-					->getActorNormalization()
-					->acquireActorId( $this->newUser, $dbw );
-			} else {
-				$newActorId = $this->newUser->getActorId( $dbw );
-			}
+			$newActorId = MediaWikiServices::getInstance()
+				->getActorNormalization()
+				->acquireActorId( $this->newUser, $dbw );
 
 			foreach ( $updateFields as $fieldInfo ) {
 				if ( empty( $fieldInfo['actorId'] ) || empty( $fieldInfo['actorStage'] ) ||
@@ -401,39 +396,39 @@ class MergeUser {
 
 				if ( $db->trxLevel() || $keyField === null ) {
 					// Can't batch/wait when in a transaction or when no batch key is given
-					$db->update(
-						$tableName,
-						[ $idField => $newActorId ],
-						[ $idField => $oldActorId ],
-						__METHOD__,
-						$options
-					);
+					$db->newUpdateQueryBuilder()
+						->update( $tableName )
+						->set( [ $idField => $newActorId ] )
+						->where( [ $idField => $oldActorId ] )
+						->options( $options )
+						->caller( __METHOD__ )
+						->execute();
 				} else {
 					$limit = 200;
 					do {
 						$checkSince = microtime( true );
 						// Note that UPDATE with ORDER BY + LIMIT is not well supported.
 						// Grab a batch of values on a mostly unique column for this user ID.
-						$res = $db->select(
-							$tableName,
-							[ $keyField ],
-							[ $idField => $oldActorId ],
-							__METHOD__,
-							[ 'LIMIT' => $limit ]
-						);
+						$res = $db->newSelectQueryBuilder()
+							->select( $keyField )
+							->from( $tableName )
+							->where( [ $idField => $oldActorId ] )
+							->limit( $limit )
+							->caller( __METHOD__ )
+							->fetchResultSet();
 						$keyValues = [];
 						foreach ( $res as $row ) {
 							$keyValues[] = $row->$keyField;
 						}
 						// Update only those rows with the given column values
 						if ( count( $keyValues ) ) {
-							$db->update(
-								$tableName,
-								[ $idField => $newActorId ],
-								[ $idField => $oldActorId, $keyField => $keyValues ],
-								__METHOD__,
-								$options
-							);
+							$db->newUpdateQueryBuilder()
+								->update( $tableName )
+								->set( [ $idField => $newActorId ] )
+								->where( [ $idField => $oldActorId, $keyField => $keyValues ] )
+								->options( $options )
+								->caller( __METHOD__ )
+								->execute();
 						}
 						// Wait for replication to catch up
 						$opts = [ 'ifWritesSince' => $checkSince ];
@@ -443,11 +438,15 @@ class MergeUser {
 			}
 		}
 
-		$dbw->delete( 'user_newtalk', [ 'user_id' => $this->oldUser->getId() ], __METHOD__ );
+		$dbw->newDeleteQueryBuilder()
+			->deleteFrom( 'user_newtalk' )
+			->where( [ 'user_id' => $this->oldUser->getId() ] )
+			->caller( __METHOD__ )
+			->execute();
 		$this->oldUser->clearInstanceCache();
 		$this->newUser->clearInstanceCache();
 
-		Hooks::run( 'MergeAccountFromTo', [ &$this->oldUser, &$this->newUser ] );
+		$hookRunner->onMergeAccountFromTo( $this->oldUser, $this->newUser );
 	}
 
 	/**
@@ -463,23 +462,23 @@ class MergeUser {
 		// Avoid using self-joins as this fails on temporary tables (e.g. unit tests).
 		// See https://bugs.mysql.com/bug.php?id=10327.
 		$titlesToDelete = [];
-		$res = $dbw->select(
-			'watchlist',
-			[ 'wl_namespace', 'wl_title' ],
-			[ 'wl_user' => $this->oldUser->getId() ],
-			__METHOD__,
-			[ 'FOR UPDATE' ]
-		);
+		$res = $dbw->newSelectQueryBuilder()
+			->select( [ 'wl_namespace', 'wl_title' ] )
+			->from( 'watchlist' )
+			->where( [ 'wl_user' => $this->oldUser->getId() ] )
+			->forUpdate()
+			->caller( __METHOD__ )
+			->fetchResultSet();
 		foreach ( $res as $row ) {
 			$titlesToDelete[$row->wl_namespace . "|" . $row->wl_title] = false;
 		}
-		$res = $dbw->select(
-			'watchlist',
-			[ 'wl_namespace', 'wl_title' ],
-			[ 'wl_user' => $this->newUser->getId() ],
-			__METHOD__,
-			[ 'FOR UPDATE' ]
-		);
+		$res = $dbw->newSelectQueryBuilder()
+			->select( [ 'wl_namespace', 'wl_title' ] )
+			->from( 'watchlist' )
+			->where( [ 'wl_user' => $this->newUser->getId() ] )
+			->forUpdate()
+			->caller( __METHOD__ )
+			->fetchResultSet();
 		foreach ( $res as $row ) {
 			$key = $row->wl_namespace . "|" . $row->wl_title;
 			if ( isset( $titlesToDelete[$key] ) ) {
@@ -490,24 +489,21 @@ class MergeUser {
 
 		$conds = [];
 		foreach ( array_keys( $titlesToDelete ) as $tuple ) {
-			list( $ns, $dbKey ) = explode( "|", $tuple, 2 );
-			$conds[] = $dbw->makeList(
-				[
-					'wl_user' => $this->oldUser->getId(),
-					'wl_namespace' => $ns,
-					'wl_title' => $dbKey
-				],
-				LIST_AND
-			);
+			[ $ns, $dbKey ] = explode( "|", $tuple, 2 );
+			$conds[] = $dbw->andExpr( [
+				'wl_user' => $this->oldUser->getId(),
+				'wl_namespace' => $ns,
+				'wl_title' => $dbKey
+			] );
 		}
 
 		if ( count( $conds ) ) {
 			# Perform a multi-row delete
-			$dbw->delete(
-				'watchlist',
-				$dbw->makeList( $conds, LIST_OR ),
-				__METHOD__
-			);
+			$dbw->newDeleteQueryBuilder()
+				->deleteFrom( 'watchlist' )
+				->where( $dbw->orExpr( $conds ) )
+				->caller( __METHOD__ )
+				->execute();
 		}
 
 		$dbw->endAtomic( __METHOD__ );
@@ -535,17 +531,20 @@ class MergeUser {
 		$newusername = Title::makeTitleSafe( NS_USER, $contLang->ucfirst( $this->newUser->getName() ) );
 
 		# select all user pages and sub-pages
-		$dbr = wfGetDB( DB_REPLICA );
-		$pages = $dbr->select(
-			'page',
-			[ 'page_namespace', 'page_title' ],
-			[
+		$dbr = MediaWikiServices::getInstance()
+			->getConnectionProvider()
+			->getReplicaDatabase();
+		$pages = $dbr->newSelectQueryBuilder()
+			->select( [ 'page_namespace', 'page_title' ] )
+			->from( 'page' )
+			->where( [
 				'page_namespace' => [ NS_USER, NS_USER_TALK ],
-				'page_title' . $dbr->buildLike( $oldusername->getDBkey() . '/', $dbr->anyString() )
-					. ' OR page_title = ' . $dbr->addQuotes( $oldusername->getDBkey() ),
-			],
-			__METHOD__
-		);
+				$dbr->expr( 'page_title', IExpression::LIKE,
+					new LikeValue( $oldusername->getDBkey() . '/', $dbr->anyString() )
+				)->or( 'page_title', '=', $oldusername->getDBkey() ),
+			] )
+			->caller( __METHOD__ )
+			->fetchResultSet();
 
 		$message = static function () use ( $msg ) {
 			return call_user_func_array( $msg, func_get_args() );
@@ -595,12 +594,8 @@ class MergeUser {
 				}
 
 				# check if any pages link here
-				$res = $dbr->selectField( 'pagelinks',
-					'pl_title',
-					[ 'pl_title' => $this->oldUser->getName() ],
-					__METHOD__
-				);
-				if ( $res === false ) {
+				$res = $oldPage->getLinksTo( [ 'limit' => 1 ] );
+				if ( !$res ) {
 					# nothing links here, so delete unmoved page/redirect
 					$this->deletePage( $message, $performer, $oldPage );
 				}
@@ -643,7 +638,9 @@ class MergeUser {
 	 * and user_former_groups tables.
 	 */
 	private function deleteUser() {
-		$dbw = wfGetDB( DB_PRIMARY );
+		$dbw = MediaWikiServices::getInstance()
+			->getConnectionProvider()
+			->getPrimaryDatabase();
 
 		/**
 		 * Format is: table => user_id column
@@ -657,12 +654,11 @@ class MergeUser {
 			'user_former_groups' => 'ufg_user',
 		];
 
-		Hooks::run( 'UserMergeAccountDeleteTables', [ &$tablesToDelete ] );
+		$hookRunner = new HookRunner( MediaWikiServices::getInstance()->getHookContainer() );
+		$hookRunner->onUserMergeAccountDeleteTables( $tablesToDelete );
 
-		// Make sure these are always set and last
-		if ( $dbw->tableExists( 'actor', __METHOD__ ) ) {
-			$tablesToDelete['actor'] = 'actor_user';
-		}
+		// Make sure these are always set, and set last
+		$tablesToDelete['actor'] = 'actor_user';
 		$tablesToDelete['user'] = 'user_id';
 
 		foreach ( $tablesToDelete as $table => $field ) {
@@ -673,14 +669,14 @@ class MergeUser {
 			} else {
 				$db = $dbw;
 			}
-			$db->delete(
-				$table,
-				[ $field => $this->oldUser->getId() ],
-				__METHOD__
-			);
+			$db->newDeleteQueryBuilder()
+				->deleteFrom( $table )
+				->where( [ $field => $this->oldUser->getId() ] )
+				->caller( __METHOD__ )
+				->execute();
 		}
 
-		Hooks::run( 'DeleteAccount', [ &$this->oldUser ] );
+		$hookRunner->onDeleteAccount( $this->oldUser );
 
 		DeferredUpdates::addUpdate( SiteStatsUpdate::factory( [ 'users' => -1 ] ) );
 	}

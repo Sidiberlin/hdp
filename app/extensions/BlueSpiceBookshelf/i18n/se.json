@@ -4,15 +4,25 @@
 			"Yupik"
 		]
 	},
+	"bs-bookshelf-specialpage-allpages-ns-book-text": "Girjerádju",
 	"bs-bookshelf-tag-next": "Čuovvovaš",
+	"bs-bookshelf-tag-edit-book": "Rievdat girjji",
+	"bs-bookshelf-add-to-book-label": "Lasit girjii",
 	"bs-bookshelf-add-to-book-label-book": "Girji",
 	"bs-bookshelf-setting-path-feature": "Girji",
 	"bs-bookshelf-book-grid-title": "Girjjit",
-	"bs-bookshelf-ve-booklist-attr-filter-label": "Silli",
-	"bs-bookshelf-specialpage-allpages-ns-book-text": "Girjerádju",
-	"bs-bookshelf-tag-edit-book": "Rievdat girjji",
-	"bs-bookshelf-ve-bookmeta-attr-version-label": "Veršuvdna",
-	"bs-bookshelf-add-to-book-label": "Lasit girjii",
 	"bs-bookshelf-actionmenuentry-addtobook": "Lasit girjii",
-	"bs-bookshelf-metadata-dlg-action-save-label": "Vurke"
+	"bs-bookshelf-ve-booklist-attr-filter-label": "Silli",
+	"bs-bookshelf-ve-bookmeta-attr-version-label": "Veršuvdna",
+	"bs-bookshelf-ve-bookshelf-attr-book-label": "Girji",
+	"bs-bookshelf-booknav-book-label": "Girji",
+	"bs-bookshelf-search-center-filter-books-label": "Girji",
+	"bs-bookshelf-metadata-dlg-action-save-label": "Vurke",
+	"bs-bookshelf-newbook-dlg-title": "Ráhkat ođđa girjji",
+	"bs-bookshelf-droplet-search-name": "Oza girjjis",
+	"bs-bookshelf-droplet-search-book": "Girji",
+	"bs-bookshelf-notification-subscription-set-book-title": "Girji",
+	"bs-bookshelf-actionmenuentry-create-new-book": "Ráhkat ođđa girjji",
+	"bs-bookshelf-chapter-plain-text-input-label": "Teaksta",
+	"bs-bookshelf-chapter-wikilink-with-alias-text-input-label": "Teaksta"
 }

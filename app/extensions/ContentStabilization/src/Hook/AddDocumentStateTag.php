@@ -2,16 +2,16 @@
 
 namespace MediaWiki\Extension\ContentStabilization\Hook;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\ContentStabilization\InclusionManager;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\ContentStabilization\StableView;
 use MediaWiki\Hook\ParserFirstCallInitHook;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 use MediaWiki\Revision\RevisionStore;
-use Message;
-use Parser;
-use PPFrame;
-use RequestContext;
-use TitleFactory;
+use MediaWiki\Title\TitleFactory;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class AddDocumentStateTag implements ParserFirstCallInitHook {
@@ -116,7 +116,8 @@ class AddDocumentStateTag implements ParserFirstCallInitHook {
 			->where( [
 				'sp_page' => $pageId
 			] )
-			->orderBy( 'sp_revision', 'DESC' );
+			->orderBy( 'sp_revision', 'DESC' )
+			->caller( __METHOD__ );
 
 		$res = $queryBuilder->fetchResultSet();
 

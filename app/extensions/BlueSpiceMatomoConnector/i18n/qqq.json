@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Josef Konrad <konrad@hallowelt.biz>",
+			"McDutchie"
+		]
+	},
+	"bs-matomoconnector-extension-description": "Extension description displayed on [[Special:Version]].",
+	"bs-matomoconnector-pref-bsprivacyintegration": "Label for \"MatomoBlueSpicePrivacyIntegration\" config",
+	"bs-matomoconnector-pref-bsprivacyintegration-help": "Help message for \"MatomoBlueSpicePrivacyIntegration\" config",
+	"bs-matomoconnector-pref-siteid": "Label for the Matomo site ID configuration option.",
+	"bs-matomoconnector-pref-siteid-help": "Help message for the Matomo site ID configuration option. Indicates how to find the site ID in Matomo.",
+	"bs-matomoconnector-pref-baseurl": "Label for the Matomo base URL configuration option.",
+	"bs-matomoconnector-pref-baseurl-help": "Help message for the Matomo base URL configuration option. Explains the expected format without site ID.",
+	"bs-matomoconnector-pref-authtoken": "Label for the Matomo authentication token configuration option.",
+	"bs-matomoconnector-pref-authtoken-help": "Help message for the Matomo authentication token configuration option. Explains where to find the token in Matomo.",
+	"bs-matomoconnector-pref-optoutfooter": "Label for the option to display a Matomo opt-out link in the wiki footer.",
+	"bs-matomoconnector-pref-optoutfooter-help": "Help message for the option to display a Matomo opt-out link in the footer. Explains that the link opens the analysis service page with an opt-out checkbox. “Analysis service” should be identical to {{msg-mw|Bs-matomoconnector-optout-footerlink}}",
+	"bs-matomoconnector-special-optoutheading": "Heading text for [[Special:OptOut]], the Matomo opt-out special page.",
+	"bs-matomoconnector-special-privacynote": "HTML content for [[Special:OptOut]], explaining Matomo's data collection, cookie usage, and opt-out mechanism.",
+	"bs-matomoconnector-optout-footerlink": "Text for the footer link to [[Special:OptOut]].",
+	"bs-matomoconnector-privacy-cookie-group": "Label for the Matomo cookie group in BlueSpicePrivacy consent manager.",
+	"bs-matomoconnector-privacy-cookie-group-desc": "Description text for the Matomo cookie group in BlueSpicePrivacy consent manager. Explains what cookies Matomo sets and how data is processed."
+}

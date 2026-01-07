@@ -2,6 +2,8 @@
 
 namespace BlueSpice\ContextMenu\MenuItem;
 
+use MediaWiki\Message\Message;
+
 class History extends Base {
 
 	/**
@@ -9,12 +11,12 @@ class History extends Base {
 	 * @return string
 	 */
 	public function getIconClass() {
-		return 'bs-icon-history';
+		return 'history';
 	}
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabelMessage() {
 		return wfMessage( 'bs-contextmenu-page-history' );

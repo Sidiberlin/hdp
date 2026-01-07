@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.ce' );
 
-bs.vec.ce.SoftHyphenNode = function() {
+bs.vec.ce.SoftHyphenNode = function () {
 	// Parent constructor
 	bs.vec.ce.SoftHyphenNode.super.apply( this, arguments );
 

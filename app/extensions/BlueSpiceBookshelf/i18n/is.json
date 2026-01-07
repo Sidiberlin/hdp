@@ -1,0 +1,8 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bjarki S"
+		]
+	},
+	"bs-bookshelf-search-center-context-books-label": "í {{PLURAL:$1|bók|bókum}} '''$2'''"
+}

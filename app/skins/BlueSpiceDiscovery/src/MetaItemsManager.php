@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Discovery;
 
-use ConfigFactory;
+use MediaWiki\Config\ConfigFactory;
 
 class MetaItemsManager {
 

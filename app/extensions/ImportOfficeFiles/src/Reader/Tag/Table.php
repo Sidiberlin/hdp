@@ -87,6 +87,9 @@ class Table extends TagProcessorBase {
 				foreach ( $nonLiveTables as $nonLiveTable ) {
 					$replacementText = $tableProcessor->process( $nonLiveTable );
 					$replacementNode = $nonLiveNode->ownerDocument->createElement( 'wikitext', $replacementText );
+					if ( !$nonLiveTable->parentNode ) {
+						continue;
+					}
 					$nonLiveTable->parentNode->replaceChild( $replacementNode, $nonLiveTable );
 				}
 			}

@@ -2,6 +2,8 @@
 
 namespace BlueSpice\Avatars\ConfigDefinition;
 
+use MediaWiki\HTMLForm\Field\HTMLSelectField;
+use MediaWiki\HTMLForm\HTMLFormField;
 use MediaWiki\MediaWikiServices;
 
 class AvatarsGenerator extends \BlueSpice\ConfigDefinition\ArraySetting {
@@ -13,17 +15,17 @@ class AvatarsGenerator extends \BlueSpice\ConfigDefinition\ArraySetting {
 	public function getPaths() {
 		return [
 			static::MAIN_PATH_FEATURE . '/' . static::FEATURE_PERSONALISATION . '/BlueSpiceAvatars',
-			static::MAIN_PATH_EXTENSION . '/BlueSpiceAvatars/' . static::FEATURE_PERSONALISATION ,
+			static::MAIN_PATH_EXTENSION . '/BlueSpiceAvatars/' . static::FEATURE_PERSONALISATION,
 			static::MAIN_PATH_PACKAGE . '/' . static::PACKAGE_FREE . '/BlueSpiceAvatars',
 		];
 	}
 
 	/**
 	 *
-	 * @return \HTMLFormField
+	 * @return HTMLFormField
 	 */
 	public function getHtmlFormField() {
-		return new \HTMLSelectField( $this->makeFormFieldParams() );
+		return new HTMLSelectField( $this->makeFormFieldParams() );
 	}
 
 	/**

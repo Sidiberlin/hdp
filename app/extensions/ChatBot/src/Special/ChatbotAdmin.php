@@ -4,10 +4,11 @@ namespace ChatBot\Special;
 
 use ChatBot\AdminModuleFactory;
 use ChatBot\IAdminModule;
-use Html;
+use MediaWiki\Html\Html;
+use MediaWiki\SpecialPage\SpecialPage;
 
 // INACTIVE - NOT NEEDED
-class ChatbotAdmin extends \SpecialPage {
+class ChatbotAdmin extends SpecialPage {
 
 	/** @var AdminModuleFactory */
 	protected $adminModuleFactory;
@@ -21,11 +22,11 @@ class ChatbotAdmin extends \SpecialPage {
 	}
 
 	/**
-	 * @param string $par
+	 * @param string $subPage
 	 * @return void
 	 */
-	public function execute( $par ) {
-		parent::execute( $par );
+	public function execute( $subPage ) {
+		parent::execute( $subPage );
 
 		$this->getOutput()->enableOOUI();
 		$rlModules = [];

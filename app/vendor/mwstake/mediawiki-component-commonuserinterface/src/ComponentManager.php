@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ObjectFactory\ObjectFactory;

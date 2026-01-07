@@ -1,6 +1,8 @@
 <?php
 
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 $IP = dirname( dirname( dirname( __DIR__ ) ) );
 require_once "$IP/maintenance/Maintenance.php";
@@ -20,14 +22,14 @@ class BSCustomMenuMigrateTopBarMenu extends LoggedUpdateMaintenance {
 	 * @return bool
 	 */
 	protected function noDataToMigrate() {
-		$oldTitle = \Title::makeTitle(
+		$oldTitle = Title::makeTitle(
 			NS_MEDIAWIKI,
 			"TopBarMenu"
 		);
 		if ( !$oldTitle || !$oldTitle->exists() ) {
 			return true;
 		}
-		$newTitle = \Title::makeTitle(
+		$newTitle = Title::makeTitle(
 			NS_MEDIAWIKI,
 			// 'TopBarMenu' in the past
 			"CustomMenu/Header"
@@ -49,16 +51,16 @@ class BSCustomMenuMigrateTopBarMenu extends LoggedUpdateMaintenance {
 		}
 		$this->output( "...TopBarMenu -> migration...\n" );
 
-		$oldTitle = \Title::makeTitle(
+		$oldTitle = Title::makeTitle(
 			NS_MEDIAWIKI,
 			"TopBarMenu"
 		);
-		$newTitle = \Title::makeTitle(
+		$newTitle = Title::makeTitle(
 			NS_MEDIAWIKI,
 			// 'TopBarMenu' in the past
 			"CustomMenu/Header"
 		);
-		try{
+		try {
 			$move = $this->services->getMovePageFactory()->newMovePage( $oldTitle, $newTitle );
 			$move->move(
 				$this->getMaintenanceUser(),

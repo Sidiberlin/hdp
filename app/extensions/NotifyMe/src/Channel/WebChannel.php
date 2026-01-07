@@ -3,8 +3,8 @@
 namespace MediaWiki\Extension\NotifyMe\Channel;
 
 use MediaWiki\Extension\NotifyMe\Storage\WebNotificationQueryStore;
+use MediaWiki\Message\Message;
 use MediaWiki\User\UserIdentity;
-use Message;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
 use MWStake\MediaWiki\Component\Events\Notification;

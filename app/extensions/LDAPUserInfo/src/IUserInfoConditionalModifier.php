@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\LDAPUserInfo;
 
-use User;
+use MediaWiki\User\User;
 
 interface IUserInfoConditionalModifier extends IUserInfoModifier {
 

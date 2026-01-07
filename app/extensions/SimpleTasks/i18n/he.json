@@ -28,9 +28,5 @@
 	"simple-tasks-taskreport-state-title-done": "המטלה פתוחה",
 	"simple-tasks-taskreport-state-filter-done": "בוצעה",
 	"simple-tasks-taskreport-state-filter-open": "פתוחה",
-	"echo-category-title-simple-tasks-notification-cat": "משימות",
-	"simple-tasks-notification-cat-tooltip": "להודיע לי כאשר מוקצות לי משימות",
-	"simple-tasks-echo-notification-task-subject": "הוקצתה לך משימה בדף $1",
-	"simple-tasks-echo-notification-task-email-body": "$3 {{GENDER:$2|הקצה|הקצתה}} לך משימה לך בדף $1.\n\n$4",
-	"simple-tasks-echo-notification-task-web-body": "$2 {{GENDER:$1|הקצה|הקצתה}} לך משימה לך בדף $3."
+	"simple-tasks-notif-message-with-due-date": "{{GENDER:$1|הקצה|הקצתה}} לך משימה: \"$1\". מועד המשימה הוא $2"
 }

@@ -4,23 +4,22 @@ window.bs.exportTables = window.bs.exportTables || {};
 bs.exportTables.ExportMenu = function ( config ) {
 	// Parent constructor
 	bs.exportTables.ExportMenu.super.call( this, config );
-	this.grid = config.grid;
 	this.dataProvider = config.dataProvider || false;
 
-	var modes = $.extend( {
-		csv:  {
-			label: mw.message('bs-exporttables-menu-csv').plain(),
-			classes: ['export-button'],
+	const modes = Object.assign( {
+		csv: {
+			label: mw.message( 'bs-exporttables-menu-csv' ).plain(),
+			classes: [ 'export-button' ],
 			icon: 'csv'
 		},
-		xls:  {
-			label: mw.message('bs-exporttables-menu-xls').plain(),
-			classes: ['export-button'],
+		xls: {
+			label: mw.message( 'bs-exporttables-menu-xls' ).plain(),
+			classes: [ 'export-button' ],
 			icon: 'xls'
 		},
 		xlsx: {
-			label: mw.message('bs-exporttables-menu-xlsx').plain(),
-			classes: ['export-button'],
+			label: mw.message( 'bs-exporttables-menu-xlsx' ).plain(),
+			classes: [ 'export-button' ],
 			icon: 'xlsx'
 		}
 	}, config.exportModes || {} );
@@ -30,22 +29,22 @@ bs.exportTables.ExportMenu = function ( config ) {
 /* Inheritance */
 OO.inheritClass( bs.exportTables.ExportMenu, OO.ui.Widget );
 
-bs.exportTables.ExportMenu.prototype.init = function( modes ) {
-	for ( var key in modes ) {
+bs.exportTables.ExportMenu.prototype.init = function ( modes ) {
+	for ( const key in modes ) {
 		if ( modes.hasOwnProperty( key ) ) {
 			this.addMenuItem( key, modes[ key ] );
 		}
 	}
 };
 
-bs.exportTables.ExportMenu.prototype.addMenuItem = function( key, data ) {
+bs.exportTables.ExportMenu.prototype.addMenuItem = function ( key, data ) {
 	data.data = data.data || {};
 	data.data.exportMode = key;
 	data.framed = false;
-	var button = new OO.ui.ButtonWidget( data ),
+	const button = new OO.ui.ButtonWidget( data ),
 		menu = this;
 	button.connect( button, {
-		click: function() {
+		click: function () {
 			menu.export( this.getData().exportMode );
 		}
 	} );
@@ -55,49 +54,82 @@ bs.exportTables.ExportMenu.prototype.addMenuItem = function( key, data ) {
 	this.$element.append( button.$element );
 };
 
-bs.exportTables.ExportMenu.prototype.export = function( mode ) {
+bs.exportTables.ExportMenu.prototype.export = function ( mode ) {
+	const dfd = $.Deferred();
 	if ( !mode ) {
-		return;
+		return dfd.reject().promise();
 	}
-	this.grid.setLoading( true );
 	// Get the data to export:
 	// 1. Use cfg.provideExportData callback if passed in the grid config, or
 	// 2. Use providerExportData function of the grid, if available, or
 	// 3. Fallback to local function
-	this.dataPromise =
-		typeof this.dataProvider === 'function' ? this.dataProvider() :
-			typeof this.grid.provideExportData === 'function' ? this.grid.provideExportData() :
-				this.provideDataTable();
+	this.dataPromise = this.provideDataTable();
+	this.dataPromise.done( ( $table ) => {
+		this.download( mode, $table )
+			.done( async ( response, statusText, jqXHR ) => {
+				const filename = jqXHR.getResponseHeader( 'X-Filename' ) || mw.config.get( 'wgPageName' ) + '.pdf';
 
-	this.dataPromise.done( function( $table ) {
-		var url = mw.util.getUrl( 'Special:UniversalExport/' + mw.config.get('wgPageName'), {
-			'ue[module]': 'table2excel'
-		} );
+				const url = window.URL.createObjectURL( response );
+				const a = document.createElement( 'a' );
+				a.href = url;
+				a.download = filename;
+				document.body.appendChild( a );
+				a.click();
+				a.remove();
 
-		var formElements = [
-			new OO.ui.HiddenInputWidget( { name: 'ModeFrom', value: 'html' } ),
-			new OO.ui.HiddenInputWidget( { name: 'ModeTo', value: mode } ),
-			new OO.ui.HiddenInputWidget( { name: 'content', value: $table } ),
-		];
+				window.URL.revokeObjectURL( url );
+				dfd.resolve();
+			} )
+			.fail( () => {
+				console.error( 'Failed to download data for export' ); // eslint-disable-line no-console
+				dfd.reject();
+			} );
+	} ).fail( () => {
+		console.error( 'Failed to retrieve data for export' ); // eslint-disable-line no-console
+		dfd.reject();
+	} );
 
-		var formLayout = new OO.ui.FormLayout( {
-			items: formElements,
-			action: url,
-			method: 'post'
-		} );
-		this.$element.append( formLayout.$element );
-		formLayout.$element.submit();
-		formLayout.$element.remove();
-		this.grid.setLoading( false );
-	}.bind( this ) ).fail( function() {
-		console.error( 'Failed to retrieve data for export' );
-		this.grid.setLoading( false );
-	}.bind( this ) );
+	return dfd.promise();
 };
 
-bs.exportTables.ExportMenu.prototype.provideDataTable = function() {
-	var $dfd = $.Deferred(),
-		$tmp = $( '<div>' ).append( this.grid.$table.clone() );
-	$dfd.resolve( $tmp.html() );
-	return $dfd.promise();
+bs.exportTables.ExportMenu.prototype.provideDataTable = function () {
+	if ( !this.dataProvider ) {
+		return $.Deferred().reject().promise();
+	}
+	return this.dataProvider();
+};
+
+bs.exportTables.ExportMenu.prototype.download = function ( mode, data ) {
+	data = data || {};
+	const dfd = $.Deferred();
+	$.ajax( {
+		method: 'POST',
+		url: this.getURL( mode ),
+		data: JSON.stringify( { data: { content: data } } ),
+		contentType: 'application/json',
+		accept: 'application/' + mode,
+		xhrFields: {
+			responseType: 'blob' // Explicitly handle binary data as a Blob
+		}
+	} ).done( ( response, statusText, jqXHR ) => {
+		if ( typeof response === 'object' && response.success === false ) {
+			dfd.reject();
+			return;
+		}
+		dfd.resolve( response, statusText, jqXHR );
+	} ).fail( ( jgXHR, type, status ) => {
+		console.error( jgXHR, type, status ); // eslint-disable-line no-console
+		if ( type === 'error' ) {
+			dfd.reject( {
+				error: jgXHR.responseJSON || jgXHR.responseText
+			} );
+		}
+		dfd.reject( { type: type, status: status } );
+	} );
+
+	return dfd.promise();
+};
+
+bs.exportTables.ExportMenu.prototype.getURL = function ( mode ) {
+	return mw.util.wikiScript( 'rest' ) + '/table2excel/' + mode;
 };

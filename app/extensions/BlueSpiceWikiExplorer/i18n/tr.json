@@ -16,7 +16,6 @@
 	"bs-wikiexplorer-categories": "Kategoriler",
 	"bs-wikiexplorer-linked-files": "Bağlantılı dosyalar",
 	"bs-wikiexplorer-linked-pages": "Bağlantılı sayfalar",
-	"apihelp-bs-wikiexplorer-store-description": "WikiExplorer uzantısı için tüm verileri sağlar",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "MetaData'nın önceden yüklenmiş olup olmadığını gösteren API parametresi.",
 	"apihelp-bs-wikiexplorer-store-summary": "WikiExplorer uzantısı için tüm verileri sağlar"
 }

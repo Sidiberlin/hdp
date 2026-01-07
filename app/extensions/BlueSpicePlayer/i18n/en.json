@@ -3,7 +3,6 @@
 		"authors": []
 	},
 	"bs-player-extension-description": "Embed a media player on a page.",
-	"bs-player-pref-autostart": "Start video automatically",
 	"bs-player-file-does-not-exist": "File does not exist.",
 	"bs-player-unsupported-type": "This file type is not supported.",
 	"bs-player-config-prefwidth": "Default width of videos",

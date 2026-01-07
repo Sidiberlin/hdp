@@ -164,13 +164,22 @@ ve.dm.RebaseClient.prototype.acceptChange = function ( change ) {
 	) {
 		uncommitted = this.getChangeSince( this.commitLength, false );
 		try {
+			// Experimental, allow client-side order skipping, as backend sends changes in order
+			if ( change.start !== uncommitted.start ) {
+				if ( change.start > uncommitted.start ) {
+					change.start = uncommitted.start;
+				}
+				if ( uncommitted.start > change.start ) {
+					uncommitted.start = change.start;
+				}
+			}
 			result = ve.dm.Change.static.rebaseUncommittedChange( change, uncommitted );
 		} catch ( e ) {
 			console.error( e ); // eslint-disable-line no-console
 			// we need to reload the page to recover from this error
 			OO.ui.alert(
 				mw.message( 'collabpads-out-of-sync' ).text()
-			).done( function () {
+			).done( () => {
 				location.reload();
 			} );
 

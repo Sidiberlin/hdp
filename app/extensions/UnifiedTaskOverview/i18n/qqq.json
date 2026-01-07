@@ -11,5 +11,6 @@
 	"unifiedtaskoverview": "Special page name for [[Special:UnifiedTaskOverview]] special page.\n{{Identical|My tasks}}",
 	"unifiedtaskoverview-label-no-task": "Text that shows when the user does not have open tasks",
 	"unifiedtaskoverview-personal-url-my-tasks": "Label for the link in the personal urls that leads to the specialpage [[Special:UnifiedTaskOverview]].\n{{Identical|Tasks}}",
-	"unifiedtaskoverview-search-placeholder": "Placeholder label for search\n\n{{Identical|Search}}"
+	"unifiedtaskoverview-search-placeholder": "Placeholder label for search\n\n{{Identical|Search}}",
+	"unifiedtaskoverview-no-login-text": "Showed on Special:Userlogin when user tries to access their tasks before logging in"
 }

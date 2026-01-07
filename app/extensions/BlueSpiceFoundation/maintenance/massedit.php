@@ -24,8 +24,12 @@ This script is based loosely on maintenance/edit.php of MediaWiki.
 // include MediaWiki's command line tools
 require_once 'BSMaintenance.php';
 
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Content\ContentHandler;
+use MediaWiki\Content\TextContent;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Title\Title;
 
 $userName    = 'WikiBot';
 $summary     = 'Some meaningful description';
@@ -139,7 +143,7 @@ $res = $dbr->select(
 	'page',
 	'page_title, page_namespace, page_id',
 	$qry_ns,
-	'Database::select',
+	__METHOD__,
 	[ 'order by' => 'page_title' ]
 );
 
@@ -216,7 +220,7 @@ foreach ( $res as $row ) {
 	}
 
 	// this part is for text modification only (append, prefix, delete, replace)
-	if ( in_array( $mode, [ 'append','prefix','delete','replace' ] ) ) {
+	if ( in_array( $mode, [ 'append', 'prefix', 'delete', 'replace' ] ) ) {
 		# Modify the text
 		$old_text = $text;
 

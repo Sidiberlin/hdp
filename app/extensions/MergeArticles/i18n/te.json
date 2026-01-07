@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Veeven"
+		]
+	},
+	"mergearticles-target-new-label": "కొత్త పేజీ",
+	"mergearticles-type-file": "దస్త్రం",
+	"mergearticles-type-article": "పేజీ",
+	"mergearticles-type-template": "మూస",
+	"mergearticles-type-category": "వర్గం",
+	"mergearticles-no-pages-available": "చూపించేందుకు ఏమీ లేదు!",
+	"mergearticles-request-invalid": "చెల్లని అభ్యర్థన",
+	"mergearticles-merge-success-page-label": "లక్ష్యిత పేజీ: $1",
+	"mergearticles-back-to-overview": "తిరిగి అవలోకనానికి",
+	"mergearticles-file-layout-label": "దస్త్రం",
+	"mergearticles-file-info-name": "పేరు: $1",
+	"mergearticles-file-info-size": "పరిమాణం: $1",
+	"mergearticles-diff-action-accept": "ఆమోదించు",
+	"mergearticles-diff-action-refuse": "తిరస్కరించు",
+	"mergearticles-diff-header": "పాఠ్యంలో మార్పులు",
+	"mergearticles-final-text-header-label": "అంతిమ పాఠ్యం",
+	"mergearticles-discard-draft": "ఈ ప్రతిని విస్మరించు"
+}

@@ -53,11 +53,9 @@
 	background-color: #fafafc;
 }
 
-/* stylelint-disable unit-disallowed-list */
 .attachments-filelist .oojsplus-data-gridWidget .oojsplus-data-gridWidget-table .oojsplus-data-gridWidget-header th .header-button {
 	font-size: 0.875rem;
 }
-/* stylelint-enable unit-disallowed-list */
 
 .attachments-filelist .drag-file .oojsplus-data-gridWidget {
 	background-color: #fff;

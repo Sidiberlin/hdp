@@ -18,11 +18,11 @@
 	"standarddialogs-page-info-history": "Lescht Ännerung",
 	"standarddialogs-page-info-properties": "Eegenschaften",
 	"standarddialogs-page-info-page-title": "Titel",
-	"standarddialogs-page-info-page-length": "Gréisst vun der Säit (a Bytes)",
+	"standarddialogs-page-info-page-length": "Gréisst vun der Säit (a Byte)",
 	"standarddialogs-page-info-page-id": "ID vun der Säit",
 	"standarddialogs-page-info-page-language": "Sprooch",
-	"standarddialogs-page-info-page-model": "Modell fir den Inhalt",
-	"standarddialogs-page-info-page-watch": "Zuel vun de Benotzer déi iwwerwaachen",
+	"standarddialogs-page-info-page-model": "Inhaltsmodell",
+	"standarddialogs-page-info-page-watch": "Zuel vun de Benotzer, déi iwwerwaachen",
 	"standarddialogs-page-info-page-redirects": "Viruleedungen",
 	"standarddialogs-page-info-page-contributors": "Auteuren",
 	"standarddialogs-page-info-page-last-edit": "Lescht Ännerung",
@@ -51,5 +51,12 @@
 	"standarddialogs-purge-title": "Säit \"$1\" nei lueden",
 	"standarddialogs-btn-done": "Fäerdeg",
 	"standarddialogs-btn-cancel": "Ofbriechen",
-	"standarddialogs-protect-level-editor": "Nëmme fir Editeuren an Administrateuren erlaben"
+	"standarddialogs-protect-level-editor": "Nëmme fir Editeuren an Administrateuren erlaben",
+	"standarddialogs-delete-subpages": "Ënnersäite läschen",
+	"standarddialogs-delete-btn-label": "Läschen",
+	"standarddialogs-move-btn-label": "Réckelen",
+	"standarddialogs-copy-btn-label": "Kopéieren",
+	"standarddialogs-new-page-btn-label": "Uleeën",
+	"standarddialogs-new-subpage-btn-label": "Uleeën",
+	"standarddialogs-purge-btn-label": "Nei lueden"
 }

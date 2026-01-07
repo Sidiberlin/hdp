@@ -2,35 +2,26 @@
 
 namespace BlueSpice\CategoryManager;
 
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
-use SpecialPage;
 
 class GlobalActionsEditing extends RestrictedTextLink {
-	/**
-	 *
-	 */
+
 	public function __construct() {
 		parent::__construct( [] );
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getId(): string {
 		return 'ga-bs-category';
 	}
 
-	/**
-	 *
-	 * @return string[]
-	 */
+	/** @inheritDoc */
 	public function getPermissions(): array {
-		$permissions = [
-			'categorymanager-viewspecialpage'
-		];
-		return $permissions;
+		return [ 'edit' ];
 	}
 
 	/**

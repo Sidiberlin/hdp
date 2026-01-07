@@ -1,8 +1,8 @@
 bs.util.registerNamespace( 'bs.vec.ui' );
 
-bs.vec.ui.InternalFileLinkContextItem = function() {
+bs.vec.ui.InternalFileLinkContextItem = function () {
 	// Parent constructor
-	bs.vec.ui.InternalFileLinkContextItem .super.apply( this, arguments );
+	bs.vec.ui.InternalFileLinkContextItem.super.apply( this, arguments );
 
 	// Initialization
 	this.$element.addClass( 've-ui-internalFileLinkContextItem' );
@@ -20,46 +20,45 @@ bs.vec.ui.InternalFileLinkContextItem.static.modelClasses = [ bs.vec.dm.Internal
 bs.vec.ui.InternalFileLinkContextItem.static.commandName = 'media';
 
 bs.vec.ui.InternalFileLinkContextItem.prototype.onEditButtonClick = function () {
-	var command = this.getCommand();
+	const command = this.getCommand();
 
 	if ( command ) {
 		command.execute( this.context.getSurface() );
-		var windowManager = this.context.getSurface().getDialogs();
+		const windowManager = this.context.getSurface().getDialogs();
 		windowManager.connect( this, {
 			opening: 'switchToInfoPanel'
 		} );
 	}
 };
 
-
-bs.vec.ui.InternalFileLinkContextItem.prototype.switchToInfoPanel = function ( win, opened, data ) {
-	var windowManager = this.context.getSurface().getDialogs(),
+bs.vec.ui.InternalFileLinkContextItem.prototype.switchToInfoPanel = function ( win, opened, data ) { // eslint-disable-line no-unused-vars
+	const windowManager = this.context.getSurface().getDialogs(),
 		annotation = this.getOneAnnotation();
 
 	if ( win.constructor.name !== 'BsVecUiMWMediaDialog' ) {
 		return;
 	}
-	opened.done( function() {
+	opened.done( () => {
 		win.setFileLinkEditMode( annotation );
 		this.emit( 'command' );
-	}.bind( this ) );
+	} );
 
 	windowManager.disconnect( this, {
 		opening: 'switchToInfoPanel'
 	} );
 };
 
-bs.vec.ui.InternalFileLinkContextItem.prototype.getOneAnnotation = function() {
-	var annotations = this.context.getSurface().getModel().getFragment().getAnnotations(),
-		annotationStoreHash;
+bs.vec.ui.InternalFileLinkContextItem.prototype.getOneAnnotation = function () {
+	const annotations = this.context.getSurface().getModel().getFragment().getAnnotations();
+	let annotationStoreHash;
 
 	annotationStoreHash = annotations.getAnnotationsByName( 'link/internalFile' );
 	if ( annotationStoreHash.storeHashes.length > 0 ) {
-		return annotationStoreHash.get()[0];
+		return annotationStoreHash.get()[ 0 ];
 	}
 	annotationStoreHash = annotations.getAnnotationsByName( 'link/internalMedia' );
 	if ( annotationStoreHash.storeHashes.length > 0 ) {
-		return annotationStoreHash.get()[0];
+		return annotationStoreHash.get()[ 0 ];
 	}
 	return null;
 };

@@ -13,8 +13,8 @@ declare( strict_types=1 );
 
 namespace MediaWiki\Extension\EmbedVideo\Media\TransformOutput;
 
-use File;
-use Html;
+use MediaWiki\FileRepo\File\File;
+use MediaWiki\Html\Html;
 
 class VideoTransformOutput extends AudioTransformOutput {
 
@@ -39,16 +39,7 @@ class VideoTransformOutput extends AudioTransformOutput {
 	/**
 	 * Fetch HTML for this transform output
 	 *
-	 * @param array $options Associative array of options. Boolean options
-	 *                        should be indicated with a value of true for true, and false or
-	 *                        absent for false.
-	 *                        alt                Alternate text or caption
-	 *                        desc-link          Boolean, show a description link
-	 *                        file-link          Boolean, show a file download link
-	 *                        custom-url-link    Custom URL to link to
-	 *                        custom-title-link  Custom Title object to link to
-	 *                        valign             vertical-align property, if the output is an inline element
-	 *                        img-class          Class applied to the "<img>" tag, if there is such a tag
+	 * @param array $options Associative array of options.
 	 *
 	 * @return string HTML
 	 */
@@ -57,7 +48,7 @@ class VideoTransformOutput extends AudioTransformOutput {
 			'src' => $this->getSrc(),
 			'width' => $this->getWidth(),
 			'height' => $this->getHeight(),
-			'class' => $options['img-class'] ?? false,
+			'class' => $options['img-class'] ?? $this->parameters['img-class'] ?? false,
 			'style' => $this->getStyle( $options ),
 			'poster' => $this->parameters['posterUrl'] ?? false,
 			'controls' => !isset( $this->parameters['nocontrols'] ),
@@ -66,7 +57,14 @@ class VideoTransformOutput extends AudioTransformOutput {
 			'muted' => isset( $this->parameters['muted'] ),
 		];
 
-		if ( $this->parameters['lazy'] === true && !isset( $this->parameters['gif'] ) ) {
+		if (
+			!empty( $options['no-dimensions'] ) ||
+			isset( $options['override-width'] ) ||
+			isset( $options['override-height'] ) ) {
+			unset( $attrs['width'], $attrs['height'] );
+		}
+
+		if ( ( $this->parameters['lazy'] ?? false ) === true && !isset( $this->parameters['gif'] ) ) {
 			$attrs['preload'] = 'none';
 		}
 
@@ -86,7 +84,10 @@ class VideoTransformOutput extends AudioTransformOutput {
 		$style[] = 'max-width: 100%;';
 		$style[] = 'max-height: 100%;';
 
-		if ( empty( $options['no-dimensions'] ) ) {
+		if (
+			empty( $options['no-dimensions'] ) &&
+			!isset( $options['override-width'] ) && !isset( $options['override-height'] )
+		) {
 			$style[] = "width: {$this->getWidth()}px;";
 			$style[] = "height: {$this->getHeight()}px;";
 		}

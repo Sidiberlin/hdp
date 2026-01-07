@@ -10,7 +10,7 @@ namespace SRF\Filtered\Filter;
  * @ingroup SemanticResultFormats
  */
 
-use SMWPropertyValue;
+use SMW\DataValues\PropertyValue;
 use SRF\Filtered\ResultItem;
 
 /**
@@ -47,12 +47,12 @@ class NumberFilter extends Filter {
 
 			$printRequest = $field->getPrintRequest();
 
-			if ( $printRequest->getData() instanceof SMWPropertyValue &&
+			if ( $printRequest->getData() instanceof PropertyValue &&
 				$printRequest->getData()->getInceptiveProperty()->getKey() === $propertyName &&
 				( $field->reset() instanceof \SMWDINumber || $field->reset() instanceof \SMWDITime )
 			) {
-
-				$values = []; // contains plain text
+				// contains plain text
+				$values = [];
 				$value = $field->getNextDataValue();
 
 				while ( $value instanceof \SMWNumberValue || $value instanceof \SMWTimeValue ) {

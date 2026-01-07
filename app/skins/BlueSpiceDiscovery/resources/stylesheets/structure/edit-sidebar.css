@@ -7,17 +7,20 @@
 	font-size: 0.7rem;
 	margin-top: 15px;
 }
+
 #mw-links:hover #edit-sidebar-link {
 	height: inherit;
 }
+
 #sb-pri #edit-sidebar-link:hover {
 	height: inherit;
 	text-decoration: underline;
 	border-left: 0;
 	background-color: transparent;
 }
+
 #sb-pri #edit-sidebar-link:focus-visible {
 	height: inherit;
-	border: 2px solid var(--focus-visible);
+	border: 2px solid var( --focus-visible );
 	outline-color: transparent;
 }

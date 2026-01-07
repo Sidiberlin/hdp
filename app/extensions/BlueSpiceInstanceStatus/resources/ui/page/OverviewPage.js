@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.instanceStatus.ui' );
 
-bs.instanceStatus.ui.OverviewPage = function( name, config ) {
+bs.instanceStatus.ui.OverviewPage = function ( name, config ) {
 	bs.instanceStatus.ui.OverviewPage.parent.call( this, name, config );
 	this.info = mw.config.get( 'bsInstanceStatus_StatusData' );
 
@@ -17,25 +17,25 @@ bs.instanceStatus.ui.OverviewPage.prototype.setupOutlineItem = function () {
 };
 
 bs.instanceStatus.ui.OverviewPage.prototype.renderItems = function () {
-	var layouts = [];
-	for ( var key in this.info ) {
+	const layouts = [];
+	for ( const key in this.info ) {
 		if ( !this.info.hasOwnProperty( key ) ) {
 			continue;
 		}
-		var data = this.info[key];
-		var items = [];
+		const data = this.info[ key ];
+		const items = [];
 		if ( Object.prototype.hasOwnProperty.call( data, 'icon' ) ) {
 			items.push( new OO.ui.IconWidget( { icon: data.icon } ) );
 		}
 		items.push( new OO.ui.LabelWidget( { label: data.label } ) );
 
-		var layout = new OO.ui.HorizontalLayout( {
+		const layout = new OO.ui.HorizontalLayout( {
 			classes: [ 'bs-instance-status-overview-item' ],
 			items: items
 		} );
 
-		var value = $( '<div>' ).addClass( 'bs-instance-status-overview-item-value' ).html( data.value );
-		layout.$element.append( value );
+		const $value = $( '<div>' ).addClass( 'bs-instance-status-overview-item-value' ).html( data.value );
+		layout.$element.append( $value );
 
 		layouts.push( layout.$element );
 	}

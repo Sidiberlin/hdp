@@ -28,8 +28,6 @@
 	"bs-countthings-tag-countfiles-desc": "Viser antall filer på wikien.",
 	"bs-countthings-tag-countcharacters-desc": "Genererer metadata om innholdet til den gitte artikkelen. Resultatet er en infoboks som kan integreres i en artikkel. Med parameteren «mode» kan forskjellige typer informasjon vises.",
 	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: Hva som skal telles: <code>chars</code> (tegn), <code>words</code> (ord) eller <code>pages</code> (sider).",
-	"bs-countthings-tag-countcharacters-example-1": "Antall ord",
-	"bs-countthings-tag-countcharacters-example-2": "Antall tegn",
 	"bs-countthings-droplet-articles-name": "Antall sider",
 	"bs-countthings-droplet-articles-description": "Viser antall sider",
 	"bs-countthings-droplet-characters-name": "Antall tegn",

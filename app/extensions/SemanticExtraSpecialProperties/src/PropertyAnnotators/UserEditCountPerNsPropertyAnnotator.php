@@ -2,12 +2,12 @@
 
 namespace SESP\PropertyAnnotators;
 
-use SESP\PropertyAnnotator;
 use SESP\AppFactory;
+use SESP\PropertyAnnotator;
+use SMW\DataModel\ContainerSemanticData;
 use SMW\DIProperty;
 use SMW\DIWikiPage;
 use SMW\SemanticData;
-use SMWContainerSemanticData as ContainerSemanticData;
 use SMWDataItem as DataItem;
 use SMWDIContainer as DIContainer;
 use SMWDINumber as DINumber;
@@ -18,7 +18,7 @@ use Wikimedia\IPUtils;
  * @private
  * @ingroup SESP
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  *
  * @author Alexander Mashin
  */
@@ -33,12 +33,12 @@ class UserEditCountPerNsPropertyAnnotator implements PropertyAnnotator {
 	/** @const string PROP_CNT_ID ID for the edit count in the record. */
 	private const PROP_CNT_ID = '___USEREDITCNTNS_CNT';
 
-	/** @var DIProperty $nsProperty DIProperty object for namespace number. */
+	/** @var DIProperty DIProperty object for namespace number. */
 	private static $nsProperty;
-	/** @var DIProperty $editsProperty DIProperty object for number if edits in NS. */
+	/** @var DIProperty DIProperty object for number if edits in NS. */
 	private static $editsProperty;
 
-	/** @var AppFactory $appFactory */
+	/** @var AppFactory */
 	private $appFactory;
 
 	/**
@@ -61,7 +61,6 @@ class UserEditCountPerNsPropertyAnnotator implements PropertyAnnotator {
 	 * @inheritDoc
 	 */
 	public function addAnnotation( DIProperty $property, SemanticData $semanticData ) {
-
 		$subject = $semanticData->getSubject();
 		$title = $subject->getTitle();
 
@@ -116,18 +115,27 @@ class UserEditCountPerNsPropertyAnnotator implements PropertyAnnotator {
 	 */
 	private function getEditsPerNs( $id, $ip ): array {
 		$db = $this->appFactory->getConnection();
+		$queryTables = [ 'revision', 'actor', 'page' ];
+
+		$joinConditions = [
+			'page'	=> [ 'INNER JOIN', [ 'page_id=rev_page' ] ],
+			'actor'	=> [ 'INNER JOIN', [ 'actor_id=rev_actor' ] ]
+		];
+
 		$result = $db->select(
-			[ 'revision', 'revision_actor_temp', 'actor', 'page' ], // FROM.
-			[ 'ns' => 'page.page_namespace', 'edits' => 'COUNT(revision.rev_id)' ], // SELECT.
-			$id === null ? [ 'actor.actor_name' => $ip ] : [ 'actor.actor_user' => $id ], // WHERE.
+		// FROM.
+			$queryTables,
+			// SELECT.
+			[ 'ns' => 'page_namespace', 'edits' => 'COUNT(rev_id)' ],
+			// WHERE.
+			$id === null ? [ 'actor_name' => $ip ] : [ 'actor_user' => $id ],
 			__METHOD__,
-			[ 'GROUP BY' => [ 'page.page_namespace' ] ], // GROUP BY.
-			[ // JOIN conditions.
-				'page'					=> [ 'INNER JOIN', ['page.page_id=revision.rev_page'] ],
-				'revision_actor_temp'	=> [ 'INNER JOIN', ['revision_actor_temp.revactor_rev=revision.rev_id'] ],
-				'actor'					=> [ 'INNER JOIN', ['actor.actor_id=revision_actor_temp.revactor_actor'] ]
-			]
+			// GROUP BY.
+			[ 'GROUP BY' => [ 'page_namespace' ] ],
+			// JOIN conditions.
+			$joinConditions
 		);
+
 		$records = [];
 		foreach ( $result as $row ) {
 			$records[$row->ns] = $row->edits;

@@ -1,6 +1,4 @@
-ext.bluespice = ext.bluespice || {};
-ext.bluespice.rating = ext.bluespice.rating || {};
-ext.bluespice.rating.panel = ext.bluespice.rating.panel || {};
+bs.util.registerNamespace( 'ext.bluespice.rating.panel' );
 
 ext.bluespice.rating.panel.SpecialRecommendationsPanel = function ( cfg ) {
 	ext.bluespice.rating.panel.SpecialRecommendationsPanel.super.apply( this, cfg );
@@ -36,46 +34,40 @@ ext.bluespice.rating.panel.SpecialRecommendationsPanel.prototype.setupGridConfig
 		style: 'differentiate-rows',
 		columns: {
 			page_namespace: { // eslint-disable-line camelcase
-				headerText: mw.message( 'bs-rating-specialrating-label-namespace' ).plain(),
+				headerText: mw.message( 'bs-rating-specialrating-label-namespace' ).text(),
 				type: 'text',
 				sortable: true,
-				valueParser: ( value, row ) => {
-					return new OO.ui.HtmlSnippet( mw.html.element(
-						'a',
-						{
-							href: mw.util.getUrl( 'Special:AllPages', {
-								namespace: value
-							} )
-						},
-						row.page_namespace_text
-					) );
-				}
+				valueParser: ( value, row ) => new OO.ui.HtmlSnippet( mw.html.element(
+					'a',
+					{
+						href: mw.util.getUrl( 'Special:AllPages', {
+							namespace: value
+						} )
+					},
+					row.page_namespace_text
+				) )
 			},
 			page_title: { // eslint-disable-line camelcase
-				headerText: mw.message( 'bs-rating-specialrating-titleTitle' ).plain(),
+				headerText: mw.message( 'bs-rating-specialrating-titleTitle' ).text(),
 				type: 'text',
 				sortable: true,
 				filter: { type: 'text' },
-				valueParser: ( value, row ) => {
-					return new OO.ui.HtmlSnippet( mw.html.element(
-						'a',
-						{
-							href: row.page_namespace == bs.ns.NS_MAIN ? // eslint-disable-line eqeqeq, max-len
-								mw.util.getUrl( value ) :
-								mw.util.getUrl( `${row.page_namespace_text}:${value}` )
-						},
-						value
-					) );
-				}
+				valueParser: ( value, row ) => new OO.ui.HtmlSnippet( mw.html.element(
+					'a',
+					{
+						href: row.page_namespace == bs.ns.NS_MAIN ? // eslint-disable-line eqeqeq
+							mw.util.getUrl( value ) :
+							mw.util.getUrl( `${ row.page_namespace_text }:${ value }` )
+					},
+					value
+				) )
 			},
 			totalcount: {
-				headerText: mw.message( 'bs-rating-special-recommendations-label-recommendation' ).plain(),
+				headerText: mw.message( 'bs-rating-special-recommendations-label-recommendation' ).text(),
 				type: 'text',
 				sortable: true,
 				filter: { type: 'text' },
-				valueParser: ( value, row ) => {
-					return new OO.ui.HtmlSnippet( row.content );
-				}
+				valueParser: ( value, row ) => new OO.ui.HtmlSnippet( row.content )
 			}
 		},
 		store: this.store,
@@ -86,30 +78,30 @@ ext.bluespice.rating.panel.SpecialRecommendationsPanel.prototype.setupGridConfig
 				try {
 					this.store.setPageSize( 99999 );
 					const response = await this.store.reload();
-
 					const $table = $( '<table>' );
-					let $row = $( '<tr>' );
 
-					$row.append( $( '<td>' ).text( mw.message( 'bs-rating-specialrating-label-namespace' ).text() ) );
-					$row.append( $( '<td>' ).text( mw.message( 'bs-rating-specialrating-titleTitle' ).text() ) );
-					$row.append( $( '<td>' ).text( mw.message( 'bs-rating-special-recommendations-label-recommendation' ).text() ) );
+					const $thead = $( '<thead>' )
+						.append( $( '<tr>' )
+							.append( $( '<th>' ).text( mw.message( 'bs-rating-specialrating-label-namespace' ).text() ) )
+							.append( $( '<th>' ).text( mw.message( 'bs-rating-specialrating-titleTitle' ).text() ) )
+							.append( $( '<th>' ).text( mw.message( 'bs-rating-special-recommendations-label-recommendation' ).text() ) )
+						);
 
-					$table.append( $row );
-
+					const $tbody = $( '<tbody>' );
 					for ( const id in response ) {
-						if ( response.hasOwnProperty( id ) ) { // eslint-disable-line no-prototype-builtins, max-len
+						if ( response.hasOwnProperty( id ) ) {
 							const record = response[ id ];
-							$row = $( '<tr>' );
-
-							$row.append( $( '<td>' ).text( record.page_namespace_text ) );
-							$row.append( $( '<td>' ).text( record.page_title ) );
-							$row.append( $( '<td>' ).text( record.totalcount ) );
-
-							$table.append( $row );
+							$tbody.append( $( '<tr>' )
+								.append( $( '<td>' ).text( record.page_namespace_text ) )
+								.append( $( '<td>' ).text( record.page_title ) )
+								.append( $( '<td>' ).text( record.totalcount ) )
+							);
 						}
 					}
 
-					deferred.resolve( `<table>${$table.html()}</table>` );
+					$table.append( $thead, $tbody );
+
+					deferred.resolve( `<table>${ $table.html() }</table>` );
 				} catch ( error ) {
 					deferred.reject( 'Failed to load data' );
 				}

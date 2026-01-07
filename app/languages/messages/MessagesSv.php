@@ -1,8 +1,6 @@
 <?php
 /** Swedish (svenska)
  *
- * To improve a translation please visit https://translatewiki.net
- *
  * @file
  * @ingroup Languages
  *
@@ -166,6 +164,7 @@ $specialPageAliases = [
 	'Recentchanges'             => [ 'Senaste_ändringar' ],
 	'Recentchangeslinked'       => [ 'Senaste_relaterade_ändringar' ],
 	'Redirect'                  => [ 'Omdirigering' ],
+	'Renameuser'                => [ 'Användarnamnbyte' ],
 	'ResetTokens'               => [ 'Återställ_nycklar' ],
 	'Revisiondelete'            => [ 'Radera_version' ],
 	'Search'                    => [ 'Sök' ],
@@ -251,7 +250,7 @@ $magicWords = [
 	'img_top'                   => [ '1', 'topp', 'top' ],
 	'img_upright'               => [ '1', 'stående', 'stående=$1', 'stående $1', 'upright', 'upright=$1', 'upright $1' ],
 	'index'                     => [ '1', '__INDEXERA__', '__INDEX__' ],
-	'language'                  => [ '0', '#SPRÅK:', '#LANGUAGE:' ],
+	'language'                  => [ '0', '#SPRÅK', '#LANGUAGE' ],
 	'lc'                        => [ '0', 'LB:', 'LC:' ],
 	'lcfirst'                   => [ '0', 'LBFÖRST:', 'LCFIRST:' ],
 	'localday'                  => [ '1', 'LOKALDAG', 'LOCALDAY' ],
@@ -276,7 +275,7 @@ $magicWords = [
 	'newsectionlink'            => [ '1', '__NYTTAVSNITTLÄNK__', '__NEWSECTIONLINK__' ],
 	'noeditsection'             => [ '0', '__INTEREDIGERASEKTION__', '__NOEDITSECTION__' ],
 	'nogallery'                 => [ '0', '__INGETGALLERI__', '__NOGALLERY__' ],
-	'noindex'                   => [ '1', '__INTEINDEXERA_', '__NOINDEX__' ],
+	'noindex'                   => [ '1', '__INTEINDEXERA__', '__INTEINDEXERA_', '__NOINDEX__' ],
 	'notoc'                     => [ '0', '__INGENINNEHÅLLSFÖRTECKNING__', '__NOTOC__' ],
 	'ns'                        => [ '0', 'NR:', 'NS:' ],
 	'numberingroup'             => [ '1', 'ANTALIGRUPP', 'NUMBERINGROUP', 'NUMINGROUP' ],

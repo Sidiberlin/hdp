@@ -1,6 +1,6 @@
 {
 	"name": "Checklists",
-	"version": "1.0.6",
+	"version": "2.0.5",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[http://www.hallowelt.com Hallo Welt! GmbH]"
@@ -8,7 +8,7 @@
 	"url": "https://www.mediawiki.org/wiki/Extension:Checklist",
 	"descriptionmsg": "checklists-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"MessagesDirs": {
 		"Checklists": "i18n"
@@ -18,7 +18,7 @@
 	},
 	"attributes": {
 		"VisualEditor": {
-			"PluginModules": [
+			"PreloadModules": [
 				"ext.checklists.ve.checkList"
 			]
 		},
@@ -26,6 +26,19 @@
 			"Droplets": {
 				"checkboxlist": {
 					"class": "\\MediaWiki\\Extension\\Checklists\\ContentDroplets\\ChecklistDroplet"
+				}
+			}
+		},
+		"PDFCreator": {
+			"StylesheetsProvider": {
+				"ChecklistStyles": {
+					"class": "MediaWiki\\Extension\\Checklists\\Integration\\PDFCreator\\StylesheetsProvider\\CSStyles"
+				}
+			},
+			"PreProcessors": {
+				"ChecklistImage": {
+					"class": "MediaWiki\\Extension\\Checklists\\Integration\\PDFCreator\\PreProcessors\\ChecklistImage",
+					"services": [ "MainConfig" ]
 				}
 			}
 		}
@@ -77,7 +90,8 @@
 				"checklists-checkbox-dlg-title",
 				"checklists-checkbox-dlg-action-done",
 				"checklists-checkbox-dlg-action-cancel",
-				"checklists-checkbox-dlg-hide-revision-label"
+				"checklists-checkbox-dlg-hide-revision-label",
+				"checklists-error-set-status"
 			],
 			"dependencies": [
 				"oojs",
@@ -95,12 +109,10 @@
 		"LoadExtensionSchemaUpdates": "runDatabaseUpdates",
 		"ParserBeforeInternalParse": "modifyOutput",
 		"PageDeleteComplete": "processChecklistItems",
-		"ArticleUndelete": "processChecklistItems",
+		"PageUndeleteComplete": "processChecklistItems",
 		"PageDelete": "processChecklistItems",
 		"GetPreferences": "userpreference",
-		"ParserAfterTidy": "modifyOutput",
-		"BeforePageDisplay": "modifyOutput",
-		"BSUEModulePDFBeforeAddingStyleBlocks": "pdf"
+		"ParserAfterTidy": "modifyOutput"
 	},
 	"HookHandlers": {
 		"processChecklistItems": {
@@ -118,10 +130,6 @@
 		"modifyOutput": {
 			"class": "\\MediaWiki\\Extension\\Checklists\\HookHandler\\ModifyOutput",
 			"services": [ "ChecklistManager" ]
-		},
-		"pdf": {
-			"class": "\\MediaWiki\\Extension\\Checklists\\HookHandler\\AddPDFStyles",
-			"services": [ "MainConfig" ]
 		}
 	},
 	"ServiceWiringFiles": [

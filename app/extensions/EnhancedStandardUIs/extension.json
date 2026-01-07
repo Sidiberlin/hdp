@@ -1,6 +1,6 @@
 {
 	"name": "EnhancedStandardUIs",
-	"version": "1.1.2",
+	"version": "2.0.4",
 	"author": [
 		"[https://www.hallowelt.com Hallo Welt! GmbH]"
 	],
@@ -8,9 +8,9 @@
 	"descriptionmsg": "enhanced-standard-uis-desc",
 	"license-name": "GPL-3.0-only",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"OOJSPlus": ">= 2.0.0"
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"AutoloadNamespaces": {
@@ -40,6 +40,11 @@
 					]
 				}
 			}
+		},
+		"BlueSpiceVisualEditorConnector": {
+			"PluginModules": [
+				"ext.enhancedstandarduis.ve.fileGrid"
+			]
 		}
 	},
 	"AvailableRights": [
@@ -80,11 +85,12 @@
 		"EnhancedUIsFilelistOverride": {
 			"value": false
 		},
-		"EnhancedUIsExtendedFilelistOverride": {
-			"value": false
-		},
 		"EnhancedUIsSpecialSpecialPagesOverride": {
 			"value": false
+		},
+		"EnhancedUIsVersionHistoryDiffMode": {
+			"value": "visual",
+			"public": true
 		}
 	},
 	"Hooks": {
@@ -144,6 +150,10 @@
 					"callback": "MediaWiki\\Extension\\EnhancedStandardUIs\\AddVersionHistoryToolbarOffset::makeConfigJson"
 				},
 				"panel/HistoryPanel.js",
+				{
+					"name": "panel/viewmode.json",
+					"config": { "mode": "EnhancedUIsVersionHistoryDiffMode" }
+				},
 				"widget/HistoryToolbar.js",
 				"widget/HistoryGrid.js"
 			],
@@ -177,10 +187,6 @@
 				},
 				"panel/AllPagesPanel.js",
 				"widget/NamespacesMenu.js",
-				{
-					"name": "widget/namespaceConfig.json",
-					"callback": "MediaWiki\\Extension\\EnhancedStandardUIs\\NamespaceClientConfig::makeNamespaceConfigJson"
-				},
 				"widget/NamespaceOptionWidget.js",
 				"widget/Paginator.js",
 				"data/PagesTree.js",
@@ -211,17 +217,20 @@
 				"enhanced-standard-uis-allpages-pageinfo-label",
 				"enhanced-standard-uis-allpages-filter-results-label",
 				"enhanced-standard-uis-allpages-untitled",
-				"enhanced-standard-uis-allpages-redirect-label"
+				"enhanced-standard-uis-allpages-redirect-label",
+				"enhanced-standard-uis-allpages-empty-namespaces-text",
+				"enhanced-standard-uis-allpages-empty-pages-text",
+				"enhanced-standard-uis-allpages-namespace-badge-aria-label",
+				"enhanced-standard-uis-allpages-page-tree-item-expander-label"
 			],
 			"dependencies": [
 				"oojs-ui",
 				"ext.oOJSPlus.data"
 			]
 		},
-		"ext.enhancedstandarduis.special.filelist": {
+		"ext.enhancedstandarduis.filelist.panel": {
 			"es6": true,
 			"packageFiles": [
-				"ext.enhancedUI.special.filelist.js",
 				"panel/FilelistPanel.js",
 				"widget/FilelistGrid.js",
 				"widget/Paginator.js",
@@ -232,6 +241,10 @@
 					"callbackParam": [
 						"cdxIconCopy"
 					]
+				},
+				{
+					"name": "panel/pluginModules.json",
+					"callback": "MediaWiki\\Extension\\EnhancedStandardUIs\\FilelistPluginModules::getModules"
 				},
 				"dialog/FileInfoDialog.js",
 				"booklet/FileInfoBooklet.js",
@@ -272,7 +285,8 @@
 				"enhanced-standard-uis-filelist-dialog-page-data-label",
 				"enhanced-standard-uis-filelist-dialog-page-data-no-metadata-label",
 				"enhanced-standard-uis-filelist-notify-copy-clipboard",
-				"enhanced-standard-uis-filelist-grid-preview-title"
+				"enhanced-standard-uis-filelist-grid-preview-title",
+				"enhanced-standard-uis-filelist-dialog-booklet-page-select-aria-label"
 			],
 			"dependencies": [
 				"oojs-ui",
@@ -281,9 +295,30 @@
 				"oojs-ui.styles.icons-editing-list"
 			]
 		},
+		"ext.enhancedstandarduis.special.filelist": {
+			"es6": true,
+			"packageFiles": [
+				"ext.enhancedUI.special.filelist.js"
+			]
+		},
 		"ext.enhancedstandarduis.api": {
 			"packageFiles": [
 				"api/Api.js"
+			]
+		},
+		"ext.enhancedstandarduis.ve.fileGrid": {
+			"scripts": [
+				"ve.plugin/MediaDialogFileGrid.js",
+				"ext.enhancedUI.ve.fileGrid.js"
+			],
+			"styles": [
+				"ext.enhancedUI.ve.fileGrid.less"
+			],
+			"messages": [
+				"enhanced-standard-uis-ve-filegrid-title"
+			],
+			"dependencies": [
+				"ext.enhancedstandarduis.filelist.panel"
 			]
 		}
 	},
@@ -299,6 +334,17 @@
 			"path": "/standarduis/file-metadata/{filename}",
 			"class": "MediaWiki\\Extension\\EnhancedStandardUIs\\Rest\\GetMetadata",
 			"services": [ "TitleFactory", "RepoGroup" ]
+		},
+		{
+			"path": "/standarduis/namespaces",
+			"class": "MediaWiki\\Extension\\EnhancedStandardUIs\\Rest\\GetNamespaces",
+			"services": [
+				"TitleFactory",
+				"PermissionManager",
+				"DBLoadBalancer",
+				"NamespaceInfo",
+				"LanguageFactory"
+			]
 		}
 	],
 	"manifest_version": 2,

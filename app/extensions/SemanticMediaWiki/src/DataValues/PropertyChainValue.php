@@ -2,6 +2,7 @@
 
 namespace SMW\DataValues;
 
+use MediaWiki\Html\Html;
 use SMW\DataValueFactory;
 use SMWDataItem as DataItem;
 use SMWDIBlob as DIBlob;
@@ -9,7 +10,7 @@ use SMWDIBlob as DIBlob;
 /**
  * @private
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.5
  *
  * @author mwjames
@@ -43,7 +44,7 @@ class PropertyChainValue extends StringValue {
 	 *
 	 * @param string $value
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public static function isChained( $value ) {
 		return strpos( $value, '.' ) !== false;
@@ -82,7 +83,6 @@ class PropertyChainValue extends StringValue {
 	 * @see DataValue::getShortWikiText
 	 */
 	public function getShortWikiText( $linker = null ) {
-
 		if ( $this->lastPropertyChainValue !== null ) {
 			return $this->lastPropertyChainValue->getShortWikiText( $linker ) . $this->doHintPropertyChainMembers();
 		}
@@ -94,7 +94,6 @@ class PropertyChainValue extends StringValue {
 	 * @see DataValue::getLongWikiText
 	 */
 	public function getLongWikiText( $linker = null ) {
-
 		if ( $this->lastPropertyChainValue !== null ) {
 			return $this->lastPropertyChainValue->getLongWikiText( $linker ) . $this->doHintPropertyChainMembers();
 		}
@@ -106,7 +105,6 @@ class PropertyChainValue extends StringValue {
 	 * @see DataValue::getShortHTMLText
 	 */
 	public function getShortHTMLText( $linker = null ) {
-
 		if ( $this->lastPropertyChainValue !== null ) {
 			return $this->lastPropertyChainValue->getShortHTMLText( $linker ) . $this->doHintPropertyChainMembers();
 		}
@@ -118,7 +116,6 @@ class PropertyChainValue extends StringValue {
 	 * @see DataValue::getLongHTMLText
 	 */
 	public function getLongHTMLText( $linker = null ) {
-
 		if ( $this->lastPropertyChainValue !== null ) {
 			return $this->lastPropertyChainValue->getLongHTMLText( $linker ) . $this->doHintPropertyChainMembers();
 		}
@@ -143,12 +140,11 @@ class PropertyChainValue extends StringValue {
 	/**
 	 * @see SMWDataValue::loadDataItem()
 	 *
-	 * @param $dataitem SMWDataItem
+	 * @param $dataItem SMWDataItem
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function loadDataItem( DataItem $dataItem ) {
-
 		if ( !$dataItem instanceof DIBlob ) {
 			return false;
 		}
@@ -165,10 +161,9 @@ class PropertyChainValue extends StringValue {
 	 * @see DataValue::parseUserValue
 	 * @note called by DataValue::setUserValue
 	 *
-	 * @param string $userValue
+	 * @param string $value
 	 */
 	protected function parseUserValue( $value ) {
-
 		if ( $value === '' ) {
 			$this->addErrorMsg( 'smw_emptystring' );
 		}
@@ -183,7 +178,6 @@ class PropertyChainValue extends StringValue {
 	}
 
 	private function initPropertyChain( $value ) {
-
 		$chain = explode( '.', $value );
 
 		// Get the last which represents the final output
@@ -214,7 +208,7 @@ class PropertyChainValue extends StringValue {
 	}
 
 	private function doHintPropertyChainMembers() {
-		return \Html::rawElement( 'span', [ 'title' => $this->m_dataitem, 'class' => 'smw-chain-marker' ], '⠉' );
+		return Html::rawElement( 'span', [ 'title' => $this->m_dataitem, 'class' => 'smw-chain-marker' ], '⠉' );
 	}
 
 }

@@ -3,12 +3,12 @@
 namespace BlueSpice\Bookshelf\Panel;
 
 use BlueSpice\Bookshelf\BookLookup;
-use Message;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleDropdown;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleDropdownItemlistFromArray;
-use RawMessage;
-use Title;
-use TitleFactory;
 
 class BookSelectWidget extends SimpleDropdown {
 

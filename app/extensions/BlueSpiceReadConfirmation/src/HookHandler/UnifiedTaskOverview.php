@@ -5,11 +5,11 @@ namespace BlueSpice\ReadConfirmation\HookHandler;
 use BlueSpice\ReadConfirmation\IMechanism;
 use BlueSpice\ReadConfirmation\MechanismFactory;
 use BlueSpice\ReadConfirmation\UnifiedTaskOverview\ReadConfirmationDescriptor;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\UnifiedTaskOverview\Hook\GetTaskDescriptors;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MediaWiki\User\UserGroupManager;
-use Title;
-use User;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\ILoadBalancer;
 
@@ -56,7 +56,10 @@ class UnifiedTaskOverview implements GetTaskDescriptors {
 		MechanismFactory $readConfirmationMechanismFactory,
 		Config $mainConfig
 	): UnifiedTaskOverview {
-		$enabledNamespaces = $mainConfig->get( 'NamespacesWithEnabledReadConfirmation' );
+		$enabledNamespaces = null;
+		if ( $mainConfig->has( 'NamespacesWithEnabledReadConfirmation' ) ) {
+			$enabledNamespaces = $mainConfig->get( 'NamespacesWithEnabledReadConfirmation' );
+		}
 		if ( $enabledNamespaces === null ) {
 			$enabledNamespaces = [];
 		}
@@ -123,6 +126,13 @@ class UnifiedTaskOverview implements GetTaskDescriptors {
 		$readConfirmationTasks = [];
 		foreach ( $userAssignedPages as $pageId ) {
 			$title = Title::newFromID( $pageId );
+			if ( !$this->readConfirmationMechanism->canConfirm( $title, $user, $title->getLatestRevID() ) ) {
+				continue;
+			}
+			$revisionToConfirm = $this->readConfirmationMechanism->getLatestRevisionToConfirm( $title, $user );
+			if ( !$revisionToConfirm ) {
+				continue;
+			}
 
 			// If user marked as "read" any of revisions of the page
 			if ( isset( $userReadConfirmations[$pageId] ) ) {
@@ -131,7 +141,9 @@ class UnifiedTaskOverview implements GetTaskDescriptors {
 
 				// If marked as read revision is not the latest - create task
 				if ( $pageLatestRevId !== $userLatestReadId ) {
-					$readConfirmationTasks[] = new ReadConfirmationDescriptor( $title, $userLatestReadId );
+					$readConfirmationTasks[] = new ReadConfirmationDescriptor(
+						$title, $revisionToConfirm, $userLatestReadId
+					);
 				} else {
 					// If marked as "read" revision is the latest - no task is needed
 				}
@@ -140,7 +152,7 @@ class UnifiedTaskOverview implements GetTaskDescriptors {
 			}
 
 			// If user did not mark as "read" any of revisions of the page - create task
-			$readConfirmationTasks[] = new ReadConfirmationDescriptor( $title );
+			$readConfirmationTasks[] = new ReadConfirmationDescriptor( $title, $revisionToConfirm );
 		}
 
 		return $readConfirmationTasks;

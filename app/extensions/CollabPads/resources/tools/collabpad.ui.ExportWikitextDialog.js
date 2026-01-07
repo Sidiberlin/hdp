@@ -31,7 +31,7 @@ collabpad.ui.ExportWikitextDialog.static.actions = [
 		flags: [ 'safe' ]
 	},
 	{
-		label: mw.msg( 'collabpads-save-dialog-save-button' ),
+		label: mw.msg( 'collabpads-save-dialog-save-button-label' ),
 		action: 'save-session',
 		flags: [ 'primary', 'progressive' ]
 	}
@@ -86,16 +86,24 @@ collabpad.ui.ExportWikitextDialog.prototype.initialize = function () {
 };
 
 collabpad.ui.ExportWikitextDialog.prototype.getActionProcess = function ( action ) {
-	if ( action === 'save-session' ) {
-		this.export();
-	}
-	if ( action === 'close' ) {
-		this.close();
-	}
-
-	return collabpad.ui.ExportWikitextDialog.super.prototype.getActionProcess.call(
-		this, action
-	);
+	return collabpad.ui.ExportWikitextDialog.super.prototype.getActionProcess.call( this, action ).next( async function () {
+		this.pushPending();
+		if ( action === 'save-session' ) {
+			try {
+				await this.export();
+				this.popPending();
+				this.close();
+			} catch ( error ) {
+				console.error( 'CollabPads error: ' + error ); // eslint-disable-line no-console
+				this.popPending();
+				dfd.reject();
+			}
+		}
+		if ( action === 'close' ) {
+			this.popPending();
+			this.close();
+		}
+	}, this );
 };
 
 /**
@@ -109,57 +117,51 @@ collabpad.ui.ExportWikitextDialog.prototype.export = async function () {
 	const shouldWatchPage = this.watchPageCheckbox.isSelected();
 	const watchPageFunction = shouldWatchPage ? api.watch : api.unwatch;
 
-	try {
-		const wikitext = await ve.init.target.getWikitextFragment(
-			this.surface.getModel().getDocument()
-		);
+	const wikitext = await ve.init.target.getWikitextFragment(
+		this.surface.getModel().getDocument()
+	);
 
-		await api.postWithEditToken( {
-			action: 'edit',
-			title: fullPageName,
-			text: wikitext,
-			summary: summaryInput,
-			minor: isMinorEdit
-		} )
-			.done( async ( data ) => {
-				if ( !data.edit || !data.edit.newrevid ) {
-					return;
-				}
+	await api.postWithEditToken( {
+		action: 'edit',
+		title: fullPageName,
+		text: wikitext,
+		summary: summaryInput,
+		minor: isMinorEdit
+	} )
+		.done( async ( data ) => {
+			if ( !data.edit || !data.edit.newrevid ) {
+				return;
+			}
 
-				const synchronizer = this.surface.getModel().synchronizer;
-				const revisionId = data.edit.newrevid;
-				const autorsSinceLastSave = synchronizer.getAuthorsSinceLastChange();
-				if ( autorsSinceLastSave.length === 0 ) {
-					autorsSinceLastSave.push( mw.user.getName() );
-				}
-				const collabApi = new collabpads.api.Api();
-				const title = mw.Title.newFromText( fullPageName );
-				await collabApi.recordParticipants(
-					title.getNamespaceId(),
-					title.getName(),
-					revisionId,
-					autorsSinceLastSave
-				);
-				synchronizer.clearAuthorsSinceLastChange();
-			} );
+			const synchronizer = this.surface.getModel().synchronizer;
+			const revisionId = data.edit.newrevid;
+			const autorsSinceLastSave = synchronizer.getAuthorsSinceLastChange();
+			if ( autorsSinceLastSave.length === 0 ) {
+				autorsSinceLastSave.push( mw.user.getName() );
+			}
+			const collabApi = new collabpads.api.Api();
+			const title = mw.Title.newFromText( fullPageName );
+			await collabApi.recordParticipants(
+				title.getNamespaceId(),
+				title.getName(),
+				revisionId,
+				autorsSinceLastSave
+			);
+			synchronizer.clearAuthorsSinceLastChange();
+		} );
 
-		await watchPageFunction.call( api, fullPageName );
-		ve.init.target.setDirty( false );
-		this.surface.getModel().synchronizer.socket.emit( 'saveRevision' );
+	await watchPageFunction.call( api, fullPageName );
+	ve.init.target.setDirty( false );
+	this.surface.getModel().synchronizer.socket.emit( 'saveRevision' );
 
-		mw.notify(
-			mw.message( 'collabpads-save-complete-notif' ).plain(),
-			{ type: 'success' }
-		);
+	mw.notify(
+		mw.message( 'collabpads-save-complete-notif' ).plain(),
+		{ type: 'success' }
+	);
 
-		const numberOfAuthors = Object.keys( this.surface.getModel().synchronizer.authors ).length;
-		if ( numberOfAuthors === 1 || this.forceDeleteSession ) {
-			this.deleteSessionRedirect( fullPageName, 1000 );
-		}
-
-		this.close();
-	} catch ( error ) {
-		console.error( 'CollabPads error: ' + error ); // eslint-disable-line no-console
+	const numberOfAuthors = Object.keys( this.surface.getModel().synchronizer.authors ).length;
+	if ( numberOfAuthors === 1 || this.forceDeleteSession ) {
+		this.deleteSessionRedirect( fullPageName, 1000 );
 	}
 };
 
@@ -178,7 +180,7 @@ collabpad.ui.ExportWikitextDialog.prototype.deleteSessionRedirect = function ( f
 	} );
 
 	setTimeout( () => {
-		const pageUrl = `${location.protocol}//${location.host}${location.pathname}?title=${fullPageName}`;
+		const pageUrl = `${ location.protocol }//${ location.host }${ location.pathname }?title=${ fullPageName }`;
 		// Redirect user to view page
 		location.href = pageUrl;
 	}, delay );

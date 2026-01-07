@@ -114,7 +114,8 @@ class CollabRevisionManager {
 				'sr_owner' => $owner,
 				'sr_rev_actor' => $revisionActor,
 				'sr_participants' => $participants
-			]
+			],
+			__METHOD__
 		);
 	}
 

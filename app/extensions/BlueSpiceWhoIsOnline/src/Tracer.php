@@ -6,16 +6,16 @@ use BlueSpice\Timestamp;
 use BlueSpice\UtilityFactory;
 use BlueSpice\WhoIsOnline\Data\Record;
 use BlueSpice\WhoIsOnline\Data\Tracer\Store;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\DataStore\FieldType;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\Filter\Date;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use MWStake\MediaWiki\Component\DataStore\RecordSet;
 use ReadOnlyMode;
-use User;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class Tracer {
@@ -97,9 +97,9 @@ class Tracer {
 					Filter::KEY_VALUE => $maxTS->getTimestamp( TS_MW ),
 					Filter::KEY_TYPE => FieldType::DATE
 				]
-			] ], [
+				] ], [
 				ReaderParams::PARAM_LIMIT => ReaderParams::LIMIT_INFINITE
-			]
+				]
 		);
 		$this->trancedRecords[$maxIdleSeconds] = ( new Store() )->getReader()->read(
 			$readerParams

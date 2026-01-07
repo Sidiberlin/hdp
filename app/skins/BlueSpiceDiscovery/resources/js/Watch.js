@@ -1,11 +1,11 @@
-( function( mw, $, d ){
-	$( d ).on( 'click', '#ca-watch, #ca-unwatch', function( e ) {
-		var $this = $(this);
-		var currentPage = mw.config.get( 'wgPageName' );
-		mw.loader.using( 'mediawiki.api' ).done( function() {
-			var api = new mw.Api();
-			if( $this.attr( 'id' ) === 'ca-watch' ) {
-				api.watch( currentPage ).done( function() {
+( function ( mw, $, d ) {
+	$( d ).on( 'click', '#ca-watch, #ca-unwatch', function ( e ) {
+		const $this = $( this );
+		const currentPage = mw.config.get( 'wgPageName' );
+		mw.loader.using( 'mediawiki.api' ).done( () => {
+			const api = new mw.Api();
+			if ( $this.attr( 'id' ) === 'ca-watch' ) {
+				api.watch( currentPage ).done( () => {
 					$this.attr( 'id', 'ca-unwatch' );
 					$this.attr( 'aria-label', mw.message( 'unwatch' ).plain() );
 					$this.attr( 'title', mw.message( 'tooltip-ca-unwatch' ).plain() );
@@ -15,7 +15,7 @@
 				e.preventDefault();
 				return false;
 			}
-			api.unwatch( currentPage ).done( function() {
+			api.unwatch( currentPage ).done( () => {
 				$this.attr( 'id', 'ca-watch' );
 				$this.attr( 'aria-label', mw.message( 'watch' ).plain() );
 				$this.attr( 'title', mw.message( 'tooltip-ca-watch' ).plain() );
@@ -26,4 +26,4 @@
 		e.preventDefault();
 		return false;
 	} );
-} )( mediaWiki, jQuery, document );
+}( mediaWiki, jQuery, document ) );

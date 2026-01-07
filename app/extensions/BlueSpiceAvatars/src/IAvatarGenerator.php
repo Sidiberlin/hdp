@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Avatars;
 
-use User;
+use MediaWiki\User\User;
 
 interface IAvatarGenerator {
 	/**
@@ -13,7 +13,7 @@ interface IAvatarGenerator {
 	/**
 	 *
 	 * @param User $user
-	 * @param type $size
+	 * @param int $size
 	 * @param array $params
 	 * @return string
 	 */

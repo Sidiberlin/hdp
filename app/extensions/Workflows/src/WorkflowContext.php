@@ -5,8 +5,8 @@ namespace MediaWiki\Extension\Workflows;
 use DateTime;
 use MediaWiki\Extension\Workflows\Definition\DefinitionContext;
 use MediaWiki\Extension\Workflows\Storage\AggregateRoot\Id\WorkflowId;
-use Title;
-use User;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 /**
  * @package MediaWiki\Extension\Workflows

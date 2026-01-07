@@ -1,28 +1,36 @@
-( function ( mw, $, d ) {
-	// eslint-disable-next-line no-underscore-dangle
-	function _setDestName() {
-		// eslint-disable-next-line no-jquery/no-global-selector
-		var prefix = $( '#mw-input-wpNSFR_Namespace' ).val();
-		// eslint-disable-next-line no-jquery/no-global-selector
-		var destName = $( '#wpDestFile' ).val();
-		var destFileParts = [ destName ];
+( function ( d ) {
+	function setDestName() {
+		const prefix = d.getElementById( 'mw-input-wpNSFR_Namespace' ).value;
+		const destName = d.getElementById( 'wpDestFile' ).value;
+		const destFileParts = [ destName ];
 		if ( prefix !== '-' ) {
 			destFileParts.unshift( prefix );
 		}
-
-		// eslint-disable-next-line no-jquery/no-global-selector
-		$( '#mw-input-wpNSFR_DestFile' ).val( destFileParts.join( ':' ) );
+		d.getElementById( 'mw-input-wpNSFR_DestFile' ).value = destFileParts.join( ':' );
 	}
-
-	// eslint-disable no-jquery/no-global-selector
-	$( d ).on( 'change', '#mw-input-wpNSFR_Namespace', _setDestName );
-	$( d ).on( 'change', '#wpUploadFile', _setDestName );
-	$( d ).on( 'change', '#wpDestFile', _setDestName );
-
-	// eslint-disable no-jquery/no-global-selector
-	$( d ).on( 'submit', '#mw-upload-form', function () {
-		// eslint-disable-next-line no-jquery/no-global-selector
-		$( '#wpDestFile' ).val( $( '#mw-input-wpNSFR_DestFile' ).val() );
+	d.addEventListener( 'DOMContentLoaded', () => {
+		const namespaceInput = d.getElementById( 'mw-input-wpNSFR_Namespace' );
+		const uploadFileInput = d.getElementById( 'wpUploadFile' );
+		const destFileInput = d.getElementById( 'wpDestFile' );
+		const uploadForm = d.getElementById( 'mw-upload-form' );
+		if ( namespaceInput ) {
+			namespaceInput.addEventListener( 'change', setDestName );
+		}
+		if ( uploadFileInput ) {
+			uploadFileInput.addEventListener( 'change', () => {
+				setTimeout( setDestName, 50 );
+			} );
+		}
+		if ( destFileInput ) {
+			destFileInput.addEventListener( 'change', setDestName );
+			destFileInput.addEventListener( 'input', setDestName );
+		}
+		if ( uploadForm ) {
+			uploadForm.addEventListener( 'submit', () => {
+				setDestName();
+				d.getElementById( 'wpDestFile' ).value = d.getElementById( 'mw-input-wpNSFR_DestFile' ).value;
+			} );
+		}
+		setDestName();
 	} );
-
-}( mediaWiki, jQuery, document ) );
+}( document ) );

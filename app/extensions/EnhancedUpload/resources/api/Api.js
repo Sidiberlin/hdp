@@ -20,7 +20,7 @@ enhancedUpload.api.Api.prototype.makeUrl = function ( path ) {
 };
 
 enhancedUpload.api.Api.prototype.ajax = function ( path, data, method ) {
-	var dfd = $.Deferred();
+	const dfd = $.Deferred();
 	data = data || {};
 
 	$.ajax( {
@@ -29,12 +29,12 @@ enhancedUpload.api.Api.prototype.ajax = function ( path, data, method ) {
 		data: data,
 		contentType: 'application/json',
 		dataType: 'json'
-	} ).done( function ( response ) {
+	} ).done( ( response ) => {
 		if ( response.success === true ) {
 			dfd.resolve( response );
 		}
 		dfd.reject( { status: response.status } );
-	} ).fail( function ( jgXHR, type, status ) {
+	} ).fail( ( jgXHR, type, status ) => {
 		if ( type === 'error' ) {
 			dfd.reject( {
 				error: jgXHR.responseJSON || jgXHR.responseText
@@ -47,7 +47,8 @@ enhancedUpload.api.Api.prototype.ajax = function ( path, data, method ) {
 };
 
 enhancedUpload.api.Api.prototype.addFiles = function ( pageId, tagcounter, data, pageNames ) {
-	var files = [], item;
+	const files = [];
+	let item;
 	for ( item in pageNames ) {
 		files.push( pageNames[ item ] );
 	}

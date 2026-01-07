@@ -3,16 +3,16 @@
 	"descriptionmsg": "bs-bssmwconnector-desc",
 	"license-name": "GPL-3.0-only",
 	"type": "bluespice",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"author": [
 		"Robert Vogel",
 		"Leonid Verhovskij"
 	],
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceSMWConnector",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"attributes": {
@@ -49,15 +49,6 @@
 					"type": "global",
 					"roles": [
 						"admin",
-						"editor",
-						"maintenanceadmin"
-					]
-				},
-				"geocode": {
-					"type": "global",
-					"roles": [
-						"admin",
-						"author",
 						"editor",
 						"maintenanceadmin"
 					]
@@ -139,23 +130,10 @@
 			]
 		}
 	},
-	"GroupPermissions": {
-		"sysop": {
-			"smw-admin": true,
-			"smw-patternedit": true,
-			"smw-pageedit": true,
-			"geocode": true,
-			"editrestrictedfields": true
-		},
-		"*": {
-			"viewedittab": true
-		},
-		"user": {
-			"createclass": true
-		}
-	},
 	"AutoloadNamespaces": {
-		"BlueSpice\\SMWConnector\\": "src/",
+		"BlueSpice\\SMWConnector\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
 		"BlueSpice\\SMWConnector\\Tests\\": "tests/phpunit/"
 	},
 	"AutoloadClasses": {
@@ -211,7 +189,6 @@
 		"BSPageTemplatesBeforeRender": "BSSMWCPageTemplates::onBSPageTemplatesBeforeRender",
 		"PageSaveComplete": "BSSMWConnectorHooks::onPageSaveComplete",
 		"SMW::Store::AfterQueryResultLookupComplete": "BlueSpice\\SMWConnector\\Hook\\SMWStoreAfterQueryResultLookupComplete\\ApplySecurityTrimming::callback",
-		"BSUEModulePDFcollectMetaData": "BlueSpice\\SMWConnector\\Hook\\BSUEModulePDFcollectMetaData\\AddSemanitcMetaData::callback",
 		"ParserFirstCallInit": "BlueSpice\\SMWConnector\\Hook\\ParserFirstCallInit\\AsyncAsk::callback",
 		"BlueSpiceDiscoveryTemplateDataProviderAfterInit": "discovery-skin",
 		"RevisionDataUpdates": "forceLinksUpdate"
@@ -228,7 +205,6 @@
 		},
 		"ext.BSSMWConnector": {
 			"scripts": [
-				"ext.BSSMWConnector.smwc.js",
 				"ext.BSSMWConnector.util.js"
 			],
 			"messages": [
@@ -236,9 +212,9 @@
 				"bs-extendedsearch-search-center-result-smwproperty-label"
 			],
 			"dependencies": [
-				"ext.bluespice",
-				"ext.smw.api"
-			]
+				"ext.bluespice"
+			],
+			"class": "\\BlueSpice\\SMWConnector\\ResourceModule\\SMWApiModule"
 		},
 		"ext.BSSMWConnector.visualEditor": {
 			"scripts": [
@@ -253,11 +229,6 @@
 				"ext.BSSMWConnector.PF.Inputs.MWVisualEditor.js"
 			]
 		},
-		"ext.BSSMWConnector.PF.Input.Grid": {
-			"scripts": [
-				"ext.BSSMWConnector.PF.Inputs.Grid.js"
-			]
-		},
 		"ext.BSSMWConnector.PF.Input.UserCombo": {
 			"scripts": [
 				"ext.BSSMWConnector.PF.Inputs.UserCombo.js"
@@ -268,33 +239,44 @@
 				"ext.BSSMWConnector.PF.Inputs.UserTags.js"
 			]
 		},
-		"ext.srf.bsextjsgrid": {
+		"ext.BSSMWConnector.resultGrid": {
 			"scripts": [
-				"ext.srf.bsextjsgrid.js"
+				"ui/data/AskResultPrinter.js",
+				"ext.BSSMWConnector.resultGrid.js"
 			],
 			"dependencies": [
+				"ext.bluespice",
 				"ext.BSSMWConnector",
-				"ext.smw.api",
-				"ext.bluespice.extjs",
-				"ext.extjsbase.ux"
-			]
-		},
-		"ext.BSSMWConnector.async.grid": {
-			"scripts": "ext.BSSMWConnector.async.grid.js",
-			"dependencies": [
-				"ext.bluespice.extjs"
+				"ext.oOJSPlus.data"
 			],
 			"messages": [
-				"bs-smw-connector-async-error"
+				"bs-smwconnector-yes",
+				"bs-smwconnector-no"
+			],
+			"class": "\\BlueSpice\\SMWConnector\\ResourceModule\\SMWApiModule"
+		},
+		"ext.BSSMWConnector.async.grid": {
+			"scripts": [
+				"ui/data/SMWStore.js",
+				"ui/data/AsyncResultGrid.js",
+				"ext.BSSMWConnector.async.grid.js"
+			],
+			"dependencies": [
+				"ext.bluespice",
+				"ext.BSSMWConnector",
+				"ext.oOJSPlus.data"
 			]
 		},
 		"ext.BSSMWConnector.async.tree": {
-			"scripts": "ext.BSSMWConnector.async.tree.js",
-			"dependencies": [
-				"ext.bluespice.extjs"
+			"scripts": [
+				"ui/data/SMWTreeStore.js",
+				"ui/data/AsyncResultTree.js",
+				"ext.BSSMWConnector.async.tree.js"
 			],
-			"messages": [
-				"bs-smw-connector-async-error"
+			"dependencies": [
+				"ext.bluespice",
+				"ext.BSSMWConnector",
+				"ext.oOJSPlus.data"
 			]
 		},
 		"ext.BSSMWConnector.PageForms.DateTimePicker.fix": {

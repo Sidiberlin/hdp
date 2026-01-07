@@ -9,9 +9,9 @@ ext.notifyme.ui.widget.NotificationItemWidget = function ( data, cfg ) {
 		this.$content.addClass( 'notifications-ui-widget-NotificationItemWidget-notification-content-in-group' );
 	}
 
-	const timestampWidget = this.getTimestampWidget( data.timestamp ),
+	const timestampWidget = this.getTimestampWidget( data.timestamp );
 
-	 $message = this.composeMessage( data.message, data.agent, data.icon );
+	const $message = this.composeMessage( data.message, data.agent, data.icon );
 
 	this.markAsReadButton = this.getMarkAsReadButton( data.unread );
 	this.markAsReadButton.connect( this, {
@@ -19,22 +19,22 @@ ext.notifyme.ui.widget.NotificationItemWidget = function ( data, cfg ) {
 	} );
 
 	// Compose header (contains icon, message, timestamp and "mark as read" circle)
-	let $header = $( '<div>' )
-			.addClass( 'notifications-ui-widget-NotificationItemWidget-header' )
-			.append( $message, this.markAsReadButton.$element ),
+	const $header = $( '<div>' )
+		.addClass( 'notifications-ui-widget-NotificationItemWidget-header' )
+		.append( $message, this.markAsReadButton.$element );
 
-	 $secondaryLinks = this.getSecondaryLinks( data.links ),
+	const $secondaryLinks = this.getSecondaryLinks( data.links );
 
-	 $timestamp = new OO.ui.LabelWidget( {
-			label: new OO.ui.HtmlSnippet( timestampWidget.$element ),
-			classes: [ 'notifications-ui-widget-NotificationItemWidget-content-message-timestamp' ]
-		} ).$element,
+	const $timestamp = new OO.ui.LabelWidget( {
+		label: new OO.ui.HtmlSnippet( timestampWidget.$element ),
+		classes: [ 'notifications-ui-widget-NotificationItemWidget-content-message-timestamp' ]
+	} ).$element;
 
-		// Compose body (contains secondary links)
-	 $body = $( '<div>' )
-			.addClass( 'notifications-ui-widget-NotificationItemWidget-body' )
-			.append( $secondaryLinks )
-			.append( $timestamp );
+	// Compose body (contains secondary links)
+	let $body = $( '<div>' )
+		.addClass( 'notifications-ui-widget-NotificationItemWidget-body' )
+		.append( $secondaryLinks )
+		.append( $timestamp );
 
 	// If any of "child" classes need to modify body somehow
 	// Example: ext.notifyme.ui.widget.NotificationGroupWidget
@@ -72,8 +72,7 @@ ext.notifyme.ui.widget.NotificationItemWidget.prototype.getTimestampWidget = fun
 
 	const timestampWidget = new OO.ui.LabelWidget( {
 		classes: [ 'notifications-ui-widget-NotificationItemWidget-timestamp' ],
-		// Get the time 'fromNow' without the suffix 'ago' and add that suffix with translated message
-		label: mw.message( 'notifyme-notification-center-timestamp-ago', itemMoment.fromNow( true ) ).text()
+		label: itemMoment.fromNow( false )
 	} );
 
 	return timestampWidget;
@@ -91,7 +90,7 @@ ext.notifyme.ui.widget.NotificationItemWidget.prototype.composeMessage = functio
 
 	if ( agent ) {
 		const userWidget = new OOJSPlus.ui.widget.UserWidget( {
-			user_name: agent.username,
+			user_name: agent.username, // eslint-disable-line camelcase
 			showImage: true,
 			showLink: true,
 			showRawUsername: false
@@ -117,7 +116,7 @@ ext.notifyme.ui.widget.NotificationItemWidget.prototype.composeMessage = functio
 
 	}
 
-	var $iconWrapper = this.getIconWrapper( icon );
+	const $iconWrapper = this.getIconWrapper( icon );
 	$message.prepend( $iconWrapper );
 
 	return $message;
@@ -125,11 +124,11 @@ ext.notifyme.ui.widget.NotificationItemWidget.prototype.composeMessage = functio
 
 ext.notifyme.ui.widget.NotificationItemWidget.prototype.getIconWrapper = function ( icon ) {
 	const iconWidget = new OO.ui.IconWidget( {
-			icon: icon
-		} ),
-	 $iconWrapper = $( '<div>' )
-			.addClass( 'notifications-ui-widget-NotificationItemWidget-icon-wrapper' )
-			.append( iconWidget.$element );
+		icon: icon
+	} );
+	const $iconWrapper = $( '<div>' )
+		.addClass( 'notifications-ui-widget-NotificationItemWidget-icon-wrapper' )
+		.append( iconWidget.$element );
 
 	return $iconWrapper;
 };
@@ -138,16 +137,16 @@ ext.notifyme.ui.widget.NotificationItemWidget.prototype.getSecondaryLinks = func
 	const $secondaryLinks = $( '<div>' ).addClass( 'notifications-ui-widget-NotificationItemWidget-secondary-links-wrapper' );
 
 	for ( let i = 0; i < links.length; i++ ) {
-		const $linkWrapper = $( '<div>' ).addClass( 'notifications-ui-widget-NotificationItemWidget-secondary-link-wrapper' ),
+		const $linkWrapper = $( '<div>' ).addClass( 'notifications-ui-widget-NotificationItemWidget-secondary-link-wrapper' );
 
-		 icon = new OO.ui.IconWidget( {
-				icon: 'next'
-			} ),
+		const icon = new OO.ui.IconWidget( {
+			icon: 'next'
+		} );
 
-		 $link = $( '<a>' )
-				.addClass( 'notifications-ui-widget-NotificationItemWidget-secondary-link' )
-				.attr( 'href', links[ i ].url )
-				.html( links[ i ].label );
+		const $link = $( '<a>' )
+			.addClass( 'notifications-ui-widget-NotificationItemWidget-secondary-link' )
+			.attr( 'href', links[ i ].url )
+			.html( links[ i ].label );
 
 		$link.on( 'click', () => {
 			this.markAsRead();
@@ -166,19 +165,18 @@ ext.notifyme.ui.widget.NotificationItemWidget.prototype.alterBody = function ( $
 };
 
 ext.notifyme.ui.widget.NotificationItemWidget.prototype.markAsRead = function () {
-	const notificationToMark = {},
-
-	 id = this.$element.attr( 'data-id' ),
-	 isUnread = this.$element.attr( 'data-unread' ) === 'true';
+	const notificationToMark = {};
+	const id = this.$element.attr( 'data-id' );
+	const isUnread = this.$element.attr( 'data-unread' ) === 'true';
 
 	notificationToMark[ id ] = isUnread;
 
 	ext.notifyme.setReadStatus( notificationToMark ).done( ( response ) => {
 		const notifications = response;
-		for ( const id in notifications ) {
+		for ( const id in notifications ) { // eslint-disable-line no-shadow
 			const isProcessed = notifications[ id ];
 			if ( !isProcessed ) {
-				console.error( 'Failed to change read status of notification: ' + id );
+				console.error( 'Failed to change read status of notification: ' + id ); // eslint-disable-line no-console
 			}
 		}
 

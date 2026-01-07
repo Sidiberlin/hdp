@@ -3,52 +3,33 @@
 namespace BlueSpice\CustomMenu\Component;
 
 use BlueSpice\CustomMenu\ICustomMenu;
-use Html;
 use HtmlArmor;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Permissions\PermissionManager;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\Sanitizer;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
+use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCard;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCardBody;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCardHeader;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleDropdownIcon;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleLinklistGroupFromArray;
-use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleTextLink;
 use MWStake\MediaWiki\Component\CommonUserInterface\IRestrictedComponent;
+use MWStake\MediaWiki\Component\CommonUserInterface\LinkFormatter;
 use MWStake\MediaWiki\Component\DataStore\Record;
 use MWStake\MediaWiki\Component\DataStore\RecordSet;
-use Sanitizer;
 
 class CustomMenuButton extends SimpleDropdownIcon implements IRestrictedComponent {
 
-	/**
-	 *
-	 * @var ICustomMenu
-	 */
-	protected $menu = null;
-
-	/**
-	 *
-	 * @var PermissionManager
-	 */
-	protected $permissionManager = null;
-
-	/**
-	 *
-	 * @var IContextSource
-	 */
+	/** @var IContextSource */
 	protected $context = null;
 
 	/**
-	 *
 	 * @param ICustomMenu $menu
-	 * @param PermissionManager $permissionManager
 	 */
-	public function __construct( ICustomMenu $menu, PermissionManager $permissionManager ) {
-		$this->menu = $menu;
-		$this->permissionManager = $permissionManager;
+	public function __construct( private readonly ICustomMenu $menu ) {
 		parent::__construct( [] );
 	}
 
@@ -58,16 +39,8 @@ class CustomMenuButton extends SimpleDropdownIcon implements IRestrictedComponen
 	 */
 	public function shouldRender( IContextSource $context ): bool {
 		$this->context = $context;
-		if ( empty( $this->menu->getData()->getRecords() ) ) {
-			return false;
-		}
-		foreach ( $this->menu->getData()->getRecords() as $record ) {
-			if ( !$record->get( 'children', false ) instanceof RecordSet ) {
-				continue;
-			}
-			return true;
-		}
-		return false;
+
+		return true;
 	}
 
 	/**
@@ -131,50 +104,37 @@ class CustomMenuButton extends SimpleDropdownIcon implements IRestrictedComponen
 	 * @inheritDoc
 	 */
 	public function getSubComponents(): array {
-		$items = [];
-		foreach ( $this->menu->getData()->getRecords() as $record ) {
-			if ( !$record->get( 'children', false ) instanceof RecordSet ) {
-				continue;
-			}
-			$text = $record->get( 'text', '' );
-			if ( empty( $text ) ) {
-				$text = $record->get( 'id', '' );
-			}
-			$text = HtmlArmor::getHtml( $text );
-			$id = Sanitizer::escapeIdForAttribute( $record->get( 'id' ) );
-			$items[] = new SimpleCard( [
-				'id' => "cm-menu-$id",
-				'classes' => [ 'card-mn' ],
-				'items' => [
-					new SimpleCardHeader( [
-						'id' => "cm-menu-$id-head",
-						'classes' => [ 'menu-title' ],
-						'items' => [
-							new Literal(
-								"cm-menu-title-$id",
-								$text
-							)
-						]
-					] ),
-					new SimpleLinklistGroupFromArray( [
-						'id' => "cm-menu-list-items-$id",
-						'classes' => [ 'menu-card-body', 'menu-list', 'll-dft' ],
-						'links' => $this->getRecordLinkDefinition( $record ),
-						'role' => 'group',
-						'item-role' => 'presentation',
-						'aria' => [
-							'labelledby' => "cm-menu-$id-head"
-						],
-					] )
-				]
-			] );
+		$items = $this->populateItems( $this->menu->getData()->getRecords() );
+
+		// Insert placeholder text
+		if ( empty( $items ) ) {
+			$items = [
+				new SimpleCard( [
+					'id' => "cm-menu-0",
+					'classes' => [ 'card-mn' ],
+					'items' => [
+						new SimpleCardBody( [
+							'id' => "cm-menu-0-head",
+							'classes' => [ 'menu-title' ],
+							'items' => [
+								new Literal(
+									"cm-empty-menu",
+									Html::element( 'div', [ 'id' => 'cm-empty-menu', 'class' => 'cm-empty-menu' ] )
+								),
+								new Literal(
+									"cm-menu-title-0",
+									Html::element( 'p', [],
+										Message::newFromKey( "bs-custommenu-no-entries-label" )->escaped() )
+								)
+							]
+						] )
+					]
+				] )
+			];
 		}
-		$isAllowedEdit = $this->permissionManager->userHasRight(
-			$this->context->getUser(),
-			'editinterface'
-		);
-		if ( $isAllowedEdit && !empty( $this->menu->getEditURL() ) ) {
-			$items[] = new SimpleTextLink( [
+
+		if ( !empty( $this->menu->getEditURL() ) ) {
+			$items[] = new RestrictedTextLink( [
 				'role' => 'link',
 				'id' => "{$this->getId()}-edit-link",
 				'href' => $this->menu->getEditURL(),
@@ -182,8 +142,10 @@ class CustomMenuButton extends SimpleDropdownIcon implements IRestrictedComponen
 				'classes' => [ 'mm-edit-link' ],
 				'title' => $this->context->msg( 'bs-custommenu-editlink-title' ),
 				'aria-label' => $this->context->msg( 'bs-custommenu-editlink-title' ),
+				'permissions' => [ 'editinterface' ]
 			] );
 		}
+
 		return [
 			new SimpleCard( [
 				'id' => 'cm-mm',
@@ -203,6 +165,59 @@ class CustomMenuButton extends SimpleDropdownIcon implements IRestrictedComponen
 				Html::element( 'div', [ 'id' => 'cm-mm-div', 'class' => 'mm-bg' ] )
 			)
 		];
+	}
+
+	/**
+	 * Populate the items for the menu from the records.
+	 *
+	 * @param Record[] $records
+	 *
+	 * @return array
+	 */
+	private function populateItems( array $records ): array {
+		$items = [];
+		foreach ( $records as $record ) {
+			if ( !$record->get( 'children', false ) instanceof RecordSet ) {
+				continue;
+			}
+			$text = $record->get( 'text', '' );
+			if ( empty( $text ) ) {
+				$text = $record->get( 'id', '' );
+			}
+			$text = HtmlArmor::getHtml( $text );
+			$id = Sanitizer::escapeIdForAttribute( $record->get( 'id' ) );
+			$items[] = new SimpleCard( [
+				'id' => "cm-menu-$id",
+				'classes' => [ 'card-mn' ],
+				'items' => [
+					new SimpleCardHeader( [
+						'id' => "cm-menu-$id-head",
+						'classes' => [ 'menu-title' ],
+						'items' => [
+							new Literal(
+								"cm-menu-title-$id", $text
+							)
+						]
+					] ),
+					new SimpleLinklistGroupFromArray( [
+						'id' => "cm-menu-list-items-$id",
+						'classes' => [
+							'menu-card-body',
+							'menu-list',
+							'll-dft'
+						],
+						'links' => $this->getRecordLinkDefinition( $record ),
+						'role' => 'group',
+						'item-role' => 'presentation',
+						'aria' => [
+							'labelledby' => "cm-menu-$id-head"
+						],
+					] )
+				]
+			] );
+		}
+
+		return $items;
 	}
 
 	/**

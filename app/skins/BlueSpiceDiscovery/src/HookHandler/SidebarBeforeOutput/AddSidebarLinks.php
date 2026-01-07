@@ -4,10 +4,10 @@ namespace BlueSpice\Discovery\HookHandler\SidebarBeforeOutput;
 
 use MediaWiki\Hook\SidebarBeforeOutputHook;
 use MediaWiki\Permissions\PermissionManager;
-use MWException;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Title\Title;
 use Skin;
-use SpecialPage;
-use Title;
+use Throwable;
 
 class AddSidebarLinks implements SidebarBeforeOutputHook {
 
@@ -46,8 +46,7 @@ class AddSidebarLinks implements SidebarBeforeOutputHook {
 			// `WebRequest::getRequestURL` may fail in some cases (e.g. UnitTests)
 			$requestUrl = $skin->getConfig()->get( 'Server' )
 				. $skin->getRequest()->getRequestURL();
-		}
-		catch ( MWException $ex ) {
+		} catch ( Throwable $ex ) {
 			$requestUrl = $title->getLocalURL();
 		}
 

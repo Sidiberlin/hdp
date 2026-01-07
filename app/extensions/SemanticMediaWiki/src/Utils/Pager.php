@@ -2,14 +2,15 @@
 
 namespace SMW\Utils;
 
-use Html;
+use MediaWiki\Html\Html;
+use MediaWiki\Title\Title;
+use MediaWiki\Xml\Xml;
 use SMW\Highlighter;
-use SMW\Localizer;
-use SMW\Message;
-use Title;
+use SMW\Localizer\Localizer;
+use SMW\Localizer\Message;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.0
  *
  * @author mwjames
@@ -37,15 +38,14 @@ class Pager {
 	/**
 	 * @since 3.0
 	 *
-	 * @param Title   $title
-	 * @param integer $limit
-	 * @param integer $offset
+	 * @param Title $title
+	 * @param int $limit
+	 * @param int $offset
 	 *
 	 * @return string
 	 */
 	public static function filter( Title $title, $limit = 0, $offset = 0, $filter = '' ) {
-
-		$form = \Xml::tags(
+		$form = Xml::tags(
 			'form',
 			[
 				'id'     => 'search',
@@ -54,7 +54,7 @@ class Pager {
 			],
 			Html::hidden(
 			'title',
-			strtok( $title->getPrefixedText(), '/' )
+			$title->getPrefixedText()
 			) . Html::hidden(
 				'limit',
 				$limit
@@ -110,15 +110,15 @@ class Pager {
 	 * Generate (prev x| next x) (20|50|100...) type links for paging
 	 *
 	 * @param Title $title Title object to link
-	 * @param int $offset
 	 * @param int $limit
-	 * @param integer $count
+	 * @param int $offset
+	 * @param int $count
 	 * @param array $query Optional URL query parameter string
+	 * @param string $prefix
 	 *
 	 * @return string
 	 */
 	public static function getPagingLinks( Title $title, $limit, $offset, $count = 0, array $query = [], $prefix = '' ) {
-
 		$list = [];
 		$limit = (int)$limit;
 		$offset = (int)$offset;

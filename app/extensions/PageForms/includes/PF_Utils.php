@@ -7,12 +7,15 @@
  * @ingroup PF
  */
 
+use MediaWiki\Html\Html;
+use MediaWiki\Linker\Linker;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\DBConnRef;
-use Wikimedia\Rdbms\IDatabase;
+use Wikimedia\Rdbms\IReadableDatabase;
 
 class PFUtils {
 
@@ -26,13 +29,7 @@ class PFUtils {
 	}
 
 	public static function getSMWContLang() {
-		if ( function_exists( 'smwfContLang' ) ) {
-			// SMW 3.2+
-			return smwfContLang();
-		} else {
-			global $smwgContLang;
-			return $smwgContLang;
-		}
+		return smwfContLang();
 	}
 
 	/**
@@ -472,6 +469,7 @@ END;
 	public static function getCargoFieldDescription( $cargoTable, $cargoField ) {
 		try {
 			$tableSchemas = CargoUtils::getTableSchemas( [ $cargoTable ] );
+		// @phan-suppress-next-line PhanUnusedVariableCaughtException
 		} catch ( MWException $e ) {
 			return null;
 		}
@@ -485,18 +483,11 @@ END;
 	/**
 	 * Provides database for read access
 	 *
-	 * @return IDatabase|DBConnRef
+	 * @return IReadableDatabase|DBConnRef
 	 */
 	public static function getReadDB() {
-		$lbFactory = MediaWikiServices::getInstance()->getDBLoadBalancerFactory();
-		if ( method_exists( $lbFactory, 'getReplicaDatabase' ) ) {
-			// MW 1.40+
-			// The correct type \Wikimedia\Rdbms\IReadableDatabase cannot be used
-			// as the return type, as that class only exists since 1.40.
-			// @phan-suppress-next-line PhanTypeMismatchReturnSuperType
-			return $lbFactory->getReplicaDatabase();
-		} else {
-			return $lbFactory->getMainLB()->getConnection( DB_REPLICA );
-		}
+		return MediaWikiServices::getInstance()
+			->getDBLoadBalancerFactory()
+			->getReplicaDatabase();
 	}
 }

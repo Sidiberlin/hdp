@@ -6,7 +6,5 @@
 	},
 	"bs-saferedit-desc": "Битте икенсе ҡатнашыусылар мөхәррирләгәндә, иҫкәртә",
 	"bs-saferedit-user-editing": "Битте $1 {{GENDER:$1|мөхәррирләүсе}}{{PLURAL:$2|булып тора}}",
-	"bs-saferedit-someone-editing": "Был бит мөхәррирләнә",
-	"bs-saferedit-pref-interval": "Бер үк ваҡытта башҡарылған төҙәтеүҙәрҙе эҙләү арауығы:",
-	"bs-saferedit-pref-shownameofeditinguser": "Ғәмәлдәге мөхәррирләүсе исемен күрһәтергә"
+	"bs-saferedit-someone-editing": "Был бит мөхәррирләнә"
 }

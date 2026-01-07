@@ -2,18 +2,17 @@
 
 namespace SMW\DataValues\ValueValidators;
 
-use SMWDataValue as DataValue;
-use SMWDataItem as DataItem;
-use SMW\DIProperty;
-use SMW\DIWikiPage;
-use SMW\Schema\SchemaFinder;
 use SMW\Constraint\ConstraintCheckRunner;
+use SMW\DIWikiPage;
 use SMW\MediaWiki\Jobs\DeferredConstraintCheckUpdateJob;
+use SMW\Schema\SchemaFinder;
+use SMW\Schema\SchemaList;
+use SMWDataValue as DataValue;
 
 /**
  * @private
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.1
  *
  * @author mwjames
@@ -31,22 +30,22 @@ class ConstraintSchemaValueValidator implements ConstraintValueValidator {
 	private $schemaFinder;
 
 	/**
-	 * @var []
+	 * @var
 	 */
 	private $schemaLists = [];
 
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	private $hasConstraintViolation = false;
 
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	private $postUpdateCheck = false;
 
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	private $isCommandLineMode = false;
 
@@ -58,7 +57,7 @@ class ConstraintSchemaValueValidator implements ConstraintValueValidator {
 	/**
 	 * @since 3.1
 	 *
-	 * @param ConstraintCheckRunner $schemaFinder
+	 * @param ConstraintCheckRunner $constraintCheckRunner
 	 * @param SchemaFinder $schemaFinder
 	 */
 	public function __construct( ConstraintCheckRunner $constraintCheckRunner, SchemaFinder $schemaFinder ) {
@@ -69,7 +68,7 @@ class ConstraintSchemaValueValidator implements ConstraintValueValidator {
 	/**
 	 * @since 3.1
 	 *
-	 * @param boolean $isCommandLineMode
+	 * @param bool $isCommandLineMode
 	 */
 	public function isCommandLineMode( $isCommandLineMode ) {
 		$this->isCommandLineMode = $isCommandLineMode;
@@ -90,7 +89,6 @@ class ConstraintSchemaValueValidator implements ConstraintValueValidator {
 	 * {@inheritDoc}
 	 */
 	public function validate( $dataValue ) {
-
 		$this->hasConstraintViolation = false;
 
 		if ( !$dataValue instanceof DataValue || $dataValue->getProperty() === null ) {
@@ -114,7 +112,7 @@ class ConstraintSchemaValueValidator implements ConstraintValueValidator {
 			$schemaList = $this->schemaFinder->getConstraintSchema( $dataItem );
 
 			if ( !$schemaList instanceof SchemaList && $dataItems !== [] ) {
-				$schemaList = new SchemaList();
+				$schemaList = new SchemaList( [] );
 			}
 
 			foreach ( $dataItems as $di ) {
@@ -144,7 +142,6 @@ class ConstraintSchemaValueValidator implements ConstraintValueValidator {
 	}
 
 	private function triggerDeferredCheck( $contextPage ) {
-
 		if ( $contextPage === null || $this->isCommandLineMode ) {
 			return;
 		}

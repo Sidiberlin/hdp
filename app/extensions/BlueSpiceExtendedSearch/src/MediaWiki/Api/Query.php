@@ -2,10 +2,13 @@
 
 namespace BS\ExtendedSearch\MediaWiki\Api;
 
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiResult;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class Query extends \ApiBase {
+class Query extends ApiBase {
 	/** @var string */
 	protected $searchTerm;
 	/** @var array */
@@ -14,7 +17,6 @@ class Query extends \ApiBase {
 	public function execute() {
 		$this->readInParameters();
 		$this->lookUpResults();
-		$this->setPageCreatable();
 		$this->returnResults();
 	}
 
@@ -27,18 +29,18 @@ class Query extends \ApiBase {
 			'q' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => true,
-				\ApiBase::PARAM_HELP_MSG => 'apihelp-bs-extendedsearch-query-param-q',
+				ApiBase::PARAM_HELP_MSG => 'apihelp-bs-extendedsearch-query-param-q',
 			],
 			'backend' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => false,
 				ParamValidator::PARAM_DEFAULT => 'local',
-				\ApiBase::PARAM_HELP_MSG => 'apihelp-bs-extendedsearch-generic-param-backend',
+				ApiBase::PARAM_HELP_MSG => 'apihelp-bs-extendedsearch-generic-param-backend',
 			],
 			'searchTerm' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => false,
-				\ApiBase::PARAM_HELP_MSG => 'apihelp-bs-extendedsearch-query-param-search-term'
+				ApiBase::PARAM_HELP_MSG => 'apihelp-bs-extendedsearch-query-param-search-term'
 			]
 		];
 	}
@@ -54,7 +56,7 @@ class Query extends \ApiBase {
 	protected function getParameterFromSettings( $paramName, $paramSettings, $parseLimit ) {
 		$value = parent::getParameterFromSettings( $paramName, $paramSettings, $parseLimit );
 		if ( $paramName === 'q' ) {
-			$decodedValue = \FormatJson::decode( $value, true );
+			$decodedValue = FormatJson::decode( $value, true );
 
 			$oLookup = new \BS\ExtendedSearch\Lookup();
 			if ( is_array( $decodedValue ) ) {
@@ -93,7 +95,7 @@ class Query extends \ApiBase {
 		$this->resultSet = $oBackend->runLookup( $this->oLookup );
 	}
 
-	/** @var \ApiResult */
+	/** @var ApiResult */
 	protected $oResult;
 
 	protected function returnResults() {
@@ -110,40 +112,8 @@ class Query extends \ApiBase {
 		$oResult->addValue( null, 'total', $this->resultSet->total );
 		$oResult->addValue( null, 'filters', $this->resultSet->filters );
 		$oResult->addValue( null, 'spellcheck', $this->resultSet->spellcheck );
-		$oResult->addValue( null, 'lookup', \FormatJson::encode( $this->oLookup ) );
+		$oResult->addValue( null, 'lookup', FormatJson::encode( $this->oLookup ) );
 		$oResult->addValue( null, 'total_approximated', $this->resultSet->total_approximated );
 		$oResult->addValue( null, 'search_after', $this->resultSet->search_after );
-		if ( !empty( $this->pageCreateData ) ) {
-			$oResult->addValue( null, 'page_create_data', $this->pageCreateData );
-		}
-	}
-
-	protected function setPageCreatable() {
-		if ( !$this->searchTerm ) {
-			return;
-		}
-		$pageName = $this->searchTerm;
-
-		if ( $this->getConfig()->get( 'CapitalLinks' ) ) {
-			$pageName = ucfirst( $pageName );
-		}
-
-		$title = \Title::newFromText( $pageName );
-
-		if ( $title instanceof \Title === false ) {
-			return;
-		}
-		$user = $this->getUser();
-		$pm = \MediaWiki\MediaWikiServices::getInstance()->getPermissionManager();
-
-		if ( $title->exists() == false &&
-			$pm->userCan( 'createpage', $user, $title ) &&
-			$pm->userCan( 'edit', $user, $title )
-		) {
-			$this->pageCreateData = [
-				'title' => $title->getPrefixedText(),
-				'url' => $title->getLocalURL( [ 'action' => 'edit' ] )
-			];
-		}
 	}
 }

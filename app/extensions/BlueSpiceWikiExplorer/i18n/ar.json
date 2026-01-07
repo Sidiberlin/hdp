@@ -17,7 +17,6 @@
 	"bs-wikiexplorer-categories": "تصنيفات",
 	"bs-wikiexplorer-linked-files": "الملفات المرتبطة",
 	"bs-wikiexplorer-linked-pages": "الصفحات المرتبطة",
-	"apihelp-bs-wikiexplorer-store-description": "يوفر جميع البيانات للامتداد WikiExplorer",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "وسط API للإشارة إلى ما إذا كان قد تم بالفعل تحميل البيانات الوصفية.",
 	"apihelp-bs-wikiexplorer-store-summary": "يوفر جميع البيانات للامتداد WikiExplorer",
 	"bs-wikiexplorer-icon-bool-true-aria-label": "مفحوص",

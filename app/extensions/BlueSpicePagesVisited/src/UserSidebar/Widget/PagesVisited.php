@@ -6,14 +6,14 @@ use BlueSpice\PagesVisited\Data\Store;
 use BlueSpice\UserSidebar\Widget;
 use BlueSpice\WhoIsOnline\Data\Record;
 use BsStringHelper;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\FieldType;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\Filter\ListValue;
 use MWStake\MediaWiki\Component\DataStore\Filter\Numeric;
 use MWStake\MediaWiki\Component\DataStore\Filter\StringValue;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
-use Title;
 
 class PagesVisited extends Widget {
 	public const PARAM_TITLE_MAX_LENGHT = 'maxtitlelength';
@@ -59,7 +59,7 @@ class PagesVisited extends Widget {
 				$record->get( Record::PAGE_NAMESPACE ),
 				$record->get( Record::PAGE_TITLE )
 			);
-			if ( !$title ) {
+			if ( !$title || !$title->isKnown() ) {
 				continue;
 			}
 			$display = BsStringHelper::shorten( $title->getPrefixedText(), [
@@ -69,8 +69,10 @@ class PagesVisited extends Widget {
 			$link = [
 				'href' => $title->getLocalURL(),
 				'text' => $display,
-				'title' => $title->getPrefixedText(),
-				'classes' => ' bs-usersidebar-internal '
+				'classes' => ' bs-usersidebar-internal ',
+				'aria' => [
+					'label' => $title->getPrefixedText()
+				]
 			];
 			$links[] = $link;
 		}

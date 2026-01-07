@@ -6,10 +6,11 @@ use DateInterval;
 use DateTime;
 use DateTimeZone;
 use Exception;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
-use MWTimestamp;
-use RequestContext;
-use User;
+use MediaWiki\Message\Message;
+use MediaWiki\User\User;
+use MediaWiki\Utils\MWTimestamp;
 
 class Timestamp extends MWTimestamp {
 
@@ -23,7 +24,7 @@ class Timestamp extends MWTimestamp {
 	 * @return string
 	 */
 	public function getAgeString(
-		Timestamp $relativeTo = null, User $user = null, $numberOfDisplayedUnits = 2
+		?Timestamp $relativeTo = null, ?User $user = null, $numberOfDisplayedUnits = 2
 	) {
 		if ( !$relativeTo ) {
 			$relativeTo = new static;
@@ -83,7 +84,7 @@ class Timestamp extends MWTimestamp {
 				}
 				continue;
 			}
-			$params[] = \Message::newFromKey( $msgKey )
+			$params[] = Message::newFromKey( $msgKey )
 				->params( $value )
 				->inLanguage( $userLanguageSetting )
 				->text();
@@ -91,7 +92,7 @@ class Timestamp extends MWTimestamp {
 
 		$paramCount = count( $params );
 		if ( $paramCount === 0 ) {
-			$ageString .= \Message::newFromKey( 'bs-now' )
+			$ageString .= Message::newFromKey( 'bs-now' )
 				->inLanguage( $userLanguageSetting )
 				->text();
 			return $ageString;
@@ -104,7 +105,7 @@ class Timestamp extends MWTimestamp {
 			$ageMsgKey = $paramCount > 1 ? 'bs-two-units-ago' : 'bs-one-unit-ago';
 		}
 
-		$ageString .= \Message::newFromKey( $ageMsgKey )
+		$ageString .= Message::newFromKey( $ageMsgKey )
 			->params( $params )
 			->inLanguage( $userLanguageSetting )
 			->text();

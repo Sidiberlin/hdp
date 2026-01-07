@@ -2,9 +2,13 @@
 
 use BlueSpice\Bookshelf\BookSourceParser;
 use BlueSpice\Bookshelf\ChapterDataModel;
+use MediaWiki\Content\TextContent;
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionLookup;
+use MediaWiki\Title\TitleFactory;
+use MWStake\MediaWiki\Component\Wikitext\ParserFactory;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\LoadBalancer;
 
@@ -105,6 +109,8 @@ class RebuildBooks extends LoggedUpdateMaintenance {
 		$res = $this->db->select(
 			'bs_books',
 			[ 'book_id', 'book_namespace', 'book_title' ],
+			'',
+			__METHOD__
 		);
 
 		foreach ( $res as $row ) {
@@ -122,9 +128,8 @@ class RebuildBooks extends LoggedUpdateMaintenance {
 			$this->output( "Cleaning table 'bs_books' ..." );
 			$this->db->delete(
 				'bs_books',
-				[
-					'book_id' => $this->invalidBookIDs
-				]
+				[ 'book_id' => $this->invalidBookIDs ],
+				__METHOD__
 			);
 			$this->output( "\033[32m  done\n\033[39m" );
 		}
@@ -144,7 +149,8 @@ class RebuildBooks extends LoggedUpdateMaintenance {
 					'book_title' => $book->getDBkey(),
 					'book_name' => $book->getText(),
 					'book_type' => 'public'
-				]
+				],
+				__METHOD__
 			);
 			$this->output( "\033[32m  done\n\033[39m" );
 		}
@@ -156,9 +162,8 @@ class RebuildBooks extends LoggedUpdateMaintenance {
 			$this->output( "Cleaning table 'bs_book_meta' ..." );
 			$this->db->delete(
 				'bs_book_meta',
-				[
-					'm_book_id' => $this->invalidBookIDs
-				]
+				[ 'm_book_id' => $this->invalidBookIDs ],
+				__METHOD__
 			);
 			$this->output( "\033[32m  done\n\033[39m" );
 		}
@@ -177,7 +182,8 @@ class RebuildBooks extends LoggedUpdateMaintenance {
 				[
 					'book_namespace' => $book->getNamespace(),
 					'book_title' => $book->getDBkey()
-				]
+				],
+				__METHOD__
 			);
 
 			$bookId = null;
@@ -221,18 +227,16 @@ class RebuildBooks extends LoggedUpdateMaintenance {
 						'm_book_id' => $bookId,
 						'm_key' => trim( $key ),
 						'm_value' => trim( $value )
-					]
+					],
+					__METHOD__
 				);
 				if ( $key === 'title' ) {
 					// Update book name
 					$this->db->update(
 						'bs_books',
-						[
-							'book_name' => $value
-						],
-						[
-							'book_id' => $bookId
-						]
+						[ 'book_name' => $value ],
+						[ 'book_id' => $bookId ],
+						__METHOD__
 					);
 				}
 				$this->output( "\033[32m  done\n\033[39m" );
@@ -246,9 +250,8 @@ class RebuildBooks extends LoggedUpdateMaintenance {
 			$this->output( "Cleaning table 'bs_book_chapters' ..." );
 			$this->db->delete(
 				'bs_book_chapters',
-				[
-					'chapter_book_id' => $this->invalidBookIDs
-				]
+				[ 'chapter_book_id' => $this->invalidBookIDs ],
+				__METHOD__
 			);
 			$this->output( "\033[32m  done\n\033[39m" );
 		}
@@ -256,6 +259,10 @@ class RebuildBooks extends LoggedUpdateMaintenance {
 		// Add new book chapters
 		foreach ( $this->books as $book ) {
 			$revisionRecord = $this->revisionLookup->getRevisionByTitle( $book );
+			if ( !$revisionRecord ) {
+				$this->output( "\033[31mNo valid revision for " . $book->getPrefixedDBKey() . "\n\033[39m" );
+				continue;
+			}
 			$bookSourceParser = new BookSourceParser(
 				$revisionRecord,
 				$this->parserFactory->getNodeProcessors(),
@@ -271,7 +278,8 @@ class RebuildBooks extends LoggedUpdateMaintenance {
 				[
 					'book_namespace' => $book->getNamespace(),
 					'book_title' => $book->getDBkey()
-				]
+				],
+				__METHOD__
 			);
 
 			$bookId = null;
@@ -291,7 +299,8 @@ class RebuildBooks extends LoggedUpdateMaintenance {
 							'chapter_name' => $chapter->getName(),
 							'chapter_number' => $chapter->getNumber(),
 							'chapter_type' => $chapter->getType()
-						]
+						],
+						__METHOD__
 					);
 					$this->output( "\033[32m  done\n\033[39m" );
 				}

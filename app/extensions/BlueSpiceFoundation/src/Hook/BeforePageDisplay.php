@@ -27,12 +27,15 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Output\OutputPage;
 
 abstract class BeforePageDisplay extends Hook {
 
 	/**
 	 *
-	 * @var \OutputPage
+	 * @var OutputPage
 	 */
 	protected $out = null;
 
@@ -44,7 +47,7 @@ abstract class BeforePageDisplay extends Hook {
 
 	/**
 	 *
-	 * @param \OutputPage &$out
+	 * @param OutputPage &$out
 	 * @param \Skin &$skin
 	 * @return bool
 	 */
@@ -61,9 +64,9 @@ abstract class BeforePageDisplay extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
-	 * @param \OutputPage &$out
+	 * @param IContextSource $context
+	 * @param Config $config
+	 * @param OutputPage &$out
 	 * @param \Skin &$skin
 	 */
 	public function __construct( $context, $config, &$out, &$skin ) {

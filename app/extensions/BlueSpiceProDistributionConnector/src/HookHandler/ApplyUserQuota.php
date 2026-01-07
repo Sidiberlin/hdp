@@ -3,8 +3,8 @@
 namespace BlueSpice\ProDistributionConnector\HookHandler;
 
 use BlueSpice\ProDistributionConnector\UserCounter;
-use MediaWiki\Hook\BeforePageDisplayHook;
 use MediaWiki\Hook\UnblockUserHook;
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
 
 class ApplyUserQuota implements UnblockUserHook, BeforePageDisplayHook {
 

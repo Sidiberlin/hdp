@@ -19,16 +19,18 @@ class PageHitsRelation extends PageHits {
 
 		foreach ( $snapshots as $snapshot ) {
 			$data = $snapshot->getData();
+			$total = $snapshot->calcTotal();
+
+			if ( $total === 0 ) {
+				continue;
+			}
+
 			if ( !isset( $data[$filterForPage ] ) ) {
 				continue;
 			}
-			$value = $data[$filterForPage][$this->getDataKeyToDisplay()] / $data['total'];
-			if ( $value === null ) {
-				if ( $data['total'] === 0 ) {
-					continue;
-				}
-				$value = $data[$filterForPage]['hits'] / $data['total'];
-			}
+
+			$value = $data[$filterForPage][$this->getDataKeyToDisplay()] / $total;
+
 			$processed[] = [
 				'name' => $snapshot->getDate()->forGraph(),
 				'line' => $filterForPage,

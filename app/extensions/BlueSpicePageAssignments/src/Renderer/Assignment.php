@@ -4,8 +4,9 @@ namespace BlueSpice\PageAssignments\Renderer;
 use BlueSpice\PageAssignments\IAssignment;
 use BlueSpice\Renderer\Params;
 use BlueSpice\Utility\CacheHelper;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkRenderer;
 
 class Assignment extends \BlueSpice\TemplateRenderer {
@@ -27,8 +28,8 @@ class Assignment extends \BlueSpice\TemplateRenderer {
 	 * @param CacheHelper|null $cacheHelper
 	 */
 	protected function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
-		$name = '', CacheHelper $cacheHelper = null ) {
+		?LinkRenderer $linkRenderer = null, ?IContextSource $context = null,
+		$name = '', ?CacheHelper $cacheHelper = null ) {
 		parent::__construct(
 			$config,
 			$params,
@@ -54,8 +55,8 @@ class Assignment extends \BlueSpice\TemplateRenderer {
 	 * @param mixed $val
 	 * @return mixed
 	 */
-	protected function render_image( $val ) {
-		return \Html::element( 'span', [
+	protected function render_image( $val ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
+		return Html::element( 'span', [
 			'class' => "bs-icon-" . $this->assignment->getType(),
 		] );
 	}

@@ -5,10 +5,10 @@ namespace MediaWiki\Extension\MenuEditor\Hook;
 use MediaWiki;
 use MediaWiki\Extension\MenuEditor\MenuFactory;
 use MediaWiki\Hook\BeforeInitializeHook;
-use OutputPage;
-use Title;
-use User;
-use WebRequest;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Request\WebRequest;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class InitializeMenus implements BeforeInitializeHook {
 	/** @var MenuFactory */

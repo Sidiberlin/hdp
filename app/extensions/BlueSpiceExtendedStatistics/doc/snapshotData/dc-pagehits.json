@@ -2,7 +2,7 @@
 	"members": {
 		"key": "{{{page}}}",
 		"value": {
-			"hits": "{{randint|0,1000}}"
+			"hitDiff": "{{randint|0,1000}}"
 		}
 	}
 }

@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface;
 
-use Message;
+use MediaWiki\Message\Message;
 
 /**
  * Inspired by https://getbootstrap.com/docs/5.0/components/badge/

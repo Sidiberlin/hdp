@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.ui' );
 
-bs.vec.ui.ButtonStyleTool = function( config ) {
+bs.vec.ui.ButtonStyleTool = function ( config ) {
 	config = config || {};
 
 	this.surface = config.surface;
@@ -26,59 +26,58 @@ bs.vec.ui.ButtonStyleTool = function( config ) {
 
 OO.inheritClass( bs.vec.ui.ButtonStyleTool, OO.ui.ButtonWidget );
 
-bs.vec.ui.ButtonStyleTool.prototype.annotate = function() {
-	var method, annotationData;
+bs.vec.ui.ButtonStyleTool.prototype.annotate = function () {
 	if ( !this.annotationAction ) {
 		this.annotationAction = new ve.ui.AnnotationAction( this.surface );
 	}
-	method = this.getMethod();
+	const method = this.getMethod();
 	if ( ve.ui.AnnotationAction.static.methods.indexOf( method ) === -1 ) {
 		return;
 	}
-	annotationData = {
+	const annotationData = {
 		attributes: this.getData(),
 		type: this.getName()
 	};
 
-	if ( this.annotationAction[method]( this.getName(), annotationData ) ) {
+	if ( this.annotationAction[ method ]( this.getName(), annotationData ) ) {
 		this.changeActive();
 	}
 };
 
-bs.vec.ui.ButtonStyleTool.prototype.setFragment = function( fragment ) {
+bs.vec.ui.ButtonStyleTool.prototype.setFragment = function ( fragment ) {
 	this.fragment = fragment;
 	this.changeActive();
 };
 
-bs.vec.ui.ButtonStyleTool.prototype.clearAnnotation = function() {
+bs.vec.ui.ButtonStyleTool.prototype.clearAnnotation = function () {
 	if ( !this.annotationAction ) {
 		this.annotationAction = new ve.ui.AnnotationAction( this.surface );
 	}
 	this.annotationAction.clear( this.getName() );
 };
 
-bs.vec.ui.ButtonStyleTool.prototype.getName = function() {
+bs.vec.ui.ButtonStyleTool.prototype.getName = function () {
 	// STUB
 };
 
-bs.vec.ui.ButtonStyleTool.prototype.getData = function() {
+bs.vec.ui.ButtonStyleTool.prototype.getData = function () {
 	// undefined
 	return;
 };
 
-bs.vec.ui.ButtonStyleTool.prototype.getMethod = function() {
+bs.vec.ui.ButtonStyleTool.prototype.getMethod = function () {
 	return 'toggle';
 };
 
-bs.vec.ui.ButtonStyleTool.prototype.getIcon = function() {
+bs.vec.ui.ButtonStyleTool.prototype.getIcon = function () {
 	// STUB
 };
 
-bs.vec.ui.ButtonStyleTool.prototype.getLabel = function() {
+bs.vec.ui.ButtonStyleTool.prototype.getLabel = function () {
 	// STUB
 };
 
-bs.vec.ui.ButtonStyleTool.prototype.changeActive = function() {
+bs.vec.ui.ButtonStyleTool.prototype.changeActive = function () {
 	if ( this.isActive() ) {
 		this.setFlags( [ 'primary', 'progressive' ] );
 	} else {
@@ -86,11 +85,11 @@ bs.vec.ui.ButtonStyleTool.prototype.changeActive = function() {
 	}
 };
 
-bs.vec.ui.ButtonStyleTool.prototype.isActive = function() {
+bs.vec.ui.ButtonStyleTool.prototype.isActive = function () {
 	if ( !this.fragment ) {
 		return false;
 	}
-	var annotations = this.fragment.getAnnotations().getAnnotationsByName( this.getName() );
+	const annotations = this.fragment.getAnnotations().getAnnotationsByName( this.getName() );
 	if ( annotations.getHashes().length > 0 ) {
 		return true;
 	}

@@ -5,6 +5,7 @@ declare( strict_types=1 );
 namespace MWStake\MediaWiki\Component\Events\Delivery;
 
 use DateTime;
+use InvalidArgumentException;
 use JsonSerializable;
 
 class NotificationStatus implements JsonSerializable {
@@ -70,7 +71,7 @@ class NotificationStatus implements JsonSerializable {
 	public function setStatus( string $status ) {
 		// Reject if status is not supported
 		if ( !in_array( $status, [ static::STATUS_PENDING, static::STATUS_COMPLETED, static::STATUS_FAILED ] ) ) {
-			throw new \InvalidArgumentException( "Invalid status: $status" );
+			throw new InvalidArgumentException( "Invalid status: $status" );
 		}
 		$this->status = $status;
 	}

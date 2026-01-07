@@ -11,10 +11,10 @@ flexiskin.ui.dialog.PreviewLoading.prototype.initialize = function () {
 	this.panel = new OO.ui.PanelLayout( {
 		padded: true
 	} );
-	var label = new OO.ui.LabelWidget( {
-			label: mw.message( 'flexiskin-ui-preview-loading-message' ).text()
-		} ),
-	 progress = new OO.ui.ProgressBarWidget();
+	const label = new OO.ui.LabelWidget( {
+		label: mw.message( 'flexiskin-ui-preview-loading-message' ).text()
+	} );
+	const progress = new OO.ui.ProgressBarWidget();
 
 	this.panel.$element.append( label.$element, progress.$element );
 

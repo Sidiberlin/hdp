@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\FlexiSkin\HookHandler;
 
-use DatabaseUpdater;
+use MediaWiki\Installer\DatabaseUpdater;
 use MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook;
 
 class ConvertDefaultFile implements LoadExtensionSchemaUpdatesHook {

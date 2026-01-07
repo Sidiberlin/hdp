@@ -1,5 +1,5 @@
 {{#vardefine:modalCount|{{#expr:{{#var:modalCount|0}}+1}}}}
-<span role="button" tabindex="0" class="content-droplet-modal-button mw-ui-button {{#switch: {{{bg-color|blue}}}|blue|blau=mw-ui-progressive|red|rot=mw-ui-destructive|}}" data-bs-toggle="modal" data-bs-target="#SimpleModal{{#var:modalCount}}">{{{btnLabel}}}</span>
+<span role="button" tabindex="0" class="content-droplet-modal-button mw-ui-button {{#switch: {{{bg-color|}}}|blue|blau=mw-ui-progressive|red|rot=mw-ui-destructive|}}" data-bs-toggle="modal" data-bs-target="#SimpleModal{{#var:modalCount}}">{{{btnLabel}}}</span>
 <div class="modal fade" id="SimpleModal{{#var:modalCount}}" tabindex="-1" role="dialog" aria-labelledby="myModalLabel{{#var:modalCount}}">
 <div class="modal-dialog">
 <div class="modal-content" style="border-radius: 0;">

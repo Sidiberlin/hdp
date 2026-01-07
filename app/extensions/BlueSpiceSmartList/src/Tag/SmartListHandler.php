@@ -5,16 +5,16 @@ namespace BlueSpice\SmartList\Tag;
 use BlueSpice\SmartList\ListRenderer;
 use BlueSpice\SmartList\Parser\ParserObjectWrapper;
 use BlueSpice\Tag\Handler;
-use FormatJson;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\HookContainer\HookContainer;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Title\TitleFactory;
 use OOUI\MessageWidget;
-use OutputPage;
-use Parser;
-use ParserOptions;
-use PPFrame;
-use RequestContext;
-use TitleFactory;
 
 class SmartListHandler extends Handler {
 
@@ -88,6 +88,7 @@ class SmartListHandler extends Handler {
 		$parser = MediaWikiServices::getInstance()->getParserFactory()->create();
 		$parser->setOptions( ParserOptions::newFromAnon() );
 		$parser->clearState();
+		$parser->setOutputType( Parser::OT_HTML );
 
 		$parser = new ParserObjectWrapper( $parser );
 		$listRenderer = new ListRenderer(

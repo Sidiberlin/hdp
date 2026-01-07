@@ -4,9 +4,9 @@ namespace MediaWiki\Extension\FlexiSkin\ResourceLoader;
 
 use MediaWiki\Extension\FlexiSkin\IPlugin;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 use MediaWiki\ResourceLoader\FileModule as ResourceLoaderFileModule;
-use OutputPage;
 use RuntimeException;
 
 class Configurator extends ResourceLoaderFileModule {
@@ -56,8 +56,12 @@ class Configurator extends ResourceLoaderFileModule {
 	 * @return string|array JavaScript code for $context, or package files data structure
 	 */
 	public function getScript( ResourceLoaderContext $context ) {
-		return $this->readScriptFiles( $this->getPluginFiles( $context ) ) .
-			parent::getScript( $context );
+		$parent = parent::getScript( $context );
+		$js = $this->readScriptFiles( $this->getPluginFiles( $context ) );
+		foreach ( $parent['plainScripts'] as $data ) {
+			$js .= "\n" . $data['content'];
+		}
+		return $js;
 	}
 
 	/**

@@ -5,11 +5,10 @@
 		]
 	},
 	"bs-expiry-header-pagename": "Seidd",
-	"bs-expiry-article-label": "Seidd",
-	"bs-expiry-edit-grid-header-date": "Peiʹvvmieʹrr",
 	"bs-expiry-header-comment": "Kommeʹntt",
+	"bs-expiry-article-label": "Seidd",
 	"bs-expiry-comment-label": "Kommeʹntt",
-	"bs-expiry-flyout-next-comment": "Kommeʹntt: $1",
 	"bs-expiry-info-dialog-comment": "Kommeʹntt: $1",
-	"bs-expiry-edit-grid-header-username": "Õõʹnni"
+	"bs-expiry-edit-grid-header-username": "Õõʹnni",
+	"bs-expiry-edit-grid-header-date": "Peiʹvvmieʹrr"
 }

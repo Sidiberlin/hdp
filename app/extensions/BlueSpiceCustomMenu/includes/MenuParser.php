@@ -28,7 +28,10 @@
  * @filesource
  */
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Title\Title;
 
 /**
  * TODO: Also re-write this parser or may even use some Treeparser from

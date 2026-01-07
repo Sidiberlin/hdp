@@ -28,7 +28,7 @@ bs.hidetitle.dm.BSHideTitleMetaItem.static.matchTagNames = [ 'meta' ];
 bs.hidetitle.dm.BSHideTitleMetaItem.static.matchRdfaTypes = [ 'mw:PageProp/bs_hidetitle' ];
 
 bs.hidetitle.dm.BSHideTitleMetaItem.static.toDomElements = function ( dataElement, doc ) {
-	var meta = doc.createElement( 'meta' );
+	const meta = doc.createElement( 'meta' );
 	meta.setAttribute( 'property', 'mw:PageProp/bs_hidetitle' );
 	return [ meta ];
 };

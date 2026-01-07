@@ -8,7 +8,6 @@
 		]
 	},
 	"importofficefiles-desc": "Erlaubt das Importieren von Office-Dateien als Wikiseiten",
-	"importofficefiles-ui-action-import-msword-text": "Word-Datei importieren",
 	"importofficefiles-ui-action-import-msword-title": "Seiten mit einer Microsoft-Word-Datei erzeugen",
 	"importofficefiles-ui-import-dialog-title": "Datei importieren",
 	"importofficefiles-ui-import-completed": "Import abgeschlossen!",
@@ -42,5 +41,8 @@
 	"importofficefiles-ui-progress-import-pages-step": "Seiten importieren …",
 	"importofficefiles-ui-progress-remove-files-step": "Temporäre Dateien entfernen …",
 	"importofficefiles-ui-import-error": "Während des Imports sind Fehler aufgetreten.",
-	"importofficefiles-ui-analyze-error": "Der Analyseprozess ist aus irgendeinem Grund fehlgeschlagen."
+	"importofficefiles-ui-analyze-error": "Der Analyseprozess ist aus irgendeinem Grund fehlgeschlagen.",
+	"importofficefiles-ui-action-import-msword-label": "Neuer Import einer Word-Datei",
+	"importofficefiles-ui-dialog-preview-action-close": "Schließen",
+	"importofficefiles-ui-dialog-preview-btn-title": "Vorschau"
 }

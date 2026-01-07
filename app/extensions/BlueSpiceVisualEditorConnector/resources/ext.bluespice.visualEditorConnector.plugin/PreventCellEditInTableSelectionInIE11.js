@@ -5,7 +5,7 @@
  * Bug: T220984 ERM#14844
  */
 
-ve.ce.Surface.prototype._onDocumentKeyPress = ve.ce.Surface.prototype.onDocumentKeyPress;
+ve.ce.Surface.prototype._onDocumentKeyPress = ve.ce.Surface.prototype.onDocumentKeyPress; // eslint-disable-line no-underscore-dangle
 
 ve.ce.Surface.prototype.onDocumentKeyPress = function ( e ) {
 	if (
@@ -14,10 +14,10 @@ ve.ce.Surface.prototype.onDocumentKeyPress = function ( e ) {
 	) {
 		return;
 	}
-	return this._onDocumentKeyPress( e );
-}
+	return this._onDocumentKeyPress( e ); // eslint-disable-line no-underscore-dangle
+};
 
-ve.ce.Surface.prototype._onPaste = ve.ce.Surface.prototype.onPaste;
+ve.ce.Surface.prototype._onPaste = ve.ce.Surface.prototype.onPaste; // eslint-disable-line no-underscore-dangle
 
 ve.ce.Surface.prototype.onPaste = function ( e ) {
 	if (
@@ -26,5 +26,5 @@ ve.ce.Surface.prototype.onPaste = function ( e ) {
 	) {
 		return;
 	}
-	return this._onPaste( e );
-}
+	return this._onPaste( e ); // eslint-disable-line no-underscore-dangle
+};

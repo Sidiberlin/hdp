@@ -1,20 +1,13 @@
 <?php
 
-/*
- * (c) Jeroen van den Enden <info@endroid.nl>
- *
- * This source file is subject to the MIT license that is bundled
- * with this source code in the file LICENSE.
- */
+declare(strict_types=1);
 
 namespace Endroid\QrCode;
 
-use MyCLabs\Enum\Enum;
-
-class ErrorCorrectionLevel extends Enum
+enum ErrorCorrectionLevel: string
 {
-    const LOW = 'low';
-    const MEDIUM = 'medium';
-    const QUARTILE = 'quartile';
-    const HIGH = 'high';
+    case High = 'high';
+    case Low = 'low';
+    case Medium = 'medium';
+    case Quartile = 'quartile';
 }

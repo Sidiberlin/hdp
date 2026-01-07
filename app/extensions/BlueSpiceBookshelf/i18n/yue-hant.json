@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"JeffreyKim",
+			"Yueman"
+		]
+	},
+	"bs-bookshelf-ve-bookmeta-attr-author-label": "作者",
+	"bs-bookshelf-formelement-book-input": "書",
+	"bs-bookshelf-formelement-book-input-return-value-label": "退還返屬性",
+	"bs-bookshelf-newbook-dlg-action-create-label": "創建"
+}

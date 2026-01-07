@@ -9,17 +9,17 @@ ext.bookshelf.data.BookMetaDataManager = function ( bookTitle ) {
 OO.initClass( ext.bookshelf.data.BookMetaDataManager );
 
 ext.bookshelf.data.BookMetaDataManager.prototype.load = function () {
-	var dfd = $.Deferred();
-	mw.loader.using( [ 'bluespice.bookshelf.api' ] ).done( function () {
-		var api = new ext.bookshelf.api.Api();
-		api.getBookMetadata( this.bookTitle ).done( function ( data ) {
+	const dfd = $.Deferred();
+	mw.loader.using( [ 'bluespice.bookshelf.api' ] ).done( () => {
+		const api = new ext.bookshelf.api.Api();
+		api.getBookMetadata( this.bookTitle ).done( ( data ) => {
 			this.data = data;
 			this.loaded = true;
 			dfd.resolve( this.data );
-		}.bind( this ) ).fail( function () {
+		} ).fail( () => {
 			dfd.resolve();
 		} );
-	}.bind( this ) );
+	} );
 
 	return dfd.promise();
 };
@@ -34,16 +34,16 @@ ext.bookshelf.data.BookMetaDataManager.prototype.getData = function () {
 
 ext.bookshelf.data.BookMetaDataManager.prototype.save = function ( data ) {
 	this.data = data;
-	var dfd = $.Deferred();
-	mw.loader.using( [ 'bluespice.bookshelf.api' ] ).done( function () {
-		var api = new ext.bookshelf.api.Api();
-		api.saveBookMetadata( this.bookTitle, data ).done( function () {
+	const dfd = $.Deferred();
+	mw.loader.using( [ 'bluespice.bookshelf.api' ] ).done( () => {
+		const api = new ext.bookshelf.api.Api();
+		api.saveBookMetadata( this.bookTitle, data ).done( () => {
 			// TODO: check success
 			dfd.resolve();
-		} ).fail( function () {
+		} ).fail( () => {
 			dfd.resolve();
 		} );
-	}.bind( this ) );
+	} );
 
 	return dfd.promise();
 };

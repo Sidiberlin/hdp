@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"Brettchenweber",
+			"Josef Konrad <konrad@hallowelt.biz>"
+		]
+	},
+	"bs-matomoconnector-extension-description": "Erlaubt die Anbindung von Matomo an das Wiki, um Dashboards in Matomo zu erstellen",
+	"bs-matomoconnector-pref-siteid": "Seiten-ID",
+	"bs-matomoconnector-pref-baseurl": "Basis-URL",
+	"bs-matomoconnector-pref-optoutfooter": "Opt-Out-Link im Footer anzeigen",
+	"bs-matomoconnector-special-optoutheading": "Analysedienste",
+	"bs-matomoconnector-special-privacynote": "<p>Informationen über {{#FORMAL:Deine|Ihre}} Benutzung dieser Webseite werden nicht an Dritte weitergegeben. {{#FORMAL:Du kannst|Sie können}} die Verwendung {{#FORMAL:von|der}} Cookies durch eine entsprechende Einstellung {{#FORMAL:Deiner|Ihrer}} Browsersoftware verhindern, es kann jedoch sein, dass {{#FORMAL:Du|Sie}} in diesem Fall gegebenenfalls nicht sämtliche Funktionen dieser Website vollumfänglich nutzen {{#FORMAL:kannst|können}}.</p>\n<br />\n<p>Wenn {{#FORMAL:Du|Sie}} mit der Speicherung und Auswertung dieser Daten aus {{#FORMAL:Deinem|Ihrem}} Besuch nicht einverstanden {{#FORMAL:bist|sind}}, dann {{#FORMAL:kannst Du|können Sie}} der Speicherung und Nutzung nachfolgend per Mausklick jederzeit widersprechen. In diesem Fall wird in {{#FORMAL:Deinem|Ihrem}} Browser ein sog. Opt-Out-Cookie abgelegt, was zur Folge hat, dass Matomo keinerlei Sitzungsdaten erhebt. Achtung: Wenn {{#FORMAL:Du deine|Sie Ihre}} Cookies {{#FORMAL:löscht|löschen}}, so hat dies zur Folge, dass auch das Opt-Out-Cookie gelöscht wird und ggf. von {{#FORMAL:Dir|Ihnen}} erneut aktiviert werden muss.</p>\n<br />\n<h3>Widerspruch:</h3>",
+	"bs-matomoconnector-optout-footerlink": "Analysedienste",
+	"bs-matomoconnector-pref-baseurl-help": "Die URL der Matomo-Installation ohne Seiten-ID.",
+	"bs-matomoconnector-pref-optoutfooter-help": "Aktiviert den Link \"Analysedienste\" in der Wiki-Fußzeile. Die Seite Analysedienste beinhaltet ein Matomo-Opt-out-Kontrollkästchen.",
+	"bs-matomoconnector-pref-siteid-help": "Matomo-Seiten-ID. Sichtbar als URL-Parameter in der Adressleiste des Browsers, wenn {{#FORMAL:du|Sie}} bei Matomo angemeldet {{#FORMAL:bist|sind}}."
+}

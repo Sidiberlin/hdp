@@ -4,6 +4,7 @@
 			"Yupik"
 		]
 	},
-	"bs-categorymanager-collection-var-namespacename": "Nammagomuvuohta",
-	"bs-categorymanager-removecategoryconfirm-title": "Sihko kategoriija"
+	"bs-categorymanager-text": "Kategoriijat",
+	"bs-categorymanager-removecategoryconfirm-title": "Sihko kategoriija",
+	"bs-categorymanager-collection-var-namespacename": "Nammagomuvuohta"
 }

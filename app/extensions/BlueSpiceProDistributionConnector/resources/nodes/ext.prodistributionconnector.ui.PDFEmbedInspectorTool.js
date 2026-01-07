@@ -1,6 +1,4 @@
-ext = ext || {};
-ext.prodistributionconnector = ext.prodistributionconnector || {};
-ext.prodistributionconnector.ui = ext.prodistributionconnector.ui || {};
+bs.util.registerNamespace( 'ext.prodistributionconnector.ui' );
 
 ext.prodistributionconnector.ui.PDFEmbedInspectorTool = function ( toolGroup, config ) {
 	ext.prodistributionconnector.ui.PDFEmbedInspectorTool.super.call( this, toolGroup, config );

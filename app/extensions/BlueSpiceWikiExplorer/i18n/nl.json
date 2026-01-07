@@ -17,7 +17,6 @@
 	"bs-wikiexplorer-categories": "Categorieën",
 	"bs-wikiexplorer-linked-files": "Gekoppelde bestanden",
 	"bs-wikiexplorer-linked-pages": "Gekoppelde pagina's",
-	"apihelp-bs-wikiexplorer-store-description": "Voorziet in alle gegevens voor de extensie WikiExplorer",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "API-parameter om aan te geven of de metagegevens al zijn geladen.",
 	"apihelp-bs-wikiexplorer-store-summary": "Voorziet in alle gegevens voor de extensie WikiExplorer",
 	"bs-wikiexplorer-icon-bool-true-aria-label": "aangevinkt",

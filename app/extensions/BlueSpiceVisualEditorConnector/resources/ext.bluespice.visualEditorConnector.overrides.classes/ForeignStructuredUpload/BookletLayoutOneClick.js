@@ -6,32 +6,32 @@ bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick = function BsVecUiForeig
 
 OO.inheritClass( bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick, bs.vec.ui.ForeignStructuredUpload.BookletLayoutSimple );
 
-bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick.prototype.setPage = function( bookletpagename ) {
-	if( bookletpagename === 'info' ) {
+bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick.prototype.setPage = function ( bookletpagename ) {
+	if ( bookletpagename === 'info' ) {
 		return;
 	}
 	bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick.parent.prototype.setPage.apply( this, [ bookletpagename ] );
 };
 
-bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick.prototype.setFilename = function( filename ) {
+bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick.prototype.setFilename = function ( filename ) {
 	// Generate random name based on orig name
-	var nameBits = filename.split( '.' );
-	var extension = nameBits.pop();
-	nameBits.push( new Date().getTime() );
+	const nameBits = filename.split( '.' );
+	const extension = nameBits.pop();
+	nameBits.push( Date.now() );
 	nameBits.push( extension );
-	var randomName = nameBits.join( '.' );
+	const randomName = nameBits.join( '.' );
 	bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick.parent.prototype.setFilename.apply( this, [ randomName ] );
 };
 
-bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick.prototype.uploadFile = function() {
-	var dfd = $.Deferred();
-	bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick.parent.prototype.uploadFile.call( this ).done( function() {
-		this.saveFile().then( function() {
+bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick.prototype.uploadFile = function () {
+	const dfd = $.Deferred();
+	bs.vec.ui.ForeignStructuredUpload.BookletLayoutOneClick.parent.prototype.uploadFile.call( this ).done( () => {
+		this.saveFile().then( () => {
 			dfd.resolve();
-		}.bind( this ), function( error ) {
+		}, ( error ) => {
 			dfd.reject( error );
 		} );
-	}.bind( this ) ).fail( function() {
+	} ).fail( () => {
 		dfd.reject();
 	} );
 	return dfd;

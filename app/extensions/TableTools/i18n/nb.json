@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jon Harald Søby"
+		]
+	},
+	"tabletools-desc": "Legger til ekstra funksjonalitet for innholdstabeller",
+	"tabletools-ve-plugin-table-style-sticky": "Klebrig overskrift"
+}

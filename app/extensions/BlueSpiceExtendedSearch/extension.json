@@ -1,7 +1,7 @@
 {
 	"name": "BlueSpiceExtendedSearch",
 	"license-name": "GPL-3.0-only",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"author": [
 		"Robert Vogel",
 		"Dejan Savuljesku"
@@ -11,9 +11,9 @@
 	"namemsg": "bs-extsearch-extensionname",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"attributes": {
@@ -25,12 +25,8 @@
 			},
 			"ConfigDefinitionRegistry": {
 				"ESExternalFilePaths": "BS\\ExtendedSearch\\ConfigDefinition\\ExternalFilePaths::getInstance",
-				"ESCompactAutocomplete": "BS\\ExtendedSearch\\ConfigDefinition\\CompactAutocomplete::getInstance",
 				"ESAutoSetLangFilter": "BS\\ExtendedSearch\\ConfigDefinition\\AutoSetLanguageFilter::getInstance",
 				"ExtendedSearchExternalFilePathsExcludes": "\\BS\\ExtendedSearch\\ConfigDefinition\\ExternalFilePathsExcludes::getInstance"
-			},
-			"AdminToolRegistry": {
-				"bs-extended-search": "BS\\ExtendedSearch\\AdminTool"
 			},
 			"PermissionRegistry": {
 				"extendedsearch-search-specialpage": {
@@ -97,11 +93,11 @@
 			"TagRegistry": {
 				"bs-tagsearch": "BS\\ExtendedSearch\\Tag\\TagSearch"
 			},
-			"JSConfigVars": {
-				"AutocompleteConfig": "\\BS\\ExtendedSearch\\JSConfigVariable\\AutocompleteConfig::factory",
-				"SourceIcons": "\\BS\\ExtendedSearch\\JSConfigVariable\\SourceIcons::factory",
-				"UseCompactAutocomplete": "\\BS\\ExtendedSearch\\JSConfigVariable\\UseCompactAutocomplete::factory",
-				"ESSimilarPages": "\\BS\\ExtendedSearch\\JSConfigVariable\\ESSimilarPages::factory"
+			"StatusCheckProvider": {
+				"bs-extendedsearch": {
+					"class": "\\BS\\ExtendedSearch\\Integration\\BlueSpiceFoundation\\StatusCheckProvider",
+					"services": [ "BSExtendedSearchBackend" ]
+				}
 			}
 		},
 		"BlueSpiceVisualEditorConnector": {
@@ -128,10 +124,27 @@
 					"services": [ "ObjectFactory" ]
 				}
 			},
-			"PluginRegistry": {},
+			"PluginRegistry": {
+				"context-provider-subpages": {
+					"class": "BS\\ExtendedSearch\\Plugin\\SubpageContextProvider",
+					"services": [ "NamespaceInfo", "TitleFactory" ]
+				},
+				"context-provider-namespace": {
+					"class": "BS\\ExtendedSearch\\Plugin\\NamespaceContextProvider",
+					"services": [ "NamespaceInfo" ]
+				},
+				"context-provider-null": {
+					"class": "BS\\ExtendedSearch\\Plugin\\NullContextProvider"
+				},
+				"shared-index": {
+					"class": "BS\\ExtendedSearch\\Plugin\\SharedIndex",
+					"services": [ "ConfigFactory" ]
+				}
+			},
 			"DefaultResultStructure": {
 				"headerText": "basename",
 				"headerUri": "uri",
+				"source": "source",
 				"secondaryInfos": {
 					"top": {
 						"items": []
@@ -151,19 +164,6 @@
 					}
 				},
 				"featured": []
-			},
-			"Autocomplete": {
-				"SuggestField": "suggestions",
-				"DisplayLimits": {
-					"normal": 7,
-					"top": 1,
-					"secondary": 4
-				}
-			},
-			"SourceIcons": {
-				"wikipage": "extensions/BlueSpiceExtendedSearch/resources/images/wikipage-icon.png",
-				"specialpage": "extensions/BlueSpiceExtendedSearch/resources/images/specialpage-icon.png",
-				"default": "extensions/BlueSpiceExtendedSearch/resources/images/default-icon.png"
 			},
 			"Icons": {
 				"pdf": "/extensions/BlueSpiceExtendedSearch/resources/images/file-icon/icon-pdf.png",
@@ -196,13 +196,13 @@
 				"searchstats": "\\BS\\ExtendedSearch\\Data\\TagCloud\\Searchstats\\Store"
 			}
 		},
-		"BlueSpiceSimpleFarmer": {
+		"BlueSpiceWikiFarm": {
 			"PostInstanceCreationCommandFactories": {
-				"initbackend": "BS\\ExtendedSearch\\SimpleFarmer\\CommandDescription\\InitBackend::factory",
-				"rebuildindex": "BS\\ExtendedSearch\\SimpleFarmer\\CommandDescription\\RebuildIndex::factory"
+				"initbackend": "BS\\ExtendedSearch\\WikiFarm\\CommandDescription\\InitBackend::factory",
+				"rebuildindex": "BS\\ExtendedSearch\\WikiFarm\\CommandDescription\\RebuildIndex::factory"
 			},
 			"PreInstanceDeletionCommandFactories": {
-				"deleteindices": "BS\\ExtendedSearch\\SimpleFarmer\\CommandDescription\\DeleteIndices::factory"
+				"deleteindices": "BS\\ExtendedSearch\\WikiFarm\\CommandDescription\\DeleteIndices::factory"
 			}
 		},
 		"BlueSpicePrivacy": {
@@ -232,6 +232,13 @@
 			"Droplets": {
 				"search": {
 					"class": "\\BS\\ExtendedSearch\\ContentDroplets\\SearchDroplet"
+				}
+			}
+		},
+		"PDFCreator": {
+			"Processors": {
+				"removeTagSearch": {
+					"class": "\\BS\\ExtendedSearch\\Integration\\PDFCreator\\Processor\\RemoveTagSearch"
 				}
 			}
 		}
@@ -287,19 +294,30 @@
 	"HookHandlers": {
 		"extendedsearchform": {
 			"class": "BS\\ExtendedSearch\\HookHandler\\SkinSlotNavbarPrimarySearchForm"
+		},
+		"overrideSpecialSearch": {
+			"class": "BS\\ExtendedSearch\\HookHandler\\OverrideSpecialSearch",
+			"services": [ "ConfigFactory" ]
+		},
+		"overrideOpenSearchUrls": {
+			"class": "BS\\ExtendedSearch\\HookHandler\\OverrideOpenSearchUrls",
+			"services": [ "ConfigFactory" ]
+		},
+		"addResources": {
+			"class": "BS\\ExtendedSearch\\Hook\\BeforePageDisplay\\AddResources",
+			"services": [ "NamespaceInfo", "ConfigFactory", "BSExtendedSearch.PluginManager" ]
 		}
 	},
 	"Hooks": {
-		"BeforePageDisplay": [
-			"BS\\ExtendedSearch\\Hook\\BeforePageDisplay\\AddResources::callback"
-		],
+		"BeforePageDisplay": "addResources",
+		"SpecialPage_initList": "overrideSpecialSearch",
+		"OpenSearchUrls": "overrideOpenSearchUrls",
 		"LoadExtensionSchemaUpdates": [
 			"BS\\ExtendedSearch\\Hook\\LoadExtensionSchemaUpdates\\AddRelevanceTable::callback",
 			"BS\\ExtendedSearch\\Hook\\LoadExtensionSchemaUpdates\\AddHistoryTable::callback",
 			"BS\\ExtendedSearch\\Hook\\LoadExtensionSchemaUpdates\\AddTraceTable::callback"
 		],
 		"GetPreferences": "BS\\ExtendedSearch\\Hook\\GetPreferences\\AddUserPreferredNamespaces::callback",
-		"BSUEModulePDFBeforeCreatePDF": "\\BS\\ExtendedSearch\\Hook\\BSUEModulePDFBeforeCreatePDF\\RemoveTagSearch::callback",
 		"NamespaceManager::editNamespace": "\\BS\\ExtendedSearch\\Hook\\NamespaceManagerEditNamespace\\ReindexNamespace::callback",
 		"UserMergeAccountFields": "\\BS\\ExtendedSearch\\Hook\\UserMergeAccountFields\\MergeExtendedSearchDBFields::callback",
 		"MWStakeCommonUIRegisterSkinSlotComponents": [ "extendedsearchform" ],
@@ -339,7 +357,11 @@
 			]
 		},
 		"ext.blueSpiceExtendedSearch.SearchBar": {
-			"scripts": [
+			"packageFiles": [
+				{
+					"name": "searchBarConfig.json",
+					"callback": "\\BS\\ExtendedSearch\\ClientConfig::makeConfigJson"
+				},
 				"ext.blueSpiceExtendedSearch.SearchBar.js"
 			],
 			"styles": [
@@ -349,7 +371,6 @@
 				"bs-extendedsearch-autocomplete-result-primary-no-results-label",
 				"bs-extendedsearch-autocomplete-result-type",
 				"bs-extendedsearch-autocomplete-result-top-match-label",
-				"bs-extendedsearch-autocomplete-result-secondary-results-label",
 				"bs-extendedsearch-close-search-button-aria-label"
 			],
 			"dependencies": [
@@ -359,11 +380,7 @@
 		},
 		"ext.blueSpiceExtendedSearch.SearchFieldAutocomplete": {
 			"packageFiles": [
-				"ext.blueSpiceExtendedSearch.Autocomplete.js",
-				{
-					"name": "config.json",
-					"callback": "\\BS\\ExtendedSearch\\ClientConfig::makeConfigJson"
-				}
+				"ext.blueSpiceExtendedSearch.Autocomplete.js"
 			],
 			"dependencies": [
 				"ext.blueSpiceExtendedSearch.Autocomplete"
@@ -373,12 +390,10 @@
 			"class": "\\BlueSpice\\ResourceModule\\LessVars",
 			"scripts": [
 				"bs.extendedSearch/mixin/Result.js",
-				"bs.extendedSearch/mixin/Autocomplete.js",
+				"bs.extendedSearch/mixin/ContextOptions.js",
 				"bs.extendedSearch/mixin/QuietSubpage.js",
+				"bs.extendedSearch/widget/autocomplete/AutocompleteResult.js",
 				"bs.extendedSearch/widget/autocomplete/Popup.js",
-				"bs.extendedSearch/widget/autocomplete/NormalResult.js",
-				"bs.extendedSearch/widget/autocomplete/SecondaryResult.js",
-				"bs.extendedSearch/widget/autocomplete/TopMatch.js",
 				"bs.extendedSearch/Autocomplete.js"
 			],
 			"styles": [
@@ -388,9 +403,7 @@
 				"bs-extendedsearch-autocomplete-result-primary-no-results-label",
 				"bs-extendedsearch-autocomplete-result-type",
 				"bs-extendedsearch-autocomplete-result-top-match-label",
-				"bs-extendedsearch-autocomplete-result-secondary-results-label",
 				"bs-extendedsearch-autocomplete-create-page-link",
-				"bs-extendedsearch-autocomplete-fulltext-search-button",
 				"bs-extendedsearch-autocomplete-modified-time-label",
 				"bs-extendedsearch-autocomplete-popup-quiet-subpage",
 				"bs-extendedsearch-autocomplete-popup-quiet-subpage-clear",
@@ -401,7 +414,11 @@
 				"bs-extendedsearch-recently-found-header-aria",
 				"bs-extendedsearch-autocomplete-popup-select-announcement",
 				"bs-extendedsearch-autocomplete-popup-primary-results-aria",
-				"bs-extendedsearch-autocomplete-popup-secondary-results-aria"
+				"bs-extendedsearch-autocomplete-popup-secondary-results-aria",
+				"bs-extendedsearch-autocomplete-popup-redirect-title",
+				"bs-extendedsearch-autocomplete-result-primary-results-label",
+				"bs-extendedsearch-autocomplete-context-options-label",
+				"bs-extendedsearch-autocomplete-result-secondary-results-header-label"
 			],
 			"dependencies": [
 				"ext.blueSpiceExtendedSearch.SearchBar",
@@ -413,17 +430,19 @@
 			"scripts": [
 				"bs.extendedSearch/mixin/Result.js",
 				"bs.extendedSearch/mixin/Filter.js",
+				"bs.extendedSearch/widget/AddFilter.js",
 				"bs.extendedSearch/widget/Result.js",
 				"bs.extendedSearch/widget/ResultRedirect.js",
 				"bs.extendedSearch/widget/HitCount.js",
 				"bs.extendedSearch/widget/Spellcheck.js",
 				"bs.extendedSearch/widget/OperatorSuggest.js",
 				"bs.extendedSearch/widget/Filter.js",
+				"bs.extendedSearch/widget/ContextButton.js",
 				"bs.extendedSearch/widget/LoadMoreButton.js",
-				"bs.extendedSearch/dialog/AddFilter.js",
 				"bs.extendedSearch/dialog/OptionsDialog.js",
 				"bs.extendedSearch/panel/Results.js",
 				"bs.extendedSearch/panel/ResultMessage.js",
+				"bs.extendedSearch/OptionStorage.js",
 				"bs.extendedSearch/panel/Tools.js",
 				"ext.blueSpiceExtendedSearch.SearchCenter.js"
 			],
@@ -436,12 +455,12 @@
 				"bs-extendedsearch-search-center-addfilter-dialog-title",
 				"bs-extendedsearch-search-center-filter-extension-label",
 				"bs-extendedsearch-search-center-filter-tags-label",
-				"bs-extendedsearch-search-center-filter-namespace_text-label",
+				"bs-extendedsearch-search-center-filter-namespace-label",
 				"bs-extendedsearch-search-center-filter-categories-label",
 				"bs-extendedsearch-search-center-filter-type-label",
 				"bs-extendedsearch-search-center-filter-extension-with-values-label",
 				"bs-extendedsearch-search-center-filter-tags-with-values-label",
-				"bs-extendedsearch-search-center-filter-namespace_text-with-values-label",
+				"bs-extendedsearch-search-center-filter-namespace-with-values-label",
 				"bs-extendedsearch-search-center-filter-categories-with-values-label",
 				"bs-extendedsearch-search-center-filter-type-with-values-label",
 				"bs-extendedsearch-search-center-filter-no-options-label",
@@ -498,7 +517,8 @@
 			],
 			"dependencies": [
 				"ext.bluespice",
-				"ext.blueSpiceExtendedSearch.SearchBar"
+				"ext.blueSpiceExtendedSearch.SearchBar",
+				"oojs-ui.styles.icons-layout"
 			]
 		},
 		"ext.blueSpiceExtendedSearch.SearchAdmin.styles": {
@@ -571,6 +591,7 @@
 			],
 			"messages": [
 				"bs-extendedsearch-statistics-report-search-terms",
+				"bs-extendedsearch-statistics-report-search-terms-desc",
 				"bs-extendedsearch-statistics-report-search-terms-axis-label"
 			]
 		},
@@ -603,6 +624,9 @@
 		"ESBackendPassword": {
 			"value": ""
 		},
+		"ESOverrideSpecialSearch": {
+			"value": true
+		},
 		"ESEnableSearchHistoryTracking": {
 			"value": true
 		},
@@ -616,15 +640,10 @@
 			"public": true,
 			"value": {}
 		},
-		"ESCompactAutocomplete": {
-			"descriptionmsg": "bs-extendedsearch-compact-ac-paths-desc",
-			"public": true,
-			"value": true
-		},
 		"ESSearchCenterDefaultFilters": {
 			"descriptionmsg": "bs-extendedsearch-default-filters-desc",
 			"public": true,
-			"value": [ "namespace_text", "categories" ]
+			"value": [ "namespace", "categories" ]
 		},
 		"ESAutoSetLangFilter": {
 			"descriptionmsg": "bs-extendedsearch-auto-set-lang-filter-desc",
@@ -633,11 +652,11 @@
 		},
 		"ESWildcardingOperators": {
 			"public": false,
-			"value": [ "+", "|", "*", "(", ")", "~" ]
+			"value": [ "+", "|", "*", "(", ")", "~", " -" ]
 		},
 		"ESWildcardingSeparators": {
 			"public": false,
-			"value": [ ",", ".", ";", "-", "_" ]
+			"value": [ ",", ".", ";", "_" ]
 		},
 		"ESRecentBoostFactor": {
 			"description": "Value must be between 0 and 1. If set to 1, very recent pages will almost double their score",
@@ -658,7 +677,7 @@
 			"description": "Namespaces to exclude from search. Add to `autocomplete` array to exclude from AC only, or to `search` array as well to exclude from both AC and fulltext",
 			"public": false,
 			"value": {
-				"autocomplete": [],
+				"autocomplete": [ 6, 7 ],
 				"search": []
 			}
 		},

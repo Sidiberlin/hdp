@@ -4,7 +4,8 @@ namespace BlueSpice\DistributionConnector\Hook\UserLoggedIn;
 
 use BlueSpice\SimpleDeferredNotification;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\User\User;
 
 class AddLoginNotification {
 

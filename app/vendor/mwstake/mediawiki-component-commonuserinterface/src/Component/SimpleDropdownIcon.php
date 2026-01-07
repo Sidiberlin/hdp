@@ -2,9 +2,9 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface\Component;
 
-use Message;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\IDropdownIcon;
-use RawMessage;
 
 class SimpleDropdownIcon extends ComponentBase implements IDropdownIcon {
 

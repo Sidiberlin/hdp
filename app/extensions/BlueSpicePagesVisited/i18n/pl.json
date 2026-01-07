@@ -11,9 +11,9 @@
 	"bs-pagesvisited-pref-sort-time": "Czas",
 	"bs-pagesvisited-pref-sort-pagename": "Tytuł",
 	"bs-pagesvisited-tag-pagesvisited-desc": "Pokazuje listę ostatnio odwiedzanych stron. Lista może zostać ograniczona przez parametry.",
-	"bs-pagesvisited-droplet-name": "Odwiedzone strony",
-	"bs-pagesvisited-droplet-description": "Lista z odwiedzonymi stronami",
 	"bs-pagesvisited-ve-pagesvisited-attr-namespaces-label": "Przestrzenie nazw",
 	"bs-pagesvisited-tag-pagesvisited-attr-order-option-time": "Czas",
-	"bs-pagesvisited-tag-pagesvisited-attr-order-option-pagename": "Nazwa strony"
+	"bs-pagesvisited-tag-pagesvisited-attr-order-option-pagename": "Nazwa strony",
+	"bs-pagesvisited-droplet-name": "Odwiedzone strony",
+	"bs-pagesvisited-droplet-description": "Lista z odwiedzonymi stronami"
 }

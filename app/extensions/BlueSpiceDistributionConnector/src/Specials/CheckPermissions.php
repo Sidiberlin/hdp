@@ -2,50 +2,78 @@
 
 namespace BlueSpice\DistributionConnector\Specials;
 
-use BlueSpice;
-use Html;
-use MWException;
-use OOUIHTMLForm;
-use Status;
+use InvalidArgumentException;
+use MediaWiki\Html\Html;
+use MediaWiki\HTMLForm\Field\HTMLSelectField;
+use MediaWiki\HTMLForm\Field\HTMLTitleTextField;
+use MediaWiki\HTMLForm\Field\HTMLUserTextField;
+use MediaWiki\HTMLForm\OOUIHTMLForm;
+use MediaWiki\Permissions\PermissionManager;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\UserFactory;
+use PermissionsError;
+use StatusValue;
 
-class CheckPermissions extends BlueSpice\SpecialPage {
+class CheckPermissions extends SpecialPage {
 
 	/**
 	 * @var PermissionManager
 	 */
-	private $permissionManager = null;
+	private $permissionManager;
 
-	public function __construct() {
+	/**
+	 * @var TitleFactory
+	 */
+	private $titleFactory;
+
+	/**
+	 * @var UserFactory
+	 */
+	private $userFactory;
+
+	/**
+	 * @param PermissionManager $permissionManager
+	 * @param TitleFactory $titleFactory
+	 * @param UserFactory $userFactory
+	 */
+	public function __construct(
+		PermissionManager $permissionManager, TitleFactory $titleFactory, UserFactory $userFactory
+	) {
 		parent::__construct( 'CheckPermissions', 'checkpermissions', false );
+		$this->permissionManager = $permissionManager;
+		$this->titleFactory = $titleFactory;
+		$this->userFactory = $userFactory;
 	}
 
 	/**
 	 *
-	 * @param string $par
+	 * @param string $subPage
 	 * @return void
+	 * @throws PermissionsError
 	 */
-	public function execute( $par ) {
+	public function execute( $subPage ) {
 		$this->checkPermissions();
 		$this->setHeaders();
 		$out = $this->getOutput();
 		$out->setPageTitle( $this->msg( 'bs-distributionconnector-checkpermissions' ) );
-		$this->permissionManager = $this->services->getPermissionManager();
 		$options = [];
 		foreach ( $this->permissionManager->getAllPermissions() as $var ) {
 			$options[$var] = $var;
 		}
 		$formDescriptor = [
 			'username' => [
-				'class' => 'HTMLUserTextField',
+				'class' => HTMLUserTextField::class,
 				'label-message' => 'bs-distributionconnector-checkpermissions-label-user'
 			],
 			'permission' => [
-				'class' => 'HTMLSelectField',
+				'class' => HTMLSelectField::class,
 				'label-message' => 'bs-distributionconnector-checkpermissions-label-permission',
 				'options' => $options
 			],
 			'title' => [
-				'class' => 'HTMLTitleTextField',
+				'class' => HTMLTitleTextField::class,
 				'label-message' => 'bs-distributionconnector-checkpermissions-label-title'
 			],
 		];
@@ -57,10 +85,10 @@ class CheckPermissions extends BlueSpice\SpecialPage {
 	/**
 	 *
 	 * @param array $formData
-	 * @return Status|array
+	 * @return StatusValue
 	 */
 	public function processInput( $formData ) {
-		$user = $this->services->getUserFactory()->newFromName( $formData['username'] );
+		$user = $this->userFactory->newFromName( $formData['username'] );
 
 		if ( !$user ) {
 			return Status::newFatal(
@@ -71,23 +99,22 @@ class CheckPermissions extends BlueSpice\SpecialPage {
 		$permission = $formData['permission'];
 		$title = $formData['title'];
 		try {
-			$title = $this->services->getTitleFactory()->newFromText( $title );
+			$title = $this->titleFactory->newFromText( $title );
 			if ( !$title ) {
 				return Status::newFatal(
 					'bs-distributionconnector-checkpermissions-error-invalid-title'
 				);
 			}
-		}
-		catch ( MWException $e ) {
+		} catch ( InvalidArgumentException $e ) {
 			return Status::newFatal( $e->getMessage() );
 		}
 
-		$errors = $this->permissionManager->getPermissionErrors( $permission, $user, $title );
-		if ( !empty( $errors ) ) {
-			return $errors;
+		$permissionStatus = $this->permissionManager->getPermissionStatus( $permission, $user, $title );
+		if ( !$permissionStatus->isOK() ) {
+			return $permissionStatus;
 		}
 
-		$successMsg = wfMessage(
+		$successMsg = $this->msg(
 			'bs-distributionconnector-checkpermissions-success',
 			$user,
 			$permission,
@@ -98,5 +125,7 @@ class CheckPermissions extends BlueSpice\SpecialPage {
 			Html::rawElement(
 				'div', [ 'class' => 'successbox' ], $successMsg
 		) );
+
+		return StatusValue::newGood();
 	}
 }

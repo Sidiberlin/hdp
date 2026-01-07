@@ -5,14 +5,15 @@ namespace BlueSpice\ReadConfirmation\RunJobsTriggerHandler;
 use BlueSpice\ReadConfirmation\IMechanism;
 use BlueSpice\ReadConfirmation\MechanismFactory;
 use BlueSpice\RunJobsTriggerHandler;
+use MediaWiki\Status\Status;
 
 class AutomaticReadConfirmationNotifier extends RunJobsTriggerHandler {
 
 	/**
-	 * @return \Status
+	 * @return Status
 	 */
 	protected function doRun() {
-		$status = \Status::newGood();
+		$status = Status::newGood();
 		$this->getReadConfirmationMechanism()->autoNotify();
 		return $status;
 	}

@@ -2,6 +2,9 @@
 
 namespace BlueSpice\ContextMenu\MenuItem;
 
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
+
 class Whatlinkshere extends Base {
 
 	/**
@@ -9,12 +12,12 @@ class Whatlinkshere extends Base {
 	 * @return string
 	 */
 	public function getIconClass() {
-		return 'bs-icon-earth';
+		return 'search';
 	}
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabelMessage() {
 		return wfMessage( 'whatlinkshere' );
@@ -25,7 +28,7 @@ class Whatlinkshere extends Base {
 	 * @return string String of the URL.
 	 */
 	public function getUrl() {
-		return \SpecialPage::getTitleFor( 'Whatlinkshere' )->
+		return SpecialPage::getTitleFor( 'Whatlinkshere' )->
 			getLinkURL( [ 'target' => $this->title->getFullText() ] );
 	}
 

@@ -25,7 +25,7 @@ bs.vec.mixin.TableBorderStylePopup = function ( cfg ) {
 
 	this.triggers.selectItemByData( 'position' );
 
-	var popupCfg = $.extend( {
+	const popupCfg = Object.assign( {
 		width: '200px',
 		padded: cfg.padded || false,
 		autoClose: false,
@@ -45,32 +45,32 @@ bs.vec.mixin.TableBorderStylePopup = function ( cfg ) {
 OO.inheritClass( bs.vec.mixin.TableBorderStylePopup, OO.ui.mixin.PopupElement );
 OO.mixinClass( bs.vec.mixin.TableBorderStylePopup, OO.EventEmitter );
 
-bs.vec.mixin.TableBorderStylePopup.prototype.setValue = function( value ) {
+bs.vec.mixin.TableBorderStylePopup.prototype.setValue = function ( value ) { // eslint-disable-line no-unused-vars
 	// NOOP
 };
 
-bs.vec.mixin.TableBorderStylePopup.prototype.getValue = function() {
+bs.vec.mixin.TableBorderStylePopup.prototype.getValue = function () {
 	// NOOP
 	return null;
 };
 
-bs.vec.mixin.TableBorderStylePopup.prototype.onToggleItem = function( item ) {
-	if ( !this.items.hasOwnProperty( item.data )  ) {
+bs.vec.mixin.TableBorderStylePopup.prototype.onToggleItem = function ( item ) {
+	if ( !this.items.hasOwnProperty( item.data ) ) {
 		return;
 	}
-	this.$itemContainer.html( this.items[item.data].$element );
+	this.$itemContainer.html( this.items[ item.data ].$element );
 
 };
 
-bs.vec.mixin.TableBorderStylePopup.prototype.makeTriggers = function() {
-	var clearTrigger = new OO.ui.ButtonOptionWidget( {
+bs.vec.mixin.TableBorderStylePopup.prototype.makeTriggers = function () {
+	const clearTrigger = new OO.ui.ButtonOptionWidget( {
 		data: 'clear',
 		icon: 'cancel',
-		title: OO.ui.deferMsg( "bs-vec-table-border-clear-all" ),
+		title: OO.ui.deferMsg( 'bs-vec-table-border-clear-all' ),
 		framed: false
 	} );
 	clearTrigger.connect( this, {
-		click: function() {
+		click: function () {
 			this.emit( 'change', { mode: 'clear', prop: null } );
 		}
 	} );
@@ -81,25 +81,25 @@ bs.vec.mixin.TableBorderStylePopup.prototype.makeTriggers = function() {
 			new OO.ui.ButtonOptionWidget( {
 				data: 'position',
 				icon: 'cellBorderAll',
-				title: OO.ui.deferMsg( "bs-vec-table-border-borders" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-borders' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'width',
 				icon: 'cellBorderWidthGroup',
-				title: OO.ui.deferMsg( "bs-vec-table-border-width" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-width' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'style',
 				icon: 'cellBorderStyleGroup',
-				title: OO.ui.deferMsg( "bs-vec-table-border-styles" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-styles' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'color',
 				icon: 'cellBorderColor',
-				title: OO.ui.deferMsg( "bs-vec-table-border-color" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-color' ),
 				framed: false
 			} ),
 			clearTrigger
@@ -107,7 +107,7 @@ bs.vec.mixin.TableBorderStylePopup.prototype.makeTriggers = function() {
 	} );
 
 	this.triggers.connect( this, {
-		select:	function( item ) {
+		select: function ( item ) {
 			if ( !item ) {
 				return;
 			}
@@ -119,86 +119,86 @@ bs.vec.mixin.TableBorderStylePopup.prototype.makeTriggers = function() {
 
 };
 
-bs.vec.mixin.TableBorderStylePopup.prototype.makeBorderPositions = function() {
+bs.vec.mixin.TableBorderStylePopup.prototype.makeBorderPositions = function () {
 	this.positionWidget = new OO.ui.ButtonSelectWidget( {
 		classes: [ 'grid-picker' ],
 		items: [
 			new OO.ui.ButtonOptionWidget( {
 				data: 'none',
 				icon: 'cellBorderNone',
-				title: OO.ui.deferMsg( "bs-vec-table-border-none" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-none' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'left',
 				icon: 'cellBorderLeft',
-				title: OO.ui.deferMsg( "bs-vec-table-border-left" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-left' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'top',
 				icon: 'cellBorderTop',
-				title: OO.ui.deferMsg( "bs-vec-table-border-top" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-top' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'right',
 				icon: 'cellBorderRight',
-				title: OO.ui.deferMsg( "bs-vec-table-border-right" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-right' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'bottom',
 				icon: 'cellBorderBottom',
-				title: OO.ui.deferMsg( "bs-vec-table-border-bottom" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-bottom' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'all',
 				icon: 'cellBorderAll',
-				title: OO.ui.deferMsg( "bs-vec-table-border-all" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-all' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'leftright',
 				icon: 'cellBorderLeftRight',
-				title: OO.ui.deferMsg( "bs-vec-table-border-leftright" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-leftright' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'topbottom',
 				icon: 'cellBorderTopBottom',
-				title: OO.ui.deferMsg( "bs-vec-table-border-topbottom" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-topbottom' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'round',
 				icon: 'cellBorderRound',
-				title: OO.ui.deferMsg( "bs-vec-table-border-round" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-round' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'horizontal',
 				icon: 'cellBorderHorizontal',
-				title: OO.ui.deferMsg( "bs-vec-table-border-horizontal" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-horizontal' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'roundhorizontal',
 				icon: 'cellBorderRoundHorizontal',
-				title: OO.ui.deferMsg( "bs-vec-table-border-roundhorizontal" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-roundhorizontal' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'roundvertical',
 				icon: 'cellBorderRoundVertical',
-				title: OO.ui.deferMsg( "bs-vec-table-border-roundvertical" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-roundvertical' ),
 				framed: false
 			} )
 		]
 	} );
 	this.positionWidget.connect( this, {
-		select:	function( item ) {
+		select: function ( item ) {
 			if ( !item ) {
 				return;
 			}
@@ -209,38 +209,38 @@ bs.vec.mixin.TableBorderStylePopup.prototype.makeBorderPositions = function() {
 	this.items.position = this.positionWidget;
 };
 
-bs.vec.mixin.TableBorderStylePopup.prototype.makeBorderWidth = function() {
-	this.widthWidget =  new OO.ui.ButtonSelectWidget( {
+bs.vec.mixin.TableBorderStylePopup.prototype.makeBorderWidth = function () {
+	this.widthWidget = new OO.ui.ButtonSelectWidget( {
 		classes: [ 'grid-picker' ],
 		items: [
 			new OO.ui.ButtonOptionWidget( {
 				data: '1px',
 				icon: 'cellBorderWidth1',
-				title: OO.ui.deferMsg( "bs-vec-table-border-width-1" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-width-1' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: '2px',
 				icon: 'cellBorderWidth2',
-				title: OO.ui.deferMsg( "bs-vec-table-border-width-2" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-width-2' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: '3px',
 				icon: 'cellBorderWidth3',
-				title: OO.ui.deferMsg( "bs-vec-table-border-width-3" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-width-3' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: '4px',
 				icon: 'cellBorderWidth4',
-				title: OO.ui.deferMsg( "bs-vec-table-border-width-4" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-width-4' ),
 				framed: false
 			} )
 		]
 	} );
 	this.widthWidget.connect( this, {
-		select:	function( item ) {
+		select: function ( item ) {
 			if ( !item ) {
 				return;
 			}
@@ -251,38 +251,38 @@ bs.vec.mixin.TableBorderStylePopup.prototype.makeBorderWidth = function() {
 	this.items.width = this.widthWidget;
 };
 
-bs.vec.mixin.TableBorderStylePopup.prototype.makeBorderStyle = function() {
-	this.styleWidget =  new OO.ui.ButtonSelectWidget( {
+bs.vec.mixin.TableBorderStylePopup.prototype.makeBorderStyle = function () {
+	this.styleWidget = new OO.ui.ButtonSelectWidget( {
 		classes: [ 'grid-picker' ],
 		items: [
 			new OO.ui.ButtonOptionWidget( {
 				data: 'solid',
 				icon: 'cellBorderWidth1',
-				title: OO.ui.deferMsg( "bs-vec-table-border-solid" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-solid' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'dashed',
 				icon: 'cellBorderStyleDashed',
-				title: OO.ui.deferMsg( "bs-vec-table-border-dashed" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-dashed' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'dotted',
 				icon: 'cellBorderStyleDotted',
-				title: OO.ui.deferMsg( "bs-vec-table-border-dotted" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-dotted' ),
 				framed: false
 			} ),
 			new OO.ui.ButtonOptionWidget( {
 				data: 'double',
 				icon: 'cellBorderStyleDouble',
-				title: OO.ui.deferMsg( "bs-vec-table-border-double" ),
+				title: OO.ui.deferMsg( 'bs-vec-table-border-double' ),
 				framed: false
 			} )
 		]
 	} );
 	this.styleWidget.connect( this, {
-		select:	function( item ) {
+		select: function ( item ) {
 			if ( !item ) {
 				return;
 			}
@@ -292,19 +292,19 @@ bs.vec.mixin.TableBorderStylePopup.prototype.makeBorderStyle = function() {
 	this.items.style = this.styleWidget;
 };
 
-bs.vec.mixin.TableBorderStylePopup.prototype.makeBorderColor = function() {
+bs.vec.mixin.TableBorderStylePopup.prototype.makeBorderColor = function () {
 	this.colorWidget = new OOJSPlus.ui.widget.ColorPickerEmbeddable( {
 		colors: bs.vec.config.get( 'CellBorderColors' ) || []
 	} );
 
 	this.colorWidget.connect( this, {
-		colorSelected: function( data ) {
+		colorSelected: function ( data ) {
 			if ( !data.hasOwnProperty( 'code' ) ) {
 				return;
 			}
 			this.emit( 'change', { mode: 'all', prop: { color: data.code } } );
 		},
-		clear: function() {
+		clear: function () {
 			this.emit( 'change', { mode: 'all', prop: { color: null } } );
 		}
 	} );

@@ -1,55 +1,51 @@
 bs.util.registerNamespace( 'bs.vec.ui.ForeignStructuredUpload' );
 
-bs.vec.ui.ForeignStructuredUpload.ForeignStructuredUpload = function( target, apiconfig ) {
+bs.vec.ui.ForeignStructuredUpload.ForeignStructuredUpload = function ( target, apiconfig ) {
 	bs.vec.ui.ForeignStructuredUpload.ForeignStructuredUpload.parent.call( this, target, apiconfig );
 };
 
 OO.inheritClass( bs.vec.ui.ForeignStructuredUpload.ForeignStructuredUpload, mw.ForeignStructuredUpload );
 
-bs.vec.ui.ForeignStructuredUpload.ForeignStructuredUpload.prototype.finishStashUpload = function( data ) {
+bs.vec.ui.ForeignStructuredUpload.ForeignStructuredUpload.prototype.finishStashUpload = function ( data ) {
 	data = data || {};
-	var upload = this,
-		ignorewarnings = data.ignorewarnings || false;
+	const ignorewarnings = data.ignorewarnings || false;
 
 	if ( !this.stashPromise ) {
 		return $.Deferred().reject( 'This upload has not been stashed, please upload it to the stash first.' );
 	}
 
-	return this.stashPromise.then( function ( finishStash ) {
-		upload.setState( mw.Upload.State.UPLOADING );
+	return this.stashPromise.then( ( finishStash ) => {
+		this.setState( mw.Upload.State.UPLOADING );
 
 		return finishStash( {
-			watchlist: ( upload.getWatchlist() ) ? 1 : undefined,
-			comment: upload.getComment(),
-			filename: upload.getFilename(),
-			text: upload.getText(),
+			watchlist: ( this.getWatchlist() ) ? 1 : undefined,
+			comment: this.getComment(),
+			filename: this.getFilename(),
+			text: this.getText(),
 			ignorewarnings: ignorewarnings
-		} ).then( function ( result ) {
-			return upload.returnUpload.call( upload, result );
-		}, function ( errorCode, result ) {
+		} ).then( ( result ) => this.returnUpload( result ), ( errorCode, result ) => {
 			if ( result && result.upload && result.upload.warnings ) {
 				if ( ignorewarnings ) {
-					return upload.returnUpload.call( upload, result );
+					return this.returnUpload( result );
 				}
-				upload.setState( mw.Upload.State.WARNING, result );
+				this.setState( mw.Upload.State.WARNING, result );
 			} else {
-				upload.setState( mw.Upload.State.ERROR, result );
+				this.setState( mw.Upload.State.ERROR, result );
 			}
 			return $.Deferred().reject( errorCode, result );
 		} );
 	} );
 };
 
-bs.vec.ui.ForeignStructuredUpload.ForeignStructuredUpload.prototype.returnUpload = function( result ) {
+bs.vec.ui.ForeignStructuredUpload.ForeignStructuredUpload.prototype.returnUpload = function ( result ) {
 	this.setState( mw.Upload.State.UPLOADED );
 
 	this.imageinfo = result.upload.imageinfo;
 	return result;
-}
+};
 
-bs.vec.ui.ForeignStructuredUpload.ForeignStructuredUpload.prototype.uploadToStash = function( ignorewarnings ) {
+bs.vec.ui.ForeignStructuredUpload.ForeignStructuredUpload.prototype.uploadToStash = function ( ignorewarnings ) {
 	ignorewarnings = ignorewarnings || false;
-	var upload = this;
 
 	if ( !this.getFile() ) {
 		return $.Deferred().reject( 'No file to upload. Call setFile to add one.' );
@@ -64,32 +60,30 @@ bs.vec.ui.ForeignStructuredUpload.ForeignStructuredUpload.prototype.uploadToStas
 	this.stashPromise = this.api.chunkedUploadToStash( this.getFile(), {
 		filename: this.getFilename(),
 		ignorewarnings: ignorewarnings
-	} ).then( function ( finishStash ) {
-		upload.setState( mw.Upload.State.STASHED );
+	} ).then( ( finishStash ) => {
+		this.setState( mw.Upload.State.STASHED );
 		return finishStash;
-	}, function ( errorCode, result ) {
+	}, ( errorCode, result ) => {
 		if ( result && result.upload && result.upload.warnings ) {
-			upload.setState( mw.Upload.State.WARNING, result );
+			this.setState( mw.Upload.State.WARNING, result );
 		} else {
-			upload.setState( mw.Upload.State.ERROR, result );
+			this.setState( mw.Upload.State.ERROR, result );
 		}
 		return $.Deferred().reject( errorCode, result );
 	} );
 
 	return this.stashPromise;
-}
+};
 
-$.extend( mw.Api.prototype, {
+Object.assign( mw.Api.prototype, {
 	chunkedUploadToStash: function ( file, data, chunkSize, chunkRetries ) {
-		var promise;
-
 		if ( !data.filename ) {
 			throw new Error( 'Filename not included in file data.' );
 		}
 
-		promise = this.chunkedUpload(
+		const promise = this.chunkedUpload(
 			file,
-			$.extend( { stash: true }, data ),
+			Object.assign( { stash: true }, data ),
 			chunkSize,
 			chunkRetries
 		);

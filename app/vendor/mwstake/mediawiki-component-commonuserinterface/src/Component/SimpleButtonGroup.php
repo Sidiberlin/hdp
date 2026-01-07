@@ -2,9 +2,9 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface\Component;
 
-use Message;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\IButtonGroup;
-use RawMessage;
 
 class SimpleButtonGroup extends ComponentBase implements IButtonGroup {
 

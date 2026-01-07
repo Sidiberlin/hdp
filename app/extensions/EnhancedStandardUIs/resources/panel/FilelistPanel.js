@@ -10,8 +10,15 @@ ext.enhancedUI.panel.FilelistPanel = function ( cfg ) {
 	ext.enhancedUI.panel.FilelistPanel.super.apply( this, cfg );
 	this.$element = $( '<div>' ).addClass( 'enhanced-ui-filelist-panel' );
 
+	this.pluginModules = require( './pluginModules.json' );
 	this.rights = cfg.rights || [];
+	this.canSwitchModes = typeof cfg.canSwitchModes === 'undefined' ? true : cfg.canSwitchModes;
 	this.mode = 'list';
+	this.$overlay = cfg.$overlay || null;
+	this.enablePreview = typeof cfg.enablePreview === 'undefined' ? true : cfg.enablePreview;
+	this.allowFileInfoDialog = typeof cfg.allowFileInfoDialog === 'undefined' ? true : cfg.allowFileInfoDialog;
+	this.mediaDialog = cfg.mediaDialog || false;
+
 	this.pageSize = 25;
 	this.store = new OOJSPlus.ui.data.store.RemoteRestStore( {
 		path: 'mws/v1/file-query-store',
@@ -24,8 +31,8 @@ ext.enhancedUI.panel.FilelistPanel = function ( cfg ) {
 	this.setupWidgets();
 	this.store.connect( this, {
 		loaded: function ( data ) {
-			var visibleData = {};
-			for ( var item in data ) {
+			const visibleData = {};
+			for ( const item in data ) {
 				if ( item < this.page ) {
 					continue;
 				}
@@ -48,19 +55,25 @@ ext.enhancedUI.panel.FilelistPanel.prototype.setupWidgets = function () {
 	this.setupTools();
 	this.setupTilesView();
 
-	this.grid = new ext.enhancedUI.widget.FilelistGrid( {
-		store: this.store,
-		rights: this.rights
+	mw.loader.using( this.pluginModules, () => {
+		this.grid = new ext.enhancedUI.widget.FilelistGrid( {
+			store: this.store,
+			rights: this.rights,
+			$overlay: this.$overlay,
+			allowFileInfoDialog: this.allowFileInfoDialog,
+			mediaDialog: this.mediaDialog
+		} );
+		this.grid.connect( this, {
+			action: 'onGridAction',
+			preview: 'onGridPreview'
+		} );
+		this.$element.append( this.grid.$element );
+		this.emit( 'gridLoaded' );
 	} );
-	this.grid.connect( this, {
-		action: 'onGridAction',
-		preview: 'onGridPreview'
-	} );
-	this.$element.append( this.grid.$element );
 };
 
 ext.enhancedUI.panel.FilelistPanel.prototype.setupTools = function () {
-	var toolsItems = [];
+	const toolsItems = [];
 	this.input = new OO.ui.SearchInputWidget( {
 		placeholder: mw.message( 'enhanced-standard-uis-filelist-panel-search-placeholder-label' ).text()
 	} );
@@ -76,39 +89,41 @@ ext.enhancedUI.panel.FilelistPanel.prototype.setupTools = function () {
 			data: 'upload',
 			label: mw.message( 'enhanced-standard-uis-filelist-panel-new-file-label' ).text(),
 			icon: 'upload',
-			id: 'enhanced-filelist-upload-file',
+			classes: [ 'enhanced-filelist-upload-file' ],
 			href: mw.util.getUrl( 'Special:Upload' ),
 			invisibleLabel: true
 		} );
 		toolsItems.push( new OO.ui.FieldLayout( this.uploadBtn ) );
 	}
 
-	this.typeSwitch = new OO.ui.ButtonSelectWidget( {
-		items: [
-			new OO.ui.ButtonOptionWidget( {
-				data: 'tiles',
-				label: mw.message( 'enhanced-standard-uis-filelist-panel-tiles-label' ).text(),
-				title: mw.message( 'enhanced-standard-uis-filelist-panel-tiles-label' ).text(),
-				icon: 'viewCompact'
-			} ),
-			new OO.ui.ButtonOptionWidget( {
-				data: 'list',
-				label: mw.message( 'enhanced-standard-uis-filelist-panel-list-label' ).text(),
-				title: mw.message( 'enhanced-standard-uis-filelist-panel-list-label' ).text(),
-				icon: 'listBullet'
-			} )
-		],
-		classes: [ '' ]
-	} );
-	$( this.typeSwitch.$element ).attr( 'aria-label', 'Select view mode' );
-	this.typeSwitch.selectItemByData( this.mode );
-	this.typeSwitch.connect( this, {
-		select: 'onTypeSwitchChange'
-	} );
+	if ( this.canSwitchModes ) {
+		this.typeSwitch = new OO.ui.ButtonSelectWidget( {
+			items: [
+				new OO.ui.ButtonOptionWidget( {
+					data: 'tiles',
+					label: mw.message( 'enhanced-standard-uis-filelist-panel-tiles-label' ).text(),
+					title: mw.message( 'enhanced-standard-uis-filelist-panel-tiles-label' ).text(),
+					icon: 'viewCompact'
+				} ),
+				new OO.ui.ButtonOptionWidget( {
+					data: 'list',
+					label: mw.message( 'enhanced-standard-uis-filelist-panel-list-label' ).text(),
+					title: mw.message( 'enhanced-standard-uis-filelist-panel-list-label' ).text(),
+					icon: 'listBullet'
+				} )
+			],
+			classes: [ '' ]
+		} );
+		$( this.typeSwitch.$element ).attr( 'aria-label', 'Select view mode' );
+		this.typeSwitch.selectItemByData( this.mode );
+		this.typeSwitch.connect( this, {
+			select: 'onTypeSwitchChange'
+		} );
 
-	toolsItems.push( new OO.ui.FieldLayout( this.typeSwitch, {
-		classes: [ 'enhanced-filelist-tools-btn-select' ]
-	} ) );
+		toolsItems.push( new OO.ui.FieldLayout( this.typeSwitch, {
+			classes: [ 'enhanced-filelist-tools-btn-select' ]
+		} ) );
+	}
 
 	this.toolsLayout = new OO.ui.HorizontalLayout( {
 		classes: [ 'enhanced-filelist-tools' ],
@@ -145,16 +160,16 @@ ext.enhancedUI.panel.FilelistPanel.prototype.setupTilesView = function () {
 };
 
 ext.enhancedUI.panel.FilelistPanel.prototype.onGridAction = function ( action, row ) {
-	var data = {
+	const data = {
 		action: action,
 		row: row
 	};
 	mw.hook( 'enhanced.filelist.action' ).fire( data );
 	action = data.action;
 	if ( action === 'info' ) {
-		var windowManager = new OO.ui.WindowManager();
+		const windowManager = new OO.ui.WindowManager();
 		$( document.body ).append( windowManager.$element );
-		var infoDialog = new ext.enhancedUI.dialog.FileInfoDialog( {
+		const infoDialog = new ext.enhancedUI.dialog.FileInfoDialog( {
 			data: row,
 			page: 'Data'
 		} );
@@ -162,7 +177,7 @@ ext.enhancedUI.panel.FilelistPanel.prototype.onGridAction = function ( action, r
 		windowManager.openWindow( infoDialog );
 	}
 	if ( action === 'reupload' ) {
-		var reuploadUrl = mw.util.getUrl( 'Special:Upload',
+		const reuploadUrl = mw.util.getUrl( 'Special:Upload',
 			{
 				wpDestFile: row.dbkey,
 				wpForReUpload: 1
@@ -171,7 +186,7 @@ ext.enhancedUI.panel.FilelistPanel.prototype.onGridAction = function ( action, r
 		window.location.href = reuploadUrl;
 	}
 	if ( action === 'delete' ) {
-		var deleteUrl = mw.util.getUrl( 'File:' + row.dbkey,
+		const deleteUrl = mw.util.getUrl( 'File:' + row.dbkey,
 			{
 				action: 'delete'
 			}
@@ -181,9 +196,12 @@ ext.enhancedUI.panel.FilelistPanel.prototype.onGridAction = function ( action, r
 };
 
 ext.enhancedUI.panel.FilelistPanel.prototype.onGridPreview = function ( action, row ) {
-	var windowManager = new OO.ui.WindowManager();
+	if ( !this.enablePreview ) {
+		return;
+	}
+	const windowManager = new OO.ui.WindowManager();
 	$( document.body ).append( windowManager.$element );
-	var infoDialog = new ext.enhancedUI.dialog.FileInfoDialog( {
+	const infoDialog = new ext.enhancedUI.dialog.FileInfoDialog( {
 		data: row,
 		page: 'Preview'
 	} );
@@ -214,17 +232,17 @@ ext.enhancedUI.panel.FilelistPanel.prototype.setItems = function ( data ) {
 			return;
 		}
 		this.grid.$element.hide();
-		var Vue = require( 'vue' ),
+		const Vue = require( 'vue' ),
 			FileCard = require( './../vue/Card.vue' );
 		this.$tileContainer.empty();
-		for ( var item in data ) {
+		for ( const item in data ) {
 			data[ item ].thumbnail = {
 				width: 200,
 				height: 180,
 				url: data[ item ].preview_url
 			};
 		}
-		var vm = Vue.createMwApp( FileCard, {
+		const vm = Vue.createMwApp( FileCard, {
 			cards: data
 		} );
 		vm.mount( '#tileview' );
@@ -248,7 +266,20 @@ ext.enhancedUI.panel.FilelistPanel.prototype.onInputChange = function ( value ) 
 		return;
 	}
 
-	this.typingTimer = setTimeout( function () {
+	this.typingTimer = setTimeout( () => {
 		this.store.query( value );
-	}.bind( this ), this.typingDoneInterval );
+	}, this.typingDoneInterval );
+};
+
+ext.enhancedUI.panel.FilelistPanel.prototype.closeFilters = function () {
+	// Make sure to close all grid filter popups
+	// Useful in case grid is getting hidden
+	if ( !this.grid ) {
+		return;
+	}
+	for ( const columnId in this.grid.columns ) {
+		if ( this.grid.columns[ columnId ].filterButton ) {
+			this.grid.columns[ columnId ].filterButton.getPopup().toggle( false );
+		}
+	}
 };

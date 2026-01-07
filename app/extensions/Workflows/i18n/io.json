@@ -20,9 +20,9 @@
 	"workflows-form-instructions-comment": "Komento",
 	"workflows-collect-data-form-username": "Uzero",
 	"workflows-ui-overview-details-raw-data-popup-prop": "Atributo",
+	"workflows-ui-overview-details-raw-data-popup-value": "Valoro",
 	"workflows-ui-action-cancel": "Nuligar",
 	"workflows-ui-trigger-action-create": "Konservez",
 	"workflows-ui-trigger-field-name": "Nomo",
-	"workflows-action-edit-label": "Redaktar",
-	"workflows-ui-overview-details-raw-data-popup-value": "Valoro"
+	"workflows-action-edit-label": "Redaktar"
 }

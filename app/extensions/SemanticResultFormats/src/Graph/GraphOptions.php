@@ -29,6 +29,7 @@ class GraphOptions {
 	private $showGraphLegend;
 	/** @var bool Show non-Page properties as fields within nodes rather than edges. */
 	private $showGraphFields;
+	private $showGraphFieldsPages;
 
 	public function __construct( $options ) {
 		$this->graphName = trim( $options['graphname'] );
@@ -45,12 +46,13 @@ class GraphOptions {
 		$this->showGraphColor = trim( $options['graphcolor'] );
 		$this->showGraphLegend = trim( $options['graphlegend'] );
 		$this->showGraphFields = trim( $options['graphfields'] );
+		$this->showGraphFieldsPages = trim( $options['graphfieldspages'] );
 	}
 
 	public function getGraphName(): string {
 		// Remove all special characters from the string to prevent the digraph from being
 		// invalid and causing an error.
-		return preg_replace('/[^A-Za-z0-9 ]/', '', $this->graphName );
+		return preg_replace( '/[^A-Za-z0-9 ]/', '', $this->graphName );
 	}
 
 	public function getGraphSize(): string {
@@ -103,5 +105,9 @@ class GraphOptions {
 
 	public function showGraphFields(): bool {
 		return $this->showGraphFields;
+	}
+
+	public function showGraphFieldsPages(): string {
+		return $this->showGraphFieldsPages;
 	}
 }

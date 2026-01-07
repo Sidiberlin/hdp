@@ -1,60 +1,44 @@
-(function(mw, $, bs){
-	var menu = null;
-
-	var showMenu = function( anchor, items, e ) {
-		$(document).trigger( 'BSContextMenuBeforeCreate', [anchor, items]);
-
-		/*
-		 * Unfortunately ExtJS does not use "close" when the context
-		 * menu disappears, but "hide". Therefore closeAction: 'destroy',
-		 * which is default does not work. But as we use DOM IDs we
-		 * really need to remove the them from the DOM, otherwise we
-		 * get ugly collisions when a second menu is opened.
-		 */
-		Ext.destroy(menu);
-
-		menu = new Ext.menu.Menu({
-			id: 'bs-cm-menu',
-			items: items
-		});
-		menu.showAt(e.pageX, e.pageY);
-
-		e.preventDefault();
+bs.util.registerNamespace( 'bs.contextMenu' );
+bs.contextMenu._storage = { // eslint-disable-line no-underscore-dangle
+	popups: {}
+};
+bs.contextMenu.openMenuOn = function ( $el, title ) {
+	if ( !title ) {
+		title = $el.data( 'bs-title' );
+	}
+	if ( !title ) {
 		return false;
-	};
-
-	$(document).on( 'contextmenu', 'a', function( e ) {
-		var modus = mw.user.options.get( 'bs-contextmenu-modus', 'ctrl' );
-		if( (modus === 'no-ctrl' && e.ctrlKey) || (modus === 'ctrl' && !e.ctrlKey) ) {
+	}
+	const cached = bs.contextMenu._storage.popups[ title ] || null; // eslint-disable-line no-underscore-dangle
+	let popup;
+	if ( !cached ) {
+		popup = new bs.contextMenu.ContextMenu( {
+			forTitle: title,
+			$floatableContainer: $el
+		} );
+		$( 'body' ).append( popup.$element );
+		popup.initialize();
+		bs.contextMenu._storage.popups[ title ] = popup; // eslint-disable-line no-underscore-dangle
+	} else {
+		popup = cached;
+	}
+	if ( !popup.hasItems ) {
+		return false;
+	}
+	popup.setFloatableContainer( $el );
+	popup.toggle( true );
+	return true;
+};
+$( () => {
+	$( document ).on( 'contextmenu', 'a', function ( e ) {
+		const mode = mw.user.options.get( 'bs-contextmenu-modus', 'ctrl' );
+		if ( ( mode === 'no-ctrl' && e.ctrlKey ) || ( mode === 'ctrl' && !e.ctrlKey ) ) {
 			return true;
 		}
-
-		var anchor = $(this);
-
-		if( anchor.hasClass('external') ) {
+		const $anchor = $( this );
+		if ( $anchor.hasClass( 'external' ) ) {
 			return true;
 		}
-
-		mw.loader.using( 'ext.bluespice.extjs', function() {
-			var items = [];
-
-			bs.api.tasks.exec(
-				'contextmenu',
-				'getMenuItems',
-				{
-					title: anchor.data('bs-title')
-				}
-			).done( function( response )  {
-				if( response.payload_count > 0 ) {
-					for( var item in response.payload.items ){
-						items.push(response.payload.items[item]);
-					}
-					showMenu( anchor, items, e );
-				}
-			});
-		});
-
-		return false;
-	});
-
-})( mediaWiki, jQuery, blueSpice);
+		return !bs.contextMenu.openMenuOn( $anchor );
+	} );
+} );

@@ -4,11 +4,11 @@ namespace ChatBot\Rest;
 
 use ChatBot\Model\ChatMessageFactory;
 use Config;
-use Html;
+use Exception;
 use MailAddress;
+use MediaWiki\Html\Html;
+use MediaWiki\Message\Message;
 use MediaWiki\Rest\SimpleHandler;
-use MediaWiki\Rest\Validator\JsonBodyValidator;
-use Message;
 use TitleFactory;
 use UserMailer;
 use Wikimedia\ParamValidator\ParamValidator;
@@ -78,27 +78,23 @@ class SendFeedbackMail extends SimpleHandler {
 	}
 
 	/**
-	 * @param string $contentType
-	 *
-	 * @return JsonBodyValidator
+	 * @inheritDoc
 	 */
-	public function getBodyValidator( $contentType ) {
-		if ( $contentType !== 'application/json' ) {
-			return null;
-		}
-
-		return new JsonBodyValidator( [
+	public function getBodyParamSettings(): array {
+		return [
 			'feedback' => [
-				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_TYPE => 'array',
 				ParamValidator::PARAM_REQUIRED => true,
 				ParamValidator::PARAM_DEFAULT => ''
 			],
-		] );
+		];
 	}
 
 	/**
 	 * @param array $data
+	 *
 	 * @return array
+	 * @throws Exception
 	 */
 	private function getMailBody( array $data ): array {
 		$mailBody = Html::openElement( 'div' );
@@ -159,7 +155,9 @@ class SendFeedbackMail extends SimpleHandler {
 
 	/**
 	 * @param array $data
+	 *
 	 * @return string
+	 * @throws Exception
 	 */
 	private function makeQuestionHtml( array $data ): string {
 		$html = Html::element( 'h3', [], Message::newFromKey( 'chatbot-feedback-mail-body-question' )->plain() );

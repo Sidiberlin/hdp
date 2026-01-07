@@ -3,7 +3,7 @@
 namespace BlueSpice\Html\FormField;
 
 use BsGroupHelper;
-use Message;
+use MediaWiki\Message\Message;
 
 class GroupMultiSelect extends \HTMLMultiSelectEx {
 
@@ -45,7 +45,7 @@ class GroupMultiSelect extends \HTMLMultiSelectEx {
 		foreach ( $this->groups as $group ) {
 			$msg = $this->msg( "group-$group" );
 			$this->options[$group] = $msg->exists()
-				? "{$msg->plain()} ($group)"
+				? "{$msg->text()} ($group)"
 				: $group;
 		}
 	}

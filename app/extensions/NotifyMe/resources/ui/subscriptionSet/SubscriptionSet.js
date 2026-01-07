@@ -37,7 +37,7 @@ ext.notifyme.ui.SubscriptionSet.prototype.setValue = function ( value ) {
 	this.render();
 };
 
-ext.notifyme.ui.SubscriptionSet.prototype.getEditor = function ( dialog ) {
+ext.notifyme.ui.SubscriptionSet.prototype.getEditor = function ( dialog ) { // eslint-disable-line no-unused-vars
 	return null;
 };
 
@@ -46,14 +46,14 @@ ext.notifyme.ui.SubscriptionSet.prototype.getEditor = function ( dialog ) {
  */
 ext.notifyme.ui.SubscriptionSet.prototype.render = function () {
 	const tileLabel = new OO.ui.LabelWidget( {
-			label: this.getLabel(),
-			classes: [ 'tile-label' ]
-		} ),
-	 tileValue = new OO.ui.LabelWidget( {
-			label: this.getHeaderKeyValue(),
-			title: this.getHeaderKeyValue(),
-			classes: [ 'tile-value' ]
-		} );
+		label: this.getLabel(),
+		classes: [ 'tile-label' ]
+	} );
+	const tileValue = new OO.ui.LabelWidget( {
+		label: this.getHeaderKeyValue(),
+		title: this.getHeaderKeyValue(),
+		classes: [ 'tile-value' ]
+	} );
 	this.bucketLabel = new OO.ui.LabelWidget( {
 		label: this.getBucketLabel()
 	} );
@@ -90,15 +90,15 @@ ext.notifyme.ui.SubscriptionSet.prototype.getBucketLabel = function () {
 
 ext.notifyme.ui.SubscriptionSet.prototype.getButtons = function () {
 	const editButton = new OO.ui.ButtonWidget( {
-			title: mw.msg( 'notifyme-ui-edit' ),
-			icon: 'edit',
-			framed: false
-		} ),
-	 deleteButton = new OO.ui.ButtonWidget( {
-			title: mw.msg( 'notifyme-ui-delete' ),
-			icon: 'trash',
-			framed: false
-		} );
+		title: mw.msg( 'notifyme-ui-edit' ),
+		icon: 'edit',
+		framed: false
+	} );
+	const deleteButton = new OO.ui.ButtonWidget( {
+		title: mw.msg( 'notifyme-ui-delete' ),
+		icon: 'trash',
+		framed: false
+	} );
 
 	editButton.connect( this, { click: function () {
 		this.emit( 'edit', this.id );

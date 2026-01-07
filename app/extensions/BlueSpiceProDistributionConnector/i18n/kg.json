@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Marphy 123"
+		]
+	},
+	"bs-pro-distribution-droplet-embed-name": "Mambu ya nganda",
+	"bs-pro-distribution-droplet-embed-desc": "Mambu ya nganda ya bo me kotisa na Git, mu mbandu. Bafichi ya bo me tula kidimbu",
+	"bs-pro-distribution-droplet-bitbucket-name": "BitBucket file",
+	"bs-pro-distribution-droplet-bitbucket-desc": "Fichier ya bo me kotisa na BitBucket",
+	"bs-pro-distribution-droplet-ec-embed-url-label": "URL",
+	"bs-pro-distribution-droplets-ec-embed-render-label": "Kidimbu ya ke monisa",
+	"bs-pro-distribution-droplets-ec-embed-lang-label": "Ndinga ya kele na kati",
+	"bs-pro-distribution-droplets-ec-embed-lang-help": "Mosi na kati ya [https://prismjs.com/#ndinga ya bo ke pesaka maboko]. Yo kele mfunu kaka kana bo me mona ve ndinga na ndonga ya ba fiche.",
+	"bs-pro-distribution-droplets-ec-embed-show-lines-label": "Bandinga ya kusonga",
+	"bs-pro-distribution-droplets-ec-embed-show-lines-help": "Songa kaka bandinga ya sikisiki. Yo lenda vanda nimero ya ndonga mosi to ndonga ya kukabwana ti kisono (-). Bo lenda kabula bantalu ya ndonga to bandonga mingi na ba commes.",
+	"bs-pro-distribution-droplets-ec-embed-show-line-numbers-label": "Banimero ya lutiti ya kusonga",
+	"bs-pro-distribution-ec-config-domain-whitelist": "Listi ya mpembe ya teritware",
+	"bs-pro-distribution-ec-config-file-whitelist": "Ndonga ya bansangu ya mpembe",
+	"bs-pro-distribution-ec-config-file-whitelist-help": "Lisiti ya bansangu ya bo me pesa nswa. Bikila yo mpamba sambu yo vanda ve ti ndilu.",
+	"bs-pro-distribution-ec-config-domain-whitelist-help": "Lisiti ya ba domain yina bo me pesa nswa ya kukotisa mambu ya kele na kati. Kukotisa ve protocole, kaka domain. Mu mbandu, Yo kele mbote sambu na yo. Bikila yo mpamba sambu yo vanda ve ti ndilu."
+}

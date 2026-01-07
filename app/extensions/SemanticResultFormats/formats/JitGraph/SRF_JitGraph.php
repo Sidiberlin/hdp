@@ -1,4 +1,8 @@
 <?php
+
+use SMW\Query\QueryResult;
+use SMW\Query\ResultPrinters\ResultPrinter;
+
 /**
  * Print query results in interactive graph using the
  * JavaScript InfoVis Toolkit (http://thejit.org)
@@ -14,7 +18,7 @@
  *
  * @ingroup SemanticResultFormats
  */
-class SRFJitGraph extends SMWResultPrinter {
+class SRFJitGraph extends ResultPrinter {
 
 	public static $NODE_SHAPES = [ 'circle', 'rectangle', 'square', 'ellipse', 'triangle', 'star' ];
 
@@ -36,8 +40,10 @@ class SRFJitGraph extends SMWResultPrinter {
 		'red' => '#CF2A2A',
 		'green' => '#558800',
 		'blue' => '#005588' ];
-	protected $m_rootNodeColor = '#CF2A2A'; // Red
-	protected $m_graphNodeColor = '#005588'; // Blue
+	// Red
+	protected $m_rootNodeColor = '#CF2A2A';
+	// Blue
+	protected $m_graphNodeColor = '#005588';
 
 	protected $m_settings = [
 		"divID" => "infovis",
@@ -141,7 +147,7 @@ class SRFJitGraph extends SMWResultPrinter {
 		return wfMessage( 'srf_printername_' . $this->mFormat )->text();
 	}
 
-	protected function getResultText( SMWQueryResult $res, $outputmode ) {
+	protected function getResultText( QueryResult $res, $outputmode ) {
 		global $wgTitle, $wgOut;
 
 		if ( class_exists( 'ResourceLoader' ) ) {
@@ -253,16 +259,20 @@ class SRFJitGraph extends SMWResultPrinter {
 
 				$firstcol = false;
 			}
-			$json = substr( $json, 0, -1 ); // Trim the comma after the last item in the list
-			$json .= "]},"; // close adjacencies array
+			// Trim the comma after the last item in the list
+			$json = substr( $json, 0, -1 );
+			// close adjacencies array
+			$json .= "]},";
 
-			//Append the leaf nodes.
-			//$jsonLeafs = substr($jsonLeafs,0,-1); // Trim the comma after the last item in the list
+			// Append the leaf nodes.
+			// $jsonLeafs = substr($jsonLeafs,0,-1); // Trim the comma after the last item in the list
 			$json .= $jsonLeafs;
 			$jsonLeafs = "";
 		}
-		$json = substr( $json, 0, -1 ); // Trim the comma after the last item in the list
-		$json .= "]"; // close the json object array
+		// Trim the comma after the last item in the list
+		$json = substr( $json, 0, -1 );
+		// close the json object array
+		$json .= "]";
 
 		$result = '';
 
@@ -271,7 +281,8 @@ class SRFJitGraph extends SMWResultPrinter {
 		}
 
 		$d_id = rand( 1000, 9999 );
-		$divID = 'infovis-' . $d_id; // generate a random id to have the ability to display multiple graphs on a single page.
+		// generate a random id to have the ability to display multiple graphs on a single page.
+		$divID = 'infovis-' . $d_id;
 		$this->m_settings['d_id'] = $d_id;
 		$this->m_settings['divID'] = $divID;
 
@@ -331,7 +342,7 @@ class SRFJitGraph extends SMWResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::getParamDefinitions
+	 * @see ResultPrinter::getParamDefinitions
 	 *
 	 * @since 1.8
 	 *

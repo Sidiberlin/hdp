@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"MITO",
+			"Minilammas",
 			"Nike",
 			"Pyscowicz",
 			"Rönttönen"
@@ -30,7 +31,6 @@
 	"bs-discovery-navbar-global-actions-button-title": "Järjestelmänlaajuiset toiminnot",
 	"bs-discovery-navbar-global-actions-button-aria-label": "Järjestelmänlaajuiset toiminnot",
 	"bs-discovery-navbar-full-screen-button-enable-title": "Ota koko näytön tila käyttöön",
-	"bs-discovery-navbar-full-screen-button-text": "Ota koko näytön tila käyttöön",
 	"bs-discovery-navbar-full-screen-button-enable-aria-label": "Ota koko näytön tila käyttöön",
 	"bs-discovery-navbar-full-screen-button-disable-title": "Poista koko näytön tila käytöstä",
 	"bs-discovery-navbar-full-screen-button-disable-aria-label": "Poista koko näytön tila käytöstä",
@@ -72,7 +72,6 @@
 	"bs-discovery-dialog-detailssectionheading-toolbox": "Työkalulaatikko",
 	"bs-discovery-edit-mediawiki-sidebar-link-text": "Muokkaa sivupalkkia",
 	"bs-discovery-edit-mediawiki-sidebar-link-title": "Muokkaa MediaWiki:Sidebar",
-	"bs-discovery-sidebar-secondary-watch-link-title": "Tarkastele sivua",
 	"bs-discovery-sidebar-secondary-watch-link-aria-label": "Tarkastele sivua",
 	"bs-discovery-permalink-copy-text": "Kopioi URL",
 	"bs-discovery-breadcrumb-label-talk": "Keskustelu",
@@ -106,5 +105,6 @@
 	"bs-discovery-enhanced-sidebar-edit-button-title": "Muokkaa tätä valikkoa",
 	"bs-discovery-page-version-pager-previous": "Edellinen",
 	"bs-discovery-page-version-pager-next": "Seuraava",
-	"bs-discovery-footerlinks-termsofservice-link-desc": "Käyttöehdot"
+	"bs-discovery-footerlinks-termsofservice-link-desc": "Käyttöehdot",
+	"bs-discovery-skip-links-nav-aria-label": "Ohita linkit"
 }

@@ -2,21 +2,18 @@
 
 namespace SMW\MediaWiki\Search\ProfileForm;
 
-use Html;
-use MWNamespace;
-use SMW;
-use SMW\Schema\SchemaFactory;
+use MediaWiki\Html\Html;
+use MediaWiki\Specials\SpecialSearch;
+use MediaWiki\Title\Title;
+use SMW\Localizer\Message;
 use SMW\ProcessingErrorMsgHandler;
-use SMW\Utils\HtmlModal;
+use SMW\Schema\SchemaFactory;
 use SMW\Store;
-use SMW\Message;
-use SpecialSearch;
-use Title;
-use WikiPage;
-use Xml;
+use SMW\Utils\HtmlModal;
+use SMWInfolink;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.0
  *
  * @author mwjames
@@ -46,7 +43,7 @@ class ProfileForm {
 	private $formsFactory;
 
 	/**
-	 * @var []
+	 * @var
 	 */
 	private $searchableNamespaces = [];
 
@@ -67,10 +64,10 @@ class ProfileForm {
 	 *
 	 * @param string $profile
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public static function isValidProfile( $profile ) {
-		return $profile === ProfileForm::PROFILE_NAME;
+		return $profile === self::PROFILE_NAME;
 	}
 
 	/**
@@ -80,7 +77,6 @@ class ProfileForm {
 	 * @param array &$profiles
 	 */
 	public static function addProfile( $type, array &$profiles, array $options ) {
-
 		if ( $type !== SMW_SPECIAL_SEARCHTYPE ) {
 			return;
 		}
@@ -100,7 +96,6 @@ class ProfileForm {
 	 * @return array
 	 */
 	public static function getFormDefinitions( Store $store ) {
-
 		static $data = null;
 
 		if ( $data !== null ) {
@@ -128,7 +123,6 @@ class ProfileForm {
 	 * @return array
 	 */
 	public static function getPrefixMap( array $data ) {
-
 		$map = [];
 
 		if (
@@ -156,7 +150,6 @@ class ProfileForm {
 	 * @param array $opts
 	 */
 	public function buildForm( &$form, array $opts = [] ) {
-
 		$hidden = '';
 		$html = '';
 
@@ -184,7 +177,7 @@ class ProfileForm {
 
 		$searchEngine = $this->specialSearch->getSearchEngine();
 
-		if ( ( $queryLink = $searchEngine->getQueryLink() ) instanceof \SMWInfolink ) {
+		if ( ( $queryLink = $searchEngine->getQueryLink() ) instanceof SMWInfolink ) {
 			$queryLink->setCaption( $this->msg( 'smw-search-profile-link-caption-query', Message::TEXT ) );
 			$queryLink->setLinkAttributes(
 				[
@@ -193,7 +186,7 @@ class ProfileForm {
 			);
 		}
 
-		list( $searchForms, $formList, $termPrefixes, $preselectNamespaces, $hiddenNamespaces ) = $this->buildSearchForms(
+		[ $searchForms, $formList, $termPrefixes, $preselectNamespaces, $hiddenNamespaces ] = $this->buildSearchForms(
 			$request
 		);
 
@@ -251,7 +244,6 @@ class ProfileForm {
 	}
 
 	private function buildNamespaceForm( $request, $searchEngine, $preselectNamespaces, $hiddenNamespaces, &$hidden ) {
-
 		$activeNamespaces = array_merge( $this->specialSearch->getNamespaces(), $preselectNamespaces );
 		$default = false;
 
@@ -305,7 +297,6 @@ class ProfileForm {
 	}
 
 	private function buildSearchForms( $request ) {
-
 		$data = $this->getFormDefinitions( $this->store );
 
 		if ( $data === [] ) {
@@ -335,7 +326,6 @@ class ProfileForm {
 	}
 
 	private function findErrors( $searchEngine ) {
-
 		if ( ( $errors = $searchEngine->getErrors() ) === [] ) {
 			return '';
 		}
@@ -357,13 +347,12 @@ class ProfileForm {
 	}
 
 	private function buildSortForm( $request ) {
-
 		$sortForm = $this->formsFactory->newSortForm( $request );
 
 		// TODO this information should come from the store and not being
 		// derived from a class! How should such characteristic be represented?
 		$features = [
-			'best' => is_a( $this->store, "SMWElasticStore" )
+			'best' => is_a( $this->store, "SMW\Elastic\ElasticStore" )
 		];
 
 		$form = $sortForm->makeFields( $features );
@@ -377,7 +366,6 @@ class ProfileForm {
 	}
 
 	private function profile_sheet( $query, $queryLink, $termPrefixes ) {
-
 		$text = Message::get( 'smw-search-profile-extended-help-intro', Message::PARSE, Message::USER_LANGUAGE );
 
 		$link = $queryLink !== null ? $queryLink->getHtml() : '';

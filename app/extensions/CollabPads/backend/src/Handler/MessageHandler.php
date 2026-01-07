@@ -7,7 +7,6 @@ use MediaWiki\Extension\CollabPads\Backend\ConnectionList;
 use MediaWiki\Extension\CollabPads\Backend\EventType;
 use MediaWiki\Extension\CollabPads\Backend\IAuthorDAO;
 use MediaWiki\Extension\CollabPads\Backend\ICollabSessionDAO;
-use MediaWiki\Extension\CollabPads\Backend\Model\Author;
 use MediaWiki\Extension\CollabPads\Backend\Model\Change;
 use MediaWiki\Extension\CollabPads\Backend\Rebaser;
 use Psr\Log\LoggerInterface;
@@ -79,7 +78,6 @@ class MessageHandler {
 		}
 		$msgArgs['authorId'] = $author->getId();
 		$msgArgs['sessionId'] = $this->authorDAO->getSessionByConnection( $from->resourceId );
-		$this->logger->debug( "Processed message arguments: " . json_encode( $msgArgs ) );
 
 		$message = null;
 		switch ( $msgArgs['eventId'] ) {
@@ -120,18 +118,6 @@ class MessageHandler {
 							$change = $this->rebaser->applyChange(
 								$msgArgs['sessionId'], $author, $eventData['backtrack'] ?? 0, $change
 							);
-							if ( !$change->isEmpty() ) {
-								$sessionChange = $this->rebaser->getSessionChange();
-								if ( $sessionChange instanceof Change ) {
-									// Update session with newly applied change
-									$sessionChange->push( $change );
-									$this->sessionDAO->replaceHistory( $msgArgs['sessionId'], $sessionChange );
-								} else {
-									// Prevent broken session: if change is rebased, and will be emitted,
-									// session change MUST also be updated
-									throw new Exception( 'Change rebased, but no session change retrieved' );
-								}
-							}
 						} catch ( Throwable $e ) {
 							// Original implementation did not catch exceptions, it would only not emit a message
 							// if rebasing cannot be done in expected way. Any unexpected errors would be thrown
@@ -139,10 +125,6 @@ class MessageHandler {
 								'backtrace' => $e->getTraceAsString(),
 								'line' => $e->getLine(),
 							] );
-							if ( $this->config['behaviourOnError'] === 'reinit' ) {
-								$this->logger->info( 'Sending re-initialization message' );
-								$this->reInitForClient( $msgArgs['sessionId'], $author );
-							}
 
 							return;
 						}
@@ -216,7 +198,7 @@ class MessageHandler {
 		if ( $author ) {
 			$this->sessionDAO->deactivateAuthor( $msgArgs['sessionId'], $authorActive, $msgArgs['authorId'] );
 			$this->authorDAO->deleteConnection( $msgArgs['connectionId'], $msgArgs['authorId'] );
-
+			$this->sessionDAO->clearAuthorRebaseData( $msgArgs['sessionId'], $msgArgs['authorId'] );
 			return $authorActive ? "" : $this->response( EventType::CONTENT, 'authorDisconnect', $author[ 'id' ] );
 		}
 
@@ -228,6 +210,7 @@ class MessageHandler {
 	 * @return string
 	 */
 	private function saveRevision( int $authorId ): string {
+		$this->logger->info( "Author (ID:$authorId) saved revision" );
 		return $this->response( EventType::CONTENT, 'saveRevision', $authorId );
 	}
 
@@ -254,6 +237,7 @@ class MessageHandler {
 			$this->sessionDAO->changeAuthorDataInSession( $msgArgs['sessionId'], $msgArgs['authorId'], $key, $value );
 		}
 
+		$this->sessionDAO->clearAuthorRebaseData( $msgArgs['sessionId'], $msgArgs['authorId'] );
 		$author = $this->sessionDAO->getAuthorInSession( $msgArgs['sessionId'], $msgArgs['authorId'] );
 		$realName = ( isset( $author['value']['realName'] ) ) ? $author['value']['realName'] : '';
 
@@ -325,7 +309,7 @@ class MessageHandler {
 		}
 		$eventData = json_decode( $rawJson, true );
 		if ( json_last_error() === JSON_ERROR_UTF16 ) {
-			$this->logger->debug( 'JSON_ERROR_UTF16... fixing Surrogate Pairs' );
+			$this->logger->info( 'JSON_ERROR_UTF16... fixing Surrogate Pairs' );
 			$cleanedJson = $this->fixSurrogatePairs( $rawJson );
 			$eventData = json_decode( $cleanedJson, true );
 		}
@@ -372,40 +356,5 @@ class MessageHandler {
 				$conn->send( $message );
 			}
 		}
-	}
-
-	/**
-	 * @param int $sessionId
-	 * @param Author $author
-	 * @return string
-	 */
-	private function reInitForClient( int $sessionId, Author $author ) {
-		$authors = $this->sessionDAO->getAllAuthorsFromSession( $sessionId );
-
-		$sessionAuthors = [];
-		foreach ( $authors as $author ) {
-			if ( $author == null ) {
-				continue;
-			}
-
-			$realName = ( isset( $author['value']['realName'] ) ) ? $author['value']['realName'] : '';
-			$sessionAuthors[$author['id']] = [
-				"name" => $author['value']['name'],
-				"realName" => $realName,
-				"color" => $author['value']['color']
-			];
-		}
-
-		$response = [
-			'history' => [
-				"start" => 0,
-				"transactions" => $this->sessionDAO->getFullHistoryFromSession( $sessionId ) ?: [],
-				"stores" => $this->sessionDAO->getFullStoresFromSession( $sessionId ) ?: [],
-				"selections" => $this->sessionDAO->getFullSelectionsFromSession( $sessionId ) ?: []
-			],
-			"authors" => $sessionAuthors
-		];
-
-		return $this->response( EventType::CONTENT, 'initDoc', json_encode( $response ) );
 	}
 }

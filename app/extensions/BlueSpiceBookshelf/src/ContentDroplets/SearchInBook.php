@@ -5,7 +5,7 @@ declare( strict_types = 1 );
 namespace BlueSpice\Bookshelf\ContentDroplets;
 
 use BS\ExtendedSearch\ContentDroplets\SearchDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class SearchInBook extends SearchDroplet {
 

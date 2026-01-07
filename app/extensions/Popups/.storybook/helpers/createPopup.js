@@ -1,9 +1,16 @@
 import { SIZES } from '../../src/ui/thumbnail';
 import { createPreviewWithType, layoutPreview, getClasses,
 	createLayout,
+	registerPreviewUI,
+	createPagePreview,
+	createDisambiguationPreview,
 	pointerSize, landscapePopupWidth, portraitPopupWidth
 } from '../../src/ui/renderer.js';
+import { previewTypes } from '../../src/preview/model';
 import scaleDownThumbnail from './scaleDownThumbnail';
+
+registerPreviewUI( previewTypes.TYPE_PAGE, createPagePreview );
+registerPreviewUI( previewTypes.TYPE_DISAMBIGUATION, createDisambiguationPreview );
 
 /**
  * @typedef {LayoutHint}
@@ -86,8 +93,8 @@ function createPopup( model, layoutHint ) {
 	link.setAttribute( 'href', '#' );
 	link.setAttribute( 'class', 'popups-storybook-link' );
 	link.textContent = `Page preview ${layout.flippedX ? 'flipped-x' : ''}
-		${layout.flippedY ? 'flipped-y' : ''} 
-		${preview.isTall ? '(landscape)' : '(portrait)'} 
+		${layout.flippedY ? 'flipped-y' : ''}
+		${preview.isTall ? '(landscape)' : '(portrait)'}
 		${preview.hasThumbnail ? 'with thumbnail' : ''}`;
 
 	wrapper.appendChild( link );
@@ -103,7 +110,7 @@ function createPopup( model, layoutHint ) {
 		pointerSize,
 		WINDOW_HEIGHT
 	);
-	wrapper.appendChild( preview.el[ 0 ] );
+	wrapper.appendChild( preview.el );
 	return wrapper.outerHTML;
 }
 

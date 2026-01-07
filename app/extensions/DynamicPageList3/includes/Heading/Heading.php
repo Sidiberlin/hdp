@@ -5,7 +5,7 @@ namespace MediaWiki\Extension\DynamicPageList3\Heading;
 use MediaWiki\Extension\DynamicPageList3\Article;
 use MediaWiki\Extension\DynamicPageList3\Lister\Lister;
 use MediaWiki\Extension\DynamicPageList3\Parameters;
-use Sanitizer;
+use MediaWiki\Parser\Sanitizer;
 
 class Heading {
 	/**
@@ -131,19 +131,19 @@ class Heading {
 	/**
 	 * Set extra list attributes.
 	 *
-	 * @param string $attributes
+	 * @param ?string $attributes
 	 */
 	public function setListAttributes( $attributes ) {
-		$this->listAttributes = Sanitizer::fixTagAttributes( $attributes, 'ul' );
+		$this->listAttributes = Sanitizer::fixTagAttributes( $attributes ?: '', 'ul' );
 	}
 
 	/**
 	 * Set extra item attributes.
 	 *
-	 * @param string $attributes
+	 * @param ?string $attributes
 	 */
 	public function setItemAttributes( $attributes ) {
-		$this->itemAttributes = Sanitizer::fixTagAttributes( $attributes, 'li' );
+		$this->itemAttributes = Sanitizer::fixTagAttributes( $attributes ?: '', 'li' );
 	}
 
 	/**
@@ -152,7 +152,7 @@ class Heading {
 	 * @param bool $show
 	 */
 	public function setShowHeadingCount( $show = false ) {
-		$this->showHeadingCount = boolval( $show );
+		$this->showHeadingCount = (bool)$show;
 	}
 
 	/**
@@ -182,7 +182,7 @@ class Heading {
 		$headings = Article::getHeadings();
 		$output = '';
 
-		if ( !empty( $headings ) ) {
+		if ( $headings ) {
 			if ( $columns != 1 || $rows != 1 ) {
 				$hspace = 2;
 

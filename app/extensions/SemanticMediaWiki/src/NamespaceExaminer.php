@@ -3,12 +3,13 @@
 namespace SMW;
 
 use InvalidArgumentException;
+use MediaWiki\Title\Title;
 
 /**
  * Examines if a specific namespace is enabled for the usage of the
  * Semantic MediaWiki extension
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 1.9
  *
  * @author mwjames
@@ -48,13 +49,12 @@ class NamespaceExaminer {
 	 *
 	 * @param Title|DIWikiPage $object
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function inNamespace( $object ) {
-
 		$namespace = null;
 
-		if ( $object instanceof \Title ) {
+		if ( $object instanceof Title ) {
 			$namespace = $object->getNamespace();
 		}
 
@@ -70,13 +70,12 @@ class NamespaceExaminer {
 	 *
 	 * @since 1.9
 	 *
-	 * @param integer $namespace
+	 * @param int $namespace
 	 *
-	 * @return boolean
+	 * @return bool
 	 * @throws InvalidArgumentException
 	 */
 	public function isSemanticEnabled( $namespace ) {
-
 		if ( !is_int( $namespace ) ) {
 			throw new InvalidArgumentException( "{$namespace} is not a number" );
 		}

@@ -27,6 +27,8 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 abstract class BSEntityConfigAttributeDefinitions extends Hook {
 	/**
@@ -60,8 +62,8 @@ abstract class BSEntityConfigAttributeDefinitions extends Hook {
 	}
 
 	/**
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param \BlueSpice\EntityConfig $entityConfig
 	 * @param array &$attributeDefinitions
 	 */

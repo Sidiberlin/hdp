@@ -5,13 +5,13 @@ declare( strict_types=1 );
 namespace MediaWiki\Extension\NotifyMe\Event;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
-use Message;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 use MWStake\MediaWiki\Component\Events\Delivery\IExternalChannel;
 use MWStake\MediaWiki\Component\Events\EventLink;
 use MWStake\MediaWiki\Component\Events\GroupableEvent;
-use Title;
 
 class EditPageEvent extends CreatePageEvent implements GroupableEvent {
 	/** @var int */
@@ -24,9 +24,9 @@ class EditPageEvent extends CreatePageEvent implements GroupableEvent {
 	 * @param UserIdentity $agent
 	 * @param Title $title
 	 * @param int $revId
-	 * @param int $diffTarget
+	 * @param int|null $diffTarget
 	 */
-	public function __construct( UserIdentity $agent, Title $title, int $revId, int $diffTarget ) {
+	public function __construct( UserIdentity $agent, Title $title, int $revId, ?int $diffTarget ) {
 		parent::__construct( $agent, $title );
 		$this->revId = $revId;
 		$this->diffTarget = $diffTarget;

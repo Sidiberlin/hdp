@@ -17,7 +17,6 @@
 	"bs-wikiexplorer-categories": "Categorias",
 	"bs-wikiexplorer-linked-files": "Arquivos associados",
 	"bs-wikiexplorer-linked-pages": "Páginas associadas",
-	"apihelp-bs-wikiexplorer-store-description": "Fornece todos os dados para a extensão WikiExplorer",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "Parâmetro da API para indicar se o MetaData já foi carregado.",
 	"apihelp-bs-wikiexplorer-store-summary": "Fornece todos os dados para a extensão WikiExplorer"
 }

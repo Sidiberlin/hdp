@@ -1,4 +1,4 @@
-ext.notifyme.ui.subscriptionset.Watchlist = function ( cfg ) {
+ext.notifyme.ui.subscriptionset.Watchlist = function ( cfg ) { // eslint-disable-line no-unused-vars
 	// Parent constructor
 	ext.notifyme.ui.subscriptionset.Watchlist.parent.apply( this, arguments );
 };
@@ -15,7 +15,7 @@ ext.notifyme.ui.subscriptionset.Watchlist.prototype.getKey = function () {
 	return 'watchlist';
 };
 
-ext.notifyme.ui.subscriptionset.Watchlist.prototype.getEditor = function ( dialog ) {
+ext.notifyme.ui.subscriptionset.Watchlist.prototype.getEditor = function ( dialog ) { // eslint-disable-line no-unused-vars
 	return null;
 };
 

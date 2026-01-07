@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Discovery;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 
 interface ISkinStructure {
 

@@ -10,31 +10,31 @@ bs.vec.ui.TextStyleInspector = function ( inspector, config ) {
 
 OO.inheritClass( bs.vec.ui.TextStyleInspector, ext.visualEditorPlus.ui.InlineTextInspectorElement );
 
-bs.vec.ui.TextStyleInspector.prototype.inspect = function ( range, selectedText ) {
-	var fragment = this.inspector.target.getSurface().getModel().getLinearFragment( range );
-	for ( var name in this.addedTools ) {
-		this.addedTools[name].setFragment( fragment );
+bs.vec.ui.TextStyleInspector.prototype.inspect = function ( range, selectedText ) { // eslint-disable-line no-unused-vars
+	const fragment = this.inspector.target.getSurface().getModel().getLinearFragment( range );
+	for ( const name in this.addedTools ) {
+		this.addedTools[ name ].setFragment( fragment );
 	}
 };
 
 bs.vec.ui.TextStyleInspector.prototype.init = function () {
-	let registry = bs.vec.registry.TextStyleTool.registry;
-	for( let name in registry ) {
-		if ( registry[name].hasOwnProperty( 'constructor' ) === false ) {
+	const registry = bs.vec.registry.TextStyleTool.registry;
+	for ( const name in registry ) {
+		if ( registry[ name ].hasOwnProperty( 'constructor' ) === false ) {
 			continue;
 		}
-		let tool = registry[name].constructor;
-		let toolInstance = new tool( {
-			surface: this.inspector.target.getSurface(),
+		const tool = registry[ name ].constructor;
+		const toolInstance = new tool( { // eslint-disable-line new-cap
+			surface: this.inspector.target.getSurface()
 		} );
-		this.addedTools[name] = toolInstance;
+		this.addedTools[ name ] = toolInstance;
 		this.$element.append( toolInstance.$element );
 	}
 };
 
 bs.vec.ui.TextStyleInspector.prototype.getTool = function ( name ) {
 	if ( this.addedTools.hasOwnProperty( name ) ) {
-		return this.addedTools[name];
+		return this.addedTools[ name ];
 	}
 	return null;
 };

@@ -4,7 +4,7 @@ namespace MediaWiki\Extension\PageCheckout;
 
 use ManualLogEntry;
 use MediaWiki\Extension\PageCheckout\Entity\CheckoutEntity;
-use User;
+use MediaWiki\User\User;
 
 class SpecialLogLogger {
 	/**

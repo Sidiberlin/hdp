@@ -31,8 +31,14 @@
 
 use BlueSpice\Api\Response\Standard;
 use BlueSpice\UtilityFactory;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Api\ApiUsageException;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
+use Wikimedia\Rdbms\DBError;
 
 /**
  * Api base class for simple tasks in BlueSpice
@@ -89,12 +95,6 @@ abstract class BSApiTasksBase extends \BlueSpice\Api {
 	protected $aReadTasks = [];
 
 	/**
-	 * Holds the context of the API call.
-	 * @var BSExtendedApiContext
-	 */
-	protected $oExtendedContext = null;
-
-	/**
 	 *
 	 * @var BSTasksApiSpec
 	 */
@@ -115,10 +115,10 @@ abstract class BSApiTasksBase extends \BlueSpice\Api {
 	 * the TaskRegistry in extension.json to be able to call your task in the new
 	 * generic task api BlueSpice\Api\Task with 'bs-task'
 	 */
-	public function __construct( \ApiMain $mainModule, $moduleName, $modulePrefix = '' ) {
+	public function __construct( ApiMain $mainModule, $moduleName, $modulePrefix = '' ) {
 		wfDebugLog( 'bluespice-deprecations', __METHOD__, 'private' );
 		parent::__construct( $mainModule, $moduleName, $modulePrefix );
-		$this->aTasks = array_merge( $this->aTasks,  $this->aGlobalTasks );
+		$this->aTasks = array_merge( $this->aTasks, $this->aGlobalTasks );
 		$this->oTasksSpec = new BSTasksApiSpec( $this->aTasks );
 		$this->utilityFactory = $this->services->getService( 'BSUtilityFactory' );
 	}
@@ -168,7 +168,7 @@ abstract class BSApiTasksBase extends \BlueSpice\Api {
 				&& !in_array( $sTask, $this->aReadTasks )
 			) {
 				$oResult->message = wfMessage( 'bs-readonly',
-					MediaWikiServices::getInstance()->getReadOnlyMode()->getReason() )->plain();
+					MediaWikiServices::getInstance()->getReadOnlyMode()->getReason() )->text();
 			} else {
 				$oTaskData = $this->getParameter( 'taskData' );
 				$this->services->getHookContainer()->run(
@@ -186,8 +186,7 @@ abstract class BSApiTasksBase extends \BlueSpice\Api {
 				if ( empty( $oResult->errors ) && empty( $oResult->message ) ) {
 					try {
 						$oResult = $this->$sMethod( $oTaskData, $aParams );
-					}
-					catch ( Exception $e ) {
+					} catch ( Exception $e ) {
 						$oResult->success = false;
 						$oResult->message = $e->getMessage();
 						$mCode = method_exists( $e, 'getCodeString' ) ? $e->getCodeString() : $e->getCode();
@@ -618,10 +617,16 @@ abstract class BSApiTasksBase extends \BlueSpice\Api {
 		return parent::getCustomPrinter();
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function isTaskDataSchemaCall() {
 		return $this->getRequest()->getVal( 'schema', null ) !== null;
 	}
 
+	/**
+	 * @return bool
+	 */
 	protected function isTaskDataExamplesCall() {
 		return $this->getRequest()->getVal( 'examples', null ) !== null;
 	}

@@ -5,14 +5,14 @@ namespace BlueSpice\Bookshelf;
 use BlueSpice\Bookshelf\Content\BookContent;
 use BlueSpice\Bookshelf\MenuEditor\Node\ChapterPlainText;
 use BlueSpice\Bookshelf\MenuEditor\Node\ChapterWikiLinkWithAlias;
-use Content;
-use FormatJson;
-use JsonContent;
+use MediaWiki\Content\Content;
+use MediaWiki\Content\JsonContent;
 use MediaWiki\Extension\MenuEditor\Node\MenuNode;
 use MediaWiki\Extension\MenuEditor\Parser\WikitextMenuParser;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\PageUpdater;
-use TitleFactory;
+use MediaWiki\Title\TitleFactory;
 
 class BookSourceParser extends WikitextMenuParser {
 

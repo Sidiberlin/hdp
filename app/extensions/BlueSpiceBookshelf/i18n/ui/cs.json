@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Jrobicek"
+		]
+	},
+	"bookshelfbookui": "Knižní editor",
+	"bookshelfbookmanager": "Správce knih",
+	"bs-bookshelfui-editor-no-title-provided": "Nebyl uveden žádný platný název knihy",
+	"bs-bookshelfui-widget-editor-link-text": "Upravit tuto knihu",
+	"bs-bookshelfui-new-book-title": "Vytvořit novou knihu",
+	"bs-bookshelfui-new-book-text": "Název knihy",
+	"bs-bookshelfui-delete-book-title": "Smazat knihu",
+	"bs-bookshelfui-delete-book-text": "Opravdu chcete smazat tuto knihu? Tagy \"knihovna\" <em>nebudou</em> automaticky odstraněny z propojených wikistránek!",
+	"bs-bookshelfui-edit-source": "Upravit zdrojovou wikistránku",
+	"bs-bookshelfui-open-source": "Zobrazit zdrojovou wikistránku",
+	"bs-bookshelfui-manager-title": "Titul",
+	"bs-bookshelfui-manager-deletingprogress-text": "Mazání vybrané knihy",
+	"bs-bookshelfui-manager-deletingprogress-title": "Mazání...",
+	"bs-bookshelfui-manager-deletionsuccess-title": "Úspěšně smazáno!",
+	"bs-bookshelfui-manager-deletionsuccess-text": "Kniha byla úspěšně smazána.",
+	"bs-bookshelfui-dlg-choosecategory-label": "Kategorie",
+	"bs-bookshelfui-dlg-type-label": "Zdroj",
+	"bs-bookshelfui-dlg-addmass-title": "Hromadné přidání",
+	"bs-bookshelfui-type-category": "Všechny stránky kategorie",
+	"bs-bookshelfui-book-title-link-edit": "Upravit knihu",
+	"bs-bookshelfui-book-title-link-edit-text": "Upravit knihu",
+	"bs-bookshelfui-chapterpager-previous": "Předchozí",
+	"bs-bookshelfui-chapterpager-next": "Další",
+	"bs-bookshelfui-panel-navigation-aria-desc": "Navigace v knize jako stromová struktura",
+	"bs-bookshelfui-bookmetatag-bookshelf": "Knihovna"
+}

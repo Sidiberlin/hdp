@@ -35,6 +35,8 @@ ve.dm.SurfaceSynchronizer = function VeDmSurfaceSynchronizer( surface, documentI
 	this.authorSelections = {};
 	this.documentId = documentId;
 
+	this.silentSessionEnd = false;
+
 	// Whether the document has been initialized
 	this.initialized = false;
 	// Whether we are currently synchronizing the model
@@ -361,7 +363,13 @@ ve.dm.SurfaceSynchronizer.prototype.getAuthorData = function ( authorId ) {
 	if ( !authorId ) {
 		authorId = this.getAuthorId();
 	}
-	return this.authors[ authorId ];
+	// This is not very nice, as we are hotswapping the name and realName, but alternative is
+	// Overriding ve.ce.Surface, so nope.
+	// Needed because surface will use `name` for the label on the cursor
+	// (line 5519: label: authorData.name)
+	const data = Object.assign( {}, this.authors[ authorId ] );
+	data.name = data.realName || data.name;
+	return data;
 };
 
 /**
@@ -378,7 +386,7 @@ ve.dm.SurfaceSynchronizer.prototype.onAuthorChange = function ( data, init = fal
 	// Notify when a new author joins
 	if ( !init && !this.authors[ authorId ] ) {
 		const name = authorData.realName ? authorData.realName : authorData.name;
-		const msg = mw.msg( 'collabpads-author-join', name );
+		const msg = mw.msg( 'collabpads-author-join', name, authorData.name );
 		mw.notify( msg, { type: 'warn' } );
 	}
 
@@ -397,7 +405,7 @@ ve.dm.SurfaceSynchronizer.prototype.changeAuthor = function ( data ) {
 ve.dm.SurfaceSynchronizer.prototype.onAuthorDisconnect = function ( authorId ) {
 	const realName = this.authors[ authorId ].realName;
 	const name = realName || this.authors[ authorId ].name;
-	const msg = mw.msg( 'collabpads-author-leave', name );
+	const msg = mw.msg( 'collabpads-author-leave', name, this.authors[ authorId ].name );
 	mw.notify( msg, { type: 'warn' } );
 	delete this.authors[ authorId ];
 	delete this.authorSelections[ authorId ];
@@ -424,8 +432,8 @@ ve.dm.SurfaceSynchronizer.prototype.alreadyLogedIn = function () {
 
 	// on closing redirect to view page
 	const fullPageName = mw.config.get( 'wgPageName' );
-	const pageUrl = `${location.protocol}//${location.host}${location.pathname}?title=${fullPageName}`;
-	windowManager.on( 'closing', function () {
+	const pageUrl = `${ location.protocol }//${ location.host }${ location.pathname }?title=${ fullPageName }`;
+	windowManager.on( 'closing', () => {
 		window.location.href = pageUrl;
 	} );
 };
@@ -441,7 +449,7 @@ ve.dm.SurfaceSynchronizer.prototype.onSaveRevision = function ( authorId ) {
 	if ( this.authors[ authorId ] ) {
 		const realName = this.authors[ authorId ].realName;
 		const name = realName || this.authors[ authorId ].name;
-		const msg = mw.msg( 'collabpads-author-save', name );
+		const msg = mw.msg( 'collabpads-author-save', name, this.authors[ authorId ].name );
 		mw.notify( msg, { type: 'warn' } );
 	}
 };
@@ -556,7 +564,9 @@ ve.dm.SurfaceSynchronizer.prototype.onNewChange = function ( serializedChange ) 
 	}
 	// Schedule submission of unsent local changes, if any
 	this.submitChangeThrottled();
-	this.updateAuthorsSinceLastChange();
+	if ( change.transactions && change.transactions.length ) {
+		this.updateAuthorsSinceLastChange();
+	}
 };
 
 ve.dm.SurfaceSynchronizer.prototype.onDisconnect = function () {
@@ -582,15 +592,33 @@ ve.dm.SurfaceSynchronizer.prototype.clearAuthorsSinceLastChange = function () {
 };
 
 ve.dm.SurfaceSynchronizer.prototype.invalidChange = function () {
+	this.openDialog( new collabpad.ui.InvalidChangeDialog( this.surface ) );
+};
+
+ve.dm.SurfaceSynchronizer.prototype.initFailed = function () {
+	const pageName = mw.config.get( 'wgTitle' );
+	mw.loader.using( [ 'ext.collabpads.api' ] ).then( () => {
+		const collabApi = new collabpads.api.Api();
+		collabApi.deleteSession( mw.config.get( 'wgNamespaceNumber' ), pageName );
+		this.silentSessionEnd = true;
+		this.socket.emit( 'deleteSession' );
+		this.openDialog( new collabpad.ui.InvalidInitializationDialog( this.surface ) );
+	} );
+
+};
+
+ve.dm.SurfaceSynchronizer.prototype.openDialog = function ( dialog ) {
 	const windowManager = new OO.ui.WindowManager();
 	$( document.body ).append( windowManager.$element );
-	const invalidChangeDialog = new collabpad.ui.InvalidChangeDialog( this.surface );
-	windowManager.addWindows( [ invalidChangeDialog ] );
-	windowManager.openWindow( invalidChangeDialog );
+	windowManager.addWindows( [ dialog ] );
+	windowManager.openWindow( dialog );
 };
 
 ve.dm.SurfaceSynchronizer.prototype.onDeleteSession = function () {
 	this.socket.disconnect();
+	if ( this.silentSessionEnd ) {
+		return;
+	}
 	const windowManager = new OO.ui.WindowManager();
 	$( document.body ).append( windowManager.$element );
 	const sessionEndedDialog = new OO.ui.MessageDialog();
@@ -609,8 +637,8 @@ ve.dm.SurfaceSynchronizer.prototype.onDeleteSession = function () {
 
 	// on closing redirect to view page
 	const fullPageName = mw.config.get( 'wgPageName' );
-	const pageUrl = `${location.protocol}//${location.host}${location.pathname}?title=${fullPageName}`;
-	windowManager.on( 'closing', function () {
+	const pageUrl = `${ location.protocol }//${ location.host }${ location.pathname }?title=${ fullPageName }`;
+	windowManager.on( 'closing', () => {
 		window.location.href = pageUrl;
 	} );
 };

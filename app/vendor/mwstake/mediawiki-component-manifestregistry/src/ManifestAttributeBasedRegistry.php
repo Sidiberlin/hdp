@@ -2,8 +2,8 @@
 
 namespace MWStake\MediaWiki\Component\ManifestRegistry;
 
-use ExtensionRegistry;
-use GlobalVarConfig;
+use MediaWiki\Config\GlobalVarConfig;
+use MediaWiki\Registration\ExtensionRegistry;
 
 class ManifestAttributeBasedRegistry implements IRegistry {
 
@@ -19,7 +19,7 @@ class ManifestAttributeBasedRegistry implements IRegistry {
 
 	/**
 	 *
-	 * @var \ExtensionRegistry
+	 * @var ExtensionRegistry
 	 */
 	protected $extensionRegistry = null;
 
@@ -32,7 +32,7 @@ class ManifestAttributeBasedRegistry implements IRegistry {
 	/**
 	 *
 	 * @param string $attribName
-	 * @param \ExtensionRegistry|null $extensionRegistry
+	 * @param ExtensionRegistry|null $extensionRegistry
 	 * @param array|null $overrides
 	 */
 	public function __construct( $attribName, $extensionRegistry = null, $overrides = null ) {

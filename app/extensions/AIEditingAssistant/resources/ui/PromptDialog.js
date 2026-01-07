@@ -2,7 +2,6 @@ ext.AIEditingAssistant.ui.PromptDialog = function ( config ) {
 	config = config || {};
 	config.size = 'small';
 	this.operationalText = config.operationalText;
-	console.log( this.operationalText );
 	ext.AIEditingAssistant.ui.PromptDialog.super.call( this, config );
 	this.activePage = null;
 };
@@ -34,9 +33,10 @@ ext.AIEditingAssistant.ui.PromptDialog.static.actions = [
 	}
 ];
 
-ext.AIEditingAssistant.ui.PromptDialog.prototype.getSetupProcess = function( data ) {
+ext.AIEditingAssistant.ui.PromptDialog.prototype.getSetupProcess = function ( data ) {
+	/* eslint-disable-next-line */
 	return ext.AIEditingAssistant.ui.PromptDialog.parent.prototype.getSetupProcess.call( this, data )
-		.next( function() {
+		.next( function () {
 			this.actions.setMode( 'selection' );
 		}, this );
 };
@@ -48,7 +48,8 @@ ext.AIEditingAssistant.ui.PromptDialog.prototype.initialize = function () {
 		$overlay: this.$overlay
 	} );
 	this.booklet.connect( this, {
-		loadingChange: function( page, isLoading, wasSuccessful, isMainCall ) {
+		loadingChange: function ( page, isLoading, wasSuccessful, isMainCall ) {
+			/* eslint-disable-next-line */
 			this.actions.setAbilities( { submit: !( isLoading || ( isMainCall && !wasSuccessful ) ) } );
 			if ( !isLoading ) {
 				this.updateSize();
@@ -56,7 +57,7 @@ ext.AIEditingAssistant.ui.PromptDialog.prototype.initialize = function () {
 		},
 		pageSet: 'onPageSet',
 		reset: 'onReset',
-		undo: function() {
+		undo: function () {
 			this.updateSize();
 		}
 	} );
@@ -85,6 +86,7 @@ ext.AIEditingAssistant.ui.PromptDialog.prototype.getActionProcess = function ( a
 	if ( action === 'cancel' ) {
 		this.close();
 	}
+	/* eslint-disable-next-line */
 	return ext.AIEditingAssistant.ui.PromptDialog.super.prototype.getActionProcess.call( this, action );
 };
 

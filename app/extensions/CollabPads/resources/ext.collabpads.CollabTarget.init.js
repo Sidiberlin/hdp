@@ -1,6 +1,21 @@
 /* eslint-disable no-jquery/no-global-selector */
+
 ( async function ( mw, $ ) {
 	$( '#mw-content-text' ).empty();
+
+	const selectFirstContentOffset = function ( surface ) {
+		var firstOffset = surface.getDocument().data.getNearestContentOffset(
+			surface.getAttachedRoot().getOffset(),
+			1
+		);
+		if ( firstOffset !== -1 ) {
+			// Found a content offset
+			surface.setLinearSelection( new ve.Range( firstOffset ) );
+		} else {
+			// Document is full of structural nodes, just give up
+			surface.setNullSelection();
+		}
+	};
 
 	try {
 		const conf = mw.config.get( 'wgVisualEditorConfig' );
@@ -47,7 +62,7 @@
 		// TODO: Create the correct model surface type (ve.ui.Surface#createModel)
 		const surfaceModel = new ve.dm.Surface( ve.dm.converter.getModelFromDom( ve.createDocumentFromHtml( '' ) ) );
 		surfaceModel.createSynchronizer(
-			`${mw.config.get( 'wgScriptPath' )}|${accessToken}|${importTitle}`,
+			`${ mw.config.get( 'wgScriptPath' ) }|${ accessToken }|${ importTitle }`,
 			{
 				server: uri,
 				defaultName: username,
@@ -75,8 +90,12 @@
 
 				try {
 					target.once( 'surfaceReady', async () => {
-						await handleInitialisation( target, surfaceModel, pageExists, importTitle );
-						surfaceModel.selectFirstContentOffset();
+						try {
+							await handleInitialisation( target, surfaceModel, pageExists, importTitle );
+							selectFirstContentOffset( surfaceModel );
+						} catch ( e ) {
+							surfaceModel.synchronizer.initFailed();
+						}
 					} );
 				} catch ( err ) {
 					throw new Error( err );
@@ -84,7 +103,7 @@
 			} );
 		} );
 	} catch ( e ) {
-		mw.log.warn( `VisualEditor failed to load: ${e}` );
+		mw.log.warn( `VisualEditor failed to load: ${ e }` );
 	}
 
 	async function handleInitialisation( target, surfaceModel, pageExists, importTitle ) {
@@ -98,7 +117,7 @@
 				const fragment = surfaceModel.getLinearFragment( new ve.Range( 0, 2 ) );
 				fragment.insertDocument( dmDoc );
 			} else {
-				throw new Error( `No content for ${importTitle}` );
+				throw new Error( `No content for ${ importTitle }` );
 			}
 		}
 	}

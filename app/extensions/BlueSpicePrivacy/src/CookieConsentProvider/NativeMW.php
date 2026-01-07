@@ -3,14 +3,14 @@
 namespace BlueSpice\Privacy\CookieConsentProvider;
 
 use BlueSpice\Privacy\ICookieConsentProvider;
-use Config;
 use Exception;
-use ExtensionRegistry;
-use FormatJson;
-use HashConfig;
-use Message;
-use RawMessage;
-use WebRequest;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\HashConfig;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
+use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\Request\WebRequest;
 
 class NativeMW extends Base {
 	/**

@@ -2,13 +2,16 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface;
 
-use Config;
+use MediaWiki\Config\Config;
+use MediaWiki\Hook\SiteNoticeAfterHook;
+use MediaWiki\Hook\SkinAfterContentHook;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
-use OutputPage;
 use Skin;
 
-class Setup {
+class Setup implements SkinAfterContentHook, SiteNoticeAfterHook, BeforePageDisplayHook {
 
 	/**
 	 *
@@ -16,7 +19,7 @@ class Setup {
 	 * @param Skin $skin
 	 * @return bool
 	 */
-	public static function onSkinAfterContent( &$data, Skin $skin ) {
+	public function onSkinAfterContent( &$data, $skin ) {
 		$services = MediaWikiServices::getInstance();
 		/** @var SkinSlotRendererFactory */
 		$skinSlotRendererFactory = $services->getService( 'MWStakeCommonUISkinSlotRendererFactory' );
@@ -33,7 +36,7 @@ class Setup {
 	 * @param Skin $skin
 	 * @return bool
 	 */
-	public static function onSiteNoticeAfter( &$siteNotice, $skin ) {
+	public function onSiteNoticeAfter( &$siteNotice, $skin ) {
 		$services = MediaWikiServices::getInstance();
 		/** @var SkinSlotRendererFactory */
 		$skinSlotRendererFactory = $services->getService( 'MWStakeCommonUISkinSlotRendererFactory' );
@@ -50,7 +53,7 @@ class Setup {
 	 * @param Skin $skin
 	 * @return bool
 	 */
-	public static function onBeforePageDisplay( OutputPage $out, Skin $skin ) {
+	public function onBeforePageDisplay( $out, $skin ): void {
 		$services = MediaWikiServices::getInstance();
 		/** @var ComponentManager */
 		$componentManager = $services->getService( 'MWStakeCommonUIComponentManager' );
@@ -59,7 +62,6 @@ class Setup {
 		$out->addModuleStyles( $componentManager->getRLModuleStyles() );
 
 		$out->addModules( 'mwstake.component.commonui' );
-		return true;
 	}
 
 	/**

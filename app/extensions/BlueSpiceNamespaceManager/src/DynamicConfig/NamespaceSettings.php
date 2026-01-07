@@ -65,7 +65,10 @@ class NamespaceSettings implements IDynamicConfig {
 		$aliases = $additionalData['aliasesMap'] ?? [];
 		$namespaceDefinition = $additionalData['userNSDefinition'] ?? [];
 
-		$globals = [];
+		$globals = [
+			'wgExtraNamespaces' => [],
+			'wgNamespaceAliases' => $GLOBALS['wgNamespaceAliases'] ?? [],
+		];
 		$serialized = [ 'constants' => [] ];
 
 		foreach ( $namespaceDefinition as $nsId => $definition ) {
@@ -105,6 +108,7 @@ class NamespaceSettings implements IDynamicConfig {
 		}
 		$serialized['globals'] = $globals;
 
+		$this->hookContainer->run( 'NamespaceManagerBeforeSerializeSettings', [ $serialized ] );
 		return serialize( $serialized );
 	}
 

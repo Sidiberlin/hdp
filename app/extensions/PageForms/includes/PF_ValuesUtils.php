@@ -8,6 +8,7 @@
  */
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 class PFValuesUtils {
 
@@ -17,27 +18,27 @@ class PFValuesUtils {
 	 * @param Store $store
 	 * @param Title $subject
 	 * @param string $propID
-	 * @param SMWRequestOptions|null $requestOptions
+	 * @param \SMW\RequestOptions|null $requestOptions
 	 * @return array
 	 * @suppress PhanUndeclaredTypeParameter For Store
 	 */
 	public static function getSMWPropertyValues( $store, $subject, $propID, $requestOptions = null ) {
 		// If SMW is not installed, exit out.
-		if ( !class_exists( 'SMWDIWikiPage' ) ) {
+		if ( !class_exists( '\SMW\DIWikiPage' ) ) {
 			return [];
 		}
 		if ( $subject === null ) {
 			$page = null;
 		} else {
-			$page = SMWDIWikiPage::newFromTitle( $subject );
+			$page = \SMW\DIWikiPage::newFromTitle( $subject );
 		}
-		$property = SMWDIProperty::newFromUserLabel( $propID );
+		$property = \SMW\DIProperty::newFromUserLabel( $propID );
 		$res = $store->getPropertyValues( $page, $property, $requestOptions );
 		$values = [];
 		foreach ( $res as $value ) {
 			if ( $value instanceof SMWDIUri ) {
 				$values[] = $value->getURI();
-			} elseif ( $value instanceof SMWDIWikiPage ) {
+			} elseif ( $value instanceof \SMW\DIWikiPage ) {
 				$realValue = str_replace( '_', ' ', $value->getDBKey() );
 				if ( $value->getNamespace() != 0 ) {
 					$realValue = PFUtils::getCanonicalName( $value->getNamespace() ) . ":$realValue";
@@ -60,8 +61,15 @@ class PFValuesUtils {
 	 * @return array
 	 */
 	public static function getCategoriesForPage( $title ) {
-		$categories = [];
 		$db = PFUtils::getReadDB();
+		if ( !$db->fieldExists( 'categorylinks', 'cl_to' ) ) {
+			// MW 1.45+
+			// Just call the original function, instead of
+			// trying to create a simplified version of it.
+			return $title->getParentCategories();
+		}
+
+		$categories = [];
 		$titlekey = $title->getArticleID();
 		if ( $titlekey == 0 ) {
 			// Something's wrong - exit
@@ -115,7 +123,7 @@ class PFValuesUtils {
 		if ( $store == null ) {
 			return [];
 		}
-		$requestoptions = new SMWRequestOptions();
+		$requestoptions = new \SMW\RequestOptions();
 		$requestoptions->limit = self::getMaxValuesToRetrieve();
 		$values = self::getSMWPropertyValues( $store, null, $property_name, $requestoptions );
 		sort( $values );
@@ -169,7 +177,7 @@ SELECT ?value  WHERE {
 ?value " . $attributesQuery . " .
 ?value rdfs:label ?valueLabel .
 FILTER(LANG(?valueLabel) = \"" . $wgLanguageCode . "\") .
-FILTER(REGEX(LCASE(?valueLabel), \"\\\\b" . strtolower( $substring ) . "\"))
+FILTER(REGEX(LCASE(?valueLabel), \"\\\\b" . strtolower( $substring ?? '' ) . "\"))
 } ";
 		$maxValues = self::getMaxValuesToRetrieve( $substring );
 		$sparqlQueryString .= "LIMIT " . ( $maxValues + 10 );
@@ -232,6 +240,7 @@ SERVICE wikibase:label { bd:serviceParam wikibase:language \"" . $wgLanguageCode
 
 		try {
 			$sqlQuery = CargoSQLQuery::newFromValues( $tableName, $fieldName, $whereStr, $joinOnStr = null, $fieldName, $havingStr = null, $fieldName, $limitStr, $offsetStr = 0 );
+		// @phan-suppress-next-line PhanUnusedVariableCaughtException
 		} catch ( Exception $e ) {
 			return [];
 		}
@@ -310,7 +319,7 @@ SERVICE wikibase:label { bd:serviceParam wikibase:language \"" . $wgLanguageCode
 						$conditions[] = '((pp_displaytitle.pp_value IS NULL OR pp_displaytitle.pp_value = \'\') AND (' .
 							self::getSQLConditionForAutocompleteInColumn( 'page_title', $substring ) .
 							')) OR ' .
-							self::getSQLConditionForAutocompleteInColumn( 'pp_displaytitle.pp_value', $substring ) .
+							self::getSQLConditionForAutocompleteInColumn( 'pp_displaytitle.pp_value', $substring, false ) .
 							' OR page_namespace = ' . NS_CATEGORY;
 					}
 				} else {
@@ -427,12 +436,11 @@ SERVICE wikibase:label { bd:serviceParam wikibase:language \"" . $wgLanguageCode
 		}
 
 		global $wgPageFormsUseDisplayTitle;
-		$conceptDI = SMWDIWikiPage::newFromTitle( $conceptTitle );
-		$desc = new SMWConceptDescription( $conceptDI );
-		$printout = new SMWPrintRequest( SMWPrintRequest::PRINT_THIS, "" );
+		$conceptDI = \SMW\DIWikiPage::newFromTitle( $conceptTitle );
+		$desc = new \SMW\Query\Language\ConceptDescription( $conceptDI );
+		$printout = new \SMW\Query\PrintRequest( \SMW\Query\PrintRequest::PRINT_THIS, "" );
 		$desc->addPrintRequest( $printout );
 		$query = new SMWQuery( $desc );
-		$query->setLimit( self::getMaxValuesToRetrieve( $substring ) );
 		$query_result = $store->getQueryResult( $query );
 		$pages = [];
 		$sortkeys = [];
@@ -509,6 +517,9 @@ SERVICE wikibase:label { bd:serviceParam wikibase:language \"" . $wgLanguageCode
 			$sortkeys = $filtered_sortkeys;
 		}
 		array_multisort( $sortkeys, $pages );
+		// Set the "limit" here.
+		$pages = array_slice( $pages, 0, self::getMaxValuesToRetrieve( $substring ), true );
+
 		return $pages;
 	}
 
@@ -633,9 +644,9 @@ SERVICE wikibase:label { bd:serviceParam wikibase:language \"" . $wgLanguageCode
 			if ( array_key_exists( 'pp_displaytitle_value', $row ) &&
 				( $row[ 'pp_displaytitle_value' ] ) !== null &&
 				trim( str_replace( '&#160;', '', strip_tags( $row[ 'pp_displaytitle_value' ] ) ) ) !== '' ) {
-				$pages[ $title ] = htmlspecialchars_decode( $row[ 'pp_displaytitle_value'], ENT_QUOTES );
+				$pages[ $title . '@' ] = htmlspecialchars_decode( $row[ 'pp_displaytitle_value'], ENT_QUOTES );
 			} else {
-				$pages[ $title ] = $title;
+				$pages[ $title . '@' ] = $title;
 			}
 			if ( array_key_exists( 'pp_defaultsort_value', $row ) &&
 				( $row[ 'pp_defaultsort_value' ] ) !== null ) {
@@ -646,8 +657,7 @@ SERVICE wikibase:label { bd:serviceParam wikibase:language \"" . $wgLanguageCode
 		}
 		$res->free();
 
-		array_multisort( $sortkeys, $pages );
-		return $pages;
+		return self::fixedMultiSort( $sortkeys, $pages );
 	}
 
 	/**
@@ -756,7 +766,7 @@ SERVICE wikibase:label { bd:serviceParam wikibase:language \"" . $wgLanguageCode
 			$autocompletionSource = null;
 		}
 
-		if ( $wgCapitalLinks && $autocompleteFieldType != 'external_url' && $autocompleteFieldType != 'cargo field' && $autocompleteFieldType != 'semantic_query' ) {
+		if ( $wgCapitalLinks && in_array( $autocompleteFieldType, [ 'category', 'concept', 'namespace', 'property' ] ) ) {
 			$autocompletionSource = PFUtils::getContLang()->ucfirst( $autocompletionSource );
 		}
 
@@ -874,7 +884,7 @@ SERVICE wikibase:label { bd:serviceParam wikibase:language \"" . $wgLanguageCode
 		}
 		$return_values = [];
 		foreach ( $data->pfautocomplete as $val ) {
-			$return_values[] = $val->title;
+			$return_values[$val->title] = $val->displaytitle ?? $val->title;
 		}
 		return $return_values;
 	}
@@ -929,7 +939,7 @@ SERVICE wikibase:label { bd:serviceParam wikibase:language \"" . $wgLanguageCode
 		global $wgPageFormsMaxAutocompleteValues;
 		global $wgPageFormsUseDisplayTitle;
 
-		$rawQuery = $rawQuery . "|named args=yes|link=none|limit=$wgPageFormsMaxAutocompleteValues|searchlabel=";
+		$rawQuery .= "|named args=yes|link=none|limit=$wgPageFormsMaxAutocompleteValues|searchlabel=";
 		$rawQueryArray = explode( "|", $rawQuery );
 		[ $queryString, $processedParams, $printouts ] = SMWQueryProcessor::getComponentsFromFunctionParams( $rawQueryArray, false );
 		SMWQueryProcessor::addThisPrintout( $printouts, $processedParams );

@@ -3,7 +3,7 @@
 namespace BlueSpice\QrCode\ContentDroplet;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\TagDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class QrCodeDroplet extends TagDroplet {
 

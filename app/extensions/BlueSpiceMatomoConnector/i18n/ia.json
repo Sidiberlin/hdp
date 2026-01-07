@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bs-matomoconnector-extension-description": "Permitte le integration de Matomo in le wiki pro crear tabulieros de instrumentos in Matomo",
+	"bs-matomoconnector-pref-bsprivacyintegration": "Integration de BlueSpicePrivacy",
+	"bs-matomoconnector-pref-bsprivacyintegration-help": "Activar le integration de BlueSpicePrivacy. Le installation de Matomo debe haber le plug-in AjaxOptOut activate. Vide docs/PrivacyIntegration.md",
+	"bs-matomoconnector-pref-siteid": "ID del sito",
+	"bs-matomoconnector-pref-siteid-help": "Le ID del sito Matomo. Illo pote esser trovate como parametro del URL in le barra de adresse del navigator quando tu ha aperite session in Matomo.",
+	"bs-matomoconnector-pref-baseurl": "URL de base",
+	"bs-matomoconnector-pref-baseurl-help": "Le URL radice del installation Matomo sin ID de sito.",
+	"bs-matomoconnector-pref-authtoken": "Token de authentication",
+	"bs-matomoconnector-pref-authtoken-help": "Le token de authentication usate pro le API HTTP. Illo pote esser trovate in Matomo: Administration -> Personal -> Securitate -> Tokens de authentication",
+	"bs-matomoconnector-pref-optoutfooter": "Monstrar ligamine pro excluder se in pede",
+	"bs-matomoconnector-pref-optoutfooter-help": "Monstra le ligamine “Servicio de analyse” in le pede del wiki. Le pagina del servicio de analyse include un quadrato de selection pro excluder se de Matomo.",
+	"bs-matomoconnector-special-optoutheading": "Servicio de analyse",
+	"bs-matomoconnector-special-privacynote": "<p>Nostre sito web usa Matomo, que es un servicio de analyse web. Matomo usa lo que se appella “cookies”. Istes es micre files de texto que se immagazina sur tu computator e que nos permitte analysar le uso de nostre sito web. Le information de uso generate per le cookies (incluse tu adresse IP abbreviate) es transmittite a nostre servitor e salveguardate de sorta que nos pote analysar le uso de nostre sito web, lo que servi pro adjutar nos a optimisar nostre sito. Tu adresse IP es immediatemente anonymisate in iste procedura, de maniera que tu remane anonyme pro nos como usator. Le information sur tu uso del sito web generate per le cookies non essera transferite a tertios. Tu pote impedir le uso de cookies usante le parametros pertinente in tu navigator web. Nonobstante, isto pote significar que tu non pote usar tote le functionalitate del sito web.</p>\n<br />\n<p>Si tu non concorda con le immagazinage e evalutation de iste datos concernente tu uso del sito web, tu pote excluder te de iste immagazinage e uso a omne momento con un clic de mus infra. In iste caso, un cookie appellate \"cookie de exclusion\" essera salveguardate, que impedi a Matomo de immagazinar alcun datos de session. Per favor nota: si tu dele tu cookies, isto dele etiam le cookie de exclusion, le qual tu deberea reactivar postea.</p>\n<br />\n<h3>Contradiction:</h3>",
+	"bs-matomoconnector-optout-footerlink": "Servicio de analyse",
+	"bs-matomoconnector-privacy-cookie-group": "Matomo",
+	"bs-matomoconnector-privacy-cookie-group-desc": "Nostre sito web usa Matomo, que es un servicio de analyse web. Matomo usa lo que se appella “cookies”. Istes es micre files de texto que se immagazina sur tu computator e que nos permitte analysar le uso de nostre sito web. Le information de uso generate per le cookies (incluse tu adresse IP abbreviate) es transmittite a nostre servitor e salveguardate de sorta que nos pote analysar le uso de nostre sito web, lo que servi pro adjutar nos a optimisar nostre sito. Tu adresse IP es immediatemente anonymisate in iste procedura, de maniera que tu remane anonyme pro nos como usator. Le information sur tu uso del sito web generate per le cookies non essera transferite a tertios."
+}

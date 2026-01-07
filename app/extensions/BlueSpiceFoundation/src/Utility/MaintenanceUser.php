@@ -2,21 +2,23 @@
 
 namespace BlueSpice\Utility;
 
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\User\User;
 
 class MaintenanceUser {
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $config = null;
 
 	/**
 	 *
-	 * @param \Config $config
+	 * @param Config $config
 	 */
-	public function __construct( \Config $config ) {
+	public function __construct( Config $config ) {
 		$this->config = $config;
 	}
 
@@ -30,10 +32,10 @@ class MaintenanceUser {
 
 	/**
 	 *
-	 * @param \User|null $user
+	 * @param User|null $user
 	 * @return bool
 	 */
-	public function isMaintenanceUser( \User $user = null ) {
+	public function isMaintenanceUser( ?User $user = null ) {
 		if ( !$user ) {
 			return false;
 		}
@@ -43,10 +45,10 @@ class MaintenanceUser {
 	/**
 	 * @param int $expireInSeconds - Expire the users groups after the next
 	 * x seconds. min 10 seconds
-	 * @return \User
+	 * @return User
 	 */
 	public function getUser( $expireInSeconds = 10 ) {
-		$user = \User::newSystemUser(
+		$user = User::newSystemUser(
 			$this->getUserName(),
 			$this->getOptions()
 		);
@@ -83,10 +85,10 @@ class MaintenanceUser {
 
 	/**
 	 *
-	 * @param \User $user
+	 * @param User $user
 	 * @param int|null $expiry
 	 */
-	protected function addGroups( \User $user, $expiry ) {
+	protected function addGroups( User $user, $expiry ) {
 		// removed the group expiry feature for now, because this could end in
 		// deadlocks:
 		// Query: UPDATE `user_groups` SET ug_expiry = '20180813134139'
@@ -96,7 +98,6 @@ class MaintenanceUser {
 		$expiry = null;
 
 		$userGroupManager = MediaWikiServices::getInstance()->getUserGroupManager();
-
 		foreach ( $this->getGroups() as $group ) {
 			if ( in_array( $group, $userGroupManager->getUserGroups( $user ) ) ) {
 				continue;

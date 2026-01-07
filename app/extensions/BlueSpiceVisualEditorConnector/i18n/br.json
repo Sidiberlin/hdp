@@ -8,7 +8,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Orin",
 	"bs-visualeditorconnector-upload-type-simple": "Eeun",
 	"bs-visualeditorconnector-upload-type-one-click": "Ur c'hlik",
-	"bs-visualeditorconnector-upload-type": "Seurt enporzhiañ",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Nullañ ar c'hemmoù",
 	"bs-visualeditorconnector-cancel-edit": "Nullañ ar c'hemmoù. Kollet e vo ar c'hemmoù n'int ket bet enrollet.",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Ha sur oc'h e fell deoc'h nullañ ar c'hemmoù ? Kollet e vo ar c'hemmoù n'int ket bet enrollet.",
@@ -50,5 +49,6 @@
 	"bs-vec-table-border-right": "Dehou",
 	"bs-vec-table-border-bottom": "Traoñ",
 	"bs-vec-table-border-all": "An holl",
-	"bs-vec-table-border-double": "Doubl"
+	"bs-vec-table-border-double": "Doubl",
+	"bs-visualeditorconnector-upload-type": "Seurt enporzhiañ"
 }

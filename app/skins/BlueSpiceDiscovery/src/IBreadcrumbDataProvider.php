@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Discovery;
 
-use Title;
+use MediaWiki\Title\Title;
 
 interface IBreadcrumbDataProvider {
 
@@ -30,4 +30,10 @@ interface IBreadcrumbDataProvider {
 	 * @return bool
 	 */
 	public function applies( Title $title ): bool;
+
+	/**
+	 * @param array $node
+	 * @return bool
+	 */
+	public function isSelfLink( $node ): bool;
 }

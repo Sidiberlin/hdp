@@ -4,5 +4,7 @@
 	},
 	"numberheadings-desc": "Nummerieren von Überschriften in Inhalts-Namensräumen",
 	"numberheadings-conf-exlude-namespaces": "Ausschließen von Namensräumen aus der Überschriftennummerierung",
-	"numberheadings-conf-enable": "Überschriftennummerierung aktivieren"
+	"numberheadings-conf-enable": "Überschriftennummerierung aktivieren",
+	"numberheadings-conf-enable-numbering": "Nummerierung der Überschriften anzeigen",
+	"numberheadings-conf-enable-numbering-help": "Fügt die Nummern des Inhaltsverzeichnisses zu den Seitenüberschriften hinzu"
 }

@@ -18,7 +18,7 @@ ext.contentdroplets.ui.ContentDropletPage.prototype.setupOutlineItem = function 
 };
 
 ext.contentdroplets.ui.ContentDropletPage.prototype.setupWidget = function () {
-	var key, widget;
+	let key, widget;
 	this.widgets = [];
 	for ( key in this.droplets ) {
 		// eslint-disable-next-line no-prototype-builtins
@@ -39,7 +39,6 @@ ext.contentdroplets.ui.ContentDropletPage.prototype.setupWidget = function () {
 	}
 
 	this.widgetsLayout = new OO.ui.HorizontalLayout( {
-		// eslint-disable-next-line compat/compat, es/no-object-values
 		items: Object.values( this.widgets )
 	} );
 

@@ -12,7 +12,7 @@ class ExternalDataHooks {
 	 * @param Parser $parser
 	 * @return bool
 	 */
-	public static function registerParser( Parser $parser ) {
+	public static function registerParser( Parser $parser ): bool {
 		// Add data retrieval parser functions as defined by $wgExternalDataConnectors.
 		global $wgExternalDataAllowGetters;
 		if ( $wgExternalDataAllowGetters ) {
@@ -20,7 +20,7 @@ class ExternalDataHooks {
 				$parser->setFunctionHook(
 					$parser_function,
 					static function ( Parser $parser, ...$params ) use ( $parser_function ) {
-						$title = $parser->getTitle();
+						$title = method_exists( 'Parser', 'getPage' ) ? $parser->getPage() : $parser->getTitle();
 						return EDParserFunctions::fetch( $title, $parser_function, $params );
 					}
 				);
@@ -39,11 +39,12 @@ class ExternalDataHooks {
 		if ( class_exists( 'CargoDisplayFormat' ) ) {
 			$parser->setFunctionHook( 'format_external_table', [ 'EDParserFunctions', 'doFormatExternalTable' ] );
 		}
-		if ( class_exists( '\SMW\ParserFunctionFactory' ) ) {
-			$parser->setFunctionHook( 'store_external_table', [ 'EDParserFunctions', 'doStoreExternalTable' ] );
-		}
 
-		EDConnectorExe::registerTags( $parser );
+		// Register tags for backward compatibility with other extensions.
+		foreach ( EDConnectorBase::emulatedTags() as $tag => $function ) {
+			$parser->setHook( $tag, $function );
+			// @todo: add code for Parsoid.
+		}
 
 		return true; // always return true, in order not to stop MW's hook processing!
 	}
@@ -53,7 +54,7 @@ class ExternalDataHooks {
 	 * @param array &$extraLibraries
 	 * @return bool
 	 */
-	public static function registerLua( $engine, array &$extraLibraries ) {
+	public static function registerLua( string $engine, array &$extraLibraries ): bool {
 		$class = 'EDScribunto';
 		// Autoload class here and not in extension.json, so that it is not loaded if Scribunto is not enabled.
 		global $wgAutoloadClasses;
@@ -68,7 +69,7 @@ class ExternalDataHooks {
 	 * @param array &$software
 	 */
 	public static function onSoftwareInfo( array &$software ) {
-		EDConnectorExe::addSoftware( $software );
+		EDConnectorBase::addSoftware( $software );
 	}
 
 	/**
@@ -86,7 +87,14 @@ class ExternalDataHooks {
 	 * @return void
 	 */
 	public static function onLoadExtensionSchemaUpdates( DatabaseUpdater $updater ) {
+		$dbType = $updater->getDB()->getType();
 		// Create ed_url_cache table. The obsolete setting $edgCacheTable is ignored.
-		$updater->addExtensionTable( 'ed_url_cache', __DIR__ . '/../sql/ExternalData.sql' );
+		$updater->addExtensionTable( 'ed_url_cache', __DIR__ . "/../sql/$dbType/ExternalData.sql" );
+		// T376241: Drop the post_vars column since it is unused
+		$updater->dropExtensionField(
+			'ed_url_cache',
+			'post_vars',
+			__DIR__ . "/../maintenance/archives/$dbType/patch-ed_url_cache-drop-post_vars.sql",
+		);
 	}
 }

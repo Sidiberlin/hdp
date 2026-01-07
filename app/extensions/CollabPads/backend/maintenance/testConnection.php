@@ -28,7 +28,6 @@ echo "Connecting to $connectionString\n";
 try {
 	$client = new Client( $connectionString );
 	echo "Connected successfully\n";
-}
-catch ( Exception $e ) {
+} catch ( Exception $e ) {
 	echo "Failed to connect: " . $e->getMessage() . "\n";
 }

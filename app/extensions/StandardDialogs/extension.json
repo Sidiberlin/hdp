@@ -1,6 +1,6 @@
 {
 	"name": "StandardDialogs",
-	"version": "2.1.2",
+	"version": "3.0.5",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[https://www.hallowelt.com Hallo Welt! GmbH]"
@@ -8,9 +8,9 @@
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:StandardDialogs",
 	"descriptionmsg": "standarddialogs-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"OOJSPlus": ">= 2.0.0"
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"attributes": {
@@ -20,6 +20,11 @@
 			],
 			"FilelistPluginModules": [
 				"ext.standardDialogs.filelist"
+			]
+		},
+		"CognitiveProcessDesigner": {
+			"ProcessOverviewPluginModules": [
+				"ext.standardDialogs.cpd"
 			]
 		}
 	},
@@ -67,7 +72,8 @@
 				"standarddialogs-btn-done",
 				"standarddialogs-btn-cancel",
 				"standarddialogs-delete-subpages",
-				"standarddialogs-confirm-mass-deletion"
+				"standarddialogs-confirm-mass-deletion",
+				"standarddialogs-delete-btn-label"
 			],
 			"dependencies": [
 				"oojs-ui-windows"
@@ -90,7 +96,9 @@
 				"movepagebtn",
 				"move-subpages",
 				"standarddialogs-btn-done",
-				"standarddialogs-btn-cancel"
+				"standarddialogs-btn-cancel",
+				"standarddialogs-validation-page-exist-info-label",
+				"standarddialogs-move-btn-label"
 			],
 			"dependencies": [
 				"oojs-ui-windows",
@@ -124,7 +132,8 @@
 				"protect-otherreason-op",
 				"watchthis",
 				"standarddialogs-btn-done",
-				"standarddialogs-btn-cancel"
+				"standarddialogs-btn-cancel",
+				"standarddialogs-protect-btn-label"
 			],
 			"dependencies": [
 				"oojs-ui-windows"
@@ -143,7 +152,8 @@
 				"confirm-purge-top",
 				"confirm-purge-bottom",
 				"standarddialogs-btn-done",
-				"standarddialogs-btn-cancel"
+				"standarddialogs-btn-cancel",
+				"standarddialogs-purge-btn-label"
 			],
 			"dependencies": [
 				"oojs-ui-windows"
@@ -162,7 +172,9 @@
 				"standarddialogs-copy-subpages",
 				"standarddialogs-copy-discussion",
 				"standarddialogs-btn-done",
-				"standarddialogs-btn-cancel"
+				"standarddialogs-btn-cancel",
+				"standarddialogs-validation-page-exist-info-label",
+				"standarddialogs-copy-btn-label"
 			],
 			"dependencies": [
 				"oojs-ui-windows",
@@ -228,7 +240,9 @@
 				"create",
 				"standarddialogs-btn-done",
 				"standarddialogs-btn-cancel",
-				"standarddialogs-new-page-not-exist-label"
+				"standarddialogs-new-page-not-exist-label",
+				"standarddialogs-validation-page-exist-info-label",
+				"standarddialogs-new-page-btn-label"
 			],
 			"dependencies": [
 				"oojs-ui-windows",
@@ -239,6 +253,7 @@
 		"ext.standardDialogs.ui.NewSubpageDialog": {
 			"scripts": [
 				"StandardDialogs.ui/BaseDialog.js",
+				"widgets/SubpageTitleWidget.js",
 				"StandardDialogs.ui/NewSubpageDialog.js"
 			],
 			"messages": [
@@ -246,7 +261,9 @@
 				"standarddialogs-new-subpage-label",
 				"create",
 				"standarddialogs-btn-done",
-				"standarddialogs-btn-cancel"
+				"standarddialogs-btn-cancel",
+				"standarddialogs-validation-page-exist-info-label",
+				"standarddialogs-new-subpage-btn-label"
 			],
 			"dependencies": [
 				"oojs-ui-windows",
@@ -278,6 +295,15 @@
 				{
 					"name": "deleteDialogMsg.json",
 					"callback": "MediaWiki\\Extension\\StandardDialogs\\ClientConfig::makeDeleteDialogMsgJson"
+				}
+			]
+		},
+		"ext.standardDialogs.cpd": {
+			"packageFiles": [
+				"ext.standardDialogs.cpd.js",
+				{
+					"name": "pageInfoPanelModuleRegistry.json",
+					"callback": "MediaWiki\\Extension\\StandardDialogs\\ClientConfig::makePageInfoPanelModuleRegistryJson"
 				}
 			]
 		}

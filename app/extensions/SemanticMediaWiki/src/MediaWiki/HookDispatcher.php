@@ -2,23 +2,23 @@
 
 namespace SMW\MediaWiki;
 
-use Hooks;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\RevisionRecord;
-use SMW\Store;
-use SMW\SQLStore\TableBuilder;
-use SMW\Options;
-use SMW\Parser\AnnotationProcessor;
-use SMW\Property\Annotator as PropertyAnnotator;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use Onoi\MessageReporter\MessageReporter;
-use SMW\Schema\SchemaTypes;
 use SMW\Constraint\ConstraintRegistry;
 use SMW\Listener\ChangeListener\ChangeListeners\PropertyChangeListener;
 use SMW\MediaWiki\Specials\Admin\OutputFormatter;
 use SMW\MediaWiki\Specials\Admin\TaskHandlerRegistry;
-use Title;
-use User;
+use SMW\Options;
+use SMW\Parser\AnnotationProcessor;
+use SMW\Property\Annotator as PropertyAnnotator;
+use SMW\Schema\SchemaTypes;
+use SMW\SQLStore\TableBuilder;
+use SMW\Store;
 
 /**
  * @private
@@ -33,7 +33,7 @@ use User;
  * alter results in a manner unpredictable based on hooks enabled by the time of
  * the test run.
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.2
  *
  * @author mwjames
@@ -50,6 +50,7 @@ class HookDispatcher {
 		$this->hookContainer = MediaWikiServices::getInstance()->getHookContainer();
 		return $this->hookContainer;
 	}
+
 	/**
 	 * @see https://github.com/SemanticMediaWiki/SemanticMediaWiki/blob/master/docs/technical/hooks/hook.admin.registertaskhandlers.md
 	 * @since 3.2
@@ -104,7 +105,6 @@ class HookDispatcher {
 	 * @param array &$configuration
 	 */
 	public function onSettingsBeforeInitializationComplete( array &$configuration ) {
-
 		// Deprecated since 3.1
 		$this->getHookContiner()
 			->run( 'SMW::Config::BeforeCompletion', [ &$configuration ] );
@@ -142,7 +142,7 @@ class HookDispatcher {
 	 * @param User $user
 	 * @param array &$preferences
 	 */
-	public function onGetPreferences( \User $user, array &$preferences ) {
+	public function onGetPreferences( User $user, array &$preferences ) {
 		$this->getHookContiner()
 			->run( 'SMW::GetPreferences', [ $user, &$preferences ] );
 	}
@@ -177,7 +177,7 @@ class HookDispatcher {
 	 * @param PropertyAnnotator $propertyAnnotator
 	 * @param ParserOutput $parserOutput
 	 */
-	public function onParserAfterTidyPropertyAnnotationComplete( PropertyAnnotator $propertyAnnotator, \ParserOutput $parserOutput ) {
+	public function onParserAfterTidyPropertyAnnotationComplete( PropertyAnnotator $propertyAnnotator, ParserOutput $parserOutput ) {
 		$this->getHookContiner()
 			->run( 'SMW::Parser::ParserAfterTidyPropertyAnnotationComplete', [ $propertyAnnotator, $parserOutput ] );
 	}
@@ -233,7 +233,7 @@ class HookDispatcher {
 	 *
 	 * @return bool
 	 */
-	public function onIsApprovedRevision( Title $title, int $latestRevID ) : bool {
+	public function onIsApprovedRevision( Title $title, int $latestRevID ): bool {
 		return $this->getHookContiner()
 			->run( 'SMW::RevisionGuard::IsApprovedRevision', [ $title, $latestRevID ] );
 	}
@@ -261,7 +261,7 @@ class HookDispatcher {
 	 * @since 3.2
 	 *
 	 * @param Title $title
-	 * @param File|null $file
+	 * @param File|null &$file
 	 */
 	public function onChangeFile( Title $title, &$file ) {
 		$this->getHookContiner()
@@ -276,7 +276,7 @@ class HookDispatcher {
 	 * @since 3.2
 	 *
 	 * @param Title $title
-	 * @param RevisionRecord|null $revision
+	 * @param RevisionRecord|null &$revision
 	 */
 	public function onChangeRevision( Title $title, ?RevisionRecord &$revision ) {
 		$this->getHookContiner()

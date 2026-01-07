@@ -7,6 +7,7 @@ ext.menueditor.ui.tools.NewItemTool.static.name = 'newItem';
 ext.menueditor.ui.tools.NewItemTool.static.icon = 'add';
 ext.menueditor.ui.tools.NewItemTool.static.title = mw.message( 'menueditor-toolbar-add-label' );
 ext.menueditor.ui.tools.NewItemTool.static.label = mw.message( 'menueditor-toolbar-add-label' );
+
 ext.menueditor.ui.tools.NewItemTool.static.flags = [ 'progressive' ];
 ext.menueditor.ui.tools.NewItemTool.static.displayBothIconAndLabel = true;
 

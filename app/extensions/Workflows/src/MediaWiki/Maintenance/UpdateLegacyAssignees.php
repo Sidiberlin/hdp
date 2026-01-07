@@ -3,11 +3,11 @@
 namespace MediaWiki\Extension\Workflows\MediaWiki\Maintenance;
 
 use Exception;
-use LoggedUpdateMaintenance;
 use MediaWiki\Extension\Workflows\Storage\WorkflowEventRepository;
 use MediaWiki\Extension\Workflows\UserInteractiveActivity;
 use MediaWiki\Extension\Workflows\Workflow;
 use MediaWiki\Extension\Workflows\WorkflowFactory;
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
 
 require_once __DIR__ . '/../../../../../maintenance/Maintenance.php';
@@ -44,6 +44,7 @@ class UpdateLegacyAssignees extends LoggedUpdateMaintenance {
 						'workflows_state',
 						[ 'wfs_assignees' ],
 						[ 'wfs_workflow_id' => $id->toString() ],
+						__METHOD__
 					);
 					if ( $stateRow === false ) {
 						continue;
@@ -56,6 +57,7 @@ class UpdateLegacyAssignees extends LoggedUpdateMaintenance {
 						'workflows_state',
 						[ 'wfs_assignees' => implode( '|', $users ) ],
 						[ 'wfs_workflow_id' => $id->toString() ],
+						__METHOD__
 					);
 					$res ? $success++ : $fail++;
 

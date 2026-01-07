@@ -5,13 +5,13 @@ declare( strict_types=1 );
 namespace MediaWiki\Extension\EmbedVideo\Media;
 
 use File;
-use FSFile;
 use MediaHandler;
 use MediaTransformOutput;
 use MediaWiki\Extension\EmbedVideo\Media\FFProbe\FFProbe;
 use MediaWiki\Extension\EmbedVideo\Media\TransformOutput\AudioTransformOutput;
 use MediaWiki\MediaWikiServices;
 use stdClass;
+use Wikimedia\FileBackend\FSFile\FSFile;
 
 class AudioHandler extends MediaHandler {
 	protected $contentLanguage;
@@ -42,6 +42,7 @@ class AudioHandler extends MediaHandler {
 			'loop' => 'loop',
 			'nocontrols' => 'nocontrols',
 			'muted'	=> 'muted',
+			'class'	=> 'class',
 		];
 	}
 
@@ -63,7 +64,7 @@ class AudioHandler extends MediaHandler {
 			return $this->parseTimeString( $value ) !== false;
 		}
 
-		if ( $name === 'autoplay' || $name === 'loop' || $name === 'nocontrols' ) {
+		if ( in_array( $name, [ 'autoplay', 'loop', 'nocontrols', 'class' ], true ) ) {
 			return true;
 		}
 
@@ -79,17 +80,20 @@ class AudioHandler extends MediaHandler {
 	 * @return false|float|int Integer seconds or false for a bad format.
 	 */
 	public function parseTimeString( $time ) {
-		$parts = explode( ":", $time );
-		if ( $parts === false ) {
+		$parts = explode( ':', $time );
+
+		if ( $parts === false || empty( $parts[0] ?? '' ) || !is_numeric( $parts[0] ?? null ) ) {
 			return false;
 		}
 		$parts = array_reverse( $parts );
 
 		$magnitude = [ 1, 60, 3600, 86400 ];
 		$seconds = 0;
+
 		foreach ( $parts as $index => $part ) {
-			$seconds += $part * $magnitude[$index];
+			$seconds += (int)$part * $magnitude[$index];
 		}
+
 		return $seconds;
 	}
 
@@ -121,7 +125,7 @@ class AudioHandler extends MediaHandler {
 	 * Returns false if the parameters are unacceptable and the transform should fail
 	 *
 	 * @param stdClass|File $image
-	 * @param array $params
+	 * @param array &$params
 	 * @return bool Success
 	 */
 	public function normaliseParams( $image, &$params ): bool {
@@ -148,6 +152,7 @@ class AudioHandler extends MediaHandler {
 		}
 
 		$params['page'] = 1;
+		$params['img-class'] = $params['img-class'] ?? $params['class'] ?? null;
 
 		return true;
 	}
@@ -257,10 +262,11 @@ class AudioHandler extends MediaHandler {
 		];
 
 		if ( $stream !== false && $stream !== null ) {
+			$bitDepth = $stream->getBitDepth();
 			$data['metadata'] = [
 				'duration' => $stream->getDuration(),
 				'codec' => $stream->getCodecName(),
-				'bitdepth' => $stream->getBitDepth(),
+				'bitdepth' => $bitDepth,
 			];
 
 			if ( !empty( $stream->getWidth() ) ) {
@@ -270,7 +276,10 @@ class AudioHandler extends MediaHandler {
 		}
 
 		if ( $format !== false && $format !== null ) {
-			$data['bits'] = $format->getBitRate();
+			$bitrate = $format->getBitRate();
+			if ( $bitrate !== false && $bitrate !== null ) {
+				$data['metadata']['bitrate'] = (int)$bitrate;
+			}
 		}
 
 		return $data;
@@ -293,7 +302,10 @@ class AudioHandler extends MediaHandler {
 		}
 
 		if ( $file === false ) {
-			return [];
+			return [
+				'stream' => false,
+				'format' => false,
+			];
 		}
 
 		$probe = new FFProbe( $path, $file );

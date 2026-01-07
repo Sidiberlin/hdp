@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Krisztina"
+		]
+	},
+	"bs-categorymanager-removecategoryconfirm-text": "Biztos, hogy törölni akarja ezt a kategóriát?",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Kérjük, próbáljon meg egy másik kategórianevet"
+}

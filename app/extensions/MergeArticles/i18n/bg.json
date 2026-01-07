@@ -1,0 +1,17 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac"
+		]
+	},
+	"mergearticles-target-new-label": "Нова страница",
+	"mergearticles-type-file": "Файл",
+	"mergearticles-type-article": "Страница",
+	"mergearticles-type-template": "Шаблон",
+	"mergearticles-type-category": "Категория",
+	"mergearticles-do-merge-label": "Сливане",
+	"mergearticles-file-layout-label": "Файл",
+	"mergearticles-diff-action-refuse": "Отхвърляне",
+	"mergearticles-diff-item-undo": "Отмяна",
+	"mergearticles-file-diff-header": "Файл"
+}

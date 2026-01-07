@@ -6,6 +6,7 @@
 			"Ex-Diktator",
 			"Steeve815",
 			"Strayblues",
+			"YaronSh",
 			"נדב ס"
 		]
 	},
@@ -14,7 +15,6 @@
 	"bs-visualeditorconnector-upload-type-original": "מקורי",
 	"bs-visualeditorconnector-upload-type-simple": "פשוט",
 	"bs-visualeditorconnector-upload-type-one-click": "לחיצה אחת",
-	"bs-visualeditorconnector-upload-type": "סוג העלאה",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "ביטול העריכה",
 	"bs-visualeditorconnector-cancel-edit": "ביטול העריכה. פעולה זו תגרום לביטול כל השינויים שלא נשמרו.",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "האם באמת לבטל את העריכה? השינויים שלא נשמרו יושלכו.",
@@ -83,10 +83,16 @@
 	"bs-vec-table-border-dotted": "נקודות",
 	"bs-vec-table-border-double": "כפול",
 	"bs-vec-insert-softhyphen-title": "מקף רך",
-	"bs-visualeditorconnector-upload-type-help": "מקורי: ההרשאה להעלות מאומתת. אפשר לערוך את שם הקובץ, את מרחב השם ואת הקטגוריות. נדרש תיאור.\nפשוט: ההרשאה להעלות לא מאומתת. אפשר לערוך את שם הקובץ, את מרחב השם ואת הקטגוריות. לא נדרש תיאור.\nלחיצה אחת: ההרשאה להעלות לא מאומתת. אי־אפשר לערוך את שם הקובץ ואת הקטגוריות. אפשר לערוך את מרחב השם.",
 	"bs-vec-insert-line-break-title": "מעבר שורה (<br />)",
 	"bs-visualeditorconnector-text-style-tool-align-center-label": "יישור למרכז",
 	"bs-visualeditorconnector-align-center-annotation-desc": "מרכוז טקסט נבחר",
 	"bs-visualeditorconnector-text-style-indent-label": "הזחה",
-	"bs-visualeditorconnector-indent-annotation-desc": "הזחת טקסט נבחר"
+	"bs-visualeditorconnector-indent-annotation-desc": "הזחת טקסט נבחר",
+	"bs-visualeditor-save-label": "שמירה",
+	"bs-visualeditorconnector-upload-type": "סוג העלאה",
+	"bs-visualeditorconnector-upload-type-help": "מקורי: ההרשאה להעלות מאומתת. אפשר לערוך את שם הקובץ, את מרחב השם ואת הקטגוריות. נדרש תיאור.\nפשוט: ההרשאה להעלות לא מאומתת. אפשר לערוך את שם הקובץ, את מרחב השם ואת הקטגוריות. לא נדרש תיאור.\nלחיצה אחת: ההרשאה להעלות לא מאומתת. אי־אפשר לערוך את שם הקובץ ואת הקטגוריות. אפשר לערוך את מרחב השם.",
+	"bs-visualeditorconnector-tab-file": "קישור לקובץ",
+	"bs-visualeditor-request-entity-too-large": "הקובץ הזה גדול מדי להעלאה.",
+	"bs-visualeditorconnector-dialog-table-title": "טבלה",
+	"bs-visualeditorconnector-dialog-action-insert": "הוספה"
 }

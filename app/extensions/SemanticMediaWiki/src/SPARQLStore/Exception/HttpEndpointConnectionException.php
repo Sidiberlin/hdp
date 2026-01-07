@@ -2,21 +2,23 @@
 
 namespace SMW\SPARQLStore\Exception;
 
+use Exception;
+
 /**
  * @ingroup Sparql
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.1
  *
  * @author mwjames
  */
-class HttpEndpointConnectionException extends \Exception {
+class HttpEndpointConnectionException extends Exception {
 
 	/**
 	 * @since  2.1
 	 *
 	 * @param string $endpoint
-	 * @param integer $errorCode
+	 * @param int $errorCode
 	 * @param string $errorText
 	 */
 	public function __construct( $endpoint, $errorCode, $errorText = '' ) {

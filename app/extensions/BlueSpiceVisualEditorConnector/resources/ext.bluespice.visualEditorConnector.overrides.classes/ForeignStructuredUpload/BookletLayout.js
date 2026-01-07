@@ -8,12 +8,23 @@ bs.vec.ui.ForeignStructuredUpload.BookletLayout = function BsVecUiForeignStructu
 
 OO.inheritClass( bs.vec.ui.ForeignStructuredUpload.BookletLayout, mw.ForeignStructuredUpload.BookletLayout );
 
-bs.vec.ui.ForeignStructuredUpload.BookletLayout.prototype.getFilename = function() {
-	var filename = bs.vec.ui.ForeignStructuredUpload.BookletLayout.parent.prototype.getFilename.call( this );
+bs.vec.ui.ForeignStructuredUpload.BookletLayout.prototype.initialize = function () {
+	const categories = mw.config.get( 'wgCategories', [] );
+	const insertCategoryEnabled = mw.config.get( 'bsgInsertCategoryUploadPanelIntegration', false );
 
-	var data = {
+	return bs.vec.ui.ForeignStructuredUpload.BookletLayout.parent.prototype.initialize.call( this ).then( () => {
+		if ( categories.length && insertCategoryEnabled && this.categoriesWidget ) {
+			this.categoriesWidget.setValue( categories );
+		}
+	} );
+};
+
+bs.vec.ui.ForeignStructuredUpload.BookletLayout.prototype.getFilename = function () {
+	const filename = bs.vec.ui.ForeignStructuredUpload.BookletLayout.parent.prototype.getFilename.call( this );
+
+	const data = {
 		filename: filename
-	}
+	};
 	this.emit( 'getfilename', this, data );
 
 	return data.filename;
@@ -31,52 +42,63 @@ bs.vec.ui.ForeignStructuredUpload.BookletLayout.prototype.createUpload = functio
 };
 
 bs.vec.ui.ForeignStructuredUpload.BookletLayout.prototype.renderUploadForm = function () {
-	var form = bs.vec.ui.ForeignStructuredUpload.BookletLayout.super.prototype.renderUploadForm.apply( this );
-	var items = form.getItems();
-	var fieldlayouts = items[0].getItems();
+	const form = bs.vec.ui.ForeignStructuredUpload.BookletLayout.super.prototype.renderUploadForm.apply( this );
+	const items = form.getItems();
+	const fieldlayouts = items[ 0 ].getItems();
 	// Hide "upload-form-label-not-own-work-message-generic-local" text
-	fieldlayouts[2].$element.hide();
+	fieldlayouts[ 2 ].$element.hide();
 	return form;
 };
 
-bs.vec.ui.ForeignStructuredUpload.BookletLayout.prototype.saveFile = function() {
+bs.vec.ui.ForeignStructuredUpload.BookletLayout.prototype.saveFile = function () {
 	if ( this.saveCalledInit === false ) {
 		this.uploadPromise = this.upload.uploadToStash( true );
 	}
-	var layout = this,
-		deferred = $.Deferred();
+	const deferred = $.Deferred();
 
 	this.upload.setFilename( this.getFilename() );
 	this.upload.setText( this.getText() );
 
-	this.uploadPromise.then( function () {
-		layout.upload.finishStashUpload( {
-			ignorewarnings: layout.saveCalledInit === false
-		} ).then( function () {
-			var name;
-
+	this.uploadPromise.then( () => {
+		this.upload.finishStashUpload( {
+			ignorewarnings: this.saveCalledInit === false
+		} ).then( () => {
 			// Normalize page name and localise the 'File:' prefix
-			name = new mw.Title( 'File:' + layout.upload.getFilename() ).toString();
-			layout.filenameUsageWidget.setValue( '[[' + name + ']]' );
-			layout.setPage( 'insert' );
+			const name = new mw.Title( 'File:' + this.upload.getFilename() ).toString();
+			this.filenameUsageWidget.setValue( '[[' + name + ']]' );
+			this.setPage( 'insert' );
 
 			deferred.resolve();
-			layout.emit( 'fileSaved', layout.upload.getImageInfo() );
-		}, function () {
-			layout.getErrorMessageForStateDetails().then( function ( errorMessage ) {
+			this.emit( 'fileSaved', this.upload.getImageInfo() );
+		} ).catch( () => {
+			this.getErrorMessageForStateDetails().then( ( errorMessage ) => {
 				deferred.reject( errorMessage );
 			} );
 		} );
-		layout.saveCalledInit = false;
+		this.saveCalledInit = false;
 	} );
 
 	return deferred.promise();
 };
 
 bs.vec.ui.ForeignStructuredUpload.BookletLayout.prototype.getErrorMessageForStateDetails = function () {
-	var state = this.upload.getState(),
+	const state = this.upload.getState(),
 		stateDetails = this.upload.getStateDetails(),
 		warnings = stateDetails.upload && stateDetails.upload.warnings;
+
+	if ( state === mw.Upload.State.ERROR ) {
+		const $error = ( new mw.Api() ).getErrorMessage( stateDetails );
+		if ( stateDetails.exception === 'Request Entity Too Large' ) {
+			if ( $error[ 0 ] ) {
+				$error[ 0 ].textContent = mw.msg( 'bs-visualeditor-request-entity-too-large' );
+			}
+		}
+
+		return $.Deferred().resolve( new OO.ui.Error(
+			$error,
+			{ recoverable: false }
+		) );
+	}
 
 	if ( state === mw.Upload.State.WARNING ) {
 		if ( warnings.exists !== undefined ) {
@@ -92,7 +114,7 @@ bs.vec.ui.ForeignStructuredUpload.BookletLayout.prototype.getErrorMessageForStat
 		} else if ( warnings[ 'was-deleted' ] !== undefined ) {
 			return $.Deferred().resolve( new OO.ui.Error(
 				$( '<p>' ).msg( 'filewasdeleted', 'File:' + warnings[ 'was-deleted' ] ),
-				{ recoverable: true,warning: true }
+				{ recoverable: true, warning: true }
 			) );
 		}
 	}

@@ -20,11 +20,12 @@
 
 namespace MediaWiki\Extension\OATHAuth\Notifications;
 
-use EchoEventPresentationModel;
-use SpecialPage;
-use Title;
+use MediaWiki\Extension\Notifications\Formatters\EchoEventPresentationModel;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Title\Title;
 
 class EnablePresentationModel extends EchoEventPresentationModel {
+
 	/**
 	 * @inheritDoc
 	 */

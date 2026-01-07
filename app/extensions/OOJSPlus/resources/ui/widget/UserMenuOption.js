@@ -1,5 +1,6 @@
-OOJSPlus.ui.widget.UserMenuOptionWidget = function( cfg ) {
+OOJSPlus.ui.widget.UserMenuOptionWidget = function ( cfg ) {
 	cfg = cfg || {};
+	cfg.showProfileOnHover = false;
 	OOJSPlus.ui.widget.UserMenuOptionWidget.parent.call( this, {} );
 
 	this.userWidget = new OOJSPlus.ui.widget.UserWidget( cfg );
@@ -17,4 +18,3 @@ OOJSPlus.ui.widget.UserMenuOptionWidget.prototype.getDisplayName = function () {
 OOJSPlus.ui.widget.UserMenuOptionWidget.prototype.getUsername = function () {
 	return this.userWidget.user.user_name;
 };
-

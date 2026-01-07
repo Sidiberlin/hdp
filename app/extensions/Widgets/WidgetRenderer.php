@@ -32,6 +32,8 @@ class WidgetRenderer {
 		$smarty->left_delimiter = '<!--{';
 		$smarty->right_delimiter = '}-->';
 		$smarty->compile_dir = $wgWidgetsCompileDir;
+		// Avoid displaying warnings, which show up with more frequency with PHP 8.
+		$smarty->error_reporting = E_ERROR;
 
 		// registering custom Smarty plugins
 		$smarty->addPluginsDir( __DIR__ . "/smarty_plugins/" );
@@ -120,16 +122,9 @@ class WidgetRenderer {
 		}
 
 		$services = MediaWikiServices::getInstance();
-		if ( method_exists( $services, 'getLanguageConverterFactory' ) ) {
-			// MW 1.35+
-			$languageConverter = $services
-				->getLanguageConverterFactory()
-				->getLanguageConverter( $services->getContentLanguage() );
-			$output = $languageConverter->convert( $output );
-		} else {
-			$parser = $services->getParser();
-			$output = $parser->getTargetLanguage()->convert( $output );
-		}
+		$languageConverter = $services->getLanguageConverterFactory()
+			->getLanguageConverter( $services->getContentLanguage() );
+		$output = $languageConverter->convert( $output );
 
 		// To prevent the widget output from being tampered with, the
 		// compiled HTML is stored and a strip marker with an index to

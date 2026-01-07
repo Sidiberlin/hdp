@@ -5,7 +5,6 @@
 		]
 	},
 	"bs-interwikilinks-headerprefix": "Ovdâlabdos",
-	"bs-interwikilinks-labelprefix": "Ovdâlabdos",
-	"bs-interwikilinks-insertlink-labelprefix": "Ovdâlabdos",
-	"bs-interwikilinks-titleaddinterwikilink": "Lasseet interwiki-liiŋkâ"
+	"bs-interwikilinks-titleaddinterwikilink": "Lasseet interwiki-liiŋkâ",
+	"bs-interwikilinks-labelprefix": "Ovdâlabdos"
 }

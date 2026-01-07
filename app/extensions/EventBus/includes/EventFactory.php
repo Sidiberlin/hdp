@@ -2,33 +2,38 @@
 
 namespace MediaWiki\Extension\EventBus;
 
-use ContentHandler;
 use IJobSpecification;
-use Language;
-use Linker;
 use MediaWiki\Block\DatabaseBlock;
 use MediaWiki\Block\Restriction\Restriction;
+use MediaWiki\CommentFormatter\CommentFormatter;
 use MediaWiki\Config\ServiceOptions;
+use MediaWiki\Content\IContentHandlerFactory;
+use MediaWiki\Http\Telemetry;
+use MediaWiki\Language\Language;
 use MediaWiki\Linker\LinkTarget;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\PageReferenceValue;
 use MediaWiki\Page\WikiPageFactory;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionSlots;
 use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Revision\SuppressedDataException;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFormatter;
 use MediaWiki\User\UserEditTracker;
 use MediaWiki\User\UserFactory;
 use MediaWiki\User\UserGroupManager;
 use MediaWiki\User\UserIdentity;
-use MWException;
+use MediaWiki\WikiMap\WikiMap;
+use MWUnknownContentModelException;
 use Psr\Log\LoggerInterface;
-use Title;
-use TitleFormatter;
-use UIDGenerator;
-use WebRequest;
-use WikiMap;
 
 /**
  * Used to create events of particular types.
+ *
+ * @deprecated since EventBus 0.5.0. Use EventSerializer and specific Serializer instances instead.
+ *
  */
 class EventFactory {
 
@@ -66,8 +71,18 @@ class EventFactory {
 	/** @var WikiPageFactory */
 	private $wikiPageFactory;
 
+	/**
+	 * @var CommentFormatter|null Will be null unless set by caller with setCommentFormatter().
+	 */
+	private ?CommentFormatter $commentFormatter = null;
+
+	/** @var IContentHandlerFactory */
+	private $contentHandlerFactory;
+
 	/** @var LoggerInterface */
 	private $logger;
+
+	private Telemetry $telemetry;
 
 	/**
 	 * @param ServiceOptions $serviceOptions
@@ -79,7 +94,9 @@ class EventFactory {
 	 * @param UserEditTracker $userEditTracker
 	 * @param WikiPageFactory $wikiPageFactory
 	 * @param UserFactory $userFactory
+	 * @param IContentHandlerFactory $contentHandlerFactory
 	 * @param LoggerInterface $logger
+	 * @param Telemetry $telemetry
 	 */
 	public function __construct(
 		ServiceOptions $serviceOptions,
@@ -91,7 +108,9 @@ class EventFactory {
 		UserEditTracker $userEditTracker,
 		WikiPageFactory $wikiPageFactory,
 		UserFactory $userFactory,
-		LoggerInterface $logger
+		IContentHandlerFactory $contentHandlerFactory,
+		LoggerInterface $logger,
+		Telemetry $telemetry
 	) {
 		$serviceOptions->assertRequiredOptions( self::CONSTRUCTOR_OPTIONS );
 		$this->options = $serviceOptions;
@@ -103,7 +122,18 @@ class EventFactory {
 		$this->userEditTracker = $userEditTracker;
 		$this->wikiPageFactory = $wikiPageFactory;
 		$this->userFactory = $userFactory;
+		$this->contentHandlerFactory = $contentHandlerFactory;
 		$this->logger = $logger;
+		$this->telemetry = $telemetry;
+	}
+
+	/**
+	 * Inject a CommentFormatter for EventFactory's use. Only needed if you need comment_html populated (T327065).
+	 * @param CommentFormatter $commentFormatter
+	 * @return void
+	 */
+	public function setCommentFormatter( CommentFormatter $commentFormatter ): void {
+		$this->commentFormatter = $commentFormatter;
 	}
 
 	/**
@@ -169,11 +199,11 @@ class EventFactory {
 	 */
 	private function createRevisionRecordAttrs(
 		RevisionRecord $revision,
-		UserIdentity $performer = null
+		?UserIdentity $performer = null
 	) {
 		$linkTarget = $revision->getPageAsLinkTarget();
 		$attrs = [
-			// Common Mediawiki entity fields
+			// Common MediaWiki entity fields
 			'database'           => $this->dbDomain,
 
 			// revision entity fields
@@ -187,13 +217,13 @@ class EventFactory {
 			'rev_len'            => $revision->getSize(),
 		];
 
-		$attrs['rev_content_model'] = $contentModel = $revision->getSlot( 'main' )->getModel();
+		$attrs['rev_content_model'] = $contentModel = $revision->getSlot( SlotRecord::MAIN )->getModel();
 
-		$contentFormat = $revision->getSlot( 'main' )->getFormat();
+		$contentFormat = $revision->getSlot( SlotRecord::MAIN )->getFormat();
 		if ( $contentFormat === null ) {
 			try {
-				$contentFormat = ContentHandler::getForModelID( $contentModel )->getDefaultFormat();
-			} catch ( MWException $e ) {
+				$contentFormat = $this->contentHandlerFactory->getContentHandler( $contentModel )->getDefaultFormat();
+			} catch ( MWUnknownContentModelException $e ) {
 				// Ignore, the `rev_content_format` is not required.
 			}
 		}
@@ -201,10 +231,8 @@ class EventFactory {
 			$attrs['rev_content_format'] = $contentFormat;
 		}
 
-		if ( $performer ) {
+		if ( isset( $performer ) ) {
 			$attrs['performer'] = $this->createPerformerAttrs( $performer );
-		} elseif ( $revision->getUser() ) {
-			$attrs['performer'] = $this->createPerformerAttrs( $revision->getUser() );
 		}
 
 		// It is possible that the $revision object does not have any content
@@ -213,7 +241,7 @@ class EventFactory {
 		// has its content hidden.
 		// TODO: In MCR Content::isRedirect should not be used to derive a redirect directly.
 		try {
-			$content = $revision->getContent( 'main' );
+			$content = $revision->getContent( SlotRecord::MAIN );
 			if ( $content !== null ) {
 				$attrs['page_is_redirect'] = $content->isRedirect();
 			} else {
@@ -225,7 +253,9 @@ class EventFactory {
 
 		if ( $revision->getComment() !== null && strlen( $revision->getComment()->text ) ) {
 			$attrs['comment'] = $revision->getComment()->text;
-			$attrs['parsedcomment'] = Linker::formatComment( $revision->getComment()->text );
+			if ( $this->commentFormatter ) {
+				$attrs['parsedcomment'] = $this->commentFormatter->format( $revision->getComment()->text );
+			}
 		}
 
 		// The rev_parent_id attribute is not required, but when supplied
@@ -262,7 +292,7 @@ class EventFactory {
 
 	/**
 	 * Given a UserIdentity $user, returns an array suitable for
-	 * use as the performer JSON object in various Mediawiki
+	 * use as the performer JSON object in various MediaWiki
 	 * entity schemas.
 	 * @param UserIdentity $user
 	 * @return array
@@ -304,8 +334,8 @@ class EventFactory {
 		$schema,
 		$stream,
 		array $attrs,
-		string $wiki = null,
-		string $dt = null
+		?string $wiki = null,
+		?string $dt = null
 	) {
 		if ( $wiki !== null ) {
 			$wikiRef = WikiMap::getWiki( $wiki );
@@ -318,12 +348,13 @@ class EventFactory {
 			$domain = $this->options->get( 'ServerName' );
 		}
 
+		$gen = MediaWikiServices::getInstance()->getGlobalIdGenerator();
 		$event = [
 			'$schema' => $schema,
 			'meta' => [
 				'uri'        => $uri,
-				'request_id' => WebRequest::getRequestId(),
-				'id'         => UIDGenerator::newUUIDv4(),
+				'request_id' => $this->telemetry->getRequestId(),
+				'id'         => $gen->newUUIDv4(),
 				'dt'         => $dt ?? wfTimestamp( TS_ISO_8601 ),
 				'domain'     => $domain,
 				'stream'     => $stream,
@@ -331,6 +362,18 @@ class EventFactory {
 		];
 
 		return $event + $attrs;
+	}
+
+	/**
+	 * Creates an event fragment suitable for the fragment/mediawiki/common schema fragment.
+	 * @param UserIdentity $user
+	 * @return array
+	 */
+	public function createMediaWikiCommonAttrs( UserIdentity $user ): array {
+		return [
+			'database'  => $this->dbDomain,
+			'performer' => $this->createPerformerAttrs( $user ),
+		];
 	}
 
 	/**
@@ -450,7 +493,7 @@ class EventFactory {
 	/**
 	 * Create a page delete event message
 	 * @param string $stream the stream to send an event to
-	 * @param UserIdentity $user
+	 * @param UserIdentity|null $user
 	 * @param int $id
 	 * @param LinkTarget $title
 	 * @param bool $is_redirect
@@ -461,7 +504,7 @@ class EventFactory {
 	 */
 	public function createPageDeleteEvent(
 		$stream,
-		UserIdentity $user,
+		?UserIdentity $user,
 		$id,
 		LinkTarget $title,
 		$is_redirect,
@@ -471,9 +514,8 @@ class EventFactory {
 	) {
 		// Create a mediawiki page delete event.
 		$attrs = [
-			// Common Mediawiki entity fields
+			// Common MediaWiki entity fields
 			'database'           => $this->dbDomain,
-			'performer'          => $this->createPerformerAttrs( $user ),
 
 			// page entity fields
 			'page_id'            => $id,
@@ -481,6 +523,10 @@ class EventFactory {
 			'page_namespace'     => $title->getNamespace(),
 			'page_is_redirect'   => $is_redirect,
 		];
+
+		if ( $user ) {
+			$attrs['performer'] = $this->createPerformerAttrs( $user );
+		}
 
 		if ( $headRevision !== null && $headRevision->getId() !== null ) {
 			$attrs['rev_id'] = $headRevision->getId();
@@ -493,7 +539,9 @@ class EventFactory {
 
 		if ( $reason !== null && strlen( $reason ) ) {
 			$attrs['comment'] = $reason;
-			$attrs['parsedcomment'] = Linker::formatComment( $reason, $title );
+			if ( $this->commentFormatter ) {
+				$attrs['parsedcomment'] = $this->commentFormatter->format( $reason, $title );
+			}
 		}
 
 		return $this->createEvent(
@@ -511,6 +559,7 @@ class EventFactory {
 	 * @param Title $title
 	 * @param string $comment
 	 * @param int $oldPageId
+	 * @param RevisionRecord $restoredRevision
 	 * @return array
 	 */
 	public function createPageUndeleteEvent(
@@ -518,11 +567,12 @@ class EventFactory {
 		UserIdentity $performer,
 		Title $title,
 		$comment,
-		$oldPageId
+		$oldPageId,
+		RevisionRecord $restoredRevision
 	) {
 		// Create a mediawiki page undelete event.
 		$attrs = [
-			// Common Mediawiki entity fields
+			// Common MediaWiki entity fields
 			'database'           => $this->dbDomain,
 			'performer'          => $this->createPerformerAttrs( $performer ),
 
@@ -531,7 +581,7 @@ class EventFactory {
 			'page_title'         => $this->titleFormatter->getPrefixedDBkey( $title ),
 			'page_namespace'     => $title->getNamespace(),
 			'page_is_redirect'   => $title->isRedirect(),
-			'rev_id'             => $title->getLatestRevID(),
+			'rev_id'             => $restoredRevision->getId(),
 		];
 
 		// If this page had a different id in the archive table,
@@ -550,7 +600,9 @@ class EventFactory {
 
 		if ( $comment !== null && strlen( $comment ) ) {
 			$attrs['comment'] = $comment;
-			$attrs['parsedcomment'] = Linker::formatComment( $comment, $title );
+			if ( $this->commentFormatter ) {
+				$attrs['parsedcomment'] = $this->commentFormatter->format( $comment, $title );
+			}
 		}
 
 		return $this->createEvent(
@@ -583,7 +635,7 @@ class EventFactory {
 		// TODO: In MCR Content::isRedirect should not be used to derive a redirect directly.
 		$newPageIsRedirect = false;
 		try {
-			$content = $newRevision->getContent( 'main' );
+			$content = $newRevision->getContent( SlotRecord::MAIN );
 			if ( $content !== null ) {
 				$newPageIsRedirect = $content->isRedirect();
 			}
@@ -591,7 +643,7 @@ class EventFactory {
 		}
 
 		$attrs = [
-			// Common Mediawiki entity fields
+			// Common MediaWiki entity fields
 			'database'           => $this->dbDomain,
 			'performer'          => $this->createPerformerAttrs( $user ),
 
@@ -629,7 +681,9 @@ class EventFactory {
 
 		if ( $reason !== null && strlen( $reason ) ) {
 			$attrs['comment'] = $reason;
-			$attrs['parsedcomment'] = Linker::formatComment( $reason, $newTitle );
+			if ( $this->commentFormatter ) {
+				$attrs['parsedcomment'] = $this->commentFormatter->format( $reason, $newTitle );
+			}
 		}
 
 		return $this->createEvent(
@@ -677,12 +731,7 @@ class EventFactory {
 		array $removedTags,
 		?UserIdentity $user
 	) {
-		$attrs = $this->createRevisionRecordAttrs( $revisionRecord );
-
-		// If the user changing the tags is provided, override the performer in the event
-		if ( $user !== null ) {
-			$attrs['performer'] = $this->createPerformerAttrs( $user );
-		}
+		$attrs = $this->createRevisionRecordAttrs( $revisionRecord, $user );
 
 		$newTags = array_values(
 			array_unique( array_diff( array_merge( $prevTags, $addedTags ), $removedTags ) )
@@ -737,7 +786,8 @@ class EventFactory {
 		$stream,
 		RevisionRecord $revisionRecord
 	) {
-		$attrs = $this->createRevisionRecordAttrs( $revisionRecord );
+		$attrs = $this->createRevisionRecordAttrs( $revisionRecord, $revisionRecord->getUser() );
+		$attrs['dt'] = self::createDTAttr( $revisionRecord->getTimestamp() );
 		// Only add to revision-create for now
 		$attrs['rev_slots'] = $this->createSlotRecordsAttrs( $revisionRecord->getSlots() );
 		// The parent_revision_id attribute is not required, but when supplied
@@ -754,7 +804,7 @@ class EventFactory {
 
 		return $this->createEvent(
 			$this->getArticleURL( $revisionRecord->getPageAsLinkTarget() ),
-			'/mediawiki/revision/create/1.1.0',
+			'/mediawiki/revision/create/2.0.0',
 			$stream,
 			$attrs
 		);
@@ -779,9 +829,9 @@ class EventFactory {
 		$revId,
 		$pageId
 	) {
-		// Create a mediawiki page delete event.
+		// Create a MediaWiki page delete event.
 		$attrs = [
-			// Common Mediawiki entity fields
+			// Common MediaWiki entity fields
 			'database'           => $this->dbDomain,
 
 			// page entity fields
@@ -796,14 +846,14 @@ class EventFactory {
 			$attrs['performer'] = $this->createPerformerAttrs( $user );
 		}
 
-		if ( !empty( $addedProps ) ) {
+		if ( $addedProps ) {
 			$attrs['added_properties'] = array_map(
 				[ EventBus::class, 'replaceBinaryValues' ],
 				$addedProps
 			);
 		}
 
-		if ( !empty( $removedProps ) ) {
+		if ( $removedProps ) {
 			$attrs['removed_properties'] = array_map(
 				[ EventBus::class, 'replaceBinaryValues' ],
 				$removedProps
@@ -843,7 +893,7 @@ class EventFactory {
 	) {
 		// Create a mediawiki page delete event.
 		$attrs = [
-			// Common Mediawiki entity fields
+			// Common MediaWiki entity fields
 			'database'           => $this->dbDomain,
 
 			// page entity fields
@@ -860,20 +910,26 @@ class EventFactory {
 
 		/**
 		 * Extract URL encoded link and whether it's external
-		 * @param Title|String $t External links are strings, internal
-		 *   links are Titles
+		 * @param PageReferenceValue|String $t External links are strings, internal
+		 *   links are PageReferenceValue
 		 * @return array
 		 */
 		$getLinkData = static function ( $t ) {
-			$isExternal = is_string( $t );
-			$link = $isExternal ? $t : $t->getLinkURL();
+			if ( $t instanceof PageReferenceValue ) {
+				$t = Title::castFromPageReference( $t );
+				$link = $t->getLinkURL();
+				$isExternal = false;
+			} else {
+				$isExternal = true;
+				$link = $t;
+			}
 			return [
 				'link' => wfUrlencode( $link ),
 				'external' => $isExternal
 			];
 		};
 
-		if ( !empty( $addedLinks ) || !empty( $addedExternalLinks ) ) {
+		if ( $addedLinks || $addedExternalLinks ) {
 			$addedLinks = $addedLinks === null ? [] : $addedLinks;
 			$addedExternalLinks = $addedExternalLinks === null ? [] : $addedExternalLinks;
 
@@ -884,7 +940,7 @@ class EventFactory {
 			$attrs['added_links'] = $addedLinks;
 		}
 
-		if ( !empty( $removedLinks ) || !empty( $removedExternalLinks ) ) {
+		if ( $removedLinks || $removedExternalLinks ) {
 			$removedLinks = $removedLinks === null ? [] : $removedLinks;
 			$removedExternalLinks = $removedExternalLinks === null ? [] : $removedExternalLinks;
 			$removedLinks = array_map(
@@ -917,7 +973,7 @@ class EventFactory {
 		?DatabaseBlock $previousBlock
 	) {
 		$attrs = [
-			// Common Mediawiki entity fields:
+			// Common MediaWiki entity fields:
 			'database'           => $this->dbDomain,
 			'performer'          => $this->createPerformerAttrs( $user ),
 		];
@@ -983,9 +1039,9 @@ class EventFactory {
 		$reason,
 		array $protect
 	) {
-		// Create a mediawiki page restrictions change event.
+		// Create a MediaWiki page restrictions change event.
 		$attrs = [
-			// Common Mediawiki entity fields
+			// Common MediaWiki entity fields
 			'database'           => $this->dbDomain,
 			'performer'          => $this->createPerformerAttrs( $user ),
 
@@ -1020,8 +1076,8 @@ class EventFactory {
 	 * @return array
 	 */
 	public function createRecentChangeEvent( $stream, LinkTarget $title, $attrs ) {
-		if ( isset( $attrs['comment'] ) ) {
-			$attrs['parsedcomment'] = Linker::formatComment( $attrs['comment'], $title );
+		if ( isset( $attrs['comment'] ) && $this->commentFormatter ) {
+			$attrs['parsedcomment'] = $this->commentFormatter->format( $attrs['comment'], $title );
 		}
 
 		$event = $this->createEvent(
@@ -1091,7 +1147,7 @@ class EventFactory {
 		if ( isset( $event['params']['requestId'] ) ) {
 			$event['meta']['request_id'] = $event['params']['requestId'];
 		} else {
-			$event['meta']['request_id'] = WebRequest::getRequestId();
+			$event['meta']['request_id'] = $this->telemetry->getRequestId();
 		}
 
 		$this->signEvent( $event );
@@ -1177,7 +1233,7 @@ class EventFactory {
 		$recommendationType,
 		RevisionRecord $revisionRecord
 	) {
-		$attrs = $this->createRevisionRecordAttrs( $revisionRecord );
+		$attrs = $this->createRevisionRecordAttrs( $revisionRecord, $revisionRecord->getUser() );
 		$attrs['recommendation_type'] = $recommendationType;
 
 		return $this->createEvent(

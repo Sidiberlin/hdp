@@ -7,6 +7,9 @@ ext.enhancedUI.widget.FilelistGrid = function ( cfg ) {
 	this.input = cfg.input;
 	this.rights = cfg.rights || [];
 	this.pageSize = 50;
+	this.$overlay = cfg.$overlay || null;
+	this.allowFileInfoDialog = typeof cfg.allowFileInfoDialog === 'undefined' ? true : cfg.allowFileInfoDialog;
+	this.mediaDialog = cfg.mediaDialog || false;
 	cfg.columns = this.getColumnDefinitions();
 	ext.enhancedUI.widget.FilelistGrid.super.call( this, cfg );
 };
@@ -14,7 +17,7 @@ ext.enhancedUI.widget.FilelistGrid = function ( cfg ) {
 OO.inheritClass( ext.enhancedUI.widget.FilelistGrid, OOJSPlus.ui.data.GridWidget );
 
 ext.enhancedUI.widget.FilelistGrid.prototype.getColumnDefinitions = function () {
-	var columnCfg = {
+	const columnCfg = {
 		preview: {
 			type: 'image',
 			filenameProperty: 'dbkey',
@@ -23,7 +26,7 @@ ext.enhancedUI.widget.FilelistGrid.prototype.getColumnDefinitions = function () 
 		},
 		title: {
 			headerText: mw.message( 'enhanced-standard-uis-filelist-grid-file-title' ).text(),
-			type: 'url',
+			type: this.mediaDialog ? 'text' : 'url',
 			sortable: true,
 			urlProperty: 'url',
 			filterable: false,
@@ -34,13 +37,14 @@ ext.enhancedUI.widget.FilelistGrid.prototype.getColumnDefinitions = function () 
 			type: 'user',
 			showImage: false,
 			sortable: false,
-			filter: { type: 'user' },
-			hidden: !mw.user.options.get( 'filelist-show-author' ),
+			filter: { type: 'user', $overlay: this.$overlay },
+			hidden: this.mediaDialog ? true : !mw.user.options.get( 'filelist-show-author' ),
 			autoClosePopup: true
 		},
 		timestamp: {
 			headerText: mw.message( 'enhanced-standard-uis-filelist-grid-date-title' ).text(),
 			type: 'date',
+			sortable: true,
 			filter: { type: 'date' },
 			valueParser: function ( value, row ) {
 				return row.formatted_ts;
@@ -72,9 +76,9 @@ ext.enhancedUI.widget.FilelistGrid.prototype.getColumnDefinitions = function () 
 			type: 'url',
 			limitShownData: true,
 			limitValue: 2,
-			sortable: true,
+			sortable: false,
 			filter: { type: 'string' },
-			hidden: !mw.user.options.get( 'filelist-show-categories' ),
+			hidden: this.mediaDialog ? true : !mw.user.options.get( 'filelist-show-categories' ),
 			autoClosePopup: true
 		},
 		comment: {
@@ -87,14 +91,16 @@ ext.enhancedUI.widget.FilelistGrid.prototype.getColumnDefinitions = function () 
 
 	mw.hook( 'enhanced.filelist.gridconfig' ).fire( columnCfg );
 
-	columnCfg.info = {
-		type: 'action',
-		title: mw.message( 'enhanced-standard-uis-filelist-grid-info-title' ).text(),
-		actionId: 'info',
-		icon: 'info',
-		headerText: mw.message( 'enhanced-standard-uis-filelist-grid-info-title' ).text(),
-		invisibleHeader: true
-	};
+	if ( this.allowFileInfoDialog ) {
+		columnCfg.info = {
+			type: 'action',
+			title: mw.message( 'enhanced-standard-uis-filelist-grid-info-title' ).text(),
+			actionId: 'info',
+			icon: 'info',
+			headerText: mw.message( 'enhanced-standard-uis-filelist-grid-info-title' ).text(),
+			invisibleHeader: true
+		};
+	}
 
 	if ( this.rights.indexOf( 'reupload' ) !== -1 &&
 		this.rights.indexOf( 'reupload-shared' ) !== -1 ) {
@@ -129,7 +135,7 @@ ext.enhancedUI.widget.FilelistGrid.prototype.setItems = function ( data ) {
 };
 
 ext.enhancedUI.widget.FilelistGrid.prototype.prepareCategories = function ( data ) {
-	for ( var element in data ) {
+	for ( const element in data ) {
 		if ( !data[ element ].categories ) {
 			data[ element ].categories = [];
 			// eslint-disable-next-line camelcase
@@ -141,27 +147,23 @@ ext.enhancedUI.widget.FilelistGrid.prototype.prepareCategories = function ( data
 			data[ element ].category_url = [];
 			continue;
 		}
-		var categoryText = data[ element ].categories;
+		const categoryText = data[ element ].categories;
 		if ( typeof categoryText !== 'string' && !( categoryText instanceof String ) ) {
 			continue;
 		}
-		var categories = [];
-		var categoryArray = categoryText.split( '|' );
-		for ( var cat in categoryArray ) {
-			var categoryTitle = mw.Title.newFromText( categoryArray[ cat ], 14 );
-			var categoryObj = {
+		const categories = [];
+		const categoryArray = categoryText.split( '|' );
+		for ( const cat in categoryArray ) {
+			const categoryTitle = mw.Title.newFromText( categoryArray[ cat ], 14 );
+			const categoryObj = {
 				name: categoryArray[ cat ],
 				url: categoryTitle.getUrl()
 			};
 			categories.push( categoryObj );
 		}
-		data[ element ].categories = categories.map( function ( category ) {
-			return category.name;
-		} );
+		data[ element ].categories = categories.map( ( category ) => category.name );
 		// eslint-disable-next-line camelcase
-		data[ element ].category_url = categories.map( function ( category ) {
-			return category.url;
-		} );
+		data[ element ].category_url = categories.map( ( category ) => category.url );
 	}
 	return data;
 };
@@ -173,22 +175,16 @@ ext.enhancedUI.widget.FilelistGrid.prototype.setColumnsVisibility = function ( v
 };
 
 ext.enhancedUI.widget.FilelistGrid.prototype.checkForColumnAddition = function ( visible ) {
-	var addition = visible.filter( function ( x ) {
-		// eslint-disable-next-line es-x/no-string-prototype-includes, es-x/no-array-prototype-includes
-		return !this.visibleColumns.includes( x );
-	}.bind( this ) );
-	for ( var column in addition ) {
+	const addition = visible.filter( ( x ) => !this.visibleColumns.includes( x ) ); // eslint-disable-line es-x/no-array-prototype-includes
+	for ( const column in addition ) {
 		this.setPreference( addition[ column ], '1' );
 	}
 };
 
 ext.enhancedUI.widget.FilelistGrid.prototype.checkForColumnRemove = function ( visible ) {
-	var toRemove = this.visibleColumns.filter( function ( x ) {
-		// eslint-disable-next-line es-x/no-string-prototype-includes, es-x/no-array-prototype-includes
-		return !visible.includes( x );
-	} );
-	for ( var column in toRemove ) {
-		// eslint-disable-next-line es-x/no-string-prototype-includes, es-x/no-array-prototype-includes
+	const toRemove = this.visibleColumns.filter( ( x ) => !visible.includes( x ) ); // eslint-disable-line es-x/no-array-prototype-includes
+	for ( const column in toRemove ) {
+		// eslint-disable-next-line es-x/no-array-prototype-includes
 		if ( this.alwaysVisibleColumns.includes( toRemove[ column ] ) ) {
 			continue;
 		}
@@ -198,7 +194,7 @@ ext.enhancedUI.widget.FilelistGrid.prototype.checkForColumnRemove = function ( v
 
 ext.enhancedUI.widget.FilelistGrid.prototype.setPreference = function ( preference, value ) {
 	if ( !mw.user.isAnon() ) {
-		mw.loader.using( 'mediawiki.api' ).done( function () {
+		mw.loader.using( 'mediawiki.api' ).done( () => {
 			mw.user.options.set( 'filelist-show-' + preference, value );
 			new mw.Api().saveOption( 'filelist-show-' + preference, value );
 		} );

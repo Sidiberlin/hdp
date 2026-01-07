@@ -15,21 +15,30 @@
  *
  */
 
+use MediaWiki\Block\DatabaseBlockStore;
+use MediaWiki\Html\Html;
+use MediaWiki\HTMLForm\HTMLForm;
+use MediaWiki\SpecialPage\FormSpecialPage;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\User\UserFactory;
 use MediaWiki\User\UserGroupManager;
 
 class SpecialUserMerge extends FormSpecialPage {
 
-	/** @var UserGroupManager */
-	private $userGroupManager;
+	private UserFactory $userFactory;
+	private UserGroupManager $userGroupManager;
+	private DatabaseBlockStore $blockStore;
 
-	/**
-	 * @param UserGroupManager $userGroupManager
-	 */
 	public function __construct(
-		UserGroupManager $userGroupManager
+		UserFactory $userFactory,
+		UserGroupManager $userGroupManager,
+		DatabaseBlockStore $blockStore
 	) {
 		parent::__construct( 'UserMerge', 'usermerge' );
+		$this->userFactory = $userFactory;
 		$this->userGroupManager = $userGroupManager;
+		$this->blockStore = $blockStore;
 	}
 
 	/**
@@ -55,7 +64,7 @@ class SpecialUserMerge extends FormSpecialPage {
 				'required' => true,
 				'label-message' => 'usermerge-newuser',
 				'validation-callback' => function ( $val ) {
-					// only pass strings to User::newFromName
+					// only pass strings to UserFactory::newFromName
 					if ( !is_string( $val ) ) {
 						return true;
 					}
@@ -80,7 +89,10 @@ class SpecialUserMerge extends FormSpecialPage {
 	 *   if validation failed
 	 */
 	public function validateOldUser( $val ) {
-		$oldUser = User::newFromName( $val );
+		$oldUser = $this->userFactory->newFromName( $val );
+		if ( !$oldUser ) {
+			return [ 'usermerge-badolduser' ];
+		}
 		if ( $this->getUser()->getId() === $oldUser->getId() ) {
 			return [ 'usermerge-noselfdelete', $this->getUser()->getName() ];
 		}
@@ -102,7 +114,7 @@ class SpecialUserMerge extends FormSpecialPage {
 			// Special case
 			return true;
 		}
-		$newUser = User::newFromName( $val );
+		$newUser = $this->userFactory->newFromName( $val );
 		if ( !$newUser || $newUser->getId() === 0 ) {
 			return 'usermerge-badnewuser';
 		}
@@ -125,19 +137,25 @@ class SpecialUserMerge extends FormSpecialPage {
 		$enableDelete = $this->getConfig()->get( 'UserMergeEnableDelete' );
 		// Most of the data has been validated using callbacks
 		// still need to check if the users are different
-		$newUser = User::newFromName( $data['newuser'] );
+		$newUser = $this->userFactory->newFromName( $data['newuser'] );
+		if ( !$newUser ) {
+			return Status::newFatal( 'usermerge-badnewuser' );
+		}
 		// Handle "Anonymous" as a special case for user deletion
 		if ( $enableDelete && $data['newuser'] === 'Anonymous' ) {
 			$newUser->mId = 0;
 		}
 
-		$oldUser = User::newFromName( $data['olduser'] );
+		$oldUser = $this->userFactory->newFromName( $data['olduser'] );
+		if ( !$oldUser ) {
+			return Status::newFatal( 'usermerge-badolduser' );
+		}
 		if ( $newUser->getName() === $oldUser->getName() ) {
 			return Status::newFatal( 'usermerge-same-old-and-new-user' );
 		}
 
 		// Validation passed, let's merge the user now.
-		$um = new MergeUser( $oldUser, $newUser, new UserMergeLogger() );
+		$um = new MergeUser( $oldUser, $newUser, new UserMergeLogger(), $this->blockStore );
 		$um->merge( $this->getUser(), __METHOD__ );
 
 		$out = $this->getOutput();

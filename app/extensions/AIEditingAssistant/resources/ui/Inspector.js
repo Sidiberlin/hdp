@@ -6,7 +6,7 @@ ext.AIEditingAssistant.ui.Inspector = function ( inspector, config ) {
 	this.inspector = inspector;
 	this.$element.addClass( 'ext-AIEditingAssistant-inspector' );
 };
-
+/* eslint-disable-next-line */
 OO.inheritClass( ext.AIEditingAssistant.ui.Inspector, ext.visualEditorPlus.ui.InlineTextInspectorElement );
 
 ext.AIEditingAssistant.ui.Inspector.prototype.inspect = function ( range, selectedText ) {
@@ -38,20 +38,20 @@ ext.AIEditingAssistant.ui.Inspector.prototype.onExecutionReplace = function ( ne
 		return;
 	}
 
-	var surfaceModel = ve.init.target.getSurface().getModel();
-	var fragment = surfaceModel.getLinearFragment( this.range );
+	const surfaceModel = ve.init.target.getSurface().getModel();
+	const fragment = surfaceModel.getLinearFragment( this.range );
 	fragment.insertContent( newText );
 	this.inspector.toggle( false );
 };
 
-ext.AIEditingAssistant.ui.Inspector.prototype.getPriority = function ( ) {
+ext.AIEditingAssistant.ui.Inspector.prototype.getPriority = function () {
 	return 99;
 };
 
 ext.AIEditingAssistant.ui.Inspector.prototype.openPromptDialog = function () {
-	var dialog = new ext.AIEditingAssistant.ui.PromptDialog( {
-		operationalText: this.text
-	} ),
+	const dialog = new ext.AIEditingAssistant.ui.PromptDialog( {
+			operationalText: this.text
+		} ),
 		windowManager = new OO.ui.WindowManager( {
 			modal: true
 		} );
@@ -59,11 +59,12 @@ ext.AIEditingAssistant.ui.Inspector.prototype.openPromptDialog = function () {
 	this.inspector.toggle( false );
 	$( document.body ).append( windowManager.$element );
 	windowManager.addWindows( [ dialog ] );
-	windowManager.openWindow( dialog ).closed.then( function ( data ) {
+	windowManager.openWindow( dialog ).closed.then( ( data ) => {
+		/* eslint-disable-next-line */
 		if ( data && data.action === 'submit' && data.hasOwnProperty( 'text' ) ) {
 			this.onExecutionReplace( data.text );
 		}
-	}.bind( this ) );
+	} );
 };
 
 if ( mw && mw.config.get( 'AIEditingAssistantActiveProvider' ) ) {

@@ -18,7 +18,15 @@
  * @file
  */
 
+namespace MediaWiki\Api;
+
+use Exception;
+use InvalidArgumentException;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use RuntimeException;
+use stdClass;
+use UnexpectedValueException;
 
 /**
  * This class represents the result of the API operations.
@@ -64,6 +72,13 @@ class ApiResult implements ApiSerializable {
 	 * @since 1.25
 	 */
 	public const NO_VALIDATE = self::NO_SIZE_CHECK | 8;
+
+	/**
+	 * For addValue(), setValue() and similar functions, do allow override
+	 * of conflicting keys.
+	 * @since 1.45 (also backported to 1.43.6, 1.44.3)
+	 */
+	public const IGNORE_CONFLICT_KEYS = 16;
 
 	/**
 	 * Key for the 'indexed tag name' metadata item. Value is string.
@@ -142,8 +157,12 @@ class ApiResult implements ApiSerializable {
 	 */
 	public const META_BC_SUBELEMENTS = '_BC_subelements';
 
-	private $data, $size, $maxSize;
-	private $errorFormatter;
+	/** @var mixed */
+	private $data;
+	private int $size;
+	/** @var int|false */
+	private $maxSize;
+	private ApiErrorFormatter $errorFormatter;
 
 	/**
 	 * @param int|false $maxSize Maximum result "size", or false for no limit
@@ -283,7 +302,7 @@ class ApiResult implements ApiSerializable {
 			if ( $flags & self::ADD_ON_TOP ) {
 				array_unshift( $arr, $value );
 			} else {
-				array_push( $arr, $value );
+				$arr[] = $value;
 			}
 			return;
 		}
@@ -297,7 +316,7 @@ class ApiResult implements ApiSerializable {
 			}
 		} elseif ( is_array( $arr[$name] ) && is_array( $value ) ) {
 			$conflicts = array_intersect_key( $arr[$name], $value );
-			if ( !$conflicts ) {
+			if ( !$conflicts || ( $flags & self::IGNORE_CONFLICT_KEYS ) ) {
 				$arr[$name] += $value;
 			} else {
 				$keys = implode( ', ', array_keys( $conflicts ) );
@@ -343,6 +362,10 @@ class ApiResult implements ApiSerializable {
 						$ex
 					);
 				}
+			} elseif ( $value instanceof \Wikimedia\Message\MessageParam ) {
+				// HACK Support code that puts $msg->getParams() directly into API responses
+				// (e.g. ApiErrorFormatter::formatRawMessage()).
+				$value = $value->getType() === 'text' ? $value->getValue() : $value->jsonSerialize();
 			} elseif ( is_callable( [ $value, '__toString' ] ) ) {
 				$value = (string)$value;
 			} else {
@@ -362,11 +385,7 @@ class ApiResult implements ApiSerializable {
 				$value[$k] = self::validateValue( $v );
 			}
 		} elseif ( $value !== null && !is_scalar( $value ) ) {
-			$type = gettype( $value );
-			// phpcs:ignore MediaWiki.Usage.ForbiddenFunctions.is_resource
-			if ( is_resource( $value ) ) {
-				$type .= '(' . get_resource_type( $value ) . ')';
-			}
+			$type = get_debug_type( $value );
 			throw new InvalidArgumentException( "Cannot add $type to ApiResult" );
 		} elseif ( is_float( $value ) && !is_finite( $value ) ) {
 			throw new InvalidArgumentException( 'Cannot add non-finite floats to ApiResult' );
@@ -1219,9 +1238,9 @@ class ApiResult implements ApiSerializable {
 	 */
 	public static function formatExpiry( $expiry, $infinity = 'infinity' ) {
 		static $dbInfinity;
-		if ( $dbInfinity === null ) {
-			$dbInfinity = wfGetDB( DB_REPLICA )->getInfinity();
-		}
+		$dbInfinity ??= MediaWikiServices::getInstance()->getConnectionProvider()
+			->getReplicaDatabase()
+			->getInfinity();
 
 		if ( $expiry === '' || $expiry === null || $expiry === false ||
 			wfIsInfinity( $expiry ) || $expiry === $dbInfinity
@@ -1244,3 +1263,6 @@ class ApiResult implements ApiSerializable {
  *
  * vim: foldmarker=//\ region,//\ endregion foldmethod=marker
  */
+
+/** @deprecated class alias since 1.43 */
+class_alias( ApiResult::class, 'ApiResult' );

@@ -3,18 +3,20 @@
 namespace MediaWiki\Extension\EnhancedStandardUIs\Action;
 
 use ChangeTags;
-use ExtensionRegistry;
-use FormatJson;
 use HistoryAction;
-use Html;
 use InvalidArgumentException;
 use LogEventsList;
 use MediaWiki\Extension\EnhancedStandardUIs\IHistoryPlugin;
+use MediaWiki\Html\Html;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Language\RawMessage;
 use MediaWiki\MainConfigNames;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Revision\RevisionRecord;
-use Message;
-use RawMessage;
+use Wikimedia\Rdbms\IResultWrapper;
 
 class EnhancedHistoryAction extends HistoryAction {
 
@@ -91,7 +93,7 @@ class EnhancedHistoryAction extends HistoryAction {
 		$data = [];
 		$userFactory = $services->getUserFactory();
 		$permissionManager = $services->getPermissionManager();
-		$language = $services->getContentLanguage();
+		$language = $this->context->getLanguage();
 		$titleFactory = $services->getTitleFactory();
 
 		$registry = ExtensionRegistry::getInstance()->getAttribute(
@@ -112,24 +114,34 @@ class EnhancedHistoryAction extends HistoryAction {
 
 		$hasPermission = $permissionManager->userHasRight( $user, 'deletedtext' );
 		$oldSize = 0;
+		$firstRevision = true;
 		foreach ( $res as $row ) {
 			$classes = [];
 			$deletedFields = $this->bitsToDeletedFields( $row->rev_deleted );
-			if ( $deletedFields['revision'] ) {
-				$classes[] = 'enhanced-history-revision-strikethrough';
-				if ( !$hasPermission ) {
-					$classes[] = 'enhanced-history-revision-grey';
+
+			/**
+			 * CSS classes
+			 * - revision: enhanced-history-revision-strikethrough, enhanced-history-revision-grey
+			 * - author:   enhanced-history-author-strikethrough,   enhanced-history-author-grey
+			 * - summary:  enhanced-history-summary-strikethrough,  enhanced-history-summary-grey
+			 */
+			$deletionClasses = [
+				'revision' => 'enhanced-history-revision',
+				'author' => 'enhanced-history-author',
+				'summary' => 'enhanced-history-summary'
+			];
+
+			foreach ( $deletionClasses as $field => $baseClass ) {
+				if ( $deletedFields[$field] ) {
+					$classes[] = "{$baseClass}-strikethrough";
+					if ( !$hasPermission ) {
+						$classes[] = "{$baseClass}-grey";
+					}
 				}
-			}
-			if ( $deletedFields['author'] ) {
-				$classes[] = 'enhanced-history-author-strikethrough';
-			}
-			if ( $deletedFields['summary'] ) {
-				$classes[] = 'enhanced-history-summary-strikethrough';
 			}
 
 			$sizeDiff = $row->rev_len - $oldSize;
-			$entry['diff'] = Message::newFromKey( 'size-bytes', $sizeDiff )->parse();
+			$entry['diff'] = Message::newFromKey( 'size-bytes', $sizeDiff )->escaped();
 			if ( $sizeDiff < 0 ) {
 				$classes[] = 'enhanced-history-diff-minus';
 			} elseif ( $sizeDiff > 0 ) {
@@ -144,13 +156,22 @@ class EnhancedHistoryAction extends HistoryAction {
 				: '';
 			$entry['author'] = $hasPermission || !$deletedFields['author']
 				? $userFactory->newFromActorId( $row->rev_actor )->getName()
-				: '';
-			$entry['size'] = Message::newFromKey( 'size-bytes', $row->rev_len )->parse();
-			$summary = new RawMessage( $row->rev_comment_text );
-			$entry['summary'] = $hasPermission || !$deletedFields['summary']
-				? $summary->parse()
-				: '';
-			$entry['tags'] = $row->ts_tags;
+				: Message::newFromKey( 'rev-deleted-user' )->escaped();
+
+			$entry['size'] = Message::newFromKey( 'size-bytes', $row->rev_len )->escaped();
+			if ( $firstRevision ) {
+				// The first revision's summary contains the whole initial wikitext.
+				// Parsing it will result in very odd behavior,
+				// e.g. images are being displayed, while tables are not
+				// Therefore we completely omit parsing the summary for the first revision
+				$entry['summary'] = Sanitizer::stripAllTags( $row->rev_comment_text );
+			} else {
+				$summary = new RawMessage( $row->rev_comment_text );
+				$entry['summary'] = $hasPermission || !$deletedFields['summary']
+					? $summary->parse()
+					: Message::newFromKey( 'rev-deleted-comment' )->escaped();
+			}
+			$entry['tags'] = $row->ts_tags ?? '';
 			$entry['tagUrl'] = $titleFactory->newFromText( 'Special:Tags' )->getLocalURL();
 
 			$attribs = [];
@@ -162,6 +183,7 @@ class EnhancedHistoryAction extends HistoryAction {
 
 			$data[] = $entry;
 			$oldSize = $row->rev_len;
+			$firstRevision = false;
 		}
 		$orderedData = array_reverse( $data );
 
@@ -226,7 +248,7 @@ class EnhancedHistoryAction extends HistoryAction {
 		$conds = $info['conds'] ?? [];
 		$options = $info['options'] ?? [];
 		$join_conds = $info['join_conds'] ?? [];
-		list( $tables, $fields, $conds, $fname, $options, $join_conds ) =
+		[ $tables, $fields, $conds, $fname, $options, $join_conds ] =
 			[ $tables, $fields, $conds, $fname, $options, $join_conds ];
 
 		$db = $services->getDBLoadBalancer()->getConnection( DB_REPLICA );

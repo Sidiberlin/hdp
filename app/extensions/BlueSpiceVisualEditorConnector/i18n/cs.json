@@ -1,11 +1,15 @@
 {
 	"@metadata": {
 		"authors": [
+			"Jrobicek",
 			"Nixtonin",
 			"Patriccck",
 			"YjM"
 		]
 	},
+	"bs-visualeditorconnector-cancel-edit": "Zrušit úpravu. Neuložené změny budou zahozeny",
+	"bs-visualeditorconnector-cancel-edit-confirm-message": "Opravdu chcete úpravu zrušit? Vaše neuložené změny budou zahozeny.",
+	"bs-visualeditor-nsm-label": "Vizuální editor",
 	"bs-vec-dialog-media-change-file": "Změň soubor",
 	"bs-vec-table-style-cell-text-vert-align": "Svislé zarovnání textu",
 	"bs-vec-table-style-cell-text-vert-align-bottom": "Dolů",

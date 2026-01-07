@@ -1,8 +1,8 @@
 bs.util.registerNamespace( 'bs.vec.ce' );
 
-bs.vec.ce.TextAlignmentCenter = function() {
+bs.vec.ce.TextAlignmentCenter = function () {
 	// Parent constructor
-	bs.vec.ce.TextAlignmentCenter.super.apply( this,  arguments );
+	bs.vec.ce.TextAlignmentCenter.super.apply( this, arguments );
 
 	// DOM changes
 	this.$element
@@ -31,8 +31,8 @@ bs.vec.ce.TextAlignmentCenter.static.tagName = 'p';
 /**
  * @inheritdoc
  */
-bs.vec.ce.TextAlignmentCenter.static.getDescription = function ( model ) {
-	return OO.ui.deferMsg( "bs-visualeditorconnector-align-center-annotation-desc" );
+bs.vec.ce.TextAlignmentCenter.static.getDescription = function ( model ) { // eslint-disable-line no-unused-vars
+	return OO.ui.deferMsg( 'bs-visualeditorconnector-align-center-annotation-desc' );
 };
 
 /* Registration */

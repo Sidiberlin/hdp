@@ -58,5 +58,5 @@ flexiskin.ui.plugin.LayoutColors.prototype.provideControls = function () {
 				}
 			}
 		}
-	}
+	};
 };

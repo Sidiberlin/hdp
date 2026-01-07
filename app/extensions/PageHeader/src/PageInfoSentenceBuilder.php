@@ -2,8 +2,8 @@
 
 namespace PageHeader;
 
-use Html;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Html\Html;
 
 class PageInfoSentenceBuilder {
 

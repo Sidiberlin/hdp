@@ -2,6 +2,9 @@
 
 namespace BlueSpice\Tag;
 
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+
 interface ITag {
 	/**
 	 * @return string[]
@@ -11,13 +14,13 @@ interface ITag {
 	/**
 	 * @param mixed $processedInput
 	 * @param array $processedArgs
-	 * @param \Parser $parser
-	 * @param \PPFrame $frame
+	 * @param Parser $parser
+	 * @param PPFrame $frame
 	 *
 	 * @return IHandler
 	 */
-	public function getHandler( $processedInput, array $processedArgs, \Parser $parser,
-		\PPFrame $frame );
+	public function getHandler( $processedInput, array $processedArgs, Parser $parser,
+		PPFrame $frame );
 
 	/**
 	 * @return string

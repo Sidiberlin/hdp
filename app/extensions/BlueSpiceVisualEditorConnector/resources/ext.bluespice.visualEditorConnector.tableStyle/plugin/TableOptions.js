@@ -9,16 +9,14 @@ bs.ui.plugin.TableOptions = function ( config ) {
 OO.inheritClass( bs.ui.plugin.TableOptions, bs.vec.ui.plugin.MWTableDialog );
 
 bs.ui.plugin.TableOptions.prototype.initialize = function () {
-	var tableOptionsLayout;
-
-	var options = [];
-	for ( var style in this.styleclasses ) {
+	const options = [];
+	for ( const style in this.styleclasses ) {
 		if ( !this.styleclasses.hasOwnProperty( style ) ) {
 			continue;
 		}
 
-		var classname = this.styleclasses[style];
-		var option = new OO.ui.MenuOptionWidget( {
+		const classname = this.styleclasses[ style ];
+		const option = new OO.ui.MenuOptionWidget( {
 			data: classname, label: style
 		} );
 		options.push( option );
@@ -29,7 +27,7 @@ bs.ui.plugin.TableOptions.prototype.initialize = function () {
 			items: options
 		}
 	} );
-	tableOptionsLayout = new OO.ui.FieldLayout( this.component.TableOptions, {
+	const tableOptionsLayout = new OO.ui.FieldLayout( this.component.TableOptions, {
 		align: 'left',
 		label: ve.msg( 'bs-visualeditorconnector-ve-style-option' )
 	} );
@@ -43,34 +41,34 @@ bs.ui.plugin.TableOptions.prototype.getValues = function ( values ) {
 	return ve.extendObject( values, { tableoption: this.getActiveClass() } );
 };
 
-bs.ui.plugin.TableOptions.prototype.getActiveClass = function( fragment, fromOriginalClasses ) {
+bs.ui.plugin.TableOptions.prototype.getActiveClass = function ( fragment, fromOriginalClasses ) {
 	fragment = fragment || this.component.getFragment();
 
-	var options = $.extend( {}, fragment.getSelection().getTableNode( fragment.document ).getAttributes() );
+	const options = Object.assign( {}, fragment.getSelection().getTableNode( fragment.document ).getAttributes() );
 	if ( fromOriginalClasses ) {
 		if ( !options.hasOwnProperty( 'originalClasses' ) ) {
 			return false;
 		}
-		var originalClasses = options.originalClasses.split( ' ' );
-		for( var x = 0; x < originalClasses.length; x++ ) {
+		const originalClasses = options.originalClasses.split( ' ' );
+		for ( let x = 0; x < originalClasses.length; x++ ) {
 			if (
-				Object.values( this.styleclasses ).indexOf( originalClasses[x] ) !== -1 &&
-				!options.hasOwnProperty( originalClasses[x] )
+				Object.values( this.styleclasses ).indexOf( originalClasses[ x ] ) !== -1 &&
+				!options.hasOwnProperty( originalClasses[ x ] )
 			) {
-				options[originalClasses[x]] = true;
+				options[ originalClasses[ x ] ] = true;
 			}
 		}
 	}
 
-	for ( var style in this.styleclasses ) {
+	for ( const style in this.styleclasses ) {
 		if ( !this.styleclasses.hasOwnProperty( style ) ) {
 			continue;
 		}
-		if ( !options.hasOwnProperty( this.styleclasses[style] ) ) {
+		if ( !options.hasOwnProperty( this.styleclasses[ style ] ) ) {
 			continue;
 		}
-		if ( options[this.styleclasses[style]] === true ) {
-			return this.styleclasses[style];
+		if ( options[ this.styleclasses[ style ] ] === true ) {
+			return this.styleclasses[ style ];
 		}
 	}
 
@@ -84,9 +82,9 @@ bs.ui.plugin.TableOptions.prototype.getActiveClass = function( fragment, fromOri
 bs.ui.plugin.TableOptions.prototype.getSetupProcess = function ( parentProcess ) {
 	parentProcess.next( function () {
 		this.fragment = this.component.getFragment();
-		var activeClass = this.getActiveClass( this.fragment );
+		const activeClass = this.getActiveClass( this.fragment );
 
-		var selected = this.component.TableOptions.getMenu().findItemFromData( 'nostyle' );
+		let selected = this.component.TableOptions.getMenu().findItemFromData( 'nostyle' );
 		if ( activeClass ) {
 			selected = this.component.TableOptions.getMenu().findItemFromData( activeClass );
 		}
@@ -101,7 +99,7 @@ bs.ui.plugin.TableOptions.prototype.getSetupProcess = function ( parentProcess )
 
 bs.ui.plugin.TableOptions.prototype.getActionProcess = function ( parentProcess, action ) {
 	parentProcess.next( function () {
-		var initialFragment, surfaceModel, fragment;
+		let initialFragment, surfaceModel, fragment;
 
 		if ( action === 'done' ) {
 			initialFragment = this.component.getFragment() || this.fragment;
@@ -112,25 +110,24 @@ bs.ui.plugin.TableOptions.prototype.getActionProcess = function ( parentProcess,
 			fragment = surfaceModel.getLinearFragment(
 				initialFragment.getSelection().tableRange, true
 			);
-			var selectedItem = this.component.TableOptions.getMenu().findSelectedItem();
+			const selectedItem = this.component.TableOptions.getMenu().findSelectedItem();
 			if ( !selectedItem ) {
 				return;
 			}
-			var selectedClass = this.component.TableOptions.getMenu().findSelectedItem().getData();
-			var allItems = this.component.TableOptions.getMenu().getItems();
+			const selectedClass = this.component.TableOptions.getMenu().findSelectedItem().getData();
+			const allItems = this.component.TableOptions.getMenu().getItems();
 
-			allItems.forEach( function ( thisClass ) {
-				var thisName = thisClass.data;
-				var obj = {};
+			allItems.forEach( ( thisClass ) => {
+				const thisName = thisClass.data;
+				const obj = {};
 				if ( thisName === 'nostyle' ) {
-					obj[thisName] = false;
+					obj[ thisName ] = false;
 					fragment.changeAttributes( obj );
-				}
-				else if ( thisName === selectedClass ) {
-					obj[thisName] = true;
+				} else if ( thisName === selectedClass ) {
+					obj[ thisName ] = true;
 					fragment.changeAttributes( obj );
 				} else {
-					obj[thisName] = false;
+					obj[ thisName ] = false;
 					fragment.changeAttributes( obj );
 				}
 			} );
@@ -141,22 +138,20 @@ bs.ui.plugin.TableOptions.prototype.getActionProcess = function ( parentProcess,
 
 bs.vec.registerComponentPlugin(
 	bs.vec.components.TABLE_DIALOG,
-	function ( component ) {
-		return new bs.ui.plugin.TableOptions( component );
-	}
+	( component ) => new bs.ui.plugin.TableOptions( component )
 );
 
 ( function registerClasses() {
-	var styleclasses = bs.vec.config.get( 'TableStyleRegistry' );
+	const styleclasses = bs.vec.config.get( 'TableStyleRegistry' );
 
 	// Add class attributes
-	for ( var style in styleclasses ) {
+	for ( const style in styleclasses ) {
 		if ( !styleclasses.hasOwnProperty( style ) ) {
 			continue;
 		}
-		var classname = styleclasses[style];
-		var obj = {};
-		obj[classname] = true;
-		ve.dm.MWTableNode.static.classAttributes[classname] = obj;
+		const classname = styleclasses[ style ];
+		const obj = {};
+		obj[ classname ] = true;
+		ve.dm.MWTableNode.static.classAttributes[ classname ] = obj;
 	}
-} )();
+}() );

@@ -14,7 +14,5 @@
 	"bs-countthings-tag-countarticles-desc": "Amuesa'l númberu d'artículos de la wiki.",
 	"bs-countthings-tag-countusers-desc": "Amuesa'l númberu d'usuarios rexistraos.",
 	"bs-countthings-tag-countcharacters-desc": "Xenera metadatos del conteníu del artículu indicáu. La salida ye un infobox que puede integrase nun artículu. Col parámetru \"mode\" puede amosar distintes clases d'información.",
-	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: Lo qu'hai que contar <code>chars</code> (caráuteres), <code>words</code> (palabres) o <code>pages</code> (páxines).",
-	"bs-countthings-tag-countcharacters-example-1": "Númberu de palabres",
-	"bs-countthings-tag-countcharacters-example-2": "Númberu de caráuteres"
+	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: Lo qu'hai que contar <code>chars</code> (caráuteres), <code>words</code> (palabres) o <code>pages</code> (páxines)."
 }

@@ -4,7 +4,6 @@
 			"Fraxinus.cs"
 		]
 	},
-	"importofficefiles-ui-action-import-msword-text": "Importujte soubor aplikace Word",
 	"importofficefiles-ui-action-import-msword-title": "Vytvářejte stránky ze souboru Microsoft Word",
 	"importofficefiles-api-storage-error-no-valid-module": "Není k dispozici žádný modul pro zpracování tohoto souboru"
 }

@@ -2,11 +2,11 @@
 
 namespace BlueSpice\PageAssignments\Data\Assignable\User;
 
-use GlobalVarConfig;
+use MediaWiki\Config\GlobalVarConfig;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\UserFactory;
-use Title;
-use TitleFactory;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class Store extends \MWStake\MediaWiki\Component\CommonWebAPIs\Data\UserQueryStore\Store {

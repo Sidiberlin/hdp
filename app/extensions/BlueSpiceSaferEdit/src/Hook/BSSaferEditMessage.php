@@ -2,7 +2,7 @@
 
 namespace BlueSpice\SaferEdit\Hook;
 
-use Title;
+use MediaWiki\Title\Title;
 
 interface BSSaferEditMessage {
 

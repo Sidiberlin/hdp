@@ -3,9 +3,9 @@
 	height: 400px;
 	float: right;
 	clear: both;
-	margin: 0px 0px 5px 5px;
-	/*@embed*/
-	background-image: url(../../BlueSpiceFoundation/resources/bluespice/images/bs-ajax-loader-bar-blue.gif);
+	margin: 0 0 5px 5px;
+	/* @embed */
+	background-image: url( ../../BlueSpiceFoundation/resources/bluespice/images/bs-ajax-loader-bar-blue.gif );
 	background-repeat: no-repeat;
 	background-position: 50% 50%;
 	background-color: #ddd;
@@ -23,4 +23,3 @@
 .ve-ce-focusableNode.bs-bookshelf-toc {
 	display: none;
 }
-

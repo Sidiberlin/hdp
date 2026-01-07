@@ -2,15 +2,15 @@
 
 namespace MediaWiki\Extension\ContentProvisioning\Rest;
 
-use Diff;
-use ExtensionRegistry;
+use MediaWiki\Content\TextContent;
+use MediaWiki\Message\Message;
 use MediaWiki\Page\WikiPageFactory;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\Rest\Handler;
-use Message;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\ContentProvisioner\ManifestListProvider\StaticManifestProvider;
-use TableDiffFormatter;
-use TextContent;
-use TitleFactory;
+use Wikimedia\Diff\Diff;
+use Wikimedia\Diff\TableDiffFormatter;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class DiffHandler extends Handler {

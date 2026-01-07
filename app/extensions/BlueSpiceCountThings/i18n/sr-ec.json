@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Aca",
 			"BadDog",
 			"Kizule",
 			"Milicevic01",
@@ -29,14 +30,12 @@
 	"bs-countthings-tag-countarticles-desc": "Приказује број чланака на викију.",
 	"bs-countthings-tag-countusers-desc": "Приказује број регистрованих корисника.",
 	"bs-countthings-tag-countfiles-desc": "Приказује број датотека на викију.",
-	"bs-countthings-tag-countcharacters-example-1": "Број речи",
-	"bs-countthings-tag-countcharacters-example-2": "Број знакова",
 	"bs-countthings-droplet-articles-name": "Број страница",
-	"bs-countthings-droplet-characters-name": "Број знакова",
-	"bs-countthings-droplet-files-name": "Број датотека",
-	"bs-countthings-droplet-user-name": "Број корисника",
 	"bs-countthings-droplet-articles-description": "Приказује број страница",
+	"bs-countthings-droplet-characters-name": "Број знакова",
 	"bs-countthings-droplet-characters-description": "Приказује број карактера или речи у страници",
+	"bs-countthings-droplet-files-name": "Број датотека",
 	"bs-countthings-droplet-files-description": "Приказује број свих отпремљених датотека",
+	"bs-countthings-droplet-user-name": "Број корисника",
 	"bs-countthings-droplet-user-description": "Приказује број свих корисника"
 }

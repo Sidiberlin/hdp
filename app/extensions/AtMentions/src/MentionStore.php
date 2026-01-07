@@ -5,9 +5,9 @@ namespace AtMentions;
 use DateInterval;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserFactory;
 use MediaWiki\User\UserIdentity;
-use Title;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class MentionStore {

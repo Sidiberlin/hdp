@@ -4,7 +4,7 @@ namespace BlueSpice\Discovery\ConfigDefinition;
 
 use BlueSpice\ConfigDefinition\ArraySetting;
 use BlueSpice\Discovery\MenuSelectorOptions;
-use HTMLSelectField;
+use MediaWiki\HTMLForm\Field\HTMLSelectField;
 
 class SidebarPrimaryMainTabPanelMenu extends ArraySetting {
 

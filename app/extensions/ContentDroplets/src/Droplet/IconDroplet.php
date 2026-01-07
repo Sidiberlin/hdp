@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\ContentDroplets\Droplet;
 
-use Message;
+use MediaWiki\Message\Message;
 
 class IconDroplet extends TemplateDroplet {
 

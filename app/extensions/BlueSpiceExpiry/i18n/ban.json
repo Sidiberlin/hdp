@@ -7,7 +7,6 @@
 	"bs-expiry-specialpage-subtitle": "← $1",
 	"bs-expiry-header-comment": "Panampen",
 	"bs-expiry-comment-label": "Panampen",
-	"bs-expiry-flyout-next-comment": "Penampen: $1",
-	"bs-expiry-edit-grid-header-comment": "Panampen",
-	"bs-expiry-info-dialog-comment": "Penampen: $1"
+	"bs-expiry-info-dialog-comment": "Penampen: $1",
+	"bs-expiry-edit-grid-header-comment": "Panampen"
 }

@@ -2,9 +2,10 @@
 
 namespace MediaWiki\Extension\EnhancedStandardUIs\Special;
 
-use Html;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use UnlistedSpecialPage;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\SpecialPage\UnlistedSpecialPage;
 
 /**
  * Override the default Special:SpecialPages page,
@@ -179,7 +180,8 @@ class EnhancedSpecialPages extends UnlistedSpecialPage {
 			if ( !isset( $groups[$group] ) ) {
 				$groups[$group] = [];
 			}
-			$groups[$group][$page->getDescription()] = [
+			$desc = (string)$page->getDescription();
+			$groups[$group][$desc] = [
 				$page->getPageTitle(),
 				$page->isRestricted(),
 				$page->isCached()

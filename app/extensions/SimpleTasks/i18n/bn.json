@@ -14,8 +14,5 @@
 	"simple-tasks-taskreport-inspector-label-state": "স্থিতি",
 	"simple-tasks-taskreport-state-title-done": "কাজ সম্পন্ন",
 	"simple-tasks-taskreport-state-filter-done": "সম্পন্ন",
-	"simple-tasks-taskreport-state-filter-open": "খুলুন",
-	"echo-category-title-simple-tasks-notification-cat": "কাজসমূহ",
-	"simple-tasks-notification-cat-tooltip": "আমার জন্য কাজ বরাদ্দ হলে আমাকে জানাবেন",
-	"simple-tasks-echo-notification-task-subject": "$1 পৃষ্ঠায় আপনাকে কাজ দেওয়া হয়েছে"
+	"simple-tasks-taskreport-state-filter-open": "খুলুন"
 }

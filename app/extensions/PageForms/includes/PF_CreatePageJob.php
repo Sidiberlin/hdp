@@ -6,6 +6,7 @@
  */
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 /**
  * Background job to create a new page, for use by the 'CreateClass' special
@@ -33,6 +34,7 @@ class PFCreatePageJob extends Job {
 
 		try {
 			$wikiPage = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $this->title );
+		// @phan-suppress-next-line PhanUnusedVariableCaughtException
 		} catch ( MWException $e ) {
 			$this->error = 'pageFormsCreatePage: Wiki page not found "' . $this->title->getPrefixedDBkey() . '"';
 			return false;
@@ -44,7 +46,7 @@ class PFCreatePageJob extends Job {
 		} else {
 			$editSummary = '';
 		}
-		$user = User::newFromId( $this->params['user_id'] );
+		$user = MediaWikiServices::getInstance()->getUserFactory()->newFromId( $this->params['user_id'] );
 
 		self::createOrModifyPage( $wikiPage, $pageText, $editSummary, $user );
 

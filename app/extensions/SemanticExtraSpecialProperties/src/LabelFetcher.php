@@ -4,12 +4,12 @@ namespace SESP;
 
 use Onoi\Cache\Cache;
 use Onoi\Cache\NullCache;
-use SMW\Message;
+use SMW\Localizer\Message;
 
 /**
  * @ingroup SESP
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.0
  *
  * @author mwjames
@@ -19,7 +19,7 @@ class LabelFetcher {
 	/**
 	 * Namespace of the cache instance
 	 */
-	const LABEL_CACHE_NAMESPACE = 'sesp:labels';
+	public const LABEL_CACHE_NAMESPACE = 'sesp:labels';
 
 	/**
 	 * @var Cache
@@ -54,7 +54,7 @@ class LabelFetcher {
 	/**
 	 * @since 2.0
 	 *
-	 * @param integer|string $labelCacheVersion
+	 * @param int|string $labelCacheVersion
 	 */
 	public function setLabelCacheVersion( $labelCacheVersion ) {
 		$this->labelCacheVersion = $labelCacheVersion;
@@ -79,7 +79,6 @@ class LabelFetcher {
 	 * @return array
 	 */
 	public function getLabelsFrom( PropertyDefinitions $propertyDefinitions ) {
-
 		$hash = smwfCacheKey(
 			self::LABEL_CACHE_NAMESPACE,
 			[
@@ -112,7 +111,6 @@ class LabelFetcher {
 	}
 
 	private function matchLabel( &$labels, $definition ) {
-
 		if ( !isset( $definition['id'] ) ) {
 			return;
 		}

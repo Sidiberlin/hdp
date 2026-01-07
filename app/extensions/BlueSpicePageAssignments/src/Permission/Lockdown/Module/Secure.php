@@ -3,12 +3,12 @@
 namespace BlueSpice\PageAssignments\Permission\Lockdown\Module;
 
 use BlueSpice\PageAssignments\AssignmentFactory;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use Message;
-use Title;
-use User;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class Secure extends \BlueSpice\Permission\Lockdown\Module {
 
@@ -40,7 +40,7 @@ class Secure extends \BlueSpice\Permission\Lockdown\Module {
 	 * @return \static
 	 */
 	public static function getInstance( Config $config, IContextSource $context,
-		MediaWikiServices $services, AssignmentFactory $assignmentFactory = null ) {
+		MediaWikiServices $services, ?AssignmentFactory $assignmentFactory = null ) {
 		if ( !$assignmentFactory ) {
 				$assignmentFactory = $services->getService(
 				'BSPageAssignmentsAssignmentFactory'
@@ -64,14 +64,17 @@ class Secure extends \BlueSpice\Permission\Lockdown\Module {
 			return false;
 		}
 
-		if ( !$title->exists() ) {
-			return false;
-		}
-
 		$enabledNs = $this->getConfig()->get(
 			'PageAssignmentsSecureEnabledNamespaces'
 		);
 		if ( !in_array( $title->getNamespace(), $enabledNs ) ) {
+			return false;
+		}
+
+		// Performance: Checking if the title exists requires a database query.
+		// Therefore we only do it in case the namespace of the title actually
+		// uses "secure page assignments".
+		if ( !$title->exists() ) {
 			return false;
 		}
 

@@ -1,7 +1,13 @@
 <?php
 
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Content\WikitextContent;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Request\WebRequest;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 
 class BsFileSystemHelper {
 
@@ -122,11 +128,10 @@ class BsFileSystemHelper {
 
 		$repo = MediaWikiServices::getInstance()->getRepoGroup()->getRepoByName( $sSubDirName );
 
-		// This is not usable! Used for invalidating cache.
-		$repo->quickImport(
-			"",
-			""
-		);
+		$file = $repo->newFile( $sFileName );
+		if ( $file ) {
+			$file->purgeCache();
+		}
 
 		return $oStatus::newGood( static::getFileFromRepoName( $sFileName, $sSubDirName ) );
 	}
@@ -568,7 +573,7 @@ class BsFileSystemHelper {
 			return Status::newFatal( wfMessage( "bs-filesystemhelper-has-path-traversal" ) );
 		}
 		$sUploadPath = $oWebRequestUpload->getTempName();
-		list( $iWidth, $iHeight, $iType ) = getimagesize( $sUploadPath );
+		[ $iWidth, $iHeight, $iType ] = getimagesize( $sUploadPath );
 		switch ( $iType ) {
 			case IMAGETYPE_GIF:
 				$rImage = imagecreatefromgif( $sUploadPath );
@@ -777,7 +782,7 @@ class BsFileSystemHelper {
 
 		if ( $oUploadFile === false ) {
 			return Status::newFatal(
-				wfMessage( 'bs-filesystemhelper-upload-local-error-stash-file' )->plain()
+				wfMessage( 'bs-filesystemhelper-upload-local-error-stash-file' )->text()
 			);
 		}
 

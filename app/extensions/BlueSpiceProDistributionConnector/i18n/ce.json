@@ -6,5 +6,22 @@
 	},
 	"droplets-modal-dialog-bg-color-red": "цӀен",
 	"droplets-modal-dialog-bg-color-neutral": "кӀай",
-	"bs-pro-distribution-pdfembed-inspector-input-label": "PDF файл"
+	"bs-pro-distribution-pdfembed-inspector-input-label": "PDF файл",
+	"bs-pro-distribution-droplet-pro-con-list-name": "Плюсаш а, минусаш а",
+	"bs-pro-distribution-droplet-pro-con-list-desc": "Плюсаш а, минусаш а дустаран таблица",
+	"bs-pro-distribution-droplet-math-name": "Математикин формула",
+	"bs-pro-distribution-droplet-math-desc": "Математикин формулаш гайтар",
+	"bs-pro-distribution-droplet-chem-name": "Химин формула",
+	"bs-pro-distribution-droplet-chem-desc": "Химин формулаш гайтар",
+	"bs-pro-distribution-droplet-modal-dialog-name": "Модалан нуьйда",
+	"bs-pro-distribution-droplet-decision-name": "Сацам",
+	"droplets-modal-dialog-bg-color-label": "Нуьйдин фонан бос",
+	"droplets-modal-dialog-bg-color-blue": "сийна",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "Шоралла",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "Локхалла",
+	"bs-pro-distribution-pdfembed-inspector-title": "PDF чуйилла",
+	"bs-pro-distribution-pdfembed-droplet-name": "PDF хьалххе хьажар",
+	"bs-pro-distribution-config-comment-streams-enabled": "Комменташ",
+	"bs-pro-distribution-config-link-titles-source-ns": "Хьостан цӀерийн меттигаш",
+	"bs-pro-distribution-config-link-titles-target-ns": "Ӏалашонан цӀерийн меттигаш"
 }

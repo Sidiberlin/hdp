@@ -4,8 +4,9 @@ namespace BlueSpice\Bookshelf;
 
 use BlueSpice\Bookshelf\MenuEditor\NodeProcessor\ChapterPlainTextProcessor;
 use BlueSpice\Bookshelf\MenuEditor\NodeProcessor\ChapterWikiLinkWithAliasProcessor;
-use BlueSpice\Bookshelf\Tag\SearchInBook;
-use MWDebug;
+use BlueSpice\Bookshelf\Tag\SearchInBook as SearchInBookTag;
+use MediaWiki\Debug\MWDebug;
+use MediaWiki\Registration\ExtensionRegistry;
 
 /**
  * Bookshelf extension for BlueSpice
@@ -48,11 +49,11 @@ class Extension extends \BlueSpice\Extension {
 		$GLOBALS['wgNamespacesWithSubpages'][NS_USER] = true;
 		static::checkLegacy();
 
-		if ( \ExtensionRegistry::getInstance()->isLoaded( 'BlueSpiceExtendedSearch' ) ) {
+		if ( ExtensionRegistry::getInstance()->isLoaded( 'BlueSpiceExtendedSearch' ) ) {
 			// Add tag conditionally
 			$GLOBALS['bsgExtensionAttributeRegistryOverrides']['BlueSpiceFoundationTagRegistry'] = [
 				'merge' => [
-					'searchinbook' => SearchInBook::class
+					'searchinbook' => SearchInBookTag::class
 				]
 			];
 		}
@@ -100,7 +101,7 @@ class Extension extends \BlueSpice\Extension {
 				$GLOBALS['BookShelfUIShowChapterNavigationPagerAfterContent'];
 		}
 
-		$registy = \ExtensionRegistry::getInstance()->getAttribute(
+		$registy = ExtensionRegistry::getInstance()->getAttribute(
 			'BlueSpiceBookshelfUIMassAddHandlerRegistry'
 		);
 		if ( !empty( $registy ) ) {

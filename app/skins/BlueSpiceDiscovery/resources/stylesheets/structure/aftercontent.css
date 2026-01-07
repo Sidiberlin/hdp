@@ -1,19 +1,17 @@
-
 #aftercontent {
 	width: 100%;
 }
+
 .ns-special #aftercontent {
-	background-color: var(--body-special-bg );
+	background-color: var( --body-special-bg );
 }
+
 #aftercontent > .inner {
-	max-width: var(--aftercontent-max-width);
+	max-width: var( --aftercontent-max-width );
 	margin: 0 auto;
-	padding-left: 2.5rem;
-	padding-right: 2.5rem;
-	padding-top: 2rem;
-	padding-bottom: 30px;
-	border-top: 0.05px solid var(--aftercontent-border-color);
-	background-color: var(--content-bg);
+	padding: 2rem 2.5rem 30px 2.5rem;
+	border-top: 0.05px solid var( --aftercontent-border-color );
+	background-color: var( --content-bg );
 }
 
 #aftercontent h1,
@@ -22,21 +20,23 @@
 #aftercontent h4,
 #aftercontent h5,
 #aftercontent h6 {
-	color: var(--footer-fg);
+	color: var( --footer-fg );
 }
 
-#aftercontent a:not( [class*="oo-ui-"] ) {
+#aftercontent a:not( [ class*='oo-ui-' ] ) {
 	text-decoration: none;
-	color: var(--aftercontent-tools-fg);
+	color: var( --aftercontent-tools-fg );
 }
 
-#aftercontent a:hover:not( [class*="oo-ui-"] ) {
-	color: var(--content-fg-primary);
+#aftercontent a:hover:not( [ class*='oo-ui-' ] ) {
+	color: var( --content-fg-primary );
 }
 
 #tools-after-content {
-	color: var(--content-fg-secondary);
+	color: var( --content-fg-secondary );
 	margin-bottom: 20px;
+	display: flex;
+	justify-content: space-between;
 }
 
 #tools-after-content:empty {
@@ -44,11 +44,11 @@
 }
 
 #aftercontent a.new {
-	color: var(--new-link-fg);
+	color: var( --new-link-fg );
 }
 
 #data-after-content {
-	background-color: var(--data-after-content-bg);
+	background-color: var( --data-after-content-bg );
 	margin: 0 -40px;
 	padding: 20px;
 	border-radius: 5px;

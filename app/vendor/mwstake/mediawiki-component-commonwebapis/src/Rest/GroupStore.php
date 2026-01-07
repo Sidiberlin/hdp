@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs\Rest;
 
-use GlobalVarConfig;
+use MediaWiki\Config\GlobalVarConfig;
 use MediaWiki\HookContainer\HookContainer;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Data\GroupStore\Store;
 use MWStake\MediaWiki\Component\DataStore\IStore;

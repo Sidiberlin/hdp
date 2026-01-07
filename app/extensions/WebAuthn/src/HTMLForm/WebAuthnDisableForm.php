@@ -2,15 +2,18 @@
 
 namespace MediaWiki\Extension\WebAuthn\HTMLForm;
 
-use ConfigException;
-use IContextSource;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Extension\OATHAuth\HTMLForm\OATHAuthOOUIHTMLForm;
 use MediaWiki\Extension\OATHAuth\IModule;
 use MediaWiki\Extension\OATHAuth\OATHUser;
 use MediaWiki\Extension\OATHAuth\OATHUserRepository;
 use MediaWiki\Extension\WebAuthn\Authenticator;
+use MediaWiki\Extension\WebAuthn\HTMLField\NoJsInfoField;
+use MediaWiki\Extension\WebAuthn\Module\WebAuthn;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Status\Status;
 use MWException;
-use SpecialPage;
 
 class WebAuthnDisableForm extends OATHAuthOOUIHTMLForm {
 
@@ -40,7 +43,7 @@ class WebAuthnDisableForm extends OATHAuthOOUIHTMLForm {
 	}
 
 	/**
-	 * @param array|bool|\Status|string $submitResult
+	 * @param array|bool|Status|string $submitResult
 	 * @return string
 	 */
 	public function getHTML( $submitResult ) {
@@ -82,6 +85,10 @@ class WebAuthnDisableForm extends OATHAuthOOUIHTMLForm {
 	 */
 	protected function getDescriptors() {
 		return [
+			'nojs' => [
+				'class' => NoJsInfoField::class,
+				'section' => 'webauthn-disable-section-name',
+			],
 			'info' => [
 				'type' => 'info',
 				'default' => wfMessage( 'webauthn-ui-disable-prompt' )->plain(),
@@ -95,23 +102,20 @@ class WebAuthnDisableForm extends OATHAuthOOUIHTMLForm {
 	}
 
 	/**
-	 * @param array $credential
+	 * @param string $credential
 	 * @return bool
-	 * @throws ConfigException
-	 * @throws MWException
 	 */
-	private function authenticate( $credential ) {
-		$verificationData = [
-			'credential' => $credential
-		];
+	private function authenticate( string $credential ): bool {
 		$authenticator = Authenticator::factory( $this->getUser(), $this->getRequest() );
 		if ( !$authenticator->isEnabled() ) {
 			return false;
 		}
-		$authenticationResult = $authenticator->continueAuthentication( $verificationData );
+		$authenticationResult = $authenticator->continueAuthentication( [
+			'credential' => $credential
+		] );
 		if ( $authenticationResult->isGood() ) {
-			$this->oathUser->setKeys();
-			$this->oathRepo->remove( $this->oathUser, $this->getRequest()->getIP(), true );
+			$this->oathRepo->removeAllOfType( $this->oathUser, WebAuthn::MODULE_ID,
+				$this->getRequest()->getIP(), true );
 			return true;
 		}
 		return false;

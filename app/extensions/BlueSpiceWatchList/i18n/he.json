@@ -5,11 +5,11 @@
 			"Erelon",
 			"Guycn2",
 			"Steeve815",
+			"YaronSh",
 			"מקף"
 		]
 	},
 	"bs-watchlist-desc": "הוספת תג וכלי רשימת המעקב",
-	"bs-watchlist-title-sidebar": "רשימת המעקב",
 	"bs-watchlist-pref-sort-time": "שעה",
 	"bs-watchlist-pref-sort-title": "כותרת",
 	"bs-watchlist-tag-watchlist-desc": "הצגת הערכים מרשימת המעקב שלך שמכילים הכי הרבה שינויים אחרונים.",
@@ -34,5 +34,6 @@
 	"bs-watchlist-tag-watchlist-attr-pagename-help": "עזרה לשם דף",
 	"bs-watchlist-tag-watchlist-attr-time-help": "עזרה על זמן",
 	"bs-watchlist-droplet-name": "רשימת המעקב",
-	"bs-watchlist-droplet-description": "שינויים אחרונים בדפים הכלולים ברשימת המעקב"
+	"bs-watchlist-droplet-description": "שינויים אחרונים בדפים הכלולים ברשימת המעקב",
+	"bs-watchlist-usersidebar-title": "רשימת המעקב"
 }

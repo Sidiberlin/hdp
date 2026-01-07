@@ -4,5 +4,9 @@
 			"Milicevic01"
 		]
 	},
-	"nsfilerepo-nsmain": "(glavni)"
+	"nsfilerepo-nsmain": "(glavni)",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "Otkaži",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "Imenski prostor",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "Imenski prostor",
+	"nsfilerepo-enhanced-filelist-grid-namespace-title": "Imenski prostor"
 }

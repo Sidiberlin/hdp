@@ -29,7 +29,7 @@ ext.atMentions.ui.MentionContextItem.static.clearable = true;
 ext.atMentions.ui.MentionContextItem.static.clearIcon = 'unLink';
 
 ext.atMentions.ui.MentionContextItem.prototype.renderBody = function () {
-	var widget = new OOJSPlus.ui.widget.UserWidget( {
+	const widget = new OOJSPlus.ui.widget.UserWidget( {
 		// eslint-disable-next-line camelcase
 		user_name: this.model.getAttribute( 'username' )
 	} );

@@ -1,15 +1,16 @@
 {
 	"name": "BlueSpicePermissionManager",
 	"license-name": "GPL-3.0-only",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpicePermissionManager",
 	"author": "Dejan Savuljesku <savuljesku@hallowelt.com>",
 	"descriptionmsg": "bs-permissionmanager-desc",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0",
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"attributes": {
@@ -21,20 +22,7 @@
 				}
 			},
 			"ConfigDefinitionRegistry": {
-				"PermissionManagerMaxBackups": "\\BlueSpice\\PermissionManager\\ConfigDefinition\\PermissionManagerMaxBackups::getInstance",
 				"PermissionManagerActivePreset": "\\BlueSpice\\PermissionManager\\ConfigDefinition\\PermissionManagerActivePresetConfig::getInstance"
-			},
-			"AdminToolRegistry": {
-				"bs-permission-manager": "BlueSpice\\PermissionManager\\AdminTool"
-			},
-			"PermissionRegistry": {
-				"permissionmanager-viewspecialpage": {
-					"type": "namespace",
-					"roles": [
-						"admin",
-						"maintenanceadmin"
-					]
-				}
 			},
 			"PermissionLockdownRegistry": {
 				"special-pages": "\\BlueSpice\\PermissionManager\\Lockdown\\SpecialPages::getInstance"
@@ -49,27 +37,6 @@
 			}
 		}
 	},
-	"AvailableRights": [
-		"permissionmanager-viewspecialpage"
-	],
-	"GroupPermissions": {
-		"*": {
-			"permissionmanager-viewspecialpage": false
-		},
-		"user": {
-			"permissionmanager-viewspecialpage": false
-		},
-		"bureaucrat": {
-			"permissionmanager-viewspecialpage": false
-		},
-		"sysop": {
-			"permissionmanager-viewspecialpage": true
-		}
-	},
-	"APIModules": {
-		"bs-permissionmanager-tasks": "BlueSpice\\PermissionManager\\Api\\ApiPermissionManager",
-		"bs-role-permission-store": "BlueSpice\\PermissionManager\\Api\\RolePermissionsStore"
-	},
 	"LogTypes": [
 		"bs-permission-manager"
 	],
@@ -80,7 +47,10 @@
 		"bs-permission-manager/*": "LogFormatter"
 	},
 	"SpecialPages": {
-		"PermissionManager": "BlueSpice\\PermissionManager\\Special\\SpecialPermissionManager"
+		"PermissionManager": {
+			"class": "\\BlueSpice\\PermissionManager\\Special\\SpecialPermissionManager",
+			"services": [ "BlueSpicePermissionManager" ]
+		}
 	},
 	"MessagesDirs": {
 		"PermissionManager": [
@@ -95,14 +65,19 @@
 		"remoteExtPath": "BlueSpicePermissionManager/resources"
 	},
 	"ResourceModules": {
-		"ext.bluespice.permissionManager": {
+		"ext.bluespice.permissionManager.skeleton": {
+			"styles": [
+				"stylesheets/skeleton-permissionManager.css"
+			]
+		},
+		"ext.bluespice.permissionManager.presetSelector": {
 			"scripts": [
 				"widget/Preset.js",
 				"widget/PresetSelect.js",
 				"bluespice.permissionManager.js"
 			],
 			"styles": [
-				"stylesheets/bluespice.permissionManager.less"
+				"stylesheets/presetSelector.less"
 			],
 			"messages": [
 				"bs-permissionmanager-preset-save-error",
@@ -112,36 +87,116 @@
 			],
 			"dependencies": [
 				"ext.bluespice",
-				"oojs-ui"
+				"oojs-ui",
+				"ext.oOJSPlus.managerPanel"
 			]
 		},
-		"ext.bluespice.permissionManager.customPreset": {
-			"styles": [
-				"stylesheets/bluespice.permissionManager.customPreset.css"
+		"ext.bluespice.permissionManager.groupManager": {
+			"scripts": [
+				"widget/GroupManagerItem.js",
+				"widget/GroupManagerSectionHeader.js",
+				"dialog/GroupNameDialog.js",
+				"dialog/EditGroup.js",
+				"dialog/AddGroup.js",
+				"panel/GroupManager.js"
 			],
 			"dependencies": [
-				"ext.bluespice.extjs"
+				"ext.bluespice",
+				"oojs-ui",
+				"ext.oOJSPlus.data",
+				"oojs-ui.styles.icons-editing-core",
+				"oojs-ui.styles.icons-interactions"
+			],
+			"styles": [
+				"stylesheets/groupManager.less"
+			],
+			"messages": [
+				"bs-permissionmanager-group-remove",
+				"bs-permissionmanager-group-edit",
+				"bs-permissionmanager-error",
+				"bs-permissionmanager-group-create-label",
+				"bs-permissionmanager-group-create",
+				"bs-permissionmanager-group-remove-confirm",
+				"bs-permissionmanager-edit-group",
+				"bs-permissionmanager-save",
+				"bs-permissionmanager-cancel",
+				"bs-permissionmanager-group-name",
+				"bs-permissionmanager-group-type-custom",
+				"bs-permissionmanager-group-type-builtin",
+				"bs-permissionmanager-group-type-implicit",
+				"bs-permissionmanager-group-manager-heading",
+				"bs-permissionmanager-group-header-implicit",
+				"bs-permissionmanager-group-header-groups"
+			]
+		},
+		"ext.bluespice.permissionManager.customPresetManager": {
+			"scripts": [
+				"panel/column/PermissionMatrixColumn.js",
+				"panel/GridMatrix.js",
+				"panel/PermissionManager.js"
+			],
+			"styles": [
+				"stylesheets/permissionManager.less"
 			],
 			"messages": [
 				"bs-permissionmanager-header-role",
 				"bs-permissionmanager-header-global",
-				"bs-permissionmanager-header-namespaces",
-				"bs-permissionmanager-header-group",
-				"bs-permissionmanager-btn-group-label",
-				"bs-permissionmanager-btn-save-in-progress-label",
-				"bs-permissionmanager-save-success",
-				"bs-permissionmanager-unsaved-changes",
+				"bs-permissionmanager-namespace-picker",
 				"bs-permissionmanager-affected-by-explicit",
 				"bs-permissionmanager-affected-by-inherited",
 				"bs-permissionmanager-affected-by-notset",
 				"bs-permissionmanager-affected-by-explicitlyset",
 				"bs-permissionmanager-affected-by-setonwiki",
-				"bs-permissionmanager-show-system-groups-label",
-				"bs-permissionmanager-role-permissions-label",
-				"bs-permissionmanager-role-permissions-column-permission",
-				"bs-permissionmanager-role-permissions-column-permission-desc",
+				"bs-permissionmanager-affected-by-dependency",
 				"bs-permissionmanager-affected-by-dependency-single",
-				"bs-permissionmanager-affected-by-dependency"
+				"bs-permissionmanager-advanced-switch",
+				"bs-permissionmanager-advanced-switch-confirm"
+			],
+			"dependencies": [
+				"ext.bluespice.permissionManager.groupManager",
+				"ext.bluespice",
+				"oojs-ui",
+				"ext.bluespice.permissionManager.simpleMatrix"
+			]
+		},
+		"ext.bluespice.permissionManager.simpleMatrix": {
+			"scripts": [
+				"widget/SimpleMatrixRoleItem.js",
+				"panel/SimpleMatrix.js"
+			],
+			"messages": [
+				"bs-permission-manager-simple-matrix-global",
+				"bs-permission-manager-simple-matrix-global-sub",
+				"bs-permission-manager-simple-matrix-namespace",
+				"bs-permission-manager-simple-matrix-namespace-sub",
+				"bs-permissionmanager-simple-inherited",
+				"bs-permissionmanager-simple-explicit",
+				"bs-permissionmanager-simple-setonwiki",
+				"bs-permissionmanager-simple-setonwiki-sub",
+				"bs-permissionmanager-simple-blocked",
+				"bs-permissionmanager-simple-blocked-sub",
+				"bs-permissionmanager-simple-notset",
+				"bs-permissionmanager-search-namespaces",
+				"bs-permission-manager-simple-matrix-group"
+			],
+			"dependencies": [
+				"ext.bluespice",
+				"oojs-ui"
+			]
+		},
+		"ext.bluespice.permissionManager.roleDetailsDialog": {
+			"scripts": [
+				"dialog/RoleDetailsDialog.js"
+			],
+			"messages": [
+				"bs-permissionmanager-header-permissions",
+				"bs-permissionmanager-cancel",
+				"bs-permissionmanager-header-description"
+			],
+			"dependencies": [
+				"ext.bluespice",
+				"oojs-ui",
+				"ext.oOJSPlus.data"
 			]
 		}
 	},
@@ -151,16 +206,19 @@
 		},
 		"registerDynamicConfig": {
 			"class": "\\BlueSpice\\PermissionManager\\Hook\\RegisterDynamicConfig"
+		},
+		"reactToGroupChanges": {
+			"class": "\\BlueSpice\\PermissionManager\\Hook\\ReactToGroupChanges",
+			"services": [ "ConfigFactory", "BlueSpicePermissionManager" ]
+		},
+		"migrateSettings": {
+			"class": "\\BlueSpice\\PermissionManager\\Hook\\MigrateSettings"
 		}
 	},
 	"Hooks": {
-		"BSGroupManagerGroupDeleted": "\\BlueSpice\\PermissionManager\\Hook\\BSGroupManagerGroupDeleted\\UnassignRoles::callback",
-		"BSGroupManagerGroupNameChanged": [
-			"\\BlueSpice\\PermissionManager\\Hook\\BSGroupManagerGroupNameChanged\\ChangeGroupRoleAssignments::callback"
-		],
-		"LoadExtensionSchemaUpdates": [
-			"\\BlueSpice\\PermissionManager\\Hook\\LoadExtensionSchemaUpdates\\MigratePmSettings::callback"
-		],
+		"BSPermissionManagerGroupDeleted": "reactToGroupChanges",
+		"BSPermissionManagerGroupEdited": "reactToGroupChanges",
+		"LoadExtensionSchemaUpdates": "migrateSettings",
 		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface",
 		"MWStakeDynamicConfigRegisterConfigs": "registerDynamicConfig"
 	},
@@ -169,11 +227,6 @@
 	],
 	"config_prefix": "bsg",
 	"config": {
-		"PermissionManagerMaxBackups": {
-			"value": 50,
-			"descriptionmsg": "bs-permissionmanager-pref-max-backups",
-			"public": true
-		},
 		"PermissionManagerActivePreset": {
 			"value": "custom"
 		},
@@ -186,6 +239,47 @@
 			]
 		}
 	},
+	"RestRoutes": [
+		{
+			"path": "/bs-permission-manager/v1/groups",
+			"class": "BlueSpice\\PermissionManager\\Rest\\RetrieveGroups",
+			"services": [ "BSUtilityFactory" ]
+		},
+		{
+			"method": "POST",
+			"path": "/bs-permission-manager/v1/groups/create/{name}",
+			"class": "BlueSpice\\PermissionManager\\Rest\\AddGroup",
+			"services": [ "BlueSpice.PermissionManager.GroupManager" ]
+		},
+		{
+			"method": "POST",
+			"path": "/bs-permission-manager/v1/groups/edit/{name}/{newName}",
+			"class": "BlueSpice\\PermissionManager\\Rest\\EditGroup",
+			"services": [ "BlueSpice.PermissionManager.GroupManager" ]
+		},
+		{
+			"method": "POST",
+			"path": "/bs-permission-manager/v1/groups/delete/{name}",
+			"class": "BlueSpice\\PermissionManager\\Rest\\DeleteGroup",
+			"services": [ "BlueSpice.PermissionManager.GroupManager" ]
+		},
+		{
+			"path": "/bs-permission-manager/v1/permissions",
+			"class": "BlueSpice\\PermissionManager\\Rest\\PermissionMatrix",
+			"services": [ "BlueSpicePermissionManager", "ContentLanguage", "NamespaceInfo", "ConfigFactory" ]
+		},
+		{
+			"method": "POST",
+			"path": "/bs-permission-manager/v1/permissions",
+			"class": "BlueSpice\\PermissionManager\\Rest\\SavePermissions",
+			"services": [ "BlueSpicePermissionManager" ]
+		},
+		{
+			"path": "/bs-permission-manager/v1/role_details/{role}",
+			"class": "BlueSpice\\PermissionManager\\Rest\\RoleDetails",
+			"services": [ "BlueSpicePermissionManager" ]
+		}
+	],
 	"AutoloadNamespaces": {
 		"BlueSpice\\PermissionManager\\": "src/",
 		"BlueSpice\\PermissionManager\\Tests\\": "tests/phpunit/"

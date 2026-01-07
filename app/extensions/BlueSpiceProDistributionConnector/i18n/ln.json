@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": [
+			"Marphy 123"
+		]
+	},
+	"bs-pro-distribution-droplet-embed-name": "Makambo ya libanda",
+	"bs-pro-distribution-droplet-embed-desc": "Botia makambo ya libanda uta na ba ebombelo ya Git, ndakisa. ba fichiers ya markdown",
+	"bs-pro-distribution-droplet-bitbucket-name": "Fisyé ya BitBucket",
+	"bs-pro-distribution-droplet-bitbucket-desc": "Botia fisyé uta na ebombelo ya BitBucket",
+	"bs-pro-distribution-droplet-ec-embed-url-label": "URL ya",
+	"bs-pro-distribution-droplets-ec-embed-render-label": "Render markdown",
+	"bs-pro-distribution-droplets-ec-embed-lang-label": "Monoko ya makambo oyo ekɔtisami",
+	"bs-pro-distribution-droplets-ec-embed-lang-help": "Moko ya minoko oyo [https://prismjs.com/#supported-languges supported]. Esengeli kaka soki monoko ezwami te uta na bobakisi ya fisyé.",
+	"bs-pro-distribution-droplets-ec-embed-show-lines-label": "Milɔngɔ́ mpo na kolakisa",
+	"bs-pro-distribution-droplets-ec-embed-show-lines-help": "Lakisa kaka milɔngɔ ya sikisiki. Ekoki kozala nimero ya molɔngɔ moko to esika oyo ekabwani na elembo (-). Mituya to ba intervalles ebele ya milɔngɔ ekoki kokabolama na virgule.",
+	"bs-pro-distribution-droplets-ec-embed-show-line-numbers-label": "Lakisa banimero ya milɔngɔ",
+	"bs-pro-distribution-ec-config-domain-whitelist": "Liste ya pembe ya domaine",
+	"bs-pro-distribution-ec-config-file-whitelist": "Liste ya pembe ya extension ya fichier",
+	"bs-pro-distribution-ec-config-file-whitelist-help": "Liste ya ba extensions ya fichier oyo epesami nzela. Tika pamba po ozala na restriction te.",
+	"bs-pro-distribution-ec-config-domain-whitelist-help": "Liste ya ba domaines oyo epesami nzela ya ko intégrer contenus à partir ya. Kotia protocole te, kaka domaine. Ndakisa. `github.com`. Tika pamba po ozala na restriction te."
+}

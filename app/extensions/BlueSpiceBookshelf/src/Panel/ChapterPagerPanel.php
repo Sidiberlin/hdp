@@ -6,10 +6,10 @@ use BlueSpice\Bookshelf\BookContextProviderFactory;
 use BlueSpice\Bookshelf\BookLookup;
 use BlueSpice\Bookshelf\ChapterLookup;
 use BlueSpice\Bookshelf\ChapterPager;
-use Html;
+use MediaWiki\Html\Html;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
-use Title;
-use TitleFactory;
 
 class ChapterPagerPanel extends Literal {
 
@@ -85,13 +85,19 @@ class ChapterPagerPanel extends Literal {
 	 */
 	public function shouldRender( $context ): bool {
 		$title = $context->getTitle();
+		$webRequestValues = $context->getRequest()->getValues();
 		if ( $title->isRedirect() ) {
-			$webRequestValues = $context->getRequest()->getValues();
 			if ( !isset( $webRequestValues['redirect'] ) || $webRequestValues['redirect'] !== 'no' ) {
 				$title = $context->getWikiPage()->getRedirectTarget();
 			}
 		}
-		if ( empty( $this->bookLookup->getBooksForPage( $title ) ) ) {
+		if ( !$title || empty( $this->bookLookup->getBooksForPage( $title ) ) ) {
+			return false;
+		}
+		if ( isset( $webRequestValues['action'] ) && $webRequestValues['action'] !== 'view' ) {
+			return false;
+		}
+		if ( isset( $webRequestValues['diff'] ) ) {
 			return false;
 		}
 

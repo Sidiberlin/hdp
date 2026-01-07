@@ -2,9 +2,9 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface\Api;
 
-use ApiBase;
-use DerivativeContext;
-use IContextSource;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Context\DerivativeContext;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
 use MWStake\MediaWiki\Component\CommonUserInterface\ComponentManager;
 use MWStake\MediaWiki\Component\CommonUserInterface\RendererDataTreeBuilder;

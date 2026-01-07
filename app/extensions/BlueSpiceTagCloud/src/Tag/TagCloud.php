@@ -4,6 +4,8 @@ namespace BlueSpice\TagCloud\Tag;
 
 use BlueSpice\Tag\MarkerType\NoWiki;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class TagCloud extends \BlueSpice\Tag\Tag {
 
@@ -63,12 +65,12 @@ class TagCloud extends \BlueSpice\Tag\Tag {
 	 *
 	 * @param string $processedInput
 	 * @param array $processedArgs
-	 * @param \Parser $parser
-	 * @param \PPFrame $frame
+	 * @param Parser $parser
+	 * @param PPFrame $frame
 	 * @return TagCloudHandler
 	 */
-	public function getHandler( $processedInput, array $processedArgs, \Parser $parser,
-		\PPFrame $frame ) {
+	public function getHandler( $processedInput, array $processedArgs, Parser $parser,
+		PPFrame $frame ) {
 		$services = MediaWikiServices::getInstance();
 		$userFactory = $services->getUserFactory();
 		$configFactory = $services->getConfigFactory();

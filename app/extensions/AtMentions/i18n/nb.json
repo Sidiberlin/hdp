@@ -5,8 +5,8 @@
 			"Jon Harald Søby"
 		]
 	},
-	"at-mentions-inspector-title": "Nevn en bruker",
 	"at-mentions-desc": "Legg til nevning av bruker",
+	"at-mentions-inspector-title": "Nevn en bruker",
 	"at-mentions-inspector-title-add": "Legg til en nevning",
 	"at-mentions-inspector-title-edit": "Rediger nevning av bruker",
 	"at-mentions-ci-title": "Brukernevning",
@@ -20,13 +20,5 @@
 	"at-mentions-mention-notification-key": "Du har blitt nevnt",
 	"at-mentions-mention-in-entity-notification-key": "Du har blitt nevnt i en kommentar eller et innlegg",
 	"at-mentions-mention-in-entity-notification-message": "nevnte deg i en kommentar eller et innlegg med navn «$2» på siden $1",
-	"at-mentions-mention-in-entity-notification-post-link": "Gå rett til innlegget",
-	"at-mentions-toolbar-tool-title": "Legg til nevning",
-	"at-mentions-echo-mention-notification-summary": "Du har blitt nevnt på siden $1",
-	"at-mentions-echo-mention-notification-web-body": "{{GENDER:$2|$3 nevnte}} deg",
-	"at-mentions-echo-mention-notification-subject": "{{GENDER:$2|$3 nevnte}} deg på siden $1",
-	"at-mentions-echo-mention-notification-email-body": "Du har blitt nevnt på siden $1",
-	"at-mentions-echo-mention-entity-notification-summary": "Du har blitt nevnt i en kommentar eller et innlegg på $1",
-	"at-mentions-echo-mention-entity-notification-subject": "{{GENDER:$2|$3}} nevnte deg i en kommentar eller et innlegg på siden $1",
-	"at-mentions-echo-mention-entity-notification-email-body": "Du har blitt nevnt i en kommentar på et innlegg på siden $1"
+	"at-mentions-toolbar-tool-title": "Legg til nevning"
 }

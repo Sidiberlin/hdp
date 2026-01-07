@@ -1,19 +1,18 @@
 <?php
 namespace BlueSpice\Renderer;
 
-use BlueSpice\DynamicFileDispatcher\Params as DFDParams;
-use BlueSpice\DynamicFileDispatcher\UserProfileImage;
 use BlueSpice\Utility\CacheHelper;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Linker\LinkRenderer;
-use RequestContext;
-use User;
+use MediaWiki\User\User;
 
 class UserImage extends \BlueSpice\TemplateRenderer {
 	public const PARAM_WIDTH = 'width';
 	public const PARAM_HEIGHT = 'height';
 	public const PARAM_USER = 'user';
+	public const PARAM_IMAGE_ALT = 'imagealt';
 
 	/**
 	 *
@@ -31,8 +30,8 @@ class UserImage extends \BlueSpice\TemplateRenderer {
 	 * @param CacheHelper|null $cacheHelper
 	 */
 	public function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
-		$name = '', CacheHelper $cacheHelper = null ) {
+		?LinkRenderer $linkRenderer = null, ?IContextSource $context = null,
+		$name = '', ?CacheHelper $cacheHelper = null ) {
 		parent::__construct(
 			$config,
 			$params,
@@ -69,7 +68,11 @@ class UserImage extends \BlueSpice\TemplateRenderer {
 			->getUserHelper( $this->getUser() );
 
 		$this->args['imagetitle'] = $userHelper->getDisplayName();
-		$this->args['imagealt'] = $userHelper->getDisplayName();
+
+		$this->args[static::PARAM_IMAGE_ALT] = $params->get(
+			static::PARAM_IMAGE_ALT,
+			''
+		);
 		$this->args['anchorhref']
 			= $this->getUser()->getUserPage()->getLocalURL();
 	}
@@ -96,15 +99,14 @@ class UserImage extends \BlueSpice\TemplateRenderer {
 	 * @return string
 	 */
 	protected function render_imagesrc( $val ) {
-		$params = [
-			DFDParams::MODULE => UserProfileImage::MODULE_NAME,
-			UserProfileImage::USERNAME => $val,
-			UserProfileImage::WIDTH => (int)$this->args[static::PARAM_WIDTH] * 1.4,
-			UserProfileImage::HEIGHT => (int)$this->args[static::PARAM_HEIGHT] * 1.4,
-		];
-
-		$dfdUrlBuilder = $this->services->getService( 'BSDynamicFileDispatcherUrlBuilder' );
-		return $dfdUrlBuilder->build( new DFDParams( $params ) );
+		return $this->services->getService( 'MWStake.DynamicFileDispatcher.Factory' )->getUrl(
+			'userprofileimage',
+			[
+				'username' => $val,
+				'width' => (int)$this->args[static::PARAM_WIDTH] * 1.4,
+				'height' => (int)$this->args[static::PARAM_HEIGHT] * 1.4
+			]
+		);
 	}
 
 	/**

@@ -1,5 +1,8 @@
 <?php
 
+use MediaWiki\Context\RequestContext;
+use MediaWiki\HTMLForm\HTMLForm;
+
 /**
  * JsonLicenses
  *
@@ -13,7 +16,11 @@ class JsonLicenses extends Licenses {
 	protected $json;
 
 	public function __construct() {
-		parent::__construct( [ 'fieldname' => 'JsonLicenses' ] );
+		$htmlForm = new HTMLForm( [], RequestContext::getMain() );
+		parent::__construct( [
+			'fieldname' => 'JsonLicenses',
+			'parent' => $htmlForm
+		] );
 	}
 
 	/**

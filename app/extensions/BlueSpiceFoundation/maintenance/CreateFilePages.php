@@ -1,7 +1,11 @@
 <?php
 
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Content\ContentHandler;
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Title\Title;
 
 require_once dirname( dirname( dirname( __DIR__ ) ) ) . "/maintenance/Maintenance.php";
 

@@ -2,8 +2,9 @@
 
 namespace BlueSpice\Hook\HtmlPageLinkRendererEnd;
 
-use Html;
 use HtmlArmor;
+use MediaWiki\Html\Html;
+use MediaWiki\Title\Title;
 
 class AddDataUserName extends \BlueSpice\Hook\HtmlPageLinkRendererEnd {
 
@@ -21,7 +22,7 @@ class AddDataUserName extends \BlueSpice\Hook\HtmlPageLinkRendererEnd {
 		if ( $this->target->getNamespace() !== NS_USER ) {
 			return true;
 		}
-		$title = \Title::newFromLinkTarget( $this->target );
+		$title = Title::newFromLinkTarget( $this->target );
 		if ( !$title || !$title->canExist() ) {
 			return true;
 		}

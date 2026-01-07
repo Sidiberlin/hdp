@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Trotinel Iftode"
+		]
+	},
+	"bs-expiry-pref-enable-page-watermark": "Afișează filigran",
+	"bs-expiry-pref-enable-page-watermark-help": "Adaugă un filigran pe o pagină expirată"
+}

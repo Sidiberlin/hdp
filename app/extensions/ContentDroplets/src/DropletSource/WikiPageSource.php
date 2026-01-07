@@ -5,7 +5,7 @@ declare( strict_types = 1 );
 namespace MediaWiki\Extension\ContentDroplets\DropletSource;
 
 use InvalidArgumentException;
-use JsonContent;
+use MediaWiki\Content\JsonContent;
 use MediaWiki\Extension\ContentDroplets\Droplet\CustomTagDroplet;
 use MediaWiki\Extension\ContentDroplets\Droplet\CustomTemplateDroplet;
 use MediaWiki\Extension\ContentDroplets\IDropletSource;

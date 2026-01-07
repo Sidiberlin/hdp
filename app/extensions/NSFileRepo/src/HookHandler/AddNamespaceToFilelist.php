@@ -2,11 +2,12 @@
 
 namespace MediaWiki\Extension\NSFileRepo\HookHandler;
 
-use Config;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Extension\NSFileRepo\NamespaceList;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Hook\MWStakeCommonWebAPIsQueryStoreResultHook;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Rest\FileQueryStore;
 use MWStake\MediaWiki\Component\DataStore\ResultSet;
-use RequestContext;
 
 class AddNamespaceToFilelist implements MWStakeCommonWebAPIsQueryStoreResultHook {
 
@@ -33,18 +34,20 @@ class AddNamespaceToFilelist implements MWStakeCommonWebAPIsQueryStoreResultHook
 			return;
 		}
 		$data = $result->getRecords();
-		$namespaceList = new \NSFileRepo\NamespaceList(
+		$namespaceList = new NamespaceList(
 			$this->context->getUser(),
 			$this->config,
 			$this->context->getLanguage()
 		);
 		$namespaces = $namespaceList->getReadable();
+		$mainNamespace = $namespaces[0];
 		foreach ( $data as $record ) {
 			$prefixed = $record->get( 'prefixed' );
+			$prefixed = str_replace( ' ', '_', $prefixed );
 
 			if ( !str_contains( $prefixed, ':' ) ) {
-				$record->set( 'namespace_text', $namespaces[0]->getDisplayName() );
-				$record->set( 'namespace', $namespaces[0]->getId() );
+				$record->set( 'namespace_text', $mainNamespace->getDisplayName() );
+				$record->set( 'namespace', $mainNamespace->getId() );
 				continue;
 			}
 			$titleParts = explode( ':', $prefixed, 2 );
@@ -61,8 +64,8 @@ class AddNamespaceToFilelist implements MWStakeCommonWebAPIsQueryStoreResultHook
 			}
 			// if title contains ':' but no valid namespace change namespace to main namespace
 			if ( !$namespaceChanged ) {
-				$record->set( 'namespace_text', $namespaces[0]->getDisplayName() );
-				$record->set( 'namespace', $namespaces[0]->getId() );
+				$record->set( 'namespace_text', $mainNamespace->getDisplayName() );
+				$record->set( 'namespace', $mainNamespace->getId() );
 			}
 		}
 

@@ -2,10 +2,10 @@
 
 namespace BlueSpice\ProDistributionConnector;
 
-use Config;
-use Html;
-use Message;
-use User;
+use MediaWiki\Config\Config;
+use MediaWiki\Html\Html;
+use MediaWiki\Message\Message;
+use MediaWiki\User\User;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class UserCounter {

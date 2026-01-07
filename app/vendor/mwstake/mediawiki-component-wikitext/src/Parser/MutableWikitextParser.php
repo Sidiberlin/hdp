@@ -2,6 +2,8 @@
 
 namespace MWStake\MediaWiki\Component\Wikitext\Parser;
 
+use MediaWiki\Content\Content;
+use MediaWiki\Content\WikitextContent;
 use MWStake\MediaWiki\Lib\Nodes\IMutableNode;
 use MWStake\MediaWiki\Lib\Nodes\INode;
 use MWStake\MediaWiki\Lib\Nodes\MutableParser;
@@ -81,7 +83,7 @@ abstract class MutableWikitextParser extends MutableParser {
 	/**
 	 * @inheritDoc
 	 */
-	protected function getContentObject() : \Content {
-		return new \WikitextContent( $this->rawData );
+	protected function getContentObject(): Content {
+		return new WikitextContent( $this->rawData );
 	}
 }

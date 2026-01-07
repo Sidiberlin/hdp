@@ -2,7 +2,8 @@
 
 namespace MediaWiki\Extension\ContentStabilization\Migration;
 
-use Status;
+use MediaWiki\Status\Status;
+use Wikimedia\Rdbms\DBConnRef;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class Settings {
@@ -14,7 +15,7 @@ class Settings {
 		'FlaggedRevsConnectorBookshelfShowStable' => 'BlueSpiceBookshelfExportListStable',
 		'FlaggedRevsConnectorFlaggedRevsHandleIncludes' => 'ContentStabilizationInclusionMode',
 		'FlaggedRevsConnectorIndexStableOnly' => 'BlueSpiceExtendedSearchIndexOnlyStable',
-		'FlaggedRevsConnectorUEModulePDFShowFRTag' => 'BlueSpiceUEModulePDFShowStabilizationTag',
+		'FlaggedRevsConnectorUEModulePDFShowFRTag' => 'IntegrationPDFCreatorShowStabilizationTag',
 		'FlaggedRevsConnectorDraftGroups' => 'ContentStabilizationDraftGroups',
 	];
 
@@ -32,8 +33,9 @@ class Settings {
 	 * @return Status
 	 */
 	public function migrate() {
-		$db = $this->loadBalancer->getConnection( DB_PRIMARY );
-		if ( !$db->tableExists( 'bs_settings3' ) ) {
+		/** @var DBConnRef $db */
+		$db = $this->loadBalancer->getConnection( DB_PRIMARY, __METHOD__ );
+		if ( !$db->tableExists( 'bs_settings3', __METHOD__ ) ) {
 			return Status::newGood( [ 'migrated_settings' => 'table_not_found' ] );
 		}
 		$res = $db->select(
@@ -60,7 +62,7 @@ class Settings {
 					$value = 'stable';
 				}
 			}
-			$r = $db->upsert(
+			$db->upsert(
 				'bs_settings3',
 				[
 					's_name' => $newVar,
@@ -72,9 +74,6 @@ class Settings {
 				],
 				__METHOD__
 			);
-			if ( !$r ) {
-				return Status::newFatal( 'Failed to migrate settings' );
-			}
 			$newValues[$newVar] = $value;
 		}
 

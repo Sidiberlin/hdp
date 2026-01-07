@@ -1,0 +1,13 @@
+diff --git a/src/Utils/Pager.php b/src/Utils/Pager.php
+index d8704d3e3..a19786376 100644
+--- a/src/Utils/Pager.php
++++ b/src/Utils/Pager.php
+@@ -53,7 +53,7 @@ class Pager {
+			],
+			Html::hidden(
+			'title',
+-			strtok( $title->getPrefixedText(), '/' )
++			$title->getPrefixedText()
+			) . Html::hidden(
+				'limit',
+				$limit

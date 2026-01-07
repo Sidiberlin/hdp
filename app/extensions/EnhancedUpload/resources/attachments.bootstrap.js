@@ -1,9 +1,9 @@
 ( function ( mw, $ ) {
-	$( function () {
+	$( () => {
 		// eslint-disable-next-line no-jquery/no-global-selector
-		var $loader = $( '.attachments-loader' );
+		const $loader = $( '.attachments-loader' );
 
-		var $attachments = $(
+		const $attachments = $(
 			'div.attachments-filelist[data-frametitle="' + mw.config.get( 'wgArticleId', 0 ) + '"]'
 		);
 		if ( $attachments.length < 1 ) {
@@ -12,7 +12,7 @@
 
 		function setLoading( select, loading ) {
 			if ( loading ) {
-				var progress = new OO.ui.ProgressBarWidget( {
+				const progress = new OO.ui.ProgressBarWidget( {
 					progress: false
 				} );
 				$( $loader[ select ] ).html(
@@ -25,9 +25,9 @@
 		}
 
 		function getEditRight() {
-			var dfd = $.Deferred();
+			const dfd = $.Deferred();
 
-			mw.user.getRights().done( function ( rights ) {
+			mw.user.getRights().done( ( rights ) => {
 				if ( rights.indexOf( 'edit' ) !== -1 ) {
 					dfd.resolve( true );
 				} else {
@@ -37,13 +37,13 @@
 			return dfd.promise();
 		}
 
-		for ( var i = 0; i < $loader.length; i++ ) {
+		for ( let i = 0; i < $loader.length; i++ ) {
 			setLoading( i, true );
 		}
 
-		getEditRight().done( function ( editRight ) {
+		getEditRight().done( ( editRight ) => {
 			mw.loader.using( 'ext.enhancedupload.attachments' ).done( function () {
-				var files, counter, tagTitle, $el, j, attachments, tagCategories, tagPrefix,
+				let files, counter, tagTitle, $el, j, attachments, tagCategories, tagPrefix,
 					tagDescription, tagSkipOptions, tagHideVersion, tagHideEditor, tagShowSize,
 					tagShowCategories;
 				for ( j = 0; j < $attachments.length; j++ ) {

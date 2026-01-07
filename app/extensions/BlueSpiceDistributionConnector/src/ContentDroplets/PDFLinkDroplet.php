@@ -3,7 +3,7 @@
 namespace BlueSpice\DistributionConnector\ContentDroplets;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\TemplateDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class PDFLinkDroplet extends TemplateDroplet {
 
@@ -21,8 +21,8 @@ class PDFLinkDroplet extends TemplateDroplet {
 	 */
 	protected function getParams(): array {
 		return [
-			'page' => 'Main Page',
-			'template' => 'BlueSpice',
+			'page' => '',
+			'template' => '',
 			'label' => 'PDF Link'
 		];
 	}

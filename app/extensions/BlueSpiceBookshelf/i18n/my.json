@@ -5,15 +5,14 @@
 			"MM abc.xyz"
 		]
 	},
-	"bs-bookshelf-action-editbook": "ရင်းမြစ်ကို တည်းဖြတ်ရန်",
-	"bs-bookshelf-action-editbook-create": "ရင်းမြစ်ကို တည်းဖြတ်ရန်",
-	"bs-bookshelf-ga-manager-label": "စာအုပ်များ",
 	"bs-bookshelf-specialpage-title": "စာအုပ်များ",
 	"bs-bookshelf-specialpage-allpages-ns-book-text": "စာကြည့်တိုက်",
 	"bs-bookshelf-tag-next": "ရှေ့",
 	"bs-bookshelf-tag-prev": "ယခင်",
-	"bs-bookshelf-ve-bookmeta-attr-version-label": "ဗားရှင်း",
+	"bs-bookshelf-action-editbook": "ရင်းမြစ်ကို တည်းဖြတ်ရန်",
+	"bs-bookshelf-action-editbook-create": "ရင်းမြစ်ကို တည်းဖြတ်ရန်",
 	"bs-bookshelf-mainlinks-label": "စာအုပ်များ",
+	"bs-bookshelf-ve-bookmeta-attr-version-label": "ဗားရှင်း",
 	"apihelp-bs-books-overview-store-summary": "စာအုပ်စင်၊ ပထမအခန်းလင့်ခ်နှင့် လုပ်ဆောင်ချက်များ အပါအဝင် စာအုပ်အားလုံးကို စာရင်းပြုစုထားသည်။",
 	"bs-books-overview-page-book-actions-dropdown-menu-title": "ဤစာအုပ်အတွက် နောက်ထပ်လုပ်ဆောင်မှုများ"
 }

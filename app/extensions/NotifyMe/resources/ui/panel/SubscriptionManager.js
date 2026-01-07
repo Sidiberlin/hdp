@@ -11,6 +11,7 @@ ext.notifyme.ui.panel.SubscriptionManager = function ( cfg ) {
 
 	this.manualSubscriptionPanel = new ext.notifyme.ui.panel.IndividualSubscriptions( {
 		buckets: cfg.buckets,
+		events: cfg.events,
 		data: cfg.data.subscriptions || [],
 		channelLabels: cfg.channelLabels
 	} );

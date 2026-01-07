@@ -25,7 +25,7 @@ ext.notifyme.ui.subscriptionset.editor.SubscriptionSetEditor.prototype.getValue 
 	return {};
 };
 
-ext.notifyme.ui.subscriptionset.editor.SubscriptionSetEditor.prototype.setValue = function ( value ) {
+ext.notifyme.ui.subscriptionset.editor.SubscriptionSetEditor.prototype.setValue = function ( value ) { // eslint-disable-line no-unused-vars
 	// STUB
 };
 
@@ -33,6 +33,6 @@ ext.notifyme.ui.subscriptionset.editor.SubscriptionSetEditor.prototype.getValidi
 	return $.Deferred().resolve().promise();
 };
 
-ext.notifyme.ui.subscriptionset.editor.SubscriptionSetEditor.prototype.setValidityFlag = function ( valid ) {
+ext.notifyme.ui.subscriptionset.editor.SubscriptionSetEditor.prototype.setValidityFlag = function ( valid ) { // eslint-disable-line no-unused-vars
 	// STUB
 };

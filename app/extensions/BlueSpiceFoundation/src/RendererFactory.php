@@ -3,8 +3,8 @@
 namespace BlueSpice;
 
 use BlueSpice\Renderer\Params;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
 
 class RendererFactory {
@@ -38,7 +38,7 @@ class RendererFactory {
 	 * @param IContextSource|null $context
 	 * @return Renderer
 	 */
-	public function get( $key, Params $params, IContextSource $context = null ) {
+	public function get( $key, Params $params, ?IContextSource $context = null ) {
 		$callable = $this->registry->getValue(
 			$key,
 			'\\BlueSpice\\Renderer\\NullRenderer::factory'

@@ -2,14 +2,15 @@
 
 namespace MediaWiki\Extension\NotifyMe\MediaWiki\Maintenance;
 
-use CommentStoreComment;
 use Exception;
-use LoggedUpdateMaintenance;
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Content\JsonContent;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\NotifyMe\MediaWiki\Content\MailTemplate;
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
-use MWException;
-use User;
+use MediaWiki\User\User;
 
 require_once __DIR__ . '/../../../../../maintenance/Maintenance.php';
 
@@ -23,7 +24,7 @@ class AddDefaultMailTemplates extends LoggedUpdateMaintenance {
 
 	/**
 	 * @return bool|void
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	protected function doDBUpdates() {
 		$this->output( "Adding default mail templates...\n" );
@@ -80,7 +81,7 @@ class AddDefaultMailTemplates extends LoggedUpdateMaintenance {
 			$updater = $wikiPage->newPageUpdater( $this->getMaintenanceUser() );
 			$content = new MailTemplate( $content );
 			$updater->setContent( 'main', $content );
-			$meta = new \JsonContent( json_encode( $data['meta'] ) );
+			$meta = new JsonContent( json_encode( $data['meta'] ) );
 			$updater->setContent( 'mail_template_meta', $meta );
 			$rev = $updater->saveRevision(
 				CommentStoreComment::newUnsavedComment( 'Default mail template content' )
@@ -122,7 +123,7 @@ class AddDefaultMailTemplates extends LoggedUpdateMaintenance {
 				'userpage' => '#'
 			],
 			'links_intro' => $this->msg( 'notifyme-sample-data-links-intro' ),
-			'timestamp' => \RequestContext::getMain()->getLanguage()->timeanddate( 20220101101010 ),
+			'timestamp' => RequestContext::getMain()->getLanguage()->timeanddate( 20220101101010 ),
 			'links' => [
 				[
 					'primary' => true, 'url' => '#', 'label' => $this->msg( 'notifyme-sample-data-link-1' ),

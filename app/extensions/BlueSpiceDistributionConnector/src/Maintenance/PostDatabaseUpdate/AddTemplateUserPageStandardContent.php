@@ -2,13 +2,13 @@
 
 namespace BlueSpice\DistributionConnector\Maintenance\PostDatabaseUpdate;
 
-use CommentStoreComment;
-use LoggedUpdateMaintenance;
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
-use Title;
-use User;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class AddTemplateUserPageStandardContent extends LoggedUpdateMaintenance {
 

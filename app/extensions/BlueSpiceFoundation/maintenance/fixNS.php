@@ -1,5 +1,7 @@
 <?php
 
+use MediaWiki\Maintenance\Maintenance;
+
 require_once __DIR__ . '/Maintenance.php';
 
 /**
@@ -20,8 +22,11 @@ class FixNS extends Maintenance {
 		$res = $dbw->select(
 			"page",
 			[ "page_id", "page_title", "page_namespace" ],
-			"page_namespace = 0",
-			"page_namespace " . $dbw->buildLike( "%:%", $dbw->anyString() )
+			[
+				"page_namespace = 0",
+				"page_namespace " . $dbw->buildLike( "%:%", $dbw->anyString() )
+			],
+			__METHOD__
 		);
 
 		if ( $res != null ) {
@@ -49,7 +54,8 @@ class FixNS extends Maintenance {
 									"page_title = '" . $nsData . ":" . $pageName . "'",
 									"page_id = " . $pageId,
 									"page_namespace = 0"
-								]
+								],
+								__METHOD__
 							);
 							$done = true;
 						}

@@ -3,8 +3,9 @@
 namespace BlueSpice\Expiry\PageInfoElement;
 
 use BlueSpice\Expiry\Extension as Expiry;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
 use PageHeader\IPageInfo;
 use PageHeader\PageInfo;
 
@@ -144,22 +145,22 @@ class Expired extends PageInfo {
 		$label = $this->context->msg( 'bs-expiry-pageinfoelement-unexpire-label' );
 		$tooltip = $this->context->msg( 'bs-expiry-pageinfoelement-unexpire-tooltip' );
 
-		$html .= \Html::openElement( 'ul' );
-		$html .= \Html::openElement( 'li' );
+		$html .= Html::openElement( 'ul' );
+		$html .= Html::openElement( 'li' );
 
-		$html .= \Html::element(
+		$html .= Html::element(
 				'a',
 				[
 					'href' => "#",
 					'class' => 'bs-expiry-unexpire dropdown-item',
 					'data-expid' => $this->expId,
-					'title' => $tooltip->plain()
+					'title' => $tooltip->text()
 				],
-				$label->plain()
+				$label->text()
 			);
 
-		$html .= \Html::closeElement( 'li' );
-		$html .= \Html::closeElement( 'ul' );
+		$html .= Html::closeElement( 'li' );
+		$html .= Html::closeElement( 'ul' );
 
 		return $html;
 	}

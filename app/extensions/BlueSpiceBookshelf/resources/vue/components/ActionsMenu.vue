@@ -45,33 +45,40 @@ module.exports = {
 	display: inline-block;
 	text-align: right;
 }
+
 .bs-card-actions .dropdown .dropdown-toggle {
 	display: inline-block;
-	padding: 3px 10px;
 	color: #666 !important;
 }
+
 .bs-card-actions .dropdown .dropdown-toggle::before {
 	vertical-align: bottom !important;
 }
+
 .bs-card-actions .dropdown .dropdown-toggle::after {
 	display: none;
 }
+
 .bs-card-actions .dropdown-toggle:focus-visible {
-	outline: var(--bs-books-overview-page-focus-visible-color) solid 1px;
+	outline: var( --bs-books-overview-page-focus-visible-color ) solid 1px;
 }
+
 .bs-card-actions .dropdown .dropdown-menu {
 	list-style: none;
 	padding: 10px 5px;
 }
+
 .bs-card-actions .dropdown .dropdown-menu a {
 	display: block;
 	width: 100%;
 	color: #666 !important;
 	padding: 0 5px;
 }
+
 .bs-card-actions .dropdown .dropdown-menu a:focus-visible {
-	outline: var(--bs-books-overview-page-focus-visible-color) solid 1px;
+	outline: var( --bs-books-overview-page-focus-visible-color ) solid 1px;
 }
+
 .bs-card-actions .dropdown .dropdown-menu a i {
 	display: inline-block;
 	width: 32px;

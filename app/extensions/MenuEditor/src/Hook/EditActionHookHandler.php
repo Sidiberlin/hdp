@@ -3,19 +3,19 @@
 namespace MediaWiki\Extension\MenuEditor\Hook;
 
 use Article;
-use Html;
 use MediaWiki;
 use MediaWiki\Extension\MenuEditor\EditPermissionProvider;
 use MediaWiki\Extension\MenuEditor\MenuFactory;
 use MediaWiki\Hook\MediaWikiPerformActionHook;
 use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
 use MediaWiki\HookContainer\HookContainer;
+use MediaWiki\Html\Html;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\Permissions\PermissionManager;
-use OutputPage;
+use MediaWiki\Request\WebRequest;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use SkinTemplate;
-use Title;
-use User;
-use WebRequest;
 
 class EditActionHookHandler implements
 	MediaWikiPerformActionHook,

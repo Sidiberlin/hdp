@@ -14,11 +14,6 @@ return array(
     'Less' => array($vendorDir . '/wikimedia/less.php/lib'),
     'HTMLPurifier' => array($vendorDir . '/ezyang/htmlpurifier/library'),
     'Console' => array($vendorDir . '/pear/console_getopt'),
-    'Composer\\Installers\\' => array($vendorDir . '/composer/installers/src'),
-    'ComposerVendorHtaccessCreator' => array($baseDir . '/includes/composer'),
-    'ComposerPhpunitXmlCoverageEdit' => array($baseDir . '/includes/composer'),
-    'ComposerHookHandler' => array($baseDir . '/includes/composer'),
     'CSSMin' => array($vendorDir . '/wikimedia/minify/src'),
-    'BaconQrCode' => array($vendorDir . '/bacon/bacon-qr-code/src'),
-    '' => array($vendorDir . '/cssjanus/cssjanus/src'),
+    '' => array($vendorDir . '/wikimedia/cssjanus/src'),
 );

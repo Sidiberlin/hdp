@@ -13,9 +13,9 @@ ve.init.sa.BlueSpiceTarget = function VeInitSaBlueSpiceTarget( config ) {
 	ve.init.sa.BlueSpiceTarget.super.call( this, config );
 
 	// Experimental - do not remove
-	/*mw.libs.ve.targetLoader.loadModules( 'visual' ).done( function() {
+	/* mw.libs.ve.targetLoader.loadModules( 'visual' ).done( function() {
 		mw.hook( 've.activationComplete' ).fire();
-	} );*/
+	} ); */
 };
 
 /* Inheritance */
@@ -56,15 +56,15 @@ ve.init.sa.BlueSpiceTarget.static.toolbarGroups = [
 		icon: 'listBullet',
 		include: [ { group: 'structure' } ],
 		demote: [ 'outdent', 'indent' ]
-	},{
+	}, {
 		name: 'insert',
 		header: OO.ui.deferMsg( 'visualeditor-toolbar-insert' ),
 		title: OO.ui.deferMsg( 'visualeditor-toolbar-insert' ),
 		type: 'list',
 		icon: 'add',
 		label: '',
-		include: ['media', 'gallery', 'comment']
-	},{
+		include: [ 'media', 'gallery', 'comment' ]
+	}, {
 		name: 'specialCharacter',
 		include: [ 'specialCharacter' ]
 	}

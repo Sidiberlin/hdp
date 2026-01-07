@@ -3,37 +3,49 @@
 namespace BlueSpice\CustomMenu\HookHandler;
 
 use BlueSpice\CustomMenu\Component\CustomMenuButton;
-use MediaWiki\MediaWikiServices;
+use BlueSpice\CustomMenu\Factory;
+use Config;
+use MediaWiki\Config\ConfigFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\Hook\MWStakeCommonUIRegisterSkinSlotComponents;
 
 class CommonUserInterface implements MWStakeCommonUIRegisterSkinSlotComponents {
+
+	/** @var Config */
+	private Config $config;
+
+	/**
+	 * @param Factory $menuFactory
+	 * @param ConfigFactory $configFactory
+	 */
+	public function __construct(
+		private readonly Factory $menuFactory,
+		ConfigFactory $configFactory
+	) {
+		$this->config = $configFactory->makeConfig( 'bsg' );
+	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function onMWStakeCommonUIRegisterSkinSlotComponents( $registry ): void {
-		$menu = $this->getServices()->getService( 'BSCustomMenuFactory' )->getMenu( 'header' );
+		$menu = $this->menuFactory->getMenu( 'header' );
 		if ( !$menu ) {
 			return;
 		}
-		$permissionManager = $this->getServices()->getPermissionManager();
+
+		if ( !$this->config->get( 'ShowCustomMenuHeader' ) ) {
+			return;
+		}
+
 		$registry->register(
 			'NavbarPrimaryItems',
 			[
 				"cm-bluespice-item" => [
-					'factory' => static function () use ( $menu, $permissionManager ) {
-						return new CustomMenuButton( $menu, $permissionManager );
+					'factory' => static function () use ( $menu, ) {
+						return new CustomMenuButton( $menu );
 					}
 				]
 			]
 		);
-	}
-
-	/**
-	 *
-	 * @return MediaWikiServices
-	 */
-	private function getServices() {
-		return MediaWikiServices::getInstance();
 	}
 }

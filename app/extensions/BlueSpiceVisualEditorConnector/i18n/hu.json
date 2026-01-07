@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Krisztina"
+			"Krisztina",
+			"Tacsipacsi"
 		]
 	},
 	"bs-visualeditorconnector-desc": "Összeköti a BlueSpice-t a VisualEditor-ral",
@@ -9,7 +10,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Eredeti",
 	"bs-visualeditorconnector-upload-type-simple": "Egyszerű",
 	"bs-visualeditorconnector-upload-type-one-click": "Kattintásra",
-	"bs-visualeditorconnector-upload-type": "Feltöltés típusa",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Szerkesztések visszavonása",
 	"bs-visualeditorconnector-cancel-edit": "Szerkesztések visszavonása. A mentés nélküli változtatások elvesznek.",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Tényleg visszavonja a szerkesztéseket? A mentés nélküli változtatásai elvesznek.",
@@ -78,10 +78,11 @@
 	"bs-vec-table-border-dotted": "Pontozott",
 	"bs-vec-table-border-double": "Dupla",
 	"bs-vec-insert-softhyphen-title": "Kötőjel",
-	"bs-visualeditorconnector-upload-type-help": "Eredeti: Feltöltési jog ellenőrizve. A fájlnév, névtér és kategória szerkeszthető. Leírás kötelező.\nEgyszerű: A feltöltési jog nincs ellenőrizve. A fájlnév, névtér és kategória szerkeszthető. A leírás nem kötelező.\nEgy kattintás: A feltöltési jog nincs ellenőrizve. A fájlnév és a kategória nem szerkeszthető. A névtér szerkeszthető.",
 	"bs-vec-insert-line-break-title": "Sortörés (<br />)",
 	"bs-visualeditorconnector-text-style-tool-align-center-label": "Középre igazítás",
 	"bs-visualeditorconnector-align-center-annotation-desc": "Középre helyezi a kiválasztott szöveget",
 	"bs-visualeditorconnector-text-style-indent-label": "Bekezdés",
-	"bs-visualeditorconnector-indent-annotation-desc": "Bekezdést nyit a kiválasztott szöveggel"
+	"bs-visualeditorconnector-indent-annotation-desc": "Bekezdést nyit a kiválasztott szöveggel",
+	"bs-visualeditorconnector-upload-type": "Feltöltés típusa",
+	"bs-visualeditorconnector-upload-type-help": "Eredeti: Feltöltési jog ellenőrizve. A fájlnév, névtér és kategória szerkeszthető. Leírás kötelező.\nEgyszerű: A feltöltési jog nincs ellenőrizve. A fájlnév, névtér és kategória szerkeszthető. A leírás nem kötelező.\nEgy kattintás: A feltöltési jog nincs ellenőrizve. A fájlnév és a kategória nem szerkeszthető. A névtér szerkeszthető."
 }

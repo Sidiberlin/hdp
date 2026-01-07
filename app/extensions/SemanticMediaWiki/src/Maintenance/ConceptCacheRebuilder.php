@@ -2,6 +2,8 @@
 
 namespace SMW\Maintenance;
 
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use Onoi\MessageReporter\MessageReporter;
 use Onoi\MessageReporter\MessageReporterFactory;
 use SMW\DIConcept;
@@ -9,7 +11,6 @@ use SMW\MediaWiki\TitleLookup;
 use SMW\Settings;
 use SMW\Store;
 use SMW\Utils\CliMsgFormatter;
-use Title;
 
 /**
  * Is part of the `rebuildConceptCache.php` maintenance script to rebuild
@@ -17,7 +18,7 @@ use Title;
  *
  * @note This is an internal class and should not be used outside of smw-core
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 1.9.2
  *
  * @author mwjames
@@ -74,7 +75,6 @@ class ConceptCacheRebuilder {
 	 * @param array $parameters
 	 */
 	public function setParameters( array $parameters ) {
-
 		$options = [ 'hard', 'update', 'old', 'quiet', 'status', 'verbose' ];
 
 		foreach ( $options as $option ) {
@@ -109,10 +109,9 @@ class ConceptCacheRebuilder {
 	/**
 	 * @since 1.9.2
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	public function rebuild() {
-
 		$cliMsgFormatter = new CliMsgFormatter();
 
 		$this->reportMessage(
@@ -179,7 +178,6 @@ class ConceptCacheRebuilder {
 	}
 
 	private function workOnConcept( Title $title ) {
-
 		$concept = $this->store->getConceptCacheStatus( $title );
 
 		if ( $this->skipConcept( $title, $concept ) ) {
@@ -192,7 +190,6 @@ class ConceptCacheRebuilder {
 	}
 
 	private function skipConcept( $title, $concept = null ) {
-
 		$skip = false;
 
 		if ( $concept === null ) {
@@ -217,7 +214,6 @@ class ConceptCacheRebuilder {
 	}
 
 	private function performAction( Title $title, DIConcept $concept ) {
-
 		$cliMsgFormatter = new CliMsgFormatter();
 
 		if ( $this->action === 'create' ) {
@@ -261,7 +257,6 @@ class ConceptCacheRebuilder {
 	}
 
 	private function getConcepts() {
-
 		if ( $this->concept !== null ) {
 			return [ $this->createConcept() ];
 		}
@@ -270,11 +265,10 @@ class ConceptCacheRebuilder {
 	}
 
 	private function createConcept() {
-		return Title::newFromText( $this->concept, SMW_NS_CONCEPT );
+		return MediaWikiServices::getInstance()->getTitleFactory()->newFromText( $this->concept, SMW_NS_CONCEPT );
 	}
 
 	private function createMultipleConcepts() {
-
 		$titleLookup = new TitleLookup( $this->store->getConnection( 'mw.db' ) );
 		$titleLookup->setNamespace( SMW_NS_CONCEPT );
 
@@ -300,7 +294,6 @@ class ConceptCacheRebuilder {
 			$this->reporter->reportMessage( $message );
 		}
 	}
-
 
 	/**
 	 * Copied from wfCountDown as it became deprecated in 1.31

@@ -1,6 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
+			"Cigaryno",
+			"Meno25",
 			"محمد أحمد عبد الفتاح"
 		]
 	},
@@ -8,5 +10,16 @@
 	"at-mentions-inspector-title": "أشر إلى مستخدم",
 	"at-mentions-ci-title": "إشارة لمستخدم",
 	"at-mentions-mentionslist-header-mine-all": "أشير إليك في هذه الصفحة",
-	"at-mentions-echo-mention-notification-summary": "أشير إليك في صفحة $1"
+	"at-mentions-toolbar-tool-title": "أضف إشارة",
+	"at-mentions-inspector-title-add": "أضف ذكرًا",
+	"at-mentions-inspector-title-edit": "تعديل ذكر المستخدم",
+	"at-mentions-tag-item-actor": "{{GENDER:$1| بواسطة [[User:$1|$1]]}}",
+	"at-mentions-tag-item-time": "بسعر $1",
+	"at-mentions-mentionslist-header-mine": "خلال {{PLURAL:$1| يوم| يوم $1}} الماضي، تم ذكرك في هذه الصفحات:",
+	"at-mentions-mentionslist-header-all": "تم ذكر المستخدم {{GENDER:$2| [[User:$2|$2]] في هذه الصفحات}}:",
+	"at-mentions-mentionslist-header": "خلال {{PLURAL:$1| يوم| $1 يوم}} الماضي، تم ذكر {{GENDER:$2| [[User:$2|$2]] على هذه الصفحات}}:",
+	"at-mentions-mention-notification-message": "{{GENDER:$1| ذكر}} اسمك في الصفحة $2",
+	"at-mentions-mention-notification-key": "لقد تم ذكرك",
+	"at-mentions-mention-in-entity-notification-key": "لقد تم ذكرك في تعليق أو منشور",
+	"at-mentions-mention-in-entity-notification-message": "{{GENDER:$1| ذكرك}} في تعليق أو منشور \" $3 \" في الصفحة $2"
 }

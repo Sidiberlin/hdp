@@ -1,14 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Aca",
 			"BadDog",
 			"Kizule",
 			"Milicevic01"
 		]
 	},
 	"bs-qr-code-extension-description": "Приказује QR код с везом до тренутне странице у траци с алаткама.",
-	"bs-qr-code-title": "QR код",
-	"bs-qr-code-text": "Скенирајте QR код да бисте отворили ову страницу на мобилном уређају",
 	"bs-qr-code-action-qr-code-text": "QR код",
 	"bs-qr-code-action-qr-code-dialog-title": "QR код",
 	"bs-qr-code-action-qr-code-dialog-alt": "QR код за $1",

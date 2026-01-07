@@ -1,40 +1,43 @@
 {
 	"name": "NotifyMe",
-	"version": "1.0.3",
+	"version": "2.0.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[http://www.hallowelt.com Hallo Welt! GmbH]"
 	],
-	"url": "http://www.hallowelt.com",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:NotifyMe",
 	"descriptionmsg": "notifyme-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"OOJSPlus": ">= 2.0.0"
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"MessagesDirs": {
 		"NotifyMe": "i18n"
+	},
+	"ExtensionMessagesFiles": {
+		"NotifyMeAliases": "languages/SpecialPages.alias.php"
 	},
 	"callback": "\\MediaWiki\\Extension\\NotifyMe\\Extension::onRegistration",
 	"attributes": {
 		"NotifyMe": {
 			"Buckets": {
 				"content-low-freq": {
-					"label": "ext-notifyme-bucket-content-low-freq",
-					"description": "ext-notifyme-bucket-content-low-freq-desc"
+					"label": "notifyme-bucket-content-low-freq-label",
+					"description": "notifyme-bucket-content-low-freq-desc"
 				},
 				"content-high-freq": {
-					"label": "ext-notifyme-bucket-content-high-freq",
-					"description": "ext-notifyme-bucket-content-high-freq-desc"
+					"label": "notifyme-bucket-content-high-freq-label",
+					"description": "notifyme-bucket-content-high-freq-desc"
 				},
 				"qm": {
-					"label": "ext-notifyme-bucket-qm",
-					"description": "ext-notifyme-bucket-qm-desc"
+					"label": "notifyme-bucket-qm-label",
+					"description": "notifyme-bucket-qm-desc"
 				},
 				"personal": {
-					"label": "ext-notifyme-bucket-personal",
-					"description": "ext-notifyme-bucket-personal-desc",
+					"label": "notifyme-bucket-personal",
+					"description": "notifyme-bucket-personal-desc",
 					"mandatory": true
 				}
 			},
@@ -43,38 +46,35 @@
 					"spec": {
 						"class": "\\MediaWiki\\Extension\\NotifyMe\\Event\\CreatePageEvent"
 					},
-					"buckets": [ "content-low-freq" ]
+					"buckets": [ "content-low-freq" ],
+					"description": "notifyme-event-page-create-desc"
 				},
 				"page-edit": {
 					"spec": {
 						"class": "\\MediaWiki\\Extension\\NotifyMe\\Event\\EditPageEvent"
 					},
-					"buckets": [ "content-high-freq" ]
+					"buckets": [ "content-high-freq" ],
+					"description": "notifyme-event-page-edit-desc"
 				},
 				"page-move": {
 					"spec": {
 						"class": "\\MediaWiki\\Extension\\NotifyMe\\Event\\MovePageEvent"
 					},
-					"buckets": [ "content-low-freq" ]
+					"buckets": [ "content-low-freq" ],
+					"description": "notifyme-event-page-move-desc"
 				},
 				"page-delete": {
 					"spec": {
 						"class": "\\MediaWiki\\Extension\\NotifyMe\\Event\\DeletePageEvent"
 					},
-					"buckets": [ "content-low-freq" ]
-				},
-				"discussion-edit": {
-					"spec": {
-						"class": "\\MediaWiki\\Extension\\NotifyMe\\Event\\DiscussionPageEditEvent",
-						"services": [ "UserFactory" ]
-					},
-					"buckets": [ "personal" ]
+					"buckets": [ "content-low-freq" ],
+					"description": "notifyme-event-page-delete-desc"
 				},
 				"page-linked": {
 					"spec": {
 						"class": "\\MediaWiki\\Extension\\NotifyMe\\Event\\PageLinkedEvent"
 					},
-					"buckets": [ "content-low-freq" ]
+					"buckets": [ "personal" ]
 				},
 				"user-group-added": {
 					"spec": {
@@ -104,7 +104,8 @@
 					"class": "\\MediaWiki\\Extension\\NotifyMe\\Channel\\EmailChannel",
 					"services": [
 						"NotifyMe.Store", "NotifyMe.Serializer", "NotifyMe.MailContentProvider",
-						"NotifyMe.SubscriptionConfigurator", "NotifyMe.Logger", "MainConfig"
+						"NotifyMe.SubscriptionConfigurator", "NotifyMe.Logger", "MainConfig",
+						"UserOptionsLookup", "ContentLanguage"
 					]
 				}
 			},
@@ -134,7 +135,9 @@
 		"includes/ServiceWiring.php"
 	],
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\NotifyMe\\": "src/",
+		"MediaWiki\\Extension\\NotifyMe\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
 		"MediaWiki\\Extension\\NotifyMe\\Tests\\": "tests/phpunit"
 	},
 	"ResourceModules": {
@@ -189,7 +192,10 @@
 				"notifyme-ui-subscription-manager-type-manual-desc",
 				"notifyme-ui-dialog-set-editor-cancel",
 				"notifyme-ui-dialog-set-editor-create",
-				"notifyme-ui-subscription-set-empty"
+				"notifyme-ui-subscription-set-empty",
+				"notifyme-ui-dialog-popup-table-event-label",
+				"notifyme-ui-dialog-popup-table-desc-label",
+				"notifyme-ui-dialog-popup-header-label"
 			],
 			"styles": [
 				"styles.less"
@@ -276,7 +282,6 @@
 				"notifyme-notification-center-help-menu-preferences-label",
 				"notifyme-notification-center-mark-as-read-circle-title",
 				"notifyme-notification-center-mark-as-unread-circle-title",
-				"notifyme-notification-center-timestamp-ago",
 				"notifyme-notification-center-no-new-notifications-label",
 				"notifyme-notification-center-pagination-aria-next",
 				"notifyme-notification-center-pagination-aria-previous",
@@ -286,7 +291,8 @@
 			"dependencies": [
 				"oojs-ui",
 				"moment",
-				"ext.oOJSPlus.widgets"
+				"ext.oOJSPlus.widgets",
+				"oojs-ui.styles.icons-movement"
 			]
 		},
 		"ext.notifyme.specialPage": {
@@ -348,20 +354,16 @@
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "resources",
-		"remoteExtPath": "Notifications/resources"
+		"remoteExtPath": "NotifyMe/resources"
 	},
 	"Hooks": {
 		"LoadExtensionSchemaUpdates": "runDatabaseUpdates",
-		"MWStakeRunJobsTriggerRegisterHandlers": [
-			"\\MediaWiki\\Extension\\NotifyMe\\MediaWiki\\Hook\\RegisterCheckEventProcesses::callback",
-			"\\MediaWiki\\Extension\\NotifyMe\\MediaWiki\\Hook\\RegisterDigestSenders::callback"
-		],
 		"MWStakeCommonUIRegisterSkinSlotComponents": "commonUserInterface",
 		"GetPreferences": "addSubscriptionCenter",
 		"UserGetDefaultOptions": "addSubscriptionCenter",
 		"BeforePageDisplay": "addBootstrap",
 		"ContentHandlerDefaultModelFor": "setMailContentModel",
-		"MediaWikiServices": "setMailContentModel",
+		"MediaWikiServices": [ "setMailContentModel", "registerCrons" ],
 		"CodeEditorGetPageLanguage": "\\MediaWiki\\Extension\\NotifyMe\\MediaWiki\\Hook\\SetMailContentModel::onCodeEditorGetPageLanguage",
 		"UserMailerTransformMessage": "handleNonNotificationMails",
 		"PageSaveComplete": "triggerEvents",
@@ -395,7 +397,7 @@
 		},
 		"handleNonNotificationMails": {
 			"class": "\\MediaWiki\\Extension\\NotifyMe\\MediaWiki\\ForeignMail\\Transformer",
-			"services": [ "NotifyMe.MailContentProvider" ]
+			"services": [ "NotifyMe.MailContentProvider", "NotifyMe.Logger" ]
 		},
 		"triggerEvents": {
 			"class": "\\MediaWiki\\Extension\\NotifyMe\\MediaWiki\\Hook\\TriggerEvents",
@@ -403,6 +405,9 @@
 		},
 		"commonUserInterface": {
 			"class": "\\MediaWiki\\Extension\\NotifyMe\\MediaWiki\\Hook\\CommonUserInterface"
+		},
+		"registerCrons": {
+			"class": "\\MediaWiki\\Extension\\NotifyMe\\MediaWiki\\Hook\\RegisterCrons"
 		}
 	},
 	"RestRoutes": [

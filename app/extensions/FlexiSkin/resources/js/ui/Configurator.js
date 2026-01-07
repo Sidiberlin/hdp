@@ -15,15 +15,15 @@ flexiskin.ui.Configurator = function ( cfg ) {
 	if ( !this.active && this.skin.id !== null ) {
 		this.makeDisabledWarning();
 	}
-	this.makeButtons();
+	this.makeToolbar();
 	this.initPlugins();
 	this.setValue( this.skin.config );
 	this.makeForm();
 
-	setTimeout( function() {
+	setTimeout( () => {
 		// Run on another event loop go
 		this.emit( 'renderComplete', this );
-	}.bind( this ), 1 );
+	}, 1 );
 };
 
 OO.inheritClass( flexiskin.ui.Configurator, OO.ui.Widget );
@@ -36,18 +36,18 @@ flexiskin.ui.Configurator.prototype.initPlugins = function () {
 	this.plugins = {};
 	this.controls = {};
 	this.items = {};
-	for ( var pluginId in flexiskin.registry.Plugin.registry ) {
+	for ( const pluginId in flexiskin.registry.Plugin.registry ) {
 		if ( !flexiskin.registry.Plugin.registry.hasOwnProperty( pluginId ) ) {
 			continue;
 		}
 
 		this.plugins[ pluginId ] = new flexiskin.registry.Plugin.registry[ pluginId ]();
-		var flatlist = this.plugins[ pluginId ].getFlatList();
-		for ( var id in flatlist ) {
+		const flatlist = this.plugins[ pluginId ].getFlatList();
+		for ( const id in flatlist ) {
 			if ( !flatlist.hasOwnProperty( id ) ) {
 				continue;
 			}
-			var callback = this.getCallbackFor( 'init', flatlist[ id ] );
+			const callback = this.getCallbackFor( 'init', flatlist[ id ] );
 			if ( callback ) {
 				callback.call( flatlist[ id ], this, id );
 			}
@@ -61,20 +61,20 @@ flexiskin.ui.Configurator.prototype.initPlugins = function () {
 flexiskin.ui.Configurator.prototype.makeDisabledWarning = function () {
 	this.$element.append( new OO.ui.MessageWidget( {
 		type: 'warning',
-		label: mw.message( "flexiskin-ui-configurator-warning-disabled-skin" ).text()
+		label: mw.message( 'flexiskin-ui-configurator-warning-disabled-skin' ).text()
 	} ).$element );
 };
 
 flexiskin.ui.Configurator.prototype.makeForm = function () {
-	var grouped = this.groupItems(),
+	const grouped = this.groupItems(),
 		items = [];
 	this.formElements = {};
 
-	for ( var groupId in grouped ) {
+	for ( const groupId in grouped ) {
 		if ( !grouped.hasOwnProperty( groupId ) ) {
 			continue;
 		}
-		var layouts = this.getGroupLayouts( grouped[ groupId ] );
+		const layouts = this.getGroupLayouts( grouped[ groupId ] );
 		this.formElements[ groupId ] = new flexiskin.ui.ConfigGroup( groupId, {
 			label: this.getItemGroupLabel( groupId ),
 			expanded: this.getItemGroupExpanded( groupId ),
@@ -88,34 +88,34 @@ flexiskin.ui.Configurator.prototype.makeForm = function () {
 };
 
 flexiskin.ui.Configurator.prototype.getGroupLayouts = function ( items ) {
-	var fieldLayouts = {},
+	const fieldLayouts = {},
 		roots = [];
 
-	for ( var id in items ) {
+	for ( const id in items ) {
 		if ( !items.hasOwnProperty( id ) ) {
 			continue;
 		}
 
-		var groups = this.getGroupsForItem( id ),
-			rootGroup;
-		rootGroup = groups[ 0 ];
+		const groups = this.getGroupsForItem( id );
+		const rootGroup = groups[ 0 ];
 		// Remove root group since we already group by it
 		if ( groups.length > 1 ) {
 			groups.shift();
 		}
-		var lastGroup;
-		for ( var i = 0; i < groups.length; i++ ) {
+		let lastGroup;
+		for ( let i = 0; i < groups.length; i++ ) {
 			if ( i === 0 ) {
 				roots.push( groups[ i ] );
 			}
-			var layout = fieldLayouts[ groups[ i ] ] || new OO.ui.FieldsetLayout( {
+			const layout = fieldLayouts[ groups[ i ] ] || new OO.ui.FieldsetLayout( {
 				label: rootGroup && rootGroup === groups[ i ] ? '' : this.getItemGroupLabel( groups[ i ] ),
 				data: {
 					group: groups[ i ]
 				}
 			} );
 			if ( i === ( groups.length - 1 ) ) {
-				var data = items[ id ].getData(), label = '';
+				const data = items[ id ].getData();
+				let label = '';
 				if ( data && data.hasOwnProperty( 'label' ) ) {
 					label = data.label;
 				}
@@ -134,7 +134,7 @@ flexiskin.ui.Configurator.prototype.getGroupLayouts = function ( items ) {
 		}
 	}
 
-	for ( var layoutGroupId in fieldLayouts ) {
+	for ( const layoutGroupId in fieldLayouts ) {
 		if ( roots.indexOf( layoutGroupId ) === -1 ) {
 			delete ( fieldLayouts[ layoutGroupId ] );
 		}
@@ -143,7 +143,8 @@ flexiskin.ui.Configurator.prototype.getGroupLayouts = function ( items ) {
 };
 
 flexiskin.ui.Configurator.prototype.groupItems = function () {
-	var grouped = {}, itemId, groups, root;
+	const grouped = {};
+	let itemId, groups, root;
 
 	for ( itemId in this.items ) {
 		if ( !this.items.hasOwnProperty( itemId ) ) {
@@ -162,7 +163,7 @@ flexiskin.ui.Configurator.prototype.groupItems = function () {
 };
 
 flexiskin.ui.Configurator.prototype.getGroupsForItem = function ( id ) {
-	var bits = id.split( '/' );
+	const bits = id.split( '/' );
 	bits.pop();
 	if ( bits.length === 0 ) {
 		return [];
@@ -172,8 +173,8 @@ flexiskin.ui.Configurator.prototype.getGroupsForItem = function ( id ) {
 };
 
 flexiskin.ui.Configurator.prototype.getVisibilityForItem = function ( id ) {
-	var widget = this.items[ id ],
-	 data = widget.getData();
+	const widget = this.items[ id ];
+	const data = widget.getData();
 	if ( data && data.hasOwnProperty( 'visibility' ) ) {
 		return data.visibility;
 	}
@@ -182,8 +183,8 @@ flexiskin.ui.Configurator.prototype.getVisibilityForItem = function ( id ) {
 
 flexiskin.ui.Configurator.prototype.getItems = function ( group ) {
 	if ( group ) {
-		var items = {};
-		for ( var id in this.items ) {
+		const items = {};
+		for ( const id in this.items ) {
 			if ( !this.items.hasOwnProperty( id ) ) {
 				continue;
 			}
@@ -201,7 +202,7 @@ flexiskin.ui.Configurator.prototype.getItems = function ( group ) {
 
 flexiskin.ui.Configurator.prototype.getItemGroupLabel = function ( group ) {
 
-	var item = this.findGroupByKey( this.controls, group );
+	const item = this.findGroupByKey( this.controls, group );
 
 	if ( item && item.hasOwnProperty( 'label' ) ) {
 		return item.label;
@@ -211,7 +212,7 @@ flexiskin.ui.Configurator.prototype.getItemGroupLabel = function ( group ) {
 };
 
 flexiskin.ui.Configurator.prototype.getItemGroupExpanded = function ( group ) {
-	var item = this.findGroupByKey( this.controls, group );
+	const item = this.findGroupByKey( this.controls, group );
 
 	if ( item && item.hasOwnProperty( 'expanded' ) ) {
 		return !!item.expanded;
@@ -221,13 +222,13 @@ flexiskin.ui.Configurator.prototype.getItemGroupExpanded = function ( group ) {
 };
 
 flexiskin.ui.Configurator.prototype.findGroupByKey = function ( obj, key ) {
-	var keys = Object.keys( obj ),
-		value;
+	const keys = Object.keys( obj );
+	let value;
 
-	for ( var i = 0; i < keys.length; i++ ) {
+	for ( let i = 0; i < keys.length; i++ ) {
 		if ( keys[ i ] === key ) {
 			return obj[ key ];
-		} else if ( !( obj[ keys[ i ] ] instanceof OO.ui.Widget ) && $.type( obj[ keys[ i ] ] ) === 'object' ) {
+		} else if ( !( obj[ keys[ i ] ] instanceof OO.ui.Widget ) && $.type( obj[ keys[ i ] ] ) === 'object' ) { // eslint-disable-line no-jquery/no-type
 			value = this.findGroupByKey( obj[ keys[ i ] ], key );
 			if ( value ) {
 				return value;
@@ -239,9 +240,9 @@ flexiskin.ui.Configurator.prototype.findGroupByKey = function ( obj, key ) {
 };
 
 flexiskin.ui.Configurator.prototype.getValue = function ( forAction ) {
-	var value = {},
+	const value = {},
 		dfd = $.Deferred(),
-		itemsToResolve = $.extend( {}, this.items );
+		itemsToResolve = Object.assign( {}, this.items );
 
 	this.getValueForItems( dfd, value, itemsToResolve, forAction );
 
@@ -252,19 +253,17 @@ flexiskin.ui.Configurator.prototype.getValueForItems = function ( dfd, value, it
 	if ( $.isEmptyObject( items ) ) {
 		return dfd.resolve( value );
 	}
-	var itemId = Object.keys( items ).shift(),
+	const itemId = Object.keys( items ).shift(),
 		item = items[ itemId ];
 	delete ( items[ itemId ] );
-	var callback = this.getCallbackFor( forAction, item );
+	const callback = this.getCallbackFor( forAction, item );
 	if ( callback ) {
 		callback.call( item, {}, itemId )
-			.done( function ( response ) {
+			.done( ( response ) => {
 				this.setToPath( value, itemId.split( '/' ), response );
 				return this.getValueForItems( dfd, value, items, forAction );
-			}.bind( this ) )
-			.fail( function () {
-				return this.getValueForItems( dfd, value, items, forAction );
-			}.bind( this ) );
+			} )
+			.fail( () => this.getValueForItems( dfd, value, items, forAction ) );
 	} else {
 		this.setToPath( value, itemId.split( '/' ), item.getValue() );
 		return this.getValueForItems( dfd, value, items, forAction );
@@ -278,10 +277,10 @@ flexiskin.ui.Configurator.prototype.setValue = function ( value ) {
 
 	this.value = value;
 
-	for ( var itemId in this.items ) {
-		var itemValue = this.getByPath( $.extend( true, {}, value ), itemId.split( '/' ) );
+	for ( const itemId in this.items ) {
+		const itemValue = this.getByPath( $.extend( true, {}, value ), itemId.split( '/' ) );
 		if ( itemValue ) {
-			var callback = this.getCallbackFor( 'setValue', this.items[ itemId ] );
+			const callback = this.getCallbackFor( 'setValue', this.items[ itemId ] );
 			if ( callback ) {
 				callback.call( this.items[ itemId ], itemValue );
 			} else {
@@ -292,8 +291,8 @@ flexiskin.ui.Configurator.prototype.setValue = function ( value ) {
 };
 
 flexiskin.ui.Configurator.prototype.getByPath = function ( obj, path ) {
-	var bit = path.shift();
-	if ( $.type( obj ) !== 'object' || !obj.hasOwnProperty( bit ) ) {
+	const bit = path.shift();
+	if ( $.type( obj ) !== 'object' || !obj.hasOwnProperty( bit ) ) { // eslint-disable-line no-jquery/no-type
 		return null;
 	}
 	if ( path.length === 0 ) {
@@ -304,8 +303,8 @@ flexiskin.ui.Configurator.prototype.getByPath = function ( obj, path ) {
 };
 
 flexiskin.ui.Configurator.prototype.getCallbackFor = function ( action, item ) {
-	var data = item.getData();
-	if ( $.type( data ) !== 'object' ) {
+	const data = item.getData();
+	if ( $.type( data ) !== 'object' ) { // eslint-disable-line no-jquery/no-type
 		return null;
 	}
 
@@ -320,7 +319,7 @@ flexiskin.ui.Configurator.prototype.getCallbackFor = function ( action, item ) {
 };
 
 flexiskin.ui.Configurator.prototype.setToPath = function ( obj, path, value, append ) {
-	var bit = path.shift();
+	const bit = path.shift();
 	if ( path.length === 0 ) {
 		if ( append ) {
 			obj[ bit ] = obj[ bit ] || [];
@@ -334,56 +333,64 @@ flexiskin.ui.Configurator.prototype.setToPath = function ( obj, path, value, app
 	this.setToPath( obj[ bit ], path, value, append );
 };
 
-flexiskin.ui.Configurator.prototype.makeButtons = function () {
-	this.disableButton = new OO.ui.ButtonWidget( {
-		label: mw.message( 'flexiskin-ui-configurator-button-disable-label' ).text(),
-		flags: [
-			'primary',
-			'destructive'
-		],
-		disabled: !this.active
-	} );
-	this.previewButton = new OO.ui.ButtonWidget( {
-		label: mw.message( 'flexiskin-ui-configurator-button-preview-label' ).text()
-	} );
-
-	this.saveButton = new OO.ui.ButtonWidget( {
-		label: mw.message( 'flexiskin-ui-configurator-button-save-label' ).text(),
-		flags: [
-			'progressive',
-			'primary'
+flexiskin.ui.Configurator.prototype.makeToolbar = function () {
+	this.toolbar = new OOJSPlus.ui.toolbar.ManagerToolbar( {
+		actions: [
+			new OOJSPlus.ui.toolbar.tool.ToolbarTool( {
+				name: 'preview',
+				title: mw.msg( 'flexiskin-ui-configurator-button-preview-label' )
+			} ),
+			new OOJSPlus.ui.toolbar.tool.ToolbarTool( {
+				name: 'delete',
+				flags: [ 'destructive', 'primary' ],
+				title: mw.msg( 'flexiskin-ui-configurator-button-disable-label' )
+			} ),
+			new OOJSPlus.ui.toolbar.tool.ToolbarTool( {
+				name: 'save',
+				flags: [ 'primary', 'progressive' ],
+				title: mw.msg( 'flexiskin-ui-configurator-button-save-label' )
+			} )
 		]
 	} );
+	this.$element.append( this.toolbar.$element );
+	this.toolbar.connect( this, {
+		action: 'onAction'
+	} );
+	this.toolbar.setup();
+	this.toolbar.initialize();
+};
 
-	this.disableButton.connect( this, { click: 'doDisable' } );
-	this.previewButton.connect( this, { click: 'doPreview' } );
-	this.saveButton.connect( this, { click: 'doSave' } );
-
-	this.$element.append( new OO.ui.HorizontalLayout( {
-		items: [ this.disableButton, this.previewButton, this.saveButton ],
-		classes: [ 'fs-configurator-buttons' ]
-	} ).$element );
+flexiskin.ui.Configurator.prototype.onAction = function ( action ) {
+	if ( action === 'preview' ) {
+		this.doPreview();
+	}
+	if ( action === 'save' ) {
+		this.doSave();
+	}
+	if ( action === 'delete' ) {
+		this.doDisable();
+	}
 };
 
 flexiskin.ui.Configurator.prototype.doPreview = function () {
 	this.clearPreview();
 
-	var loadingDialog = new flexiskin.ui.dialog.PreviewLoading( { size: 'small' } ),
+	const loadingDialog = new flexiskin.ui.dialog.PreviewLoading( { size: 'small' } ),
 		windowManager = OO.ui.getWindowManager();
-		windowManager.addWindows( [ loadingDialog ] );
-		windowManager.openWindow( loadingDialog );
-	this.getValue( 'preview' ).done( function ( value ) {
+	windowManager.addWindows( [ loadingDialog ] );
+	windowManager.openWindow( loadingDialog );
+	this.getValue( 'preview' ).done( ( value ) => {
 		new mw.Api().get( {
 			action: 'flexiskin-preview',
 			config: JSON.stringify( value ),
-			_dc: new Date().getTime()
-		} ).done( function ( response ) {
+			_dc: Date.now()
+		} ).done( ( response ) => {
 			if ( response.hasOwnProperty( 'loadData' ) ) {
 				$.get( mw.util.wikiScript( 'load' ), {
 					modules: response.loadData.modules.join( '|' ),
 					vars: JSON.stringify( response.loadData.vars ),
 					only: 'styles'
-				} ).done( function ( data ) {
+				} ).done( ( data ) => {
 					// TODO: This will keep on adding new versions - not a big deal, but not nice
 					$( 'style' ).append( data );
 					windowManager.closeWindow( loadingDialog );
@@ -404,56 +411,56 @@ flexiskin.ui.Configurator.prototype.doPreview = function () {
 flexiskin.ui.Configurator.prototype.doSave = function () {
 	this.clearPreview();
 
-	var confirmationMessage = mw.message( 'flexiskin-configurator-prompt-on-save' ).text();
-	OO.ui.confirm( confirmationMessage, { size: 'large' } ).done( function ( confirmed ) {
+	const confirmationMessage = mw.message( 'flexiskin-configurator-prompt-on-save' ).text();
+	OO.ui.confirm( confirmationMessage, { size: 'large' } ).done( ( confirmed ) => {
 		if ( confirmed ) {
-			this.getValue( 'save' ).done( function ( value ) {
+			this.getValue( 'save' ).done( ( value ) => {
 				new mw.Api().get( {
 					action: 'flexiskin-save',
 					skinname: this.skin.name,
 					config: JSON.stringify( value )
-				} ).done( function ( response ) {
+				} ).done( ( response ) => {
 					if ( !response.hasOwnProperty( 'success' ) || !response.success ) {
 						this.saveError();
 						return;
 					}
 					this.debugReload();
-				}.bind( this ) ).fail( function () {
+				} ).fail( () => {
 					this.saveError();
-				}.bind( this ) );
-			}.bind( this ) );
+				} );
+			} );
 		}
-	}.bind( this ) );
+	} );
 
 };
 
-flexiskin.ui.Configurator.prototype.doDisable = function() {
-	var confirmationMessage = mw.message( 'flexiskin-configurator-prompt-on-disable' ).text();
-	OO.ui.confirm( confirmationMessage, { size: 'large' } ).done( function ( confirmed ) {
+flexiskin.ui.Configurator.prototype.doDisable = function () {
+	const confirmationMessage = mw.message( 'flexiskin-configurator-prompt-on-disable' ).text();
+	OO.ui.confirm( confirmationMessage, { size: 'large' } ).done( ( confirmed ) => {
 		if ( confirmed ) {
 			new mw.Api().get( {
 				action: 'flexiskin-activation',
 				skinname: this.skin.name,
 				active: 0
-			} ).done( function ( response ) {
+			} ).done( ( response ) => {
 				if ( !response.hasOwnProperty( 'success' ) || !response.success ) {
 					this.resetError();
 					return;
 				}
 				this.debugReload();
-			}.bind( this ) ).fail( function () {
+			} ).fail( () => {
 				this.disableError();
-			}.bind( this ) );
+			} );
 		}
 
-	}.bind( this ) );
+	} );
 };
 
 flexiskin.ui.Configurator.prototype.debugReload = function () {
 	// Refresh to apply changes
 	// Add debug=true param - works for cache, but breaks other things
-	var url = new URL( window.location.href );
-	url.searchParams.set( 'debug','true' );
+	const url = new URL( window.location.href );
+	url.searchParams.set( 'debug', 'true' );
 	window.location.href = url.href;
 };
 

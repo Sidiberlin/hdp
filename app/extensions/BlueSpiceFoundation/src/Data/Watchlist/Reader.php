@@ -2,8 +2,8 @@
 
 namespace BlueSpice\Data\Watchlist;
 
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
 use MWStake\MediaWiki\Component\DataStore\DatabaseReader;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
@@ -24,8 +24,8 @@ class Reader extends DatabaseReader {
 	 * @param Config|null $config
 	 * @param bool $filterForContextUser
 	 */
-	public function __construct( $loadBalancer, IContextSource $context = null,
-			Config $config = null, $filterForContextUser = false ) {
+	public function __construct( $loadBalancer, ?IContextSource $context = null,
+			?Config $config = null, $filterForContextUser = false ) {
 		parent::__construct( $loadBalancer, $context, $config );
 		$this->filterForContextUser = $filterForContextUser;
 	}

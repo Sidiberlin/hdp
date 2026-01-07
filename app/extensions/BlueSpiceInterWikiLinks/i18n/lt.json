@@ -14,10 +14,7 @@
 	"bs-interwikilinks-pfxexists": "Priešdėlis jau egzistuoja.",
 	"bs-interwikilinks-headerprefix": "Priešdėlis",
 	"bs-interwikilinks-labelprefix": "Priešdėlis",
-	"bs-interwikilinks-insertlink-tabtitle": "Nuoroda į kitą vikį",
-	"bs-interwikilinks-insertlink-labelprefix": "Priešdėlis",
-	"bs-interwikilink-select-a-prefix": "Pasirinkti priešdėlį",
-	"interwikilinks": "Tarpkalbinės nuorodos",
 	"action-interwikilinks-viewspecialpage": "žiūrėti specialų puslapį „{{int:bs-interwikilinks-label}}“",
+	"interwikilinks": "Tarpkalbinės nuorodos",
 	"right-interwikilinks-viewspecialpage": "Prieiga prie specialaus puslapio [[Special:InterWikiLinks]]"
 }

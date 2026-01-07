@@ -5,21 +5,21 @@ bs.bookshelf.util.tag.BooklistDefinition = function BsVecUtilTagBooklistDefiniti
 
 OO.inheritClass( bs.bookshelf.util.tag.BooklistDefinition, bs.vec.util.tag.Definition );
 
-bs.bookshelf.util.tag.BooklistDefinition.prototype.getCfg = function() {
-	var cfg = bs.bookshelf.util.tag.BooklistDefinition.super.prototype.getCfg.call( this );
-	return $.extend( cfg, {
-		classname : 'Booklist',
+bs.bookshelf.util.tag.BooklistDefinition.prototype.getCfg = function () {
+	const cfg = bs.bookshelf.util.tag.BooklistDefinition.super.prototype.getCfg.call( this );
+	return $.extend( cfg, { // eslint-disable-line no-jquery/no-extend
+		classname: 'Booklist',
 		name: 'booklist',
 		tagname: 'bs:booklist',
 		descriptionMsg: 'bs-bookshelf-tag-booklist-description',
 		menuItemMsg: 'bs-bookshelf-ve-booklistinspector-title',
-		attributes: [{
+		attributes: [ {
 			name: 'filter',
 			labelMsg: 'bs-bookshelf-ve-booklist-attr-filter-label',
 			helpMsg: 'bs-bookshelf-ve-booklist-attr-filter-help',
 			type: 'text'
-		}]
-	});
+		} ]
+	} );
 };
 
 bs.vec.registerTagDefinition(

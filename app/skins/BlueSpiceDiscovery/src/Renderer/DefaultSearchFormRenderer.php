@@ -10,6 +10,6 @@ class DefaultSearchFormRenderer extends TemplateRendererBase {
 	 */
 	public function getTemplatePath(): string {
 		return $GLOBALS['wgStyleDirectory'] .
-		'/BlueSpiceDiscovery/resources/templates/renderer/default-searchform';
+			'/BlueSpiceDiscovery/resources/templates/renderer/default-searchform';
 	}
 }

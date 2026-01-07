@@ -4,23 +4,12 @@
 			"Bosogo"
 		]
 	},
-	"bs-statistics-label-page": "Барак",
-	"bs-statistics-aggregated-report-filter-page": "Барак",
-	"bs-statistics-label-registration": "Катталуу",
-	"bs-statistics-label-name": "Аталыш",
-	"bs-statistics-list": "Тизме",
-	"bs-statistics-filters": "Чыпкалар",
-	"bs-statistics-day": "Күн",
 	"bs-statistics-aggregated-report-filter-interval-day": "Күн",
-	"bs-statistics-year": "Жыл",
-	"bs-statistics-month": "Ай",
 	"bs-statistics-aggregated-report-filter-interval-week": "Апта",
 	"bs-statistics-aggregated-report-filter-interval-month": "Ай",
 	"bs-statistics-aggregated-report-filter-interval-year": "Жыл",
-	"bs-statistics-diag-number-of-pages": "Түзүлгөн барактардын саны",
-	"bs-statistics-portlet-numberofpages": "Барактардын саны",
-	"bs-statistics-panel-title-result": "Натыйжа",
-	"bs-statistics-label-creator": "Автор",
-	"bs-statistics-diag-number-of-edits": "Түзөтүүлөрдүн саны",
-	"bs-statistics-portlet-numberofedits": "Түзөтүүлөрдүн саны"
+	"bs-statistics-aggregated-report-filter-page": "Барак",
+	"bs-statistics-aggregated-report-filter-user": "Колдонуучу",
+	"bs-statistics-aggregated-report-filter-user-multi": "Колдонуучулар",
+	"bs-statistics-aggregated-report-filter-category-multi": "Категориялар"
 }

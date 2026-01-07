@@ -61,7 +61,7 @@ ext.notifyme.ui.panel.NotificationTab.prototype.applyFilter = function ( key ) {
 /**
  * Changes page and re-loads notifications
  *
- * @param dir
+ * @param {string} dir
  */
 ext.notifyme.ui.panel.NotificationTab.prototype.changePage = function ( dir ) {
 	if ( dir === 'next' ) {
@@ -85,16 +85,16 @@ ext.notifyme.ui.panel.NotificationTab.prototype.changePage = function ( dir ) {
 
 ext.notifyme.ui.panel.NotificationTab.prototype.loadNotifications = function () {
 
-	function _showLoading() {
+	function _showLoading() { // eslint-disable-line no-underscore-dangle
 		if ( $( '.notifications-ui-panel-NotificationTab-loading' ).length > 0 ) {
 			return;
 		}
 
 		const pbWidget = new OO.ui.ProgressBarWidget( {
-				progress: false
-			} ),
+			progress: false
+		} );
 
-		 $notificationsWrapper = $( '.notifications-ui-panel-NotificationTab-notifications' );
+		const $notificationsWrapper = $( '.notifications-ui-panel-NotificationTab-notifications' );
 
 		// Insert loader before results div to avoid resetting it
 		$notificationsWrapper.before(
@@ -106,7 +106,7 @@ ext.notifyme.ui.panel.NotificationTab.prototype.loadNotifications = function () 
 		$( '.notifications-ui-widget-PaginationWidget-row' ).hide();
 	}
 
-	function _removeLoading() {
+	function _removeLoading() { // eslint-disable-line no-underscore-dangle
 		$( '.notifications-ui-panel-NotificationTab-loading' ).remove();
 		$( '.notifications-ui-panel-NotificationTab-notifications' ).show();
 		$( '.notifications-ui-widget-PaginationWidget-row' ).show();
@@ -125,17 +125,17 @@ ext.notifyme.ui.panel.NotificationTab.prototype.loadNotifications = function () 
 	// Clear the tab before filling it
 	this.$notificationsWrapper.empty();
 
-	const offset = this.shownPerPage.hasOwnProperty( this.page - 1 ) ? this.shownPerPage[ this.page - 1 ] : 0,
+	const offset = this.shownPerPage.hasOwnProperty( this.page - 1 ) ? this.shownPerPage[ this.page - 1 ] : 0;
 
-	 params = {
-			limit: this.itemPerPage,
-			start: offset,
-			filter: this.getFilters(),
-			sort: [ {
-				property: 'timestamp',
-				direction: 'desc'
-			} ]
-		};
+	const params = {
+		limit: this.itemPerPage,
+		start: offset,
+		filter: this.getFilters(),
+		sort: [ {
+			property: 'timestamp',
+			direction: 'desc'
+		} ]
+	};
 
 	ext.notifyme.retrieve( params ).done( ( response ) => {
 		ext.notifyme.getFilterMetadata( this.notificationStatus ).done( ( filtersData ) => {
@@ -145,19 +145,19 @@ ext.notifyme.ui.panel.NotificationTab.prototype.loadNotifications = function () 
 		// Make sure that pagination is visible
 		this.paginationWidget.toggle( true );
 
-		let datedNotificationWidget = null, prevTimestamp = null, isUnread,
-			results = response.results || [];
+		let datedNotificationWidget = null, prevTimestamp = null, isUnread;
+		const results = response.results || [];
 		for ( const i in results ) {
-			let entity = results[ i ],
+			const entity = results[ i ];
 
-			 isSingleNotification = entity.entity_type === 'single_notification',
+			const isSingleNotification = entity.entity_type === 'single_notification';
 
-			 entityWidget;
+			let entityWidget;
 
 			if ( isSingleNotification ) {
 				isUnread = entity.status === 'pending';
 
-				var agent;
+				let agent;
 				if ( entity.agent_is_bot ) {
 					agent = null;
 				} else {
@@ -190,7 +190,7 @@ ext.notifyme.ui.panel.NotificationTab.prototype.loadNotifications = function () 
 				isUnread = entityWidget.isGroupUnread();
 			}
 
-			var currentTimestamp;
+			let currentTimestamp;
 			if ( isSingleNotification ) {
 				currentTimestamp = entity.timestamp;
 			} else {
@@ -214,8 +214,8 @@ ext.notifyme.ui.panel.NotificationTab.prototype.loadNotifications = function () 
 
 			// If notifications were sent in one day - they are united in one dated group
 			if ( prevTimestamp !== null ) {
-				const prevDate = new Date( prevTimestamp ),
-				 currentDate = new Date( currentTimestamp );
+				const prevDate = new Date( prevTimestamp );
+				const currentDate = new Date( currentTimestamp );
 
 				if (
 					prevDate.getDate() === currentDate.getDate() &&
@@ -247,13 +247,14 @@ ext.notifyme.ui.panel.NotificationTab.prototype.loadNotifications = function () 
 		this.total = response.total;
 		this.shownPerPage[ this.page ] = this.page === 1 ?
 			response.processed : this.shownPerPage[ this.page - 1 ] + response.processed;
-		this.paginationWidget.updateWidget( response.total );
+		this.paginationWidget.updateWidget( response.items_total );
 
 		_removeLoading();
 
 		// If there are no notifications, show corresponding label and hide pagination
 		if ( !results.length ) {
-			const labelWidget = new OO.ui.LabelWidget( {
+			const labelWidget = new OOJSPlus.ui.widget.NoContentPlaceholderWidget( {
+				icon: 'no-notifications',
 				label: mw.message( 'notifyme-notification-center-no-new-notifications-label' ).text()
 			} );
 
@@ -280,18 +281,21 @@ ext.notifyme.ui.panel.NotificationTab.prototype.getFilters = function () {
 		// But subitems will have "$filterKey-$subItemKey" keys
 		const dashIndex = this.filter.indexOf( '-' );
 		if ( dashIndex !== -1 ) {
-			const filterKey = this.filter.slice( 0, Math.max( 0, dashIndex ) ),
-			 subItemKey = this.filter.slice( Math.max( 0, dashIndex + 1 ) ),
+			const filterKey = this.filter.slice( 0, Math.max( 0, dashIndex ) );
+			const subItemKey = this.filter.slice( Math.max( 0, dashIndex + 1 ) );
 
-			 filterObj = {
-					property: filterKey,
-					value: subItemKey,
-					operator: 'eq',
-					type: 'string'
-				};
+			const filterObj = {
+				property: filterKey,
+				value: subItemKey,
+				operator: 'eq',
+				type: 'string'
+			};
 
 			if ( filterKey === 'category' && subItemKey !== '' ) {
 				filterObj.operator = 'like';
+
+				// Wire up with backend data provider
+				filterObj.property = 'categories';
 			}
 
 			if ( filterKey === 'namespace' ) {

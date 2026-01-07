@@ -3,7 +3,7 @@
 namespace BlueSpice\Bookshelf\ConfigDefinition;
 
 use BlueSpice\ConfigDefinition\BooleanSetting;
-use ExtensionRegistry;
+use MediaWiki\Registration\ExtensionRegistry;
 
 class MainLinksBookshelf extends BooleanSetting {
 

@@ -5,10 +5,9 @@ namespace ChatBot\Rest;
 use ChatBot\Model\ChatMessage;
 use ChatBot\Model\ChatMessageFactory;
 use DateTime;
+use MediaWiki\Message\Message;
 use MediaWiki\Rest\Response;
 use MediaWiki\Rest\SimpleHandler;
-use MediaWiki\Rest\Validator\JsonBodyValidator;
-use Message;
 use PhpOffice\PhpSpreadsheet\Style\Font;
 use PhpOffice\PhpWord\Element\Section;
 use PhpOffice\PhpWord\Exception\Exception;
@@ -124,7 +123,7 @@ class CreateChatOdf extends SimpleHandler {
 
 			$table->addRow();
 			$answerCell = $table->addCell( null, $this->cellStyle );
-			\PhpOffice\PhpWord\Shared\Html::addHtml( $answerCell, $message->getAnswer(), false, false );
+			$answerCell->addText( $message->getRawAnswer() );
 
 			$references = $message->getReferences();
 			if ( count( $references ) > 0 ) {
@@ -164,22 +163,16 @@ class CreateChatOdf extends SimpleHandler {
 	}
 
 	/**
-	 * @param string $contentType
-	 *
-	 * @return JsonBodyValidator
+	 * @inheritDoc
 	 */
-	public function getBodyValidator( $contentType ) {
-		if ( $contentType !== 'application/json' ) {
-			return null;
-		}
-
-		return new JsonBodyValidator( [
+	public function getBodyParamSettings(): array {
+		return [
 			'history' => [
-				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_TYPE => 'array',
 				ParamValidator::PARAM_REQUIRED => true,
 				ParamValidator::PARAM_DEFAULT => ''
 			],
-		] );
+		];
 	}
 
 	/**

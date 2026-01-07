@@ -2,6 +2,8 @@
 
 namespace BlueSpice\ContextMenu\MenuItem;
 
+use MediaWiki\Message\Message;
+
 class Watch extends Base {
 
 	/**
@@ -9,12 +11,12 @@ class Watch extends Base {
 	 * @return string
 	 */
 	public function getIconClass() {
-		return 'bs-icon-magnifying-glass';
+		return 'star';
 	}
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabelMessage() {
 		return wfMessage( 'watchthis' );

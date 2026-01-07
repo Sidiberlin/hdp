@@ -4,7 +4,6 @@ namespace MediaWiki\Extension\CollabPads\Backend;
 
 use MediaWiki\Extension\CollabPads\Backend\Model\Author;
 use MediaWiki\Extension\CollabPads\Backend\Model\Change;
-use MediaWiki\Extension\CollabPads\Backend\Model\Store;
 
 interface ICollabSessionDAO {
 
@@ -21,12 +20,13 @@ interface ICollabSessionDAO {
 	 * @param int $sessionId
 	 * @param int $authorId
 	 * @param string $authorName
+	 * @param string $authorRealName
 	 * @param string $authorColor
 	 * @param bool $authorStatus
 	 * @param int $connectionId
 	 */
 	public function setNewAuthorInSession(
-		int $sessionId, int $authorId, string $authorName,
+		int $sessionId, int $authorId, string $authorName, string $authorRealName,
 		string $authorColor, bool $authorStatus, int $connectionId
 	);
 
@@ -46,9 +46,9 @@ interface ICollabSessionDAO {
 	 * @param int $sessionId
 	 * @param int $authorId
 	 * @param string $authorData
-	 * @param string $authorValue
+	 * @param mixed $authorValue
 	 */
-	public function changeAuthorDataInSession( int $sessionId, int $authorId, string $authorData, string $authorValue );
+	public function changeAuthorDataInSession( int $sessionId, int $authorId, string $authorData, mixed $authorValue );
 
 	/**
 	 * @param int $sessionId
@@ -146,4 +146,11 @@ interface ICollabSessionDAO {
 	 * @return mixed
 	 */
 	public function replaceHistory( int $sessionId, Change $change );
+
+	/**
+	 * @param int $sessionId
+	 * @param int $authorId
+	 * @return mixed
+	 */
+	public function clearAuthorRebaseData( int $sessionId, int $authorId );
 }

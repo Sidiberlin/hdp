@@ -3,7 +3,6 @@
 namespace BlueSpice\DistributionConnector;
 
 use BlueSpice\DistributionConnector\SearchBackend\BlueSpiceTitleSearch;
-use ExtensionRegistry;
 
 class Extension extends \BlueSpice\Extension {
 
@@ -22,16 +21,5 @@ class Extension extends \BlueSpice\Extension {
 		}
 
 		$GLOBALS['wgSearchType'] = BlueSpiceTitleSearch::class;
-
-		if ( ExtensionRegistry::getInstance()->isLoaded( 'EmbedVideo' ) ) {
-			$GLOBALS['wgContentDropletsDroplets']['video'] = [
-				"class" => "\\BlueSpice\\DistributionConnector\\ContentDroplets\\VideoDroplet"
-			];
-		}
-		if ( ExtensionRegistry::getInstance()->isLoaded( 'InputBox' ) ) {
-			$GLOBALS['wgContentDropletsDroplets']['createInput'] = [
-				"class" => "\\BlueSpice\\DistributionConnector\\ContentDroplets\\CreateInputDroplet"
-			];
-		}
 	}
 }

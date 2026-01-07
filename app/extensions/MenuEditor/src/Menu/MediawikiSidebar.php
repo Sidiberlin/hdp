@@ -7,7 +7,7 @@ use MediaWiki\Extension\MenuEditor\ParsableMenu;
 use MediaWiki\Extension\MenuEditor\Parser\IMenuParser;
 use MediaWiki\Extension\MenuEditor\Parser\WikitextMenuParser;
 use MediaWiki\Revision\RevisionRecord;
-use Title;
+use MediaWiki\Title\Title;
 
 class MediawikiSidebar extends GenericMenu implements ParsableMenu, EditPermissionProvider {
 

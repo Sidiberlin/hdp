@@ -20,7 +20,7 @@ enhancedUpload.ui.dataTransferHandler.MediaTransferHandler.static.name = 'mediaT
 
 enhancedUpload.ui.dataTransferHandler.MediaTransferHandler.static.kinds = [ 'file' ];
 
-var config = require( './config.json' );
+const config = require( './config.json' );
 
 enhancedUpload.ui.dataTransferHandler.MediaTransferHandler.static.types = config.allowedMimeTypes;
 
@@ -31,10 +31,9 @@ enhancedUpload.ui.dataTransferHandler.MediaTransferHandler.static.extensions =
  * @inheritdoc
  */
 enhancedUpload.ui.dataTransferHandler.MediaTransferHandler.prototype.process = function () {
-	var action,
-		file = this.item.getAsFile();
+	const file = this.item.getAsFile();
 
-	action = ve.ui.actionFactory.create( 'window', this.surface );
+	const action = ve.ui.actionFactory.create( 'window', this.surface );
 	action.open( 'mediaUpload', { file: file } );
 };
 

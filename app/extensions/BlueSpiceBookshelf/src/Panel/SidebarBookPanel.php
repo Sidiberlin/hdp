@@ -5,11 +5,14 @@ namespace BlueSpice\Bookshelf\Panel;
 use BlueSpice\Bookshelf\BookContextProviderFactory;
 use BlueSpice\Bookshelf\BookLookup;
 use BlueSpice\Bookshelf\ChapterLookup;
-use Html;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\ComponentBase;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCard;
@@ -17,8 +20,6 @@ use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCardFooter;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCardHeader;
 use MWStake\MediaWiki\Component\CommonUserInterface\ITabPanel;
 use MWStake\MediaWiki\Component\CommonUserInterface\TreeDataGenerator;
-use Title;
-use TitleFactory;
 
 class SidebarBookPanel extends ComponentBase implements ITabPanel {
 
@@ -163,10 +164,7 @@ class SidebarBookPanel extends ComponentBase implements ITabPanel {
 				new BookNavigationChapterPagerContainer(
 					$this->title, $this->titleFactory, $this->bookContextProviderFactory, $this->chapterLookup
 				),
-				new BookNavigationTreeContainer(
-					$this->title, $this->titleFactory, $this->bookContextProviderFactory,
-					$this->bookLookup, $this->treeDataGenerator
-				),
+				new AsyncBookNavigationTreeContainer( $activeBook ),
 				new SimpleCardFooter( [
 					'id' => 'n-book-panel-footer',
 					'classes' => [ 'bg-transp' ],
@@ -226,7 +224,6 @@ class SidebarBookPanel extends ComponentBase implements ITabPanel {
 		if ( $activeBook instanceof Title ) {
 			return $activeBook->getText();
 		}
-
 		return '';
 	}
 
@@ -235,7 +232,13 @@ class SidebarBookPanel extends ComponentBase implements ITabPanel {
 	 * @return string
 	 */
 	protected function getBookEditLink( $activeBook ): string {
-		if ( $activeBook instanceof Title === false ) {
+		if ( !$activeBook ) {
+			return '';
+		}
+
+		$user = RequestContext::getMain()->getUser();
+		$permissionManager = MediaWikiServices::getInstance()->getPermissionManager();
+		if ( !$permissionManager->userCan( 'edit', $user, $activeBook ) ) {
 			return '';
 		}
 
@@ -244,11 +247,11 @@ class SidebarBookPanel extends ComponentBase implements ITabPanel {
 			[
 				'id' => 'book-panel-edit-book',
 				'href' => $activeBook->getFullURL( [ 'action' => 'edit' ] ),
-				'title' => wfMessage( 'bs-bookshelfui-book-title-link-edit' )->plain()
+				'title' => wfMessage( 'bs-bookshelfui-book-title-link-edit' )->text()
 			]
 		);
 		$bookEditorLink .=
-			wfMessage( 'bs-bookshelfui-book-title-link-edit-text' )->plain();
+			wfMessage( 'bs-bookshelfui-book-title-link-edit-text' )->text();
 
 		$bookEditorLink .= Html::closeElement( 'a' );
 

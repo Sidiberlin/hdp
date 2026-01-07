@@ -8,8 +8,6 @@
 	},
 	"bs-bssmwconnector-desc": "Integreert SemanticMediaWiki in BlueSpice",
 	"bs-bssmwconnector-srf-printername-bsgrid": "BlueSpice Grid",
-	"bs-dlg-choosesmwprop-label": "Eigenschap",
-	"bs-dlg-choosesmwprop-type-smwprop": "Semantische eigenschap",
 	"bs-extendedsearch-add-filter-group-smwproperty-label": "Semantische eigenschappen",
 	"bs-extendedsearch-search-center-result-smwproperty-label": "Semantische eigenschappen:",
 	"bs-smwconnector-extendedsearch-boolean-property-true": "Ja",
@@ -55,5 +53,10 @@
 	"bs-smwconnector-decision-overview-title": "Beslissingsoverzicht",
 	"bs-smwconnector-decision-overview-no-result": "Geen beslissingen gevonden met de huidige filters",
 	"bs-smwconnector-decision-overview-droplet-title": "Beslissingsoverzicht",
-	"bs-smwconnector-decision-overview-droplet-description": "Maakt het mogelijk dat query’s een overzicht van beslissingen krijgen"
+	"bs-smwconnector-decision-overview-droplet-description": "Maakt het mogelijk dat query’s een overzicht van beslissingen krijgen",
+	"bs-smwconnector-decision-overview-table-heading-page-label": "Pagina",
+	"bs-smwconnector-decision-overview-table-heading-decisions-label": "Beslissingen",
+	"bs-smwconnector-yes": "Ja",
+	"bs-smwconnector-no": "Nee",
+	"bs-smwconnector-user-input-placeholder": "Typ een letter…"
 }

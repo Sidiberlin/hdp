@@ -4,14 +4,16 @@
 	float: left;
 	padding: 0 40px 0 0;
 }
-.flexiskin-color-preset-option .oo-ui-radioInputWidget{
+
+.flexiskin-color-preset-option .oo-ui-radioInputWidget {
 	vertical-align: middle;
 }
 
-.flexiskin-color-preset-option:not(.color-item-custom) .oo-ui-labelElement-label {
+.flexiskin-color-preset-option:not( .color-item-custom ) .oo-ui-labelElement-label {
 	position: absolute;
-	bottom: -15px
+	bottom: -15px;
 }
+
 .flexiskin-color-preset-option .oo-ui-buttonWidget {
 	vertical-align: middle;
 	display: table-cell;

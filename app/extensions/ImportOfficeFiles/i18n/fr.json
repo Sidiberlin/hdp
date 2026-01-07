@@ -1,11 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
+			"EmDashUser002",
+			"JLTRY",
+			"Mahabarata",
+			"Marphy 123",
 			"Verdy p"
 		]
 	},
 	"importofficefiles-desc": "Permet d’importer des fichiers de bureau en tant que pages wiki",
-	"importofficefiles-ui-action-import-msword-text": "Importer un fichier Word",
 	"importofficefiles-ui-action-import-msword-title": "Créer des pages à partir d’un fichier Microsoft Word",
 	"importofficefiles-ui-import-dialog-title": "Importer le fichier",
 	"importofficefiles-ui-import-completed": "Import terminé !",
@@ -32,6 +35,8 @@
 	"importofficefiles-ui-dialog-preview-title": "Aperçu",
 	"importofficefiles-ui-dialog-preview-label": "Les pages suivantes seront importées",
 	"importofficefiles-ui-dialog-link-import-files-text": "Liste de fichiers importés exportés vers $1",
+	"importofficefiles-ui-dialog-link-imported-page-text": "Fichier importé vers $1",
+	"importofficefiles-ui-dialog-page-collection-protected-namespace": "Remarque : la page « collection de pages » n'a pas été créée car l'espace de noms « $1 » est protégé",
 	"importofficefiles-api-storage-error-no-available-file": "Aucun fichier téléversé disponible",
 	"importofficefiles-api-storage-error-save-temp": "Aucun enregistrement temporaire possible",
 	"importofficefiles-api-storage-error-no-valid-module": "Aucun module disponible pour gérer ce fichier",
@@ -39,5 +44,8 @@
 	"importofficefiles-ui-progress-import-pages-step": "Importation des pages...",
 	"importofficefiles-ui-progress-remove-files-step": "Retrait des fichiers temporaires...",
 	"importofficefiles-ui-import-error": "Une erreur est survenue durant l’import.",
-	"importofficefiles-ui-analyze-error": "Le processus d’analyse a échoué pour une certaine raison."
+	"importofficefiles-ui-analyze-error": "Le processus d’analyse a échoué pour une certaine raison.",
+	"importofficefiles-ui-action-import-msword-label": "Nouvelle importation de fichier Word",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-characters": "Ce titre ne peut pas être utilisé. Il contient un caractère (« $1 ») non autorisé.",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-fallback": "Cet titre ne peut pas être utilisé."
 }

@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.ce' );
 
-bs.vec.ce.ExplicitLineBreak = function() {
+bs.vec.ce.ExplicitLineBreak = function () {
 	// Parent InternalFileLinkAnnotation
 	bs.vec.ce.ExplicitLineBreak.super.apply( this, arguments );
 	this.$element.addClass( 'bs-vec-line-break' );

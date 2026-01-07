@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\ImportOfficeFiles;
 
-use Config;
-use FormatJson;
+use MediaWiki\Config\Config;
+use MediaWiki\Json\FormatJson;
 use MWCryptRand;
 use SplFileInfo;
 

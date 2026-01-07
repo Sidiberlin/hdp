@@ -4,7 +4,7 @@ namespace MediaWiki\Extension\PageCheckout\Entity;
 
 use DateTime;
 use JsonSerializable;
-use User;
+use MediaWiki\User\User;
 
 class CheckoutEvent implements JsonSerializable {
 	/** @var CheckoutEntity */

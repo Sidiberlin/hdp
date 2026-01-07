@@ -8,7 +8,5 @@
 	},
 	"bs-saferedit-desc": "Выводит предупреждение, если другие участники редактируют страницу",
 	"bs-saferedit-user-editing": "$1 {{PLURAL:$2|{{GENDER:$1|редактирует}}|редактируют}} страницу",
-	"bs-saferedit-someone-editing": "Эта страница редактируется",
-	"bs-saferedit-pref-interval": "Интервал поиска одновременных правок:",
-	"bs-saferedit-pref-shownameofeditinguser": "Показать имя текущего редактора"
+	"bs-saferedit-someone-editing": "Эта страница редактируется"
 }

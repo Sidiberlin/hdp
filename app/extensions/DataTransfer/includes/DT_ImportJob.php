@@ -48,12 +48,20 @@ class DTImportJob extends Job {
 			$slotRole = SlotRecord::MAIN;
 		}
 
-		$user = User::newFromId( $this->params['user_id'] );
+		$user = MediaWikiServices::getInstance()->getUserFactory()->newFromId( $this->params['user_id'] );
+		// Exit if this is a blocked user (must have been blocked very recently, i.e.
+		// after the job was created).
+		if ( !$user->definitelyCan( 'edit', $this->title ) ) {
+			return true;
+		}
+
 		$text = $this->params['text'];
 		if ( $this->title->exists() ) {
 			if ( $for_pages_that_exist == 'append' ) {
-				$existingText = ContentHandler::getContentText( $wikiPage->getContent() );
-				$text = $existingText . "\n" . $text;
+				$pageContent = $wikiPage->getContent();
+				if ( $pageContent !== null && $pageContent instanceof TextContent ) {
+					$text = $pageContent->getText() . "\n" . $text;
+				}
 			} elseif ( $for_pages_that_exist == 'merge' ) {
 				$existingPageStructure = DTPageStructure::newFromTitle( $this->title, false );
 				$newPageStructure = new DTPageStructure;

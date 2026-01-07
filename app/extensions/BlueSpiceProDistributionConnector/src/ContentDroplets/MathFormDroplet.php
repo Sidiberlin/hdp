@@ -5,7 +5,7 @@ declare( strict_types = 1 );
 namespace BlueSpice\ProDistributionConnector\ContentDroplets;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\GenericDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class MathFormDroplet extends GenericDroplet {
 

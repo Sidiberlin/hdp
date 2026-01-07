@@ -3,14 +3,16 @@
 		"authors": [
 			"Kly",
 			"LNDDYL",
+			"SunAfterRain",
+			"Winston Sung",
 			"列维劳德"
 		]
 	},
 	"getdata": "取得資料",
 	"externaldata-desc": "允許外部 URL、資料庫，以及其它來源檢索結構化資料",
-	"externaldata-smw-needed": "錯誤：必須安裝 Semantic MediaWiki 才能調用{{#store_external_table:}}。",
 	"externaldata-no-param-specified": "錯誤：未指定「$1」參數。",
 	"externaldata-param-type-error": "錯誤：參數 $1 必須是 $2 類型。",
+	"externaldata-processing-exception": "運行前置處理器或後置處理器時拋出例外：$1",
 	"externaldata-php-library-missing": "錯誤：缺少 $2 所需的 PHP 函式庫 $1。",
 	"external-data-no-suitable-connector": "錯誤：沒有給這個外部資料查詢定義合適的資料來源",
 	"externaldata-throttled": "對 $1 的呼叫被限制到 {{#time:c|@$2}}。",
@@ -33,6 +35,8 @@
 	"externaldata-db-invalid-join": "無效的 JOIN 條件 $1：每個部份都應包含「=」符號。",
 	"externaldata-db-empty-rowset": "查詢 $1 回傳空白的列集合。",
 	"externaldata-db-prepared-not-specified": "請指定(query=)，用於資料庫 ID $1 的參數化查詢。",
+	"externaldata-db-prepared-config-wrong-datatype": "給資料庫ID「$1」指定的預備查詢（$2）存在，但未正確設定。",
+	"externaldata-db-prepared-wrong-params": "給資料庫ID「$1」指定的預備查詢（$2）產生錯誤（$3）。",
 	"externaldata-db-no-such-prepared": "未為資料庫 ID $1 設定參數化查詢 $2。",
 	"externaldata-db-odbc-illegal": "參數 $2 含有不合規範的序列 $1。請停止。",
 	"externaldata-mongodb-unknown-collection": "錯誤：未知的 MongoDB 集合 $1。",
@@ -45,9 +49,10 @@
 	"externaldata-url-unknown-error": "在取得來自 URL $1 的資料時發生未知錯誤。",
 	"externaldata-url-not-allowed": "URL $1 在此 wiki 上不被允許。",
 	"externaldata-caught-exception-soap": "在建立 SOAP 客戶端時捕獲到異常 $1。",
-	"externaldata-parsing-html-failed": "無法解析 HTML。",
+	"externaldata-parsing-html-failed": "無法解析 HTML：\n$1",
 	"externaldata-caught-exception-parsing-html": "捕獲解析 HTML 時的例外狀況。錯誤訊息為 &quot;$1&quot;。",
 	"externaldata-error-converting-css-to-xpath": "捕獲轉換 CSS 選擇器 $1 成 XPath 時的例外狀況。錯誤訊息為：\n$2",
+	"externaldata-jsonpath-error": "違規的 JSONPath $1",
 	"externaldata-missing-library": "缺少使用解析函式「$2」或 Lua 函式「<code>$3</code>」時所需的函式庫 $1。",
 	"externaldata-undefined-file": "檔案 $1 未定義。",
 	"externaldata-missing-file": "缺少檔案 $1。",
@@ -57,8 +62,13 @@
 	"externaldata-not-a-directory": "$1 不是目錄或並不存在。",
 	"externaldata-exe-shell-disabled": "錯誤：PHP 管理員已禁用存取殼層。",
 	"externaldata-exe-incomplete-information": "錯誤：此 $1 命令 ID ($2) 有未完成的資訊",
+	"externaldata-illegal-parameter": "錯誤：參數$1有非法值$2。",
 	"externaldata-exe-exception": "錯誤：嘗試運作程式 $1 時出現例外狀況。訊息：$2。",
 	"externaldata-exe-error": "錯誤：$1 程式送回退出代碼 $2。消息：$3。",
+	"external-data-archive-could-not-read": "錯誤：無法打開$1檔案<code>$2</code>（$3）",
+	"external-data-archive-could-not-extract": "錯誤：無法從$1檔案提取檔案<code>$2</code>（$3）",
 	"externaldata-no-local-variable": "錯誤：未設定本地變數「$1」。",
-	"externaldata-no-template": "錯誤：沒有指定模板。"
+	"externaldata-no-template": "錯誤：沒有指定模板。",
+	"externaldata-no-loop-body": "錯誤：第一個或第二個參數沒有設定為迴圈體。",
+	"externaldata-getdata-badurl": "您必須在URL內指定頁面名稱，例如「{{#Special:GetData}}/頁面名稱」。"
 }

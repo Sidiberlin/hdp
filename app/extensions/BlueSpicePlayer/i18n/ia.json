@@ -7,7 +7,6 @@
 	"bs-player-extension-description": "Incorporar un reproductor multimedial sur un pagina.",
 	"bs-player-pref-autostart": "Comenciar video automaticamente",
 	"bs-player-file-does-not-exist": "File non existe.",
-	"bs-player-tag-showtime-desc": "Iste etiquetta permitte incorporar un video.",
 	"bs-player-unsupported-type": "Iste typo de file non es supportate.",
 	"bs-player-config-prefwidth": "Latitude predefinite de videos",
 	"bs-player-config-prefheight": "Altitude predefinite de videos",

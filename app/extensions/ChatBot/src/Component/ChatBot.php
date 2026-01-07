@@ -5,7 +5,8 @@ namespace ChatBot\Component;
 use ChatBot\Util\RoleLookup;
 use Config;
 use IContextSource;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
 use TemplateParser;
 
@@ -80,7 +81,7 @@ class ChatBot extends Literal {
 			'close_button' => Message::newFromKey( 'chat-close-button-title' )->text(),
 			'restore_session' => Message::newFromKey( 'chat-restore-session-text' )->text(),
 			'chat_banner_message' => Message::newFromKey( 'chat-banner-label' )->parse(),
-			'logo_link' => \Title::newFromText( 'Chatbot-FAQ' )->getLocalURL(),
+			'logo_link' => Title::newFromText( 'Chatbot-FAQ' )->getLocalURL(),
 			'dismiss_error_button' => Message::newFromKey( 'chat-dismiss-error-button-title' )->text(),
 			'banner_help_button' => Message::newFromKey( 'chat-banner-help-button' )->text(),
 			'banner_close_button' => Message::newFromKey( 'chat-banner-close-button' )->text(),

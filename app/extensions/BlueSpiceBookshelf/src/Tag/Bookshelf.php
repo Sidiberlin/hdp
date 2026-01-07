@@ -9,8 +9,8 @@ use BlueSpice\Tag\MarkerType;
 use BlueSpice\Tag\MarkerType\NoWiki;
 use BlueSpice\Tag\Tag;
 use MediaWiki\MediaWikiServices;
-use Parser;
-use PPFrame;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class Bookshelf extends Tag {
 

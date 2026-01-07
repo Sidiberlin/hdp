@@ -2,7 +2,7 @@ ext.notifyme.ui.widget.HelpMenuWidget = function ( cfg ) {
 	cfg = cfg || {};
 
 	// Parent constructor
-	ext.notifyme.ui.widget.HelpMenuWidget.super.call( this, $.extend( {
+	ext.notifyme.ui.widget.HelpMenuWidget.super.call( this, Object.assign( {
 		icon: 'settings',
 		label: mw.message( 'notifyme-notification-center-help-menu-aria-label' ).text(),
 		indicator: 'down',
@@ -62,8 +62,8 @@ ext.notifyme.ui.widget.HelpMenuWidget.prototype.onMenuChoose = function ( item )
  */
 ext.notifyme.ui.widget.HelpMenuWidget.prototype.onMenuToggle = function ( isVisible ) {
 	if ( isVisible ) {
-		this.menu.getVisibleItems()[ 0 ].$element.focus();
+		this.menu.getVisibleItems()[ 0 ].$element.trigger( 'focus' );
 	} else {
-		this.$button.focus();
+		this.$button.trigger( 'focus' );
 	}
 };

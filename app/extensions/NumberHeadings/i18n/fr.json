@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"JLTRY",
+			"Mahabarata"
+		]
+	},
+	"numberheadings-desc": "Numéroter les titres dans les espaces de noms de contenu",
+	"numberheadings-conf-exlude-namespaces": "Exclure les espaces de noms de la numérotation des titres",
+	"numberheadings-conf-enable-numbering": "Afficher la numérotation des titres",
+	"numberheadings-conf-enable-numbering-help": "Ajoute les numéros de la table des matières aux titres de page"
+}

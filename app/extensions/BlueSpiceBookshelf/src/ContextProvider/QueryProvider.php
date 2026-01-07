@@ -3,11 +3,11 @@
 namespace BlueSpice\Bookshelf\ContextProvider;
 
 use BlueSpice\Bookshelf\IBookContextProvider;
+use MediaWiki\Request\WebRequest;
 use MediaWiki\Session\Session;
 use MediaWiki\Session\SessionManager;
-use Title;
-use TitleFactory;
-use WebRequest;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 
 class QueryProvider implements IBookContextProvider {
 

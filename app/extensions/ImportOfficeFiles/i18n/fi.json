@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"MITO"
+			"MITO",
+			"Minilammas"
 		]
 	},
 	"importofficefiles-ui-import-dialog-title": "Tuo tiedosto",
@@ -16,5 +17,7 @@
 	"importofficefiles-ui-dialog-settings-conflicts-rename": "Nimeä uudelleen",
 	"importofficefiles-ui-dialog-preview-title": "Esikatsele",
 	"importofficefiles-ui-progress-import-images-step": "Tuodaan kuvia...",
-	"importofficefiles-ui-progress-import-pages-step": "Tuodaan sivuja..."
+	"importofficefiles-ui-progress-import-pages-step": "Tuodaan sivuja...",
+	"importofficefiles-ui-dialog-preview-action-close": "Sulje",
+	"importofficefiles-ui-dialog-preview-btn-title": "Esikatselu"
 }

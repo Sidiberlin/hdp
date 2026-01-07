@@ -3,7 +3,7 @@
 namespace BlueSpice\Bookshelf\ContentDroplets;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\TemplateDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class BookPDFDroplet extends TemplateDroplet {
 
@@ -23,7 +23,7 @@ class BookPDFDroplet extends TemplateDroplet {
 		return [
 			'book' => '',
 			'template' => '',
-			'label' => 'Book PDF Link'
+			'label' => ''
 		];
 	}
 
@@ -31,14 +31,14 @@ class BookPDFDroplet extends TemplateDroplet {
 	 * @inheritDoc
 	 */
 	public function getName(): Message {
-		return Message::newFromKey( 'bs-bookshelf-droplet-pdf-name' );
+		return Message::newFromKey( 'bs-bookshelf-droplet-bookpdf-name' );
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function getDescription(): Message {
-		return Message::newFromKey( "bs-bookshelf-droplet-pdf-description" );
+		return Message::newFromKey( 'bs-bookshelf-droplet-bookpdf-desc' );
 	}
 
 	/**
@@ -52,13 +52,14 @@ class BookPDFDroplet extends TemplateDroplet {
 	 * @inheritDoc
 	 */
 	public function getRLModules(): array {
-		return [ 'ext.bluespice.bookshelf.droplet-bookpdf' ];
+		return [ 'ext.bluespice.object.bookpdf' ];
 	}
 
 	/**
-	 * @return array
+	 * @inheritDoc
 	 */
 	public function getCategories(): array {
 		return [ 'content', 'export' ];
 	}
+
 }

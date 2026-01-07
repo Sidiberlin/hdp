@@ -7,13 +7,6 @@
 			"SongNgu.xyz"
 		]
 	},
-	"bs-bookshelf-action-editbook": "Sửa mã nguồn",
-	"bs-bookshelf-action-editbook-create": "Sửa mã nguồn",
-	"bs-bookshelf-ga-manager-label": "Sách",
-	"bs-bookshelf-mainlinks-label": "Sách",
-	"bs-bookshelf-droplet-pdf-name": "Liên kết sách PDF",
-	"bs-bookshelf-droplet-pdf-description": "Liên kết tải sách dưới dạng PDF",
-	"bs-bookshelf-droplet-pdf-link-label": "Nhãn liên kết",
 	"bs-bookshelf-extension-description": "Cho phép BlueSpice quản lý và xuất các bộ sưu tập bài viết theo thứ bậc.",
 	"bs-bookshelf-tagerror-no-attribute-given": "Không có thuộc tính nào được cung cấp! Sử dụng <strong>src</strong> để cấu hình mục lục.",
 	"bs-bookshelf-tagerror-article-title-not-valid": "Bài viết nguồn được cung cấp (&quot;$1&quot;) không tồn tại.",
@@ -22,9 +15,7 @@
 	"bs-bookshelf-tagerror-attribute-float-not-valid": "Vui lòng sử dụng <i>left</i> hoặc <i>right</i> .",
 	"bs-bookshelf-specialpage-title": "Sách",
 	"bs-bookshelf-specialpage-allpages-ns-book-text": "Thư viện",
-	"bs-bookshelf-pref-SupressBookNS": "Bỏ tiền tố không gian tên của các bài viết trong sách ở đầu ra",
 	"bs-bookshelf-pref-TitleDisplayText": "Sử dụng tiêu đề hiển thị từ nguồn sách trên bài viết",
-	"bs-bookshelf-pref-PrependPageTOCNumbers": "Thêm mục lục và tiêu đề bài viết với số sách",
 	"bs-bookshelf-tag-next": "Sau",
 	"bs-bookshelf-tag-prev": "Trước",
 	"bs-bookshelf-tag-edit-book": "Sửa đổi sách",
@@ -43,8 +34,10 @@
 	"apihelp-bs-bookshelf-store-summary": "Liệt kê tất cả các cuốn sách. Cho phép sắp xếp, lọc và phân trang. Triển khai các tham số ExtJS Store.",
 	"apihelp-query+bsbookshelf-summary": "Cho phép truy vấn trong tất cả các cuốn sách.",
 	"bs-bookshelf-pref-titledisplaytext-help": "Hiển thị tiêu đề từ mục điều hướng sách dưới dạng tiêu đề trang thay vì tên trang.",
-	"bs-bookshelf-grouping-template-type-local_storage": "Sách tạm thời",
 	"bs-bookshelf-grouping-template-type-ns_book": "Sách tổng hợp",
+	"bs-bookshelf-action-editbook": "Sửa mã nguồn",
+	"bs-bookshelf-action-editbook-create": "Sửa mã nguồn",
 	"bs-bookshelf-action-export-book": "Xuất cuốn sách",
-	"bs-bookshelf-edit-title": "Sửa đổi $1"
+	"bs-bookshelf-edit-title": "Sửa đổi $1",
+	"bs-bookshelf-mainlinks-label": "Sách"
 }

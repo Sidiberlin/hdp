@@ -3,14 +3,13 @@
 namespace BlueSpice\Discovery\Component;
 
 use BlueSpice\Discovery\SkinSlotRenderer\UserMenuCardsSkinSlotRenderer;
-use BlueSpice\DynamicFileDispatcher\Params;
-use BlueSpice\DynamicFileDispatcher\UrlBuilder;
-use BlueSpice\DynamicFileDispatcher\UserProfileImage;
-use BlueSpice\UtilityFactory;
-use Html;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
+use MediaWiki\Language\RawMessage;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCard;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCardBody;
@@ -18,9 +17,7 @@ use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleCardHeader;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleDropdown;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\SimpleLinklistGroupFromArray;
 use MWStake\MediaWiki\Component\CommonUserInterface\LinkFormatter;
-use RawMessage;
-use RequestContext;
-use User;
+use MWStake\MediaWiki\Component\DynamicFileDispatcher\DynamicFileDispatcherFactory;
 
 class UserButtonMenu extends SimpleDropdown {
 
@@ -258,69 +255,41 @@ class UserButtonMenu extends SimpleDropdown {
 	 * @return string
 	 */
 	private function getAvatar(): string {
-		$defaultIcon = '<i class="ico-usr"></i>';
-		if ( !$this->avatarServicesAvailable() ) {
-			return $defaultIcon;
-		}
-
 		/** @var IContextSource */
 		$context = RequestContext::getMain();
 
 		/** @var User */
 		$user = $context->getUser();
 
-		/** @var UrlBuilder */
-		$imageUrlBuilder = MediaWikiServices::getInstance()->getService(
-			'BSDynamicFileDispatcherUrlBuilder'
-		);
-
-		/** @var UtilityFactory */
-		$utilityFactory = MediaWikiServices::getInstance()->getService(
-			'BSUtilityFactory'
-		);
-
-		$imgBaseSize = 28;
-		$realsize = (int)$imgBaseSize * 1.4;
-		$userImageParams = [
-			Params::MODULE => 'userprofileimage',
-			UserProfileImage::USERNAME => $user->getName(),
-			UserProfileImage::HEIGHT => $realsize,
-			UserProfileImage::WIDTH => $realsize,
-		];
-
-		$src = $imageUrlBuilder->build( new Params( $userImageParams ) );
-		if ( empty( $src ) ) {
-			return $defaultIcon;
+		$username = $user->getName();
+		if ( MediaWikiServices::getInstance()->hasService( 'BSUtilityFactory' ) ) {
+			$username = MediaWikiServices::getInstance()->getService(
+				'BSUtilityFactory'
+			)->getUserHelper( $user )->getDisplayName();
 		}
 
-		$image = Html::element(
+		$imgBaseSize = 28;
+		$realsize = $imgBaseSize * 1.4;
+		$userImageParams = [
+			'username' => $user->getName(),
+			'height' => $realsize,
+			'width' => $realsize,
+		];
+		/** @var DynamicFileDispatcherFactory $dynamicFileFactory */
+		$dynamicFileFactory = MediaWikiServices::getInstance()->getService(
+			'MWStake.DynamicFileDispatcher.Factory'
+		);
+		$src = $dynamicFileFactory->getUrl( 'userprofileimage', $userImageParams );
+
+		return Html::element(
 			'img',
 			[
 				// title is not required becaus the anchor tag arround this image hase already a title
 				'src' => $src,
-				'alt' => $utilityFactory->getUserHelper( $user )->getDisplayName(),
+				'alt' => $username,
 				'width' => $imgBaseSize . 'px',
 				'height' => $imgBaseSize . 'px'
 			]
 		);
-
-		return $image;
-	}
-
-	/**
-	 *
-	 * @return bool
-	 */
-	private function avatarServicesAvailable(): bool {
-		$hasImageUrlBuilder = MediaWikiServices::getInstance()->hasService(
-			'BSDynamicFileDispatcherUrlBuilder'
-		);
-		$hasUtilityFactory = MediaWikiServices::getInstance()->hasService(
-			'BSUtilityFactory'
-		);
-		if ( $hasImageUrlBuilder && $hasUtilityFactory ) {
-			return true;
-		}
-		return false;
 	}
 }

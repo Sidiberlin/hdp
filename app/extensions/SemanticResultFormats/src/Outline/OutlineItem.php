@@ -4,21 +4,15 @@ namespace SRF\Outline;
 
 /**
  * Represents a single item, or page, in the outline - contains both the
- * SMWResultArray and an array of some of its values, for easier aggregation
+ * \SMW\Query\Result\ResultArray and an array of some of its values, for easier aggregation
  *
  * @license GPL-2.0-or-later
  * @since 3.1
  */
 class OutlineItem {
 
-	/**
-	 * @var type
-	 */
 	public $row;
 
-	/**
-	 * @var
-	 */
 	private $vals;
 
 	/**
@@ -34,7 +28,7 @@ class OutlineItem {
 	/**
 	 * @since 3.1
 	 *
-	 * @param $name
+	 * @param $key
 	 * @param $value
 	 */
 	public function addFieldValue( $key, $value ) {
@@ -48,7 +42,7 @@ class OutlineItem {
 	/**
 	 * @since 3.1
 	 *
-	 * @param $row
+	 * @param $key
 	 */
 	public function getFieldValues( $key ) {
 		if ( array_key_exists( $key, $this->vals ) ) {

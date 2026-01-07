@@ -13,5 +13,6 @@
 	"droplets-modal-dialog-bg-color-red": "rout",
 	"droplets-modal-dialog-bg-color-neutral": "wäiss",
 	"bs-pro-distribution-pdfembed-inspector-width-label": "Breet",
-	"bs-pro-distribution-pdfembed-inspector-height-label": "Héicht"
+	"bs-pro-distribution-pdfembed-inspector-height-label": "Héicht",
+	"bs-pro-distribution-droplet-ec-embed-url-label": "URL"
 }

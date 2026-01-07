@@ -1,6 +1,6 @@
 {
 	"name": "ContentDroplets",
-	"version": "1.0.7",
+	"version": "2.0.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[http://www.hallowelt.com Hallo Welt! GmbH]"
@@ -8,15 +8,25 @@
 	"url": "https://www.mediawiki.org/wiki/Extension:ContentDroplets",
 	"descriptionmsg": "contentdroplets-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"callback": "mwsInitComponents",
+	"ExtensionFunctions": [
+		"MediaWiki\\Extension\\ContentDroplets\\ResourceLoader\\DropletDefinitions::addPreloadModules"
+	],
 	"MessagesDirs": {
 		"ContentDroplets": "i18n"
 	},
 	"attributes": {
 		"VisualEditor": {
-			"PluginModules": []
+			"PluginModules": [
+				"ext.contentdroplets.ve.toolbar"
+			]
+		},
+		"CollabPads": {
+			"PluginModules": [
+				"ext.contentdroplets.ve.toolbar"
+			]
 		},
 		"ContentDroplets": {
 			"Droplets": {
@@ -48,7 +58,10 @@
 					"class": "\\MediaWiki\\Extension\\ContentDroplets\\Droplet\\IconDroplet"
 				},
 				"code": {
-					"class": "\\MediaWiki\\Extension\\ContentDroplets\\Droplet\\CodeDroplet"
+					"class": "\\MediaWiki\\Extension\\ContentDroplets\\Droplet\\CodeDroplet",
+					"requires": {
+						"SyntaxHighlight": "*"
+					}
 				}
 			}
 		},
@@ -63,11 +76,17 @@
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\ContentDroplets\\": "src/"
 	},
+	"TestAutoloadNamespaces": {
+		"MediaWiki\\Extension\\ContentDroplets\\Tests\\": "tests/phpunit/"
+	},
 	"ResourceModules": {
 		"ext.contentdroplets.ve.toolbar": {
 			"scripts": [
 				"ext.contentdroplets.toolbar.js",
 				"dialog/ContentDropletsDialog.js"
+			],
+			"styles": [
+				"stylesheets/droplets.css"
 			],
 			"dependencies": [
 				"ext.visualEditor.mwcore",
@@ -114,9 +133,12 @@
 				"bootstrap.js",
 				"object/Droplet.js",
 				"object/CustomInspectorDroplet.js",
-				"object/TransclusionDroplet.js"
+				"object/TransclusionDroplet.js",
+				"object/ParserFunctionDroplet.js"
 			],
 			"dependencies": [
+				"ext.visualEditor.mwtransclusion",
+				"oojs",
 				"oojs-ui"
 			]
 		},
@@ -157,12 +179,18 @@
 			"messages": [
 				"contentdroplets-droplet-icon-class-label",
 				"contentdroplets-droplet-icon-font-size-label",
+				"contentdroplets-droplet-icon-font-size-help",
 				"contentdroplets-droplet-icon-color-label",
-				"contentdroplets-droplet-icon-orientation-label"
+				"contentdroplets-droplet-icon-color-help",
+				"contentdroplets-droplet-icon-orientation-label",
+				"contentdroplets-droplet-icon-orientation-help"
 			],
 			"dependencies": [
 				"oojs-ui"
 			]
+		},
+		"z-ext.contentdroplets.definition.preload": {
+			"class": "MediaWiki\\Extension\\ContentDroplets\\ResourceLoader\\DropletDefinitions"
 		}
 	},
 	"ResourceFileModulePaths": {

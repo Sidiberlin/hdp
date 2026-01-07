@@ -1,5 +1,9 @@
 <?php
 
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\ParserOutput;
+
 /**
  * This class attempts to provide safe yet simple means for managing data that is relevant
  * for the final HTML output of MediaWiki. In particular, this concerns additions to the HTML
@@ -85,7 +89,7 @@ class SMWOutputs {
 	 * recorded multiple times in SMWOutputs.
 	 *
 	 * @param string $id
-	 * @param string $item
+	 * @param string $script
 	 */
 	public static function requireScript( $id, $script ) {
 		self::$scripts[$id] = $script;
@@ -108,11 +112,13 @@ class SMWOutputs {
 		if ( is_numeric( $id ) ) {
 			switch ( $id ) {
 				case SMW_HEADER_TOOLTIP:
-					self::requireResource( 'ext.smw.tooltips' );
-				break;
+					self::requireStyle( 'ext.smw.styles' );
+					self::requireStyle( 'ext.smw.tooltip.styles' );
+					self::requireResource( 'ext.smw.tooltip' );
+					break;
 				case SMW_HEADER_STYLE:
-					self::requireStyle( 'ext.smw.style' );
-				break;
+					self::requireStyle( 'ext.smw.styles' );
+					break;
 			}
 		} else {
 			self::$headItems[$id] = $item;
@@ -134,7 +140,7 @@ class SMWOutputs {
 	 *
 	 * @param ParserOutput $parserOutput
 	 */
-	static public function requireFromParserOutput( ParserOutput $parserOutput ) {
+	public static function requireFromParserOutput( ParserOutput $parserOutput ) {
 		// Note: we do not attempt to recover which head items where scripts here.
 
 		$parserOutputHeadItems = $parserOutput->getHeadItems();
@@ -160,7 +166,7 @@ class SMWOutputs {
 	 *
 	 * @param Parser $parser
 	 */
-	static public function commitToParser( Parser $parser ) {
+	public static function commitToParser( Parser $parser ) {
 		$po = $parser->getOutput();
 
 		if ( isset( $po ) ) {
@@ -173,8 +179,7 @@ class SMWOutputs {
 	 *
 	 * @param ParserOutput $parserOutput
 	 */
-	static public function commitToParserOutput( ParserOutput $parserOutput ) {
-
+	public static function commitToParserOutput( ParserOutput $parserOutput ) {
 		foreach ( self::$scripts as $key => $script ) {
 			$parserOutput->addHeadItem( $script . "\n", $key );
 		}
@@ -201,7 +206,7 @@ class SMWOutputs {
 	 *
 	 * @param OutputPage $output
 	 */
-	static public function commitToOutputPage( OutputPage $output ) {
+	public static function commitToOutputPage( OutputPage $output ) {
 		foreach ( self::$scripts as $script ) {
 			$output->addScript( $script );
 		}

@@ -3,14 +3,14 @@
 namespace BlueSpice\ProDistributionConnector\Collector;
 
 use BS\UsageTracker\Collectors\Base;
-use GlobalVarConfig;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Config\GlobalVarConfig;
 
 class NoOfNamespaces extends Base {
 
 	/**
-	 *
 	 * @return \BS\UsageTracker\CollectorResult
-	 * @throws \MWException
+	 * @throws ConfigException
 	 */
 	public function getUsageData() {
 		$oRes = new \BS\UsageTracker\CollectorResult( $this );

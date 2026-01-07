@@ -1,6 +1,8 @@
 <?php
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 class BsNamespaceHelper {
 
@@ -42,9 +44,10 @@ class BsNamespaceHelper {
 	/**
 	 * @param int $iNS
 	 * @param string|null $name
+	 * @param bool|null $ignoreExisting
 	 * @return string
 	 */
-	public static function getNamespaceConstName( $iNS, $name = null ) {
+	public static function getNamespaceConstName( $iNS, $name = null, ?bool $ignoreExisting = false ) {
 		// find existing NS_ definitions
 		$aNSConstants = [];
 		foreach ( get_defined_constants() as $key => $value ) {
@@ -61,7 +64,7 @@ class BsNamespaceHelper {
 		$aNSConstants = array_flip( $aNSConstants );
 
 		// Use existing constant name if possible
-		if ( isset( $aNSConstants[$iNS] ) ) {
+		if ( isset( $aNSConstants[$iNS] ) && !$ignoreExisting ) {
 			$sConstName = $aNSConstants[$iNS];
 		} elseif ( is_string( $name ) && preg_match( "/^[a-zA-Z0-9_]{3,}$/", $name ) ) {
 			// If compatible, use namespace name as const name
@@ -106,10 +109,10 @@ class BsNamespaceHelper {
 		// TODO SW(05.01.12 15:21): Profiling
 		if ( $bReturnNamesForMainAndAll ) {
 			if ( $iNamespaceId == 0 ) {
-				return wfMessage( 'bs-ns_main' )->plain();
+				return wfMessage( 'bs-ns_main' )->text();
 			}
 			if ( $iNamespaceId == -99 ) {
-				return wfMessage( 'bs-ns_all' )->plain();
+				return wfMessage( 'bs-ns_all' )->text();
 			}
 		}
 
@@ -217,7 +220,7 @@ class BsNamespaceHelper {
 					$aValidNamespaceIntIndexes[] = $vAmbiguousNS;
 				}
 			} else {
-				if ( $vAmbiguousNS == wfMessage( 'bs-ns_main' )->plain()
+				if ( $vAmbiguousNS == wfMessage( 'bs-ns_main' )->text()
 					|| strcmp( $vAmbiguousNS, "main" ) === 0 ) {
 					$iNamespaceIdFromText = 0;
 				} elseif ( $vAmbiguousNS == '' ) {
@@ -285,7 +288,7 @@ class BsNamespaceHelper {
 			->getPermissionManager()
 			->userCan(
 				$sPermission,
-				\RequestContext::getMain()->getUser(),
+				RequestContext::getMain()->getUser(),
 				$oDummyTitle
 			);
 	}

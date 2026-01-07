@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Bookshelf\ContextProvider;
 
-use TitleFactory;
+use MediaWiki\Title\TitleFactory;
 
 class SessionProvider extends QueryProvider {
 

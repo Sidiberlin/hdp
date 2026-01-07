@@ -2,18 +2,34 @@
 
 namespace MediaWiki\Extension\Forms\Target;
 
+use MediaWiki\Config\HashConfig;
 use MediaWiki\Extension\Forms\FormRevisionManager;
+use MediaWiki\Extension\Forms\ITarget;
 use MediaWiki\MediaWikiServices;
-use Status;
-use Title;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
 
 class FormDefinition extends JsonOnWikiPage {
 
 	/**
-	 * @return string
+	 * @param HashConfig $config
+	 * @return ITarget
 	 */
-	protected function getPageFormat() {
-		return ".form";
+	public static function factory( HashConfig $config ) {
+		if ( !$config->has( 'form' ) || !$config->has( 'title' ) ) {
+			return null;
+		}
+		$pageName = $config->get( 'title' );
+		if ( !str_ends_with( $pageName, '.form' ) ) {
+			$pageName .= '.form';
+		}
+		$title = MediaWikiServices::getInstance()->getTitleFactory()->newFromText( $pageName );
+		if ( !$title ) {
+			throw new \RuntimeException(
+				'Invalid title ' . $config->get( 'title' ) . ' for form target'
+			);
+		}
+		return new static( $config->get( 'form' ), $title );
 	}
 
 	/**
@@ -25,15 +41,10 @@ class FormDefinition extends JsonOnWikiPage {
 		$this->data = $formsubmittedData;
 		$this->summary = $summary;
 
-		if ( !$this->exists ) {
-			$this->parsePageName();
-		}
-
 		if ( !$this->checkPermissions() ) {
-			return \Status::newFatal( 'badaccess-group0' );
+			return Status::newFatal( 'badaccess-group0' );
 		}
 
-		$this->addPageNameToData();
 		$saveStatus = $this->saveToPage();
 		if ( $saveStatus->isGood() ) {
 			$this->insertRev( $saveStatus->getValue() );

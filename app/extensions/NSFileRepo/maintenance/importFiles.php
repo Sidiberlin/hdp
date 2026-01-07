@@ -9,9 +9,13 @@
  * A file 'ABC_My_File.png' will be uploaded to the wiki as 'ABC:My File.png'
  */
 
-require_once dirname( dirname( dirname( __DIR__ ) ) ) . '/maintenance/Maintenance.php';
+use MediaWiki\MainConfigNames;
+use MediaWiki\Maintenance\Maintenance;
+use MediaWiki\Specials\SpecialUpload;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
-use MediaWiki\MediaWikiServices;
+require_once dirname( __DIR__, 3 ) . '/maintenance/Maintenance.php';
 
 class ImportFiles extends Maintenance {
 
@@ -78,8 +82,9 @@ class ImportFiles extends Maintenance {
 	 * @return array
 	 */
 	public function getFileList() {
-		global $wgFileExtensions;
-		$fileExtensions = array_map( 'strtolower', $wgFileExtensions );
+		$fileExtensions = array_map( 'strtolower',
+			$this->getConfig()->get( MainConfigNames::FileExtensions )
+		);
 
 		$realPath = realPath( $this->src );
 		$this->output( 'Fetching file list from "' . $realPath . '"' );
@@ -96,7 +101,7 @@ class ImportFiles extends Maintenance {
 			}
 			if ( !empty( $fileExtensions ) ) {
 				$fileExt = strtolower( $file->getExtension() );
-				if ( !in_array( $fileExt,  $fileExtensions ) ) {
+				if ( !in_array( $fileExt, $fileExtensions ) ) {
 					continue;
 				}
 			}
@@ -128,7 +133,7 @@ class ImportFiles extends Maintenance {
 	 */
 	public function processFile( $file ) {
 		$filename = $file->getFileName();
-		$services = MediaWikiServices::getInstance();
+		$services = $this->getServiceContainer();
 
 		// NSFileRep: Use the text till first '_' as namespace
 		$pos = strpos( $filename, '_' );
@@ -171,7 +176,11 @@ class ImportFiles extends Maintenance {
 			$publishOptions = [];
 			$handler = MediaHandler::getHandler( $props['mime'] );
 			if ( $handler ) {
-				$metadata = \Wikimedia\AtEase\AtEase::quietCall( 'unserialize', $props['metadata'] );
+
+				$metadata = $props['metadata'];
+				if ( !is_array( $metadata ) ) {
+					$metadata = \Wikimedia\AtEase\AtEase::quietCall( 'unserialize', $metadata );
+				}
 
 				$publishOptions['headers'] = $handler->getContentHeaders( $metadata );
 			} else {

@@ -2,9 +2,9 @@
 
 namespace BlueSpice\Discovery\SkinSlotRenderer;
 
+use MediaWiki\Html\TemplateParser;
 use MWStake\MediaWiki\Component\CommonUserInterface\IComponent;
 use MWStake\MediaWiki\Component\CommonUserInterface\ITabPanel;
-use TemplateParser;
 
 abstract class TabPanelSkinSlotRendererBase extends ExtendedSkinSlotRendererBase {
 

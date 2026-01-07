@@ -2,9 +2,9 @@
 	"@metadata": {
 		"authors": [
 			"D41D8CD98F",
+			"Lakejason0",
 			"Looong",
-			"Yfdyh000",
-			"Lakejason0"
+			"Yfdyh000"
 		]
 	},
 	"loops-desc": "执行循环的解析器函数",

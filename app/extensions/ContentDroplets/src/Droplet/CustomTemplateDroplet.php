@@ -2,9 +2,9 @@
 
 namespace MediaWiki\Extension\ContentDroplets\Droplet;
 
-use FormatJson;
-use Message;
-use RawMessage;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
 
 class CustomTemplateDroplet extends TemplateDroplet {
 

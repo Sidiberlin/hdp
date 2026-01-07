@@ -2,27 +2,25 @@
 
 namespace BlueSpice\QrCode\Tag;
 
-use BlueSpice\DynamicFileDispatcher\Params;
-use BlueSpice\DynamicFileDispatcher\UrlBuilder;
-use BlueSpice\QrCode\DynamicFileDispatcher\QrCode as DynamicFileDispatcherQrCode;
 use BlueSpice\QrCode\Tag\QrCode as TagQrCode;
 use BlueSpice\Tag\Handler;
-use Html;
-use Parser;
-use PPFrame;
-use RequestContext;
-use TitleFactory;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Title\TitleFactory;
+use MWStake\MediaWiki\Component\DynamicFileDispatcher\DynamicFileDispatcherFactory;
 
 class QrCodeHandler extends Handler {
 
 	/** @var RequestContext */
-	private $context = null;
+	private $context;
 
 	/** @var TitleFactory */
-	private $titleFactory = null;
+	private $titleFactory;
 
-	/** @var UrlBuilder */
-	private $urlBuilder = null;
+	/** @var DynamicFileDispatcherFactory */
+	private $dfdFactory;
 
 	/**
 	 * @param string $processedInput
@@ -31,14 +29,16 @@ class QrCodeHandler extends Handler {
 	 * @param PPFrame $frame
 	 * @param RequestContext $context
 	 * @param TitleFactory $titleFactory
-	 * @param UrlBuilder $urlBuilder
+	 * @param DynamicFileDispatcherFactory $dfdFactory
 	 */
 	public function __construct( $processedInput, array $processedArgs, Parser $parser,
-		PPFrame $frame, RequestContext $context, TitleFactory $titleFactory, $urlBuilder ) {
+		PPFrame $frame, RequestContext $context, TitleFactory $titleFactory,
+		DynamicFileDispatcherFactory $dfdFactory
+	) {
 		parent::__construct( $processedInput, $processedArgs, $parser, $frame );
 		$this->context = $context;
 		$this->titleFactory = $titleFactory;
-		$this->urlBuilder = $urlBuilder;
+		$this->dfdFactory = $dfdFactory;
 	}
 
 	/**
@@ -63,12 +63,11 @@ class QrCodeHandler extends Handler {
 
 		$altText = $this->context->msg( 'bs-qr-code-alt-text', $title->getText() );
 
-		$url = $this->urlBuilder->build( new Params( [
-			Params::MODULE => DynamicFileDispatcherQrCode::MODULE_NAME,
-			DynamicFileDispatcherQrCode::PAGENAME => $title->getPrefixedText(),
-			DynamicFileDispatcherQrCode::QUERY => $query,
-			DynamicFileDispatcherQrCode::SIZE => $size,
-		] ) );
+		$url = $this->dfdFactory->getUrl( 'qrcode', [
+			'pagename' => $title->getPrefixedText(),
+			'query' => $query,
+			'size' => $size,
+		] );
 
 		$img = Html::element( 'img', [ 'src' => $url, 'alt' => $altText, 'class' => 'qrCodeImg' ] );
 		if ( $desc === '' ) {

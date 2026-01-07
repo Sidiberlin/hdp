@@ -2,15 +2,17 @@
 
 namespace MediaWiki\Extension\MenuEditor\Node;
 
+use MediaWiki\Title\TitleFactory;
+
 class WikiLink extends TwoFoldLinkSpec {
 	/**
 	 * @param int $level
 	 * @param string $target
 	 * @param string $label
 	 * @param string $originalWikitext
-	 * @param \TitleFactory $titleFactory
+	 * @param TitleFactory $titleFactory
 	 */
-	public function __construct( int $level, $target, $label, $originalWikitext, \TitleFactory $titleFactory ) {
+	public function __construct( int $level, $target, $label, $originalWikitext, TitleFactory $titleFactory ) {
 		parent::__construct( $target, $label, $originalWikitext, $titleFactory, $level );
 	}
 

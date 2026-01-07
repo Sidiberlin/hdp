@@ -1,6 +1,8 @@
 <?php
 
 use BlueSpice\Renderer\Params;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 /**
  * @deprecated since 4.2.2 - use CommonWebAPIs REST api instead
@@ -37,9 +39,9 @@ class BSApiUserStore extends BSApiExtJSStoreBase {
 		}
 
 		$this->aBlocks = [];
-		$blocksRes = $dbr->select( 'ipblocks', '*', '', __METHOD__ );
+		$blocksRes = $dbr->select( 'block_target', '*', '', __METHOD__ );
 		foreach ( $blocksRes as $row ) {
-			$this->aBlocks[$row->ipb_user] = $row->ipb_address;
+			$this->aBlocks[$row->bt_user] = $row->bt_user_text;
 		}
 
 		// TODO: It would be very cool to have the permissions as a filterable

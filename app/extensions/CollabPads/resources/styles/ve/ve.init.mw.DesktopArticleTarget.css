@@ -54,7 +54,6 @@
 	cursor: pointer;
 }
 
-/* stylelint-disable-next-line selector-class-pattern */
 .ve-init-mw-desktopArticleTarget .redirectMsg a:hover {
 	text-decoration: none;
 }
@@ -62,7 +61,7 @@
 /*!
  * Increase z-index of surface container so it appears above the debug bar
  */
-.ve-init-mw-desktopArticleTarget #bodyContent { /* stylelint-disable-line selector-max-id */
+.ve-init-mw-desktopArticleTarget #bodyContent {
 	z-index: 1;
 }
 
@@ -71,7 +70,6 @@
 	margin: 1em 0 0.5em 0;
 }
 
-/* stylelint-disable declaration-no-important */
 .ve-ui-init-desktopArticleTarget-sectionTitle .oo-ui-inputWidget-input {
 	padding: 0 !important;
 	border: 0 !important;
@@ -79,4 +77,3 @@
 	box-shadow: none !important;
 	line-height: inherit;
 }
-/* stylelint-enable declaration-no-important */

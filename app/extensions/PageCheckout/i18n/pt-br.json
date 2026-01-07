@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eduardoaddad"
+		]
+	},
+	"pagecheckout-desc": "Permite direitos exclusivos em uma página para um usuário",
+	"pagecheckout-error-no-title": "Título inválido",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "Usuário",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename": "Nome da página",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-force": "Forçar?",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "Usuário",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Nome da página"
+}

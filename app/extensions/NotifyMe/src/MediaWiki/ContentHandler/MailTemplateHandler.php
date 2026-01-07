@@ -2,9 +2,9 @@
 
 namespace MediaWiki\Extension\NotifyMe\MediaWiki\ContentHandler;
 
+use MediaWiki\Content\TextContentHandler;
 use MediaWiki\Extension\NotifyMe\MediaWiki\Action\EditMailTemplateAction;
 use MediaWiki\Extension\NotifyMe\MediaWiki\Content\MailTemplate;
-use TextContentHandler;
 
 class MailTemplateHandler extends TextContentHandler {
 	/**

@@ -3,7 +3,8 @@
 		"authors": [
 			"BaRaN6161 TURK",
 			"Hedda",
-			"Mirzali"
+			"Mirzali",
+			"Sakblue"
 		]
 	},
 	"bs-rating-extension-description": "Bir derecelendirme sistemi sağlar",
@@ -29,12 +30,11 @@
 	"bs-rating-specialrating-titleTitle": "Başlık",
 	"bs-rating-specialrating-titleRating": "Derecelendirme",
 	"bs-rating-specialrating-titleVotes": "Derecelendirme sayısı",
-	"apihelp-bs-rating-tasks-description": "Uzantı değerlendirmesi için genel görevleri yürütür",
-	"apihelp-bs-rating-store-description": "Maddeler derecelendirmesi sunar",
+	"apihelp-bs-rating-store-summary": "Maddeler derecelendirmesi sunar",
 	"bs-rating-nsm-label": "Derecelendirme",
 	"bs-rating-nsm-label-recommendations": "Öneriler",
 	"apihelp-bs-rating-tasks-summary": "Derecelendirme uzantısı için genel görevleri yürütür",
 	"apihelp-bs-ratingarticle-store-summary": "Maddeler için derecelendirme sunar",
 	"apihelp-bs-ratingarticlelike-store-summary": "Maddeler için öneriler sunar",
-	"apihelp-bs-rating-store-summary": "Maddeler derecelendirmesi sunar"
+	"bs-rating-button-name": "Derecelendirme"
 }

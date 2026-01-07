@@ -12,14 +12,10 @@
 	"bs-authors-profileimage": "صورة الملف الشخصي",
 	"bs-authors-profileimage-change": "تغيير صورة الملف الشخصي",
 	"bs-authors-show-all-authors": "المزيد من الكتاب المتاحين",
-	"bs-authors-pref-show": "عرض المؤلفين",
-	"bs-authors-switch-description": "يخفي المؤلفين على هذه الصفحة.",
 	"bs-authors-navigation-link-title": "مؤلفو هذه الصفحة",
 	"bs-authors-navigation-link-text": "المؤلفون",
-	"bs-authors-flyout-title": "مؤلفو هذه الصفحة",
-	"bs-authors-author-type-originator": "المؤلف الأصلي",
-	"bs-authors-author-type-editor": "محرر",
 	"apihelp-bs-pageauthors-store-summary": "سرد جميع مؤلفي الصفحة المتوفرة في السياق",
 	"bs-authors-info-dialog": "مؤلفو هذه الصفحة",
-	"bs-authors-pref-show-help": "يعرض محرري الصفحة على معلومات الصفحة ضمن أدوات إدارة الجودة."
+	"bs-authors-info-dialog-grid-column-author": "المؤلف",
+	"bs-authors-info-dialog-grid-column-type": "نوع المؤلف"
 }

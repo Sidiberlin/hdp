@@ -29,12 +29,10 @@
 	"bs-rating-specialrating-titleTitle": "Назва",
 	"bs-rating-specialrating-titleRating": "Рейтинг",
 	"bs-rating-specialrating-titleVotes": "Кількість оцінок",
-	"apihelp-bs-rating-tasks-description": "Виконує звичайні завдання для розширення Рейтинг",
-	"apihelp-bs-rating-store-description": "Додає рейтинги для статей",
+	"apihelp-bs-rating-store-summary": "Додає рейтинги для статей",
 	"bs-rating-nsm-label": "Рейтинг",
 	"bs-rating-nsm-label-recommendations": "Рекомендації",
 	"apihelp-bs-rating-tasks-summary": "Виконує звичайні завдання для розширення Рейтинг",
 	"apihelp-bs-ratingarticle-store-summary": "Додає рейтинги для статей",
-	"apihelp-bs-ratingarticlelike-store-summary": "Додає рекомендації до статей",
-	"apihelp-bs-rating-store-summary": "Додає рейтинги для статей"
+	"apihelp-bs-ratingarticlelike-store-summary": "Додає рекомендації до статей"
 }

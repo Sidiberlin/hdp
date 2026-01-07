@@ -2,25 +2,26 @@
 
 namespace SMW\Maintenance;
 
+use MediaWiki\Maintenance\Maintenance;
 use Onoi\MessageReporter\MessageReporter;
-use SMW\Services\ServicesFactory as ApplicationFactory;
-use SMW\SQLStore\SQLStore;
-use SMW\DIWikiPage;
 use SMW\DIProperty;
+use SMW\Services\ServicesFactory as ApplicationFactory;
 use SMW\Setup;
-use Title;
+use SMW\SQLStore\SQLStore;
 
 $basePath = getenv( 'MW_INSTALL_PATH' ) !== false ? getenv( 'MW_INSTALL_PATH' ) : __DIR__ . '/../../..';
 
+// @codeCoverageIgnoreStart
 require_once $basePath . '/maintenance/Maintenance.php';
+// @codeCoverageIgnoreEnd
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.1
  *
  * @author mwjames
  */
-class updateQueryDependencies extends \Maintenance {
+class updateQueryDependencies extends Maintenance {
 
 	/**
 	 * @var MessageReporter
@@ -50,7 +51,6 @@ class updateQueryDependencies extends \Maintenance {
 	 * @param string $message
 	 */
 	public function reportMessage( $message ) {
-
 		if ( $this->messageReporter !== null ) {
 			return $this->messageReporter->reportMessage( $message );
 		}
@@ -62,7 +62,6 @@ class updateQueryDependencies extends \Maintenance {
 	 * @see Maintenance::execute
 	 */
 	public function execute() {
-
 		if ( !Setup::isEnabled() ) {
 			$this->dieMessage(
 				"\nYou need to have SMW enabled in order to run the maintenance script!\n"
@@ -117,7 +116,6 @@ class updateQueryDependencies extends \Maintenance {
 	}
 
 	private function runUpdate() {
-
 		$applicationFactory = ApplicationFactory::getInstance();
 		$store = $applicationFactory->getStore( SQLStore::class );
 
@@ -158,15 +156,16 @@ class updateQueryDependencies extends \Maintenance {
 		$this->reportMessage( "\n   ... found $expected entities ..." );
 		$this->reportMessage( "\n" );
 
+		$titleFactory = $this->getServiceContainer()->getTitleFactory();
 		foreach ( $res as $row ) {
 			$i++;
 
 			$this->reportMessage(
-				"\r". sprintf( "%-55s%s", "   ... update ...", sprintf( "%4.0f%% (%s/%s)", ( $i / $expected ) * 100, $i, $expected ) )
+				"\r" . sprintf( "%-55s%s", "   ... update ...", sprintf( "%4.0f%% (%s/%s)", ( $i / $expected ) * 100, $i, $expected ) )
 			);
 
 			$updateJob = $jobFactory->newUpdateJob(
-				Title::makeTitleSafe( $row->smw_namespace, $row->smw_title ),
+				$titleFactory->makeTitleSafe( $row->smw_namespace, $row->smw_title ),
 				[
 					'origin' => 'updateQueryDependencies.php'
 				]
@@ -182,5 +181,7 @@ class updateQueryDependencies extends \Maintenance {
 
 }
 
-$maintClass = 'SMW\Maintenance\updateQueryDependencies';
-require_once( RUN_MAINTENANCE_IF_MAIN );
+// @codeCoverageIgnoreStart
+$maintClass = updateQueryDependencies::class;
+require_once RUN_MAINTENANCE_IF_MAIN;
+// @codeCoverageIgnoreEnd

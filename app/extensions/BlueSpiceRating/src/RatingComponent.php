@@ -3,7 +3,8 @@
 namespace BlueSpice\Rating;
 
 use BsArticleHelper;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\Literal;
 
 class RatingComponent extends Literal {

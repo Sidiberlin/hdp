@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\ContentDroplets;
 
-use Message;
+use MediaWiki\Message\Message;
 
 interface IDropletDescription {
 	/**

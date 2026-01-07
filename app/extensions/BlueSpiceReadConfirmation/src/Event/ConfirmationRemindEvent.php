@@ -3,10 +3,10 @@
 namespace BlueSpice\ReadConfirmation\Event;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
-use Message;
 use MWStake\MediaWiki\Component\Events\BotAgent;
-use Title;
 
 class ConfirmationRemindEvent extends ConfirmationRequestEvent {
 

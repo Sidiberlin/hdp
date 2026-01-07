@@ -57,7 +57,7 @@ collabpad.ui.LeaveSessionDialog.prototype.getActionProcess = function ( action )
  */
 collabpad.ui.LeaveSessionDialog.prototype.leave = function () {
 	const fullPageName = mw.config.get( 'wgPageName' );
-	const pageUrl = `${location.protocol}//${location.host}${location.pathname}?title=${fullPageName}`;
+	const pageUrl = `${ location.protocol }//${ location.host }${ location.pathname }?title=${ fullPageName }`;
 	// Redirect user to view page
 	location.href = pageUrl;
 

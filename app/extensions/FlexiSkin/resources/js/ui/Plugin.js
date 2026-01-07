@@ -21,27 +21,27 @@ flexiskin.ui.plugin.Plugin.prototype.getFlatList = function () {
 	this.labels = {};
 	this.actionCallbacks = {};
 
-	var flat = {};
+	const flat = {};
 
-	return $.extend( flat, this.parseFlat( this.controls ) );
+	return Object.assign( flat, this.parseFlat( this.controls ) );
 };
 
 flexiskin.ui.plugin.Plugin.prototype.parseFlat = function ( controls, groups ) {
 	groups = groups || [];
-	var result = {};
-	if ( $.type( controls ) !== 'object' ) {
+	let result = {};
+	if ( $.type( controls ) !== 'object' ) { // eslint-disable-line no-jquery/no-type
 		return result;
 	}
 
 	if ( controls.hasOwnProperty( 'items' ) ) {
 		result = $.extend( true, {}, result, this.getItemsForObject( controls.items, groups ) );
 	} else {
-		for ( var id in controls ) {
-			var subGroups = groups.concat( [] );
+		for ( const id in controls ) {
+			const subGroups = groups.concat( [] );
 			if ( !controls.hasOwnProperty( id ) ) {
 				continue;
 			}
-			if ( $.type( controls[ id ] ) !== 'object' ) {
+			if ( $.type( controls[ id ] ) !== 'object' ) { // eslint-disable-line no-jquery/no-type
 				continue;
 			}
 
@@ -64,28 +64,28 @@ flexiskin.ui.plugin.Plugin.prototype.parseFlat = function ( controls, groups ) {
 };
 
 flexiskin.ui.plugin.Plugin.prototype.getItemsForObject = function ( controls, groups ) {
-	var result = {};
-	for ( var itemId in controls ) {
+	let result = {};
+	for ( const itemId in controls ) {
 		if ( !controls.hasOwnProperty( itemId ) ) {
 			continue;
 		}
 
 		if ( controls[ itemId ] instanceof OO.ui.Widget ) {
-			result = $.extend( result, this.getWidgetForItem( controls[ itemId ], groups, itemId ) );
+			result = Object.assign( result, this.getWidgetForItem( controls[ itemId ], groups, itemId ) );
 			continue;
 		}
 
-		if ( $.type( controls[ itemId ] ) !== 'object' ) {
+		if ( $.type( controls[ itemId ] ) !== 'object' ) { // eslint-disable-line no-jquery/no-type
 			// Don't know what this is
 			continue;
 		}
 		if ( controls[ itemId ].hasOwnProperty( 'widget' ) ) {
 			this.addData( controls[ itemId ], itemId );
-			result = $.extend( result, this.getWidgetForItem( controls[ itemId ].widget, groups, itemId ) );
+			result = Object.assign( result, this.getWidgetForItem( controls[ itemId ].widget, groups, itemId ) );
 			continue;
 		}
 		groups.push( itemId );
-		result = $.extend( result, this.parseFlat( controls[ itemId ], groups ) );
+		result = Object.assign( result, this.parseFlat( controls[ itemId ], groups ) );
 	}
 
 	return result;
@@ -93,7 +93,7 @@ flexiskin.ui.plugin.Plugin.prototype.getItemsForObject = function ( controls, gr
 
 flexiskin.ui.plugin.Plugin.prototype.addData = function ( item, id ) {
 	if ( item.hasOwnProperty( 'label' ) ) {
-		var label = item.label;
+		const label = item.label;
 		if ( label ) {
 			this.labels[ id ] = label;
 		}
@@ -105,7 +105,7 @@ flexiskin.ui.plugin.Plugin.prototype.addData = function ( item, id ) {
 };
 
 flexiskin.ui.plugin.Plugin.prototype.getWidgetForItem = function ( widget, groups, itemId ) {
-	var result = {}, widgetData = {};
+	const result = {}, widgetData = {};
 	if ( this.labels.hasOwnProperty( itemId ) ) {
 		widgetData.label = this.labels[ itemId ];
 	}

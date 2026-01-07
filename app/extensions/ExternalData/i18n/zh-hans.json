@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Anterdc99",
 			"GuoPC",
 			"Hydra",
 			"Lakejason0",
@@ -16,9 +17,9 @@
 	},
 	"getdata": "获取数据",
 	"externaldata-desc": "允许从外部URL、数据库和其他来源检索结构化数据",
-	"externaldata-smw-needed": "错误：必须安装语义MediaWiki才能调用{{#store_external_table:}}。",
 	"externaldata-no-param-specified": "错误：未指定“$1”参数。",
 	"externaldata-param-type-error": "错误：参数$1必须是$2类型。",
+	"externaldata-processing-exception": "运行预处理器或后处理器时抛出异常：$1",
 	"externaldata-php-library-missing": "错误：缺少使用$2所需的PHP库$1。",
 	"external-data-no-suitable-connector": "错误：没有给该外部数据查询定义合适的数据来源",
 	"externaldata-throttled": "对$1调用在{{#time:c|@$2}}前受到速率限制。",
@@ -55,9 +56,10 @@
 	"externaldata-url-unknown-error": "从URL“$1”获取数据时出现未知错误。",
 	"externaldata-url-not-allowed": "此wiki不允许URL“$1”。",
 	"externaldata-caught-exception-soap": "创建SOAP客户端时捕获异常$1。",
-	"externaldata-parsing-html-failed": "无法解析HTML。",
+	"externaldata-parsing-html-failed": "无法解析HTML：\n $1",
 	"externaldata-caught-exception-parsing-html": "解析HTML时捕获异常。错误消息是“$1”。",
 	"externaldata-error-converting-css-to-xpath": "把CSS选择器$1转换为XPath时捕获异常：$2",
+	"externaldata-jsonpath-error": "非法的 JSONPath$1",
 	"externaldata-missing-library": "缺少使用解析器函数“$2”或Lua函数<code>$3</code>所需的库$1。",
 	"externaldata-undefined-file": "文件$1未定义。",
 	"externaldata-missing-file": "文件$1丢失。",
@@ -75,5 +77,5 @@
 	"externaldata-no-local-variable": "错误：未设置本地变量“$1”。",
 	"externaldata-no-template": "错误：未指定模板。",
 	"externaldata-no-loop-body": "错误：第一个或第二个参数没有设置为循环体。",
-	"externaldata-getdata-badurl": "您必须在URL内指定页面名称，如“{{#Special:GetData}}/<页面名称>”。"
+	"externaldata-getdata-badurl": "您必须在URL内指定页面名称。如“{{#Special:GetData}}/页面名称”。"
 }

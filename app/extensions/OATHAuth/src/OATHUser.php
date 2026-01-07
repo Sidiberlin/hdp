@@ -18,7 +18,7 @@
 
 namespace MediaWiki\Extension\OATHAuth;
 
-use User;
+use MediaWiki\User\UserIdentity;
 
 /**
  * Class representing a user from OATH's perspective
@@ -26,32 +26,31 @@ use User;
  * @ingroup Extensions
  */
 class OATHUser {
-	/** @var User */
-	private $user;
+	private UserIdentity $user;
+	private int $centralId;
 
 	/** @var IAuthKey[] */
-	private $keys;
-
-	/**
-	 * @var ?IModule
-	 */
-	private $module;
+	private array $keys = [];
 
 	/**
 	 * Constructor. Can't be called directly. Use OATHUserRepository::findByUser instead.
-	 * @param User $user
-	 * @param IAuthKey[] $keys
+	 * @param UserIdentity $user
+	 * @param int $centralId
 	 */
-	public function __construct( User $user, array $keys = [] ) {
+	public function __construct( UserIdentity $user, int $centralId ) {
 		$this->user = $user;
-		$this->setKeys( $keys );
+		$this->centralId = $centralId;
+	}
+
+	public function getUser(): UserIdentity {
+		return $this->user;
 	}
 
 	/**
-	 * @return User
+	 * @return int The central ID of this user
 	 */
-	public function getUser() {
-		return $this->user;
+	public function getCentralId(): int {
+		return $this->centralId;
 	}
 
 	/**
@@ -76,45 +75,45 @@ class OATHUser {
 	/**
 	 * Get the key associated with this user.
 	 *
-	 * @return IAuthKey[]|array
+	 * @return IAuthKey[]
 	 */
-	public function getKeys() {
+	public function getKeys(): array {
 		return $this->keys;
 	}
 
 	/**
-	 * Useful for modules that operate on single-key premise,
-	 * as well as testing the key type, since first key is
-	 * necessarily the same type as others
-	 *
-	 * @return IAuthKey|null
+	 * @param string $moduleName As in IModule::getName().
+	 * @return IAuthKey[]
 	 */
-	public function getFirstKey() {
-		if ( !empty( $this->keys ) ) {
-			return $this->keys[0];
-		}
-		return null;
+	public function getKeysForModule( string $moduleName ): array {
+		return array_values(
+			array_filter(
+				$this->keys,
+				static fn ( IAuthKey $key ) => $key->getModule() === $moduleName
+			)
+		);
+	}
+
+	public function removeKey( IAuthKey $key ) {
+		$keyId = $key->getId();
+		$this->keys = array_values(
+			array_filter(
+				$this->keys,
+				static fn ( IAuthKey $key ) => $key->getId() !== $keyId
+			)
+		);
 	}
 
 	/**
-	 * Set the key associated with this user.
-	 *
-	 * @param IAuthKey[] $keys
+	 * @param string $moduleName As in IModule::getName()
 	 */
-	public function setKeys( array $keys = [] ) {
-		$this->keys = [];
-		foreach ( $keys as $key ) {
-			$this->addKey( $key );
-		}
-	}
-
-	/**
-	 * Removes all keys associated with the user
-	 * Warning: This only removes the keys in memory,
-	 * changes need to be persisted
-	 */
-	public function clearAllKeys() {
-		$this->keys = [];
+	public function removeKeysForModule( string $moduleName ): void {
+		$this->keys = array_values(
+			array_filter(
+				$this->keys,
+				static fn ( IAuthKey $key ) => $key->getModule() !== $moduleName
+			)
+		);
 	}
 
 	/**
@@ -123,10 +122,6 @@ class OATHUser {
 	 * @param IAuthKey $key
 	 */
 	public function addKey( IAuthKey $key ) {
-		if ( !$this->keyTypeCorrect( $key ) ) {
-			return;
-		}
-
 		$this->keys[] = $key;
 	}
 
@@ -134,18 +129,22 @@ class OATHUser {
 	 * Gets the module instance associated with this user
 	 *
 	 * @return IModule|null
+	 * @deprecated Use {@link IAuthKey::getModule()} instead
 	 */
 	public function getModule() {
-		return $this->module;
+		// wfDeprecated( 'OATHUser::getModule()', '1.44', 'OATHAuth' );
+		if ( !$this->keys ) {
+			return null;
+		}
+		$key = $this->keys[0];
+		return OATHAuthServices::getInstance()->getModuleRegistry()->getModuleByKey( $key->getModule() );
 	}
 
 	/**
-	 * Sets the module instance associated with this user
-	 *
-	 * @param IModule|null $module
+	 * @return bool Whether this user has two-factor authentication enabled or not
 	 */
-	public function setModule( IModule $module = null ) {
-		$this->module = $module;
+	public function isTwoFactorAuthEnabled(): bool {
+		return count( $this->getKeys() ) >= 1;
 	}
 
 	/**
@@ -153,21 +152,5 @@ class OATHUser {
 	 */
 	public function disable() {
 		$this->keys = [];
-		$this->module = null;
-	}
-
-	/**
-	 * All keys set for the user must be of the same type
-	 *
-	 * @param IAuthKey $key
-	 * @return bool
-	 */
-	private function keyTypeCorrect( IAuthKey $key ) {
-		foreach ( $this->keys as $keyToTest ) {
-			if ( get_class( $keyToTest ) !== get_class( $key ) ) {
-				return false;
-			}
-		}
-		return true;
 	}
 }

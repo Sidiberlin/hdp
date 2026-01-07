@@ -56,7 +56,6 @@
 	"bs-readconfirmation-dlg-label-page": "Leesbevestiging voor pagina \"$1\"",
 	"bs-readconfirmation-view-confirmations": "Bekijk leesbevestigingen",
 	"bs-readconfirmation-api-confirmation-error-no-valid-title": "Geen geldige paginatitel beschikbaar",
-	"bs-readconfirmation-api-confirmation-error-no-read-confirmation-active": "Leesbevestiging niet geactiveerd voor deze paginatitel",
 	"bs-readconfirmation-api-confirmation-error-no-assignment-title": "Geen geldige titel voor paginatoewijzingen beschikbaar",
 	"bs-readconfirmation-api-confirmation-error-no-read-permission": "Geen toestemming om leesbevestigingen te bekijken",
 	"bs-readconfirmation-page-info-read-confirmations": "Bevestigingen lezen",

@@ -2,7 +2,11 @@
 
 namespace BlueSpice\Html\Descriptor;
 
-use RawMessage;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 
 class TitleLink extends LinkBase {
 
@@ -13,15 +17,15 @@ class TitleLink extends LinkBase {
 
 	/**
 	 *
-	 * @var \Title
+	 * @var Title
 	 */
 	protected $title = null;
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
-	 * @param \Title|null $title
+	 * @param IContextSource $context
+	 * @param Config $config
+	 * @param Title|null $title
 	 */
 	public function __construct( $context, $config, $title = null ) {
 		parent::__construct( $context, $config );
@@ -34,7 +38,7 @@ class TitleLink extends LinkBase {
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabel() {
 		$label = $this->title->getPrefixedText();
@@ -53,7 +57,7 @@ class TitleLink extends LinkBase {
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getTooltip() {
 		return new RawMessage( $this->title->getPrefixedText() );

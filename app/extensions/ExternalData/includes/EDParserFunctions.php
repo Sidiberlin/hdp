@@ -1,6 +1,4 @@
 <?php
-use SMW\ParserFunctionFactory;
-use SMW\ParserParameterProcessor;
 
 /**
  * Class for handling the parser functions for External Data.
@@ -42,8 +40,12 @@ class EDParserFunctions {
 	 * @return string Wrapped error message.
 	 */
 	public static function formatErrorMessages( array $errors ) {
-		$messages = array_map( static function ( array $error ) {
-			return wfMessage( $error['code'], $error['params'] )->inContentLanguage()->text();
+		$messages = array_map( static function ( $error ) {
+			if ( is_array( $error ) && $error['code'] ) {
+				return wfMessage( $error['code'], $error['params'] )->inContentLanguage()->text();
+			} else {
+				return $error;
+			}
 		}, $errors );
 		return '<span class="error">' . implode( "<br />", $messages ) . '</span>';
 	}
@@ -70,17 +72,20 @@ class EDParserFunctions {
 	/**
 	 * Actually get the external data.
 	 *
-	 * @param ?Title $title Page title.
+	 * @param Title $title Page title.
 	 * @param string|null $name Parser function name.
 	 * @param array $args Parser function parameters ($parser not included).
 	 *
 	 * @return string|array|null Return an array of values on success, an error message otherwise.
 	 */
-	private static function get( $title, $name, array $args ) {
+	private static function get( Title $title, ?string $name, array $args ) {
 		// Unset self::$values if the current page changed during this script run.
 		// Looks like it is relevant for maintenance scripts.
 		if ( $title ) {
 			self::clearValuesIfNecessary( $title->getText() );
+		} else {
+			// Hopefully, this code is never reached.
+			$title = Title::newMainPage();
 		}
 
 		$connector = EDConnectorBase::getConnector( $name, self::parseParams( $args ), $title );
@@ -103,13 +108,13 @@ class EDParserFunctions {
 	 * Also includes all the boilerplate code that processes parameters,
 	 * saves external values, etc.
 	 *
-	 * @param ?Title $title Parser object.
+	 * @param Title $title Parser object.
 	 * @param string|null $name Parser function name.
 	 * @param array $args Parser function parameters ($parser not included).
 	 *
 	 * @return string|null Return null on success, an error message otherwise.
 	 */
-	public static function fetch( $title, $name, array $args ) {
+	public static function fetch( Title $title, ?string $name, array $args ) {
 		$result = self::get( $title, $name, $args );
 		if ( is_array( $result ) ) {
 			// An array of values, not an error message.
@@ -185,16 +190,16 @@ class EDParserFunctions {
 	/**
 	 * Emulate {{#get_external_data:}} call.
 	 * @param array &$args
-	 * @param ?Title $title
+	 * @param Title $title
 	 * @return null|string
 	 */
 	private static function emulateGetExternalData( array &$args, $title ) {
-		if ( isset( $args['source'] ) || isset( $args['url'] ) || isset( $args['text'] ) ) {
+		if ( EDConnectorBase::sourceSet( $args ) ) {
 			// If {{#for_external_table:}} is called in standalone mode, there is no shared context,
 			// therefore, emulate {{#clear_external_data:}}.
 			self::actuallyClearExternalData( [] );
 			// Emulate {{#get_external_data:}}.
-			$result = self::fetch( $title, null, $args );
+			$result = self::fetch( $title, 'get_external_data', $args );
 			if ( $result !== null ) {
 				// There have been errors while fetching data.
 				return $result;
@@ -219,7 +224,8 @@ class EDParserFunctions {
 			array_shift( $args );
 		}
 		$args['data'] ??= "$variable=$variable";
-		$fetched = self::emulateGetExternalData( $args, $parser->getTitle() );
+		$title = method_exists( 'Parser', 'getPage' ) ? $parser->getPage() : $parser->getTitle();
+		$fetched = self::emulateGetExternalData( $args, $title );
 		if ( $fetched ) {
 			// There is an error.
 			return $fetched;
@@ -263,7 +269,7 @@ class EDParserFunctions {
 	 * @param array|string $value
 	 * @return string
 	 */
-	private static function serialise( $value ) {
+	private static function serialise( $value ): string {
 		if ( is_array( $value ) ) {
 			$serialised = [];
 			foreach ( $value as $key => $val ) {
@@ -281,7 +287,7 @@ class EDParserFunctions {
 	 * @param string $body
 	 * @return string
 	 */
-	private static function actuallyForExternalTableFirst( $body ) {
+	private static function actuallyForExternalTableFirst( $body ): string {
 		$macros = self::getMacros( $body );
 		$num_loops = self::numLoops( array_map( static function ( $set ) {
 			return $set['var'];
@@ -308,17 +314,23 @@ class EDParserFunctions {
 	 * Actually render the #for_external_table parser function. The "template" is passed as the second parameter.
 	 * @param Parser $parser
 	 * @param PPNode_Hash_Tree $tree
-	 * @param array $defaults
+	 * @param array $defaults Default values of {{{…|def}}} ED variables.
+	 * @param array $template_args Arguments {{{…}}} that may have come from outer template.
 	 * @return string
 	 */
-	private static function actuallyForExternalTableSecond( Parser $parser, PPNode_Hash_Tree $tree, array $defaults ) {
+	private static function actuallyForExternalTableSecond(
+		Parser $parser,
+		PPNode_Hash_Tree $tree,
+		array $defaults,
+		array $template_args
+	): string {
 		$variables = array_keys( self::getAllValues() );
 		$num_loops = self::numLoops( $variables );
 		$loops = [];
 		for ( $loop = 0; $loop < $num_loops; $loop++ ) {
 			$row = array_combine( $variables, array_map( static function ( $var ) use ( $loop, $defaults ){
-				return self::serialise( self::getIndexedValue( $var, $loop, $defaults[$var] ) );
-			}, $variables ) );
+				return self::serialise( self::getIndexedValue( $var, $loop, $defaults[$var] ?? '' ) );
+			}, $variables ) ) + $template_args;
 			$row_as_frame = $parser->getPreprocessor()->newCustomFrame( $row );
 			$loops[] = $row_as_frame->expand( $tree ); // substitution of {{{var}}} happens here.
 		}
@@ -332,7 +344,7 @@ class EDParserFunctions {
 	 * @param array $args
 	 * @return string
 	 */
-	public static function doForExternalTable( Parser $parser, PPFrame $frame, array $args ) {
+	public static function doForExternalTable( Parser $parser, PPFrame $frame, array $args ): string {
 		if ( !$args[0] ) {
 			// {{#for_external_table:|loop body}}
 			if ( !isset( $args[1] ) ) {
@@ -369,7 +381,8 @@ class EDParserFunctions {
 				$data_params['data'] = $variables;
 			}
 
-			$fetched = self::emulateGetExternalData( $data_params, $parser->getTitle() );
+			$title = method_exists( 'Parser', 'getPage' ) ? $parser->getPage() : $parser->getTitle();
+			$fetched = self::emulateGetExternalData( $data_params, $title );
 			if ( $fetched ) {
 				// There is an error.
 				return $fetched;
@@ -377,7 +390,7 @@ class EDParserFunctions {
 		}
 
 		return $frame->expand( $second
-			? self::actuallyForExternalTableSecond( $parser, $body, $defaults )
+			? self::actuallyForExternalTableSecond( $parser, $body, $defaults, $frame->getArguments() )
 			: self::actuallyForExternalTableFirst( $body )
 		);
 	}
@@ -407,7 +420,7 @@ class EDParserFunctions {
 	 * Actually display external table.
 	 *
 	 * @param array $args
-	 * @param ?Title $title
+	 * @param Title $title
 	 * @return array
 	 */
 	private static function actuallyDisplayExternalTable( array $args, $title ): array {
@@ -477,7 +490,8 @@ class EDParserFunctions {
 		$params = func_get_args();
 		array_shift( $params ); // we already know the $parser ...
 		$args = self::parseParams( $params ); // parse params into name-value pairs
-		$result = self::actuallyDisplayExternalTable( $args, $parser->getTitle() );
+		$title = method_exists( 'Parser', 'getPage' ) ? $parser->getPage() : $parser->getTitle();
+		$result = self::actuallyDisplayExternalTable( $args, $title );
 		if ( isset( $result['error'] ) ) {
 			// Message is created here rather than in EDParserFunctions::actuallyDisplayExternalTable()
 			//      to clear that method from MediaWiki installation-dependent code and make it testable.
@@ -501,7 +515,8 @@ class EDParserFunctions {
 		array_shift( $params ); // we already know the $parser ...
 		$args = self::parseParams( $params ); // parse params into name-value pairs
 
-		$fetched = self::emulateGetExternalData( $args, $parser->getTitle() );
+		$title = method_exists( 'Parser', 'getPage' ) ? $parser->getPage() : $parser->getTitle();
+		$fetched = self::emulateGetExternalData( $args, $title );
 		if ( $fetched ) {
 			// There is an error.
 			return [ 'error' => $fetched ];
@@ -524,101 +539,6 @@ class EDParserFunctions {
 
 		// @phan-suppress-next-line PhanUndeclaredClassMethod Cargo is not necessarily installed.
 		return CargoDisplayFormat::formatArray( $parser, $values, $mappings, $args );
-	}
-
-	/**
-	 * Based on Semantic Internal Objects'
-	 * SIOSubobjectHandler::doSetInternal().
-	 * @param Parser $parser
-	 * @param string $back_property
-	 * @param array $params
-	 * @return string|null
-	 */
-	private static function callSubobject( Parser $parser, $back_property, array $params ) {
-		// This is a hack, since SMW's SMWSubobject::render() call is
-		// not meant to be called outside SMW. However, this seemed
-		// like the better solution than copying over all of that
-		// method's code. Ideally, a true public function can be
-		// added to SMW, that handles a subobject creation, that this
-		// code can then call.
-
-		$title = $parser->getTitle();
-		if ( $title ) {
-			$subobject_args = [ $parser ];
-			// Blank first argument, so that subobject ID will be
-			// an automatically-generated random number.
-			$subobject_args[1] = '';
-			// "main" property, pointing back to the page.
-
-			$main_page_name = $title->getText();
-			$main_page_namespace = $title->getNsText();
-			if ( $main_page_namespace !== '' ) {
-				$main_page_name = $main_page_namespace . ':' . $main_page_name;
-			}
-			$subobject_args[2] = $back_property . '=' . $main_page_name;
-
-			foreach ( $params as $property => $value ) {
-				$subobject_args[] = "$property=$value";
-			}
-
-			// SMW 1.9+
-			// @phan-suppress-next-line PhanUndeclaredClassMethod SMW is optional.
-			$instance = ParserFunctionFactory::newFromParser( $parser )->newSubobjectParserFunction( $parser );
-			// @phan-suppress-next-line PhanUndeclaredClassMethod SMW is optional.
-			return $instance->parse( new ParserParameterProcessor( $subobject_args ) );
-		}
-	}
-
-	/**
-	 * Render the #store_external_table parser function.
-	 * @param Parser $parser
-	 * @param string ...$params
-	 * @return string|null
-	 */
-	public static function doStoreExternalTable( Parser $parser, ...$params ) {
-		$pattern = '/{{{(?<var>[^|}]+)(\|(?<default>[^}]+))?}}}/';
-		$args = self::parseParams( $params );
-		$back_property = '';
-		if ( isset( $args[0] ) ) {
-			$back_property = $args[0];
-			unset( $args[0] );
-		}
-
-		$templates = [];
-		$variables = [];
-		$data_params = [];
-		foreach ( $args as $key => $value ) {
-			if ( preg_match( $pattern, $value, $matches ) ) {
-				$templates[$key] = $matches[0];
-				$variables[] = $matches['var'];
-			} else {
-				$data_params[$key] = $value;
-			}
-		}
-		$variables = array_unique( $variables );
-		if ( !isset( $data_params['data'] ) ) {
-			$data_params['data'] = implode( ',', array_map( static function ( $var ) {
-				return "$var=$var";
-			}, $variables ) );
-		}
-
-		$fetched = self::emulateGetExternalData( $data_params, $parser->getTitle() );
-		if ( $fetched ) {
-			// There is an error.
-			return $fetched;
-		}
-
-		$num_loops = self::numLoops( $variables );
-		for ( $i = 0; $i < $num_loops; $i++ ) {
-			$params = [];
-			foreach ( $templates as $property => $template ) {
-				$params[$property] = preg_replace_callback( $pattern, static function ( array $matches ) use ( $i ) {
-					return self::getIndexedValue( $matches['var'], $i, null ) ?: $matches['default'];
-				}, $template );
-			}
-			self::callSubobject( $parser, $back_property, $params );
-		}
-		return null;
 	}
 
 	/**

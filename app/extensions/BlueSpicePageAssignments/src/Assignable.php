@@ -1,11 +1,14 @@
 <?php
 namespace BlueSpice\PageAssignments;
 
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+
 abstract class Assignable implements IAssignable {
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $config = null;
 
@@ -17,14 +20,14 @@ abstract class Assignable implements IAssignable {
 
 	/**
 	 *
-	 * @var \IContextSource
+	 * @var IContextSource
 	 */
 	protected $context = null;
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param string $type
 	 */
 	public function __construct( $context, $config, $type ) {

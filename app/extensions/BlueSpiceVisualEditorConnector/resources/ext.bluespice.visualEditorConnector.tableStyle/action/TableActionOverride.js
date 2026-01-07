@@ -1,13 +1,13 @@
-var orig = ve.ui.TableAction.prototype.create;
+var orig = ve.ui.TableAction.prototype.create; // eslint-disable-line no-var
 
 ve.ui.TableAction.prototype.create = function ( options ) {
-	var optionsDialog = new bs.vec.ui.dialog.CreateTableOptions(),
+	const optionsDialog = new bs.vec.ui.dialog.CreateTableOptions(),
 		preselection = ve.init.target.surface.model.selection;
 
-	var windowManager = new OO.ui.WindowManager();
+	const windowManager = new OO.ui.WindowManager();
 	$( document.body ).append( windowManager.$element );
 	windowManager.addWindows( [ optionsDialog ] );
-	windowManager.openWindow( optionsDialog ).closed.done( function( data ) {
+	windowManager.openWindow( optionsDialog ).closed.done( ( data ) => {
 		if ( !data ) {
 			return;
 		}
@@ -21,5 +21,5 @@ ve.ui.TableAction.prototype.create = function ( options ) {
 		options.rows = parseInt( data.rows );
 		ve.init.target.surface.model.selection = preselection;
 		return orig.call( this, options );
-	}.bind( this ) );
+	} );
 };

@@ -3,8 +3,8 @@
 namespace BlueSpice\Discovery\SkinSlotRenderer;
 
 use BlueSpice\Discovery\CookieHandler;
-use IContextSource;
-use Message;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\AriaAttributesBuilder;
 use MWStake\MediaWiki\Component\CommonUserInterface\DataAttributesBuilder;
 use MWStake\MediaWiki\Component\CommonUserInterface\HtmlIdRegistry;
@@ -315,10 +315,10 @@ abstract class ExtendedSkinSlotRendererBase extends SkinSlotRendererBase {
 
 			if ( !$ariaString ) {
 				/*
-				* bs-discovery-tools-after-content-aria-label,
-				* bs-discovery-data-after-content-aria-label
+				* bs-discovery-tools-after-content-cnt-aria-label,
+				* bs-discovery-data-after-content-cnt-aria-label
 				*/
-				$ariaLabel = Message::newFromKey( "bs-discovery-$id-aria-label" );
+				$ariaLabel = Message::newFromKey( "bs-discovery-$id-cnt-aria-label" );
 				$ariaLabelString = ' aria-label="' . $ariaLabel->escaped() . '"';
 			}
 		}

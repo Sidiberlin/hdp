@@ -4,18 +4,6 @@
 			"Mehtab ahmed"
 		]
 	},
-	"bs-statistics-from": "کان",
-	"bs-statistics-mode": "موڊ",
-	"bs-statistics-month": "مھينو",
-	"bs-statistics-day": "ڏينھن",
-	"bs-statistics-list": "فھرست",
-	"bs-statistics-filters": "ڇاڻيون",
-	"bs-statistics-label-name": "نالو",
-	"bs-statistics-label-page": "صفحو",
-	"bs-statistics-diag-number-of-edits": "سنوارن جو انگ",
-	"bs-statistics-diag-edits-per-user": "سنوارون في صفحو",
-	"bs-statistics-label-count": "ڳاڻيٽو",
-	"bs-statistics-portlet-numberofedits": "سنوارن جو انگ",
 	"bs-statistics-aggregated-report-filter-category-multi": "زمرا",
 	"bs-statistics-aggregated-report-filter-date-start": "شروع ٿيڻ جي تاريخ",
 	"bs-statistics-aggregated-report-filter-date-end": "پڄاڻيءَ جي تاريخ",
@@ -26,6 +14,5 @@
 	"bs-statistics-aggregated-report-filter-namespaces": "نانءُپولارَ",
 	"bs-statistics-aggregated-report-filter-page": "صفحو",
 	"bs-statistics-aggregated-report-filter-user-multi": "واپرائيندڙَ",
-	"bs-statistics-ve-progressinspector-title": "اڳڀرائي",
-	"bs-statistics-filter-category": "زمرو"
+	"bs-statistics-ve-progressinspector-title": "اڳڀرائي"
 }

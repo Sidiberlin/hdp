@@ -30,8 +30,6 @@
 	"bs-countthings-tag-countusers-desc": "Mostra il numero di utenti registrati.",
 	"bs-countthings-tag-countfiles-desc": "Visualizza il numero di file nel wiki.",
 	"bs-countthings-tag-countcharacters-desc": "Genera metadati sul contenuto dell'articolo indicato. Il risultato è una casella informativa che può essere integrata nell'articolo. Con il parametro \"mode\" è possibile visualizzare diversi tipi di informazioni.",
-	"bs-countthings-tag-countcharacters-example-1": "Numero di parole",
-	"bs-countthings-tag-countcharacters-example-2": "Numero di caratteri",
 	"bs-countthings-droplet-articles-name": "Numero di pagine",
 	"bs-countthings-droplet-articles-description": "Mostra il numero di pagine",
 	"bs-countthings-droplet-characters-name": "Numero di caratteri",

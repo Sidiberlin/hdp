@@ -2,9 +2,9 @@
 	"@metadata": {
 		"authors": [
 			"Ajeje Brazorf",
+			"McDutchie",
 			"SPQRobin",
-			"Siebrand",
-			"McDutchie"
+			"Siebrand"
 		]
 	},
 	"widgets-desc": "Stelt wikibeheerders in staat naar eigen inzicht widgets aan de wiki toe te voegen door het bewerken van pagina's in de naamruimte {{ns:widget}}.\nDoor de gemeenschap ontwikkelde widgets zijn te vinden op [http://www.mediawikiwidgets.org/Main_Page MediaWikiWidgets.org]",
@@ -14,6 +14,7 @@
 	"grouppage-widgeteditor": "{{ns:project}}:Widgetbewerkers",
 	"action-editwidgets": "widgets aan te maken en te bewerken",
 	"right-editwidgets": "[https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:Widgets Widgets] aanmaken en bewerken in de naamruimte <code>{{ns:widget}}</code>",
+	"grant-editwidgets": "Widgets maken en bewerken",
 	"widgets-config-useflaggedrevs": "Stel dit in op ‘true’ om de stabiele versie van de uitbreiding FlaggedRevs te gebruiken voor widgetbeveiliging",
 	"widgets-config-compiledir": "Een standaardmap instellen voor de opslag van gecompileerde sjablonen"
 }

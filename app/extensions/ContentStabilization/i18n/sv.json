@@ -29,7 +29,6 @@
 	"contentstabilization-pageinfoelement-pagestatus-is-first-unstable-title": "Första utkastsversion",
 	"contentstabilization-pageinfoelement-pagestatus-is-stable-text": "godkänd",
 	"contentstabilization-pageinfoelement-pagestatus-is-stable-title": "Godkänd version",
-	"contentstabilization-pageinfoelement-pagestatus-is-implicit-unstable-text": "ett utkast, på grund av ändringar i inkluderade resurser",
 	"contentstabilization-pageinfoelement-pagestatus-is-implicit-unstable-title": "Utkast på grund av ändringar i inkluderade resurser",
 	"contentstabilization-ui-approve-title": "Godkänd sida",
 	"contentstabilization-ui-approve-approve": "Godkänn",

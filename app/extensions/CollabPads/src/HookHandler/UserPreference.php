@@ -3,6 +3,7 @@
 namespace MediaWiki\Extension\CollabPads\HookHandler;
 
 use MediaWiki\Preferences\Hook\GetPreferencesHook;
+use MediaWiki\User\User;
 
 class UserPreference implements GetPreferencesHook {
 

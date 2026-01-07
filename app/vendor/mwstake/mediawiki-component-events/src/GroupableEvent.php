@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\Events;
 
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 
 interface GroupableEvent extends INotificationEvent {

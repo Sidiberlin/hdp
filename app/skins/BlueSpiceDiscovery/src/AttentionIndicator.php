@@ -2,9 +2,9 @@
 
 namespace BlueSpice\Discovery;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
-use User;
+use MediaWiki\User\User;
 
 abstract class AttentionIndicator implements IAttentionIndicator {
 

@@ -7,6 +7,10 @@ use BlueSpice\Privacy\Module\Transparency;
 use BS\ExtendedSearch\Backend;
 use BS\ExtendedSearch\Lookup;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use Wikimedia\Rdbms\IDatabase;
 
 class Handler implements IPrivacyHandler {
@@ -25,42 +29,44 @@ class Handler implements IPrivacyHandler {
 	 *
 	 * @param string $oldUsername
 	 * @param string $newUsername
-	 * @return \Status
+	 * @return Status
 	 */
 	public function anonymize( $oldUsername, $newUsername ) {
 		// Nothing to handle
-		return \Status::newGood();
+		return Status::newGood();
 	}
 
 	/**
 	 *
-	 * @param \User $userToDelete
-	 * @param \User $deletedUser
-	 * @return \Status
+	 * @param User $userToDelete
+	 * @param User $deletedUser
+	 * @return Status
 	 */
-	public function delete( \User $userToDelete, \User $deletedUser ) {
+	public function delete( User $userToDelete, User $deletedUser ) {
 		$this->db->update(
 			'bs_extendedsearch_history',
 			[ 'esh_user' => $deletedUser->getId() ],
-			[ 'esh_user' => $userToDelete->getId() ]
+			[ 'esh_user' => $userToDelete->getId() ],
+			__METHOD__
 		);
 
 		$this->db->delete(
 			'bs_extendedsearch_relevance',
-			[ 'esr_user' => $userToDelete->getId() ]
+			[ 'esr_user' => $userToDelete->getId() ],
+			__METHOD__
 		);
 
-		return \Status::newGood();
+		return Status::newGood();
 	}
 
 	/**
 	 *
 	 * @param array $types
 	 * @param string $format
-	 * @param \User $user
-	 * @return \Status
+	 * @param User $user
+	 * @return Status
 	 */
-	public function exportData( array $types, $format, \User $user ) {
+	public function exportData( array $types, $format, User $user ) {
 		$data = [];
 		if ( in_array( Transparency::DATA_TYPE_CONTENT, $types ) ) {
 			$data[Transparency::DATA_TYPE_CONTENT] = $this->getContentData( $user );
@@ -69,12 +75,12 @@ class Handler implements IPrivacyHandler {
 			$data[Transparency::DATA_TYPE_WORKING] = $this->getWorkingData( $user );
 		}
 
-		return \Status::newGood( $data );
+		return Status::newGood( $data );
 	}
 
 	/**
 	 *
-	 * @param \User $user
+	 * @param User $user
 	 * @return array
 	 */
 	protected function getContentData( $user ) {
@@ -96,8 +102,8 @@ class Handler implements IPrivacyHandler {
 		$results = $searchBackend->runRawQuery( $lookup, [ 'wikipage' ] );
 		foreach ( $results->getResults() as $resultObject ) {
 			$prefixedTitle = $resultObject->getData()['prefixed_title'];
-			$title = \Title::newFromText( $prefixedTitle );
-			if ( $title instanceof \Title === false ) {
+			$title = Title::newFromText( $prefixedTitle );
+			if ( $title instanceof Title === false ) {
 				continue;
 			}
 
@@ -105,7 +111,7 @@ class Handler implements IPrivacyHandler {
 				'bs-extendedsearch-privacy-transparency-content-highlight',
 				$title->getPrefixedText(),
 				$this->getFormattedHighlights( $resultObject->getParam( 'highlight' ) )
-			)->plain();
+			)->text();
 		}
 
 		return $data;
@@ -132,7 +138,7 @@ class Handler implements IPrivacyHandler {
 
 	/**
 	 *
-	 * @param \User $user
+	 * @param User $user
 	 * @return array
 	 */
 	protected function getWorkingData( $user ) {
@@ -152,8 +158,8 @@ class Handler implements IPrivacyHandler {
 
 	/**
 	 *
-	 * @param \User $user
-	 * @return \Message[]
+	 * @param User $user
+	 * @return Message[]
 	 */
 	protected function getSearchHistory( $user ) {
 		$res = $this->db->select(
@@ -173,7 +179,7 @@ class Handler implements IPrivacyHandler {
 				'bs-extendedsearch-privacy-transparency-history-item',
 				$row->esh_term,
 				$row->freq
-			)->plain();
+			)->text();
 		}
 
 		if ( empty( $terms ) ) {
@@ -184,14 +190,14 @@ class Handler implements IPrivacyHandler {
 			wfMessage(
 				'bs-extendedsearch-privacy-transparency-history-summary',
 				implode( ',', $terms )
-			)->plain()
+			)->text()
 		];
 	}
 
 	/**
 	 *
-	 * @param \User $user
-	 * @return \Message[]
+	 * @param User $user
+	 * @return Message[]
 	 */
 	protected function getSearchRelevance( $user ) {
 		// We can only show the number of relevant pages user has,

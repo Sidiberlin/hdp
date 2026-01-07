@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
-			"Chulsu463"
+			"Chulsu463",
+			"MiiCii"
 		]
 	},
-	"bs-bookshelf-booknav-title": "baktambun i bithe afaha"
+	"bs-bookshelf-booknav-title": "baktambun i bithe afaha",
+	"bs-bookshelf-ve-bookshelf-attr-book-label": "ᠪᡳᡨᡥᡝ"
 }

@@ -5,15 +5,15 @@ bs.bookshelf.tag.SearchInBookDefinition = function () {
 
 OO.inheritClass( bs.bookshelf.tag.SearchInBookDefinition, bs.extendedSearch.vec.util.tag.TagSearchDefinition );
 
-bs.bookshelf.tag.SearchInBookDefinition.prototype.getCfg = function() {
-	var cfg = bs.bookshelf.tag.SearchInBookDefinition.parent.prototype.getCfg.call( this );
-	return $.extend( cfg, {
-		classname : 'SearchInBook',
+bs.bookshelf.tag.SearchInBookDefinition.prototype.getCfg = function () {
+	const cfg = bs.bookshelf.tag.SearchInBookDefinition.parent.prototype.getCfg.call( this );
+	return $.extend( cfg, { // eslint-disable-line no-jquery/no-extend
+		classname: 'SearchInBook',
 		name: 'searchinbook',
 		tagname: 'bs:searchinbook',
 		descriptionMsg: 'bs-bookshelf-droplet-search-description',
 		menuItemMsg: 'bs-bookshelf-droplet-search-name',
-		attributes: [{
+		attributes: [ {
 			name: 'placeholder',
 			labelMsg: 'bs-extendedsearch-tagsearch-ve-tagsearch-tb-placeholder',
 			helpMsg: 'bs-extendedsearch-tagsearch-ve-tagsearch-tb-placeholder-help',
@@ -27,7 +27,7 @@ bs.bookshelf.tag.SearchInBookDefinition.prototype.getCfg = function() {
 			type: 'custom',
 			widgetClass: ext.bookshelf.ui.widget.BookInputWidget,
 			default: ''
-		}]
+		} ]
 	} );
 };
 

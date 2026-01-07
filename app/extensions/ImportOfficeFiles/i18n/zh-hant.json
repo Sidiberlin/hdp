@@ -6,7 +6,6 @@
 		]
 	},
 	"importofficefiles-desc": "允許將辦公檔案以 wikipages 匯入",
-	"importofficefiles-ui-action-import-msword-text": "匯入 Word 檔案",
 	"importofficefiles-ui-action-import-msword-title": "從 Microsoft Word 檔案建立頁面",
 	"importofficefiles-ui-import-dialog-title": "匯入檔案",
 	"importofficefiles-ui-import-completed": "匯入完成！",
@@ -33,6 +32,8 @@
 	"importofficefiles-ui-dialog-preview-title": "預覽",
 	"importofficefiles-ui-dialog-preview-label": "將匯入以下頁面",
 	"importofficefiles-ui-dialog-link-import-files-text": "匯入檔案清單匯出至$1",
+	"importofficefiles-ui-dialog-link-imported-page-text": "檔案已匯入至$1",
+	"importofficefiles-ui-dialog-page-collection-protected-namespace": "註：因為「$1」命名空間已被保護，無法建立「頁面收藏」頁面",
 	"importofficefiles-api-storage-error-no-available-file": "沒有可用的上傳檔案",
 	"importofficefiles-api-storage-error-save-temp": "無法臨時儲存",
 	"importofficefiles-api-storage-error-no-valid-module": "沒有可用於處理此檔案的模組",
@@ -41,6 +42,9 @@
 	"importofficefiles-ui-progress-remove-files-step": "正在移除暫存檔案…",
 	"importofficefiles-ui-import-error": "匯入過程中發生了一些錯誤。",
 	"importofficefiles-ui-analyze-error": "分析過程出於某種原因導致失敗。",
-	"importofficefiles-ui-dialog-link-imported-page-text": "檔案已匯入至$1",
-	"importofficefiles-ui-dialog-page-collection-protected-namespace": "註：因為「$1」命名空間已被保護，無法建立「頁面收藏」頁面"
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-characters": "此標題無法使用。因為包含不允許的字元（「$1」）。",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-fallback": "此標題無法使用。",
+	"importofficefiles-ui-action-import-msword-label": "新的 Word 檔案匯入",
+	"importofficefiles-ui-dialog-preview-action-close": "關閉",
+	"importofficefiles-ui-dialog-preview-btn-title": "預覽"
 }

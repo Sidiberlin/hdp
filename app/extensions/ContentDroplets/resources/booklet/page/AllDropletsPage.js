@@ -6,7 +6,7 @@ OO.inheritClass( ext.contentdroplets.ui.AllDropletsPage,
 	ext.contentdroplets.ui.ContentDropletPage );
 
 ext.contentdroplets.ui.AllDropletsPage.prototype.filter = function ( keys ) {
-	var key;
+	let key;
 	for ( key in this.widgets ) {
 		// eslint-disable-next-line no-prototype-builtins
 		if ( !this.widgets.hasOwnProperty( key ) ) {
@@ -20,7 +20,7 @@ ext.contentdroplets.ui.AllDropletsPage.prototype.filter = function ( keys ) {
 };
 
 ext.contentdroplets.ui.AllDropletsPage.prototype.removeFilter = function () {
-	var key;
+	let key;
 	for ( key in this.widgets ) {
 		// eslint-disable-next-line no-prototype-builtins
 		if ( !this.widgets.hasOwnProperty( key ) ) {

@@ -21,7 +21,7 @@ class EnablePageWatermark extends \BlueSpice\ConfigDefinition\BooleanSetting {
 	 * @return string
 	 */
 	public function getLabelMessageKey() {
-		return 'bs-expiry-pref-enablepagewatermark';
+		return 'bs-expiry-pref-enable-page-watermark';
 	}
 
 	/**
@@ -29,7 +29,7 @@ class EnablePageWatermark extends \BlueSpice\ConfigDefinition\BooleanSetting {
 	 * @return string
 	 */
 	public function getHelpMessageKey() {
-		return 'bs-expiry-pref-enablepagewatermark-help';
+		return 'bs-expiry-pref-enable-page-watermark-help';
 	}
 
 }

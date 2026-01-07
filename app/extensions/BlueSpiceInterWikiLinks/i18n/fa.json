@@ -6,6 +6,7 @@
 			"Ebraminio",
 			"FarsiNevis",
 			"Jeeputer",
+			"LordProfo",
 			"Reza1615"
 		]
 	},
@@ -14,7 +15,7 @@
 	"bs-interwikilinks-invalid-url-spc": "این نشانی نامعتبر است. لطفاً از فاصله استفاده نکنید.",
 	"bs-interwikilinks-label": "پیوندهای میان‌ویکی",
 	"bs-interwikilinks-link-created": "پیوند میان‌ویکی ایجاد شد.",
-	"bs-interwikilinks-link-added": "پیوند میان‌ویکی اضافه شد.",
+	"bs-interwikilinks-link-added": "پیوند میان‌ویکی افزوده شد.",
 	"bs-interwikilinks-link-deleted": "پیوند میان‌ویکی حذف شد.",
 	"bs-interwikilinks-nooldpfx": "پیشوند پیشین یافت نشد.",
 	"bs-interwikilinks-nopfx": "لطفاً یک پیشوند تدارک ببینید.",
@@ -29,9 +30,6 @@
 	"bs-interwikilinks-labelurl": "نشانی اینترنتی",
 	"bs-interwikilinks-titledeleteinterwikilink": "حذف پیوند میان‌ویکی",
 	"bs-interwikilinks-confirmdeleteinterwikilink": "آیا مطمئنید، می‌خواهید این پیوند میان‌ویکی را حذف کنید؟",
-	"bs-interwikilinks-insertlink-tabtitle": "پیوند به ویکی دیگر",
-	"bs-interwikilinks-insertlink-labelprefix": "پیشوند",
-	"bs-interwikilink-select-a-prefix": "انتخاب پیشوند",
 	"bs-interwikilinks-link-edited": "پیوند میان‌ویکی ویرایش شده است",
 	"action-interwikilinks-viewspecialpage": "مشاهدهٔ صفحهٔ ویژهٔ «{{int:bs-interwikilinks-label}}»",
 	"interwikilinks": "پیوندهای میان‌ویکی",

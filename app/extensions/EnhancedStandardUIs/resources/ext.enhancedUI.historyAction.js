@@ -1,28 +1,28 @@
 ( function ( mw, $ ) {
 
-	$( function () {
+	$( () => {
 		require( './panel/HistoryPanel.js' );
-		mw.user.getRights().done( function ( rights ) {
+		mw.user.getRights().done( ( rights ) => {
 			/* eslint-disable-next-line no-jquery/no-global-selector */
-			var $historyCnt = $(
+			const $historyCnt = $(
 				'#enhanced-history-cnt[data-history]'
 			);
-			var cfg = {
+			const cfg = {
 				rights: rights,
 				data: $historyCnt.data( 'history' )
 			};
-			var historyGrid = new ext.enhancedUI.panel.HistoryPanel( cfg );
+			const historyGrid = new ext.enhancedUI.panel.HistoryPanel( cfg );
 			$historyCnt.append( historyGrid.$element );
 		} );
 	} );
 
-	var toolbarOffsetJson = require( './addToolbarOffset.json' );
-	var toolbarOffsetHeight = toolbarOffsetJson.offsetHeight;
+	const toolbarOffsetJson = require( './addToolbarOffset.json' );
+	const toolbarOffsetHeight = toolbarOffsetJson.offsetHeight;
 	$( window ).on( 'scroll', function () {
 
-		var windowTop = $( this ).scrollTop();
-		var $toolbar = $( '.enhanced-history-toolbar' ); // eslint-disable-line no-jquery/no-global-selector
-		var contentWidth = getContentWidth();
+		const windowTop = $( this ).scrollTop();
+		const $toolbar = $( '.enhanced-history-toolbar' ); // eslint-disable-line no-jquery/no-global-selector
+		const contentWidth = getContentWidth();
 
 		if ( windowTop > toolbarOffsetHeight ) {
 			$toolbar.css( 'top', toolbarOffsetHeight );

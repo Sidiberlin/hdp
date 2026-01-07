@@ -1,12 +1,12 @@
 <?php
 namespace BlueSpice\PageAssignments;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\DataStore\RecordSet;
-use Status;
-use Title;
-use User;
 
 class TitleTarget implements ITarget {
 

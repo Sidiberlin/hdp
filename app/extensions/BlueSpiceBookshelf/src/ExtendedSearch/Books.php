@@ -15,15 +15,19 @@ use BS\ExtendedSearch\Plugin\IDocumentDataModifier;
 use BS\ExtendedSearch\Plugin\IFilterModifier;
 use BS\ExtendedSearch\Plugin\IFormattingModifier;
 use BS\ExtendedSearch\Plugin\IMappingModifier;
+use BS\ExtendedSearch\Plugin\ISearchContextProvider;
 use BS\ExtendedSearch\Plugin\ISearchPlugin;
 use BS\ExtendedSearch\SearchResult;
 use BS\ExtendedSearch\Source\DocumentProvider\WikiPage as WikiPageProvider;
 use BS\ExtendedSearch\Source\WikiPages;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Language\Language;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Message\Message;
 use MediaWiki\Page\PageIdentity;
-use Message;
-use TitleFactory;
+use MediaWiki\Permissions\Authority;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\UserIdentity;
 use WikiPage;
 
 class Books implements
@@ -32,7 +36,8 @@ class Books implements
 	IFormattingModifier,
 	IDocumentDataModifier,
 	IFilterModifier,
-	ILookupModifierProvider
+	ILookupModifierProvider,
+	ISearchContextProvider
 {
 
 	/** @var TitleFactory */
@@ -218,5 +223,66 @@ class Books implements
 			return null;
 		}
 		return $this->bookLookup->getBookInfo( $page );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getContextDefinitionForPage( PageIdentity $page, Authority $authority ): ?array {
+		$books = $this->bookLookup->getBooksForPage( $page );
+		if ( empty( $books ) ) {
+			return null;
+		}
+		return [
+			'books' => array_values( array_map( static function ( $book ) {
+				return $book->getName();
+			}, $books ) ),
+		];
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getContextDisplayText( array $contextDefinition, UserIdentity $user, Language $language ): Message {
+		return Message::newFromKey(
+			'bs-bookshelf-search-center-context-books-label',
+			count( $contextDefinition['books'] ),
+			Message::listParam( $contextDefinition['books'] )
+		);
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function showContextFilterPill(): bool {
+		return false;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function applyContext( array $contextDefinition, Authority $actor, Lookup $lookup ) {
+		$lookup->addTermsFilter( 'books', $contextDefinition['books'] );
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function undoContext( array $contextDefinition, Lookup $lookup ) {
+		// NOOP
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getContextKey(): string {
+		return 'books';
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getContextPriority(): int {
+		return 20;
 	}
 }

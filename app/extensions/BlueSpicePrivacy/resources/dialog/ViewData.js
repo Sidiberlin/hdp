@@ -1,48 +1,52 @@
-( function( mw, $, bs, d, undefined ){
+( function ( mw, bs ) {
 	window.bs.privacy = bs.privacy || {};
 	bs.privacy.dialog = bs.privacy.dialog || {};
 
-	bs.privacy.dialog.ViewDataDialog = function( cfg ) {
+	bs.privacy.dialog.ViewDataDialog = function ( cfg ) {
 		cfg = cfg || {};
 
 		this.data = cfg.data;
 		bs.privacy.dialog.ViewDataDialog.super.call( this, cfg );
-	}
+	};
 
 	OO.inheritClass( bs.privacy.dialog.ViewDataDialog, OO.ui.ProcessDialog );
 
 	bs.privacy.dialog.ViewDataDialog.static.name = 'viewDataDialog';
 
-	bs.privacy.dialog.ViewDataDialog.static.title = mw.message( 'bs-privacy-transparency-view-data-dialog-title' ).plain();
+	bs.privacy.dialog.ViewDataDialog.static.title = mw.message( 'bs-privacy-transparency-view-data-dialog-title' ).text();
 
 	bs.privacy.dialog.ViewDataDialog.static.actions = [
 		{
-			label: mw.message( 'bs-privacy-transparency-view-data-dialog-close' ).plain(),
+			label: mw.message( 'bs-privacy-transparency-view-data-dialog-close' ).text(),
 			flags: 'safe'
 		}
 
 	];
 
-	bs.privacy.dialog.ViewDataDialog.prototype.initialize = function() {
+	bs.privacy.dialog.ViewDataDialog.prototype.initialize = function () {
 		bs.privacy.dialog.ViewDataDialog.super.prototype.initialize.call( this );
 
 		this.indexLayout = new OO.ui.IndexLayout( {
 			expanded: true
 		} );
 
+		for ( const tab in this.data ) {
+			const content = this.data[ tab ];
 
-		for ( var tab in this.data ) {
-			var content = this.data[tab];
-
-			var tabPanel = new OO.ui.TabPanelLayout( tab, {
+			const tabPanel = new OO.ui.TabPanelLayout( tab, {
+				// The following messages are used here:
+				// * bs-privacy-transparency-type-title-content
+				// * bs-privacy-transparency-type-title-working
+				// * bs-privacy-transparency-type-title-personal
+				// * bs-privacy-transparency-type-title-actions
 				label: mw.message( 'bs-privacy-transparency-type-title-' + tab ).text()
 			} );
 
-			if( content.length === 0 ) {
+			if ( content.length === 0 ) {
 				tabPanel.$element.append( this.getEmptyTab().$element );
 			} else {
-				for( var idx in content ) {
-					var item = content[idx];
+				for ( const idx in content ) {
+					const item = content[ idx ];
 					tabPanel.$element.append( new OO.ui.LabelWidget( {
 						label: item,
 						classes: [ 'bs-privacy-transparency-tab-line' ]
@@ -62,9 +66,8 @@
 			]
 		} );
 
-
 		this.$body.append( this.layout.$element );
-	}
+	};
 
 	bs.privacy.dialog.ViewDataDialog.prototype.getBodyHeight = function () {
 		return this.layout.$element.outerHeight() + 500;
@@ -77,4 +80,4 @@
 		} );
 	};
 
-} )( mediaWiki, jQuery, blueSpice, document );
+}( mediaWiki, blueSpice ) );

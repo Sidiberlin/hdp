@@ -3,14 +3,14 @@
 namespace BlueSpice\NamespaceManager;
 
 use BsNamespaceHelper;
-use Config;
 use Exception;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Status\Status;
 use MWStake\MediaWiki\Component\DynamicConfig\DynamicConfigManager;
-use RequestContext;
-use Status;
 
 class NamespaceManager {
 	/**
@@ -84,7 +84,7 @@ class NamespaceManager {
 	 * @param IContextSource $context
 	 * @return array
 	 */
-	public function setUserNamespaces( $userNSDefinition, IContextSource $context = null ) {
+	public function setUserNamespaces( $userNSDefinition, ?IContextSource $context = null ) {
 		wfDebugLog( 'bluespice-deprecations', __METHOD__, 'private' );
 		if ( !$context ) {
 			$context = RequestContext::getMain();
@@ -93,12 +93,12 @@ class NamespaceManager {
 		if ( $status->isGood() ) {
 			return [
 				'success' => true,
-				'message' => $context->msg( 'bs-namespacemanager-ns-config-saved' )->plain()
+				'message' => $context->msg( 'bs-namespacemanager-ns-config-saved' )->text()
 			];
 		}
 		return [
 			'success' => false,
-			'message' => $context->msg( 'bs-namespacemanager-error-save-fail' )->plain()
+			'message' => $context->msg( 'bs-namespacemanager-error-save-fail' )->text()
 		];
 	}
 
@@ -123,7 +123,7 @@ class NamespaceManager {
 			$aliasesMap[$nsId] = BsNamespaceHelper::getNamespaceAliases( $nsId );
 
 			$name = isset( $definition['name'] ) ? $definition['name'] : null;
-			$constantsNames[$nsId] = BsNamespaceHelper::getNamespaceConstName( $nsId, $name );
+			$constantsNames[$nsId] = BsNamespaceHelper::getNamespaceConstName( $nsId, $name, true );
 		}
 
 		$data = [
@@ -144,59 +144,22 @@ class NamespaceManager {
 	 * @param IContextSource|null $context
 	 * @return array
 	 */
-	public function getMetaFields( IContextSource $context = null ) {
+	public function getMetaFields( ?IContextSource $context = null ) {
 		if ( !$context ) {
 			$context = RequestContext::getMain();
 		}
 		$metaFields = [
 			[
-				'name' => 'id',
-				'type' => 'int',
-				'sortable' => true,
-				'filter' => [ 'type' => 'numeric' ],
-				'label' => $context->msg( 'bs-namespacemanager-label-id' )->plain()
-			],
-			[
-				'name' => 'name',
-				'type' => 'string',
-				'sortable' => true,
-				'filter' => [ 'type' => 'string' ],
-				'label' => $context->msg( 'bs-namespacemanager-label-namespaces' )->plain()
-			],
-			[
-				'name' => 'pageCount',
-				'type' => 'int',
-				'sortable' => true,
-				'filter' => [ 'type' => 'numeric' ],
-				'label' => $context->msg( 'bs-namespacemanager-label-pagecount' )->plain()
-			],
-			[
-				'name' => 'isSystemNS',
-				'type' => 'boolean',
-				'label' => $context->msg( 'bs-namespacemanager-label-editable' )->plain(),
-				'hidden' => true,
-				'sortable' => true,
-				'filter' => [ 'type' => 'boolean' ],
-			],
-			[
-				'name' => 'isTalkNS',
-				'type' => 'boolean',
-				'label' => $context->msg( 'bs-namespacemanager-label-istalk' )->plain(),
-				'hidden' => true,
-				'sortable' => true,
-				'filter' => [ 'type' => 'boolean' ],
-			],
-			[
 				'name' => 'subpages',
 				'type' => 'boolean',
-				'label' => $context->msg( 'bs-namespacemanager-label-subpages' )->plain(),
+				'label' => $context->msg( 'bs-namespacemanager-label-subpages' )->text(),
 				'sortable' => true,
 				'filter' => [ 'type' => 'boolean' ],
 			],
 			[
 				'name' => 'content',
 				'type' => 'boolean',
-				'label' => $context->msg( 'bs-namespacemanager-label-content' )->plain(),
+				'label' => $context->msg( 'bs-namespacemanager-label-content' )->text(),
 				'sortable' => true,
 				'filter' => [ 'type' => 'boolean' ],
 			]

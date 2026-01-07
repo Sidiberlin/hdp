@@ -2,10 +2,13 @@
 
 namespace BlueSpice\ContextMenu;
 
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Message\Message;
+
 interface IMenuItem {
 
 	/**
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabelMessage();
 
@@ -38,7 +41,7 @@ interface IMenuItem {
 	public function getChildren();
 
 	/**
-	 * @param \IContextSource $context
+	 * @param IContextSource $context
 	 * @return bool
 	 */
 	public function shouldList( $context );
@@ -47,4 +50,20 @@ interface IMenuItem {
 	 * @return int
 	 */
 	public function getPosition();
+
+	/**
+	 * @return array
+	 */
+	public function getFlags(): array;
+
+	/**
+	 * @return bool
+	 */
+	public function isPrimary(): bool;
+
+	/**
+	 * Key that this item overrides
+	 * @return string|null
+	 */
+	public function getOverride(): ?string;
 }

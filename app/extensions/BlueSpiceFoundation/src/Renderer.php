@@ -27,13 +27,14 @@
 namespace BlueSpice;
 
 use BlueSpice\Renderer\Params;
-use Config;
-use Html;
 use HtmlArmor;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
 use MessageLocalizer;
 
 abstract class Renderer implements IRenderer, MessageLocalizer {
@@ -86,7 +87,7 @@ abstract class Renderer implements IRenderer, MessageLocalizer {
 	 * @param string $name
 	 */
 	protected function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
+		?LinkRenderer $linkRenderer = null, ?IContextSource $context = null,
 		$name = '' ) {
 		$this->config = $config;
 		$this->context = $context;
@@ -123,14 +124,14 @@ abstract class Renderer implements IRenderer, MessageLocalizer {
 	 * @return Renderer
 	 */
 	public static function factory( $name, MediaWikiServices $services, Config $config,
-		Params $params, IContextSource $context = null, LinkRenderer $linkRenderer = null ) {
+		Params $params, ?IContextSource $context = null, ?LinkRenderer $linkRenderer = null ) {
 		if ( !$context ) {
 			$context = $params->get(
 				static::PARAM_CONTEXT,
 				false
 			);
 			if ( !$context instanceof IContextSource ) {
-				$context = \RequestContext::getMain();
+				$context = RequestContext::getMain();
 			}
 		}
 		if ( !$linkRenderer ) {

@@ -64,13 +64,13 @@ officeimport.ui.ImportProgressPage.prototype.onImportDone = function ( pages, ti
 
 	let pageCollectionCreated = true;
 
-	this.exportList( linklist ).fail( function () {
+	this.exportList( linklist ).fail( () => {
 		// Error code we catch here:
 		// protectednamespace-interface
 		pageCollectionCreated = false;
-	} ).always( function () {
+	} ).always( () => {
 		this.setImportDoneUI( pageCollectionCreated, pages[ 0 ] );
-	}.bind( this ) );
+	} );
 };
 
 /**
@@ -85,20 +85,20 @@ officeimport.ui.ImportProgressPage.prototype.onImportDone = function ( pages, ti
  * @param {Object} data Some additional data/configuration
  */
 officeimport.ui.ImportProgressPage.prototype.startImport = function ( uploadId, fileName, data ) {
-	mw.loader.using( [ 'ext.importofficefiles.api' ], function () {
+	mw.loader.using( [ 'ext.importofficefiles.api' ], () => {
 		const api = new officeimport.api.Api();
-		api.startImport( uploadId, fileName, data ).done( function ( response ) {
+		api.startImport( uploadId, fileName, data ).done( ( response ) => {
 			if ( response.processId ) {
 				this.emit( 'importRunning', response.processId, fileName );
 			} else {
 				// Import process failed to start
 				this.emit( 'importFailed', 'Import process failed to start', response.error );
 			}
-		}.bind( this ) ).fail( function ( error ) {
+		} ).fail( ( error ) => {
 			// Probably API is unreachable currently, or there is some fatal
 			this.emit( 'importFailed', 'Import process failed to start', error );
-		}.bind( this ) );
-	}.bind( this ) );
+		} );
+	} );
 };
 
 /**
@@ -117,11 +117,11 @@ officeimport.ui.ImportProgressPage.prototype.checkImportStatus = function ( proc
 		return;
 	}
 
-	mw.loader.using( [ 'ext.importofficefiles.api' ], function () {
+	mw.loader.using( [ 'ext.importofficefiles.api' ], () => {
 		this.isStatusApiCallRunning = true;
 
 		const api = new officeimport.api.Api();
-		api.getImportStatus( processId ).done( function ( response ) {
+		api.getImportStatus( processId ).done( ( response ) => {
 			if ( response.state === 'terminated' ) {
 				if ( response.exitCode === 0 ) {
 					this.emit( 'importDone', response.pid, timer );
@@ -151,7 +151,7 @@ officeimport.ui.ImportProgressPage.prototype.checkImportStatus = function ( proc
 				// Even if the last step was already executed - we anyway need to proceed
 				// with import process to correctly finish this process.
 				// eslint-disable-next-line no-shadow
-				api.importNextStep( processId ).done( function ( response ) {
+				api.importNextStep( processId ).done( ( response ) => {
 					if ( !response.success ) {
 						// One of the steps failed to start, we should not continue in such case
 						this.emit( 'importFailed', response.error, response );
@@ -164,19 +164,19 @@ officeimport.ui.ImportProgressPage.prototype.checkImportStatus = function ( proc
 					if ( this.currentStep !== this.steps.length - 1 ) {
 						this.currentStep++;
 					}
-				}.bind( this ) ).fail( function ( error ) {
+				} ).fail( ( error ) => {
 					// Some unexpected exception was thrown when one of steps tried to start
 					this.emit( 'importFailed', 'Next process step failed to start', error );
 					clearInterval( timer );
-				}.bind( this ) );
+				} );
 			} else {
 				this.isStatusApiCallRunning = false;
 			}
-		}.bind( this ) ).fail( function ( error ) {
+		} ).fail( ( error ) => {
 			// Getting import process status failed
 			this.emit( 'importFailed', 'Getting import process status failed', error );
-		}.bind( this ) );
-	}.bind( this ) );
+		} );
+	} );
 };
 
 /**
@@ -244,15 +244,15 @@ officeimport.ui.ImportProgressPage.prototype.getPageList = function ( pages ) {
 officeimport.ui.ImportProgressPage.prototype.exportList = function ( linklist ) {
 	const me = this;
 	const dfd = $.Deferred();
-	mw.loader.using( 'mediawiki.api' ).done( function () {
+	mw.loader.using( 'mediawiki.api' ).done( () => {
 		const api = new mw.Api();
 		api.postWithToken( 'csrf', {
 			action: 'edit',
 			title: me.targetTitle.getPrefixedText(),
 			text: linklist
-		} ).done( function ( response ) {
+		} ).done( ( response ) => {
 			dfd.resolve( response );
-		} ).fail( function ( code, err ) {
+		} ).fail( ( code, err ) => {
 			dfd.reject( code, err );
 		} );
 	} );

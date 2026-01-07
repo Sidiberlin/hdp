@@ -76,11 +76,11 @@ officeimport.ui.StructurePreviewPage.prototype.generatePagesStructure = function
 
 		iconPreviewWidget.$element.data( 'page-title', title );
 
-		iconPreviewWidget.$element.on( 'click', function ( e ) {
+		iconPreviewWidget.$element.on( 'click', ( e ) => {
 			const dataTitle = $( e.target ).data( 'page-title' );
 
 			this.showPreview( dataTitle );
-		}.bind( this ) );
+		} );
 
 		$pageTitleWrap.append( fieldLayout.$element );
 
@@ -115,9 +115,9 @@ officeimport.ui.StructurePreviewPage.prototype.generatePagesStructure = function
 
 officeimport.ui.StructurePreviewPage.prototype.showPreview = function ( title ) {
 	const officeApi = new officeimport.api.Api();
-	officeApi.getContent( this.uploadId, title ).done( function ( response ) {
+	officeApi.getContent( this.uploadId, title ).done( ( response ) => {
 		this.generateContentPreview( title, response.content );
-	}.bind( this ) ).fail( function () {
+	} ).fail( () => {
 		OO.ui.alert(
 			'No content preview available'
 		);
@@ -133,7 +133,7 @@ officeimport.ui.StructurePreviewPage.prototype.generateContentPreview =
 			prop: 'text',
 			contentmodel: 'wikitext',
 			text: content
-		} ).done( function ( response ) {
+		} ).done( ( response ) => {
 			// eslint-disable-next-line no-prototype-builtins
 			if ( !response.hasOwnProperty( 'parse' ) || !response.parse.hasOwnProperty( 'text' ) ) {
 				// eslint-disable-next-line no-console
@@ -148,8 +148,8 @@ officeimport.ui.StructurePreviewPage.prototype.generateContentPreview =
 				content: parsedContent
 			} );
 			this.previewDialog.$element.trigger( 'focus' );
-		}.bind( this ) )
-			.fail( function () {
+		} )
+			.fail( () => {
 				// eslint-disable-next-line no-console
 				console.log( 'Some error during "action=parse" API call' );
 			} );
@@ -170,13 +170,13 @@ officeimport.ui.StructurePreviewPage.prototype.onToggle = function ( index ) {
 // eslint-disable-next-line no-unused-vars
 officeimport.ui.StructurePreviewPage.prototype.getPreview = function ( uploadId, config ) {
 	this.uploadId = uploadId;
-	mw.loader.using( [ 'ext.importofficefiles.api' ], function () {
+	mw.loader.using( [ 'ext.importofficefiles.api' ], () => {
 		const api = new officeimport.api.Api();
-		api.getPagesStructure( uploadId ).done( function ( response ) {
+		api.getPagesStructure( uploadId ).done( ( response ) => {
 			this.generatePagesStructure( response.pages );
 			this.emit( 'changeContent' );
-		}.bind( this ) );
-	}.bind( this ) );
+		} );
+	} );
 };
 
 officeimport.ui.StructurePreviewPage.prototype.getPageTitles = function () {

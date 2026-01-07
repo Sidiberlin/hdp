@@ -2,11 +2,12 @@
 
 namespace MediaWiki\Extension\PageCheckout\Api;
 
-use ApiBase;
-use ApiMain;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiMain;
 use MediaWiki\Extension\PageCheckout\CheckoutManager;
 use MediaWiki\Extension\PageCheckout\Entity\CheckoutEntity;
-use Title;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ApiClearCheckout extends ApiBase {
@@ -31,7 +32,7 @@ class ApiClearCheckout extends ApiBase {
 		$title = Title::newFromText( $params['page_title'] );
 		$checkout = $this->manager->getCheckoutEntity( $title );
 		if ( !$checkout instanceof CheckoutEntity ) {
-			$this->dieStatus( \Status::newFatal( 'pagecheckout-error-no-checkout' ) );
+			$this->dieStatus( Status::newFatal( 'pagecheckout-error-no-checkout' ) );
 		}
 
 		$res = $this->manager->clearCheckout( $title );

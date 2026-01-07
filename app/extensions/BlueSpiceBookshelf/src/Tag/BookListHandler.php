@@ -5,11 +5,11 @@ namespace BlueSpice\Bookshelf\Tag;
 use BlueSpice\Bookshelf\BookLookup;
 use BlueSpice\Bookshelf\BookMetaLookup;
 use BlueSpice\Tag\Handler;
-use Html;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkRenderer;
-use Parser;
-use PPFrame;
-use TitleFactory;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Title\TitleFactory;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class BookListHandler extends Handler {

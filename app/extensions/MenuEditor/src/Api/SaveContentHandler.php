@@ -2,9 +2,8 @@
 
 namespace MediaWiki\Extension\MenuEditor\Api;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Rest\HttpException;
-use MediaWiki\Rest\Validator\JsonBodyValidator;
-use RequestContext;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class SaveContentHandler extends MenuHandler {
@@ -19,7 +18,7 @@ class SaveContentHandler extends MenuHandler {
 		$body = $this->getValidatedBody();
 
 		$parser = $this->getParserForRevision( $page );
-		$parser->addNodesFromData( $body );
+		$parser->addNodesFromData( $body['data'] );
 
 		$rev = $parser->saveRevision( RequestContext::getMain()->getUser() );
 		if ( !$rev ) {
@@ -44,14 +43,16 @@ class SaveContentHandler extends MenuHandler {
 	}
 
 	/**
-	 * @param string $contentType
-	 * @return JsonBodyValidator
-	 * @throws HttpException
+	 * @return array[]
 	 */
-	public function getBodyValidator( $contentType ) {
-		if ( $contentType !== 'application/json' ) {
-			throw new HttpException( 'ContentType header must be application/json' );
-		}
-		return new JsonBodyValidator( [] );
+	public function getBodyParamSettings(): array {
+		return [
+			'data' => [
+				self::PARAM_SOURCE => 'body',
+				ParamValidator::PARAM_TYPE => 'array',
+				ParamValidator::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_DEFAULT => ''
+			]
+		];
 	}
 }

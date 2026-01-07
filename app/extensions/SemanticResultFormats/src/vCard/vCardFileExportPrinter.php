@@ -2,12 +2,12 @@
 
 namespace SRF\vCard;
 
-use SMWExportPrinter as FileExportPrinter;
+use MediaWiki\MediaWikiServices;
+use SMW\Query\QueryResult;
+use SMW\Query\ResultPrinters\FileExportPrinter;
 use SMWQuery as Query;
 use SMWQueryProcessor as QueryProcessor;
-use SMWQueryResult as QueryResult;
 use SMWTimeValue as TimeValue;
-use WikiPage;
 
 /**
  * Printer class for creating vCard exports
@@ -132,7 +132,8 @@ class vCardFileExportPrinter extends FileExportPrinter {
 
 		if ( array_key_exists( 'limit', $this->params ) ) {
 			$link->setParameter( $this->params['limit'], 'limit' );
-		} else { // use a reasonable default limit
+		} else {
+			// use a reasonable default limit
 			$link->setParameter( 20, 'limit' );
 		}
 
@@ -162,7 +163,8 @@ class vCardFileExportPrinter extends FileExportPrinter {
 			$uri = $title->getFullURL();
 
 			// A timestamp for the last time the vCard was updated
-			$timestamp = WikiPage::factory( $title )->getTimestamp();
+			$timestamp = MediaWikiServices::getInstance()->getWikiPageFactory()
+				->newFromTitle( $title )->getTimestamp();
 			$text = $title->getText();
 
 			$vCards[] = $this->newVCard( $row, $uri, $text, $timestamp, $isPublic );
@@ -286,6 +288,7 @@ class vCardFileExportPrinter extends FileExportPrinter {
 				break;
 			case "category":
 				$vCard->set( 'category', $this->getFieldCommaList( $field ) );
+				break;
 			case "email":
 				while ( $value = $field->getNextDataValue() ) {
 					$emails[] = new Email( 'INTERNET', $value->getShortWikiText() );

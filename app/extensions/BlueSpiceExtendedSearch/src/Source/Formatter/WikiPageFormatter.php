@@ -2,10 +2,12 @@
 
 namespace BS\ExtendedSearch\Source\Formatter;
 
-use BlueSpice\DynamicFileDispatcher\ArticlePreviewImage;
-use BlueSpice\DynamicFileDispatcher\Params;
 use BS\ExtendedSearch\SearchResult;
+use BsNamespaceHelper;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 
 class WikiPageFormatter extends Base {
 
@@ -17,6 +19,8 @@ class WikiPageFormatter extends Base {
 	public function getResultStructure( $defaultResultStructure = [] ): array {
 		$resultStructure = $defaultResultStructure;
 		$resultStructure['page_anchor'] = 'page_anchor';
+		$resultStructure['namespace_text'] = 'namespace_text';
+		$resultStructure['breadcrumbs'] = 'breadcrumbs';
 		$resultStructure['original_title'] = 'original_title';
 		$resultStructure['highlight'] = 'highlight';
 		$resultStructure['secondaryInfos']['top']['items'][] = [
@@ -34,10 +38,7 @@ class WikiPageFormatter extends Base {
 			"name" => "categories"
 		];
 
-		// $resultStructure['imageUri'] = "image_uri";
-
 		$resultStructure['featured']['highlight'] = "rendered_content_snippet";
-		$resultStructure['featured']['imageUri'] = "image_uri";
 
 		return $resultStructure;
 	}
@@ -55,26 +56,33 @@ class WikiPageFormatter extends Base {
 		parent::format( $resultData, $resultObject );
 
 		if ( $resultData['is_redirect'] === true ) {
-			$this->formatRedirect( $resultData );
+			$this->addAnchor( $resultData );
+			$this->addRedirectAttributes( $resultData );
 			return;
 		}
-		$resultData['categories'] = $this->formatCategories( $resultData['categories'] );
+		$resultData['categories'] = $this->formatCategories( $resultData['categories'], $resultData['_is_foreign'] );
 		$resultData['highlight'] = $this->getHighlight( $resultObject );
 		$resultData['sections'] = $this->getSections( $resultData );
 		$resultData['redirects'] = $this->formatRedirectedFrom( $resultData );
 		$resultData['rendered_content_snippet'] = $this->getRenderedContentSnippet( $resultData['rendered_content'] );
 
-		if ( $resultData['display_title'] !== '' ) {
-			$resultData['basename'] = $resultData['display_title'];
+		$title = Title::newFromText( $resultData['prefixed_title'] );
+		if ( !$title ) {
+			return;
 		}
-		$resultData['original_title'] = $this->getOriginalTitleText( $resultData );
+		if ( $resultData['display_title'] !== $title->getPrefixedText() ) {
+			$resultData['basename'] = $resultData['display_title'];
+			$resultData['original_title'] = $this->getOriginalTitleText( $resultData );
+		} else {
+			$resultData['display_title'] = '';
+		}
 
 		$resultData['file-usage'] = '';
-		if ( $resultData['namespace'] === NS_FILE ) {
+		if ( $resultData['namespace'] === NS_FILE && $resultData['_is_foreign'] === false ) {
 			$resultData['file-usage'] = $this->getFileUsage( $resultData['prefixed_title'] );
 		}
 
-		$this->addAnchorAndImageUri( $resultData );
+		$this->addAnchor( $resultData );
 	}
 
 	/**
@@ -96,8 +104,8 @@ class WikiPageFormatter extends Base {
 
 		$filters = $this->lookup->getFilters();
 		$namespaceFilters = [];
-		if ( isset( $filters['terms']['namespace_text'] ) ) {
-			$namespaceFilters = $filters['terms']['namespace_text'];
+		if ( isset( $filters['terms']['namespace'] ) ) {
+			$namespaceFilters = $filters['terms']['namespace'];
 		}
 
 		$pageTitle = $result['prefixed_title'];
@@ -117,12 +125,19 @@ class WikiPageFormatter extends Base {
 	 *
 	 * @param array &$result
 	 */
-	protected function addAnchorAndImageUri( &$result ) {
-		$title = \Title::newFromText( $result['prefixed_title'] );
-		if ( $title instanceof \Title && $title->getNamespace() == $result['namespace'] ) {
-			$result['page_anchor'] = $this->getTraceablePageAnchor( $title, $result['display_title'] );
-			if ( $title->exists() ) {
-				$result['image_uri'] = $this->getImageUri( $result['prefixed_title'], 150 );
+	protected function addAnchor( &$result ) {
+		$result['namespace_text'] = $result['namespace'] === NS_MAIN ?
+			Message::newFromKey( 'blanknamespace' )->text() :
+			BsNamespaceHelper::getNamespaceName( $result['namespace'] );
+		$result['breadcrumbs'] = $this->makeSubpageBreadCrumbs( $result['prefixed_title'] );
+		if ( $result['_is_foreign'] ?? false ) {
+			$result['page_anchor'] = Html::element( 'a', [
+				'href' => $result['uri'],
+			], $this->getAnchorText( $result ) );
+		} else {
+			$title = Title::newFromText( $result['prefixed_title'] );
+			if ( $title instanceof Title && $title->getNamespace() == $result['namespace'] ) {
+				$result['page_anchor'] = $this->getTraceablePageAnchor( $title, $result['display_title'] );
 			}
 		}
 	}
@@ -130,9 +145,10 @@ class WikiPageFormatter extends Base {
 	/**
 	 *
 	 * @param array $categories
+	 * @param bool $isForeign
 	 * @return string|null
 	 */
-	protected function formatCategories( $categories ) {
+	protected function formatCategories( $categories, bool $isForeign = false ) {
 		if ( empty( $categories ) ) {
 			return null;
 		}
@@ -144,10 +160,15 @@ class WikiPageFormatter extends Base {
 				$moreCategories = true;
 				break;
 			}
-			$categoryTitle = \Title::makeTitle( NS_CATEGORY, $category );
-			$formattedCategories[] = $this->linkRenderer->makeLink( $categoryTitle, $categoryTitle->getText() );
+			if ( $isForeign ) {
+				$formattedCategories[] = $category;
+			} else {
+				$categoryTitle = Title::makeTitle( NS_CATEGORY, $category );
+				$formattedCategories[] = $this->linkRenderer->makeLink( $categoryTitle, $categoryTitle->getText() );
+			}
 		}
-		return implode( Base::VALUE_SEPARATOR, $formattedCategories ) . ( $moreCategories ? Base::MORE_VALUES_TEXT : '' );
+		return implode( Base::VALUE_SEPARATOR, $formattedCategories ) .
+			( $moreCategories ? Base::MORE_VALUES_TEXT : '' );
 	}
 
 	/**
@@ -203,7 +224,10 @@ class WikiPageFormatter extends Base {
 	 * @return string
 	 */
 	protected function formatSections( $result, $sectionsToAdd ) {
-		$title = \Title::newFromText( $result['prefixed_title'] );
+		if ( $result['_is_foreign'] ) {
+			return '';
+		}
+		$title = Title::newFromText( $result['prefixed_title'] );
 		$sections = [];
 		$moreSections = false;
 		foreach ( $sectionsToAdd as $idx => $section ) {
@@ -225,7 +249,7 @@ class WikiPageFormatter extends Base {
 				wfMessage(
 					'bs-extendedseach-wikipage-section-more-text',
 					( count( $result['sections'] ) - 3 )
-				)->plain();
+				)->text();
 		}
 		return $sectionText;
 	}
@@ -241,17 +265,21 @@ class WikiPageFormatter extends Base {
 		}
 
 		$redirs = [];
-		foreach ( $result[ 'redirected_from'] as $prefixedTitle ) {
-			$redirTitle = \Title::newFromText( $prefixedTitle );
-			if ( $redirTitle instanceof \Title === false ) {
-				continue;
-			}
+		foreach ( $result['redirected_from'] as $prefixedTitle ) {
 
 			$displayText = str_replace( '_', ' ', $prefixedTitle );
 			if ( strlen( $displayText ) > 25 ) {
 				$displayText = substr( $displayText, 0, 25 ) . Base::MORE_VALUES_TEXT;
 			}
-			$redirs[] = $this->linkRenderer->makeLink( $redirTitle, $displayText );
+			if ( $result['_is_foreign'] ) {
+				$redirs[] = $displayText;
+			} else {
+				$redirTitle = Title::newFromText( $prefixedTitle );
+				if ( $redirTitle instanceof Title === false ) {
+					continue;
+				}
+				$redirs[] = $this->linkRenderer->makeLink( $redirTitle, $displayText );
+			}
 		}
 
 		return implode( Base::VALUE_SEPARATOR, $redirs );
@@ -282,71 +310,20 @@ class WikiPageFormatter extends Base {
 	}
 
 	/**
-	 * Gets the URL for the article preview image
-	 *
-	 * @param string $prefixedTitle
-	 * @param int $width
-	 * @return string
-	 */
-	protected function getImageUri( $prefixedTitle, $width = 102 ) {
-		$title = \Title::newFromText( $prefixedTitle );
-		if ( !( $title instanceof \Title ) || $title->exists() == false ) {
-			return '';
-		}
-
-		$params = [
-			Params::MODULE => 'articlepreviewimage',
-			ArticlePreviewImage::WIDTH => $width,
-			ArticlePreviewImage::TITLETEXT => $title->getFullText(),
-		];
-		$dfdUrlBuilder = $this->source->getBackend()->getService(
-			'BSDynamicFileDispatcherUrlBuilder'
-		);
-		if ( $dfdUrlBuilder == null ) {
-			return '';
-		}
-
-		$url = $dfdUrlBuilder->build(
-			new Params( $params )
-		);
-
-		return $url;
-	}
-
-	/**
-	 *
-	 * @param array &$result
-	 */
-	protected function formatRedirect( &$result ) {
-		$title = \Title::newFromText( $result['prefixed_title'] );
-		$redirTarget = \Title::newFromText( $result['redirects_to'] );
-		if ( $redirTarget instanceof \Title === false ) {
-			return;
-		}
-
-		$result['page_anchor'] = $this->getTraceablePageAnchor( $title, $result['display_title'] );
-		$this->addRedirectAttributes( $result );
-	}
-
-	/**
 	 * @param array &$result
 	 * @return void
 	 */
 	protected function addRedirectAttributes( array &$result ) {
-		$redirTarget = \Title::newFromText( $result['redirects_to'] );
-		if ( $redirTarget instanceof \Title === false ) {
+		if ( $result['_is_foreign'] ) {
+			$result['redirect_target_anchor'] = $result['redirects_to'];
+			return;
+		}
+		$redirTarget = Title::newFromText( $result['redirects_to'] );
+		if ( $redirTarget instanceof Title === false ) {
 			return;
 		}
 		$result['is_redirect'] = 1;
 		$result['redirect_target_anchor'] = $this->getTraceablePageAnchor( $redirTarget, $result['redirects_to'] );
-
-		$icons = \ExtensionRegistry::getInstance()
-			->getAttribute( 'BlueSpiceExtendedSearchIcons' );
-
-		$scriptPath = $this->getContext()->getConfig()->get( 'ScriptPath' );
-		if ( isset( $icons['redirect'] ) ) {
-			$result['image_uri'] = $scriptPath . $icons['redirect'];
-		}
 	}
 
 	/**
@@ -376,17 +353,17 @@ class WikiPageFormatter extends Base {
 				continue;
 			}
 
-			if ( $result['display_title'] !== '' ) {
-				$result['display_text'] = $result['display_title'];
+			if ( $result['display_title'] !== $result['prefixed_title'] ) {
 				$result['original_title'] = $this->getOriginalTitleText( $result );
 			} else {
-				$result['display_text'] = $result['prefixed_title'];
+				// If no dedicated display title is set, allow normal mechanisms to show title
+				$result['display_title'] = '';
 			}
 			if ( $result['is_redirect'] === true ) {
 				$this->addRedirectAttributes( $result );
 			}
 
-			$this->addAnchorAndImageUri( $result );
+			$this->addAnchor( $result );
 		}
 	}
 
@@ -438,10 +415,8 @@ class WikiPageFormatter extends Base {
 
 		$lcTitle = mb_strtolower( $pageTitle );
 		$lcSearchTerm = mb_strtolower( $searchData['value'] );
-		if ( strpos( $lcTitle, $lcSearchTerm ) === 0 && $topId === $result['_id'] ) {
-			$result['rank'] = self::AC_RANK_TOP;
-		} elseif ( $this->matchTokenized( $lcTitle, $lcSearchTerm ) ) {
-			$result['rank'] = self::AC_RANK_NORMAL;
+		if ( $this->matchTokenized( $lcTitle, $lcSearchTerm ) ) {
+			$result['rank'] = self::AC_RANK_PRIMARY;
 		} elseif ( !isset( $result['rank'] ) || !$result['rank'] ) {
 			$result['rank'] = self::AC_RANK_SECONDARY;
 		}
@@ -463,7 +438,7 @@ class WikiPageFormatter extends Base {
 
 	/**
 	 *
-	 * @param \Title $title
+	 * @param Title $title
 	 * @return string
 	 */
 	protected function getFileUsage( $title ) {
@@ -471,7 +446,7 @@ class WikiPageFormatter extends Base {
 			->getConnection( DB_REPLICA );
 
 		// Would be nice to get this info from the index w/o running another query
-		$target = \Title::newFromText( $title );
+		$target = Title::newFromText( $title );
 		$res = $dbr->select(
 			[ 'imagelinks', 'page' ],
 			[ 'page_namespace', 'page_title', 'il_to' ],
@@ -485,7 +460,7 @@ class WikiPageFormatter extends Base {
 
 		$usedInPages = [];
 		foreach ( $res as $row ) {
-			$usedInPages[] = \Title::makeTitle(
+			$usedInPages[] = Title::makeTitle(
 				$row->page_namespace,
 				$row->page_title
 			);
@@ -502,6 +477,34 @@ class WikiPageFormatter extends Base {
 		}
 
 		return implode( Base::VALUE_SEPARATOR, $formattedPages ) . ( $morePages ? Base::MORE_VALUES_TEXT : '' );
+	}
+
+	/**
+	 * @param string $text
+	 * @return string
+	 */
+	private function makeSubpageBreadCrumbs( string $text ): string {
+		// Strip NS prefix
+		$text = preg_replace( '/^[^:]+:/', '', $text );
+
+		$bits = explode( '/', $text );
+		array_pop( $bits );
+		if ( empty( $bits ) ) {
+			return '';
+		}
+		return implode( ' > ', $bits );
+	}
+
+	/**
+	 * @param array $resultData
+	 * @return string|null
+	 */
+	private function getAnchorText( array $resultData ) {
+		// Strip NS prefix
+		$text = preg_replace( '/^[^:]+:/', '', $resultData['prefixed_title'] );
+
+		$bits = explode( '/', $text );
+		return array_pop( $bits );
 	}
 
 }

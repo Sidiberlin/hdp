@@ -3,6 +3,8 @@
 namespace BlueSpice\ConfigDefinition;
 
 use BlueSpice\Html\FormField\PermissionMultiSelect;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\HTMLForm\HTMLForm;
 
 abstract class PermissionsList extends \BlueSpice\ConfigDefinition {
 
@@ -12,11 +14,11 @@ abstract class PermissionsList extends \BlueSpice\ConfigDefinition {
 	 */
 	public function getHtmlFormField() {
 		return new PermissionMultiSelect( [
-			'parent' => new \HTMLForm( [] ),
+			'parent' => new HTMLForm( [], RequestContext::getMain() ),
 			'fieldname' => $this->getName(),
 			'id' => $this->makeID(),
 			'name' => $this->name,
-			'label' => wfMessage( $this->getLabelMessageKey() )->plain(),
+			'label' => wfMessage( $this->getLabelMessageKey() )->text(),
 			'type' => $this->getPermissionType()
 		] );
 	}

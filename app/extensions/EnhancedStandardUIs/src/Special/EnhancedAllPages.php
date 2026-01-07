@@ -2,25 +2,28 @@
 
 namespace MediaWiki\Extension\EnhancedStandardUIs\Special;
 
-use ExtensionRegistry;
-use Html;
+use MediaWiki\Html\Html;
+use MediaWiki\Html\TemplateParser;
+use MediaWiki\Registration\ExtensionRegistry;
+use OOJSPlus\Special\OOJSTreeSpecialPage;
 use OOUI\FieldLayout;
 use OOUI\SearchInputWidget;
-use SpecialPage;
 
-class EnhancedAllPages extends SpecialPage {
+class EnhancedAllPages extends OOJSTreeSpecialPage {
 
 	public function __construct() {
 		parent::__construct( 'EnhancedAllPages' );
+
+		$this->templateParser = new TemplateParser(
+			dirname( __DIR__, 2 ) . '/resources/templates'
+		);
 	}
 
 	/**
 	 *
 	 * @inheritDoc
 	 */
-	public function execute( $subPage ) {
-		parent::execute( $subPage );
-
+	public function doExecute( $subPage ) {
 		$this->getOutput()->enableOOUI();
 
 		$this->getOutput()->addModules( 'ext.enhancedstandarduis.special.allpages' );
@@ -38,6 +41,13 @@ class EnhancedAllPages extends SpecialPage {
 		$html .= $this->getSearchWidget();
 		$html .= Html::closeElement( 'div' );
 		$this->getOutput()->addHTML( $html );
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getTemplateName() {
+		return 'allpages';
 	}
 
 	/**

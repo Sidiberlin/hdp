@@ -2,13 +2,13 @@
 
 namespace MediaWiki\Extension\Forms\Target;
 
-use FormatJson;
-use HashConfig;
+use MediaWiki\Config\HashConfig;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\Forms\ITarget;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
-use RequestContext;
-use Status;
-use User;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 use Wikimedia\Rdbms\IDatabase;
 
 class Database implements ITarget {
@@ -136,7 +136,8 @@ class Database implements ITarget {
 		$row = $this->db->selectRow(
 			static::TABLE,
 			[ static::FIELD_FORM ],
-			[ static::FIELD_ID => $this->id ]
+			[ static::FIELD_ID => $this->id ],
+			__METHOD__
 		);
 
 		// Form cannot change between saves, make sure form is still the same
@@ -155,7 +156,8 @@ class Database implements ITarget {
 		return $this->db->update(
 			static::TABLE,
 			$this->getDataForDB( $formsubmittedData ),
-			[ static::FIELD_ID => $this->id ]
+			[ static::FIELD_ID => $this->id ],
+			__METHOD__
 		);
 	}
 
@@ -166,7 +168,8 @@ class Database implements ITarget {
 	private function insert( array $formsubmittedData ) {
 		return $this->db->insert(
 			static::TABLE,
-			$this->getDataForDB( $formsubmittedData )
+			$this->getDataForDB( $formsubmittedData ),
+			__METHOD__
 		);
 	}
 

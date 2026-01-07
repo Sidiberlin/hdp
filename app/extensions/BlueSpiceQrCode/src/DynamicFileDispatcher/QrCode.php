@@ -2,45 +2,36 @@
 
 namespace BlueSpice\QrCode\DynamicFileDispatcher;
 
-use BlueSpice\DynamicFileDispatcher\File;
-use BlueSpice\DynamicFileDispatcher\Module;
-use BlueSpice\DynamicFileDispatcher\Params;
+use MediaWiki\Permissions\Authority;
+use MediaWiki\Title\TitleFactory;
+use MWStake\MediaWiki\Component\DynamicFileDispatcher\IDynamicFile;
+use MWStake\MediaWiki\Component\DynamicFileDispatcher\IDynamicFileModule;
 
-class QrCode extends Module {
+class QrCode implements IDynamicFileModule {
 
-	public const MODULE_NAME = 'qrcode';
-	public const PAGENAME = 'pagename';
-	public const QUERY = 'query';
-	public const SIZE = 'size';
+	/** @var TitleFactory */
+	private $titleFactory;
 
 	/**
-	 * @return File
+	 * @param TitleFactory $titleFactory
 	 */
-	public function getFile() {
-		return new QrCodeImage( $this );
+	public function __construct( TitleFactory $titleFactory ) {
+		$this->titleFactory = $titleFactory;
 	}
 
-	/**
-	 *
-	 * @return array
-	 */
-	public function getParamDefinition() {
-		return array_merge( parent::getParamDefinition(),
-			[
-				static::PAGENAME => [
-					Params::PARAM_TYPE => Params::TYPE_STRING,
-					Params::PARAM_DEFAULT => '',
-				],
-				static::QUERY => [
-					Params::PARAM_TYPE => Params::TYPE_STRING,
-					Params::PARAM_DEFAULT => '',
-				],
-				static::SIZE => [
-					Params::PARAM_TYPE => Params::TYPE_INT,
-					Params::PARAM_DEFAULT => 120,
-				]
-			]
+	public function getFile( array $params ): ?IDynamicFile {
+		return new QrCodeImage(
+			$this->titleFactory,
+			$params['pagename'] ?? $this->titleFactory->newMainPage()->getPrefixedText(),
+			$params['query'] ?? '',
+			isset( $params['size'] ) ? (int)$params['size'] : 100
 		);
 	}
 
+	/**
+	 * @inheritDoc
+	 */
+	public function isAuthorized( Authority $user, array $params ): bool {
+		return true;
+	}
 }

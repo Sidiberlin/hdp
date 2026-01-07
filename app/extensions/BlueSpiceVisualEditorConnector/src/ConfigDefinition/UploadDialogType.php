@@ -3,8 +3,8 @@
 namespace BlueSpice\VisualEditorConnector\ConfigDefinition;
 
 use BlueSpice\ConfigDefinition;
-
-use HTMLSelectField;
+use MediaWiki\HTMLForm\Field\HTMLSelectField;
+use MediaWiki\HTMLForm\HTMLFormField;
 
 class UploadDialogType extends ConfigDefinition {
 
@@ -15,13 +15,13 @@ class UploadDialogType extends ConfigDefinition {
 	public function getPaths() {
 		return [
 			static::MAIN_PATH_FEATURE . '/' . static::FEATURE_EDITOR . '/BlueSpiceVisualEditorConnector',
-			static::MAIN_PATH_EXTENSION . '/BlueSpiceVisualEditorConnector/' . static::FEATURE_EDITOR ,
+			static::MAIN_PATH_EXTENSION . '/BlueSpiceVisualEditorConnector/' . static::FEATURE_EDITOR,
 			static::MAIN_PATH_PACKAGE . '/' . static::PACKAGE_FREE . '/BlueSpiceVisualEditorConnector',
 		];
 	}
 
 	/**
-	 * @return \HTMLFormField
+	 * @return HTMLFormField
 	 */
 	public function getHtmlFormField() {
 		return new HTMLSelectField( $this->makeFormFieldParams() );
@@ -47,7 +47,7 @@ class UploadDialogType extends ConfigDefinition {
 	 * @return string
 	 */
 	public function getLabelMessageKey() {
-		return 'bs-visualeditorconnector-upload-type';
+		return 'bs-visualeditorconnector-upload-dlg-type';
 	}
 
 	/**
@@ -55,7 +55,7 @@ class UploadDialogType extends ConfigDefinition {
 	 * @return string
 	 */
 	public function getHelpMessageKey() {
-		return 'bs-visualeditorconnector-upload-type-help';
+		return 'bs-visualeditorconnector-upload-dlg-type-help';
 	}
 
 }

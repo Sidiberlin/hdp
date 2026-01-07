@@ -4,10 +4,10 @@ namespace BlueSpice\PageAccess\Hook\PageContentSave;
 
 use BlueSpice\Hook\PageContentSave;
 use ManualLogEntry;
+use MediaWiki\Content\TextContent;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
-use TextContent;
-use Title;
+use MediaWiki\Title\Title;
 
 class EditPageAccess extends PageContentSave {
 

@@ -2,15 +2,22 @@
 
 This component allows you to emit notification events to consumers
 
+## Compatibility
+- `4.0.x` -> MediaWiki 1.43
+- `3.0.x` -> MediaWiki 1.39
+- `1.0.x` -> MediaWiki 1.35
+
 ## Use in a MediaWiki extension
 
-**MediaWiki 1.35**
+Require this component in the `composer.json` of your extension:
 
-- Add `"mwstake/mediawiki-component-events": "~1"` to the `require` section of your `composer.json` file.
-
-**MediaWiki 1.39**
-
-- Add `"mwstake/mediawiki-component-events": "~2"` to the `require` section of your `composer.json` file.
+```json
+{
+	"require": {
+		"mwstake/mediawiki-component-events": "~4"
+	}
+}
+```
 
 ## Register consumer
 

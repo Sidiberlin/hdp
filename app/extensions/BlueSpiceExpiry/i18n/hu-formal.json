@@ -1,0 +1,15 @@
+{
+	"@metadata": {
+		"authors": [
+			"Krisztina"
+		]
+	},
+	"bs-expiry-text-delete": "Tényleg törölni akarja {{PLURAL:$1|ezt az elévülést|ezeket az $1 elévüléseket}}?",
+	"bs-expiry-alert-body-expired": "Ez a lap $1 elévült. Kérjük, ellenőrizze a tartalmát.",
+	"bs-expiry-dialog-delete-prompt": "Biztosan törölni szeretné a lap elévülési dátumát?",
+	"bs-expiry-dialog-create-reminder-prompt": "Szeretne emlékeztetőt létrehozni ehhez a laphoz?",
+	"bs-expiry-event-today": "$1 lap egy ma elévül.<br><br> Kérjük, ellenőrizze az oldal tartalmát, hogy eldönthesse, frissíteni kell-e.",
+	"bs-expiry-event-today-with-comment": "$1 lap ma elévül.<br><br> Kérjük, ellenőrizze az oldal tartalmát, hogy eldönthesse, frissíteni kell-e.<br><br> Hozzászólás az elévülésről:<br> <b>$2</b>",
+	"bs-expiry-event-one-week": "$1 lap egy héten belül elévül.<br><br> Kérjük, ellenőrizze az oldal tartalmát, hogy eldönthesse, frissíteni kell-e",
+	"bs-expiry-event-one-week-with-comment": "$1 lap egy héten belül elévül.<br><br> Kérjük, ellenőrizze az oldal tartalmát, hogy eldönthesse, frissíteni kell-e.<br><br> Hozzászólás az elévülésről:<br> <b>$2</b>"
+}

@@ -22,8 +22,6 @@
 	"bs-countthings-tag-countarticles-desc": "Wyświetla liczbę artykułów w wiki.",
 	"bs-countthings-tag-countusers-desc": "Pokazuje liczbę zarejestrowanych użytkowników.",
 	"bs-countthings-tag-countfiles-desc": "Wyświetla liczbę plików w wiki.",
-	"bs-countthings-tag-countcharacters-example-1": "Liczba wyrazów",
-	"bs-countthings-tag-countcharacters-example-2": "Liczba znaków",
 	"bs-countthings-droplet-articles-name": "Liczba stron",
 	"bs-countthings-droplet-characters-name": "Liczba znaków",
 	"bs-countthings-droplet-files-name": "Liczba plików",

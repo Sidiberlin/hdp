@@ -1,5 +1,7 @@
 <?php
 
+use MediaWiki\Title\Title;
+
 class BSApiPageAccessStore extends BSApiExtJSStoreBase {
 
 	/**
@@ -23,8 +25,7 @@ class BSApiPageAccessStore extends BSApiExtJSStoreBase {
 					'additional_group' => isset( $wgAdditionalGroups[$group] ),
 					'displayname' => wfMessage( "group-$group" )->exists() ?
 					wfMessage( "group-$group" ) :
-					$group
-					,
+					$group,
 				];
 			}
 			$title = Title::newFromID( $row->pp_page );

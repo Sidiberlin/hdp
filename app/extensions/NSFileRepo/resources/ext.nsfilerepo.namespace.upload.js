@@ -1,7 +1,7 @@
 ( function ( mw ) {
 
-	mw.hook( 'enhancedUpload.makeParamProcessor' ).add( function ( paramsProcessor ) {
-		paramsProcessor.processor = new nsfr.EnhancedUploadParamsProcessor();
+	mw.hook( 'enhancedUpload.makeParamProcessor' ).add( ( paramsProcessor ) => {
+		paramsProcessor.processors.push( new nsfr.EnhancedUploadParamsProcessor() );
 	} );
 
 }( mediaWiki ) );

@@ -4,12 +4,17 @@ namespace BS\ExtendedSearch\Tag;
 
 use BlueSpice\Tag\Handler;
 use BS\ExtendedSearch\Lookup;
-use Config;
-use ConfigException;
-use Message;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Html\TemplateParser;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Title\Title;
 use MWException;
-use Parser;
-use PPFrame;
 
 class TagSearchHandler extends Handler {
 	public const OPERATOR_OR = 'OR';
@@ -52,7 +57,7 @@ class TagSearchHandler extends Handler {
 		$this->parser->getOutput()->addModuleStyles( [ 'ext.blueSpiceExtendedSearch.TagSearch.styles' ] );
 		$this->parser->getOutput()->addModules( [ 'ext.blueSpiceExtendedSearch.TagSearch' ] );
 
-		$templateParser = new \TemplateParser( $this->config->get( 'TagSearchSearchFieldTemplatePath' ) );
+		$templateParser = new TemplateParser( $this->config->get( 'TagSearchSearchFieldTemplatePath' ) );
 
 		$lookup = new Lookup();
 
@@ -67,15 +72,15 @@ class TagSearchHandler extends Handler {
 		$this->handleCategories( $lookup, TagSearch::PARAM_CATEGORY_FULLNAME );
 
 		if ( count( $this->processedArgs[TagSearch::PARAM_TYPE] ) > 0 ) {
-			$lookup->addSearchInTypes( [ $this->processedArgs[TagSearch::PARAM_TYPE] ] );
+			$lookup->addSearchInTypes( $this->processedArgs[TagSearch::PARAM_TYPE] );
 		}
 		$this->modifyLookup( $lookup );
 
-		$lookup = \FormatJson::encode( $lookup );
+		$lookup = FormatJson::encode( $lookup );
 
 		$params = [
 			"placeholder" => $this->processedArgs[TagSearch::PARAM_PLACEHOLDER],
-			"action" => \SpecialPage::getTitleFor( 'SearchCenter' )->getLocalURL(),
+			"action" => SpecialPage::getTitleFor( 'SearchCenter' )->getLocalURL(),
 			"lookup_object" => $lookup,
 			"id_number" => $this->tagIdNumber,
 			"returnto" => "",
@@ -83,8 +88,8 @@ class TagSearchHandler extends Handler {
 			"button-aria-label" => Message::newFromKey( 'bs-extendedsearch-tagsearch-btn-aria-label' )->text()
 		];
 
-		$title = \RequestContext::getMain()->getTitle();
-		if ( $title instanceof \Title ) {
+		$title = RequestContext::getMain()->getTitle();
+		if ( $title instanceof Title ) {
 			$params['returnto'] = $title->getPrefixedDBkey();
 		}
 

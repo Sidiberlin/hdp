@@ -1,6 +1,6 @@
 {
 	"name": "ContentStabilization",
-	"version": "2.1.2",
+	"version": "3.1.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[http://www.hallowelt.com Hallo Welt! GmbH]"
@@ -8,9 +8,9 @@
 	"url": "https://www.mediawiki.org/wiki/Extension:ContentStabilization",
 	"descriptionmsg": "contentstabilization-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"OOJSPlus": ">= 2.0.0"
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"attributes": {
@@ -41,7 +41,8 @@
 						"class": "MediaWiki\\Extension\\ContentStabilization\\Event\\StablePointAdded",
 						"services": [ "ContentStabilization._Store" ]
 					},
-					"buckets": [ "qm" ]
+					"buckets": [ "qm" ],
+					"description": "contentstabilization-event-stable-point-added-desc"
 				}
 			}
 		},
@@ -66,10 +67,7 @@
 				"ContentStabilizationAllowFirstUnstable": "MediaWiki\\Extension\\ContentStabilization\\Integration\\ConfigDefinition\\AllowFirstUnstable::getInstance",
 				"ContentStabilizationStabilizeSMWProperties": "MediaWiki\\Extension\\ContentStabilization\\Integration\\ConfigDefinition\\StabilizeSMWProperties::getInstance",
 				"BlueSpiceExtendedSearchIndexOnlyStable": "MediaWiki\\Extension\\ContentStabilization\\Integration\\ConfigDefinition\\SearchIndexOnlyStable::getInstance",
-				"BlueSpiceUEModulePDFShowStabilizationTag": "MediaWiki\\Extension\\ContentStabilization\\Integration\\ConfigDefinition\\PDFExportShowTag::getInstance",
-				"BlueSpiceBookshelfExportListStable": "MediaWiki\\Extension\\ContentStabilization\\Integration\\ConfigDefinition\\BookshelfExportListStable::getInstance",
-				"BlueSpiceBookshelfExportListUnstable": "MediaWiki\\Extension\\ContentStabilization\\Integration\\ConfigDefinition\\BookshelfExportListUnstable::getInstance",
-				"BlueSpiceBookshelfExportListDisabled": "MediaWiki\\Extension\\ContentStabilization\\Integration\\ConfigDefinition\\BookshelfExportListDisabled::getInstance"
+				"ContentStabilizationPDFCreatorShowStabilizationTag": "MediaWiki\\Extension\\ContentStabilization\\Integration\\ConfigDefinition\\PDFExportShowTag::getInstance"
 			},
 			"AlertProviderRegistry": {
 				"contentstabilization-revisionstate": "MediaWiki\\Extension\\ContentStabilization\\Integration\\AlertProvider\\RevisionState::factory"
@@ -133,6 +131,16 @@
 			"PluginModules": [
 				"ext.contentStabilization.wikiExplorer.columns"
 			]
+		},
+		"PDFCreator": {
+			"ExportPluginModules": [
+				"ext.contentStabilization.exportmode.pdf"
+			],
+			"StylesheetsProvider": {
+				"content-stabilization": {
+					"class": "MediaWiki\\Extension\\ContentStabilization\\Integration\\PDFCreator\\StylesheetsProvider\\CSStyles"
+				}
+			}
 		}
 	},
 	"ExtensionMessagesFiles": {
@@ -151,7 +159,9 @@
 		"includes/ServiceWiring.php"
 	],
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\ContentStabilization\\": "src/",
+		"MediaWiki\\Extension\\ContentStabilization\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
 		"MediaWiki\\Extension\\ContentStabilization\\Tests\\": "tests/phpunit"
 	},
 	"ResourceModules": {
@@ -235,12 +245,21 @@
 			]
 		},
 		"ext.contentStabilization.enhanced.history": {
-			"scripts": "ext.contentStabilization.enhancedHistory.js",
+			"scripts": [
+				"ui/RemoveApprovalColumn.js",
+				"ext.contentStabilization.enhancedHistory.js"
+			],
 			"messages": [
 				"contentstabilization-versionhistory-grid-header-state",
 				"contentstabilization-versionhistory-grid-header-approver",
 				"contentstabilization-versionhistory-grid-header-approval-date",
-				"contentstabilization-versionhistory-grid-header-approval-comment"
+				"contentstabilization-versionhistory-grid-header-approval-comment",
+				"contentstabilization-versionhistory-grid-header-remove-approval-title",
+				"contentstabilization-versionhistory-remove-approval-confirm"
+			],
+			"dependencies": [
+				"ext.oOJSPlus.data",
+				"oojs-ui.styles.icons-moderation"
 			]
 		},
 		"ext.contentStabilization.workflows.editor.customElements": {
@@ -275,6 +294,11 @@
 				"contentstabilization-wikiexplorer-filter-has-draft",
 				"contentstabilization-wikiexplorer-filter-no-draft"
 			]
+		},
+		"ext.contentStabilization.exportmode.pdf": {
+			"scripts": [
+				"ext.contentStabilization.export.plugin.js"
+			]
 		}
 	},
 	"ResourceFileModulePaths": {
@@ -304,6 +328,9 @@
 		"ArticleViewHeader": [ "stabilizeContent" ],
 		"BeforeParserFetchTemplateRevisionRecord": "stabilizeContent",
 		"BeforeParserFetchFileAndTitle": "stabilizeContent",
+		"PDFCreatorAfterSetRevision": "stabilizePDFExport",
+		"PDFCreatorAfterGetDOMDocument": "stabilizePDFExport",
+		"PDFCreatorContextBeforeGetPage": "stabilizeContent",
 		"PageDeleteComplete": "stabilizeContent",
 		"PageMoveComplete": "stabilizeContent",
 		"ImagePageFindFile": "stabilizeContent",
@@ -327,10 +354,6 @@
 		"ImgAuthBeforeStream": "stabilizeImgAuthFile",
 		"BSExtendedSearchWikipageFetchRevision": "stabilizeExtendedSearch",
 		"BSExtendedSearchRepoFileGetFile": "stabilizeExtendedSearch",
-		"BSUEModulePDFgetPage": "stabilizePDFExport",
-		"BSUEModulePDFBeforeAddingStyleBlocks": [ "stabilizePDFExport", "stabilizeBookExport" ],
-		"BSUEModulePDFbeforeGetPage": "stabilizePDFExport",
-		"BSBookshelfExportBeforeArticles": "stabilizeBookExport",
 		"BSApiExtJSStoreBaseBeforePostProcessData": "addStabilizationInfoToPageAssignments",
 		"BSPageAssignmentsOverview": "addStabilizationInfoToPageAssignments",
 		"MediaWikiPerformAction": "stabilizeContent",
@@ -343,7 +366,15 @@
 		"PageSaveComplete": "autoStabilize",
 		"ParserFirstCallInit": "addDocumentStateTag",
 		"DifferenceEngineViewHeader": "stabilizeContent",
-		"NotifyMeBeforeGenerateNotification": "stabilizeNotifications"
+		"NotifyMeBeforeGenerateNotification": "stabilizeNotifications",
+		"CognitiveProcessDesignerBeforeRender": "stabilizeCognitiveProcessDesigner",
+		"getUserPermissionsErrors": "stabilizeContent",
+		"MediaWikiServices": "overrideServices",
+		"ApiQueryBaseBeforeQuery": "overrideApis",
+		"ModifyExportQuery": "overrideApis",
+		"APIGetAllowedParams": "addStabilizationDataToApiReports",
+		"APIQueryAfterExecute": "addStabilizationDataToApiReports",
+		"OutputPageBodyAttributes": "stabilizeContent"
 	},
 	"HookHandlers": {
 		"addBootstrap": {
@@ -407,13 +438,7 @@
 		},
 		"stabilizePDFExport": {
 			"class": "MediaWiki\\Extension\\ContentStabilization\\Integration\\Hook\\StabilizePDFExport",
-			"services": [ "ContentStabilization.Lookup", "TitleFactory", "ContentLanguage", "MainConfig" ]
-		},
-		"stabilizeBookExport": {
-			"class": "MediaWiki\\Extension\\ContentStabilization\\Integration\\Hook\\StabilizeBookExport",
-			"services": [
-				"ContentStabilization.Lookup", "TitleFactory", "ContentLanguage", "PageProps", "MainConfig", "HookContainer"
-			]
+			"services": [ "ContentStabilization.Lookup", "ContentLanguage", "MainConfig" ]
 		},
 		"addStabilizationInfoToPageAssignments": {
 			"class": "MediaWiki\\Extension\\ContentStabilization\\Integration\\Hook\\AddStabilizationInfoToPageAssignments",
@@ -443,6 +468,23 @@
 		"stabilizeNotifications": {
 			"class": "MediaWiki\\Extension\\ContentStabilization\\Integration\\Hook\\StabilizeNotifications",
 			"services": [ "ContentStabilization.Lookup" ]
+		},
+		"stabilizeCognitiveProcessDesigner": {
+			"class": "MediaWiki\\Extension\\ContentStabilization\\Integration\\Hook\\StabilizeCognitiveProcessDesigner",
+			"services": [
+				"ContentStabilization.Lookup", "RevisionLookup"
+			]
+		},
+		"overrideServices": {
+			"class": "MediaWiki\\Extension\\ContentStabilization\\Integration\\Hook\\OverrideServices"
+		},
+		"overrideApis": {
+			"class": "MediaWiki\\Extension\\ContentStabilization\\Integration\\Hook\\OverrideApis",
+			"services": [ "ContentStabilization.Lookup" ]
+		},
+		"addStabilizationDataToApiReports": {
+			"class": "MediaWiki\\Extension\\ContentStabilization\\Hook\\AddStabilizationDataToApiReports",
+			"services": [ "DBLoadBalancer", "TitleFactory", "ContentStabilization.Lookup" ]
 		}
 	},
 	"SpecialPages": {
@@ -497,6 +539,10 @@
 			"description": "Whether to stabilize SMW properties. If true, it will only show properties that are stable",
 			"value": true
 		},
+		"ContentStabilizationUnavailableNamespaces": {
+			"description": "Array of namespace IDs for which content stabilization cannot be enabled",
+			"value": [ -1, 8 ]
+		},
 		"ContentStabilizationDraftGroups": {
 			"description": "Array of user groups that are allowed to view draft content",
 			"value": [ "user" ]
@@ -505,23 +551,8 @@
 			"description": "Whether to only index stable content in the search index",
 			"value": false
 		},
-		"BlueSpiceUEModulePDFShowStabilizationTag": {
+		"ContentStabilizationPDFCreatorShowStabilizationTag": {
 			"value": true
-		},
-		"BlueSpiceBookshelfExportListStable": {
-			"value": true,
-			"description": "List approved revisions log",
-			"public": true
-		},
-		"BlueSpiceBookshelfExportListUnstable": {
-			"value": true,
-			"description": "List pages without stable revision",
-			"public": true
-		},
-		"BlueSpiceBookshelfExportListDisabled": {
-			"value": true,
-			"description": "List pages that do not have stabilization enabled",
-			"public": true
 		},
 		"BlueSpicePageApprovedReminderDelay": {
 			"public": false,

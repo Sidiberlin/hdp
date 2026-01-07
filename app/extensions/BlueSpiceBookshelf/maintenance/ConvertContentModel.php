@@ -1,6 +1,9 @@
 <?php
 
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use Wikimedia\Rdbms\IDatabase;
 
 require_once dirname( dirname( dirname( __DIR__ ) ) ) . '/maintenance/Maintenance.php';
 

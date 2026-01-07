@@ -19,7 +19,7 @@ class Schema extends \MWStake\MediaWiki\Component\DataStore\Schema {
 			],
 			Record::IN_SYNC => [
 				self::FILTERABLE => true,
-				self::SORTABLE => true ,
+				self::SORTABLE => true,
 				self::TYPE => FieldType::BOOLEAN
 			]
 		] );

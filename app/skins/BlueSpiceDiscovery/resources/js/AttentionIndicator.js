@@ -1,17 +1,17 @@
-( function( mw, $, d ){
-	var indicators = {};
-	var keys = [];
-	$( "[data-attentionindicator]" ).each( function() {
-		indicators[$(this).data( 'attentionindicator' )] = $( this );
-		keys.push( $(this).data( 'attentionindicator' ) );
+( function ( mw, $ ) {
+	const indicators = {};
+	const keys = [];
+	$( '[data-attentionindicator]' ).each( function () {
+		indicators[ $( this ).data( 'attentionindicator' ) ] = $( this );
+		keys.push( $( this ).data( 'attentionindicator' ) );
 	} );
 	if ( keys.length < 1 ) {
 		return;
 	}
-	mw.loader.using( 'ext.bluespice' ).done( function() {
-		var callback = function( result, Listener ) {
-			var indication = false;
-			if( result.success !== true ) {
+	mw.loader.using( 'ext.bluespice' ).done( () => {
+		const callback = function ( result, Listener ) { // eslint-disable-line no-unused-vars
+			let indication = false;
+			if ( result.success !== true ) {
 				return;
 			}
 			BSPing.registerListener(
@@ -22,29 +22,29 @@
 			);
 			let msg = false;
 			let $children = [];
-			for ( var i in result.indicators ) {
-				if ( !indicators[i] ) {
+			for ( const i in result.indicators ) {
+				if ( !indicators[ i ] ) {
 					continue;
 				}
-				if( result.indicators[i] ) {
-					if ( !indicators[i].hasClass( 'attention-indicator' ) ) {
+				if ( result.indicators[ i ] ) {
+					if ( !indicators[ i ].hasClass( 'attention-indicator' ) ) {
 						msg = mw.message( 'bs-discovery-requires-attention' );
-						$span = $( '<span>' );
+						const $span = $( '<span>' );
 						$span.addClass( 'visually-hidden' );
 						$span.html( msg.escaped() );
-						indicators[i].append( $span );
+						indicators[ i ].append( $span );
 					}
-					indicators[i].addClass( 'attention-indicator' );
+					indicators[ i ].addClass( 'attention-indicator' );
 					indication = true;
 					continue;
 				}
-				if ( indicators[i].hasClass( 'attention-indicator' ) ) {
-					$children = indicators[i].children( '.visually-hidden' );
+				if ( indicators[ i ].hasClass( 'attention-indicator' ) ) {
+					$children = indicators[ i ].children( '.visually-hidden' );
 					if ( $children.length > 0 ) {
 						$children.first().remove();
 					}
 				}
-				indicators[i].removeClass( 'attention-indicator' );
+				indicators[ i ].removeClass( 'attention-indicator' );
 			}
 			if ( indication ) {
 				$( '#usr-btn' ).addClass( 'attention-indicator' );
@@ -67,4 +67,4 @@
 		);
 
 	} );
-} )( mediaWiki, jQuery, document );
+}( mediaWiki, jQuery ) );

@@ -32,10 +32,11 @@
 	"menueditor-ui-dialog-title": "Уреди елемент",
 	"menueditor-ui-mediawiki-sidebar-keyword-label-edit": "Уреди клучен збор",
 	"menueditor-ui-mediawiki-sidebar-keyword-label": "Клучен збор",
-	"menueditor-toolbar-submit": "Зачувај промени",
 	"menueditor-toolbar-cancel": "Откажи уредување",
 	"menueditor-toolbar-add-label": "Додај елемент",
 	"menueditor-ui-edit-label": "Уреди",
 	"menueditor-ui-add-sub-element-label": "Додај поделемент",
-	"menueditor-footerlinks-banner-text": "Некои врски може да бидат ставени автоматски од додаток. Погледајте ја поставеноста на додатокот за да дознаете повеќе."
+	"menueditor-footerlinks-banner-text": "Некои врски може да бидат ставени автоматски од додаток. Погледајте ја поставеноста на додатокот за да дознаете повеќе.",
+	"menueditor-toolbar-save": "Зачувај",
+	"menueditor-ui-cancel-confirmation": "Дали сигурно сакате да го откажете уредувањето? Со тоа ќе ги изгубите сите незачувани измени."
 }

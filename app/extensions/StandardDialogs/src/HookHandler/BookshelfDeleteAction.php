@@ -4,7 +4,7 @@ namespace MediaWiki\Extension\StandardDialogs\HookHandler;
 
 use BlueSpice\Bookshelf\Hook\BSBookshelfBooksOverviewBeforeSetBookActions;
 use MediaWiki\Extension\StandardDialogs\BookOverviewActions\BookOverviewDelete;
-use Title;
+use MediaWiki\Title\Title;
 
 class BookshelfDeleteAction implements BSBookshelfBooksOverviewBeforeSetBookActions {
 

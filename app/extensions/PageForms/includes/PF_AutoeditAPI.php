@@ -6,8 +6,12 @@
  * @ingroup PageForms
  */
 
+use MediaWiki\EditPage\EditPage;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Request\FauxRequest;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
 
 /**
  * @ingroup PageForms
@@ -208,6 +212,7 @@ class PFAutoeditAPI extends ApiBase {
 			}
 		} else {
 			$this->mOptions['target'] = '';
+			$this->mOptions['blankTarget'] = true;
 		}
 
 		// Normalize form and target names
@@ -419,27 +424,50 @@ class PFAutoeditAPI extends ApiBase {
 
 		$services = MediaWikiServices::getInstance();
 		$permManager = $services->getPermissionManager();
-		$permErrors = $permManager->getPermissionErrors( 'edit', $user, $title );
 
-		// if this title needs to be created, user needs create rights
-		if ( !$title->exists() ) {
-			$permErrorsForCreate = $permManager->getPermissionErrors( 'create', $user, $title );
-			$permErrors = array_merge( $permErrors, wfArrayDiff2( $permErrorsForCreate, $permErrors ) );
-		}
+		if ( method_exists( $permManager, 'getPermissionStatus' ) ) {
+			// MW 1.43+
+			$permStatus = $permManager->getPermissionStatus( 'edit', $user, $title );
 
-		if ( $permErrors ) {
-			// Auto-block user's IP if the account was "hard" blocked
-			$user->spreadAnyEditBlock();
-
-			foreach ( $permErrors as $error ) {
-				$this->logMessage( call_user_func_array( 'wfMessage', $error )->parse() );
+			// if this title needs to be created, user needs create rights
+			if ( !$title->exists() ) {
+				$permStatusForCreate = $permManager->getPermissionStatus( 'create', $user, $title );
+				$permStatus->merge( $permStatusForCreate );
 			}
 
-			return;
+			if ( !$permStatus->isOK() ) {
+				// Auto-block user's IP if the account was "hard" blocked
+				$user->spreadAnyEditBlock();
+
+				foreach ( $permStatus->getMessages() as $errorMsg ) {
+					$this->logMessage( wfMessage( $errorMsg )->parse() );
+				}
+
+				return;
+			}
+		} else {
+			// MW < 1.43
+			$permErrors = $permManager->getPermissionErrors( 'edit', $user, $title );
+
+			// if this title needs to be created, user needs create rights
+			if ( !$title->exists() ) {
+				$permErrorsForCreate = $permManager->getPermissionErrors( 'create', $user, $title );
+				$permErrors = array_merge( $permErrors, wfArrayDiff2( $permErrorsForCreate, $permErrors ) );
+			}
+
+			if ( $permErrors ) {
+				// Auto-block user's IP if the account was "hard" blocked
+				$user->spreadAnyEditBlock();
+
+				foreach ( $permErrors as $error ) {
+					$this->logMessage( call_user_func_array( 'wfMessage', $error )->parse() );
+				}
+
+				return;
+			}
 		}
 
 		$resultDetails = [];
-		$isBot = $user->isAllowed( 'bot' );
 
 		$request = $editor->pfFauxRequest;
 		if ( $this->tokenOk( $request ) ) {
@@ -451,7 +479,7 @@ class PFAutoeditAPI extends ApiBase {
 			// @todo Make a real fix for this.
 			// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 			@$ctx->setTitle( $title );
-			$status = $editor->internalAttemptSave( $resultDetails, $isBot );
+			$status = $editor->attemptSave( $resultDetails );
 			// phpcs:ignore Generic.PHP.NoSilencedErrors.Discouraged
 			@$ctx->setTitle( $tempTitle );
 		} else {
@@ -591,6 +619,7 @@ class PFAutoeditAPI extends ApiBase {
 				$this->logMessage( 'User tried to create a blank page', self::DEBUG );
 				try {
 					$contextTitle = $editor->getContextTitle();
+				// @phan-suppress-next-line PhanUnusedVariableCaughtException
 				} catch ( Exception $e ) {
 					// getContextTitle() throws an exception
 					// if there's no context title - this
@@ -662,7 +691,12 @@ class PFAutoeditAPI extends ApiBase {
 				// so that pages in the File: namespace won't
 				// cause the actual image to be displayed.
 				$targetText = ':' . $this->mOptions['target'] . '|' . $this->mOptions['target'];
-				$responseText = $this->msg( 'pf_autoedit_success', $targetText, $this->mOptions['form'] )->parse();
+				if ( array_key_exists( 'blankTarget', $this->mOptions ) ) {
+					$successMsg = 'pf_autoedit_newpagesuccess';
+				} else {
+					$successMsg = 'pf_autoedit_success';
+				}
+				$responseText = $this->msg( $successMsg, $targetText, $this->mOptions['form'] )->parse();
 			} else {
 				$responseText = null;
 			}
@@ -1221,7 +1255,6 @@ class PFAutoeditAPI extends ApiBase {
 				$array[$key] = [];
 			}
 
-			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset
 			self::addToArray( $array[$key], $matches[2] . $matches[3], $value, false );
 		} else {
 			if ( $key ) {

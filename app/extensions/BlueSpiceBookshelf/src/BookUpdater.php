@@ -2,8 +2,8 @@
 
 namespace BlueSpice\Bookshelf;
 
-use Title;
-use TitleFactory;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\LoadBalancer;
 
@@ -77,7 +77,8 @@ class BookUpdater {
 				'book_title' => $bookData->getTitle(),
 				'book_name' => $bookData->getName(),
 				'book_type' => $bookData->getType(),
-			]
+			],
+			__METHOD__
 		);
 
 		if ( !$res ) {

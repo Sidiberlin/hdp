@@ -4,7 +4,7 @@ declare( strict_types = 1 );
 
 namespace MediaWiki\Extension\ContentDroplets\Droplet;
 
-use Message;
+use MediaWiki\Message\Message;
 
 class CodeDroplet extends GenericDroplet {
 

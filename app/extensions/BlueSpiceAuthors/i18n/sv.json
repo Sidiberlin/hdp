@@ -13,11 +13,6 @@
 	"bs-authors-profileimage": "Profilbild",
 	"bs-authors-profileimage-change": "Ändra profilbild",
 	"bs-authors-show-all-authors": "Fler författare tillgängliga",
-	"bs-authors-pref-show": "Visa författare",
-	"bs-authors-switch-description": "Döljer författarna för denna sida.",
 	"bs-authors-navigation-link-title": "Författarna till denna sida",
-	"bs-authors-navigation-link-text": "Författare",
-	"bs-authors-flyout-title": "Författare till denna sida",
-	"bs-authors-author-type-originator": "Upphovsförfattare",
-	"bs-authors-author-type-editor": "Redaktörer"
+	"bs-authors-navigation-link-text": "Författare"
 }

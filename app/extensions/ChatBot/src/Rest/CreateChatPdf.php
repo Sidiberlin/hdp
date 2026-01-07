@@ -2,65 +2,76 @@
 
 namespace ChatBot\Rest;
 
-use BlueSpice\UEModulePDF\PDFServletHookRunner;
-use BsPDFServlet;
 use ChatBot\Model\ChatMessage;
 use ChatBot\Model\ChatMessageFactory;
-use Config;
-use ConfigFactory;
 use DateTime;
 use DOMDocument;
 use DOMDocumentFragment;
 use DOMException;
-use Html;
+use Exception;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Extension\PDFCreator\Factory\ExportSpecificationFactory;
+use MediaWiki\Extension\PDFCreator\PDFCreator;
+use MediaWiki\Extension\PDFCreator\Utility\ExportContext;
+use MediaWiki\Html\Html;
+use MediaWiki\Message\Message;
 use MediaWiki\Rest\Response;
 use MediaWiki\Rest\SimpleHandler;
-use MediaWiki\Rest\Validator\JsonBodyValidator;
-use Message;
-use MWException;
 use TitleFactory;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class CreateChatPdf extends SimpleHandler {
-	/** @var ChatMessageFactory */
-	private ChatMessageFactory $chatMessageFactory;
-	/** @var Config */
-	private Config $config;
-	/** @var TitleFactory */
-	private TitleFactory $titleFactory;
 
 	/**
 	 * @param ChatMessageFactory $chatMessageFactory
-	 * @param ConfigFactory $configFactory
 	 * @param TitleFactory $titleFactory
+	 * @param PDFCreator $pdfCreator
+	 * @param ExportSpecificationFactory $specificationFactory
 	 */
 	public function __construct(
-		ChatMessageFactory $chatMessageFactory,
-		ConfigFactory $configFactory,
-		TitleFactory $titleFactory
+		private readonly ChatMessageFactory $chatMessageFactory,
+		private readonly TitleFactory $titleFactory,
+		private readonly PDFCreator $pdfCreator,
+		private readonly ExportSpecificationFactory $specificationFactory
 	) {
-		$this->chatMessageFactory = $chatMessageFactory;
-		$this->config = $configFactory->makeConfig( 'bsg' );
-		$this->titleFactory = $titleFactory;
 	}
 
 	/**
 	 * @return Response
-	 * @throws MWException
 	 * @throws DOMException
+	 * @throws Exception
 	 */
 	public function execute() {
 		$history = $this->getValidatedBody()['history'];
-		$chatMessages = $this->chatMessageFactory->makeMessages( $history );
 		$filename = $this->getValidatedParams()['filename'];
 
-		$doc = $this->createDomDocument( $chatMessages );
-		$pdfByteArray = $this->createPdfByteArray( $doc, $filename );
+		$chatMessages = $this->chatMessageFactory->makeMessages( $history );
+		$dom = $this->createDomDocument( $chatMessages );
+
+		$result = $this->pdfCreator->create(
+			$this->specificationFactory->createNewSpec( [
+				'module' => 'chatbot-pdf-export',
+				'target' => 'download',
+				'params' => [
+					'dom' => $dom,
+					'template' => 'StandardPDF'
+				],
+			] ),
+			new ExportContext(
+				RequestContext::getMain()->getUser(), $this->titleFactory->newFromText( $filename )
+			)
+		);
+
+		$exportResult = $result->getResult();
+		$exportData = $exportResult->getData();
+		$pdfData = $exportData['data'];
 
 		$response = $this->getResponseFactory()->create();
 		$response->setHeader( 'Content-Type', 'application/pdf' );
 		$response->setHeader( 'Content-Disposition', 'attachment; filename=' . $filename );
-		$response->getBody()->write( $pdfByteArray );
+		$response->setHeader( 'Content-Length', strlen( $pdfData ) );
+		$response->setHeader( 'X-Filename', $filename );
+		$response->getBody()->write( $pdfData );
 
 		return $response;
 	}
@@ -85,16 +96,18 @@ class CreateChatPdf extends SimpleHandler {
 		$body = $doc->createElement( 'body' );
 		$html->appendChild( $body );
 
+		$wrapper = $doc->createElement( 'div', '' );
+
 		$headline = $doc->createElement( 'p' );
 		$headline->textContent = Message::newFromKey( 'chat-pdf-title' )->text();
-		$body->appendChild( $headline );
+		$wrapper->appendChild( $headline );
 
 		$dataTable = $this->getDataTableHtml( $doc );
-		$body->appendChild( $dataTable );
+		$wrapper->appendChild( $dataTable );
 
 		$chatheading = $doc->createElement( 'p' );
 		$chatheading->textContent = 'Vollständiger Chatverlauf';
-		$body->appendChild( $chatheading );
+		$wrapper->appendChild( $chatheading );
 
 		$content = $doc->createDocumentFragment();
 		$chatTable = Html::openElement( 'table', [
@@ -148,40 +161,14 @@ class CreateChatPdf extends SimpleHandler {
 		}
 		$chatTable .= Html::closeElement( 'table' );
 		$content->appendXML( $chatTable );
-		$body->appendChild( $content );
+		$wrapper->appendChild( $content );
 
 		$banner = $this->getBannerHtml( $doc );
-		$body->appendChild( $banner );
+		$wrapper->appendChild( $banner );
+
+		$body->appendChild( $wrapper );
 
 		return $doc;
-	}
-
-	/**
-	 * @param DOMDocument $doc
-	 * @param string $filename
-	 *
-	 * @return string
-	 * @throws MWException
-	 */
-	private function createPdfByteArray( DOMDocument $doc, string $filename ): string {
-		$hookContainer = $this->getHookContainer();
-		$hookRunner = new PDFServletHookRunner( $hookContainer );
-
-		if ( !$this->config->has( 'UEModulePDFPdfServiceURL' ) ) {
-			throw new MWException( 'UEModulePDFPdfServiceURL is not set' );
-		}
-
-		$params = [
-			'format' => 'pdf',
-			'module' => 'pdf',
-			'title' => 'Chat',
-			'display-title' => 'Chat',
-			'soap-service-url' => $this->config->get( 'UEModulePDFPdfServiceURL' ),
-			'document-token' => md5( $filename ),
-		];
-		$backend = new BsPDFServlet( $params, $hookRunner );
-
-		return $backend->createPDF( $doc );
 	}
 
 	/**
@@ -198,22 +185,16 @@ class CreateChatPdf extends SimpleHandler {
 	}
 
 	/**
-	 * @param string $contentType
-	 *
-	 * @return JsonBodyValidator
+	 * @inheritDoc
 	 */
-	public function getBodyValidator( $contentType ) {
-		if ( $contentType !== 'application/json' ) {
-			return null;
-		}
-
-		return new JsonBodyValidator( [
+	public function getBodyParamSettings(): array {
+		return [
 			'history' => [
-				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_TYPE => 'array',
 				ParamValidator::PARAM_REQUIRED => true,
 				ParamValidator::PARAM_DEFAULT => ''
-			],
-		] );
+			]
+		];
 	}
 
 	/**
@@ -222,7 +203,7 @@ class CreateChatPdf extends SimpleHandler {
 	 *
 	 * @return DOMDocumentFragment
 	 */
-	private function getBannerHtml( $doc ) {
+	private function getBannerHtml( $doc ): DOMDocumentFragment {
 		// To have wikitext parsable its necessary to create a fragment here - ERM37507
 		$fragment = $doc->createDocumentFragment();
 		$bannerDiv = Html::openElement( 'div', [

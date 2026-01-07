@@ -5,7 +5,6 @@
 		]
 	},
 	"importofficefiles-desc": "Leidžia importuoti „Office“ failus kaip viki puslapius",
-	"importofficefiles-ui-action-import-msword-text": "Importuoti Word failą",
 	"importofficefiles-ui-action-import-msword-title": "Sukurkite puslapius iš „Microsoft Word“ failo",
 	"importofficefiles-ui-import-dialog-title": "Importuoti failą",
 	"importofficefiles-ui-import-completed": "Importavimas baigtas!",

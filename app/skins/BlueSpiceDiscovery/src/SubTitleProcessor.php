@@ -109,14 +109,14 @@ class SubTitleProcessor {
 	 */
 	private function checkSubpages() {
 		$hasSubpages = preg_match(
-			'#(<span class="subpages">)(.*?)(<\/span>)#',
+			'#(<div class="subpages">)(.*?)(<\/div>)#',
 			$this->subtitle,
 			$matches
 		);
 		if ( $hasSubpages ) {
 			$this->subpages = $matches[0];
 			$this->subtitle = preg_replace(
-			'#(<span class="subpages">)(.*?)(<\/span>)#',
+			'#(<div class="subpages">)(.*?)(<\/div>)#',
 			'',
 			$this->subtitle );
 		}

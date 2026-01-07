@@ -11,7 +11,7 @@
  */
 
 $moduleTemplate = [
-	'localBasePath' => __DIR__ ,
+	'localBasePath' => __DIR__,
 	'remoteExtPath' => 'SemanticResultFormats'
 ];
 
@@ -148,9 +148,9 @@ return [
 		],
 		'dependencies' => [
 			'ext.srf',
-			'ext.jquery.jStorage',
 			'ext.jquery.blockUI',
 			'jquery.client',
+			'mediawiki.storage',
 			'mediawiki.Title',
 		],
 		'group' => 'ext.srf'
@@ -569,7 +569,7 @@ return [
 
 	// D3
 	'ext.d3.core' => $moduleTemplate + [
-		'scripts' => 'resources/jquery/d3/d3.v3.js'
+		'scripts' => 'resources/jquery/d3/d3.min.js'
 	],
 
 	//
@@ -780,7 +780,8 @@ return [
 			],
 			'dependencies' => [
 				'ext.srf.filtered.calendar-view.messages',
-				'ext.jquery.fullcalendar'
+				// included using gulp
+				// 'ext.jquery.fullcalendar'
 			],
 		],
 
@@ -924,17 +925,6 @@ return [
 		'group' => 'ext.srf'
 	],
 
-	// jQuery DataTables
-	'jquery.dataTables' => $moduleTemplate + [
-		'scripts' => 'resources/jquery/datatables/datatables.min.js',
-		'position' => 'top'
-	],
-
-	// DataTables extras
-	'jquery.dataTables.extras' => $moduleTemplate + [
-		'scripts'  => 'resources/jquery/datatables/jquery.dataTables.extras.js',
-	],
-
 	'ext.srf.carousel.module' => $moduleTemplate + [
 		'styles' => [
 			'resources/slick/slick.css',
@@ -953,7 +943,6 @@ return [
 			'carousel/resources/ext.srf.formats.carousel.css'
 		],
 		'dependencies' => [
-			'ext.smw.dataItem',
 			'ext.smw.api',
 			'ext.srf.api',
 			'ext.srf.util',
@@ -966,7 +955,7 @@ return [
 			'datatables/resources/ext.srf.formats.datatables.js',
 		],
 		'styles'  => [
-			 'datatables/resources/ext.srf.formats.datatables.css'
+			 'datatables/resources/ext.srf.formats.datatables.less'
 		],
 		'dependencies' => [
 			'ext.srf.datatables.v2.module',
@@ -979,10 +968,13 @@ return [
 			'ext.srf.widgets'
 		],
 		'messages' => [
+			'search',
 			'srf-ui-datatables-label-conditions',
 			'srf-ui-datatables-label-parameters',
 			'srf-ui-datatables-label-filters',
 			'srf-ui-datatables-label-information',
+			'srf-ui-datatables-label-rows',
+			'srf-ui-datatables-label-rows-all',
 			'srf-ui-datatables-panel-disclaimer',
 			'srf-ui-datatables-refresh-button-title',
 			'srf-ui-datatables-panel-switch-button-title',
@@ -1017,10 +1009,13 @@ return [
 
 	'ext.srf.datatables.v2.module' => $moduleTemplate + [
 		'scripts' => [
-			'resources/jquery/datatables/datatables.min.js',
-			'resources/jquery/datatables/jquery.dataTables.extras.js',
+			'resources/jquery/datatables/object_hash.js',
+			'resources/jquery/datatables/jquery.mark.min.js',
+			'resources/jquery/datatables/datatables.mark.min.js',
+			'resources/jquery/datatables/datatables.min.js'
 		],
 		'styles'  => [
+			'resources/jquery/datatables/datatables.mark.min.css',
 			'resources/jquery/datatables/datatables.min.css',
 		]
 	],

@@ -27,5 +27,6 @@
 	"simple-tasks-taskreport-state-title-open": "任務已開放",
 	"simple-tasks-taskreport-state-title-done": "任務已完成",
 	"simple-tasks-taskreport-state-filter-done": "完成",
-	"simple-tasks-taskreport-state-filter-open": "開放"
+	"simple-tasks-taskreport-state-filter-open": "開放",
+	"simple-tasks-notif-message-with-due-date": "{{GENDER:$1|已分配}}一個任務給您：「$1」。任務截止於 $2"
 }

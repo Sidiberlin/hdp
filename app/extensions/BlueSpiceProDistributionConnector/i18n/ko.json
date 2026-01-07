@@ -11,5 +11,8 @@
 	"bs-pro-distribution-pdfembed-inspector-height-label": "높이",
 	"bs-pro-distribution-pdfembed-inspector-title": "PDF 포함",
 	"bs-pro-distribution-pdfembed-droplet-name": "PDF 미리 보기",
-	"bs-pro-distribution-pdfembed-droplet-description": "위키페이지에 PDF 파일의 미리 보기 포함"
+	"bs-pro-distribution-pdfembed-droplet-description": "위키페이지에 PDF 파일의 미리 보기 포함",
+	"bs-pro-distribution-config-comment-streams-enabled": "의견",
+	"bs-pro-distribution-config-link-titles-source-ns": "원본 이름공간",
+	"bs-pro-distribution-config-link-titles-target-ns": "대상 이름공간"
 }

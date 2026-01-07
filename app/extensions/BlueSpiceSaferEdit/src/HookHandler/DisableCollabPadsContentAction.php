@@ -3,10 +3,10 @@
 namespace BlueSpice\SaferEdit\HookHandler;
 
 use BlueSpice\Discovery\ITemplateDataProvider;
-use Config;
-use ConfigFactory;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Extension\CollabPads\Hook\CollabPadsAfterAddContentActionHook;
-use Title;
+use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class DisableCollabPadsContentAction implements CollabPadsAfterAddContentActionHook {

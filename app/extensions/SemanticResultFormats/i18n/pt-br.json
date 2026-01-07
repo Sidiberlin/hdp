@@ -23,9 +23,6 @@
 	"prefs-srf-eventcalendar-options": "Opções do calendário de eventos",
 	"srf-prefs-eventcalendar-options-update-default": "Habilitar as [https://www.semantic-mediawiki.org/wiki/Help:User_preferences#Automatic_updates atualizações automáticas] dos eventos de calendário durante a atualização da página",
 	"srf-prefs-eventcalendar-options-paneview-default": "Habilite a exibição do painel por padrão",
-	"prefs-srf-datatables-options": "Opções do DataTables",
-	"srf-prefs-datatables-options-update-default": "Habilitar as [https://www.semantic-mediawiki.org/wiki/Help:User_preferences#Automatic_updates atualizações automáticas] do conteúdo da tabela durante a atualização da página",
-	"srf-prefs-datatables-options-cache-default": "Habilitar o [https://www.semantic-mediawiki.org/wiki/Help:User_preferences#Local_storage armazenamento local] para melhorar o tempo de resposta",
 	"srf-paramdesc-datatables-library-option": "opção de datatables nativa",
 	"srf-module-loading": "Carregando...",
 	"srf-paramdesc-layout": "Layout disponível",
@@ -211,10 +208,9 @@
 	"srf-paramdesc-debug": "Define se o código do gráfico do processo deve ser mostrado etiquetas previas envolvidas",
 	"srf-paramdesc-graphvalidation": "Exibe as etapas do processo em vermelho que não possuem função atribuída",
 	"srf-printername-datatables": "DataTables",
-	"srf-printername-datatables-legacy": "DataTables (legada)",
 	"srf-ui-datatables-label-conditions": "Condições",
 	"srf-ui-datatables-label-parameters": "Parâmetros",
-	"srf-ui-datatables-label-filters": "Filtros de coluna e busca",
+	"srf-ui-datatables-label-filters": "Filtros",
 	"srf-ui-datatables-label-information": "Informação",
 	"srf-ui-datatables-panel-disclaimer": "Parâmetros e condições podem ser alteradas, mas qualquer mudança é temporária e abandonada após uma atualização da página.",
 	"srf-ui-datatables-refresh-button-title": "atualizar tabela",
@@ -379,5 +375,6 @@
 	"srf-error-gantt-mermaid-not-installed": "A Extensão Mermaid precisa ser instalado.",
 	"srf-printername-gantt": "Gantt",
 	"srf-paramdesc-nodelabel": "Use um rótulo de nó de gráfico. Valores permitidos: displaytitle.",
-	"srf-paramdesc-graphfields": "Exibe valores de propriedades que não são de páginas dentro dos nós do gráfico, em vez de arestas."
+	"srf-paramdesc-graphfields": "Exibe valores de propriedades que não são de páginas dentro dos nós do gráfico, em vez de arestas.",
+	"srf-printername-mode": "Modo"
 }

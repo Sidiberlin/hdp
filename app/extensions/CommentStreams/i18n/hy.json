@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac"
+		]
+	},
+	"commentstreams-author-anonymous": "անանուն",
+	"commentstreams-buttontooltip-edit": "խմբագրել",
+	"commentstreams-buttontooltip-delete": "ջնջել",
+	"commentstreams-buttontooltip-permalink": "մշտական հղում",
+	"commentstreams-buttontooltip-collapse": "ծալել",
+	"commentstreams-buttontooltip-expand": "բացել",
+	"commentstreams-buttontooltip-watch": "հսկել",
+	"commentstreams-buttontooltip-cancel": "չեղարկել",
+	"commentstreams-dialog-buttontext-ok": "Լավ",
+	"commentstreams-dialog-buttontext-cancel": "Չեղարկել",
+	"commentstreams-dialog-buttontext-yes": "Այո",
+	"commentstreams-dialog-buttontext-no": "Ոչ",
+	"commentstreams-ui-close": "Փակել",
+	"commentstreams-history-timestamp": "ժամանակ",
+	"commentstreams-history-actor": "Հեղինակ",
+	"commentstreams-history-text": "Մեկնաբանություն",
+	"commentstreams-button-add-comment": "Ավելացնել մեկնաբանություն",
+	"commentstreams-button-cancel": "Չեղարկել",
+	"commentstreams-event-new-comment-desc": "Նոր մեկնաբանություն"
+}

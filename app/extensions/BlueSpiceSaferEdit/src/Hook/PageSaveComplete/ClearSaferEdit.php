@@ -9,6 +9,7 @@ class ClearSaferEdit extends PageSaveComplete {
 	protected function doProcess() {
 		$seManager = $this->getServices()->getService( 'BSSaferEditManager' );
 		$title = $this->wikiPage->getTitle();
-		return $seManager->doClearSaferEdit( $this->user, $title );
+		$status = $seManager->doClearSaferEdit( $this->user, $title );
+		return $status->isOk();
 	}
 }

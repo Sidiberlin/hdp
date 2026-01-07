@@ -2,6 +2,7 @@
 
 namespace MediaWiki\Extension\NotifyMe\Rest;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\NotifyMe\MediaWiki\Data\WebNotifications\Store;
 use MediaWiki\Extension\NotifyMe\NotificationSerializer;
 use MediaWiki\Extension\NotifyMe\Storage\NotificationStore;
@@ -11,7 +12,6 @@ use MediaWiki\Rest\Response;
 use MWStake\MediaWiki\Component\CommonWebAPIs\Rest\QueryStore;
 use MWStake\MediaWiki\Component\DataStore\IStore;
 use MWStake\MediaWiki\Component\DataStore\ResultSet;
-use RequestContext;
 use Wikimedia\ParamValidator\ParamValidator;
 use Wikimedia\Rdbms\ILoadBalancer;
 
@@ -77,7 +77,8 @@ class RetrieveWebNotificationsHandler extends QueryStore {
 		return $this->getResponseFactory()->createJson( [
 			'results' => $result->getRecords(),
 			'total' => $result->getTotal(),
-			'processed' => $result->getProcessedCount()
+			'processed' => $result->getProcessedCount(),
+			'items_total' => $result->getItemsCount()
 		] );
 	}
 

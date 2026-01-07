@@ -8,5 +8,6 @@
 	"unifiedtaskoverview": "Mi cargas",
 	"unifiedtaskoverview-label-no-task": "Actualmente il non ha cargas a complir.",
 	"unifiedtaskoverview-personal-url-my-tasks": "Cargas",
-	"unifiedtaskoverview-search-placeholder": "Cercar"
+	"unifiedtaskoverview-search-placeholder": "Cercar",
+	"unifiedtaskoverview-no-login-text": "Per favor aperi session pro vider tu cargas"
 }

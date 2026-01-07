@@ -5,7 +5,15 @@
 			"Toliño"
 		]
 	},
-	"nsfilerepo-desc": "Proporciona características baseadas en espazos de nomes para ficheiros cargados",
-	"nsfilerepo-upload-target": "Nombre de ficheiro destino no espazo de nomes",
-	"nsfilerepo-nsmain": "(Principal)"
+	"nsfilerepo-desc": "Proporciona características baseadas no espazo de nomes para ficheiros subidos",
+	"nsfilerepo-upload-target": "Nome do ficheiro de destino no espazo de nomes",
+	"nsfilerepo-nsmain": "(Principal)",
+	"nsfilerepo-reupload-namespaceselector-disabled-helptext": "Este campo non se pode modificar ao subir de novo un ficheiro",
+	"nsfilerepo-move-file-namespace-action-label": "Definir o espazo de nomes do ficheiro",
+	"nsfilerepo-move-file-namespace-dialog-title": "Definir o espazo de nomes do ficheiro",
+	"nsfilerepo-move-file-namespace-dialog-button-done": "Feito",
+	"nsfilerepo-move-file-namespace-dialog-button-cancel": "Cancelar",
+	"nsfilerepo-move-file-namespace-dialog-namespaceselector-label": "Espazo de nomes",
+	"nsfilerepo-upload-file-namespace-namespaceselector-label": "Espazo de nomes",
+	"nsfilerepo-enhanced-filelist-grid-namespace-title": "Espazo de nomes"
 }

@@ -2,22 +2,22 @@
 
 namespace BS\ExtendedSearch\Source\DocumentProvider;
 
-use Content;
+use MediaWiki\Content\Content;
 use MediaWiki\Content\Renderer\ContentRenderer;
+use MediaWiki\Content\TextContent;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Page\PageProps;
 use MediaWiki\Page\RedirectLookup;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionRenderer;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
 use MWException;
-use PageProps;
-use Parser;
-use ParserOutput;
-use TextContent;
-use Title;
-use User;
 use WikiPage as WikiPageObject;
 
 class WikiPage extends Base {
@@ -98,6 +98,7 @@ class WikiPage extends Base {
 		}
 
 		$aDC = array_merge( $aDC, [
+			'uri' => $this->title->getFullURL(),
 			'basename' => $this->title->getBaseText(),
 			'basename_exact' => $this->title->getBaseText(),
 			'extension' => 'wiki',
@@ -187,11 +188,11 @@ class WikiPage extends Base {
 	 * @return string
 	 */
 	protected function getHTMLContent() {
-		$sHtml = $this->parserOutput->getText( [
+		$html = $this->parserOutput->runOutputPipeline( \ParserOptions::newFromAnon(), [
 			'allowTOC' => false,
 			'enableSectionEditLinks' => false
-		] );
-		return $this->stripTags( $sHtml );
+		] )->getRawText() ?? '';
+		return $this->stripTags( $html );
 	}
 
 	/**
@@ -213,8 +214,15 @@ class WikiPage extends Base {
 	 * @return string
 	 */
 	protected function stripTags( $sText ) {
+		// Replace whole `<styles>...</styles>` blocks with a space
+		$sText = preg_replace( '/<style[^>]*>.*?<\/style>/is', ' ', $sText );
 		$sText = strip_tags( $sText );
 		$sText = preg_replace( '/<!--(.|\s)*?-->/', '', $sText );
+		// Replace all variables with a space
+		$sText = preg_replace( '/\{\{[^}]*\}\}/', ' ', $sText );
+		$sText = preg_replace( '/__[^_]*__/', ' ', $sText );
+		// Remove excess line breaks and empty lines
+		$sText = preg_replace( '/\n{2,}/', "\n", $sText );
 		return trim( $sText );
 	}
 
@@ -355,7 +363,7 @@ class WikiPage extends Base {
 			return '';
 		}
 		if ( $title->getNamespace() === NS_MAIN ) {
-			return wfMessage( 'bs-ns_main' )->plain();
+			return wfMessage( 'bs-ns_main' )->text();
 		}
 		return $title->getNsText();
 	}

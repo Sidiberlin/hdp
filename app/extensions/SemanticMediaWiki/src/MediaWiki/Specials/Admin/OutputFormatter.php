@@ -2,13 +2,15 @@
 
 namespace SMW\MediaWiki\Specials\Admin;
 
-use FormatJson;
-use Html;
-use OutputPage;
-use SMW\Message;
+use MediaWiki\Html\Html;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Skin\SkinComponentUtils;
+use MediaWiki\SpecialPage\SpecialPage;
+use SMW\Localizer\Message;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since   2.5
  *
  * @author mwjames
@@ -99,11 +101,7 @@ class OutputFormatter {
 	 * @param string $text
 	 */
 	public function addWikiText( $text ) {
-		if ( method_exists( $this->outputPage, 'addWikiTextAsInterface' ) ) {
-			$this->outputPage->addWikiTextAsInterface( $text );
-		} else {
-			$this->outputPage->addWikiText( $text );
-		}
+		$this->outputPage->addWikiTextAsInterface( $text );
 	}
 
 	/**
@@ -112,8 +110,7 @@ class OutputFormatter {
 	 * @param string $fragment
 	 */
 	public function redirectToRootPage( $fragment = '', $query = [] ) {
-
-		$title = \SpecialPage::getTitleFor( 'SMWAdmin' );
+		$title = SpecialPage::getTitleFor( 'SMWAdmin' );
 		$title->setFragment( ' ' . $fragment );
 
 		$this->outputPage->redirect( $title->getFullURL( $query ) );
@@ -136,7 +133,11 @@ class OutputFormatter {
 	 * @param array $query
 	 */
 	public function createSpecialPageLink( $caption = '', $query = [] ) {
-		return '<a href="' . htmlspecialchars( \SpecialPage::getTitleFor( 'SMWAdmin' )->getFullURL( $query ) ) . '">' . $caption . '</a>';
+		return Html::rawElement(
+			'a',
+			[ 'href' => SkinComponentUtils::makeSpecialUrl( 'SMWAdmin', $query ) ],
+			$caption
+		);
 	}
 
 	/**
@@ -174,7 +175,6 @@ class OutputFormatter {
 	 * @return string
 	 */
 	public function encodeAsJson( array $input ) {
-
 		if ( defined( 'JSON_PRETTY_PRINT' ) ) {
 			return json_encode( $input, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE );
 		}
@@ -191,11 +191,11 @@ class OutputFormatter {
 				[ 'class' => 'smw-breadcrumb-arrow-right' ],
 				''
 			) .
-			Html::rawElement(
-				'a',
-				[ 'href' => \SpecialPage::getTitleFor( 'SMWAdmin' )->getFullURL( $query ) ],
-				Message::get( $title, Message::TEXT, Message::USER_LANGUAGE )
-		) );
+			$this->createSpecialPageLink(
+				Message::get( $title, Message::TEXT, Message::USER_LANGUAGE ),
+				$query
+			)
+		);
 	}
 
 }

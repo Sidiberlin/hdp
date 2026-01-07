@@ -4,10 +4,10 @@ namespace MediaWiki\Extension\CollabPads\HookHandler;
 
 use BlueSpice\Discovery\Hook\BlueSpiceDiscoveryTemplateDataProviderAfterInit;
 use BlueSpice\Discovery\ITemplateDataProvider;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\CollabPads\CollabSessionManager;
 use MediaWiki\HookContainer\HookContainer;
-use RequestContext;
-use Title;
+use MediaWiki\Title\Title;
 
 class DiscoverySkin implements BlueSpiceDiscoveryTemplateDataProviderAfterInit {
 

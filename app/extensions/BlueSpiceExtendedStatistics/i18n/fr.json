@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
+			"Derugon",
 			"DreZhsh",
 			"Gomoko",
+			"Mahabarata",
 			"Orikrin1998",
 			"Pols12",
 			"Terio legale",
@@ -65,17 +67,13 @@
 	"bs-statistics-portlet-numberofpagesdesc": "Statistique du nombre de pages.",
 	"bs-statistics-portlet-numberofarticlesdesc": "Statistiques du nombre de pages de contenu.",
 	"bs-statistics-portletconfig-periodday": "Hier",
-	"apihelp-bs-statistics-tasks-description": "Fournit les tâches courantes pour les statistiques",
 	"apihelp-bs-statistics-tasks-summary": "Fournit les tâches communes dédiées aux statistiques",
-	"apihelp-bs-statistics-available-diagrams-store-description": "Fournit un magasin avec les diagrammes disponibles",
 	"apihelp-bs-statistics-available-diagrams-store-summary": "Fournit un magasin avec les diagrammes disponibles",
-	"apihelp-bs-statistics-search-options-store-description": "Fournit un magasin avec les options de recherche disponibles",
 	"apihelp-bs-statistics-search-options-store-summary": "Fournit un stockage avec des options de recherche disponibles",
 	"action-statistic-viewspecialpage": "accès aux statistiques étendues",
 	"right-statistic-viewspecialpage": "Accès aux statistiques étendues",
 	"bs-statistics-button-label-export": "Exporter",
 	"bs-statistics-panel-title-result": "Résultat",
-	"apihelp-bs-extendedstatistics-collection-store-description": "Fournit un dépôt pour les statistiques qui peut être interrogé par des requêtes, filtré et agrégé.",
 	"apihelp-bs-extendedstatistics-collection-store-summary": "Fournit un magasin (''store'') de statistiques qui peut être interrogé par des requêtes, filtré et agrégé.",
 	"apihelp-bs-extendedstatistics-collection-store-param-aggregate": "Objet encodé sous forme de chaine JSON, avec des données arbitraires pour le regroupement",
 	"aggregatedstatistic": "Statistiques des instantanés",
@@ -115,6 +113,7 @@
 	"bs-statistics-aggregated-report-loading": "Chargement des données...",
 	"bs-statistics-pref-excludeusers-help": "Certains utilisateurs, par exemple ceux avec des droits d’administrateur, peuvent perturber les statistiques de la page Special:ExtendedStatistics. Ils peuvent être exclus des résultats statistiques.",
 	"bs-statistics-tag-progress-desc": "Génère une barre de progression. La valeur dépend de l’apparition d’un texte donné trouvé dans le corps et d’une limite maximale définie par l’utilisateur.",
+	"bs-statistics-tag-progress-label-text": "<span class='visually-hidden'>Barre de progression à</span> $1",
 	"bs-statistics-ve-progressinspector-title": "Progression",
 	"bs-statistics-ve-progress-attr-basecount-label": "Compteur de base",
 	"bs-statistics-ve-progress-attr-basecount-help": "Spécifie la limite supérieure du nombre de fois où l’élément de progression donné doit se trouver sur la page pour que la barre de progression soit complètement remplie",
@@ -126,5 +125,5 @@
 	"bs-statistics-ve-progress-attr-width-help": "Largeur de la barre de progression en pixels",
 	"bs-statistics-droplet-progress-name": "Avancement",
 	"bs-statistics-droplet-progress-description": "Visualise la progression des variables de mesure données",
-	"bs-statistics-tag-progress-label-text": "Barre de progression à la position $1 %"
+	"apihelp-query+statistics-reports-param-aggregate": "Si les statistiques doivent être agrégées ou non"
 }

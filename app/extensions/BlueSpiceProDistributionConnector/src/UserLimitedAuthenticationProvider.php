@@ -4,11 +4,17 @@ namespace BlueSpice\ProDistributionConnector;
 
 use MediaWiki\Auth\AbstractPreAuthenticationProvider;
 use MediaWiki\Auth\AuthenticationRequest;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\User\User;
 use StatusValue;
-use User;
 
 class UserLimitedAuthenticationProvider extends AbstractPreAuthenticationProvider {
+
+	/**
+	 * @param UserCounter $userCounter
+	 */
+	public function __construct( private readonly UserCounter $userCounter ) {
+	}
+
 	/**
 	 * Determine whether an account creation may begin
 	 *
@@ -23,20 +29,45 @@ class UserLimitedAuthenticationProvider extends AbstractPreAuthenticationProvide
 	 * @param AuthenticationRequest[] $reqs
 	 * @return StatusValue
 	 */
-	public function testForAccountCreation( $user, $creator, array $reqs ) {
-		$userCounter = MediaWikiServices::getInstance()->getService( 'BlueSpiceUserCounter' );
-		$userLimit = $userCounter->getUserLimit();
+	public function testForAccountCreation( $user, $creator, array $reqs ): StatusValue {
+		if ( !$this->allowUserCreation() ) {
+			return StatusValue::newFatal( 'bs-pro-distribution-createaccount-fail-max-accounts-exceed' );
+		}
 
+		return StatusValue::newGood();
+	}
+
+	/**
+	 * @param User $user
+	 * @param bool|string $autocreate
+	 * @param array $options
+	 *
+	 * @return StatusValue
+	 */
+	public function testUserForCreation( $user, $autocreate, array $options = [] ): StatusValue {
+		if ( !$this->allowUserCreation() ) {
+			return StatusValue::newFatal( 'bs-pro-distribution-createaccount-fail-max-accounts-exceed' );
+		}
+
+		return StatusValue::newGood();
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function allowUserCreation(): bool {
+		$userLimit = $this->userCounter->getUserLimit();
+
+		// Unlimited user
 		if ( $userLimit === -1 ) {
-			// unlimited
-			return StatusValue::newGood();
+			return true;
 		}
 
-		$currentNumOfUser = $userCounter->getCurrentNumberOfUser();
+		$currentNumOfUser = $this->userCounter->getCurrentNumberOfUser();
 		if ( $currentNumOfUser < $userLimit ) {
-			return StatusValue::newGood();
+			return true;
 		}
 
-		return StatusValue::newFatal( 'bs-pro-distribution-createaccount-fail-max-accounts-exceed' );
+		return false;
 	}
 }

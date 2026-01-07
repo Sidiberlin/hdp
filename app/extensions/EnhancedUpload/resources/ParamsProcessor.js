@@ -22,16 +22,16 @@ enhancedUpload.ParamsProcessor.prototype.getParams = function ( params, item, sk
 
 // eslint-disable-next-line no-underscore-dangle
 enhancedUpload.ParamsProcessor.prototype._getParamFileName = function ( params, prefix ) {
-	var filename = params.filename;
-	var prefixPartOne = '';
-	var prefixParts = prefix.split( ':' );
+	const filename = params.filename;
+	let prefixPartOne = '';
+	const prefixParts = prefix.split( ':' );
 
 	if ( prefixParts.length > 1 ) {
 		prefixPartOne = prefixParts[ 0 ];
 		prefixParts.splice( 0, 1 );
 	}
 
-	var prefixStub = prefixParts.join( ':' );
+	let prefixStub = prefixParts.join( ':' );
 	prefixStub = prefixStub.replace( ':', '_' );
 
 	if ( prefixPartOne.length > 0 ) {

@@ -36,7 +36,7 @@ collabpad.ui.CollabAuthorItemWidget = function VeUiCollabAuthorItemWidget(
 	this.$color = $( '<div>' ).addClass( 'collabpad-ui-authorItemWidget-color' );
 	if ( this.editable ) {
 		this.colorPicker = new OOJSPlus.ui.widget.ColorPickerPopupCustomColor( { icon: '' } );
-		this.colorPicker.on( 'colorSelected', function ( color ) {
+		this.colorPicker.on( 'colorSelected', ( color ) => {
 			if ( color.indexOf( '#' ) === 0 ) {
 				item.color = color.slice( 1 );
 			} else {

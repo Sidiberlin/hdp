@@ -4,19 +4,27 @@
 			"Умар"
 		]
 	},
-	"specialexpiry": "Ширбелла йаззамаш",
+	"specialexpiry": "Ширйелла агӀонаш",
 	"bs-expiry-header-pagename": "АгӀо",
 	"bs-expiry-header-date": "Чекхйолу",
 	"bs-expiry-header-comment": "Коммент",
 	"bs-expiry-date-label": "Чекхйолу",
 	"bs-expiry-article-label": "АгӀо",
 	"bs-expiry-comment-label": "Коммент",
-	"bs-expiry-flyout-next-comment": "Коммент: $1",
+	"bs-expiry-info-dialog-comment": "Коммент: $1",
 	"bs-expiry-edit-grid-header-username": "Декъашхо",
 	"bs-expiry-edit-grid-header-date": "Терахь",
 	"bs-expiry-edit-grid-header-comment": "Коммент",
 	"bs-expiry-error-invalid-date": "Цамаго терахь",
 	"bs-expiry-dialog-create-reminder-title": "Кхолла дагадаийтар",
 	"bs-expiry-dialog-action-no": "ХӀан-хӀа",
-	"bs-expiry-info-dialog-comment": "Коммент: $1"
+	"expiry": "Ардаман хан",
+	"prefs-expiry": "Ардаман хан",
+	"bs-expiry-pageinfoelement-expired-label": "чекхйаьлла",
+	"bs-expiry-pageinfoelement-unexpire-label": "хан чекхйаьлла йоцу",
+	"bs-expiry-reminder-type-expiry": "Ардаман хан",
+	"log-name-bs-expiry": "Ардаман хан",
+	"bs-expiry-header-action-edit": "Нисйан",
+	"bs-expiry-header-action-delete": "ДӀайаккха",
+	"bs-expiry-create-reminder-label": "Кхолла дагадаийтар"
 }

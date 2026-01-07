@@ -27,20 +27,19 @@ OO.inheritClass( bs.ui.widget.StoreComboBoxInput, OO.ui.ComboBoxInputWidget );
 OO.mixinClass( bs.ui.widget.StoreComboBoxInput, OO.ui.mixin.LookupElement );
 
 /**
- *
  * @inheritdoc
  */
 bs.ui.widget.StoreComboBoxInput.prototype.getLookupRequest = function () {
-	var value = this.getValue(),
+	const value = this.getValue(),
 		deferred = $.Deferred(),
 		promise = deferred.promise( { abort: function () {} } );
 
 	if ( !value ) {
 		deferred.resolve( this.localData );
 	} else {
-		var filteredData = [];
-		for ( var i = 0; i < this.localData.length; i++ ) {
-			var record = this.localData[ i ];
+		const filteredData = [];
+		for ( let i = 0; i < this.localData.length; i++ ) {
+			const record = this.localData[ i ];
 			if ( this.displayField && record[ this.displayField ].indexOf( value ) !== -1 ) {
 				filteredData.push( record );
 				continue;
@@ -54,13 +53,12 @@ bs.ui.widget.StoreComboBoxInput.prototype.getLookupRequest = function () {
 };
 
 /**
- *
  * @inheritdoc
  */
 bs.ui.widget.StoreComboBoxInput.prototype.getLookupMenuOptionsFromData = function ( data ) {
-	var items = [];
-	for ( var i = 0; i < data.length; i++ ) {
-		var record = data[ i ];
+	const items = [];
+	for ( let i = 0; i < data.length; i++ ) {
+		const record = data[ i ];
 		items.push( new OO.ui.MenuOptionWidget( {
 			data: record,
 			label: record[ this.displayField ]
@@ -71,7 +69,6 @@ bs.ui.widget.StoreComboBoxInput.prototype.getLookupMenuOptionsFromData = functio
 };
 
 /**
- *
  * @inheritdoc
  */
 bs.ui.widget.StoreComboBoxInput.prototype.getLookupCacheDataFromResponse = function ( response ) {
@@ -79,12 +76,11 @@ bs.ui.widget.StoreComboBoxInput.prototype.getLookupCacheDataFromResponse = funct
 };
 
 /**
- *
  * @inheritdoc
  */
 bs.ui.widget.StoreComboBoxInput.prototype.setValue = function ( value ) {
 	this.selectedItem = null;
-	var displayValue = value;
+	const displayValue = value;
 	if ( typeof value === 'object' ) {
 		this.selectedItem = value;
 	}
@@ -99,7 +95,6 @@ bs.ui.widget.StoreComboBoxInput.prototype.setValue = function ( value ) {
 };
 
 /**
- *
  * @inheritdoc
  */
 bs.ui.widget.StoreComboBoxInput.prototype.cleanUpValue = function ( value ) {
@@ -110,7 +105,6 @@ bs.ui.widget.StoreComboBoxInput.prototype.cleanUpValue = function ( value ) {
 };
 
 /**
- *
  * @inheritdoc
  */
 bs.ui.widget.StoreComboBoxInput.prototype.findSelectedItem = function () {
@@ -125,7 +119,7 @@ bs.ui.widget.StoreComboBoxInput.prototype.getSelectedValue = function () {
 	if ( this.valueField === '' ) {
 		return this.getValue();
 	}
-	var item = this.findSelectedItem();
+	const item = this.findSelectedItem();
 	return item ? item[ this.valueField ] : null;
 };
 

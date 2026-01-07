@@ -157,3 +157,40 @@
 .enhancedui-allpages-untitled-page {
 	font-style: italic;
 }
+
+.allpages-empty-pages-cnt {
+	align-items: center;
+	height: 100%;
+	text-align: center;
+	background-color: transparent;
+	margin-bottom: 20px;
+}
+
+.oojsplus-widget-no-content-placeholder .oo-ui-icon-allpages-no-page {
+	background-image: url( ./../images/no-pages-icon.svg );
+	background-color: #eaf3ff;
+	background-repeat: no-repeat;
+	border-radius: 100%;
+	margin: 30px auto 15px;
+	height: 120px;
+	width: 120px;
+}
+
+.allpages-skeleton-namespace-widgets .oojs-skeleton--tree-line {
+	height: 30px;
+	margin: 10px 0;
+}
+
+.allpages-skeleton--tree {
+	margin-left: 30px;
+	columns: 2;
+	column-gap: 20px;
+}
+
+#enhanced-allpages-skeleton-tree {
+	margin-top: 75px;
+}
+
+#enhanced-allpages-skeleton-tree.hidden {
+	display: none;
+}

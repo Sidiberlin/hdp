@@ -12,7 +12,7 @@ namespace SRF\Filtered\Filter;
 
 use DataValues\Geo\Parsers\LatLongParser;
 use Exception;
-use SMWPropertyValue;
+use SMW\DataValues\PropertyValue;
 use SRF\Filtered\ResultItem;
 
 /**
@@ -59,8 +59,7 @@ class DistanceFilter extends Filter {
 
 			$this->addValueToJsConfig( 'distance filter origin', 'origin', null, $callback );
 
-		}
-		catch ( Exception $exception ) {
+		} catch ( Exception $exception ) {
 			$label = $this->getPrintRequest()->getLabel();
 			$this->getQueryPrinter()->addError( "Distance filter on $label: " . $exception->getMessage() );
 			return [];
@@ -87,11 +86,12 @@ class DistanceFilter extends Filter {
 			$field->reset();
 
 			$value = $field->getNextDataItem();
-			if ( $printRequest->getData() instanceof SMWPropertyValue &&
+			if ( $printRequest->getData() instanceof PropertyValue &&
 				$printRequest->getData()->getInceptiveProperty()->getKey() === $markerPositionPropertyName &&
 				( $value instanceof \SMWDIGeoCoord || $value instanceof \SMWDIBlob )
 			) {
-				$values = []; // contains plain text
+				// contains plain text
+				$values = [];
 
 				if ( $value instanceof \SMWDIGeoCoord ) {
 
@@ -107,8 +107,7 @@ class DistanceFilter extends Filter {
 						try {
 							$latlng = $coordParser->parse( $value->getSerialization() );
 							$values[] = [ 'lat' => $latlng->getLatitude(), 'lng' => $latlng->getLongitude() ];
-						}
-						catch ( \Exception $exception ) {
+						} catch ( \Exception $exception ) {
 							$this->getQueryPrinter()->addError( "Error on '$value': " . $exception->getMessage() );
 						}
 						$value = $field->getNextDataItem();

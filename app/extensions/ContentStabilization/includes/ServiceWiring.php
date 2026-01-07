@@ -1,5 +1,6 @@
 <?php
 
+use MediaWiki\Config\GlobalVarConfig;
 use MediaWiki\Extension\ContentStabilization\ContentStabilizer;
 use MediaWiki\Extension\ContentStabilization\InclusionManager;
 use MediaWiki\Extension\ContentStabilization\InclusionMode;
@@ -8,6 +9,7 @@ use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\ContentStabilization\Storage\StablePointStore;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 
 return [
 	// Internal use only
@@ -20,7 +22,8 @@ return [
 			$services->getDBLoadBalancer(),
 			$services->getUserFactory(),
 			$services->getRevisionStore(),
-			$services->getRepoGroup()
+			$services->getRepoGroup(),
+			$services->getMainWANObjectCache()
 		);
 	},
 	// Internal use only
@@ -46,6 +49,7 @@ return [
 			$services->getRepoGroup(),
 			$services->getService( 'ContentStabilization._Config' ),
 			$services->getParserFactory(),
+			$services->getHookContainer(),
 			$inclusionModes
 		);
 	},
@@ -74,7 +78,8 @@ return [
 			$services->getRevisionStore(),
 			$services->getUserGroupManager(),
 			$config,
-			$services->getHookContainer()
+			$services->getHookContainer(),
+			$services->getObjectCacheFactory()
 		);
 	}
 ];

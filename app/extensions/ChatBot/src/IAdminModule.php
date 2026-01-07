@@ -2,7 +2,7 @@
 
 namespace ChatBot;
 
-use Message;
+use MediaWiki\Message\Message;
 
 interface IAdminModule {
 	/**

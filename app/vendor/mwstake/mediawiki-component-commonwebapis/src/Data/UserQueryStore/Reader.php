@@ -2,8 +2,10 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs\Data\UserQueryStore;
 
-use GlobalVarConfig;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\GlobalVarConfig;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\UserFactory;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use Wikimedia\Rdbms\ILoadBalancer;
@@ -15,7 +17,7 @@ class Reader extends \MWStake\MediaWiki\Component\DataStore\Reader {
 	protected $userFactory;
 	/** @var LinkRenderer */
 	protected $linkRenderer;
-	/** @var \TitleFactory */
+	/** @var TitleFactory */
 	protected $titleFactory;
 	/** @var Config */
 	protected $mwsgConfig;
@@ -24,12 +26,12 @@ class Reader extends \MWStake\MediaWiki\Component\DataStore\Reader {
 	 * @param ILoadBalancer $lb
 	 * @param UserFactory $userFactory
 	 * @param LinkRenderer $linkRenderer
-	 * @param \TitleFactory $titleFactory
+	 * @param TitleFactory $titleFactory
 	 * @param GlobalVarConfig $mwsgConfig
 	 */
 	public function __construct(
 		ILoadBalancer $lb, UserFactory $userFactory,
-		LinkRenderer $linkRenderer, \TitleFactory $titleFactory, GlobalVarConfig $mwsgConfig
+		LinkRenderer $linkRenderer, TitleFactory $titleFactory, GlobalVarConfig $mwsgConfig
 	) {
 		parent::__construct();
 		$this->lb = $lb;

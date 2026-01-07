@@ -1,10 +1,12 @@
 <?php
 
+use MediaWiki\Maintenance\Maintenance;
+
 $IP = dirname( dirname( dirname( __DIR__ ) ) );
 
 require_once "$IP/maintenance/Maintenance.php";
 
-abstract class searchScriptBase extends Maintenance {
+abstract class searchScriptBase extends Maintenance { // phpcs:ignore Squiz.Classes.ValidClassName.NotCamelCaps
 	/**
 	 * @var string
 	 */

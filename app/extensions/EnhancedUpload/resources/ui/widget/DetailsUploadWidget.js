@@ -14,7 +14,7 @@ enhancedUpload.ui.widget.DetailsUploadWidget = function ( cfg ) {
 		this.setDefaultCategories( cfg.categories );
 	}
 
-	var categoryInputField = new OO.ui.FieldLayout( this.categoryInput, {
+	const categoryInputField = new OO.ui.FieldLayout( this.categoryInput, {
 		label: mw.message( 'enhancedupload-details-categories-label' ).plain(),
 		align: 'left'
 	} );
@@ -25,7 +25,7 @@ enhancedUpload.ui.widget.DetailsUploadWidget = function ( cfg ) {
 	if ( cfg.description ) {
 		this.setDescription( cfg.description );
 	}
-	var descriptionInputField = new OO.ui.FieldLayout( this.descriptionInput, {
+	const descriptionInputField = new OO.ui.FieldLayout( this.descriptionInput, {
 		label: mw.message( 'enhancedupload-details-description-label' ).plain(),
 		align: 'left'
 	} );
@@ -54,11 +54,11 @@ enhancedUpload.ui.widget.DetailsUploadWidget.prototype.setDescription = function
 };
 
 enhancedUpload.ui.widget.DetailsUploadWidget.prototype.getCategories = function () {
-	var categories = '';
-	for ( var i = 0; i < this.categoryInput.getSelectedCategories().length; i++ ) {
-		var catText = this.categoryInput.getSelectedCategories()[ i ];
-		var catTitle = mw.Title.newFromText( catText, 14 );
-		var cat = '[[' + catTitle.getPrefixedText() + ']] ';
+	let categories = '';
+	for ( let i = 0; i < this.categoryInput.getSelectedCategories().length; i++ ) {
+		const catText = this.categoryInput.getSelectedCategories()[ i ];
+		const catTitle = mw.Title.newFromText( catText, 14 );
+		const cat = '[[' + catTitle.getPrefixedText() + ']] ';
 		categories += cat;
 	}
 	return categories;
@@ -66,7 +66,7 @@ enhancedUpload.ui.widget.DetailsUploadWidget.prototype.getCategories = function 
 
 enhancedUpload.ui.widget.DetailsUploadWidget.prototype.setDefaultCategories =
 	function ( category ) {
-		var categories = [];
+		let categories = [];
 		categories = category.split( '|' );
 		this.categoryInput.setValue( categories );
 	};

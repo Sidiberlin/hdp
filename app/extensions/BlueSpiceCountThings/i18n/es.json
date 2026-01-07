@@ -34,8 +34,6 @@
 	"bs-countthings-tag-countfiles-desc": "Muestra el número de artículos en la wiki.",
 	"bs-countthings-tag-countcharacters-desc": "Genera metadatos sobre el contenido del artículo indicado. La salida es una caja informativa que se puede integrar en un artículo. Con el parámetro «mode» se pueden mostrar distintos tipos de información.",
 	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: Lo que debe contarse <code>chars</code> (caracteres), <code>words</code> (palabras) o <code>pages</code> (páginas).",
-	"bs-countthings-tag-countcharacters-example-1": "Número de palabras",
-	"bs-countthings-tag-countcharacters-example-2": "Número de caracteres",
 	"bs-countthings-droplet-articles-name": "Número de páginas",
 	"bs-countthings-droplet-articles-description": "Muestra la cantidad de páginas",
 	"bs-countthings-droplet-characters-name": "Número de caracteres",

@@ -2,9 +2,10 @@
 
 namespace BlueSpice\Discovery;
 
+use Exception;
 use MediaWiki\MediaWikiServices;
-use Message;
-use Title;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 
 class SubpageDataGenerator {
 
@@ -23,8 +24,10 @@ class SubpageDataGenerator {
 	}
 
 	/**
-	 * Tree root title has to be the subpage root of the title or
-	 * one of titles suppages.
+	 * Sets the root title for the subpage tree.
+	 *
+	 * When provided, this title becomes the anchor for the tree generated.
+	 * Only subpages of this title will be included in the output.
 	 *
 	 * @param Title $title
 	 * @return void
@@ -34,34 +37,32 @@ class SubpageDataGenerator {
 	}
 
 	/**
-	 * $title is the root title or a subpage of the title for that the
-	 * subpage tree should be created.
+	 * Generates a subpage tree.
+	 *
+	 * If $this->treeRootTitle is set, subpages of that title are used.
+	 * Otherwise, the root title of the given $title is used.
 	 *
 	 * @param Title $title
 	 * @return array
 	 */
 	public function generate( Title $title, int $maxDepth = 6 ): array {
-		$minDepth = 1;
-		$rootTitle = $title;
-
-		/** $title->isSubpage() delivers false even if it is a subpage */
-		if ( !$rootTitle->equals( $title->getRootTitle() ) ) {
-			$rootTitle = $title->getRootTitle();
-		}
-
-		if ( $this->treeRootTitle ) {
-			$rootTitleParts = explode( '/', $this->treeRootTitle->getDBkey() );
-			if ( count( $rootTitleParts ) > 1 ) {
-				$minDepth = count( $rootTitleParts );
-				$maxDepth = $maxDepth + count( $rootTitleParts ) - 1;
-			}
-		}
+		$rootTitle = $this->treeRootTitle ?: $title->getRootTitle();
+		$rootParts = explode( '/', $rootTitle->getDBkey() );
+		$rootDepth = count( $rootParts );
 
 		$subpageTitles = $rootTitle->getSubpages();
 
 		$subpages = [];
 		foreach ( $subpageTitles as $subpageTitle ) {
-			$subpagePath = $this->makeSupbageData( $subpageTitle, $minDepth, $maxDepth );
+			$subParts = explode( '/', $subpageTitle->getDBkey() );
+			$currentDepth = count( $subParts );
+
+			if ( $currentDepth - $rootDepth > $maxDepth ) {
+				// too deep
+				continue;
+			}
+
+			$subpagePath = $this->makeSubpageData( $subpageTitle, $rootDepth, $maxDepth );
 			$this->buildSubpageTreeData( $subpagePath, $subpages, $maxDepth );
 		}
 
@@ -102,7 +103,7 @@ class SubpageDataGenerator {
 	 * @param int $maxDepth
 	 * @return array
 	 */
-	private function makeSupbageData( Title $title, int $minDepth, int $maxDepth ): array {
+	private function makeSubpageData( Title $title, int $minDepth, int $maxDepth ): array {
 		$list = [];
 
 		$services = MediaWikiServices::getInstance();
@@ -132,6 +133,9 @@ class SubpageDataGenerator {
 			}
 
 			$curTitle = Title::makeTitle( $namespace, $curTitleText );
+			if ( !$curTitle || !$curTitle->canExist() ) {
+				continue;
+			}
 
 			if ( $this->treeRootTitle ) {
 				$curDBKey = $curTitle->getDBkey();
@@ -146,11 +150,17 @@ class SubpageDataGenerator {
 			$id = substr( $fullId, 0, 6 );
 
 			$text = $titleParts[$index];
-			$pageId = $curTitle->getId();
-			$displayTitleProps = $pageProps->getProperties( $curTitle, 'displaytitle' );
 
-			if ( isset( $displayTitleProps[$pageId] ) ) {
-				$text = $displayTitleProps[$pageId];
+			try {
+				$pageId = $curTitle->getId();
+				$displayTitleProps = $pageProps->getProperties( $curTitle, 'displaytitle' );
+
+				if ( isset( $displayTitleProps[$pageId] ) ) {
+					$text = $displayTitleProps[$pageId];
+				}
+			} catch ( Exception $ex ) {
+				// Nothing to do here -> page has no ID but should be shown anyways
+				// ERM42605
 			}
 
 			$key = $curTitle->getDBkey();

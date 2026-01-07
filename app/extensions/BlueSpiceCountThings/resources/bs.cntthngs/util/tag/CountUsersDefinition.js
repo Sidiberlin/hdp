@@ -6,15 +6,15 @@ bs.cntthngs.util.tag.CountUsersDefinition = function BsVecUtilTagCountUsersDefin
 
 OO.inheritClass( bs.cntthngs.util.tag.CountUsersDefinition, bs.vec.util.tag.Definition );
 
-bs.cntthngs.util.tag.CountUsersDefinition.prototype.getCfg = function() {
-	var cfg = bs.cntthngs.util.tag.CountUsersDefinition.super.prototype.getCfg.call( this );
-	return $.extend( cfg, {
-		classname : 'CountUsers',
+bs.cntthngs.util.tag.CountUsersDefinition.prototype.getCfg = function () {
+	const cfg = bs.cntthngs.util.tag.CountUsersDefinition.super.prototype.getCfg.call( this );
+	return $.extend( cfg, { // eslint-disable-line no-jquery/no-extend
+		classname: 'CountUsers',
 		name: 'countUsers',
 		tagname: 'bs:countusers',
 		menuItemMsg: 'bs-countthings-ve-countusers-title',
 		descriptionMsg: 'bs-countthings-tag-countusers-desc'
-	});
+	} );
 };
 
 bs.vec.registerTagDefinition(

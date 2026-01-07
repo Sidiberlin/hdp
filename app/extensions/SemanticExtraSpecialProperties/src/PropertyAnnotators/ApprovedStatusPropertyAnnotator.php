@@ -3,26 +3,25 @@
 namespace SESP\PropertyAnnotators;
 
 use ApprovedRevs;
+use IDBAccessObject;
+use SESP\AppFactory;
+use SESP\PropertyAnnotator;
 use SMW\DIProperty;
 use SMW\SemanticData;
-use SMWDIString as DIString;
-use SESP\PropertyAnnotator;
-use SESP\AppFactory;
-use LogReader;
-use Title;
+use SMWDIBlob as DIString;
 
 /**
  * @private
  * @ingroup SESP
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  */
 class ApprovedStatusPropertyAnnotator implements PropertyAnnotator {
 
 	/**
 	 * Predefined property ID
 	 */
-	const PROP_ID = '___APPROVEDSTATUS';
+	public const PROP_ID = '___APPROVEDSTATUS';
 
 	/**
 	 * @var AppFactory
@@ -30,7 +29,7 @@ class ApprovedStatusPropertyAnnotator implements PropertyAnnotator {
 	private $appFactory;
 
 	/**
-	 * @var Integer|null
+	 * @var int|null
 	 */
 	private $approvedStatus;
 
@@ -61,13 +60,12 @@ class ApprovedStatusPropertyAnnotator implements PropertyAnnotator {
 	 * {@inheritDoc}
 	 */
 	public function addAnnotation( DIProperty $property, SemanticData $semanticData ) {
-
 		if ( $this->approvedStatus === null && class_exists( 'ApprovedRevs' ) ) {
 			$title = $semanticData->getSubject()->getTitle();
 			if ( ApprovedRevs::pageIsApprovable( $title ) ) {
 				$approvedRevId = self::getApprovedRevID( $title );
 				if ( $approvedRevId !== null ) {
-					$latestRevId = $title->getLatestRevID( Title::READ_LATEST );
+					$latestRevId = $title->getLatestRevID( IDBAccessObject::READ_LATEST );
 					if ( $latestRevId === $approvedRevId ) {
 						$this->approvedStatus = "approved";
 					} else {
@@ -91,6 +89,6 @@ class ApprovedStatusPropertyAnnotator implements PropertyAnnotator {
 
 	private static function getApprovedRevID( $title ): ?int {
 		$id = ApprovedRevs::getApprovedRevID( $title );
-		return $id === null || $id === false ? null : (int) $id;
+		return $id === null || $id === false ? null : (int)$id;
 	}
 }

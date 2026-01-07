@@ -15,9 +15,5 @@
 	"simple-tasks-taskreport-inspector-label-state": "Стање",
 	"simple-tasks-taskreport-state-title-done": "Задатак урађен",
 	"simple-tasks-taskreport-state-filter-done": "Урађено",
-	"simple-tasks-taskreport-state-filter-open": "Отворено",
-	"simple-tasks-notification-cat-tooltip": "Обавести ме кад добијем задатак(ке)",
-	"simple-tasks-echo-notification-task-subject": "Задатак додељен Вама на страници $1",
-	"simple-tasks-echo-notification-task-email-body": "$3 Вам је {{GENDER:$2|доделио|доделила}} задатак на страници $1.\n\n$4",
-	"simple-tasks-echo-notification-task-web-body": "$2 Вам је {{GENDER:$1|доделио|доделила}} задатак: $3"
+	"simple-tasks-taskreport-state-filter-open": "Отворено"
 }

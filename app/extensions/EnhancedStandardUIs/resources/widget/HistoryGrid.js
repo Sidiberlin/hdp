@@ -11,7 +11,7 @@ ext.enhancedUI.widget.HistoryGrid = function ( cfg ) {
 OO.inheritClass( ext.enhancedUI.widget.HistoryGrid, OOJSPlus.ui.data.GridWidget );
 
 ext.enhancedUI.widget.HistoryGrid.prototype.clickOnRow = function ( e ) {
-	var positionInArray = -1;
+	let positionInArray = -1;
 	if ( this.selectedRows.length > 0 ) {
 		positionInArray = this.selectedRows.indexOf( e.data.item );
 	}
@@ -33,16 +33,14 @@ ext.enhancedUI.widget.HistoryGrid.prototype.clickOnRow = function ( e ) {
 };
 
 ext.enhancedUI.widget.HistoryGrid.prototype.toggleRowSelectionButton = function ( selection ) {
-	var $tbody = $( this.$table ).find( 'tbody' ),
+	const $tbody = $( this.$table ).find( 'tbody' ),
 		$rows = $tbody.find( 'tr' );
-	for ( var i = 0; i < $rows.length; i++ ) {
-		var $row = $( $rows[ i ] );
-		var rowId = parseInt( $( $row ).attr( 'id' ) );
-		var positionInArray = this.selectedRows.map( function ( e ) {
-			return parseInt( e.id );
-		} ).indexOf( rowId );
+	for ( let i = 0; i < $rows.length; i++ ) {
+		const $row = $( $rows[ i ] );
+		const rowId = parseInt( $( $row ).attr( 'id' ) );
+		const positionInArray = this.selectedRows.map( ( e ) => parseInt( e.id ) ).indexOf( rowId );
 		if ( positionInArray < 0 ) {
-			var $input = $( $row ).find( 'input' );
+			const $input = $( $row ).find( 'input' );
 			if ( selection ) {
 				this.disableElement( $input );
 			} else {
@@ -100,22 +98,16 @@ ext.enhancedUI.widget.HistoryGrid.prototype.setColumnsVisibility = function ( vi
 };
 
 ext.enhancedUI.widget.HistoryGrid.prototype.checkForColumnAddition = function ( visible ) {
-	var addition = visible.filter( function ( x ) {
-		// eslint-disable-next-line es-x/no-string-prototype-includes, es-x/no-array-prototype-includes
-		return !this.visibleColumns.includes( x );
-	}.bind( this ) );
-	for ( var column in addition ) {
+	const addition = visible.filter( ( x ) => !this.visibleColumns.includes( x ) ); // eslint-disable-line es-x/no-array-prototype-includes
+	for ( const column in addition ) {
 		this.setPreference( addition[ column ], '1' );
 	}
 };
 
 ext.enhancedUI.widget.HistoryGrid.prototype.checkForColumnRemove = function ( visible ) {
-	var toRemove = this.visibleColumns.filter( function ( x ) {
-		// eslint-disable-next-line es-x/no-string-prototype-includes, es-x/no-array-prototype-includes
-		return !visible.includes( x );
-	} );
-	for ( var column in toRemove ) {
-		// eslint-disable-next-line es-x/no-string-prototype-includes, es-x/no-array-prototype-includes
+	const toRemove = this.visibleColumns.filter( ( x ) => !visible.includes( x ) ); // eslint-disable-line es-x/no-array-prototype-includes
+	for ( const column in toRemove ) {
+		// eslint-disable-next-line es-x/no-array-prototype-includes
 		if ( this.alwaysVisibleColumns.includes( toRemove[ column ] ) ) {
 			continue;
 		}
@@ -125,7 +117,7 @@ ext.enhancedUI.widget.HistoryGrid.prototype.checkForColumnRemove = function ( vi
 
 ext.enhancedUI.widget.HistoryGrid.prototype.setPreference = function ( preference, value ) {
 	if ( !mw.user.isAnon() ) {
-		mw.loader.using( 'mediawiki.api' ).done( function () {
+		mw.loader.using( 'mediawiki.api' ).done( () => {
 			mw.user.options.set( 'history-show-' + preference, value );
 			new mw.Api().saveOption( 'history-show-' + preference, value );
 		} );

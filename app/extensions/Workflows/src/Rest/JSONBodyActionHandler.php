@@ -2,7 +2,6 @@
 
 namespace MediaWiki\Extension\Workflows\Rest;
 
-use MediaWiki\Rest\Validator\JsonBodyValidator;
 use Wikimedia\ParamValidator\ParamValidator;
 
 abstract class JSONBodyActionHandler extends ActionHandler {
@@ -28,17 +27,13 @@ abstract class JSONBodyActionHandler extends ActionHandler {
 		return $default;
 	}
 
-	/**
-	 * @param string $contentType
-	 * @return JsonBodyValidator
-	 */
-	public function getBodyValidator( $contentType ) {
-		if ( $contentType === 'application/json' ) {
-			return new JsonBodyValidator( [
-				'data' => [
-					ParamValidator::PARAM_REQUIRED => false,
-				]
-			] );
-		}
+	public function getBodyParamSettings(): array {
+		return [
+			'data' => [
+				static::PARAM_SOURCE => 'body',
+				ParamValidator::PARAM_TYPE => 'array',
+				ParamValidator::PARAM_REQUIRED => false,
+			]
+		];
 	}
 }

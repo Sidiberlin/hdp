@@ -1,28 +1,27 @@
-( function( mw, $, d, undefined ){
-	scrollToTop = {
+( function ( $, d ) {
+	scrollToTop = { // eslint-disable-line no-implicit-globals, no-undef
 		duration: 400,
 		offset: 300
 	};
 
-	$( window ).scroll( function() {
-		if( $( this ).scrollTop() > scrollToTop.offset ) {
+	$( window ).on( 'scroll', function () {
+		if ( $( this ).scrollTop() > scrollToTop.offset ) { // eslint-disable-line no-undef
 			$( '#back-to-top' ).removeClass( 'd-none' );
-		}
-		else {
+		} else {
 			$( '#back-to-top' ).addClass( 'd-none' );
 		}
-	});
+	} );
 
-	$( d ).on('click', '.back-to-top', function( e ){
+	$( d ).on( 'click', '.back-to-top', ( e ) => {
 		e.preventDefault();
 		$( 'body,html' ).animate(
 			{
 				scrollTop: 0
 			},
-			scrollToTop.duration
+			scrollToTop.duration // eslint-disable-line no-undef
 		);
 
-		$( '#content' ).first().focus();
+		$( '#content' ).first().trigger( 'focus' );
 	} );
 
-} )( mediaWiki, jQuery, document );
+}( jQuery, document ) );

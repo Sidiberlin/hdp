@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Tensama0415"
+		]
+	},
+	"datetimetools-desc": "VisualEditor에서 날짜 도구를 제공합니다",
+	"datetimetools-ve-inspector-title": "날짜 수정",
+	"datetimetools-ve-inspector-date-picker-label": "날짜 선택",
+	"datetimetools-droplet-date-name": "날짜",
+	"datetimetools-droplet-date-description": "날짜를 삽입"
+}

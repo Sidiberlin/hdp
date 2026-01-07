@@ -17,10 +17,5 @@
 	"at-mentions-mention-notification-key": "Anda telah disebutkan",
 	"at-mentions-mention-in-entity-notification-key": "Anda telah disebutkan dalam komentar atau kiriman",
 	"at-mentions-mention-in-entity-notification-message": "menyebut Anda dalam komentar atau kiriman \"$2\" di halaman $1",
-	"at-mentions-toolbar-tool-title": "Tambahkan sebutan",
-	"at-mentions-echo-mention-notification-summary": "Anda telah disebutkan di halaman $1",
-	"at-mentions-echo-mention-notification-web-body": "{{GENDER:$2|$3 menyebutkan}} Anda",
-	"at-mentions-echo-mention-notification-subject": "{{GENDER:$2|$3 menyebutkan}} Anda di halaman $1",
-	"at-mentions-echo-mention-notification-email-body": "Anda telah disebutkan di halaman $1",
-	"at-mentions-echo-mention-entity-notification-summary": "Anda telah disebutkan dalam komentar atau kiriman di $1"
+	"at-mentions-toolbar-tool-title": "Tambahkan sebutan"
 }

@@ -12,10 +12,10 @@ if ( !file_exists( $maintPath ) ) {
 }
 require_once $maintPath;
 
-use FormatJson;
-use Maintenance;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Maintenance\Maintenance;
+use MediaWiki\WikiMap\WikiMap;
 use SplFileInfo;
-use WikiMap;
 
 class ConvertLdapAuthenticationConfig extends Maintenance {
 
@@ -27,8 +27,10 @@ class ConvertLdapAuthenticationConfig extends Maintenance {
 		$this->requireExtension( 'LDAPProvider' );
 	}
 
+	/** @var array */
 	protected $newConfig = [];
 
+	/** @var array<string,string> */
 	protected $oldConfigVarNames = [
 		'wgLDAPServerNames' => 'connection.server',
 		'wgLDAPProxyAgent' => 'connection.user',

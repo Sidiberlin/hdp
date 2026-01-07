@@ -19,13 +19,5 @@
 	"at-mentions-mention-notification-key": "הוזכרת",
 	"at-mentions-mention-in-entity-notification-key": "הוזכרת בתגובה או ברשומה",
 	"at-mentions-mention-in-entity-notification-message": "{{GENDER:$1|הזכיר|הזכירה}} אותך בתגובה או ברשומה \"$3\" בדף $2",
-	"at-mentions-mention-in-entity-notification-post-link": "מעבר ישיר לרשומה",
-	"at-mentions-toolbar-tool-title": "הוספת אזכור",
-	"at-mentions-echo-mention-notification-summary": "אוזכרת בדף $1",
-	"at-mentions-echo-mention-notification-web-body": "$3 {{GENDER:$2|הזכיר|הזכירה}} אותך",
-	"at-mentions-echo-mention-notification-subject": "$3 {{GENDER:$2|הזכיר|הזכירה}} אותך בדף $1",
-	"at-mentions-echo-mention-notification-email-body": "אוזכרת בדף $1",
-	"at-mentions-echo-mention-entity-notification-summary": "הוזכרת בתגובה או ברשומה בדף $1",
-	"at-mentions-echo-mention-entity-notification-subject": "$3 {{GENDER:$2|הזכיר|הזכירה}} אותך בתגובה או ברשומה בדף $1",
-	"at-mentions-echo-mention-entity-notification-email-body": "הוזכרת בתגובה ברשומה בדף $1"
+	"at-mentions-toolbar-tool-title": "הוספת אזכור"
 }

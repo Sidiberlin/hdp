@@ -42,7 +42,6 @@ enhancedUpload.ui.dialog.AddExistingMediaDialog.prototype.getBodyHeight = functi
 };
 
 enhancedUpload.ui.dialog.AddExistingMediaDialog.prototype.initialize = function () {
-	var titleField;
 	enhancedUpload.ui.dialog.AddExistingMediaDialog.super.prototype.initialize.call( this );
 
 	this.content = new OO.ui.PanelLayout( {
@@ -60,7 +59,7 @@ enhancedUpload.ui.dialog.AddExistingMediaDialog.prototype.initialize = function 
 		choose: 'activateAdd'
 	} );
 
-	titleField = new OO.ui.FieldsetLayout( {
+	const titleField = new OO.ui.FieldsetLayout( {
 		expanded: true,
 		items: [
 			new OO.ui.FieldLayout( this.titleSearch, {
@@ -86,16 +85,16 @@ enhancedUpload.ui.dialog.AddExistingMediaDialog.prototype.show = function () {
 };
 
 enhancedUpload.ui.dialog.AddExistingMediaDialog.prototype.getActionProcess = function ( action ) {
-	var title, args;
+	let title, args;
 	if ( action === 'add' ) {
-		return new OO.ui.Process( function () {
+		return new OO.ui.Process( () => {
 			title = this.titleSearch.getMWTitle();
 
 			args = [ 'actioncompleted', title ];
 			this.emit.apply( this, args );
 			this.close();
 
-		}.bind( this ) );
+		} );
 	}
 	return enhancedUpload.ui.dialog.AddExistingMediaDialog.super.prototype.getActionProcess.call(
 		this, action

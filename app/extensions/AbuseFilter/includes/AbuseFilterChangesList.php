@@ -3,13 +3,15 @@
 namespace MediaWiki\Extension\AbuseFilter;
 
 use HtmlArmor;
-use IContextSource;
-use Linker;
 use LogFormatter;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Linker\Linker;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Title\TitleValue;
 use OldChangesList;
 use RecentChange;
-use SpecialPage;
 
 class AbuseFilterChangesList extends OldChangesList {
 
@@ -17,6 +19,11 @@ class AbuseFilterChangesList extends OldChangesList {
 	 * @var string
 	 */
 	private $testFilter;
+
+	/**
+	 * @var array<int,bool> Maps RC IDs to a boolean indicating whether the RC would match a filter that is being tested
+	 */
+	private array $rcResults = [];
 
 	/**
 	 * @param IContextSource $context
@@ -49,7 +56,8 @@ class AbuseFilterChangesList extends OldChangesList {
 			$examineParams['testfilter'] = $this->testFilter;
 		}
 
-		$title = SpecialPage::getTitleFor( 'AbuseFilter', 'examine/' . $rc->getAttribute( 'rc_id' ) );
+		$rcid = $rc->getAttribute( 'rc_id' );
+		$title = SpecialPage::getTitleFor( 'AbuseFilter', 'examine/' . $rcid );
 		$examineLink = $this->linkRenderer->makeLink(
 			$title,
 			new HtmlArmor( $this->msg( 'abusefilter-changeslist-examine' )->parse() ),
@@ -60,8 +68,8 @@ class AbuseFilterChangesList extends OldChangesList {
 		$s .= ' ' . $this->msg( 'parentheses' )->rawParams( $examineLink )->escaped();
 
 		// Add CSS classes for match and not match
-		if ( isset( $rc->filterResult ) ) {
-			$class = $rc->filterResult ?
+		if ( isset( $this->rcResults[$rcid] ) ) {
+			$class = $this->rcResults[$rcid] ?
 				'mw-abusefilter-changeslist-match' :
 				'mw-abusefilter-changeslist-nomatch';
 
@@ -119,13 +127,18 @@ class AbuseFilterChangesList extends OldChangesList {
 		if ( $this->isDeleted( $rc, RevisionRecord::DELETED_COMMENT ) ) {
 			if ( $this->userCan( $rc, RevisionRecord::DELETED_COMMENT ) ) {
 				return ' <span class="history-deleted">' .
-					Linker::commentBlock( $rc->getAttribute( 'rc_comment' ), $rc->getTitle() ) . '</span>';
+					MediaWikiServices::getInstance()->getCommentFormatter()
+						->formatBlock(
+							$rc->getAttribute( 'rc_comment' ),
+							TitleValue::castPageToLinkTarget( $rc->getPage() )
+						) . '</span>';
 			} else {
 				return ' <span class="history-deleted">' .
 					$this->msg( 'rev-deleted-comment' )->escaped() . '</span>';
 			}
 		} else {
-			return Linker::commentBlock( $rc->getAttribute( 'rc_comment' ), $rc->getTitle() );
+			return MediaWikiServices::getInstance()->getCommentFormatter()
+				->formatBlock( $rc->getAttribute( 'rc_comment' ), TitleValue::castPageToLinkTarget( $rc->getPage() ) );
 		}
 	}
 
@@ -136,7 +149,7 @@ class AbuseFilterChangesList extends OldChangesList {
 	 * @return string
 	 */
 	public function insertLogEntry( $rc ) {
-		$formatter = LogFormatter::newFromRow( $rc->getAttributes() );
+		$formatter = MediaWikiServices::getInstance()->getLogFormatterFactory()->newFromRow( $rc->getAttributes() );
 		$formatter->setContext( $this->getContext() );
 		$formatter->setAudience( LogFormatter::FOR_THIS_USER );
 		$formatter->setShowUserToolLinks( true );
@@ -150,5 +163,10 @@ class AbuseFilterChangesList extends OldChangesList {
 	 */
 	public function insertRollback( &$s, &$rc ) {
 		// Kill rollback links.
+	}
+
+	public function setRCResult( RecentChange $rc, bool $matches ): void {
+		$id = $rc->getAttribute( 'rc_id' );
+		$this->rcResults[$id] = $matches;
 	}
 }

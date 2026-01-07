@@ -1,8 +1,26 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hamilton Abreu"
+			"Hamilton Abreu",
+			"Mansil alfalb"
 		]
 	},
-	"bs-prodistributionconnector-desc": "Liga o BlueSpice a várias extensões do MediaWiki"
+	"bs-prodistributionconnector-desc": "Liga o BlueSpice a várias extensões do MediaWiki",
+	"bs-pro-distribution-droplet-pro-con-list-name": "Prós e contras",
+	"bs-pro-distribution-droplet-decision-name": "Decisão",
+	"droplets-pro-con-advantages-label": "Vantagens",
+	"droplets-pro-con-disadvantages-title-label": "Título para desvantagens",
+	"droplets-pro-con-disadvantages-label": "Desvantagens",
+	"droplets-modal-dialog-btn-label": "Texto para botão",
+	"droplets-decision-label": "Decisão",
+	"droplets-modal-dialog-bg-color-blue": "azul",
+	"droplets-modal-dialog-bg-color-red": "vermelho",
+	"droplets-modal-dialog-bg-color-neutral": "branco",
+	"bs-pro-distribution-pdfembed-inspector-input-label": "Ficheiro PDF",
+	"bs-pro-distribution-pdfembed-inspector-width-label": "Largura",
+	"bs-pro-distribution-pdfembed-inspector-height-label": "Altura",
+	"bs-pro-distribution-config-outh-public-key": "Chave pública de OAuth2",
+	"bs-pro-distribution-config-outh-private-key": "Chave privada de OAuth2",
+	"bs-pro-distribution-config-comment-streams-enabled": "Comentários",
+	"bs-pro-distribution-droplet-ec-embed-url-label": "URL"
 }

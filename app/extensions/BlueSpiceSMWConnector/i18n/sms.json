@@ -4,5 +4,7 @@
 			"Yupik"
 		]
 	},
-	"bs-swm-connector-ask-store-page-label": "Seidd"
+	"bs-swm-connector-ask-store-page-label": "Seidd",
+	"bs-smwconnector-decision-overview-categories-label": "Kategoria",
+	"bs-smwconnector-decision-overview-prefix-label": "Prefikss"
 }

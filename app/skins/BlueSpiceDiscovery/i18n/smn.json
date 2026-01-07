@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Seipinne"
+			"Seipinne",
+			"Yupik"
 		]
 	},
 	"bs-discovery-back-to-top-text": "Maassâd aalgân",
@@ -23,10 +24,7 @@
 	"bs-discovery-create-button-new-file-title": "Vuorkkii uđđâ tiätuvuárhá",
 	"bs-discovery-navbar-global-actions-button-title": "Systeemvijđosiih tooimah",
 	"bs-discovery-navbar-global-actions-button-aria-label": "Systeemviijđosiih tooimah",
-	"bs-discovery-navbar-global-actions-tool-text": "Tyejiniävuh",
-	"bs-discovery-navbar-global-actions-manager-text": "Haldâšem",
 	"bs-discovery-navbar-full-screen-button-enable-title": "Vääldi oles čááitu tile kiävtun",
-	"bs-discovery-navbar-full-screen-button-text": "Vääldi oles čááitu tile kiävtun",
 	"bs-discovery-navbar-full-screen-button-enable-aria-label": "Vääldi oles čááitu tile kiävtun",
 	"bs-discovery-navbar-full-screen-button-disable-title": "Jooskâ oles čááitu tile",
 	"bs-discovery-navbar-full-screen-button-disable-aria-label": "Jooskâ oles čááitu tile",
@@ -61,15 +59,14 @@
 	"bs-discovery-dialog-detailssectionheading-views": "Čäittimtoveh",
 	"bs-discovery-edit-mediawiki-sidebar-link-text": "Mute sijđotuálbus",
 	"bs-discovery-edit-mediawiki-sidebar-link-title": "Mute MediaWiki:Sidebar",
-	"bs-discovery-edit-mediawiki-sidebar-link-aria-label": "Mute MediaWiki:Sidebar",
-	"bs-discovery-sidebar-secondary-watch-link-title": "Tarkkuu siijđo",
 	"bs-discovery-sidebar-secondary-watch-link-aria-label": "Tarkkuu siijđo",
 	"bs-discovery-permalink-copy-text": "Kopijist URL",
 	"bs-discovery-breadcrumb-label-talk": "Savâstâllâm",
 	"bs-discovery-breadcrumb-label-special-linkliste": "Liiŋkah",
 	"bs-discovery-breadcrumb-label-action-history": "Historjá",
 	"bs-discovery-breadcrumb-label-action-edit": "Mute",
-	"bs-discovery-first-heading-aria-label": "Siijđo paječaalâ",
+	"bs-discovery-first-heading-aria-label": "Sijđonommâ",
+	"bs-discovery-mainlinks-categories-label": "Luokah",
 	"bs-discovery-personalurl-mycontributions-text": "Hammiimeh",
 	"bs-discovery-personalurl-userpage-text": "Proofiil",
 	"bs-discovery-globalactionentry-templates-text": "Myenstereh",

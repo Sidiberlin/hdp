@@ -1,39 +1,52 @@
-/**
- * @module popups
- */
-
 import * as Redux from 'redux';
 import * as ReduxThunk from 'redux-thunk';
 
 import createPagePreviewGateway from './gateway/page';
-import createReferenceGateway from './gateway/reference';
 import createUserSettings from './userSettings';
 import createPreviewBehavior from './previewBehavior';
 import createSettingsDialogRenderer from './ui/settingsDialogRenderer';
 import registerChangeListener from './changeListener';
 import createIsPagePreviewsEnabled from './isPagePreviewsEnabled';
 import { fromElement as titleFromElement } from './title';
-import { init as rendererInit } from './ui/renderer';
+import { init as rendererInit, registerPreviewUI, createPagePreview,
+	createDisambiguationPreview
+} from './ui/renderer';
 import createExperiments from './experiments';
 import { isEnabled as isStatsvEnabled } from './instrumentation/statsv';
 import changeListeners from './changeListeners';
 import * as actions from './actions';
 import reducers from './reducers';
 import createMediaWikiPopupsObject from './integrations/mwpopups';
-import { previewTypes, getPreviewType } from './preview/model';
-import isReferencePreviewsEnabled from './isReferencePreviewsEnabled';
+import { previewTypes, getPreviewType,
+	registerModel, findNearestEligibleTarget } from './preview/model';
 import setUserConfigFlags from './setUserConfigFlags';
-
+import { registerGatewayForPreviewType, getGatewayForPreviewType } from './gateway';
+import { FETCH_START_DELAY, FETCH_COMPLETE_TARGET_DELAY } from './constants';
+/**
+ * @module popups
+ * @private
+ */
 const EXCLUDED_LINK_SELECTORS = [
 	'.extiw',
+	// ignore links that point to the same article
+	'.mw-selflink',
 	'.image',
 	'.new',
 	'.internal',
 	'.external',
 	'.mw-cite-backlink a',
-	'.oo-ui-buttonedElement-button',
+	'.oo-ui-buttonElement-button',
 	'.ve-ce-surface a', // T259889
-	'.cancelLink a'
+	'.ext-discussiontools-init-timestamplink',
+	'.cancelLink a',
+	// T198652: lists to hash fragments are ignored.
+	// Note links that include the path will still trigger a hover,
+	// e.g. <a href="Foo#foo"> will trigger a preview but <a href="#foo"> will not.
+	// This is intentional behaviour that will not be handled by page previews, to avoid
+	// introducing complex behaviour. If a link must include the path it should make use of
+	// the .mw-selflink-fragment class.
+	'.mw-selflink-fragment',
+	'[href^="#"]'
 ];
 
 /**
@@ -43,8 +56,6 @@ const EXCLUDED_LINK_SELECTORS = [
  *
  * @param {string} topic
  * @param {Object} data
- *
- * @global
  */
 
 /**
@@ -89,7 +100,6 @@ function getPageviewTracker( config ) {
  * @param {PreviewBehavior} previewBehavior
  * @param {EventTracker} statsvTracker
  * @param {EventTracker} pageviewTracker
- * @return {void}
  */
 function registerChangeListeners(
 	store, registerActions, userSettings, settingsDialog, previewBehavior,
@@ -109,6 +119,49 @@ function registerChangeListeners(
 	);
 }
 
+/**
+ * Creates an event handler that only executes if the current target
+ * is eligible for page previews and a title can be associated with the element.
+ *
+ * @param {Function} handler
+ * @return {Function}
+ */
+function handleDOMEventIfEligible( handler ) {
+	return function ( event ) {
+		let target = event && event.target;
+		if ( !target ) {
+			return;
+		}
+		// if the element is a text node, as events can be triggered on text nodes
+		// it won't have a closest method, so we get its parent element (T340081)
+		if ( target.nodeType === 3 ) {
+			target = target.parentNode;
+		}
+
+		// If the event bubbles up all the way,
+		// document does not have closest method, so exit early (T336650).
+		if ( target === document ) {
+			return;
+		}
+
+		// If the closest method is not defined, let's return early and
+		// understand this better by logging an error. (T340081)
+		if ( target && !target.closest ) {
+			const err = new Error( `T340081: Unexpected DOM element ${ target.tagName } with nodeType ${ target.nodeType }` );
+			mw.errorLogger.logError( err, 'error.web-team' );
+			return;
+		}
+
+		target = findNearestEligibleTarget( target );
+		if ( target === null ) {
+			return;
+		}
+		const mwTitle = titleFromElement( target, mw.config );
+		if ( mwTitle ) {
+			handler( target, mwTitle, event );
+		}
+	};
+}
 /*
  * Initialize the application by:
  * 1. Initializing side-effects and "services"
@@ -128,18 +181,12 @@ function registerChangeListeners(
 		// So-called "services".
 		generateToken = mw.user.generateRandomSessionId,
 		pagePreviewGateway = createPagePreviewGateway( mw.config ),
-		referenceGateway = createReferenceGateway(),
 		userSettings = createUserSettings( mw.storage ),
-		referencePreviewsState = isReferencePreviewsEnabled( mw.user, userSettings, mw.config ),
-		settingsDialog = createSettingsDialogRenderer( referencePreviewsState !== null ),
+		settingsDialog = createSettingsDialogRenderer(),
 		experiments = createExperiments( mw.experiments ),
 		statsvTracker = getStatsvTracker( mw.user, mw.config, experiments ),
 		pageviewTracker = getPageviewTracker( mw.config ),
-		initiallyEnabled = {
-			[ previewTypes.TYPE_PAGE ]:
-				createIsPagePreviewsEnabled( mw.user, userSettings, mw.config ),
-			[ previewTypes.TYPE_REFERENCE ]: referencePreviewsState
-		};
+		pagePreviewState = createIsPagePreviewsEnabled( mw.user, userSettings, mw.config );
 
 	// If debug mode is enabled, then enable Redux DevTools.
 	if ( mw.config.get( 'debug' ) ||
@@ -164,7 +211,7 @@ function registerChangeListeners(
 	);
 
 	boundActions.boot(
-		initiallyEnabled,
+		{},
 		mw.user,
 		userSettings,
 		mw.config,
@@ -175,80 +222,83 @@ function registerChangeListeners(
 	 * Register external interface exposing popups internals so that other
 	 * extensions can query it (T171287)
 	 */
-	mw.popups = createMediaWikiPopupsObject( store );
+	mw.popups = createMediaWikiPopupsObject(
+		store, registerModel, registerPreviewUI, registerGatewayForPreviewType,
+		boundActions.registerSetting, userSettings
+	);
 
-	const selectors = [];
-	if ( initiallyEnabled[ previewTypes.TYPE_PAGE ] !== null ) {
+	// Migrate any old preferences to new system.
+	// FIXME: This can be removed in 4 weeks time.
+	userSettings.migrateOldPreferences();
+
+	if ( pagePreviewState !== null ) {
 		const excludedLinksSelector = EXCLUDED_LINK_SELECTORS.join( ', ' );
-		selectors.push( `#mw-content-text a[href][title]:not(${excludedLinksSelector})` );
+		// Register default preview type
+		mw.popups.register( {
+			type: previewTypes.TYPE_PAGE,
+			selector: `#mw-content-text a[href][title]:not(${ excludedLinksSelector })`,
+			delay: FETCH_COMPLETE_TARGET_DELAY - FETCH_START_DELAY,
+			gateway: pagePreviewGateway,
+			renderFn: createPagePreview,
+			subTypes: [
+				{
+					type: previewTypes.TYPE_DISAMBIGUATION,
+					renderFn: createDisambiguationPreview,
+					doNotRequireSummary: true
+				}
+			]
+		} );
 	}
-	if ( initiallyEnabled[ previewTypes.TYPE_REFERENCE ] !== null ) {
-		selectors.push( '#mw-content-text .reference a[ href*="#" ]' );
-	}
-	if ( !selectors.length ) {
-		mw.log.warn( 'ext.popups was loaded but everything is disabled' );
-		return;
-	}
-	const validLinkSelector = selectors.join( ', ' );
 
 	rendererInit();
 
 	/*
 	 * Binding hover and click events to the eligible links to trigger actions
 	 */
-	$( document )
-		.on( 'mouseover keyup', validLinkSelector, function ( event ) {
-			const mwTitle = titleFromElement( this, mw.config );
-			if ( !mwTitle ) {
+	function setupEventListeners() {
+		const onHover = handleDOMEventIfEligible( function ( target, mwTitle, event ) {
+			const type = getPreviewType( target );
+			const gateway = getGatewayForPreviewType( type );
+			if ( !gateway ) {
 				return;
 			}
-			const type = getPreviewType( this, mw.config, mwTitle );
-			let gateway;
 
-			switch ( type ) {
-				case previewTypes.TYPE_PAGE:
-					gateway = pagePreviewGateway;
-					break;
-				case previewTypes.TYPE_REFERENCE:
-					gateway = referenceGateway;
-					break;
-				default:
-					return;
-			}
-
-			const $target = $( this );
-			const $window = $( window );
-
+			const scrollTop = window.scrollY;
+			const bbox = target.getBoundingClientRect();
+			const offset = {
+				top: scrollTop + bbox.y,
+				left: window.scrollX + bbox.x
+			};
 			const measures = {
 				pageX: event.pageX,
 				pageY: event.pageY,
 				clientY: event.clientY,
-				width: $target.width(),
-				height: $target.height(),
-				offset: $target.offset(),
-				clientRects: this.getClientRects(),
-				windowWidth: $window.width(),
-				windowHeight: $window.height(),
-				scrollTop: $window.scrollTop()
+				width: target.offsetWidth,
+				height: target.offsetHeight,
+				offset,
+				clientRects: target.getClientRects(),
+				windowWidth: window.innerWidth,
+				windowHeight: window.innerHeight,
+				scrollTop
 			};
 
-			boundActions.linkDwell( mwTitle, this, measures, gateway, generateToken, type );
-		} )
-		.on( 'mouseout blur', validLinkSelector, function () {
-			const mwTitle = titleFromElement( this, mw.config );
-
-			if ( mwTitle ) {
-				boundActions.abandon();
-			}
-		} )
-		.on( 'click', validLinkSelector, function () {
-			const mwTitle = titleFromElement( this, mw.config );
-			if ( mwTitle ) {
-				if ( previewTypes.TYPE_PAGE === getPreviewType( this, mw.config, mwTitle ) ) {
-					boundActions.linkClick( this );
-				}
+			boundActions.linkDwell( mwTitle, target, measures, gateway, generateToken, type );
+		} );
+		const onHoverOut = handleDOMEventIfEligible( function () {
+			boundActions.abandon();
+		} );
+		const onClick = handleDOMEventIfEligible( function ( target ) {
+			if ( previewTypes.TYPE_PAGE === getPreviewType( target ) ) {
+				boundActions.linkClick( target );
 			}
 		} );
+		document.addEventListener( 'mouseover', onHover );
+		document.addEventListener( 'keyup', onHover );
+		document.addEventListener( 'mouseout', onHoverOut );
+		document.addEventListener( 'blur', onHoverOut );
+		document.addEventListener( 'click', onClick );
+	}
+	setupEventListeners();
 }() );
 
 window.Redux = Redux;

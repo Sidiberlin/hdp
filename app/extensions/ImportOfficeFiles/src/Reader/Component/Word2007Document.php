@@ -5,11 +5,11 @@ namespace MediaWiki\Extension\ImportOfficeFiles\Reader\Component;
 use DOMDocument;
 use DOMNode;
 use DOMNodeList;
-use ExtensionRegistry;
 use MediaWiki\Extension\ImportOfficeFiles\Reader\DocumentPreprocessor;
 use MediaWiki\Extension\ImportOfficeFiles\Reader\DocumentSplitter;
 use MediaWiki\Extension\ImportOfficeFiles\Segment;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 
 class Word2007Document {
 

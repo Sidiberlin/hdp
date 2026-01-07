@@ -3,11 +3,13 @@
 		"authors": [
 			"Karim185.3",
 			"Meno25",
+			"Mohammed Qays",
 			"NEHAOUA",
 			"OsamaK",
 			"Tala Ali",
 			"ديفيد",
-			"روخو"
+			"روخو",
+			"محمد أحمد عبد الفتاح"
 		]
 	},
 	"srf-desc": "صيغ نتائج إضافية لاستعلامات ميدياويكي الدلالية",
@@ -16,9 +18,6 @@
 	"prefs-srf-eventcalendar-options": "خيارات تقويم الحدث",
 	"srf-prefs-eventcalendar-options-update-default": "تمكين [https://www.semantic-mediawiki.org/wiki/Help:User_preferences#Automatic_updates التحديثات التلقائية] لأحداث التقويم أثناء تحديث الصفحة",
 	"srf-prefs-eventcalendar-options-paneview-default": "تمكين عرض الجزء بشكل افتراضي",
-	"prefs-srf-datatables-options": "خيارات جداول البيانات",
-	"srf-prefs-datatables-options-update-default": "تمكين [https://www.semantic-mediawiki.org/wiki/Help:User_preferences#Automatic_updates التحديثات التلقائية]  لمحتوى الجدول أثناء تحديث الصفحة",
-	"srf-prefs-datatables-options-cache-default": "تمكين [https://www.semantic-mediawiki.org/wiki/Help:User_preferences#Local_storage التخزين المحلي] لتحسين وقت الاستجابة",
 	"srf-module-loading": "جارٍ التحميل...",
 	"srf-paramdesc-layout": "التصميم المتاح",
 	"srf-paramdesc-height": "الارتفاع",
@@ -203,7 +202,7 @@
 	"srf-printername-datatables": "جداول البيانات",
 	"srf-ui-datatables-label-conditions": "الشروط",
 	"srf-ui-datatables-label-parameters": "وسائط",
-	"srf-ui-datatables-label-filters": "مرشحات وبحث العمود",
+	"srf-ui-datatables-label-filters": "المرشحات",
 	"srf-ui-datatables-label-information": "معلومات",
 	"srf-ui-datatables-panel-disclaimer": "يمكن تغيير الوسائط والشروط، ولكن أي تغيير مؤقت ويتم التخلي عنه بعد تحديث الصفحة.",
 	"srf-ui-datatables-label-update-success": "تم تحديث الجدول بنجاح",
@@ -230,6 +229,7 @@
 	"srf-ui-datatables-label-oPaginate-sPrevious": "السابق",
 	"srf-ui-datatables-label-oAria-sSortAscending": ": تفعيل لفرز العمود تصاعديا",
 	"srf-ui-datatables-label-oAria-sSortDescending": ": تفعيل لفرز العمود تنازليا",
+	"srf-ui-datatables-label-rows-all": "كل الصفوف",
 	"srf-printername-tree": "زود بعمود",
 	"srf-printername-ultree": "Ultree",
 	"srf-printername-oltree": "Oltree",
@@ -271,7 +271,7 @@
 	"srf-filtered-selectorlabel-table": "جدول",
 	"srf-filtered-selectorlabel-calendar": "التقويم",
 	"srf-filtered-selectorlabel-map": "خريطة",
-	"srf-filtered-noscript-error": "لا يمكن عرض النتائج بسبب عدم تمكين JavaScript. اذهب إلى $1 .",
+	"srf-filtered-noscript-error": "لا يمكن عرض النتائج بسبب عدم تمكين JavaScript. انتقل إلى $1 .",
 	"srf-filtered-noscript-link-caption": "النتائج في شكل جدول",
 	"srf-filtered-map-provider-missing-error": "لم يتم تحديد موفر الخريطة للعرض \"الخريطة\".",
 	"srf-filtered-value-filter-and": "و",
@@ -334,11 +334,12 @@
 	"srf-ui-mediaplayer-label-full-screen": "ملء الشاشة",
 	"srf-ui-mediaplayer-label-restore-screen": "استعادة الشاشة",
 	"srf-ui-slideshow-slide-button-play": "تشغيل",
+	"srf-ui-slideshow-slide-button-pause": "إيقاف مؤقت",
 	"srf-spreadsheet-link": "جدول ممتد",
 	"srf-paramdesc-spreadsheet-filename": "اسم ملف لتنزيل ملف جدول البيانات المنشأ",
 	"srf-paramdesc-spreadsheet-fileformat": "التنسيق الذي سيتم إنتاجه لملف جدول البيانات، القيم المسموح بها: xlsx وxls وods وcsv، الافتراضي: xlsx",
 	"srf-paramdesc-spreadsheet-templatefile": "اسم ملف جدول ممتد من نطاق ''ملف'' المستخدمة لتنسيق الملف المنشأ",
-	"srf-paramdesc-icalendar-timezone": "قائمة مفصولة بفواصل بالمناطق الزمنية",
+	"srf-paramdesc-icalendar-timezone": "قائمة منفصلة بفواصل للمناطق الزمنية",
 	"srf-paramdesc-gantt-diagramtitle": "اسم المخطط",
 	"srf-paramdesc-gantt-diagramtheme": "موضوع الرسم البياني",
 	"srf-paramdesc-gantt-axisformat": "المحور السيني: صيغة التاريخ",
@@ -353,5 +354,7 @@
 	"srf-error-gantt-sortkey": "'''مفتاح الفرز''' الذي اخترته غير مدعوم",
 	"srf-error-gantt-mermaid-not-installed": "امتداد Mermaid يحتاج إلى تثبيت.",
 	"srf-printername-gantt": "جانت",
-	"srf-paramdesc-nodelabel": "استخدام تسمية عقدة الرسم البياني، القيم المسموح بها: عنوان العرض."
+	"srf-paramdesc-nodelabel": "استخدام تسمية عقدة الرسم البياني، القيم المسموح بها: عنوان العرض.",
+	"srf-printername-mode": "وضع",
+	"srf-printername-range": "النطاق"
 }

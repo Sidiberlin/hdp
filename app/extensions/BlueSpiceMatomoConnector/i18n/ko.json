@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Bisang",
+			"Ykhwong"
+		]
+	},
+	"bs-matomoconnector-pref-siteid": "사이트 ID",
+	"bs-matomoconnector-pref-baseurl": "기본 URL",
+	"bs-matomoconnector-pref-authtoken": "인증 토큰",
+	"bs-matomoconnector-privacy-cookie-group-desc": "저희 웹사이트는 웹 분석 서비스인 Matomo를 사용합니다. Matomo는 \"쿠키\"라고 불리는 것을 사용합니다. 쿠키는 귀하의 컴퓨터에 저장되는 작은 텍스트 파일로, 저희가 웹사이트 이용 내역을 분석할 수 있게 합니다. 쿠키를 통해 생성된 사용 정보(귀하의 축약된 IP 주소를 포함)는 저희 서버로 전송되어 웹사이트 이용 내역을 분석하고, 이를 통해 웹사이트를 최적화하는 데에 활용됩니다. 이 과정에서 귀하의 IP 주소는 즉시 익명화되어, 익명의 사용자로서 존재합니다. 쿠키를 통해 생성된 귀하의 정보는 제3자에게 전송되지 않습니다."
+}

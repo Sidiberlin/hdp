@@ -42,7 +42,7 @@ enhancedUpload.ui.dialog.UploadFilesDialog.prototype.getSetupProcess = function 
 };
 
 enhancedUpload.ui.dialog.UploadFilesDialog.prototype.initialize = function () {
-	var pluginModules = require( './pluginModules.json' );
+	const pluginModules = require( './pluginModules.json' );
 	enhancedUpload.ui.dialog.UploadFilesDialog.super.prototype.initialize.call( this );
 	this.booklet = new enhancedUpload.ui.booklet.UploadBooklet( {
 		expanded: false,
@@ -72,7 +72,7 @@ enhancedUpload.ui.dialog.UploadFilesDialog.prototype.show = function () {
 };
 
 enhancedUpload.ui.dialog.UploadFilesDialog.prototype.switchPage = function ( name, data ) {
-	var page = this.booklet.getPage( name );
+	const page = this.booklet.getPage( name );
 	if ( !page ) {
 		return;
 	}
@@ -97,6 +97,7 @@ enhancedUpload.ui.dialog.UploadFilesDialog.prototype.switchPage = function ( nam
 					this.updateSize();
 				}
 			} );
+			this.updateSize();
 			break;
 		case 'ResultPage':
 			this.actions.setAbilities( { cancel: false, add: false, done: true } );
@@ -124,7 +125,7 @@ enhancedUpload.ui.dialog.UploadFilesDialog.prototype.getReadyProcess = function 
 };
 
 enhancedUpload.ui.dialog.UploadFilesDialog.prototype.getActionProcess = function ( action ) {
-	var page = this.booklet.getCurrentPage();
+	const page = this.booklet.getCurrentPage();
 	return enhancedUpload.ui.dialog.UploadFilesDialog.parent.prototype.getActionProcess.call(
 		this, action
 	).next(

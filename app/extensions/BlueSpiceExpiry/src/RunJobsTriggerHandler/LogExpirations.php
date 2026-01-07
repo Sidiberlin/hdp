@@ -6,17 +6,17 @@ use BlueSpice\Config;
 use BlueSpice\Expiry\SpecialLogLogger;
 use BlueSpice\RunJobsTriggerHandler\Interval\OnceADay;
 use BlueSpice\UtilityFactory;
-use DeferredUpdates;
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Page\WikiPageFactory;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
 use MWException;
 use MWStake\MediaWiki\Component\RunJobsTrigger\Handler;
 use MWStake\MediaWiki\Component\RunJobsTrigger\Interval;
-use Status;
-use Title;
-use TitleFactory;
-use User;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class LogExpirations extends Handler {

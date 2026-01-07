@@ -3,8 +3,10 @@
 namespace ChatBot\Model;
 
 use DateTime;
+use DOMDocument;
+use Exception;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
 
 class ChatMessage {
 	/**
@@ -29,13 +31,13 @@ class ChatMessage {
 	private DateTime $date;
 
 	/**
-	 * @param string $query
+	 * @param array $query
 	 * @param string $answer
 	 * @param array $references
 	 * @param string $session_id
 	 * @param string $time
 	 *
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	private function __construct(
 		array $query,
@@ -55,7 +57,7 @@ class ChatMessage {
 	 * @param array $message
 	 *
 	 * @return ChatMessage
-	 * @throws \Exception
+	 * @throws Exception
 	 */
 	public static function fromMessageJson( array $message ): ChatMessage {
 		return new ChatMessage(
@@ -98,13 +100,23 @@ class ChatMessage {
 	 */
 	public function getAnswer(): string {
 		$urlUtils = MediaWikiServices::getInstance()->getUrlUtils();
-		$dom = new \DOMDocument();
-		$dom->loadHTML( '<html><head><meta charset=\"UTF-8\"></head><body>' . $this->answer . '</body></html>' );
+		$dom = new DOMDocument();
+		libxml_use_internal_errors(true);
+		$dom->loadHTML('<html><head><meta charset="UTF-8"></head><body>' . $this->answer . '</body></html>');
 		$links = $dom->getElementsByTagName( 'a' );
 		foreach ( $links as $link ) {
 			$link->setAttribute( 'href', $urlUtils->expand( $link->getAttribute( 'href' ) ) );
 		}
 		return $dom->saveHTML( $dom->getElementsByTagName( 'body' )->item( 0 ) );
+	}
+
+	/**
+	 * Remove <a> tags but keep the inner text
+	 *
+	 * @return string
+	 */
+	public function getRawAnswer(): string {
+		return strip_tags( $this->answer );
 	}
 
 	/**

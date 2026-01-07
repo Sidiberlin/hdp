@@ -2,7 +2,7 @@
 
 namespace SimpleTasks\Hook;
 
-use DatabaseUpdater;
+use MediaWiki\Installer\DatabaseUpdater;
 use MediaWiki\Installer\Hook\LoadExtensionSchemaUpdatesHook;
 
 class RunDatabaseUpdates implements LoadExtensionSchemaUpdatesHook {

@@ -27,9 +27,9 @@ officeimport.api.Api.prototype.ajax = function ( path, data, method ) {
 		data: data,
 		contentType: 'application/json',
 		dataType: 'json'
-	} ).done( function ( response ) {
+	} ).done( ( response ) => {
 		dfd.resolve( response );
-	} ).fail( function ( xhr, type, status ) {
+	} ).fail( ( xhr, type, status ) => {
 		// eslint-disable-next-line no-console
 		console.dir( status );
 		dfd.reject();
@@ -58,13 +58,13 @@ officeimport.api.Api.prototype.uploadFile = function ( file ) {
 		data: formData,
 		contentType: false,
 		processData: false
-	} ).done( function ( response ) {
+	} ).done( ( response ) => {
 		if ( response.success === false ) {
 			dfd.reject();
 			return;
 		}
 		dfd.resolve( response );
-	} ).fail( function ( xhr, type, status ) {
+	} ).fail( ( xhr, type, status ) => {
 		// eslint-disable-next-line no-console
 		console.dir( xhr );
 		// eslint-disable-next-line no-console
@@ -104,5 +104,5 @@ officeimport.api.Api.prototype.getImportStatus = function ( processId ) {
 };
 
 officeimport.api.Api.prototype.importNextStep = function ( processId ) {
-	return this.post( 'file_import/proceed/' + processId );
+	return this.post( 'file_import/proceed/' + processId, JSON.stringify( {} ) );
 };

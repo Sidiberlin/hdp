@@ -11,5 +11,6 @@
 	"bs-expiry-edit-grid-header-date": "Ամսաթիվ",
 	"bs-expiry-edit-grid-header-comment": "Մեկնաբանություն",
 	"bs-expiry-dialog-action-no": "Ոչ",
-	"bs-expiry-event-today-desc": "Էջի ժամկետը լրանում է այսօր"
+	"bs-expiry-event-today-desc": "Էջի ժամկետը լրանում է այսօր",
+	"bs-expiry-header-action-delete": "Ջնջել"
 }

@@ -9,7 +9,7 @@ ext.bookshelf.ui.dialog.MetaDataDialog = function ( config ) {
 	this.originData = config.data;
 	ext.bookshelf.ui.dialog.MetaDataDialog.super.call( this, config );
 	this.metadata = [];
-}
+};
 OO.inheritClass( ext.bookshelf.ui.dialog.MetaDataDialog, OO.ui.ProcessDialog );
 
 ext.bookshelf.ui.dialog.MetaDataDialog.static.name = 'MetaDataDialog';
@@ -22,19 +22,21 @@ ext.bookshelf.ui.dialog.MetaDataDialog.static.actions = [
 		flags: [ 'primary', 'progressive' ]
 	},
 	{
-		label: mw.message( 'cancel' ).text(),
-		flags: 'safe'
+		title: mw.message( 'cancel' ).text(),
+		flags: [ 'safe', 'close' ]
 	}
 ];
 
 ext.bookshelf.ui.dialog.MetaDataDialog.prototype.initialize = function () {
 	ext.bookshelf.ui.dialog.MetaDataDialog.super.prototype.initialize.apply( this, arguments );
-	var data = require( './metadata.json');
-	var modules = data.modules;
+	const data = require( './metadata.json' );
 
-	mw.loader.using( modules ).done( function () {
-		var pages = this.getPagesFromConfig( data.pages );
-		var metaDataKeys = this.getKeysFromConfig( data.pages );
+	// eslint-disable-next-line
+	const modules = Object.values( data.modules );
+
+	mw.loader.using( modules ).done( () => {
+		const pages = this.getPagesFromConfig( data.pages );
+		const metaDataKeys = this.getKeysFromConfig( data.pages );
 		this.content = new ext.bookshelf.ui.widget.MetaDataLayout( {
 			originData: this.originData,
 			metaDataKeys: metaDataKeys
@@ -42,14 +44,14 @@ ext.bookshelf.ui.dialog.MetaDataDialog.prototype.initialize = function () {
 		this.content.addItems( pages );
 		this.$body.append( this.content.$element );
 		this.updateSize();
-	}.bind( this ) );
+	} );
 };
 
 ext.bookshelf.ui.dialog.MetaDataDialog.prototype.getActionProcess = function ( action ) {
-	var dialog = this;
+	const dialog = this;
 	if ( action ) {
 		dialog.metadata = dialog.getNewMetaData();
-		return new OO.ui.Process( function () {
+		return new OO.ui.Process( () => {
 			dialog.emit( 'metadataset', dialog.metadata );
 			dialog.close( { action: action } );
 		} );
@@ -58,57 +60,56 @@ ext.bookshelf.ui.dialog.MetaDataDialog.prototype.getActionProcess = function ( a
 };
 
 ext.bookshelf.ui.dialog.MetaDataDialog.prototype.getNewMetaData = function () {
-	var data = {};
-	var pages = this.content.pages;
-	for ( var page in pages ) {
-		var value = pages[ page ].getValue();
+	const data = {};
+	const pages = this.content.pages;
+	for ( const page in pages ) {
+		const value = pages[ page ].getValue();
 		if ( value === '' ) {
 			continue;
 		}
 		data[ page ] = value;
 	}
 	return data;
-}
+};
 
 ext.bookshelf.ui.dialog.MetaDataDialog.prototype.getPagesFromConfig = function ( data ) {
-	var pages = [];
-	for ( var key in data ) {
-		var classname = this.callbackFromString( data[ key ].classname );
-		var active = false;
-		var value = '';
+	const pages = [];
+	for ( const key in data ) {
+		const classname = this.callbackFromString( data[ key ].classname );
+		let active = false;
+		let value = '';
 		if ( this.originData.hasOwnProperty( key ) ) {
 			active = true;
 			value = this.originData[ key ];
 		}
-		var page =  new classname( key, {
+		const page = new classname( key, { // eslint-disable-line new-cap
 			active: active,
 			value: value,
-			key: key
+			key: key,
+			$overlay: this.$overlay
 		} );
 		page.toggle( active );
 		pages.push( page );
 	}
 
-	pages.sort( function ( a, b ) {
-		return a.getOutlineLabel().localeCompare( b.getOutlineLabel() );
-	} );
+	pages.sort( ( a, b ) => a.getOutlineLabel().localeCompare( b.getOutlineLabel() ) );
 	return pages;
 };
 
 ext.bookshelf.ui.dialog.MetaDataDialog.prototype.getKeysFromConfig = function ( data ) {
-	var keys = [];
-	for ( var key in data ) {
+	const keys = [];
+	for ( const key in data ) {
 		keys.push( data[ key ].key );
 	}
 
 	return keys;
 };
 
-ext.bookshelf.ui.dialog.MetaDataDialog.prototype.callbackFromString = function( callback ) {
-	var parts = callback.split( '.' );
-	var func = window[parts[0]];
-	for( var i = 1; i < parts.length; i++ ) {
-		func = func[parts[i]];
+ext.bookshelf.ui.dialog.MetaDataDialog.prototype.callbackFromString = function ( callback ) {
+	const parts = callback.split( '.' );
+	let func = window[ parts[ 0 ] ];
+	for ( let i = 1; i < parts.length; i++ ) {
+		func = func[ parts[ i ] ];
 	}
 
 	return func;

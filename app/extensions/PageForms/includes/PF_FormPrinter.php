@@ -13,7 +13,10 @@
  * @ingroup PF
  */
 
+use MediaWiki\EditPage\EditPage;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 class PFFormPrinter {
 
@@ -460,7 +463,7 @@ END;
 
 		$html = '';
 		foreach ( $tif->getFields() as $formField ) {
-			$fieldName = $formField->template_field->getFieldName();
+			$fieldName = $formField->getTemplateField()->getFieldName();
 			if ( $gridValues == null ) {
 				$curValue = null;
 			} else {
@@ -500,8 +503,8 @@ END;
 				$formField->setFieldArg( 'label', '' );
 			} elseif ( $formField->getLabelMsg() !== null ) {
 				$labelText = wfMessage( $formField->getLabelMsg() )->parse();
-			} elseif ( $formField->template_field->getLabel() !== null ) {
-				$labelText = $formField->template_field->getLabel() . ':';
+			} elseif ( $formField->getTemplateField()->getLabel() !== null ) {
+				$labelText = $formField->getTemplateField()->getLabel() . ':';
 			} else {
 				$labelText = $fieldName . ': ';
 			}
@@ -542,7 +545,7 @@ END;
 		} elseif ( array_key_exists( 'values from external data', $formFieldArgs ) ) {
 			return [ 'external data', $formFieldArgs['origName'] ];
 		} elseif ( array_key_exists( 'values from wikidata', $formFieldArgs ) ) {
-			return [ 'wikidata', $formFieldArgs['wikidata'] ];
+			return [ 'wikidata', $formFieldArgs['values from wikidata'] ];
 		} else {
 			return [ '', '' ];
 		}
@@ -560,7 +563,7 @@ END;
 
 		$gridParams = [];
 		foreach ( $tif->getFields() as $formField ) {
-			$templateField = $formField->template_field;
+			$templateField = $formField->getTemplateField();
 			$formFieldArgs = $formField->getFieldArgs();
 			$possibleValues = $formField->getPossibleValues();
 
@@ -906,19 +909,34 @@ END;
 		) {
 			$this->showDeletionLog( $wgOut );
 		}
-		$hookContainer = MediaWikiServices::getInstance()->getHookContainer();
+		$services = MediaWikiServices::getInstance();
+		$hookContainer = $services->getHookContainer();
 		// Unfortunately, we can't just call userCan() or its
 		// equivalent here because it seems to ignore the setting
 		// "$wgEmailConfirmToEdit = true;". Instead, we'll just get the
 		// permission errors from the start, and use those to determine
 		// whether the page is editable.
 		if ( !$is_query ) {
-			$permissionErrors = MediaWikiServices::getInstance()->getPermissionManager()
-				->getPermissionErrors( 'edit', $user, $this->mPageTitle );
-			if ( MediaWikiServices::getInstance()->getReadOnlyMode()->isReadOnly() ) {
-				$permissionErrors = [ [ 'readonlytext', [ MediaWikiServices::getInstance()->getReadOnlyMode()->getReason() ] ] ];
+			$permissionManager = $services->getPermissionManager();
+			$readOnlyMode = $services->getReadOnlyMode();
+			$permissionStatus = $permissionErrors = null;
+
+			if ( method_exists( $permissionManager, 'getPermissionStatus' ) ) {
+				// MW 1.43+
+				$permissionStatus = $permissionManager->getPermissionStatus( 'edit', $user, $this->mPageTitle );
+				if ( $readOnlyMode->isReadOnly() ) {
+					$permissionStatus->error( 'readonlytext', $readOnlyMode->getReason() );
+				}
+				$userCanEditPage = $permissionStatus->isOK();
+			} else {
+				// MW < 1.43
+				$permissionErrors = $permissionManager->getPermissionErrors( 'edit', $user, $this->mPageTitle );
+				if ( $readOnlyMode->isReadOnly() ) {
+					$permissionErrors = [ [ 'readonlytext', [ $readOnlyMode->getReason() ] ] ];
+				}
+				$userCanEditPage = count( $permissionErrors ) == 0;
 			}
-			$userCanEditPage = count( $permissionErrors ) == 0;
+
 			$hookContainer->run( 'PageForms::UserCanEditPage', [ $this->mPageTitle, &$userCanEditPage ] );
 		}
 
@@ -942,7 +960,14 @@ END;
 			$form_is_disabled = true;
 			if ( $wgOut->getTitle() != null ) {
 				$wgOut->setPageTitle( wfMessage( 'badaccess' )->text() );
-				$wgOut->addWikiTextAsInterface( $wgOut->formatPermissionsErrorMessage( $permissionErrors, 'edit' ) );
+				if ( $permissionStatus ) {
+					$wgOut->addWikiTextAsInterface( $wgOut->formatPermissionStatus( $permissionStatus, 'edit' ) );
+				} else {
+					// MW < 1.43
+					$wgOut->addWikiTextAsInterface(
+						$wgOut->formatPermissionsErrorMessage( $permissionErrors, 'edit' )
+					);
+				}
 				$wgOut->addHTML( "\n<hr />\n" );
 			}
 		}
@@ -953,12 +978,7 @@ END;
 				Html::element( 'a', [ 'href' => '#' ], 'Expand all collapsed parts of the form' ) ) . "\n";
 		}
 
-		if ( method_exists( ParserFactory::class, 'getInstance' ) ) {
-			// MW 1.39+
-			$parser = MediaWikiServices::getInstance()->getParserFactory()->getInstance();
-		} else {
-			$parser = PFUtils::getParser()->getFreshParser();
-		}
+		$parser = $services->getParserFactory()->getInstance();
 		if ( !$parser->getOptions() ) {
 			$parser->setOptions( ParserOptions::newFromUser( $user ) );
 		}
@@ -1016,7 +1036,7 @@ END;
 				$brackets_end_loc = strpos( $section, "}}}", $brackets_loc );
 				// For cases with more than 3 ending brackets,
 				// take the last 3 ones as the tag end.
-				while ( $section[$brackets_end_loc + 3] == "}" ) {
+				while ( isset( $section[$brackets_end_loc + 3] ) && $section[$brackets_end_loc + 3] == "}" ) {
 					$brackets_end_loc++;
 				}
 				$bracketed_string = substr( $section, $brackets_loc + 3, $brackets_end_loc - ( $brackets_loc + 3 ) );
@@ -1735,7 +1755,7 @@ END;
 						$text = '';
 						$params = [];
 						foreach ( $tif->getFields() as $formField ) {
-							$templateField = $formField->template_field;
+							$templateField = $formField->getTemplateField();
 							$inputType = $formField->getInputType();
 							$values = [ 'name' => $templateField->getFieldName() ];
 							if ( $formField->getLabel() !== null ) {
@@ -2055,19 +2075,19 @@ END;
 			$text = $form_input->getHtmlText();
 		}
 
-		$this->addTranslatableInput( $form_field, $cur_value, $text );
+		$this->addTranslatableInput( $form_field, $text );
 		return $text;
 	}
 
 	/**
-	 * for translatable fields, this function add an hidden input containing the translate tags
+	 * If a field is "translatable", add a hidden input containing the "<!--T:X-->"
+	 * translate tag.
 	 *
 	 * @param PFFormField $form_field
-	 * @param string $cur_value
 	 * @param string &$text
 	 */
-	private function addTranslatableInput( $form_field, $cur_value, &$text ) {
-		if ( PFUtils::isTranslateEnabled() || !$form_field->hasFieldArg( 'translatable' ) || !$form_field->getFieldArg( 'translatable' ) ) {
+	private function addTranslatableInput( $form_field, &$text ) {
+		if ( !PFUtils::isTranslateEnabled() || !$form_field->hasFieldArg( 'translatable' ) || !$form_field->getFieldArg( 'translatable' ) ) {
 			return;
 		}
 
@@ -2085,7 +2105,11 @@ END;
 	}
 
 	private function createFormFieldTranslateTag( &$template, &$tif, &$form_field, &$cur_value ) {
-		if ( PFUtils::isTranslateEnabled() || !$form_field->hasFieldArg( 'translatable' ) || !$form_field->getFieldArg( 'translatable' ) ) {
+		if ( !PFUtils::isTranslateEnabled() || !$form_field->hasFieldArg( 'translatable' ) || !$form_field->getFieldArg( 'translatable' ) ) {
+			return;
+		}
+
+		if ( $cur_value == null ) {
 			return;
 		}
 

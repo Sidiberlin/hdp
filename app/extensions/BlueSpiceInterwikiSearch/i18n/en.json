@@ -1,0 +1,22 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"bs-interwikisearch-desc": "Search in other wikis",
+	"bs-interwikisearch-label": "Results from other wikis",
+	"bs-interwikisearch-item-button-label": "$1 ($2)",
+	"bs-interwikisearch-results-dialog-title": "Results",
+	"bs-interwikisearch-results-dialog-button-go-full": "Open full search",
+	"bs-interwikisearch-results-dialog-button-close": "Close",
+	"bs-interwikisearch-pref-searchinotherwikis": "Enable interwiki search",
+	"bs-interwikisearch-error-generic": "Results cannot be retrieved from \"$1\"",
+	"bs-interwikisearch-error-generic-with-message": "Results cannot be retrieved from \"$1\": $2",
+	"bs-interwikisearch-pref-silentonerror": "Skip over wikis that cannot be accessed or otherwise cannot return results without showing it to the user",
+	"bs-interwikisearch-error-open-target-action": "Switch to $1",
+	"bs-interwikisearch-error-open-login-action": "Log in to $1",
+	"bs-interwikisearch-error-generic-dlg-title": "Search failed",
+	"bs-interwikisearch-error-login-dlg-title": "Login required",
+	"bs-interwikisearch-login-suggestion-label": "The search in \"$1\" has currently returned no results.\n You may not be logged in to \"$1\". After logging in, you can search again here.",
+	"bs-interwikisearch-redirect-suggestion-label": "For more information please visit the target wiki.",
+	"bs-interwikisearch-results-desc-label": "The first results from \"$1\" are displayed. For the complete list: \"{{int:bs-interwikisearch-results-dialog-button-go-full}}\""
+}

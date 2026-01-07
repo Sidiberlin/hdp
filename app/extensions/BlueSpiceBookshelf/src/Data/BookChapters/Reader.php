@@ -2,8 +2,8 @@
 
 namespace BlueSpice\Bookshelf\Data\BookChapters;
 
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use Wikimedia\Rdbms\LoadBalancer;
@@ -22,7 +22,7 @@ class Reader extends \MWStake\MediaWiki\Component\DataStore\Reader {
 	 * @param LoadBalancer|null $loadBalancer
 	 */
 	public function __construct(
-		IContextSource $context = null, Config $config = null, LoadBalancer $loadBalancer = null
+		?IContextSource $context = null, ?Config $config = null, ?LoadBalancer $loadBalancer = null
 	) {
 		parent::__construct( $context, $config );
 

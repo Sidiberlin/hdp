@@ -2,15 +2,15 @@
 
 namespace MediaWiki\Extension\ContentStabilization\Rest;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\ContentStabilization\ContentStabilizer;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Page\PageIdentity;
 use MediaWiki\Rest\HttpException;
 use MediaWiki\Rest\SimpleHandler;
-use RequestContext;
-use Title;
-use TitleFactory;
-use User;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
 
 abstract class StabilizerHandler extends SimpleHandler {
 

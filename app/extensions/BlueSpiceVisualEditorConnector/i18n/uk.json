@@ -15,7 +15,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Оригінальний",
 	"bs-visualeditorconnector-upload-type-simple": "Простий",
 	"bs-visualeditorconnector-upload-type-one-click": "Один клік",
-	"bs-visualeditorconnector-upload-type": "Тип завантаження",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Скасувати редагування",
 	"bs-visualeditorconnector-cancel-edit": "Скасувати редагування. Незбережені зміни буде відкинуто",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Ви справді хочете скасувати редагування? Ваші незбережені зміни буде відкинуто.",
@@ -84,8 +83,9 @@
 	"bs-vec-table-border-dotted": "Пунктирна",
 	"bs-vec-table-border-double": "Подвійна",
 	"bs-vec-insert-softhyphen-title": "М'який дефіс",
-	"bs-visualeditorconnector-upload-type-help": "Оригінал: право на завантаження перевірено. Ім'я файлу, простір назв та категорію можна редагувати. Опис обов’язковий.\nПростий: право на завантаження не перевірено. Ім'я файлу, простір назв та категорію можна редагувати. Опис необов’язковий.\nОдин клік: право на завантаження не перевірено. Ім'я файлу та категорію не можна редагувати. Простір назв можна редагувати.",
 	"bs-visualeditorconnector-text-style-tool-align-center-label": "Вирівнювання по центру",
 	"bs-visualeditorconnector-align-center-annotation-desc": "Центрує виділений текст",
-	"bs-visualeditorconnector-text-style-indent-label": "Відступ"
+	"bs-visualeditorconnector-text-style-indent-label": "Відступ",
+	"bs-visualeditorconnector-upload-type": "Тип завантаження",
+	"bs-visualeditorconnector-upload-type-help": "Оригінал: право на завантаження перевірено. Ім'я файлу, простір назв та категорію можна редагувати. Опис обов’язковий.\nПростий: право на завантаження не перевірено. Ім'я файлу, простір назв та категорію можна редагувати. Опис необов’язковий.\nОдин клік: право на завантаження не перевірено. Ім'я файлу та категорію не можна редагувати. Простір назв можна редагувати."
 }

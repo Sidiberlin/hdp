@@ -24,7 +24,5 @@
 	"bs-countthings-tag-countusers-desc": "Го прикажува бројот на зачленети корисници.",
 	"bs-countthings-tag-countfiles-desc": "Го прикажува бројот на податотеки во викито.",
 	"bs-countthings-tag-countcharacters-desc": "Создава метаподатоци од содржината на укажаната статија. Изводот е инфокутија која може да се вметнате во статијата. Со параметарот „mode“ можат да се прикажуваат разни видови информации.",
-	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: Што да се брои: <code>chars</code> (знаци), <code>words</code> (зборови) или <code>pages</code> (страници).",
-	"bs-countthings-tag-countcharacters-example-1": "Број зборови",
-	"bs-countthings-tag-countcharacters-example-2": "Број знаци"
+	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: Што да се брои: <code>chars</code> (знаци), <code>words</code> (зборови) или <code>pages</code> (страници)."
 }

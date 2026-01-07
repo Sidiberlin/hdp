@@ -19,7 +19,5 @@
 	"bs-countthings-ve-countcharacters-mode-wordsandchars": "tegn og ord",
 	"bs-countthings-ve-countcharacters-mode-pagesonly": "sider",
 	"bs-countthings-ve-countcharacters-input-label": "Sider",
-	"bs-countthings-error-not-exist": "Siden \"$1\" findes ikke.",
-	"bs-countthings-tag-countcharacters-example-1": "Antal ord",
-	"bs-countthings-tag-countcharacters-example-2": "Antal tegn"
+	"bs-countthings-error-not-exist": "Siden \"$1\" findes ikke."
 }

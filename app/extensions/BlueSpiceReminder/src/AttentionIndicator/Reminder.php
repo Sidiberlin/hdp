@@ -4,10 +4,10 @@ namespace BlueSpice\Reminder\AttentionIndicator;
 
 use BlueSpice\Discovery\AttentionIndicator;
 use BlueSpice\Discovery\IAttentionIndicator;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
-use TitleFactory;
-use User;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class Reminder extends AttentionIndicator {
@@ -45,9 +45,10 @@ class Reminder extends AttentionIndicator {
 	 * @param TitleFactory|null $titleFactory
 	 * @return IAttentionIndicator
 	 */
-	public static function factory( string $key, Config $config, User $user,
-		MediaWikiServices $services, LoadBalancer $lb = null,
-		TitleFactory $titleFactory = null ) {
+	public static function factory(
+		string $key, Config $config, User $user, MediaWikiServices $services,
+		?LoadBalancer $lb = null, ?TitleFactory $titleFactory = null
+	) {
 		if ( !$lb ) {
 			$lb = $services->getDBLoadBalancer();
 		}

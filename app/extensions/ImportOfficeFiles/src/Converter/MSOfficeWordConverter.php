@@ -44,6 +44,11 @@ class MSOfficeWordConverter implements IConverter {
 	private $username = '';
 
 	/**
+	 * @var int
+	 */
+	private $imageWidthThreshold;
+
+	/**
 	 * @param Workspace $workspace
 	 * @return ConverterResult
 	 */
@@ -56,6 +61,7 @@ class MSOfficeWordConverter implements IConverter {
 		$this->categories = $params->getCategories();
 		$this->verbose = $params->getVerbose();
 		$this->username = $params->getUsername();
+		$this->imageWidthThreshold = $params->getImageWidthThreshold();
 
 		$this->resultDir = $this->workspace->createSubDir( self::DIR_RESULT );
 
@@ -124,7 +130,7 @@ class MSOfficeWordConverter implements IConverter {
 	 */
 	private function getWikiTextProcessors(): array {
 		return [
-			new ImageReplacement( $this->workspace ),
+			new ImageReplacement( $this->workspace, $this->imageWidthThreshold ),
 			new BoldMarkupReplacement(),
 			new ItalicMarkupReplacement(),
 			new RemoveIllegalMarkup()

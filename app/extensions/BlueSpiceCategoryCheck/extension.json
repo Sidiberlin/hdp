@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceCategoryCheck",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceCategoryCheck",
 	"author": [
@@ -9,9 +9,9 @@
 	],
 	"descriptionmsg": "bs-categorycheck-extension-description",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"type": "bluespice",

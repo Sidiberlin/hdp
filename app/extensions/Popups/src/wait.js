@@ -1,5 +1,6 @@
 /**
  * @module wait
+ * @private
  */
 
 /**
@@ -14,10 +15,12 @@
  *   } );
  *
  * @param {number} delay The number of milliseconds to wait
- * @return {jQuery.Promise}
+ * @return {Promise}
  */
 export default function wait( delay ) {
-	const deferred = $.Deferred();
-	setTimeout( () => deferred.resolve(), delay );
-	return deferred.promise();
+	return new Promise( ( resolve ) => {
+		setTimeout( () => {
+			resolve();
+		}, delay );
+	} );
 }

@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"contentprovisioning-desc": "Biedt een overzicht van aangeleverde pagina’s en stelt beheerders in staat om inhoud te synchroniseren",
+	"contentprovisioning": "Inhoudsaanlevering",
+	"right-contentprovisioning-viewspecialpage": "De speciale pagina voor het aanleveren van inhoud bekijken",
+	"action-contentprovisioning-viewspecialpage": "de speciale pagina voor het aanleveren van inhoud te bekijken",
+	"contentprovisioning-ui-overview-grid-section-page": "Pagina",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "Synchroon?",
+	"contentprovisioning-ui-overview-grid-action-force-sync": "Synchronisatie forceren",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "Verschillen weergeven",
+	"contentprovisioning-diff-no-change": "Geen verschil tussen manifestversie en wikipaginaversie",
+	"contentprovisioning-ui-content-diff-title": "Inhoudsverschillen",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "Wiki",
+	"contentprovisioning-ui-content-diff-headline-provisioner-content": "Op afstand"
+}

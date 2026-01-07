@@ -3,11 +3,12 @@
 namespace BS\ExtendedSearch;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\User\User;
 
 class ResultRelevance {
 	/**
 	 *
-	 * @var \User
+	 * @var User
 	 */
 	protected $user;
 
@@ -42,14 +43,14 @@ class ResultRelevance {
 
 	/**
 	 *
-	 * @param \User $user
+	 * @param User $user
 	 * @param string $resultId
-	 * @param int $value
+	 * @param bool $value
 	 */
-	public function __construct( \User $user, $resultId = '', $value = 0 ) {
+	public function __construct( User $user, $resultId = '', $value = false ) {
 		$this->user = $user;
 		$this->resultId = $resultId;
-		$this->value = is_int( $value ) ? $value : 0;
+		$this->value = $value;
 		$this->services = MediaWikiServices::getInstance();
 	}
 
@@ -63,7 +64,8 @@ class ResultRelevance {
 		$result = $dbr->select(
 			'bs_extendedsearch_relevance',
 			[ 'esr_result', 'esr_value' ],
-			$this->queryConditions
+			$this->queryConditions,
+			__METHOD__
 		);
 
 		$values = [];
@@ -77,11 +79,11 @@ class ResultRelevance {
 	/**
 	 * Gets relevance for set user and result ID
 	 *
-	 * @return int
+	 * @return bool
 	 */
 	public function getValue() {
 		if ( $this->resultId == '' ) {
-			return 0;
+			return false;
 		}
 
 		$this->setConditions();
@@ -90,14 +92,15 @@ class ResultRelevance {
 		$result = $dbr->selectRow(
 			'bs_extendedsearch_relevance',
 			[ 'esr_value' ],
-			$this->queryConditions
+			$this->queryConditions,
+			__METHOD__
 		);
 
 		if ( $result == null ) {
-			return 0;
+			return false;
 		}
 
-		return $result->esr_value;
+		return (bool)$result->esr_value;
 	}
 
 	/**
@@ -116,7 +119,8 @@ class ResultRelevance {
 		if ( $this->value == 0 ) {
 			$result = $dbw->delete(
 				'bs_extendedsearch_relevance',
-				$this->queryConditions
+				$this->queryConditions,
+				__METHOD__
 			);
 		} else {
 			if ( $this->getValue() == 0 ) {
@@ -127,7 +131,8 @@ class ResultRelevance {
 						'esr_result' => $this->resultId,
 						'esr_value' => $this->value,
 						'esr_timestamp' => wfTimestamp( TS_UNIX )
-					]
+					],
+					__METHOD__
 				);
 			} else {
 				$result = $dbw->update(
@@ -136,7 +141,8 @@ class ResultRelevance {
 						'esr_value' => $this->value,
 						'esr_timestamp' => wfTimestamp( TS_UNIX )
 					],
-					$this->queryConditions
+					$this->queryConditions,
+					__METHOD__
 				);
 			}
 		}

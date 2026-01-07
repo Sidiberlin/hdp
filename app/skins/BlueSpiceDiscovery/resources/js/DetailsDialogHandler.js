@@ -1,10 +1,10 @@
-( function( mw, $, d ){
-	$( d ).on( 'click', '#ca-details', function( e ) {
+( function ( mw, $, d ) {
+	$( d ).on( 'click', '#ca-details', function ( e ) {
 		e.preventDefault();
-		var links = $( this ).data( 'toolbox' );
-		mw.loader.using( 'skin.discovery.dialog.details' ).done( function() {
-			var windowManager = OO.ui.getWindowManager();
-			var dialog = new window.bs.skin.dialog.DetailsDialog( {
+		const links = $( this ).data( 'toolbox' );
+		mw.loader.using( 'skin.discovery.dialog.details' ).done( () => {
+			const windowManager = OO.ui.getWindowManager();
+			const dialog = new window.bs.skin.dialog.DetailsDialog( {
 				links: links
 			} );
 			windowManager.addWindows( [ dialog ] );
@@ -12,4 +12,4 @@
 		} );
 		return false;
 	} );
-} )( mediaWiki, jQuery, document );
+}( mediaWiki, jQuery, document ) );

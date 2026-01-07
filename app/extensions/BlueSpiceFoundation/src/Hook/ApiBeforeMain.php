@@ -29,18 +29,21 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 abstract class ApiBeforeMain extends Hook {
 
 	/**
 	 *
-	 * @var \ApiMain
+	 * @var ApiMain
 	 */
 	protected $main = null;
 
 	/**
 	 *
-	 * @param \ApiMain &$main
+	 * @param ApiMain &$main
 	 * @return bool
 	 */
 	public static function callback( &$main ) {
@@ -55,9 +58,9 @@ abstract class ApiBeforeMain extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
-	 * @param \ApiMain &$main
+	 * @param IContextSource $context
+	 * @param Config $config
+	 * @param ApiMain &$main
 	 */
 	public function __construct( $context, $config, &$main ) {
 		parent::__construct( $context, $config );

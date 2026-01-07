@@ -73,7 +73,7 @@ class MongoDBCollabSessionDAO extends MongoDBDAOBase implements ICollabSessionDA
 	 * @inheritDoc
 	 */
 	public function setNewAuthorInSession(
-		int $sessionId, int $authorId, string $authorName,
+		int $sessionId, int $authorId, string $authorName, string $authorRealName,
 		string $authorColor, bool $authorStatus, int $connectionId
 	) {
 		$this->collection->updateOne(
@@ -82,6 +82,7 @@ class MongoDBCollabSessionDAO extends MongoDBDAOBase implements ICollabSessionDA
 				's_authors' => [
 					'authorId' => $authorId,
 					'name' => $authorName,
+					'realName' => $authorRealName,
 					'color' => $authorColor,
 					'active' => $authorStatus,
 					'connection' => [ $connectionId ]
@@ -124,7 +125,7 @@ class MongoDBCollabSessionDAO extends MongoDBDAOBase implements ICollabSessionDA
 	 * @inheritDoc
 	 */
 	public function changeAuthorDataInSession(
-		int $sessionId, int $authorId, string $authorData, string $authorValue
+		int $sessionId, int $authorId, string $authorData, mixed $authorValue
 	) {
 		$this->collection->updateOne(
 			[ 's_id' => $sessionId, 's_authors.authorId' => $authorId ],
@@ -157,9 +158,10 @@ class MongoDBCollabSessionDAO extends MongoDBDAOBase implements ICollabSessionDA
 				],
 				'$pop' => [
 					's_authors.$.connection' => 1
-				]
+				],
 			]
 		);
+		$this->clearAuthorRebaseData( $sessionId, $authorId );
 	}
 
 	/**
@@ -194,7 +196,7 @@ class MongoDBCollabSessionDAO extends MongoDBDAOBase implements ICollabSessionDA
 			foreach ( $row['s_authors'] as $key => $author ) {
 				if ( $author && ( $author['active'] === true ) ) {
 					$output[] = [
-						'id' => $key,
+						'id' => $row['s_authors'][$key]['authorId'],
 						'value' => $row['s_authors'][$key]
 					];
 				}
@@ -217,7 +219,7 @@ class MongoDBCollabSessionDAO extends MongoDBDAOBase implements ICollabSessionDA
 			foreach ( $row['s_authors'] as $key => $author ) {
 				if ( $author && ( $author['authorId'] === $authorId ) ) {
 					return [
-						'id' => $key,
+						'id' => $row['s_authors'][$key]['authorId'],
 						'value' => $row['s_authors'][$key]
 					];
 				}
@@ -240,13 +242,31 @@ class MongoDBCollabSessionDAO extends MongoDBDAOBase implements ICollabSessionDA
 		if ( !$cb ) {
 			return null;
 		}
-		$cb = json_decode( $cb, true );
+		$cb = json_decode( json_encode( $cb ), true );
 		$stores = $cb['stores'] ?? [];
 		if ( is_array( $stores ) && isset( $stores['hashes'] ) ) {
 			// To be removed
 			$stores = [ $stores ];
 		}
 		return new Change( $cb['start'], $cb['transactions'], $cb['selections'] ?? [], $stores );
+	}
+
+	/**
+	 * @param int $sessionId
+	 * @param int $authorId
+	 * @return void
+	 */
+	public function clearAuthorRebaseData( int $sessionId, int $authorId ) {
+		// Clear continue base and rejections
+		$this->collection->updateOne(
+			[ 's_id' => $sessionId, 's_authors.authorId' => $authorId ],
+			[
+				'$unset' => [
+					's_authors.$.continueBase' => '',
+					's_authors.$.rejections' => ''
+				]
+			]
+		);
 	}
 
 	/**
@@ -310,9 +330,7 @@ class MongoDBCollabSessionDAO extends MongoDBDAOBase implements ICollabSessionDA
 		$stores = $this->getFullStoresFromSession( $sessionId );
 		// Maybe we should store selections
 		$selections = [];
-		$sessionChange = new Change( 0, $transactions, $selections, $stores );
-		$this->logger->debug( "Retrieved session change", [ json_encode( $sessionChange ) ] );
-		return $sessionChange;
+		return new Change( 0, $transactions, $selections, $stores );
 	}
 
 	/**

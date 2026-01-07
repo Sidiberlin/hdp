@@ -20,7 +20,9 @@
 	"workflows-action-delete-label": "Siho",
 	"workflows-ui-trigger-field-description": "Kuvvim",
 	"workflows-activity-set-template-params-cannot-save": "Vuorkkim ij luhostum",
+	"workflows-activity-property-username": "Kevtteenommâ",
 	"workflows-activity-property-comment": "Komment",
+	"workflows-editor-editor-button-save": "Vuorkkii",
 	"workflows-ui-editor-inspector-activity-edit-page-property-user": "Kevttee",
 	"workflows-ui-editor-inspector-activity-set-template-param-property-user": "Kevttee",
 	"workflows-editor-editor-dialog-save-action-save": "Vuorkkii"

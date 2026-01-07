@@ -2,19 +2,20 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs;
 
-use Category;
 use ManualLogEntry;
+use MediaWiki\Category\Category;
 use MediaWiki\Hook\AfterImportPageHook;
 use MediaWiki\Hook\PageMoveCompleteHook;
-use MediaWiki\Page\Hook\ArticleUndeleteHook;
 use MediaWiki\Page\Hook\CategoryAfterPageAddedHook;
 use MediaWiki\Page\Hook\CategoryAfterPageRemovedHook;
 use MediaWiki\Page\Hook\PageDeleteCompleteHook;
+use MediaWiki\Page\Hook\PageUndeleteCompleteHook;
 use MediaWiki\Page\PageIdentity;
 use MediaWiki\Page\ProperPageIdentity;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\Hook\PageSaveCompleteHook;
+use Wikimedia\Rdbms\DBConnRef;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class CategoryIndexUpdater implements
@@ -23,7 +24,7 @@ class CategoryIndexUpdater implements
 	PageSaveCompleteHook,
 	PageMoveCompleteHook,
 	PageDeleteCompleteHook,
-	ArticleUndeleteHook,
+	PageUndeleteCompleteHook,
 	AfterImportPageHook
 {
 
@@ -65,9 +66,18 @@ class CategoryIndexUpdater implements
 	/**
 	 * @inheritDoc
 	 */
-	public function onArticleUndelete( $title, $create, $comment, $oldPageId, $restoredPages ) {
-		if ( $title->getNamespace() === NS_CATEGORY ) {
-			$this->updateForPage( $title );
+	public function onPageUndeleteComplete(
+		ProperPageIdentity $page,
+		Authority $restorer,
+		string $reason,
+		RevisionRecord $restoredRev,
+		ManualLogEntry $logEntry,
+		int $restoredRevisionCount,
+		bool $created,
+		array $restoredPageIds
+	): void {
+		if ( $page->getNamespace() === NS_CATEGORY ) {
+			$this->updateForPage( $page );
 		}
 	}
 
@@ -128,13 +138,16 @@ class CategoryIndexUpdater implements
 	 * @return void
 	 */
 	private function delete( string $categoryKey ) {
+		/** @var DBConnRef $dbw */
 		$dbw = $this->lb->getConnection( DB_PRIMARY );
-		if ( !$dbw->tableExists( 'mws_category_index' ) ) {
+		if ( !$dbw->tableExists( 'mws_category_index', __METHOD__ ) ) {
 			return;
 		}
-		$dbw->delete( 'mws_category_index', [
-			'mci_title' => mb_strtolower( str_replace( '_', ' ', $categoryKey ) )
-		] );
+		$dbw->delete(
+			'mws_category_index',
+			[ 'mci_title' => mb_strtolower( str_replace( '_', ' ', $categoryKey ) ) ],
+			__METHOD__
+		);
 	}
 
 	/**
@@ -164,8 +177,9 @@ class CategoryIndexUpdater implements
 	 * @return void
 	 */
 	private function insert( array $info ) {
-		$dbw = $this->lb->getConnectionRef( DB_PRIMARY );
-		if ( !$dbw->tableExists( 'mws_category_index' ) ) {
+		/** @var DBConnRef $dbw */
+		$dbw = $this->lb->getConnection( DB_PRIMARY );
+		if ( !$dbw->tableExists( 'mws_category_index', __METHOD__ ) ) {
 			return;
 		}
 		$dbw->insert( 'mws_category_index', $info, __METHOD__, [ 'IGNORE' ] );

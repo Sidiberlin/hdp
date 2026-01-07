@@ -3,9 +3,9 @@
 namespace BlueSpice\Expiry;
 
 use ManualLogEntry;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWException;
-use Title;
-use User;
 
 class SpecialLogLogger {
 	public const LOG_ACTION_EXPIRED = 'expired';

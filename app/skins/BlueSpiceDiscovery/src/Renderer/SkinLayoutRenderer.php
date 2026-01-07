@@ -9,8 +9,8 @@ use BlueSpice\Discovery\ISkinLayoutAware;
 use BlueSpice\Discovery\ISkinLayoutRenderer;
 use BlueSpice\Discovery\ITemplateProvider;
 use Exception;
-use OutputPage;
-use TemplateParser;
+use MediaWiki\Html\TemplateParser;
+use MediaWiki\Output\OutputPage;
 
 class SkinLayoutRenderer implements ISkinLayoutRenderer {
 
@@ -45,16 +45,19 @@ class SkinLayoutRenderer implements ISkinLayoutRenderer {
 	 * @return string
 	 */
 	public function getHtml(): string {
-		$templateParser = new TemplateParser(
-			$this->skinLayout->getTemplatePath()
-		);
-		$templateParser->enableRecursivePartials(
-			$this->skinLayout->enableRecursivePartials()
-		);
-		$html = $templateParser->processTemplate(
-			$this->skinLayout->getTemplateName(),
-			$this->getAllStructureElementsHtml()
-		);
+		$html = '';
+		if ( $this->skinLayout instanceof ITemplateProvider ) {
+			$templateParser = new TemplateParser(
+				$this->skinLayout->getTemplatePath()
+			);
+			$templateParser->enableRecursivePartials(
+				$this->skinLayout->enableRecursivePartials()
+			);
+			$html = $templateParser->processTemplate(
+				$this->skinLayout->getTemplateName(),
+				$this->getAllStructureElementsHtml()
+			);
+		}
 		return $html;
 	}
 

@@ -29,6 +29,9 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\Title;
 
 /**
  * @deprecated since REL1_39. Use SkinTemplateNavigation__UniversalHook
@@ -43,7 +46,7 @@ abstract class PersonalUrls extends Hook {
 
 	/**
 	 *
-	 * @var \Title
+	 * @var Title
 	 */
 	protected $title = null;
 
@@ -75,8 +78,8 @@ abstract class PersonalUrls extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param array &$personal_urls
 	 * @param Title $title
 	 * @param SkinTemplate $skin

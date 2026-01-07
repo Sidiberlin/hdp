@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\NotifyMe\MediaWiki\Hook;
 
-use MediaWiki\Hook\BeforePageDisplayHook;
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
 
 class AddBootstrap implements BeforePageDisplayHook {
 	/**

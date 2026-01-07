@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80"
+		]
+	},
+	"numberheadings-desc": "מספור כותרות במרחבי שם של תוכן",
+	"numberheadings-conf-exlude-namespaces": "לא לכלול מרחבי שם במספור כותרות",
+	"numberheadings-conf-enable-numbering": "הצגת מספור כותרות",
+	"numberheadings-conf-enable-numbering-help": "הוספת המספרים מתוכן העניינים לכותרות הדף"
+}

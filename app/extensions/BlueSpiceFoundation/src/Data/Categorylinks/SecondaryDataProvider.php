@@ -3,10 +3,10 @@
 namespace BlueSpice\Data\Categorylinks;
 
 use BsNamespaceHelper;
-use Content;
+use MediaWiki\Content\Content;
+use MediaWiki\Content\TextContent;
 use MediaWiki\MediaWikiServices;
-use TextContent;
-use Title;
+use MediaWiki\Title\Title;
 
 class SecondaryDataProvider extends \MWStake\MediaWiki\Component\DataStore\SecondaryDataProvider {
 

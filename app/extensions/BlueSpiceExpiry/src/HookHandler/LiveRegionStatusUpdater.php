@@ -3,7 +3,7 @@
 namespace BlueSpice\Expiry\Hookhandler;
 
 use BlueSpice\Expiry\Extension;
-use MediaWiki\Hook\BeforePageDisplayHook;
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
 
 class LiveRegionStatusUpdater implements BeforePageDisplayHook {
 

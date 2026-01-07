@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Alshamiri1",
-			"Meno25"
+			"Meno25",
+			"Mohammed Qays"
 		]
 	},
 	"bs-prodistributionconnector-desc": "يربط BlueSpice بامتدادات ميدياويكي المختلفة",
@@ -12,6 +13,7 @@
 	"bs-pro-distribution-droplet-math-desc": "عرض الصيغ الرياضية",
 	"bs-pro-distribution-droplet-chem-name": "معادلة كيميائية",
 	"bs-pro-distribution-droplet-chem-desc": "عرض الصيغ الكيميائية",
+	"bs-pro-distribution-droplet-modal-dialog-name": "زر النموذج",
 	"bs-pro-distribution-droplet-modal-dialog-desc": "زر قابل للتكوين يفتح حوارًا معياريًا قابلًا للتخصيص",
 	"bs-pro-distribution-droplet-decision-name": "قرار",
 	"bs-pro-distribution-droplet-decision-desc": "يبرز القرار كخاصية صفحة",
@@ -28,15 +30,15 @@
 	"bs-pro-distribution-instance-status-number-of-users-unlimited": "هناك {{PLURAL:$1| هو '' ' $1 ' '' مستخدم نشط مسجل | هم '' ' $1 ' '' مستخدمون نشطون مسجلون}}. عدد المستخدمين غير محدود.",
 	"bs-pro-distribution-instance-status-number-of-users-limited": "هناك {{PLURAL:$1| هو '' ' $1 ' '' مستخدم نشط مسجل | هم '' ' $1 ' '' مستخدمون نشطون مسجلون}} ( $3 ٪). عدد المستخدمين محدود بـ $2 .",
 	"bs-pro-distribution-instance-status-user-quota-label": "حصة المستخدم",
-	"bs-pro-distribution-instance-status-number-of-users-limited-full": "هناك {{PLURAL:$1| هو '' ' $1 ' '' مستخدم نشط مسجل | هم '' ' $1 ' '' مستخدمون نشطون مسجلون}}. تم الوصول إلى الحد الأقصى لعدد المستخدمين! يرجى الاتصال بفريق BlueSpice لزيادة عدد المستخدمين المسموح لهم أو تعطيل بعض المستخدمين الحاليين حتى تتمكن من إنشاء مستخدمين جدد",
+	"bs-pro-distribution-instance-status-number-of-users-limited-full": "هناك {{PLURAL:$1| هو '''$1''' مستخدم نشط مسجل|هم '''$1''' مستخدمون نشطون مسجلون}}. تم الوصول إلى الحد الأقصى لعدد المستخدمين! يرجى الاتصال بفريق BlueSpice لزيادة عدد المستخدمين المسموح لهم أو تعطيل بعض المستخدمين الحاليين حتى تتمكن من إنشاء مستخدمين جدد.",
 	"bs-pro-distribution-createaccount-fail-max-accounts-exceed": "تم تجاوز الحد الأقصى لعدد الحسابات",
-	"bs-pro-distribution-config-license-key": "مفتاح ترخيص BlueSpice",
+	"bs-pro-distribution-config-license-key": "مفتاح اشتراك BlueSpice",
 	"droplets-modal-dialog-bg-color-label": "لون خلفية الزر",
 	"droplets-modal-dialog-bg-color-blue": "أزرق",
 	"droplets-modal-dialog-bg-color-red": "أحمر",
 	"droplets-modal-dialog-bg-color-neutral": "أبيض",
 	"bs-pro-distribution-pdfembed-inspector-input-label": "ملف PDF",
-	"bs-pro-distribution-pdfembed-inspector-input-help": "حدد ملف PDF من موقع wiki لتضمينه في صفحة wikipage",
+	"bs-pro-distribution-pdfembed-inspector-input-help": "حدد ملف PDF من الويكي لتضمينه في صفحة الويكي",
 	"bs-pro-distribution-pdfembed-inspector-width-label": "العرض",
 	"bs-pro-distribution-pdfembed-inspector-width-help": "اضبط عرض معاينة PDF. اتركه فارغًا لاستخدام الحجم الافتراضي 800 بكسل",
 	"bs-pro-distribution-pdfembed-inspector-height-label": "الارتفاع",
@@ -45,5 +47,19 @@
 	"bs-pro-distribution-pdfembed-inspector-page-help": "عدد الصفحات التي سيتم عرضها بعد تقديم المعاينة",
 	"bs-pro-distribution-pdfembed-inspector-title": "تضمين PDF",
 	"bs-pro-distribution-pdfembed-droplet-name": "معاينة ملف PDF",
-	"bs-pro-distribution-pdfembed-droplet-description": "قم بتضمين معاينة ملف PDF في wikipage"
+	"bs-pro-distribution-pdfembed-droplet-description": "تضمين معاينة لملف PDF في صفحة الويكي",
+	"bs-pro-distribution-config-outh-public-key": "مفتاح عام OAuth2",
+	"bs-pro-distribution-config-outh-private-key": "مفتاح خاص OAuth2",
+	"bs-pro-distribution-config-comment-streams-enabled": "تعليقات",
+	"bs-pro-distribution-config-link-titles-parse-on-edit": "تحليل الروابط عند التحرير",
+	"bs-pro-distribution-config-link-titles-parse-on-edit-help": "عند الحفظ، قم بتحليل محتوى الصفحة والارتباط بالصفحات المذكورة في المحتوى",
+	"bs-pro-distribution-config-link-titles-parse-on-render": "إضافة الروابط عند عرض الصفحة",
+	"bs-pro-distribution-config-link-titles-parse-on-render-help": "عند عرض صفحة، قم بتحليل المحتوى والارتباط بالصفحات المذكورة في المحتوى. لن يؤدي هذا إلى تغيير محتوى الصفحة",
+	"bs-pro-distribution-config-link-titles-source-ns": "مساحات الأسماء المصدرية",
+	"bs-pro-distribution-config-link-titles-source-ns-help": "تحليل الصفحات الموجودة في هذه المساحات فقط",
+	"bs-pro-distribution-config-link-titles-target-ns": "مساحات الأسماء المستهدفة",
+	"bs-pro-distribution-config-link-titles-target-ns-help": "الارتباط فقط بالصفحات الموجودة في هذه المساحات",
+	"bs-pro-distribution-config-link-titles-same-ns": "قم فقط بالربط إلى الصفحات الموجودة في نفس مساحة اسم الصفحة المصدر",
+	"bs-pro-distribution-droplet-ec-embed-url-label": "مسار",
+	"bs-pro-distribution-droplets-ec-embed-show-line-numbers-label": "إظهار أرقام الأسطر"
 }

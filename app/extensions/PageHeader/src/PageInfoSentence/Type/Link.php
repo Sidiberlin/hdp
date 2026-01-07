@@ -2,7 +2,7 @@
 
 namespace PageHeader\PageInfoSentence\Type;
 
-use Html;
+use MediaWiki\Html\Html;
 use PageHeader\IPageInfo;
 use PageHeader\PageInfoSentence\Type;
 

@@ -2,10 +2,10 @@
 
 namespace BlueSpice\Privacy\ComponentFilter;
 
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\IComponent;
 use MWStake\MediaWiki\Component\CommonUserInterface\IComponentFilter;
-use TitleFactory;
 
 class PrivacyFilter implements IComponentFilter {
 
@@ -63,13 +63,13 @@ class PrivacyFilter implements IComponentFilter {
 		}
 
 		$title = $context->getTitle();
-		if ( $title->isSpecial( 'PrivacyPages' ) ) {
+		if ( !$title || $title->isSpecial( 'PrivacyPages' ) ) {
 			return false;
 		}
 
 		foreach ( self::PRIVACY_PAGES as $value ) {
 			$page = $context->msg( $value );
-			$privacytitle = $this->titleFactory->newFromText( $page->inContentLanguage()->plain() );
+			$privacytitle = $this->titleFactory->newFromText( $page->inContentLanguage()->text() );
 			if ( $privacytitle && $title->equals( $privacytitle ) ) {
 				return false;
 			}

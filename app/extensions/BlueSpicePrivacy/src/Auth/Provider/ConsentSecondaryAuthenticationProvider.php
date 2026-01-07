@@ -8,10 +8,9 @@ use MediaWiki\Auth\AuthenticationRequest;
 use MediaWiki\Auth\AuthenticationResponse;
 use MediaWiki\Auth\TemporaryPasswordAuthenticationRequest;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\User\UserOptionsManager;
-use Message;
-use RequestContext;
-use User;
+use MediaWiki\Message\Message;
+use MediaWiki\User\Options\UserOptionsManager;
+use MediaWiki\User\User;
 
 class ConsentSecondaryAuthenticationProvider extends AbstractSecondaryAuthenticationProvider {
 	/**
@@ -128,7 +127,8 @@ class ConsentSecondaryAuthenticationProvider extends AbstractSecondaryAuthentica
 	 * @return Consent
 	 */
 	protected function getModule() {
-		return new Consent( RequestContext::getMain() );
+		$registry = MediaWikiServices::getInstance()->getService( 'BlueSpicePrivacy.ModuleRegistry' );
+		return $registry->getModuleByKey( 'consent' );
 	}
 
 	/**

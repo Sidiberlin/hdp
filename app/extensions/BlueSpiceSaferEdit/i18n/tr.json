@@ -7,7 +7,5 @@
 	},
 	"bs-saferedit-desc": "Diğer kullanıcılar sayfayı düzenliyorsa uyarılar sağlar",
 	"bs-saferedit-user-editing": "$1, {{PLURAL:$2|sayfayı}} {{GENDER:$1|düzenliyor}}",
-	"bs-saferedit-someone-editing": "Sayfa düzenleniyor",
-	"bs-saferedit-pref-interval": "Eşzamanlı baskıları aramaya yönelik aralık:",
-	"bs-saferedit-pref-shownameofeditinguser": "Geçerli düzenleyicinin adını göster"
+	"bs-saferedit-someone-editing": "Sayfa düzenleniyor"
 }

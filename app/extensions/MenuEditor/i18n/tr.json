@@ -2,7 +2,9 @@
 	"@metadata": {
 		"authors": [
 			"Hedda",
-			"Rapsar"
+			"Leo",
+			"Rapsar",
+			"Vito Genovese"
 		]
 	},
 	"menueditor-desc": "Menü sayfaları için grafik düzenleyici",
@@ -13,7 +15,6 @@
 	"menueditor-ui-menu-raw-text-label": "Metin veya mesaj anahtarı",
 	"menueditor-ui-menu-keyword-label": "Anahtar kelime",
 	"menueditor-ui-menu-keyword-help": "Uygun küçük aracı gösterecek mevcut '''anahtar kelimeler'''den biri",
-	"menueditor-ui-edit-node-label": "Düğümü düzenle",
 	"menueditor-ui-form-field-keyword": "Anahtar kelime",
 	"menueditor-ui-form-field-text": "Metin veya bir mesaj anahtarı",
 	"menueditor-ui-form-field-target": "Bağlantı hedefi",
@@ -24,6 +25,6 @@
 	"menueditor-ui-submit": "Kaydet",
 	"menueditor-ui-cancel": "İptal",
 	"menueditor-ui-redlink-notice": "Bu menü henüz mevcut değil!",
-	"menueditor-action-menueditsource": "Kaynağı değiştir",
+	"menueditor-action-menueditsource": "Kaynağı düzenle",
 	"menueditor-action-menuedit": "Değiştir"
 }

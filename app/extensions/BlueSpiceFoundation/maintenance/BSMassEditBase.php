@@ -1,7 +1,13 @@
 <?php
 
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Content\Content;
+use MediaWiki\Content\TextContent;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Title\Title;
+use Wikimedia\Diff\Diff;
+use Wikimedia\Diff\UnifiedDiffFormatter;
 
 require_once __DIR__ . '/BSMaintenance.php';
 
@@ -60,7 +66,7 @@ class BSMassEditBase extends BSMaintenance {
 			if ( !$oStatus->isOK() ) {
 				$this->error(
 					"--> Content of page {$oTitle->getPrefixedText()} could not be modified: "
-					. "{$oStatus->getMessage()->plain()}"
+					. "{$oStatus->getMessage()->text()}"
 				);
 				$this->iFailureTitleCount++;
 			} else {
@@ -84,7 +90,12 @@ class BSMassEditBase extends BSMaintenance {
 		$dbr = $this->getDB( DB_REPLICA );
 		$aTitles = [];
 
-		$res = $dbr->select( 'page', '*' );
+		$res = $dbr->select(
+			'page',
+			'*',
+			'',
+			__METHOD__
+		);
 		foreach ( $res as $row ) {
 			$oTitle = Title::newFromRow( $row );
 			$aTitles[ $oTitle->getPrefixedDBkey() ] = $oTitle;
@@ -93,6 +104,9 @@ class BSMassEditBase extends BSMaintenance {
 		return $aTitles;
 	}
 
+	/**
+	 * @return bool
+	 */
 	public function isDryMode() {
 		return (bool)$this->getOption( 'dry', false );
 	}

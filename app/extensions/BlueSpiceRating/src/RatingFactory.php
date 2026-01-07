@@ -28,6 +28,8 @@
 namespace BlueSpice\Rating;
 
 use BlueSpice\Rating\Data\Record;
+use MediaWiki\Config\Config;
+use MediaWiki\Status\Status;
 
 class RatingFactory {
 	/**
@@ -50,14 +52,14 @@ class RatingFactory {
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $config = null;
 
 	/**
 	 * @param RatingRegistry $ratingRegistry
 	 * @param RatingConfigFactory $configFactory
-	 * @param \Config $config
+	 * @param Config $config
 	 * @return Rating|null
 	 */
 	public function __construct( $ratingRegistry, $configFactory, $config ) {
@@ -87,26 +89,26 @@ class RatingFactory {
 	 * @param \stdClass|null $data
 	 * @return Status
 	 */
-	public function ensureBasicParams( \stdClass $data = null ) {
+	public function ensureBasicParams( ?\stdClass $data = null ) {
 		if ( $data === null ) {
-			return \Status::newFatal( 'No Data Given' );
+			return Status::newFatal( 'No Data Given' );
 		}
 		if ( empty( $data->{Record::REF} ) ) {
-			return \Status::newFatal( 'No reference Given' );
+			return Status::newFatal( 'No reference Given' );
 		}
 		if ( empty( $data->{Record::REFTYPE} ) ) {
-			return \Status::newFatal( 'No reference type Given' );
+			return Status::newFatal( 'No reference type Given' );
 		}
 		if ( empty( $data->{Record::SUBTYPE} ) ) {
 			$data->{Record::SUBTYPE} = 'default';
 		}
-		return \Status::newGood( $data );
+		return Status::newGood( $data );
 	}
 
 	/**
 	 * RatingItem from a set of data
 	 * @param \stdClass $data
-	 * @return \RatingItem
+	 * @return \RatingItem|null
 	 */
 	public function newFromObject( \stdClass $data ) {
 		$status = $this->ensureBasicParams( $data );

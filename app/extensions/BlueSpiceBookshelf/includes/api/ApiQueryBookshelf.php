@@ -1,6 +1,8 @@
 <?php
 
+use MediaWiki\Api\ApiQueryBase;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 class ApiQueryBookshelf extends ApiQueryBase {
 

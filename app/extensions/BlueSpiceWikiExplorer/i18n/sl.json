@@ -16,7 +16,6 @@
 	"bs-wikiexplorer-categories": "Kategorije",
 	"bs-wikiexplorer-linked-files": "Povezane datoteke",
 	"bs-wikiexplorer-linked-pages": "Povezane strani",
-	"apihelp-bs-wikiexplorer-store-description": "Zagotavlja vse podatke za razširitev WikiExplorer",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "API-parameter, ki označuje, ali so metapodatki že naloženi.",
 	"apihelp-bs-wikiexplorer-store-summary": "Zagotavlja vse podatke za razširitev WikiExplorer",
 	"bs-wikiexplorer-icon-bool-true-aria-label": "obkljukano",

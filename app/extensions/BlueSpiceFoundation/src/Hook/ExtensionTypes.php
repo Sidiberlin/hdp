@@ -27,6 +27,8 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 abstract class ExtensionTypes extends Hook {
 
@@ -53,8 +55,8 @@ abstract class ExtensionTypes extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param array &$extTypes
 	 */
 	public function __construct( $context, $config, &$extTypes ) {

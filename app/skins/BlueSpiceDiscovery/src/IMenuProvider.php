@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Discovery;
 
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\IComponent;
 
 interface IMenuProvider {

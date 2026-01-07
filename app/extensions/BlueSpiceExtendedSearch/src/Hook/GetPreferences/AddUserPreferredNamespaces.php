@@ -3,6 +3,7 @@
 namespace BS\ExtendedSearch\Hook\GetPreferences;
 
 use BlueSpice\Hook\GetPreferences;
+use MediaWiki\Title\Title;
 
 class AddUserPreferredNamespaces extends GetPreferences {
 
@@ -13,13 +14,13 @@ class AddUserPreferredNamespaces extends GetPreferences {
 
 		$namespaceValues = [];
 		foreach ( $namespaces as $namespaceId => $namespace ) {
-			$testTitle = \Title::makeTitle( $namespaceId, 'ESDummy' );
+			$testTitle = Title::makeTitle( $namespaceId, 'ESDummy' );
 
 			if ( $namespaceId >= 0 && $pm->userCan( 'read', $user, $testTitle ) ) {
 				$label = $testTitle->getNsText();
 
 				if ( $namespaceId === NS_MAIN ) {
-					$label = wfMessage( 'bs-ns_main' )->plain();
+					$label = wfMessage( 'bs-ns_main' )->text();
 				}
 
 				$namespaceValues[$label] = $namespaceId;
@@ -28,8 +29,8 @@ class AddUserPreferredNamespaces extends GetPreferences {
 
 		$this->preferences['searchNs'] = [
 			'type' => 'multiselect',
-			'label' => wfMessage( 'bs-extendedsearch-user-preferred-namespaces' )->plain(),
-			'section' => 'extendedsearch',
+			'label-message' => 'bs-extendedsearch-user-preferred-namespaces',
+			'section' => 'extendedsearch/searchsection',
 			'options' => $namespaceValues
 		];
 

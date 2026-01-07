@@ -5,8 +5,6 @@
 		]
 	},
 	"bs-qr-code-extension-description": "Monstra un codice QR con un ligamine al pagina actual in le barra de utensiles.",
-	"bs-qr-code-title": "Codice QR",
-	"bs-qr-code-text": "Scanna le codice QR pro aperir iste pagina sur un apparato mobile.",
 	"bs-qr-code-action-qr-code-title": "Aperir un dialogo con codice QR",
 	"bs-qr-code-action-qr-code-text": "Codice QR",
 	"bs-qr-code-action-qr-code-dialog-title": "Codice QR",

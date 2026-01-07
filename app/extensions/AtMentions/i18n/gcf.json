@@ -10,9 +10,5 @@
 	"at-mentions-mention-notification-key": "Ou té mansyonné",
 	"at-mentions-mention-in-entity-notification-key": "Ou té mansyonné adan on komantasyon oben adan on piblikasyon",
 	"at-mentions-mention-in-entity-notification-message": "Mansyonné-w adan on komantasyon oben on post \"$2\" asi paj $1",
-	"at-mentions-toolbar-tool-title": "Bouté on mansyon",
-	"at-mentions-echo-mention-notification-web-body": "{{GENDER:$2|$3 mansyonné\n}}-w",
-	"at-mentions-echo-mention-notification-subject": "{{GENDER:$2|$3 mansyonné}}-w asi paj $1",
-	"at-mentions-echo-mention-entity-notification-subject": "{{GENDER:$2|$3 mansyonné}}-w adan on komantasyon oben on piblikasyon asi paj $1",
-	"at-mentions-echo-mention-entity-notification-email-body": "Ou té mansyonné adan on comantasyon dé on piblikasyon asi paj $1"
+	"at-mentions-toolbar-tool-title": "Bouté on mansyon"
 }

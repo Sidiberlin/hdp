@@ -4,7 +4,7 @@ namespace BlueSpice\SaferEdit\Hook\BsAdapterAjaxPingResult;
 
 use BlueSpice\Hook\BsAdapterAjaxPingResult;
 use BlueSpice\SaferEdit\SaferEditManager;
-use Title;
+use MediaWiki\Title\Title;
 
 class HandleSaferEditSave extends BsAdapterAjaxPingResult {
 

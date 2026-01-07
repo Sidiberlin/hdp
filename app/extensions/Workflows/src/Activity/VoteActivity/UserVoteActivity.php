@@ -13,8 +13,8 @@ use MediaWiki\Extension\Workflows\IActivityDescriptor;
 use MediaWiki\Extension\Workflows\UserInteractionModule;
 use MediaWiki\Extension\Workflows\WorkflowContext;
 use MediaWiki\MediaWikiServices;
-use Message;
-use User;
+use MediaWiki\Message\Message;
+use MediaWiki\User\User;
 
 class UserVoteActivity extends GenericVoteActivity {
 	/** @var bool */

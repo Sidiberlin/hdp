@@ -1,6 +1,6 @@
 {
 	"name": "TabberNeue",
-	"version": "2.1.1",
+	"version": "3.3.0",
 	"author": [
 		"alistair3149",
 		"Eric Fortin",
@@ -12,7 +12,7 @@
 	"type": "parserhook",
 	"license-name": "GPL-3.0-or-later",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"MessagesDirs": {
 		"TabberNeue": [
@@ -30,10 +30,6 @@
 		"ext.tabberNeue.init.styles": {
 			"styles": [
 				"ext.tabberNeue.init/ext.tabberNeue.init.less"
-			],
-			"targets": [
-				"desktop",
-				"mobile"
 			]
 		},
 		"ext.tabberNeue": {
@@ -42,47 +38,25 @@
 				{
 					"name": "ext.tabberNeue/config.json",
 					"config": {
+						"cdnMaxAge": "CdnMaxAge",
 						"enableAnimation": "TabberNeueEnableAnimation",
-						"parseTabName": "TabberNeueParseTabName",
 						"updateLocationOnTabChange": "TabberNeueUpdateLocationOnTabChange"
 					}
 				},
-				"ext.tabberNeue/Hash.js",
 				"ext.tabberNeue/Transclude.js",
 				"ext.tabberNeue/Util.js"
 			],
 			"messages": [
-				"error"
+				"error",
+				"tabberneue-button-next",
+				"tabberneue-button-prev"
 			],
 			"styles": [
 				"ext.tabberNeue/ext.tabberNeue.less",
 				"ext.tabberNeue/ext.tabberNeue.mobile.less"
 			],
 			"dependencies": [
-				"mediawiki.Uri",
 				"mediawiki.util"
-			],
-			"targets": [
-				"desktop",
-				"mobile"
-			]
-		},
-		"ext.tabberNeue.codex": {
-			"packageFiles": [
-				"ext.tabberNeue.codex/ext.tabberNeue.codex.js",
-				"ext.tabberNeue.codex/App.vue",
-				"ext.tabberNeue.codex/TabContent.vue"
-			],
-			"styles": [
-				"ext.tabberNeue.codex/ext.tabberNeue.codex.less"
-			],
-			"dependencies": [
-				"@wikimedia/codex",
-				"mediawiki.util"
-			],
-			"targets": [
-				"desktop",
-				"mobile"
 			]
 		},
 		"ext.tabberNeue.visualEditor": {
@@ -110,10 +84,6 @@
 				"tabberneue-visualeditor-mwtabberdialog-desc",
 				"tabberneue-visualeditor-mwtabbertranscludeinspector-title",
 				"tabberneue-visualeditor-mwtabbertranscludeinspector-desc"
-			],
-			"targets": [
-				"desktop",
-				"mobile"
 			]
 		},
 		"ext.tabberNeue.icons": {
@@ -146,11 +116,6 @@
 			"description": "Parse tab name as wikitext. This can have a performance impact and cause unexpected behaviors.",
 			"public": true
 		},
-		"TabberNeueUseCodex": {
-			"value": false,
-			"description": "Use Codex to render Tabber. It is experimental and many features might not work as expected.",
-			"public": true
-		},
 		"TabberNeueEnableAnimation": {
 			"value": true,
 			"description": "Enable or disable smooth scroll animation",
@@ -160,17 +125,29 @@
 			"value": true,
 			"description": "If enabled, when a tab is selected, the URL displayed on the browser changes. Opening this URL makes that tab initially selected.",
 			"public": true
+		},
+		"TabberNeueAddTabPrefix": {
+			"value": true,
+			"description": "If enabled, tabpanel IDs will be prepended with \"tabber-\". This avoids potential conflicts with page headings that use the same IDs.",
+			"public": true
 		}
 	},
 	"Hooks": {
-		"BeforePageDisplayMobile": "TabberHooks",
-		"ParserFirstCallInit": "TabberHooks"
+		"ParserFirstCallInit": "TabberHooks",
+		"ScribuntoExternalLibraries": "MediaWiki\\Extension\\TabberNeue\\Hooks::onScribuntoExternalLibraries"
 	},
 	"HookHandlers": {
 		"TabberHooks": {
-			"class": "MediaWiki\\Extension\\TabberNeue\\Hooks"
+			"class": "MediaWiki\\Extension\\TabberNeue\\Hooks",
+			"services": [
+				"MainConfig",
+				"TabberNeue.TabNameHelper"
+			]
 		}
 	},
+	"ServiceWiringFiles": [
+		"includes/ServiceWiring.php"
+	],
 	"attributes": {
 		"CodeMirror": {
 			"TagModes": {

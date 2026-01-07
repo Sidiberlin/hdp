@@ -24,7 +24,7 @@
 		windowManager.addWindows( [ startSessionDialogWindow ] );
 		windowManager.openWindow( startSessionDialogWindow );
 
-		startSessionDialogWindow.on( 'actionCompleted', function () {
+		startSessionDialogWindow.on( 'actionCompleted', () => {
 			startSession();
 		} );
 	} );

@@ -2,6 +2,8 @@
 
 namespace BlueSpice\ProDistributionConnector\HookHandler;
 
+use MediaWiki\Output\OutputPage;
+
 class AddResources {
 
 	/**

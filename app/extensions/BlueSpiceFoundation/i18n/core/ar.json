@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Alshamiri1",
+			"Cigaryno",
 			"Meno25",
 			"Sonic N800",
 			"ديفيد",
@@ -38,7 +39,6 @@
 	"bs-exception-view-admin-hint": "من فضلك تواصل مع إداري نظامك.",
 	"bs-exception-view-stacktrace-toggle-show-text": "إظهار تفاصيل الخطأ",
 	"bs-exception-view-stacktrace-toggle-hide-text": "إخفاء تفاصيل الخطأ",
-	"bs-viewtagerrorlist-legend": "$1 - خطأ",
 	"bs-readonly": "قاعدة البيانات مقفلة حاليا للإدخالات الجديدة والتعديلات الأخرى، ربما لصيانة قاعدة البيانات الروتينية، وبعد ذلك سوف تعود إلى طبيعتها، قدم الإداري الذي قام بقفلها هذا التفسير: $1",
 	"bs-imageofotheruser": "غير مسموح لك برفع صورة لمستخدم آخر.",
 	"bs-permissionerror": "خطأ في الصلاحية!",
@@ -63,7 +63,6 @@
 	"bs-navigation-instructions": "تعليمات",
 	"bs-navigation-support": "الدعم",
 	"bs-navigation-contact": "اتصل",
-	"bs-imagepage-download-text": "تنزيل",
 	"bs-ns": "نطاق",
 	"bs-from-something": "(من $1)",
 	"bs-pref-fileextensions": "امتدادات الملفات المسموح بها:",
@@ -100,10 +99,16 @@
 	"bs-ping-on-init-desc": "يجب إرسال طلب إشارة بعد تحميل الصفحة مباشرةً",
 	"right-editor": "يتم منح جميع الأذونات من دور \"المحرر\" للصفحات المحمية في قيود المحرر عند تنشيط نظام الدور",
 	"action-editor": "يتم منح جميع الأذونات من دور \"المحرر\" للصفحات المحمية في قيود المحرر عند تنشيط نظام الدور",
-	"bs-pref-fileextensions-help": "أنواع الملفات التي يمكن تحميلها على موقع wiki. بعض الأنواع (على سبيل المثال ، html ، js ، php ، cgi ، exe) غير مسموح بها لأسباب أمنية حتى إذا تمت إضافتها هنا.",
+	"bs-pref-fileextensions-help": "أنواع الملفات التي يُمكن رفعها إلى الويكي. بعض الأنواع (مثل html، js، php، cgi، exe) غير مسموح بها لأسباب أمنية حتى لو أُضيفت هنا.",
 	"bs-pref-imageextensions-help": "أنواع ملفات الصور التي يمكن تحميلها على موقع wiki. تنسيقات الويب الممكنة: gif، png، jpg، jpeg. تنسيقات الصور الأخرى: tiff ، bmp",
-	"bs-dynamic-settings-error-config-file-could-not-be-written": "تعذر كتابة ملف التكوين $1 !",
-	"bs-pref-logopath-help": "يجب تخزين الشعار في مجلد / w / images في التثبيت. إذا قمت بتخزينه في مجلد / w / skins الخاص بتثبيت BlueSpice ، فيمكن الكتابة فوقه بترقية.",
-	"bs-pref-faviconpath-help": "يجب تخزين الرمز المفضل في مجلد / w / images في التثبيت. إذا قمت بتخزينه في مجلد / w / skins الخاص بتثبيت BlueSpice ، فيمكن الكتابة فوقه بترقية. الأيقونات لها امتداد الملف .ico.",
-	"bs-exttype-bluespice-assets": "أصول BlueSpice"
+	"bs-dynamic-settings-error-config-file-could-not-be-written": "لم يتم كتابة ملف التكوين $1 !",
+	"bs-pref-logopath-help": "يجب حفظ الشعار في مجلد /w/images في تثبيتك. إذا خزّنته في مجلد /w/skins في تثبيت BlueSpice، فيمكنك استبداله بالترقية.",
+	"bs-pref-faviconpath-help": "يجب حفظ أيقونة المفضلة في مجلد /w/images في تثبيتك. إذا خزّنتها في مجلد /w/skins في تثبيت BlueSpice، فقد يتم استبدالها بالترقية. أيقونة المفضلة لها امتداد الملف .ico",
+	"bs-exttype-bluespice-assets": "أصول BlueSpice",
+	"bs-permission-role-reader": "قارئ",
+	"bs-permission-role-editor": "محرر",
+	"bs-permission-role-reviewer": "مراجع",
+	"bs-permission-role-admin": "إداري",
+	"bs-title-warning": "تحذير",
+	"bs-title-success": "نجاح"
 }

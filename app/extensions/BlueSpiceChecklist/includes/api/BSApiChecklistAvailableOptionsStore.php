@@ -1,5 +1,7 @@
 <?php
 
+use MediaWiki\Title\Title;
+
 class BSApiChecklistAvailableOptionsStore extends BSApiExtJSStoreBase {
 	/**
 	 *
@@ -14,7 +16,8 @@ class BSApiChecklistAvailableOptionsStore extends BSApiExtJSStoreBase {
 			[ 'page_namespace', 'page_title' ],
 			[
 				'page_namespace' => NS_TEMPLATE
-			]
+			],
+			__METHOD__
 		);
 
 		$aAvailableOptions = [];

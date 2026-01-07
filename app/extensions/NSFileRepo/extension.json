@@ -1,6 +1,6 @@
 {
 	"name": "NSFileRepo",
-	"version": "2.0.10",
+	"version": "3.0.6",
 	"author": [
 		"Jack D. Pond",
 		"[https://www.hallowelt.com Hallo Welt! GmbH]",
@@ -11,9 +11,9 @@
 	"license-name": "GPL-2.0-or-later",
 	"type": "media",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
-	"callback": "NSFileRepoHooks::register",
+	"callback": "\\MediaWiki\\Extension\\NSFileRepo\\Setup::register",
 	"MessagesDirs": {
 		"NSFileRepo": [
 			"i18n/nsfilerepo"
@@ -42,24 +42,26 @@
 			"FilelistPluginModules": [
 				"ext.nsfilerepo.filelist"
 			]
+		},
+		"PDFCreator": {
+			"Processors": {
+				"NSFileRepoAttachments": {
+					"class": "MediaWiki\\Extension\\NSFileRepo\\Integration\\PDFCreator\\Processor\\AttachmentProcessor",
+					"services": [ "TitleFactory", "MainConfig", "RepoGroup" ]
+				},
+				"NSFileRepoImages": {
+					"class": "MediaWiki\\Extension\\NSFileRepo\\Integration\\PDFCreator\\Processor\\ImageProcessor",
+					"services": [ "TitleFactory", "MainConfig", "RepoGroup" ]
+				}
+			}
 		}
 	},
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\NSFileRepo\\": "src/",
-		"NSFileRepo\\": "src/"
+		"MediaWiki\\Extension\\NSFileRepo\\": "src/"
 	},
 	"TestAutoloadNamespaces": {
 		"MediaWiki\\Extension\\NSFileRepo\\Tests\\": "tests/phpunit/",
 		"NSFileRepo\\Tests\\": "tests/phpunit/"
-	},
-	"AutoloadClasses": {
-		"NSFileRepoHooks": "includes/NSFileRepoHooks.php",
-		"NSLocalRepo": "includes/filerepo/NSLocalRepo.php",
-		"NSLocalFile": "includes/filerepo/file/NSLocalFile.php",
-		"NSLocalFileMoveBatch": "includes/filerepo/file/NSLocalFile.php",
-		"NSOldLocalFile": "includes/filerepo/file/NSOldLocalFile.php",
-		"NSFileRepoFSFileBackend": "includes/filebackend/NSFileRepoFSFileBackend.php",
-		"NSFileRepoHelper": "includes/utility/NSFileRepoHelper.php"
 	},
 	"DefaultUserOptions": {
 		"filelist-show-namespace_text": 1
@@ -99,8 +101,8 @@
 		},
 		"ext.nsfilerepo.namespace.cpd": {
 			"scripts": [
-				"ext.nsfilerepo.namespace.cpd.js",
-				"nsfr/NamespaceFilenameProcessor.js"
+				"nsfr/NamespaceFilenameProcessor.js",
+				"ext.nsfilerepo.namespace.cpd.js"
 			],
 			"dependencies": [
 				"oojs-ui"
@@ -108,8 +110,8 @@
 		},
 		"ext.nsfilerepo.namespace.drawioeditor": {
 			"scripts": [
-				"ext.nsfilerepo.namespace.drawioeditor.js",
-				"nsfr/NamespaceFilenameProcessor.js"
+				"nsfr/NamespaceFilenameProcessor.js",
+				"ext.nsfilerepo.namespace.drawioeditor.js"
 			],
 			"dependencies": [
 				"oojs-ui"
@@ -120,7 +122,7 @@
 				"nsfr/EnhancedUploadParamsProcessor.js",
 				{
 					"name": "nsfr/config.json",
-					"callback": "NSFileRepo\\ClientConfig::makeConfigJson"
+					"callback": "\\MediaWiki\\Extension\\NSFileRepo\\ClientConfig::makeConfigJson"
 				}
 			],
 			"messages": [
@@ -134,7 +136,11 @@
 		},
 		"ext.nsfilerepo.filelist": {
 			"packageFiles": [
-				"ext.nsfilerepo.filelist.js"
+				"ext.nsfilerepo.filelist.js",
+				{
+					"name": "buckets.json",
+					"callback": "\\MediaWiki\\Extension\\NSFileRepo\\ClientConfig::makeNamespaceBuckets"
+				}
 			],
 			"messages": [
 				"nsfilerepo-enhanced-filelist-grid-namespace-title"
@@ -146,9 +152,9 @@
 		"remoteExtPath": "NSFileRepo/resources"
 	},
 	"HookHandlers": {
-		"permission-checker": {
-			"class": "MediaWiki\\Extension\\NSFileRepo\\HookHandler\\PermissionChecker",
-			"services": [ "MainConfig", "PermissionManager" ]
+		"authenticate": {
+			"class": "MediaWiki\\Extension\\NSFileRepo\\HookHandler\\Authenticate",
+			"services": [ "PermissionManager", "MainConfig", "TitleFactory" ]
 		},
 		"addNamespaces": {
 			"class": "MediaWiki\\Extension\\NSFileRepo\\HookHandler\\AddNamespaceToFilelist",
@@ -157,22 +163,27 @@
 		"userpreference": {
 			"class": "MediaWiki\\Extension\\NSFileRepo\\HookHandler\\AddUserPreference"
 		},
-		"specialFilelistAvailableNamespaces": {
-			"class": "NSFileRepo\\Hooks\\SpecialFilelistAvailableNamespaces",
-			"services": [ "DBLoadBalancer" ]
+		"addModules": {
+			"class": "MediaWiki\\Extension\\NSFileRepo\\HookHandler\\AddModules"
+		},
+		"handleUpload": {
+			"class": "MediaWiki\\Extension\\NSFileRepo\\HookHandler\\HandleUpload",
+			"services": [ "TitleFactory" ]
+		},
+		"oldImageLinkHandler": {
+			"class": "MediaWiki\\Extension\\NSFileRepo\\HookHandler\\OldImageLinkHandler"
 		}
 	},
 	"Hooks": {
-		"UploadForm:BeforeProcessing": "NSFileRepo\\Hooks\\UploadFormBeforeProcessing::handle",
-		"getUserPermissionsErrors": "permission-checker",
-		"BeforePageDisplay": [ "NSFileRepoHooks::onBeforePageDisplay", "specialFilelistAvailableNamespaces" ],
-		"UploadFormInitDescriptor": "NSFileRepo\\Hooks\\UploadFormInitDescriptor::handle",
-		"ImgAuthBeforeCheckFileExists": "NSFileRepoHooks::onImgAuthBeforeCheckFileExists",
-		"ImgAuthBeforeStream": "NSFileRepoHooks::onImgAuthBeforeStream",
-		"UploadVerification": "NSFileRepoHooks::onUploadVerification",
+		"getUserPermissionsErrors": "authenticate",
+		"SpecialPageBeforeExecute": "addModules",
+		"UploadFormInitDescriptor": "handleUpload",
 		"SkinTemplateNavigation::Universal": "NSFileRepo\\Hooks\\SkinTemplateNavigationUniversal::handle",
 		"MWStakeCommonWebAPIsQueryStoreResult": "addNamespaces",
-		"GetPreferences": "userpreference"
+		"GetPreferences": "userpreference",
+		"UploadVerifyFile": "handleUpload",
+		"UploadForm:BeforeProcessing": "handleUpload",
+		"HtmlPageLinkRendererBegin": "oldImageLinkHandler"
 	},
 	"QUnitTestModule": {
 		"localBasePath": "",
@@ -201,5 +212,13 @@
 			"value": [ "js", "css", "xml", "html", "htm", "xhtml" ]
 		}
 	},
+	"RestRoutes": [
+		{
+			"path": "/nsfr/v1/accessible_namespaces",
+			"class": "\\MediaWiki\\Extension\\NSFileRepo\\Rest\\NamespaceListHandler",
+			"services": [ "ContentLanguage" ]
+		}
+	],
+	"load_composer_autoloader": true,
 	"manifest_version": 2
 }

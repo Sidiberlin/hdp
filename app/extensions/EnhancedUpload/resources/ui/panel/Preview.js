@@ -3,13 +3,13 @@ window.enhancedUpload.ui = window.enhancedUpload.ui || {};
 window.enhancedUpload.ui.panel = window.enhancedUpload.ui.panel || {};
 
 enhancedUpload.ui.panel.Preview = function enhancedUploadUiPanelPreview() {
-	var cfg = {};
+	const cfg = {};
 	cfg.orientation = 'horizontal';
 	cfg.draggable = true;
 	cfg.classes = [ 'file-preview', 'no-files' ];
 
 	enhancedUpload.ui.panel.Preview.parent.call( this, cfg );
-	OO.ui.mixin.GroupElement.call( this, $.extend( {}, cfg, { $group: this.$element } ) );
+	OO.ui.mixin.GroupElement.call( this, Object.assign( {}, cfg, { $group: this.$element } ) );
 
 	this.items = [];
 	this.itemData = [];
@@ -23,7 +23,7 @@ enhancedUpload.ui.panel.Preview.static.label = '';
 enhancedUpload.ui.panel.Preview.static.tagName = 'div';
 
 enhancedUpload.ui.panel.Preview.prototype.addToPreview = function ( value, url ) {
-	var itemWidget;
+	let itemWidget;
 	this.itemData.push( {
 		data: value,
 		url: url
@@ -62,7 +62,6 @@ enhancedUpload.ui.panel.Preview.prototype.clearPreview = function () {
 };
 
 enhancedUpload.ui.panel.Preview.prototype.removeItemFromPreview = function ( widget ) {
-	var index;
 	if ( !this.items.length ) {
 		return;
 	}
@@ -72,7 +71,7 @@ enhancedUpload.ui.panel.Preview.prototype.removeItemFromPreview = function ( wid
 		return;
 	}
 
-	index = this.items.indexOf( widget );
+	const index = this.items.indexOf( widget );
 
 	this.removeItems( widget );
 	widget.$element.hide();

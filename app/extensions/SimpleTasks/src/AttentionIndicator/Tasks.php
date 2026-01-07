@@ -3,10 +3,10 @@
 namespace SimpleTasks\AttentionIndicator;
 
 use BlueSpice\Discovery\AttentionIndicator;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\User\User;
 use SimpleTasks\SimpleTaskManager;
-use User;
 
 class Tasks extends AttentionIndicator {
 
@@ -36,7 +36,7 @@ class Tasks extends AttentionIndicator {
 	 * @return IAttentionIndicator
 	 */
 	public static function factory( string $key, Config $config, User $user,
-		MediaWikiServices $services, SimpleTaskManager $taskManager = null ) {
+		MediaWikiServices $services, ?SimpleTaskManager $taskManager = null ) {
 		if ( !$taskManager ) {
 			$taskManager = $services->get( 'SimpleTaskManager' );
 		}

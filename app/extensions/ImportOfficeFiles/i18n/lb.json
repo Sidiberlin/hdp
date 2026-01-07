@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Robby"
+			"Robby",
+			"Volvox"
 		]
 	},
 	"importofficefiles-desc": "Erlaabt et fir Office-Fichieren als Wiki-Säiten z'importéieren",
@@ -11,7 +12,7 @@
 	"importofficefiles-ui-dialog-action-cancel": "Ofbriechen",
 	"importofficefiles-ui-dialog-action-import": "Importéieren",
 	"importofficefiles-ui-dialog-action-next": "Weider",
-	"importofficefiles-ui-dialog-action-back": "Zréck",
+	"importofficefiles-ui-dialog-action-back": "Zeréck",
 	"importofficefiles-ui-dialog-action-done": "Fäerdeg",
 	"importofficefiles-ui-dialog-label-select-file": "Fichier eraussichen",
 	"importofficefiles-ui-dialog-configuration-settings-title": "Astellunge fir den Import festleeën",
@@ -24,5 +25,7 @@
 	"importofficefiles-ui-dialog-settings-conflicts-rename": "Ëmbenennen",
 	"importofficefiles-ui-dialog-settings-conflicts-override": "Iwwerschreiwen",
 	"importofficefiles-ui-dialog-preview-title": "Kucken ouni ofzespäicheren",
-	"importofficefiles-ui-dialog-preview-label": "Dës Säite ginn importéiert"
+	"importofficefiles-ui-dialog-preview-label": "Dës Säite ginn importéiert",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-fallback": "Dësen Titel kann net benotzt ginn.",
+	"importofficefiles-ui-dialog-preview-action-close": "Zoumaachen"
 }

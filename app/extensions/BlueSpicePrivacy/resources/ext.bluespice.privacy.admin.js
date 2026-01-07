@@ -1,32 +1,34 @@
-( function( mw, $ ) {
-	Ext.onReady( function() {
-		var requestManager = new bs.privacy.widget.RequestManager( {
-			$element: $( '#bs-privacy-admin-requests' )
-		} );
-
-		$( '.bs-privacy-admin-section' ).each( function( k, section ) {
-			var $section = $( section );
-
-			var rlModule = $section.data( 'rl-module' );
-			if ( !rlModule ) {
-				return;
-			}
-
-			mw.loader.using( rlModule ).then( function() {
-				var sectionCallback = $section.data( 'callback' );
-				var func = bs.privacy.util.funcFromCallback( sectionCallback );
-
-				var config = {};
-				if( $section.data( 'config' ) ) {
-					config = $section.data( 'config' );
-				}
-
-				var widget = new func( $.extend( {
-					$element: $section
-				}, config ) );
-				widget.init();
-			} );
-		} );
-
+( function ( mw, $ ) {
+	const requestManager = new bs.privacy.widget.RequestManager( {
+		$element: $( '#bs-privacy-admin-requests' )
 	} );
-} )( mediaWiki, jQuery );
+	requestManager.init();
+
+	function initPanel( $section ) {
+		const sectionCallback = $section.data( 'callback' );
+		const func = bs.privacy.util.funcFromCallback( sectionCallback );
+
+		let config = {};
+		if ( $section.data( 'config' ) ) {
+			config = $section.data( 'config' );
+		}
+
+		const widget = new func( Object.assign( { // eslint-disable-line new-cap
+			$element: $section
+		}, config ) );
+		widget.init();
+	}
+
+	$( '.bs-privacy-admin-section' ).each( ( k, section ) => {
+		const $section = $( section );
+
+		const rlModule = $section.data( 'rl-module' );
+		if ( !rlModule ) {
+			initPanel( $section );
+			return;
+		}
+		mw.loader.using( rlModule ).then( () => {
+			initPanel( $section );
+		} );
+	} );
+}( mediaWiki, jQuery ) );

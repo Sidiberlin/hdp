@@ -119,14 +119,6 @@ if ( !isset( $GLOBALS[ 'bsgNamespaceRolesLockdown' ] ) ) {
 	$GLOBALS['bsgNamespaceRolesLockdown'] = [];
 }
 
-// Hardcoded permissions, not part of role system
-// Required for external authentication providers like LDAP, SAML, OIDC
-$GLOBALS['wgGroupPermissions']['*']['autocreateaccount'] = true;
-// Required for "reset password" functionality
-$GLOBALS['wgGroupPermissions']['*']['editmyprivateinfo'] = true;
-// Required for API logins, e.g. by bots
-$GLOBALS['wgGroupPermissions']['*']['writeapi'] = true;
-
 $GLOBALS[ 'bsgPermissionConfigDefault' ] = [
 	"apihighlimits" => [
 		"type" => 'global',
@@ -204,7 +196,7 @@ $GLOBALS[ 'bsgPermissionConfigDefault' ] = [
 	],
 	"deletedtext" => [
 		"type" => 'namespace',
-		"roles" => [ 'admin', 'author', 'editor', 'maintenanceadmin', 'reviewer' ]
+		"roles" => [ 'admin', 'author', 'maintenanceadmin', 'reviewer' ]
 	],
 	"deletelogentry" => [
 		"type"  => 'global',
@@ -507,10 +499,6 @@ $GLOBALS[ 'bsgPermissionConfigDefault' ] = [
 	]
 ];
 
-// Introduce new semiprotected restriction level - editor is a permission in this case
-$GLOBALS['wgSemiprotectedRestrictionLevels'] = [ 'editor' ];
-$GLOBALS['wgRestrictionLevels'] = [ '', 'editor', 'sysop' ];
-
 /**
  * Allows extensions to distinguish between normal content NS, that can be
  * renamed of deleted and system NS that can not be modified. Used in
@@ -532,31 +520,6 @@ $GLOBALS['bsgExtensions'] = [];
  * )
  */
 $GLOBALS['bsgTemplates'] = [];
-
-/*
- * ExtJSThemes
- */
-$GLOBALS["bsgExtJSThemes"] = [
-	"white" => [
-		'bs-extjs-theme-primary-text-color' => 'black',
-		'bs-extjs-theme-secondary-text-color' => 'black',
-		'bs-extjs-theme-primary-background-color' => 'white',
-		'bs-extjs-theme-secondary-background-color' => 'white',
-		'bs-extjs-theme-toolbar-footer-background' => 'white',
-		'bs-extjs-theme-btn-small-border' => '1px solid @bs-color-neutral4',
-		'bs-extjs-theme-tab-active-background' => '@bs-color-neutral4',
-		'bs-extjs-theme-tab-active-text' => 'white',
-		'bs-extjs-theme-tab-active-strip' => '@bs-color-neutral4',
-		'bs-extjs-theme-panel-border' => '5px solid @bs-color-neutral4',
-		'bs-extjs-theme-panel-header-horizontal-border' => '1px solid @bs-color-neutral4',
-		'bs-extjs-theme-panel-header-vertical-border' => '1px solid @bs-color-neutral4',
-		'bs-extjs-theme-btn-toolbar-noicon-border' => '1px solid black',
-		'bs-extjs-theme-tool-img-image' => 'url( "/extensions/BlueSpiceFoundation/resources/'
-			. 'bluespice.extjs/bluespice-theme/images/tools/tool-sprites-dark.png" )',
-		'bs-extjs-theme-btn-split-right-image' => 'url( "/extensions/BlueSpiceFoundation/resources/'
-			. 'bluespice.extjs/bluespice-theme/images/button/default-toolbar-small-s-arrow.png" )',
-	]
-];
 
 $GLOBALS['bsgUserMiniProfileParams'] = [ 'width' => 40, 'height' => 40 ];
 $GLOBALS['bsgMiniProfileEnforceHeight'] = true;

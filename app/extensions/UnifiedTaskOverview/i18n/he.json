@@ -8,5 +8,6 @@
 	"unifiedtaskoverview": "המשימות שלי",
 	"unifiedtaskoverview-label-no-task": "נכון לעכשיו אין משימות שצריך להשלים.",
 	"unifiedtaskoverview-personal-url-my-tasks": "משימות",
-	"unifiedtaskoverview-search-placeholder": "חיפוש"
+	"unifiedtaskoverview-search-placeholder": "חיפוש",
+	"unifiedtaskoverview-no-login-text": "נא להתחבר כדי לראות את המשימות שלך"
 }

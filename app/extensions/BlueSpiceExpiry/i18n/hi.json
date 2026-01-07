@@ -4,5 +4,7 @@
 			"Abijeet Patro"
 		]
 	},
-	"bs-expiry-dialog-action-no": "नहीं"
+	"bs-expiry-dialog-action-no": "नहीं",
+	"bs-expiry-header-action-edit": "सम्पादन",
+	"bs-expiry-header-action-delete": "हटाएँ"
 }

@@ -7,7 +7,7 @@ trait BlueSpiceFarmingTrait {
 	 * @return bool
 	 */
 	private function isFarmingInstance(): bool {
-		return defined( 'FARMER_CALLED_INSTANCE' ) && FARMER_CALLED_INSTANCE !== '';
+		return defined( 'FARMER_CALLED_INSTANCE' ) && FARMER_CALLED_INSTANCE !== 'w';
 	}
 
 	/**

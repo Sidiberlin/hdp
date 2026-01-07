@@ -6,40 +6,44 @@ use Article;
 use DifferenceEngine;
 use ManualLogEntry;
 use MediaWiki\Content\Hook\ContentAlterParserOutputHook;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Diff\Hook\DifferenceEngineViewHeaderHook;
 use MediaWiki\Extension\ContentStabilization\ContentStabilizer;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
 use MediaWiki\Extension\ContentStabilization\StableFilePoint;
 use MediaWiki\Extension\ContentStabilization\StablePoint;
 use MediaWiki\Extension\ContentStabilization\StableView;
-use MediaWiki\Hook\BeforePageDisplayHook;
 use MediaWiki\Hook\BeforeParserFetchFileAndTitleHook;
 use MediaWiki\Hook\BeforeParserFetchTemplateRevisionRecordHook;
 use MediaWiki\Hook\MediaWikiPerformActionHook;
+use MediaWiki\Hook\OutputPageBodyAttributesHook;
 use MediaWiki\Hook\PageMoveCompleteHook;
 use MediaWiki\Hook\TitleGetEditNoticesHook;
 use MediaWiki\HookContainer\HookContainer;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
+use MediaWiki\Output\OutputPage;
 use MediaWiki\Page\Hook\ArticleViewHeaderHook;
 use MediaWiki\Page\Hook\ImagePageFindFileHook;
 use MediaWiki\Page\Hook\PageDeleteCompleteHook;
 use MediaWiki\Page\PageIdentity;
 use MediaWiki\Page\ProperPageIdentity;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\ParserOptions;
 use MediaWiki\Permissions\Authority;
+use MediaWiki\Permissions\Hook\GetUserPermissionsErrorsHook;
 use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionRenderer;
 use MediaWiki\Revision\SlotRecord;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\UserIdentity;
-use Message;
-use OutputPage;
-use Parser;
-use ParserOptions;
 use PermissionsError;
-use RequestContext;
-use Title;
-use TitleFactory;
 
 class StabilizeContent implements
 	ArticleViewHeaderHook,
@@ -52,7 +56,9 @@ class StabilizeContent implements
 	MediaWikiPerformActionHook,
 	TitleGetEditNoticesHook,
 	ContentAlterParserOutputHook,
-	DifferenceEngineViewHeaderHook
+	DifferenceEngineViewHeaderHook,
+	GetUserPermissionsErrorsHook,
+	OutputPageBodyAttributesHook
 {
 
 	/** @var StabilizationLookup */
@@ -200,6 +206,9 @@ class StabilizeContent implements
 			// Otherwise always edit the latest version
 			$article->getContext()->getOutput()->setRevisionId( $pageTitle->getLatestRevID() );
 		}
+		$article->getContext()->getOutput()->addJsConfigVars(
+			[ 'wgStabilizedRevisionId' => $revisionUsed->getId(), 'wgStabilizationState' => $this->view->getStatus() ]
+		);
 		$end = microtime( true );
 		$article->getContext()->getOutput()->addHTML( '<!-- StabilizeContent: ' . ( $end - $start ) . ' -->' );
 	}
@@ -220,7 +229,7 @@ class StabilizeContent implements
 			return;
 		}
 		if ( !$this->lookup->isStableRevision( $new ) || !$this->lookup->isStableRevision( $old ) ) {
-			throw new PermissionsError( 'badaccess-group0' );
+			throw new PermissionsError( 'read' );
 		}
 	}
 
@@ -273,6 +282,14 @@ class StabilizeContent implements
 				return;
 			}
 		}
+	}
+
+	/**
+	 *
+	 * @inheritDoc
+	 */
+	public function onPDFCreatorContextBeforeGetPage( IContextSource $contextSource ): void {
+		$this->view = $this->lookup->getStableViewFromContext( $contextSource );
 	}
 
 	/**
@@ -407,6 +424,10 @@ class StabilizeContent implements
 	 * @return void
 	 */
 	private function setViewFromArticle( Article $article ) {
+		if ( $article->getContext()->getRequest()->getBool( 'nostabilize' ) ) {
+			$this->view = null;
+			return;
+		}
 		$this->view = $this->lookup->getStableViewFromContext( $article->getContext() );
 	}
 
@@ -428,10 +449,10 @@ class StabilizeContent implements
 		}
 		$requested = $this->view->getRevision();
 		$stableFromView = $this->view->getLastStablePoint();
-		$latestStable = $this->lookup->getLastStablePoint( $page );
+		$latestStableRevision = $this->lookup->getLastStableRevision( $page );
 		if (
-			$stableFromView && $latestStable &&
-			$stableFromView->getRevision()->getId() < $latestStable->getRevision()->getId()
+			$stableFromView && $latestStableRevision &&
+			$stableFromView->getRevision()->getId() < $latestStableRevision->getId()
 		) {
 			// If we are viewing an old revision, that has a stable point afterwards, edit that one
 			return false;
@@ -454,8 +475,8 @@ class StabilizeContent implements
 		$this->setViewFromArticle( $article );
 
 		$action = $request->getText( 'veaction', $request->getText( 'action', 'view' ) );
-		if ( $action === 'edit' ) {
-			if ( !$this->shouldSwitchToLatestForEdit( $title, $user ) ) {
+		if ( $action === 'edit' || $action === 'editsource' ) {
+			if ( $request->getBool( 'nostabilize' ) || !$this->shouldSwitchToLatestForEdit( $title, $user ) ) {
 				return true;
 			}
 			// Replace revision to edit, if needed
@@ -509,7 +530,7 @@ class StabilizeContent implements
 		$msg = Message::newFromKey(
 			'contentstabilization-edit-notice-approval-needed'
 		);
-		$notices['contentstabilization-approvalnotice'] = \Html::rawElement( 'b', [], $msg->text() );
+		$notices['contentstabilization-approvalnotice'] = Html::rawElement( 'b', [], $msg->text() );
 	}
 
 	/**
@@ -563,21 +584,30 @@ class StabilizeContent implements
 			if ( $view->getRevision()->isCurrent() ) {
 				return;
 			}
+			if ( $context->getRequest()->getText( 'action', 'view' ) === 'visualeditor' ) {
+				// Do not replace actual content for VE parsing
+				$oldId = $context->getRequest()->getInt( 'oldid' );
+				$stabilizedRev = $view->getRevision()->getId();
+				if ( $oldId !== $stabilizedRev ) {
+					$context->getRequest()->setVal( 'oldid', $stabilizedRev );
+				}
+				return;
+			}
 			// Do not re-trigger this hook while we re-parse
 			$this->allowParserOutputAlteration = false;
 			$options = ParserOptions::newFromContext( $context );
 			$renderedRev = $this->revisionRenderer->getRenderedRevision( $view->getRevision(), $options );
 			if ( $renderedRev ) {
-				$text = $renderedRev->getRevisionParserOutput()->getText();
+				$text = $renderedRev->getRevisionParserOutput()->runOutputPipeline( $options )->getContentHolderText();
 				// Remove wrapping in <div class="mw-parser-output">...</div>
 				$text = preg_replace( '/^<div class="mw-parser-output">(.*)<\/div>$/s', '$1', $text );
-				$parserOutput->setText( $text );
+				$parserOutput->setRawText( $text );
 			}
 			$this->allowParserOutputAlteration = true;
 			return;
 		}
 
-		$parserOutput->setText( '' );
+		$parserOutput->setRawText( null );
 	}
 
 	/**
@@ -588,5 +618,45 @@ class StabilizeContent implements
 	 */
 	private function pageEquals( $a, $b ): bool {
 		return $a && $b && $a->getNamespace() === $b->getNamespace() && $a->getDBkey() === $b->getDBkey();
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function onGetUserPermissionsErrors( $title, $user, $action, &$result ) {
+		if ( $this->view && !$this->view->getRevision() ) {
+			// View is initialized, but no revision can be shown to the user
+			$result = 'badaccess-group0';
+			return false;
+		}
+		return true;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function onOutputPageBodyAttributes( $out, $sk, &$bodyAttrs ): void {
+		if ( !$this->view ) {
+			return;
+		}
+		$isStable = $this->view->isStable();
+		$status = $this->view->getStatus();
+		if ( $isStable ) {
+			$bodyAttrs['data-stable'] = 'true';
+		}
+		// add class
+		$classes = $bodyAttrs['class'] ?? '';
+		if ( empty( $classes ) ) {
+			$classes = [];
+		} elseif ( !is_array( $classes ) ) {
+			$classes = explode( ' ', $classes );
+		}
+		$classes[] = 'cs-state-' . $status;
+		if ( $isStable ) {
+			$classes[] = 'cs-stable';
+		} else {
+			$classes[] = 'cs-unstable';
+		}
+		$bodyAttrs['class'] = implode( ' ', $classes );
 	}
 }

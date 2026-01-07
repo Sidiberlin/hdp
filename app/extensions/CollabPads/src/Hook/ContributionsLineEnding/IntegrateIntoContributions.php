@@ -4,13 +4,13 @@ namespace MediaWiki\Extension\CollabPads\Hook\ContributionsLineEnding;
 
 use ChangesList;
 use ContribsPager;
-use Html;
 use MediaWiki\Extension\CollabPads\CollabRevisionManager;
 use MediaWiki\Hook\ContribsPager__getQueryInfoHook;
 use MediaWiki\Hook\SpecialContributions__formatRow__flagsHook;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserFactory;
-use Title;
 
 class IntegrateIntoContributions
 	implements ContribsPager__getQueryInfoHook, SpecialContributions__formatRow__flagsHook {
@@ -44,7 +44,7 @@ class IntegrateIntoContributions
 	 * @inheritDoc
 	 */
 	public function onContribsPager__getQueryInfo( $pager, &$queryInfo ) {
-		$title = $pager->getRequest()->getValues()['title'];
+		$title = $pager->getRequest()->getText( 'title', '' );
 		$userName = str_replace( "Special:Contributions/", "", $title );
 		$user = $this->userFactory->newFromName( $userName );
 		if ( !$user ) {

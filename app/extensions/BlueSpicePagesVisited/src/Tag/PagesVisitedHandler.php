@@ -8,6 +8,7 @@ use BlueSpice\PagesVisited\Tag\PagesVisited as Tag;
 use BlueSpice\Renderer\Params;
 use BlueSpice\Tag\Handler;
 use BlueSpice\WhoIsOnline\Data\Record;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
 use MWStake\MediaWiki\Component\DataStore\FieldType;
 use MWStake\MediaWiki\Component\DataStore\Filter;
@@ -17,7 +18,6 @@ use MWStake\MediaWiki\Component\DataStore\Filter\StringValue;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use MWStake\MediaWiki\Component\DataStore\ResultSet;
 use MWStake\MediaWiki\Component\DataStore\Sort;
-use RequestContext;
 
 class PagesVisitedHandler extends Handler {
 

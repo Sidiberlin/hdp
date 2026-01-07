@@ -3,7 +3,7 @@
 namespace BlueSpice\Discovery\Renderer;
 
 use BlueSpice\Discovery\ITemplateRenderer;
-use TemplateParser;
+use MediaWiki\Html\TemplateParser;
 
 abstract class TemplateRendererBase implements ITemplateRenderer {
 

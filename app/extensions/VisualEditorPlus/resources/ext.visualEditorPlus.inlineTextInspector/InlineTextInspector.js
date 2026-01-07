@@ -30,10 +30,8 @@ ext.visualEditorPlus.ui.InlineTextInspector.prototype.addInspector = function ( 
 };
 
 ext.visualEditorPlus.ui.InlineTextInspector.prototype.appendInspectors = function () {
-	var header, i;
-	this.inspectors.sort( function ( a, b ) {
-		return a.getPriority() - b.getPriority();
-	} );
+	let header, i;
+	this.inspectors.sort( ( a, b ) => a.getPriority() - b.getPriority() );
 	for ( i = 0; i < this.inspectors.length; i++ ) {
 		header = this.inspectors[ i ].getHeader();
 		if ( header ) {
@@ -49,7 +47,7 @@ ext.visualEditorPlus.ui.InlineTextInspector.prototype.init = function () {
 	this.selection = null;
 	this.selectedNode = null;
 
-	this.surfaceModel.on( 'select', this.onSelection.bind( this )  );
+	this.surfaceModel.on( 'select', this.onSelection.bind( this ) );
 	this.target.getToolbar().on( 'updateState', this.onToolbarUpdateState.bind( this ) );
 	$( document ).on( 'mousedown', this.onMouseDown.bind( this ) );
 	$( document ).on( 'mouseup', this.onMouseUp.bind( this ) );
@@ -84,11 +82,17 @@ ext.visualEditorPlus.ui.InlineTextInspector.prototype.onMouseDown = function ( e
 				y: e.pageY
 			}
 		};
+	} else {
+		const isPartOfPopup = $( e.target ).closest( '.ext-visualEditorPlus-inlineTextInspector' ).length > 0;
+		if ( isPartOfPopup ) {
+			// If the click is inside the popup, prevent bubbling
+			e.stopPropagation();
+			e.preventDefault();
+		}
 	}
 };
 
 ext.visualEditorPlus.ui.InlineTextInspector.prototype.onMouseUp = function ( e ) {
-	var range, selectedText, strLength;
 	if ( !this.location || this.isVisible() ) {
 		return;
 	}
@@ -96,13 +100,13 @@ ext.visualEditorPlus.ui.InlineTextInspector.prototype.onMouseUp = function ( e )
 		x: e.pageX,
 		y: e.pageY
 	};
-	if ( !this.selection || ( this.selectedNode && !( this.selectedNode instanceof ve.dm.TextNode ) ) ){
+	if ( !this.selection || ( this.selectedNode && !( this.selectedNode instanceof ve.dm.TextNode ) ) ) {
 		// If some particular node is selected, we don't want to show the inspector, just on plain text
 		return;
 	}
-	range = this.selection.getRange();
-	selectedText = window.getSelection().toString();
-	strLength = selectedText.trim().length;
+	const range = this.selection.getRange();
+	const selectedText = window.getSelection().toString();
+	const strLength = selectedText.trim().length;
 	if ( strLength ) {
 		this.inspect( range, selectedText );
 	}
@@ -113,7 +117,7 @@ ext.visualEditorPlus.ui.InlineTextInspector.prototype.onResize = function () {
 };
 
 ext.visualEditorPlus.ui.InlineTextInspector.prototype.shouldHide = function ( e ) {
-	var $target = $( e.target );
+	const $target = $( e.target );
 	// eslint-disable-next-line no-jquery/no-class-state
 	if ( $target.hasClass( 'ext-visualEditorPlus-inlineTextInspector' ) ) {
 		return false;
@@ -126,7 +130,7 @@ ext.visualEditorPlus.ui.InlineTextInspector.prototype.shouldHide = function ( e 
 };
 
 ext.visualEditorPlus.ui.InlineTextInspector.prototype.inspect = function ( range, selectedText ) {
-	var i;
+	let i;
 	this.toggle( true );
 	for ( i = 0; i < this.inspectors.length; i++ ) {
 		this.inspectors[ i ].inspect( range, selectedText );
@@ -134,25 +138,24 @@ ext.visualEditorPlus.ui.InlineTextInspector.prototype.inspect = function ( range
 };
 
 ext.visualEditorPlus.ui.InlineTextInspector.prototype.getDesiredPosition = function () {
-	var xStart, xEnd, yStart, yEnd, xBlockStart, yBlockStart, xBlockEnd, yBlockEnd;
-	xStart = this.location.start.x;
-	xEnd = this.location.end.x;
-	yStart = this.location.start.y;
-	yEnd = this.location.end.y;
-	xBlockStart = xStart < xEnd ? xStart : xEnd;
-	yBlockStart = yStart < yEnd ? yStart : yEnd;
-	xBlockEnd = xStart > xEnd ? xStart : xEnd;
-	yBlockEnd = yStart > yEnd ? yStart : yEnd;
+	const xStart = this.location.start.x;
+	const xEnd = this.location.end.x;
+	const yStart = this.location.start.y;
+	const yEnd = this.location.end.y;
+	const xBlockStart = xStart < xEnd ? xStart : xEnd;
+	const yBlockStart = yStart < yEnd ? yStart : yEnd;
+	const xBlockEnd = xStart > xEnd ? xStart : xEnd;
+	const yBlockEnd = yStart > yEnd ? yStart : yEnd;
 
 	return {
 		above: { x: xBlockStart, y: yBlockStart },
-		below: { x: xBlockEnd, y: yBlockEnd },
+		below: { x: xBlockEnd, y: yBlockEnd }
 	};
 };
 
 ext.visualEditorPlus.ui.InlineTextInspector.prototype.getEditorBoundary = function () {
 	// eslint-disable-next-line no-jquery/no-global-selector, no-jquery/variable-pattern
-	var target = $( '.ve-init-target' ),
+	const target = $( '.ve-ui-surface' ),
 		offset = target.offset(),
 		width = target.width(),
 		height = target.height();
@@ -166,20 +169,24 @@ ext.visualEditorPlus.ui.InlineTextInspector.prototype.getEditorBoundary = functi
 };
 
 ext.visualEditorPlus.ui.InlineTextInspector.prototype.computePosition = function () {
-	//var x = ext.visualEditorPlus.ui.InlineTextInspector.super.prototype.computePosition.call( this );
-	var boundary, desiredPosition;
+	// var x = ext.visualEditorPlus.ui.InlineTextInspector.super.prototype.computePosition.call( this );
+	let desiredPosition;
 	if ( !this.location || !this.location.hasOwnProperty( 'start' ) || !this.location.hasOwnProperty( 'end' ) ) {
+		// If this.$container has no `direction` css property set, set it to ltr
 		return ext.visualEditorPlus.ui.InlineTextInspector.super.prototype.computePosition.call( this );
 	}
+	if ( !this.$container.css( 'direction' ) ) {
+		this.$container.css( 'direction', 'ltr' );
+	}
 
-	boundary = this.getEditorBoundary();
+	const boundary = this.getEditorBoundary();
 	desiredPosition = this.getDesiredPosition();
 
-	desiredPosition = desiredPosition[this.getPosition()];
-	if ( desiredPosition.x < boundary.left + 20  ) {
+	desiredPosition = desiredPosition[ this.getPosition() ];
+	if ( desiredPosition.x < boundary.left + 20 ) {
 		desiredPosition.x = boundary.left + 20;
 	}
-	var width = this.width || 300;
+	const width = this.width || 300;
 	if ( desiredPosition.x > boundary.right - width ) {
 		desiredPosition.x = boundary.right - width;
 	}
@@ -196,23 +203,24 @@ ext.visualEditorPlus.ui.InlineTextInspector.prototype.computePosition = function
 		left: desiredPosition.x - 20
 	} );
 
-	var pos = ext.visualEditorPlus.ui.InlineTextInspector.super.prototype.computePosition.call( this );
+	const pos = ext.visualEditorPlus.ui.InlineTextInspector.super.prototype.computePosition.call( this );
 	pos.left -= 20;
 	return pos;
 };
 
 ext.visualEditorPlus.ui.InlineTextInspector.prototype.toggle = function ( show ) {
-	var i;
+	let i;
 	ext.visualEditorPlus.ui.InlineTextInspector.parent.prototype.toggle.call( this, show );
-
 	if ( !show ) {
-		for( i = 0; i < this.inspectors.length; i++ ) {
-			this.inspectors[i].onClose();
+		for ( i = 0; i < this.inspectors.length; i++ ) {
+			this.inspectors[ i ].onClose();
 		}
 		if ( this.selection ) {
 			this.selection.collapseToEnd();
 		}
+		this.$element.addClass( 'oo-ui-element-hidden' );
 	}
+
 	if ( this.oldWidth ) {
 		this.width = this.oldWidth;
 	}

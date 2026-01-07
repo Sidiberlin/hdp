@@ -3,8 +3,8 @@
 namespace BlueSpice\Bookshelf;
 
 use MediaWiki\HookContainer\HookContainer;
-use Title;
-use TitleFactory;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\ILoadBalancer;
 
@@ -87,7 +87,8 @@ class ChapterUpdater {
 					'chapter_number' => $chapter->getNumber(),
 					'chapter_type' => $chapter->getType(),
 					'chapter_book_id' => $bookId
-				]
+				],
+				__METHOD__
 			);
 
 			if ( !$res ) {

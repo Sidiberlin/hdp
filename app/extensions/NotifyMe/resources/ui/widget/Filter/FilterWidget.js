@@ -23,9 +23,9 @@ ext.notifyme.ui.widget.FilterWidget.prototype.updateContent = function () {
 		.attr( 'tabindex', 0 );
 
 	for ( const filter in this.filterData ) {
-		var $listItem,
+		let $listItem;
 
-		 filterType = this.filterData[ filter ].type;
+		const filterType = this.filterData[ filter ].type;
 
 		if ( !this.filterData[ filter ].hasOwnProperty( 'items' ) ) {
 			$listItem = this.generateListItem( this.filterData[ filter ], filterType );
@@ -48,8 +48,8 @@ ext.notifyme.ui.widget.FilterWidget.prototype.updateContent = function () {
 
 			// As soon as we should not insert "<ul>" directly as child of "<ul>" (violates WCAG)
 			// Then at first wrap it into "<li>"
-			const $subListWrapper = $( '<li>' ).addClass( 'notifications-ui-widget-FilterWidget-sublist-wrapper' ),
-			 $subList = $( '<ul>' ).addClass( 'notifications-ui-widget-FilterWidget-sublist' );
+			const $subListWrapper = $( '<li>' ).addClass( 'notifications-ui-widget-FilterWidget-sublist-wrapper' );
+			const $subList = $( '<ul>' ).addClass( 'notifications-ui-widget-FilterWidget-sublist' );
 
 			for ( const item in this.filterData[ filter ].items ) {
 				const $subListItem = this.generateListItem( this.filterData[ filter ].items[ item ], filterType );
@@ -81,9 +81,9 @@ ext.notifyme.ui.widget.FilterWidget.prototype.updateContent = function () {
 
 	// Consider selecting necessary filter option using keyboard, with "Enter"
 	$( document ).on( 'keyup', '.notifications-ui-widget-FilterWidget-item', ( e ) => {
-		let $target = $( e.target ),
+		const $target = $( e.target );
 
-		 $actualItem;
+		let $actualItem;
 
 		if ( $target.hasClass( 'notifications-ui-widget-FilterWidget-item' ) ) {
 			$actualItem = $target;
@@ -113,21 +113,22 @@ ext.notifyme.ui.widget.FilterWidget.prototype.updateContent = function () {
  * @private
  * @param {Object} item
  * @param {string} filterType
+ * @return {HTMLElement}
  */
 ext.notifyme.ui.widget.FilterWidget.prototype.generateListItem = function ( item, filterType ) {
 	const $listItem = $( '<li>' ).addClass( 'notifications-ui-widget-FilterWidget-item' )
-			.attr( 'tabindex', 0 )
-			.attr(
-				'aria-label',
-				mw.message( 'notifyme-notification-center-filter-item-aria-label', item.label ).text()
-			),
+		.attr( 'tabindex', 0 )
+		.attr(
+			'aria-label',
+			mw.message( 'notifyme-notification-center-filter-item-aria-label', item.label ).text()
+		);
 
-	 $itemLabel = $( '<span>' )
-			.addClass( 'notifications-ui-widget-FilterWidget-item-label' )
-			.html( item.label ),
-	 $itemCount = $( '<span>' )
-			.addClass( 'notifications-ui-widget-FilterWidget-item-count' )
-			.html( item.count );
+	const $itemLabel = $( '<span>' )
+		.addClass( 'notifications-ui-widget-FilterWidget-item-label' )
+		.html( item.label );
+	const $itemCount = $( '<span>' )
+		.addClass( 'notifications-ui-widget-FilterWidget-item-count' )
+		.html( item.count );
 
 	$listItem.append(
 		$itemLabel, $itemCount
@@ -149,13 +150,14 @@ ext.notifyme.ui.widget.FilterWidget.prototype.generateListItem = function ( item
 /**
  * @private
  * @param {Object} item
+ * @return {HTMLElement}
  */
 ext.notifyme.ui.widget.FilterWidget.prototype.generateSublistTitle = function ( item ) {
-	const $sublistTitle = $( '<li>' ).addClass( 'notifications-ui-widget-FilterWidget-sublist-title' ),
+	const $sublistTitle = $( '<li>' ).addClass( 'notifications-ui-widget-FilterWidget-sublist-title' );
 
-	 $itemLabel = $( '<span>' )
-			.addClass( 'notifications-ui-widget-FilterWidget-item-label' )
-			.html( item.label );
+	const $itemLabel = $( '<span>' )
+		.addClass( 'notifications-ui-widget-FilterWidget-item-label' )
+		.html( item.label );
 
 	$sublistTitle.append( $itemLabel );
 

@@ -2,10 +2,11 @@
 
 namespace SMW\MediaWiki\Api;
 
-use ApiBase;
-use SMW\Services\ServicesFactory as ApplicationFactory;
+use MediaWiki\Api\ApiBase;
 use SMW\DIWikiPage;
 use SMW\MediaWiki\Specials\Browse\HtmlBuilder;
+use SMW\Services\ServicesFactory as ApplicationFactory;
+use Wikimedia\ParamValidator\ParamValidator;
 
 /**
  * Browse a subject api module
@@ -18,7 +19,7 @@ use SMW\MediaWiki\Specials\Browse\HtmlBuilder;
  *
  * @ingroup Api
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 1.9
  *
  * @author mwjames
@@ -36,7 +37,6 @@ class BrowseBySubject extends ApiBase {
 	 * @see ApiBase::execute
 	 */
 	public function execute() {
-
 		$params = $this->extractRequestParams();
 
 		if ( isset( $params['type'] ) && $params['type'] === 'html' ) {
@@ -53,7 +53,6 @@ class BrowseBySubject extends ApiBase {
 	}
 
 	protected function buildHTML( $params ) {
-
 		$subject = new DIWikiPage(
 			$params['subject'],
 			$params['ns'],
@@ -74,7 +73,6 @@ class BrowseBySubject extends ApiBase {
 	}
 
 	protected function doSerialize( $params ) {
-
 		$applicationFactory = ApplicationFactory::getInstance();
 
 		$title = $applicationFactory->newTitleFactory()->newFromText(
@@ -87,13 +85,7 @@ class BrowseBySubject extends ApiBase {
 		try {
 			$title = $deepRedirectTargetResolver->findRedirectTargetFor( $title );
 		} catch ( \Exception $e ) {
-
-			// 1.29+
-			if ( method_exists( $this, 'dieWithError' ) ) {
-				$this->dieWithError( [ 'smw-redirect-target-unresolvable', $e->getMessage() ] );
-			} else {
-				$this->dieUsage( $e->getMessage(), 'redirect-target-unresolvable' );
-			}
+			$this->dieWithError( [ 'smw-redirect-target-unresolvable', $e->getMessage() ] );
 		}
 
 		$dataItem = new DIWikiPage(
@@ -113,7 +105,6 @@ class BrowseBySubject extends ApiBase {
 	}
 
 	protected function doFormat( $serialized ) {
-
 		$this->addIndexTags( $serialized );
 
 		if ( isset( $serialized['sobj'] ) ) {
@@ -129,7 +120,6 @@ class BrowseBySubject extends ApiBase {
 	}
 
 	protected function addIndexTags( &$serialized ) {
-
 		if ( isset( $serialized['data'] ) && is_array( $serialized['data'] ) ) {
 
 			$this->getResult()->setIndexedTagName( $serialized['data'], 'property' );
@@ -151,39 +141,39 @@ class BrowseBySubject extends ApiBase {
 	public function getAllowedParams() {
 		return [
 			'subject' => [
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_ISMULTI => false,
-				ApiBase::PARAM_REQUIRED => true,
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_ISMULTI => false,
+				ParamValidator::PARAM_REQUIRED => true,
 			],
 			'ns' => [
-				ApiBase::PARAM_TYPE => 'integer',
-				ApiBase::PARAM_ISMULTI => false,
-				ApiBase::PARAM_DFLT => 0,
-				ApiBase::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_TYPE => 'integer',
+				ParamValidator::PARAM_ISMULTI => false,
+				ParamValidator::PARAM_DEFAULT => 0,
+				ParamValidator::PARAM_REQUIRED => false,
 			],
 			'iw' => [
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_ISMULTI => false,
-				ApiBase::PARAM_DFLT => '',
-				ApiBase::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_ISMULTI => false,
+				ParamValidator::PARAM_DEFAULT => '',
+				ParamValidator::PARAM_REQUIRED => false,
 			],
 			'subobject' => [
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_ISMULTI => false,
-				ApiBase::PARAM_DFLT => '',
-				ApiBase::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_ISMULTI => false,
+				ParamValidator::PARAM_DEFAULT => '',
+				ParamValidator::PARAM_REQUIRED => false,
 			],
 			'type' => [
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_ISMULTI => false,
-				ApiBase::PARAM_DFLT => '',
-				ApiBase::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_ISMULTI => false,
+				ParamValidator::PARAM_DEFAULT => '',
+				ParamValidator::PARAM_REQUIRED => false,
 			],
 			'options' => [
-				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_ISMULTI => false,
-				ApiBase::PARAM_DFLT => '',
-				ApiBase::PARAM_REQUIRED => false,
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_ISMULTI => false,
+				ParamValidator::PARAM_DEFAULT => '',
+				ParamValidator::PARAM_REQUIRED => false,
 			]
 		];
 	}

@@ -6,9 +6,9 @@
 	},
 	"getdata": "Земи податоци",
 	"externaldata-desc": "Овозможува добивање структурирани податоци од надворешни URL-адреси, бази на податоци и други извори",
-	"externaldata-smw-needed": "Грешка: Мора да биде воспоставен Семантички МедијаВики за да може да се повика {{#store_external_table:}}.",
 	"externaldata-no-param-specified": "Грешка: Го немате укажано параметарот „$1“.",
 	"externaldata-param-type-error": "Грешка: Параметарот $1 мора да биде од видот $2.",
+	"externaldata-processing-exception": "Се јави исклучок при работата на предобработувачот или пообработувачот: $1",
 	"externaldata-php-library-missing": "Грешка: Недостасува PHP-библиотеката $1, потребна за употреба на $2.",
 	"external-data-no-suitable-connector": "Грешка: Нема зададено погоден извор на податоци за ова барање за надворешни податоци",
 	"externaldata-throttled": "Повикувањата на $1 се ограничени до {{#time:c|@$2}}.",
@@ -45,9 +45,10 @@
 	"externaldata-url-unknown-error": "Непозната грешка при добивањето на податоците од URL-то $1.",
 	"externaldata-url-not-allowed": "URL-то $1 не е дозволено на ова вики.",
 	"externaldata-caught-exception-soap": "Го добив исклучокот $1 при создавањето на SOAP-клиентот.",
-	"externaldata-parsing-html-failed": "Не можав да го расчленам HTML.",
+	"externaldata-parsing-html-failed": "Не можев да го расчленам HTML:\n $1",
 	"externaldata-caught-exception-parsing-html": "Добив исклучок при расчленувањето на HTML. Пораката гласи &quot;$1&quot;.",
 	"externaldata-error-converting-css-to-xpath": "Добив грешка при претворањето на CSS-изборникот $1 во XPath:\n$2",
+	"externaldata-jsonpath-error": "Неважечки JSONPath-$1",
 	"externaldata-missing-library": "Недостасува библиотеката $1, потребна за употреба на расчленувачката функција „$2“ или Lua-функцијата <code>$3</code>.",
 	"externaldata-undefined-file": "Податотеката $1 не е зададена.",
 	"externaldata-missing-file": "Податотеката $1 недостасува.",
@@ -65,5 +66,5 @@
 	"externaldata-no-local-variable": "Грешка: нема укажано месна променлива „$1“.",
 	"externaldata-no-template": "Грешка: нема укажано параметар.",
 	"externaldata-no-loop-body": "Грешка: нема зададено тело на јамката како прв или втор параметар.",
-	"externaldata-getdata-badurl": "Мора да укажете име на страница во URL-адресата;\nТаа треба да гласи нешто како „{{#Special:GetData}}/<page name>“."
+	"externaldata-getdata-badurl": "Мора да укажете име на страница во URL-адресата. URL-адресата треба да гласи нешто како „{{#Special:GetData}}/Page_name“."
 }

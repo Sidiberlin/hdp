@@ -2,9 +2,9 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface\Component;
 
-use Message;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\ICollapsibleCard;
-use RawMessage;
 
 class SimpleCollapsibleCard extends ComponentBase implements ICollapsibleCard {
 

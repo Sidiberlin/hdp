@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"沈澄心"
+		]
+	},
+	"tabletools-desc": "为内容表格添加额外功能",
+	"tabletools-ve-plugin-table-style-sticky": "固定标头"
+}

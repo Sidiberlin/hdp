@@ -1,9 +1,37 @@
 {
 	"@metadata": {
 		"authors": [
-			"Hanna Tardos"
+			"Hanna Tardos",
+			"Krisztina"
 		]
 	},
 	"bs-categorymanager-rename-category": "Kategória átnevezése",
-	"bs-categorymanager-rename-category-new-name": "Új kategórianév:"
+	"bs-categorymanager-rename-category-new-name": "Új kategórianév:",
+	"bluespicecategorymanager": "Kategória kezelő",
+	"bluespicecategorymanager-desc": "Vizuális eszköz a kategóriák kezeléséhez",
+	"action-categorymanager-viewspecialpage": "kategória kezelő megtekintése",
+	"bs-categorymanager-text": "Kategóriák",
+	"bs-categorymanager-label": "Kategória kezelő",
+	"bs-categorymanager-dlg-new-title": "Kategória létrehozása",
+	"bs-categorymanager-removecategoryconfirm-text": "Biztos, hogy törölni akarod ezt a kategóriát?",
+	"bs-categorymanager-removecategoryconfirm-title": "Kategória eltávolítása",
+	"bs-categorymanager-addcategory-dialog-error-title": "A kategória létrehozása sikertelen",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-title": "A kategória már létezik",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Kérjük, próbálj meg egy másik kategórianevet",
+	"right-categorymanager-viewspecialpage": "Hozzáférés a [[Special:BlueSpiceCategoryManager]] speciális laphoz",
+	"bs-categorymanager-collection-type-categorizedpages": "Kategória hozzárendelés",
+	"bs-categorymanager-collection-var-namespacename": "Névtér",
+	"bs-categorymanager-collection-var-categorizedpages": "Kategóriákat tartalmazó lapok",
+	"bs-categorymanager-collection-var-uncategorizedpages": "Kategóriák nélküli lapok",
+	"bs-categorymanager-statistics-report-category-pages": "Kategóriákba tartozó lapok",
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "Lapok száma",
+	"bs-categorymanager-dialog-action-done-label": "Kész",
+	"bs-categorymanager-removecategory-confirm": "A $1 kategória törölve",
+	"bs-categorymanager-dialog-create-category-placeholder": "Új kategória hozzáadása",
+	"bs-categorymanager-create-new-category-label": "Új kategória",
+	"bs-configmanager-tool-create-category-label": "Kategória létrehozása",
+	"bs-categorymanager-movecategory-confirm": "A(z) $1 kategória áthelyezve",
+	"bs-categorymanager-category-item-edit-label": "Szerkesztés",
+	"bs-categorymanager-category-item-view-label": "Kategórialap megtekintése",
+	"bs-categorymanager-category-item-delete-label": "Törlés"
 }

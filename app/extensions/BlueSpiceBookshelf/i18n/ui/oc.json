@@ -5,14 +5,13 @@
 			"Nicolas Eynaud"
 		]
 	},
-	"bs-bookshelfui-type-category": "Totas las paginas d’una categoria",
 	"bs-bookshelfui-widget-editor-link-text": "Modificar aquest libre",
 	"bs-bookshelfui-manager-title": "Títol",
 	"bs-bookshelfui-manager-deletingprogress-title": "En cors de supression...",
 	"bs-bookshelfui-manager-deletionsuccess-title": "Supression capitada !",
-	"bs-bookshelfui-dlg-choosewikipage-title": "Wikipagina",
 	"bs-bookshelfui-dlg-choosewikipage-cbxArticleLabel": "Wikipagina",
 	"bs-bookshelfui-dlg-choosecategory-label": "Categoria",
+	"bs-bookshelfui-type-category": "Totas las paginas d’una categoria",
 	"bs-bookshelfui-bookmetatag-author1": "Autor 1",
 	"bs-bookshelfui-bookmetatag-author2": "Autor 2",
 	"bs-bookshelfui-bookmetatag-version": "Version",

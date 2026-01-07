@@ -18,8 +18,12 @@ interface ISkinLayout {
 	public function enableRecursivePartials(): bool;
 
 	/**
-	 *
 	 * @return array
 	 */
 	public function getSkinStructureElements(): array;
+
+	/**
+	 * @return array
+	 */
+	public function getStructureElementNames(): array;
 }

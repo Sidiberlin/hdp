@@ -1,14 +1,14 @@
 {
 	"name": "VisualEditorPlus",
-	"version": "1.1.2",
+	"version": "2.1.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[http://www.hallowelt.com Hallo Welt! GmbH]"
 	],
-	"url": "http://www.hallowelt.com",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:VisualEditorPlus",
 	"descriptionmsg": "visualeditorplus-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"attributes": {
 		"VisualEditor": {
@@ -60,7 +60,8 @@
 				"ext.visualEditorPlus/ui/BackTickCodeSequence.js",
 				"ext.visualEditorPlus/ui/TildeStrikeThroughSequence.js",
 				"ext.visualEditorPlus/ui/UnderlineItalicSequence.js",
-				"ext.visualEditorPlus.replacementSequences.js"
+				"ext.visualEditorPlus.replacementSequences.js",
+				"ext.visualEditorPlus.updateVEToolbar.js"
 			],
 			"dependencies": [
 				"ext.visualEditor.core"

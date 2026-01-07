@@ -2,11 +2,12 @@
 
 namespace MediaWiki\Extension\NotifyMe\MediaWiki\Hook;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Hook\MediaWikiServicesHook;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\Hook\ContentHandlerDefaultModelForHook;
 use MediaWiki\Revision\SlotRoleRegistry;
-use Title;
+use MediaWiki\Title\Title;
 
 class SetMailContentModel implements ContentHandlerDefaultModelForHook, MediaWikiServicesHook {
 	/**
@@ -36,7 +37,7 @@ class SetMailContentModel implements ContentHandlerDefaultModelForHook, MediaWik
 			) {
 				if ( !$registry->isDefinedRole( 'mail_template_meta' ) ) {
 					$options = [ 'display' => 'none' ];
-					if ( \RequestContext::getMain()->getRequest()->getBool( 'debug' ) ) {
+					if ( RequestContext::getMain()->getRequest()->getBool( 'debug' ) ) {
 						$options['display'] = 'section';
 					}
 					$registry->defineRoleWithModel( 'mail_template_meta', CONTENT_MODEL_JSON, $options );

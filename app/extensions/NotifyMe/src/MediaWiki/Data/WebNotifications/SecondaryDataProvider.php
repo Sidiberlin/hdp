@@ -41,6 +41,11 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 	private $processedCount = 0;
 
 	/**
+	 * @var int
+	 */
+	private $itemsCount = 0;
+
+	/**
 	 * @param NotificationStore $notificationStore
 	 * @param NotificationSerializer $serializer
 	 * @param UserIdentity $forUser
@@ -84,7 +89,7 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 			$this->addToOutput( $notifications, $output );
 		}
 
-		return [ $output, $this->processedCount ];
+		return [ $output, $this->itemsCount, $this->processedCount ];
 	}
 
 	/**
@@ -96,6 +101,8 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 		if ( $this->grouping ) {
 			$grouper = new Grouper( $notifications );
 			$grouped = $grouper->group();
+
+			$this->itemsCount = count( $grouped );
 
 			foreach ( $grouped as $notification ) {
 				try {
@@ -125,6 +132,8 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 				}
 			}
 		} else {
+			$this->itemsCount = count( $notifications );
+
 			foreach ( $notifications as $notification ) {
 				if ( count( $output ) === $this->limit ) {
 					return;

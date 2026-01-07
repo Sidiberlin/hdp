@@ -3,8 +3,8 @@
 namespace BlueSpice\Bookshelf\BooksOverviewActions;
 
 use BlueSpice\Bookshelf\IBooksOverviewAction;
-use Message;
-use Title;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 
 class View implements IBooksOverviewAction {
 

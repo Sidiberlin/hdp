@@ -2,15 +2,16 @@
 
 namespace SMW\MediaWiki\Specials;
 
-use SMW\Services\ServicesFactory as ApplicationFactory;
+use MediaWiki\Html\Html;
+use MediaWiki\Skin\SkinComponentUtils;
+use MediaWiki\SpecialPage\SpecialPage;
+use SMW\Localizer\Message;
 use SMW\MediaWiki\Specials\PropertyLabelSimilarity\ContentsBuilder;
+use SMW\Services\ServicesFactory as ApplicationFactory;
 use SMW\SQLStore\Lookup\PropertyLabelSimilarityLookup;
-use SMW\Message;
-use SpecialPage;
-use Html;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.5
  *
  * @author mwjames
@@ -28,10 +29,11 @@ class SpecialPropertyLabelSimilarity extends SpecialPage {
 	 * @see SpecialPage::execute
 	 */
 	public function execute( $query ) {
-
 		$this->setHeaders();
 		$output = $this->getOutput();
 		$webRequest = $this->getRequest();
+
+		$output->addModuleStyles( [ 'ext.smw.styles' ] );
 
 		$applicationFactory = ApplicationFactory::getInstance();
 		$store = $applicationFactory->getStore( '\SMW\SQLStore\SQLStore' );
@@ -86,17 +88,10 @@ class SpecialPropertyLabelSimilarity extends SpecialPage {
 	 * @see SpecialPage::getGroupName
 	 */
 	protected function getGroupName() {
-
-		if ( version_compare( MW_VERSION, '1.33', '<' ) ) {
-			return 'smw_group';
-		}
-
-		// #3711, MW 1.33+
 		return 'smw_group/properties-concepts-types';
 	}
 
 	private static function makeSpecialPageBreadcrumbLink( $query = [] ) {
-
 		return Html::rawElement(
 			'div',
 			[
@@ -110,7 +105,7 @@ class SpecialPropertyLabelSimilarity extends SpecialPage {
 			) . Html::rawElement(
 				'a',
 				[
-					'href' => \SpecialPage::getTitleFor( 'Specialpages' )->getFullURL( $query ) . '#Semantic_MediaWiki'
+					'href' => SkinComponentUtils::makeSpecialUrl( 'Specialpages', $query ) . '#Semantic_MediaWiki'
 				],
 				Message::get( 'specialpages', Message::TEXT, Message::USER_LANGUAGE )
 		) );

@@ -2,13 +2,13 @@
 
 namespace BlueSpice\Permission\Lockdown;
 
-use Config;
-use IContextSource;
+use IDBAccessObject;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use MediaWiki\User\UserGroupManager;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\User\User;
 use MessageLocalizer;
-use User;
 
 abstract class Module implements IModule, MessageLocalizer {
 
@@ -104,9 +104,9 @@ abstract class Module implements IModule, MessageLocalizer {
 		if ( isset( static::$userGroups[$user->getId()] ) ) {
 			return static::$userGroups[$user->getId()];
 		}
-		static::$userGroups[$user->getId()] = MediaWikiServices::getInstance()
-			->getUserGroupManager()
-			->getUserEffectiveGroups( $user, UserGroupManager::READ_NORMAL, true );
+		$userGroupManager = $this->services->getUserGroupManager();
+		static::$userGroups[$user->getId()] = $userGroupManager
+			->getUserEffectiveGroups( $user, IDBAccessObject::READ_NORMAL, true );
 		return static::$userGroups[$user->getId()];
 	}
 

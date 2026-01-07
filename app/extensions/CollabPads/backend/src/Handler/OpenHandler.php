@@ -152,7 +152,7 @@ class OpenHandler {
 		$pageName = $docNameParts[2];
 
 		$url = $this->serverConfigs['baseurl'] . $scriptPath . "/rest.php/collabpads/acl/" .
-			str_replace( "/", "|",  $pageName ) . '/' . $accessToken;
+			str_replace( "/", "|", $pageName ) . '/' . $accessToken;
 		$this->logger->info( "Calling: {$url}" );
 
 		try {
@@ -261,8 +261,10 @@ class OpenHandler {
 		$authorConnections = $this->sessionDAO->isAuthorInSession( $config['sessionId'], $config['authorId'] );
 
 		if ( !$authorConnections ) {
-			$this->sessionDAO->setNewAuthorInSession( $config['sessionId'], $config['authorId'],
-				$config['user']['userName'], $this->generateRandomColor(), true, $config['connectionId'] );
+			$this->sessionDAO->setNewAuthorInSession(
+				$config['sessionId'], $config['authorId'],
+				$config['user']['userName'], $config['user']['realName'],
+				$this->generateRandomColor(), true, $config['connectionId'] );
 		} else {
 			$this->sessionDAO->activateAuthor( $config['sessionId'], $config['authorId'], $config['connectionId'] );
 		}

@@ -28,12 +28,11 @@
  */
 namespace Lingo;
 
+use BagOStuff;
 use DOMDocument;
 use DOMXPath;
 use ObjectCache;
 use Parser;
-use StubObject;
-use Title;
 use Wikimedia\AtEase\AtEase;
 
 /**
@@ -47,6 +46,8 @@ use Wikimedia\AtEase\AtEase;
 class LingoParser {
 
 	private const WORD_OFFSET = 1;
+
+	private const CACHE_LIFETIME = 60 * 60 * 24 * 30; // 30 days
 
 	/** @var Tree|null */
 	private $mLingoTree = null;
@@ -70,10 +71,7 @@ class LingoParser {
 		$this->regex = '/' . preg_quote( Parser::MARKER_PREFIX, '/' ) . '.*?' . preg_quote( Parser::MARKER_SUFFIX, '/' ) . '|[\p{L}\p{N}]+|[^\p{L}\p{N}]/u';
 	}
 
-	/**
-	 * @param Parser $mwParser
-	 */
-	public function parse( $mwParser ) {
+	public function parse( Parser $mwParser ) {
 		if ( $this->shouldParse( $mwParser ) ) {
 			$this->realParse( $mwParser );
 		}
@@ -116,16 +114,15 @@ class LingoParser {
 	 *
 	 * @return Tree a Lingo\Tree mapping terms (keys) to descriptions (values)
 	 */
-	private function getLingoTree() {
+	private function getLingoTree( array $searchTerms ) {
+		$useCache = $this->getBackend()->useCache();
+
 		// build glossary array only once per request
 		if ( !$this->mLingoTree ) {
 			// use cache if enabled
-			if ( $this->getBackend()->useCache() ) {
+			if ( $useCache ) {
 				// Try cache first
-				global $wgexLingoCacheType;
-				$cache = ( $wgexLingoCacheType !== null )
-					? ObjectCache::getInstance( $wgexLingoCacheType )
-					: ObjectCache::getLocalClusterInstance();
+				$cache = $this->getCacheInstance();
 				$cachekey = $this->getCacheKey();
 				$cachedLingoTree = $cache->get( $cachekey );
 
@@ -137,17 +134,18 @@ class LingoParser {
 					wfDebug( "Re-cached lingo tree.\n" );
 				} else {
 					wfDebug( "Cache miss: Lingo tree not found in cache.\n" );
-					$this->mLingoTree = $this->buildLingo();
+					$this->mLingoTree = $this->buildLingo( $searchTerms );
+
+					// Keep for one month
+					// Limiting the cache validity will allow to purge stale cache
+					// entries inserted by older versions after one month
+					$cache->set( $cachekey, $this->mLingoTree, self::CACHE_LIFETIME );
+
 					wfDebug( "Cached lingo tree.\n" );
 				}
-
-				// Keep for one month
-				// Limiting the cache validity will allow to purge stale cache
-				// entries inserted by older versions after one month
-				$cache->set( $cachekey, $this->mLingoTree, 60 * 60 * 24 * 30 );
 			} else {
 				wfDebug( "Caching of lingo tree disabled.\n" );
-				$this->mLingoTree = $this->buildLingo();
+				$this->mLingoTree = $this->buildLingo( $searchTerms );
 			}
 		}
 
@@ -157,9 +155,10 @@ class LingoParser {
 	/**
 	 * @return Tree
 	 */
-	private function buildLingo() {
+	private function buildLingo( array $searchTerms ) {
 		$lingoTree = new Tree();
-		$backend = &$this->mLingoBackend;
+		$backend = $this->mLingoBackend;
+		$backend->setSearchTerms( $searchTerms );
 
 		// assemble the result array
 		while ( $elementData = $backend->next() ) {
@@ -173,10 +172,8 @@ class LingoParser {
 	 * Parses the given text and enriches applicable terms
 	 *
 	 * This method currently only recognizes terms consisting of max one word
-	 *
-	 * @param Parser $parser
 	 */
-	private function realParse( $parser ) {
+	private function realParse( Parser $parser ): void {
 		// Parse text identical to options used in includes/api/ApiParse.php
 		$params = $this->mApiParams;
 		$text = $params === null ? $parser->getOutput()->getText() : $parser->getOutput()->getText( [
@@ -189,34 +186,13 @@ class LingoParser {
 		if ( $text === null || $text === '' ) {
 			return;
 		}
-
-		// Get array of terms
-		$glossary = $this->getLingoTree();
-
-		if ( $glossary == null ) {
-			return;
-		}
-
 		// Parse HTML from page
 
-		// TODO: Remove call to \MediaWiki\suppressWarnings() for MW 1.34+.
-		// \Wikimedia\AtEase\AtEase::suppressWarnings() is available from MW 1.34.
-		if ( method_exists( AtEase::class, 'suppressWarnings' ) ) {
-			\Wikimedia\AtEase\AtEase::suppressWarnings();
-		} else {
-			\MediaWiki\suppressWarnings();
-		}
-
+		// Suppress warnings during DOMDocument loading
+		AtEase::suppressWarnings();
 		$doc = new DOMDocument( '1.0', 'utf-8' );
 		$doc->loadHTML( '<html><head><meta http-equiv="content-type" content="charset=utf-8"/></head><body>' . $text . '</body></html>' );
-
-		// TODO: Remove call to \MediaWiki\restoreWarnings() for MW 1.34+.
-		// \Wikimedia\AtEase\AtEase::restoreWarnings() is available from MW 1.34.
-		if ( method_exists( AtEase::class, 'suppressWarnings' ) ) {
-			\Wikimedia\AtEase\AtEase::restoreWarnings();
-		} else {
-			\MediaWiki\restoreWarnings();
-		}
+		AtEase::restoreWarnings();
 
 		// Find all text in HTML.
 		$xpath = new DOMXPath( $doc );
@@ -224,18 +200,11 @@ class LingoParser {
 			"//*[not(ancestor-or-self::*[@class='noglossary'] or ancestor-or-self::a)][text()!=' ']/text()"
 		);
 
-		// Iterate all HTML text matches
-		$numberOfTextElements = $textElements->length;
+		// Collect all terms from text elements
+		$allTermsInText = [];
 
-		$definitions = [];
-
-		for ( $textElementIndex = 0; $textElementIndex < $numberOfTextElements; $textElementIndex++ ) {
-			$textElement = $textElements->item( $textElementIndex );
-
-			if ( strlen( $textElement->nodeValue ) < $glossary->getMinTermLength() ) {
-				continue;
-			}
-
+		// Iterate all HTML text matches to collect terms
+		foreach ( $textElements as $textElement ) {
 			$matches = [];
 			preg_match_all(
 				$this->regex,
@@ -245,6 +214,45 @@ class LingoParser {
 			);
 
 			if ( count( $matches ) === 0 || count( $matches[ 0 ] ) === 0 ) {
+				continue;
+			}
+
+			$termsInText = array_map( static fn ( $match ) => $match[0], $matches[0] );
+			$allTermsInText = array_merge( $allTermsInText, $termsInText );
+		}
+
+		// Remove duplicates and empty strings
+		$allTermsInText = array_unique(
+			array_filter(
+				array_map( 'trim', $allTermsInText ),
+				static fn ( $item ) => !empty( $item )
+			)
+		);
+
+		// Get array of terms once
+		$glossary = $this->getLingoTree( $allTermsInText );
+
+		if ( $glossary == null || count( $glossary->getTermList() ) === 0 ) {
+			return;
+		}
+
+		// Now iterate again to process each text element using the built glossary
+		$definitions = [];
+
+		foreach ( $textElements as $textElement ) {
+			$matches = [];
+			preg_match_all(
+				$this->regex,
+				$textElement->nodeValue,
+				$matches,
+				PREG_OFFSET_CAPTURE | PREG_PATTERN_ORDER
+			);
+
+			if ( count( $matches ) === 0 || count( $matches[ 0 ] ) === 0 ) {
+				continue;
+			}
+
+			if ( strlen( $textElement->nodeValue ) < $glossary->getMinTermLength() ) {
 				continue;
 			}
 
@@ -258,7 +266,7 @@ class LingoParser {
 
 			while ( $wordDescriptorIndex < $numberOfWordDescriptors ) {
 				/** @var \Lingo\Element $definition */
-				list( $skippedWords, $usedWords, $definition ) =
+				[ $skippedWords, $usedWords, $definition ] =
 					$glossary->findNextTerm( $wordDescriptors, $wordDescriptorIndex, $numberOfWordDescriptors );
 
 				if ( $usedWords > 0 ) { // found a term
@@ -280,11 +288,6 @@ class LingoParser {
 
 					$changedElem = true;
 				} else { // did not find any term, just use the rest of the text
-					// If we found no term now and no term before, there was no
-					// term in the whole element. Might as well not change the
-					// element at all.
-
-					// Only change element if found term before
 					if ( $changedElem === true ) {
 						$start = $wordDescriptors[ $wordDescriptorIndex ][ self::WORD_OFFSET ];
 
@@ -295,8 +298,6 @@ class LingoParser {
 							$textElement
 						);
 					}
-
-					// In principle superfluous, the loop would run out anyway. Might save a bit of time.
 					break;
 				}
 
@@ -323,17 +324,24 @@ class LingoParser {
 	 * @param Parser $parser
 	 */
 	private function loadModules( $parser ) {
-		global $wgOut;
+		global $wgOut, $wgexLingoWCAGStyle;
 
 		$parserOutput = $parser->getOutput();
 
+		$modules = [ 'ext.Lingo' ];
+		$moduleStyles = [ 'ext.Lingo.styles' ];
+
+		if ( $wgexLingoWCAGStyle ) {
+			$moduleStyles[] = 'ext.Lingo.WCAG.styles';
+		}
+
 		// load scripts
-		$parserOutput->addModules( [ 'ext.Lingo' ] );
-		$parserOutput->addModuleStyles( [ 'ext.Lingo.styles' ] );
+		$parserOutput->addModules( $modules );
+		$parserOutput->addModuleStyles( $moduleStyles );
 
 		if ( !$wgOut->isArticle() ) {
-			$wgOut->addModules( 'ext.Lingo' );
-			$wgOut->addModuleStyles( 'ext.Lingo.styles' );
+			$wgOut->addModules( $modules );
+			$wgOut->addModuleStyles( $moduleStyles );
 		}
 	}
 
@@ -377,18 +385,10 @@ class LingoParser {
 		$this->mApiParams = $params;
 	}
 
-	/**
-	 * @param Parser $parser
-	 * @return bool
-	 */
-	private function shouldParse( $parser ) {
+	private function shouldParse( Parser $parser ): bool {
 		global $wgexLingoUseNamespaces;
 
-		if ( $parser->getOutput() === null || !$parser->getOutput()->hasText() ) {
-			return false;
-		}
-
-		if ( !( $parser instanceof Parser || $parser instanceof StubObject ) ) {
+		if ( !$parser->getOutput() || !$parser->getOutput()->hasText() ) {
 			return false;
 		}
 
@@ -396,18 +396,14 @@ class LingoParser {
 			return false;
 		}
 
-		$title = $parser->getTitle();
+		$namespace = $parser->getTitle()->getNamespace();
+		return $wgexLingoUseNamespaces[$namespace] ?? true;
+	}
 
-		if ( !( $title instanceof Title ) ) {
-			return false;
-		}
-
-		$namespace = $title->getNamespace();
-
-		if ( isset( $wgexLingoUseNamespaces[ $namespace ] ) && $wgexLingoUseNamespaces[ $namespace ] === false ) {
-			return false;
-		}
-
-		return true;
+	private function getCacheInstance(): BagOStuff {
+		global $wgexLingoCacheType;
+		return ( $wgexLingoCacheType !== null )
+			? ObjectCache::getInstance( $wgexLingoCacheType )
+			: ObjectCache::getLocalClusterInstance();
 	}
 }

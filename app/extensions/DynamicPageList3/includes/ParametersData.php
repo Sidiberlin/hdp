@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\DynamicPageList3;
 
-use MWException;
+use UnexpectedValueException;
 
 class ParametersData {
 	/**
@@ -104,7 +104,6 @@ class ParametersData {
 			'lastmodifiedby',
 			'linksfrom',
 			'linksto',
-			'linkstoexternal',
 			'listattr',
 			'minoredits',
 			'modifiedby',
@@ -134,6 +133,9 @@ class ParametersData {
 			'categoryregexp',
 			'firstrevisionsince',
 			'lastrevisionbefore',
+			'linkstoexternal',
+			'linkstoexternaldomain',
+			'linkstoexternalpath',
 			'maxrevisions',
 			'minrevisions',
 			'notcategorymatch',
@@ -147,7 +149,10 @@ class ParametersData {
 			'deleterules',
 			'goal',
 			'updaterules'
-		]
+		],
+		// Should never be used; likely broken or will cause exceptions
+		5 => [
+		],
 	];
 
 	/**
@@ -155,7 +160,9 @@ class ParametersData {
 	 * A 'default' key indicates the default value for the parameter.
 	 * A 'pattern' key indicates a pattern for regular expressions (that the value must match).
 	 * A 'values' key is the set of possible values.
-	 * For some options (e.g. 'namespace'), possible values are not yet defined, but will be if necessary (for debugging).
+	 *
+	 * For some options (e.g. 'namespace'), possible values are not yet defined,
+	 * but will be if necessary (for debugging).
 	 *
 	 * @var array
 	 */
@@ -235,10 +242,12 @@ class ParametersData {
 		 * ...
 		 * [Special value] catX='' (empty string without quotes) means pseudo-categoy of Uncategorized pages
 		 * Means pages have to be in category (Cat11 OR (inclusive) Cat2 OR...) AND (Cat21 OR Cat22 OR...) AND...
-		 * If '+' prefixes the list of categories (e.g. category=+ Cat1 | Cat 2 ...), only these categories can be used as headings in the DPL. See	 'headingmode' param.
-		 * If '-' prefixes the list of categories (e.g. category=- Cat1 | Cat 2 ...), these categories will not appear as headings in the DPL. See	'headingmode' param.
+		 * If '+' prefixes the list of categories (e.g. category=+ Cat1 | Cat 2 ...), only these categories can
+		 *   be used as headings in the DPL. See 'headingmode' param.
+		 * If '-' prefixes the list of categories (e.g. category=- Cat1 | Cat 2 ...), these categories will not
+		 *   appear as headings in the DPL. See 'headingmode' param.
 		 * Magic words allowed.
-		 * @todo define 'category' options (retrieve list of categories from 'categorylinks' table?)
+		 * @TODO define 'category' options (retrieve list of categories from 'categorylinks' table?)
 		 */
 		'category' => [
 			'default' => null,
@@ -394,9 +403,11 @@ class ParametersData {
 		],
 
 		/**
-		 * Attributes for HTML list items (headings) at the heading level, depending on 'headingmode' (e.g. 'li' for ordered/unordered)
+		 * Attributes for HTML list items (headings) at the heading level, depending on 'headingmode'
+		 * e.g. 'li' for ordered/unordered
+		 *
 		 * Not yet applicable to 'headingmode=none | definition | H2 | H3 | H4'.
-		 * @todo Make 'hitemattr' param applicable to  'none', 'definition', 'H2', 'H3', 'H4' headingmodes.
+		 * @TODO Make 'hitemattr' param applicable to  'none', 'definition', 'H2', 'H3', 'H4' headingmodes.
 		 * Example: hitemattr= class="topmenuli" style="color: red;"
 		 */
 		'hitemattr' => [
@@ -404,9 +415,11 @@ class ParametersData {
 		],
 
 		/**
-		 * Attributes for the HTML list element at the heading/top level, depending on 'headingmode' (e.g. 'ol' for ordered, 'ul' for unordered, 'dl' for definition)
+		 * Attributes for the HTML list element at the heading/top level, depending on 'headingmode'
+		 * e.g. 'ol' for ordered, 'ul' for unordered, 'dl' for definition
+		 *
 		 * Not yet applicable to 'headingmode=none'.
-		 * @todo Make 'hlistattr' param applicable to  headingmode=none.
+		 * @TODO Make 'hlistattr' param applicable to  headingmode=none.
 		 * Example: hlistattr= class="topmenul" id="dmenu"
 		 */
 		'hlistattr' => [
@@ -416,15 +429,18 @@ class ParametersData {
 		/**
 		 * PAGE TRANSCLUSION: includepage=... or include=...
 		 * To include the whole page, use a wildcard:
-		 * includepage =*
-		 * To include sections labeled 'sec1' or 'sec2' or... from the page (see the doc of the LabeledSectionTransclusion extension for more info):
-		 * includepage = sec1,sec2,..
-		 * To include from the first occurrence of the heading 'heading1' (resp. 'heading2') until the next heading of the same or lower level. Note that this comparison is case insensitive. (See http://www.mediawiki.org/wiki/Extension:Labeled_Section_Transclusion#Transcluding_visual_headings.) :
-		 * includepage = #heading1,#heading2,....
+		 *   includepage =*
+		 * To include sections labeled 'sec1' or 'sec2' or... from the page
+		 *   See the doc of the LabeledSectionTransclusion extension for more info:
+		 *     includepage = sec1,sec2,..
+		 * To include from the first occurrence of the heading 'heading1' (resp. 'heading2')
+		 *   until the next heading of the same or lower level. Note that this comparison is case insensitive.
+		 *   See https://www.mediawiki.org/wiki/Extension:Labeled_Section_Transclusion#Transcluding_visual_headings:
+		 *     includepage = #heading1,#heading2,....
 		 * You can combine:
-		 * includepage= sec1,#heading1,...
+		 *   includepage= sec1,#heading1,...
 		 * To include nothing from the page (no transclusion), leave empty:
-		 * includepage =
+		 *   includepage =
 		 */
 
 		'includepage' => [
@@ -564,10 +580,36 @@ class ParametersData {
 			'set_criteria_found' => true
 		],
 		/**
-		 * this parameter restricts the output to articles which contain an external reference that conatins a certain pattern
-		 * Examples:   linkstoexternal= www.xyz.com|www.xyz2.com
+		 * Alias for `linkstoexternaldomain`.
+		 * To mimic old behaviour use `linkstoexternaldomain` together with `linkstoexternalpath`
 		 */
 		'linkstoexternal' => [
+			'default' => null,
+			'open_ref_conflict' => true,
+			'page_name_list' => true,
+			'page_name_must_exist' => false,
+			'set_criteria_found' => true
+		],
+		/**
+		 * This parameter restricts the output to articles which contain an external
+		 * domain reference that contains a certain pattern.
+		 *
+		 * Examples:   linkstoexternaldomain=www.xyz.com|www.xyz2.%
+		 */
+		'linkstoexternaldomain' => [
+			'default' => null,
+			'open_ref_conflict' => true,
+			'page_name_list' => true,
+			'page_name_must_exist' => false,
+			'set_criteria_found' => true
+		],
+		/**
+		 * This parameter restricts the output to articles which contain an external
+		 * path reference that contains a certain pattern.
+		 *
+		 * Examples:   linkstoexternalpath=/xyz/%|%/abc/%
+		 */
+		'linkstoexternalpath' => [
 			'default' => null,
 			'open_ref_conflict' => true,
 			'page_name_list' => true,
@@ -822,7 +864,9 @@ class ParametersData {
 		],
 		/**
 		 * 'ordermethod=param1,param2' means ordered by param1 first, then by param2.
-		 * @todo: add 'ordermethod=category,categoryadd' (for each category CAT, pages ordered by date when page was added to CAT).
+		 *
+		 * @TODO: add 'ordermethod=category,categoryadd'
+		 *   For each category CAT, pages ordered by date when page was added to CAT.
 		 */
 		'ordermethod' => [
 			'default' => [ 'none' ],
@@ -1012,7 +1056,9 @@ class ParametersData {
 
 		/**
 		 * Number of rows for output, default is 1
-		 * Note: a "row" is a group of lines for which the heading tags defined in listseparators/format will be repeated
+		 *
+		 * Note: a "row" is a group of lines for which the heading tags
+		 * defined in listseparators/format will be repeated.
 		 */
 		'rows' => [
 			'default' => 1,
@@ -1188,7 +1234,7 @@ class ParametersData {
 	 * @param int $level
 	 */
 	public function setRichness( $level ) {
-		$this->parameterRichness = intval( $level );
+		$this->parameterRichness = (int)$level;
 	}
 
 	/**
@@ -1256,7 +1302,7 @@ class ParametersData {
 			return null;
 		}
 
-		throw new MWException( __METHOD__ . ": Attempted to load a parameter that does not exist." );
+		throw new UnexpectedValueException( __METHOD__ . ': Attempted to load a parameter that does not exist.' );
 	}
 
 	/**
@@ -1274,7 +1320,7 @@ class ParametersData {
 			return false;
 		}
 
-		throw new MWException( __METHOD__ . ": Attempted to load a parameter that does not exist." );
+		throw new UnexpectedValueException( __METHOD__ . ': Attempted to load a parameter that does not exist.' );
 	}
 
 	/**
@@ -1292,7 +1338,7 @@ class ParametersData {
 			return false;
 		}
 
-		throw new MWException( __METHOD__ . ": Attempted to load a parameter that does not exist." );
+		throw new UnexpectedValueException( __METHOD__ . ': Attempted to load a parameter that does not exist.' );
 	}
 
 	/**
@@ -1310,7 +1356,7 @@ class ParametersData {
 			return false;
 		}
 
-		throw new MWException( __METHOD__ . ": Attempted to load a parameter that does not exist." );
+		throw new UnexpectedValueException( __METHOD__ . ': Attempted to load a parameter that does not exist.' );
 	}
 
 	/**
@@ -1328,7 +1374,7 @@ class ParametersData {
 			return false;
 		}
 
-		throw new MWException( __METHOD__ . ": Attempted to load a parameter that does not exist." );
+		throw new UnexpectedValueException( __METHOD__ . ': Attempted to load a parameter that does not exist.' );
 	}
 
 	/**
@@ -1346,7 +1392,7 @@ class ParametersData {
 			return false;
 		}
 
-		throw new MWException( __METHOD__ . ": Attempted to load a parameter that does not exist." );
+		throw new UnexpectedValueException( __METHOD__ . ': Attempted to load a parameter that does not exist.' );
 	}
 
 	/**
@@ -1364,7 +1410,7 @@ class ParametersData {
 			return false;
 		}
 
-		throw new MWException( __METHOD__ . ": Attempted to load a parameter that does not exist." );
+		throw new UnexpectedValueException( __METHOD__ . ': Attempted to load a parameter that does not exist.' );
 	}
 
 	/**
@@ -1382,6 +1428,6 @@ class ParametersData {
 			return false;
 		}
 
-		throw new MWException( __METHOD__ . ": Attempted to load a parameter that does not exist." );
+		throw new UnexpectedValueException( __METHOD__ . ': Attempted to load a parameter that does not exist.' );
 	}
 }

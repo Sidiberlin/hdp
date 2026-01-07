@@ -1,4 +1,4 @@
-( function( mw, $, bs ) {
+( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.aggregatedStatistics.filter' );
 
 	bs.aggregatedStatistics.filter.NamespaceMultiFilter = function ( cfg ) {
@@ -18,8 +18,8 @@
 
 		this.namespaceSelect.on( 'change', this.onFilter.bind( this ) );
 
-		var namespaceLayout = new OO.ui.FieldLayout( this.namespaceSelect, {
-			label: mw.message( "bs-statistics-aggregated-report-filter-namespaces" ).text(),
+		const namespaceLayout = new OO.ui.FieldLayout( this.namespaceSelect, {
+			label: mw.message( 'bs-statistics-aggregated-report-filter-namespaces' ).text(),
 			align: 'top'
 		} );
 		this.$element.append( namespaceLayout.$element );
@@ -35,9 +35,8 @@
 		};
 	};
 
-
 	bs.aggregatedStatistics.filter.NamespaceMultiFilter.prototype.clear = function () {
 		this.namespaceSelect.setValue( [] );
 	};
 
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

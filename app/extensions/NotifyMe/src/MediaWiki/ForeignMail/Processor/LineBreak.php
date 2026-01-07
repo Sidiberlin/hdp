@@ -86,10 +86,28 @@ class LineBreak implements IProcessor {
 	 * @return string
 	 */
 	private function fixWhitespaces( $line ) {
-		$res = preg_replace( '/\s+/', ' ', trim( $line ) );
-		// Put whitespace after each delimiter after text continues
-		return preg_replace(
-			'/([' . implode( '', static::DELIMITERS ) . '])([^<\s0-9])/', '$1 $2', $res
+		// Preserve quoted parts
+		$res = preg_replace_callback(
+			'/(".*?")/',
+			static function ( $matches ) {
+				return '####' . base64_encode( $matches[1] ) . '####';
+			},
+			$line
+		);
+		$res = preg_replace( '/\s+/', ' ', trim( $res ) );
+		// Add a space after delimiters if followed by an uppercase letter
+		$res = preg_replace(
+			'/([' . implode( '', static::DELIMITERS ) . '])(\p{Lu})/u',
+			'$1 $2',
+			$res
+		);
+
+		return preg_replace_callback(
+			'/####(.*?)####/',
+			static function ( $matches ) {
+				return base64_decode( $matches[1] );
+			},
+			$res
 		);
 	}
 }

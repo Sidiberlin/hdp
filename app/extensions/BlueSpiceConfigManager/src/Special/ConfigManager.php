@@ -2,82 +2,55 @@
 
 namespace BlueSpice\ConfigManager\Special;
 
-use BlueSpice\ConfigDefinition;
-use BlueSpice\Special\ManagerBase;
+use MediaWiki\Html\Html;
+use MediaWiki\Html\TemplateParser;
+use OOJSPlus\Special\OOJSSpecialPage;
 
-class ConfigManager extends ManagerBase {
+class ConfigManager extends OOJSSpecialPage {
 
 	public function __construct() {
 		parent::__construct(
 			'BlueSpiceConfigManager',
 			'bluespiceconfigmanager-viewspecialpage'
 		);
+
+		$this->templateParser = new TemplateParser(
+			dirname( __DIR__, 2 ) . '/resources/templates'
+		);
 	}
 
 	/**
 	 *
-	 * @param string $param
+	 * @return void
 	 */
-	public function execute( $param ) {
-		parent::execute( $param );
-
-		$this->checkReadOnly();
+	protected function buildSkeleton() {
 		$this->getOutput()->enableOOUI();
+		$this->getOutput()->addModuleStyles( [ 'ext.bluespice.configManager.skeleton' ] );
+		$skeleton = $this->templateParser->processTemplate(
+			'skeleton-configmanager',
+			[]
+		);
+		$skeletonCnt = Html::openElement( 'div', [
+			'id' => 'bs-configManager-skeleton-cnt'
+		] );
+		$skeletonCnt .= $skeleton;
+		$skeletonCnt .= Html::closeElement( 'div' );
+		$this->getOutput()->addHTML( $skeletonCnt );
 	}
 
 	/**
-	 *
-	 * @param ConfigDefinition $cfgDef
-	 * @param array &$pathMessages
+	 * @inheritDoc
 	 */
-	protected function extractPathMessageKeys( $cfgDef, &$pathMessages ) {
-		$msgFactory = $this->services->getService( 'BSSettingPathFactory' );
-		foreach ( $cfgDef->getPaths() as $path ) {
-			foreach ( explode( '/', $path ) as $section ) {
-				$msgKey = $msgFactory->getMessageKey( $section );
-				if ( !$msgKey ) {
-					continue;
-				}
-				$pathMessages[$section] = $msgKey;
-			}
-		}
-	}
+	public function doExecute( $param ) {
+		$this->getOutput()->addModuleStyles( [ 'ext.bluespice.configmanager.styles' ] );
+		$this->getOutput()->addModules(
+			'ext.bluespice.configmanager'
+		);
 
-	/**
-	 * @return string ID of the HTML element being added
-	 */
-	protected function getId() {
-		return 'bs-configmanager';
-	}
-
-	/**
-	 * @return array
-	 */
-	protected function getModules() {
-		return [
-			'ext.bluespice.configmanager',
-			'ext.bluespice.configmanager.styles'
-		];
-	}
-
-	/**
-	 *
-	 * @return array
-	 */
-	protected function getJSVars() {
-		$cfgDefFactory = $this->services->getService( 'BSConfigDefinitionFactory' );
-		$pathMessages = [];
-
-		foreach ( $cfgDefFactory->getRegisteredDefinitions() as $name ) {
-			$cfgDef = $cfgDefFactory->factory( $name );
-			if ( !$cfgDef ) {
-				continue;
-			}
-			$this->extractPathMessageKeys( $cfgDef, $pathMessages );
-		}
-
-		return [
-			'ConfigManagerPathMessages' => $pathMessages
-		];
+		$this->getOutput()->addHTML(
+			Html::element( 'div', [
+				'id' => 'bs-configmanager'
+			] )
+		);
 	}
 }

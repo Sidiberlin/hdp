@@ -56,12 +56,12 @@ module.exports = {
 			cardClass = "bs-card new disabled";
 			ariaDisabled = true;
 		}
-		var cardAnchorTitle = mw.message( 'bs-books-overview-page-book-anchor-title', this.title ).plain();
-		var cardAnchorAriaLabel = mw.message( 'bs-books-overview-page-book-anchor-aria-label', this.title ).plain();
+		var cardAnchorTitle = mw.message( 'bs-books-overview-page-book-anchor-title', this.title ).text();
+		var cardAnchorAriaLabel = mw.message( 'bs-books-overview-page-book-anchor-aria-label', this.title ).text();
 
 		if ( this.book_edit_url !== '' ) {
-			cardAnchorTitle = mw.message( 'bs-books-overview-page-edit-book-anchor-title', this.title ).plain();
-			cardAnchorAriaLabel = mw.message( 'bs-books-overview-page-edit-book-anchor-aria-label', this.title ).plain();
+			cardAnchorTitle = mw.message( 'bs-books-overview-page-edit-book-anchor-title', this.title ).text();
+			cardAnchorAriaLabel = mw.message( 'bs-books-overview-page-edit-book-anchor-aria-label', this.title ).text();
 			href = this.book_edit_url;
 		}
 
@@ -92,8 +92,8 @@ module.exports = {
 			// Nesting the menu in a array. If no menu is available the array is empty
 			// and the component won't be rendered. This will prevent us from a empty dropdown menu.
 			var menu = {};
-			menu.label = mw.message( 'bs-books-overview-page-book-actions-dropdown-menu-aria-label' ).plain();
-			menu.title = mw.message( 'bs-books-overview-page-book-actions-dropdown-menu-title' ).plain();
+			menu.label = mw.message( 'bs-books-overview-page-book-actions-dropdown-menu-aria-label' ).text();
+			menu.title = mw.message( 'bs-books-overview-page-book-actions-dropdown-menu-title' ).text();
 			menu.actions = menuActions;
 
 			actionsMenu.push( menu );
@@ -115,33 +115,39 @@ module.exports = {
 <style lang="css">
 .bs-card {
 	position: relative;
-	width: 320px;
+	width: 325px;
 	height: 450px;
 	border: 1px solid #d7d7d7;
-	margin: 20px 26px;
+	margin: 20px 20px;
 }
+
 .bs-card.new {
-	outline: var(--bs-books-overview-page-book-new) solid 3px;
+	outline: var( --bs-books-overview-page-book-new ) solid 3px;
 }
-.bs-card.new .bs-card-anchor {
-	pointer-events: none;
-  	cursor: default;
-}
+
 .bs-card-anchor {
 	display: block;
 	width: 100%;
-	height: calc(100% - 47px);
+	height: calc( 100% - 47px );
 	text-decoration: none !important;
 }
-.bs-card:focus-within {
-	outline: var(--bs-books-overview-page-focus-visible-color) solid 3px;
+
+.bs-card.new .bs-card-anchor {
+	pointer-events: none;
+	cursor: default;
 }
+
+.bs-card:focus-within {
+	outline: var( --bs-books-overview-page-focus-visible-color ) solid 3px;
+}
+
 .bs-card-image {
 	width: 100%;
 	height: 220px;
 	background-size: cover;
-  	background-repeat: no-repeat;
+	background-repeat: no-repeat;
 }
+
 .bs-card-body {
 	height: 163px;
 	text-align: center;
@@ -149,30 +155,36 @@ module.exports = {
 	overflow: hidden;
 	color: black !important;
 }
+
 .bs-card-title {
 	width: 100%;
 	font-weight: bold;
 	font-size: 1.4em;
 	margin-bottom: 5px;
 }
+
 .bs-card-subtitle {
 	width: 100%;
 	font-size: 1.1em;
 }
+
 .bs-card-footer {
 	position: absolute;
 	bottom: 0;
 	left: 0;
-	height: 47px;
 	width: 100%;
-	padding: 10px 10px 0 10px;
+	padding: 0;
 }
+
 .bs-card-actions {
 	display: flex;
-  	justify-content: space-between;
+	justify-content: space-between;
 	list-style: none;
 	margin: 0;
+	flex-wrap: wrap;
+	padding: 15px 0;
 }
+
 .bs-card-actions > li {
 	margin: 0;
 }

@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Discovery;
 
-use Title;
+use MediaWiki\Title\Title;
 
 interface ILangLinksProvider {
 

@@ -5,8 +5,6 @@
 		]
 	},
 	"bs-qr-code-extension-description": "V orodni vrstici prikaže kodo QR s povezavo do trenutne strani.",
-	"bs-qr-code-title": "Koda QR",
-	"bs-qr-code-text": "Preskenirajte kodo QR, da odprete to stran na mobilni napravi",
 	"bs-qr-code-action-qr-code-title": "Odpri pogovorno okno s kodo QR",
 	"bs-qr-code-action-qr-code-text": "Koda QR",
 	"bs-qr-code-action-qr-code-dialog-title": "Koda QR",

@@ -5,18 +5,18 @@ namespace MediaWiki\Extension\Workflows\Activity;
 use MediaWiki\Extension\Workflows\Definition\ITask;
 use MediaWiki\Extension\Workflows\Exception\WorkflowExecutionException;
 use MediaWiki\Extension\Workflows\WorkflowContext;
+use MediaWiki\Message\Message;
 use MediaWiki\Permissions\PermissionManager;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionStore;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
-use Message;
 use MWContentSerializationException;
-use MWException;
 use MWStake\MediaWiki\Component\Wikitext\Node\Transclusion;
 use MWStake\MediaWiki\Component\Wikitext\ParserFactory;
-use Title;
-use TitleFactory;
-use User;
+use RuntimeException;
 
 class SetTemplateParamsActivity extends GenericActivity {
 	/** @var ParserFactory */
@@ -71,7 +71,8 @@ class SetTemplateParamsActivity extends GenericActivity {
 	 * @return ExecutionStatus
 	 * @throws WorkflowExecutionException
 	 * @throws MWContentSerializationException
-	 * @throws MWException
+	 * @throws LogicException
+	 * @throws RuntimeException
 	 */
 	public function execute( $data, WorkflowContext $context ): ExecutionStatus {
 		$this->assertData( $data );
@@ -87,6 +88,7 @@ class SetTemplateParamsActivity extends GenericActivity {
 		$templates = array_filter( $templates, static function ( $node ) {
 			return $node instanceof Transclusion;
 		} );
+
 		if ( empty( $templates ) || !isset( $templates[$this->templateIndex] ) ) {
 			throw new WorkflowExecutionException(
 				Message::newFromKey( 'workflows-activity-set-template-params-no-target' )->text()

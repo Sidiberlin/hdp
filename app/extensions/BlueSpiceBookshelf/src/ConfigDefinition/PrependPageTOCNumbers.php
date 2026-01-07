@@ -12,8 +12,8 @@ class PrependPageTOCNumbers extends BooleanSetting implements \BlueSpice\Bookshe
 	 */
 	public function getPaths() {
 		return [
-			static::MAIN_PATH_FEATURE . '/' . static::FEATURE_CONTENT_STRUCTURING . '/BlueSpiceBookshelf',
-			static::MAIN_PATH_EXTENSION . '/BlueSpiceBookshelf/' . static::FEATURE_CONTENT_STRUCTURING ,
+			static::MAIN_PATH_FEATURE . '/' . static::FEATURE_BOOK . '/BlueSpiceBookshelf',
+			static::MAIN_PATH_EXTENSION . '/BlueSpiceBookshelf/' . static::FEATURE_BOOK,
 			static::MAIN_PATH_PACKAGE . '/' . static::PACKAGE_PRO . '/BlueSpiceBookshelf',
 		];
 	}
@@ -23,7 +23,7 @@ class PrependPageTOCNumbers extends BooleanSetting implements \BlueSpice\Bookshe
 	 * @return string
 	 */
 	public function getLabelMessageKey() {
-		return 'bs-bookshelf-pref-PrependPageTOCNumbers';
+		return 'bs-bookshelf-pref-prependpage-toc-numbers-label';
 	}
 
 	/**
@@ -38,6 +38,6 @@ class PrependPageTOCNumbers extends BooleanSetting implements \BlueSpice\Bookshe
 	 * @return string
 	 */
 	public function getHelpMessageKey() {
-		return 'bs-bookshelf-pref-prepend-tocnumber-help';
+		return 'bs-bookshelf-pref-prependpage-toc-numbers-help';
 	}
 }

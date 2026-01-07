@@ -5,7 +5,6 @@ namespace ChatBot\Rest;
 use ChatBot\DeepsetApi\HistoryApi;
 use Exception;
 use MediaWiki\Rest\SimpleHandler;
-use MediaWiki\Rest\Validator\JsonBodyValidator;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class History extends SimpleHandler {
@@ -40,21 +39,19 @@ class History extends SimpleHandler {
 	}
 
 	/**
-	 * @param string $contentType
-	 *
-	 * @return JsonBodyValidator
+	 * @inheritDoc
 	 */
-	public function getBodyValidator( $contentType ): JsonBodyValidator {
-		return new JsonBodyValidator( [
+	public function getBodyParamSettings(): array {
+		return [
 			'sessionId' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => true
 			],
 			'after' => [
-				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_TYPE => 'integer',
 				ParamValidator::PARAM_REQUIRED => true,
 				ParamValidator::PARAM_DEFAULT => -1
 			],
-		] );
+		];
 	}
 }

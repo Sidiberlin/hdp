@@ -3,6 +3,7 @@
 namespace MediaWiki\Extension\UnifiedTaskOverview\HookHandler\SkinTemplateNavigation;
 
 use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
+use MediaWiki\SpecialPage\SpecialPage;
 
 class Setup implements SkinTemplateNavigation__UniversalHook {
 
@@ -17,7 +18,7 @@ class Setup implements SkinTemplateNavigation__UniversalHook {
 		}
 		$links['user-menu']['mytasks'] = [
 			"text" => $sktemplate->msg( 'unifiedtaskoverview-personal-url-my-tasks' )->text(),
-			"href" => \SpecialPage::getTitleFor( 'UnifiedTaskOverview' )->getLocalURL(),
+			"href" => SpecialPage::getTitleFor( 'UnifiedTaskOverview' )->getLocalURL(),
 			"active" => false,
 			'data' => [ 'attentionindicator' => 'taskoverview' ],
 			'position' => 10,

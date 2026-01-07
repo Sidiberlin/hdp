@@ -2,12 +2,12 @@
 
 namespace MediaWiki\Extension\LDAPProvider;
 
-use BagOStuff;
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\LDAPProvider\Config as LDAPConfig;
 use MediaWiki\Logger\LoggerFactory;
 use MWException;
 use ObjectCache;
+use Wikimedia\ObjectCache\BagOStuff;
 
 class Client {
 
@@ -176,7 +176,7 @@ class Client {
 	 */
 	protected function establishBinding() {
 		if ( $this->boundTo == self::BOUND_ADMIN ||
-			$this->boundTo == self::BOUND_USER && !$this->adminUserProvided ) {
+			( $this->boundTo == self::BOUND_USER && !$this->adminUserProvided ) ) {
 			return;
 		}
 		$this->init();

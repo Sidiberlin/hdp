@@ -4,13 +4,14 @@ declare( strict_types=1 );
 
 namespace MediaWiki\Extension\EmbedVideo\EmbedService;
 
-use ConfigException;
 use Exception;
 use JsonException;
+use MediaWiki\Config\ConfigException;
 use MediaWiki\Extension\EmbedVideo\EmbedVideo;
 use MediaWiki\Extension\EmbedVideo\OEmbed;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
 use UnexpectedValueException;
 
 final class EmbedHtmlFormatter {
@@ -26,9 +27,10 @@ final class EmbedHtmlFormatter {
 	 * style: String - CSS Style added to the container,
 	 * withConsent: Boolean - Whether to add the consent HTML,
 	 * description: String - Optional Description
+	 * @param array $args - Optional args from the actual parser call
 	 * @return string
 	 */
-	public static function toHtml( AbstractEmbedService $service, array $config = [] ): string {
+	public static function toHtml( AbstractEmbedService $service, array $config = [], array $args = [] ): string {
 		if ( $service instanceof OEmbedServiceInterface ) {
 			return self::makeIframe( $service );
 		}
@@ -48,13 +50,33 @@ final class EmbedHtmlFormatter {
 			$config
 		);
 
+		if ( !empty( $config['img-class'] ) ) {
+			$config['class'] .= ' ' . $config['img-class'];
+		}
+
+		// Detect gallery-like contexts for local videos (packed galleries provide override-* options)
+		$isGalleryLike = $service instanceof LocalVideo && (
+			isset( $args['override-width'] ) || isset( $args['override-height'] )
+		);
+
 		$inlineStyles = [
 			'container' => $config['style'] ?? '',
 			'wrapper' => '',
 		];
 
+		// Force autoresize for gallery-like local embeds to avoid fixed dimensions
+		if ( $isGalleryLike ) {
+			$config['autoresize'] = true;
+		}
+
 		if ( $config['autoresize'] === true ) {
 			$config['class'] .= ' embedvideo--autoresize';
+			if ( isset( $args['width'] ) ) {
+				$inlineStyles['container'] .= sprintf( 'max-width:%dpx', $width );
+			}
+			if ( isset( $args['height'] ) ) {
+				$inlineStyles['wrapper'] .= sprintf( 'max-height:%dpx', $height );
+			}
 		} else {
 			// Autoresize does not need inline width and height
 			$inlineStyles['container'] .= sprintf( 'width:%dpx', $width );
@@ -78,18 +100,9 @@ final class EmbedHtmlFormatter {
 				->makeConfig( 'EmbedVideo' )
 				->get( 'EmbedVideoRequireConsent' );
 			if ( $consent === true ) {
-				$attributes = [];
-				if ( $width !== $service->getDefaultWidth() ) {
-					$attributes['width'] = $width;
-				}
-				if ( $height !== $service->getDefaultHeight() ) {
-					$attributes['height'] = $height;
-				}
-
-				$attributes['src'] = $service->getUrl();
 				$iframeConfig = sprintf(
-					"data-iframeconfig='%s'",
-					json_encode( $attributes, JSON_THROW_ON_ERROR | JSON_UNESCAPED_SLASHES )
+					"data-mw-iframeconfig='%s'",
+					$service->getIframeConfig( $width, $height )
 				);
 			}
 		} catch ( JsonException | ConfigException $e ) {
@@ -108,10 +121,18 @@ final class EmbedHtmlFormatter {
 		 * @see https://www.mediawiki.org/wiki/Specs/HTML/2.7.0#Audio/Video
 		 */
 		$template = <<<HTML
-			<figure class="%s" data-service="%s" %s %s><!--
-				--><span class="embedvideo-wrapper" %s>%s%s</span>%s
+			<figure class="%s" data-service="%s" %s %s>
+				<div class="embedvideo-wrapper" %s>%s%s</div>%s
 			</figure>
 			HTML;
+
+		$consentHtml = ( $config['withConsent'] ?? false ) === true
+			? self::makeConsentContainerHtml( $service )
+			: '';
+
+		$embedHtml = $service instanceof LocalVideo
+			? $service->renderVideoHtml( $args )
+			: (string)$service;
 
 		return sprintf(
 			$template,
@@ -120,8 +141,8 @@ final class EmbedHtmlFormatter {
 			$iframeConfig,
 			$inlineStyles['container'],
 			$inlineStyles['wrapper'],
-			( $config['withConsent'] ?? false ) === true ? self::makeConsentContainerHtml( $service ) : '',
-			$service,
+			$consentHtml,
+			$embedHtml,
 			$caption
 		);
 	}
@@ -177,7 +198,8 @@ final class EmbedHtmlFormatter {
 	 */
 	public static function makeThumbHtml( AbstractEmbedService $service ): string {
 		$emptyThumb = '';
-		if ( $service->getServiceName() === 'fauxembedservice' ) {
+		$emptyThumbServices = [ LocalVideo::getServiceName(), ExternalVideo::getServiceName() ];
+		if ( in_array( $service::getServiceName(), $emptyThumbServices, true ) ) {
 			$emptyThumb = '<div class="embedvideo-thumbnail"></div>';
 		}
 
@@ -186,11 +208,7 @@ final class EmbedHtmlFormatter {
 		}
 
 		try {
-			if ( method_exists( MediaWikiServices::class, 'getUrlUtils' ) ) {
-				$url = MediaWikiServices::getInstance()->getUrlUtils()->expand( $service->getLocalThumb()->getUrl() );
-			} else {
-				$url = wfExpandUrl( $service->getLocalThumb()->getUrl() );
-			}
+			$url = MediaWikiServices::getInstance()->getUrlUtils()->expand( $service->getLocalThumb()->getUrl() );
 
 			// phpcs:disable
 			return <<<HTML
@@ -215,7 +233,13 @@ final class EmbedHtmlFormatter {
 			return '';
 		}
 
-		return sprintf( '<div class="embedvideo-loader__title">%s</div>', $service->getTitle() );
+		$link = Html::element( 'a', [
+			'target' => '_blank',
+			'href' => $service->getUrl(),
+			'rel' => 'noopener noreferrer nofollow'
+		], $service->getTitle() );
+
+		return sprintf( '<div class="embedvideo-loader__title embedvideo-loader__title--manual">%s</div>', $link );
 	}
 
 	/**
@@ -226,23 +250,23 @@ final class EmbedHtmlFormatter {
 	 */
 	public static function makeConsentContainerHtml( AbstractEmbedService $service ): string {
 		$template = <<<HTML
-<div class="embedvideo-consent" data-show-privacy-notice="%s">%s<!--
---><div class="embedvideo-overlay"><!--
-	--><div class="embedvideo-loader" role="button">%s<!--
-		--><div class="embedvideo-loader__fakeButton">%s</div><!--
-		--><div class="embedvideo-loader__footer"><!--
-			--><div class="embedvideo-loader__service">%s</div><!--
-		--></div><!--
-	--></div><!--
-	--><div class="embedvideo-privacyNotice hidden"><!--
-		--><div class="embedvideo-privacyNotice__content">%s%s</div><!--
-		--><div class="embedvideo-privacyNotice__buttons"><!--
-			--><button class="embedvideo-privacyNotice__continue">%s</button><!--
-			--><button class="embedvideo-privacyNotice__dismiss">%s</button><!--
-		--></div><!--
-	--></div><!--
---></div><!--
---></div>
+<div class="embedvideo-consent" data-show-privacy-notice="%s">%s
+	<div class="embedvideo-overlay">
+		<div class="embedvideo-loader" role="button">%s
+			<div class="embedvideo-loader__fakeButton">%s</div>
+			<div class="embedvideo-loader__footer">
+				<div class="embedvideo-loader__service">%s</div>
+			</div>
+		</div>
+		<div class="embedvideo-privacyNotice hidden">
+			<div class="embedvideo-privacyNotice__content">%s%s</div>
+			<div class="embedvideo-privacyNotice__buttons">
+				<button class="embedvideo-privacyNotice__continue">%s</button>
+				<button class="embedvideo-privacyNotice__dismiss">%s</button>
+			</div>
+		</div>
+	</div>
+</div>
 HTML;
 
 		$showPrivacyNotice = false;

@@ -1,6 +1,8 @@
 <?php
 namespace BlueSpice\Bookshelf\MassAdd\Handler;
 
+use MediaWiki\Category\Category as MediaWikiCategory;
+
 class Category implements \BlueSpice\Bookshelf\MassAdd\IHandler {
 	/**
 	 * Name of the category containing pages
@@ -15,7 +17,7 @@ class Category implements \BlueSpice\Bookshelf\MassAdd\IHandler {
 	 * @return array
 	 */
 	public function getData() {
-		$categoryPage = \Category::newFromName( $this->root );
+		$categoryPage = MediaWikiCategory::newFromName( $this->root );
 		$titles = $categoryPage->getMembers();
 
 		$categoryRes = [];

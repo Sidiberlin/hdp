@@ -14,7 +14,7 @@ class MWStakeCommonLessVars implements MWStakeCommonUILessVarsInit {
 		$lessVars->setVar( 'navbar-fg', '#252525' );
 		$lessVars->setVar( 'navbar-highlight', '#3e5389' );
 
-		$lessVars->setVar( 'sidebar-bg', '#f1f3f9' );
+		$lessVars->setVar( 'sidebar-bg', '#fff' );
 		$lessVars->setVar( 'sidebar-fg', '#252525' );
 		$lessVars->setVar( 'sidebar-highlight', '#3e5389' );
 

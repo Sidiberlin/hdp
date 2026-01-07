@@ -2,10 +2,9 @@
 
 namespace SMW\Maintenance;
 
-use SMW\Services\ServicesFactory as ApplicationFactory;
-use SMW\SQLStore\SQLStore;
-use SMW\Elastic\ElasticFactory;
+use MediaWiki\Maintenance\Maintenance;
 use SMW\Elastic\ElasticStore;
+use SMW\Services\ServicesFactory as ApplicationFactory;
 use SMW\Setup;
 use SMW\SetupFile;
 use SMW\Utils\CliMsgFormatter;
@@ -13,19 +12,21 @@ use SMW\Utils\CliMsgFormatter;
 /**
  * Load the required class
  */
+// @codeCoverageIgnoreStart
 if ( getenv( 'MW_INSTALL_PATH' ) !== false ) {
 	require_once getenv( 'MW_INSTALL_PATH' ) . '/maintenance/Maintenance.php';
 } else {
 	require_once __DIR__ . '/../../../maintenance/Maintenance.php';
 }
+// @codeCoverageIgnoreEnd
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.0
  *
  * @author mwjames
  */
-class rebuildElasticIndex extends \Maintenance {
+class rebuildElasticIndex extends Maintenance {
 
 	/**
 	 * @var Store
@@ -89,7 +90,6 @@ class rebuildElasticIndex extends \Maintenance {
 	 * @see Maintenance::execute
 	 */
 	public function execute() {
-
 		if ( $this->canExecute() !== true ) {
 			exit;
 		}
@@ -224,7 +224,6 @@ class rebuildElasticIndex extends \Maintenance {
 	}
 
 	protected function handleTermSignal( $signal ) {
-
 		$this->reportMessage( "\n" . '   ... rebuild was terminated, start recovery process ...' );
 		$this->rebuilder->setDefaults();
 		$this->rebuilder->refresh();
@@ -235,7 +234,6 @@ class rebuildElasticIndex extends \Maintenance {
 	}
 
 	private function canExecute() {
-
 		if ( !Setup::isEnabled() ) {
 			return $this->reportMessage(
 				"\nYou need to have SMW enabled in order to run the maintenance script!\n"
@@ -253,7 +251,6 @@ class rebuildElasticIndex extends \Maintenance {
 	}
 
 	private function otherActivities() {
-
 		if ( $this->hasOption( 'update-settings' ) ) {
 
 			$this->reportMessage(
@@ -303,7 +300,6 @@ class rebuildElasticIndex extends \Maintenance {
 	}
 
 	private function showAbort() {
-
 		$showAbort = !$this->hasOption( 'quick' ) && !$this->hasOption( 's' ) && !$this->hasOption( 'page' ) && !$this->hasOption( 'run-fileindex' );
 
 		if ( $this->hasOption( 'auto-recovery' ) && $this->autoRecovery->has( 'ar_id' ) ) {
@@ -346,7 +342,6 @@ class rebuildElasticIndex extends \Maintenance {
 	}
 
 	private function rebuild() {
-
 		$this->reportMessage(
 			$this->cliMsgFormatter->section( 'Indices rebuild' )
 		);
@@ -399,7 +394,7 @@ class rebuildElasticIndex extends \Maintenance {
 		$this->rebuilder->prepare();
 		$this->rebuilder->set( 'skip-fileindex', $this->getOption( 'skip-fileindex' ) );
 
-		list( $res, $last ) = $this->rebuilder->select(
+		[ $res, $last ] = $this->rebuilder->select(
 			$this->store,
 			$this->select_conditions()
 		);
@@ -453,7 +448,6 @@ class rebuildElasticIndex extends \Maintenance {
 	}
 
 	private function rebuildFromRow( $i, $count, $row, $last ) {
-
 		$progress = $this->cliMsgFormatter->progressCompact( $i, $count, $row->smw_id, $last );
 
 		$this->reportMessage(
@@ -484,7 +478,6 @@ class rebuildElasticIndex extends \Maintenance {
 	}
 
 	private function select_conditions() {
-
 		$connection = $this->store->getConnection( 'mw.db' );
 
 		$conditions = [];
@@ -508,9 +501,10 @@ class rebuildElasticIndex extends \Maintenance {
 
 		if ( $this->hasOption( 'page' ) ) {
 			$pages = explode( '|', $this->getOption( 'page' ) );
+			$titleFactory = $this->getServiceContainer()->getTitleFactory();
 
 			foreach ( $pages as $page ) {
-				$title = \Title::newFromText( $page );
+				$title = $titleFactory->newFromText( $page );
 
 				if ( $title === null ) {
 					continue;
@@ -532,7 +526,7 @@ class rebuildElasticIndex extends \Maintenance {
 
 				$conditions[] = implode( ' AND ', $cond );
 			}
-		} elseif( !$this->hasOption( 's' ) || $this->getOption( 's' ) < 2 ) {
+		} elseif ( !$this->hasOption( 's' ) || $this->getOption( 's' ) < 2 ) {
 			// Make sure we always replicate properties whether they have a
 			// `smw_proptable_hash` or not (which hints to predefined properties
 			// without an actual page)
@@ -548,5 +542,7 @@ class rebuildElasticIndex extends \Maintenance {
 
 }
 
-$maintClass = 'SMW\Maintenance\rebuildElasticIndex';
-require_once( RUN_MAINTENANCE_IF_MAIN );
+// @codeCoverageIgnoreStart
+$maintClass = rebuildElasticIndex::class;
+require_once RUN_MAINTENANCE_IF_MAIN;
+// @codeCoverageIgnoreEnd

@@ -4,12 +4,13 @@ namespace MediaWiki\Extension\Workflows;
 
 use EventSauce\EventSourcing\PointInTime;
 use Exception;
-use FormatJson;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\Workflows\Definition\ITask;
 use MediaWiki\Extension\Workflows\Storage\WorkflowEventRepository;
-use RequestContext;
-use Title;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class WorkflowSerializer {
 	/** @var WorkflowEventRepository */
@@ -40,7 +41,7 @@ class WorkflowSerializer {
 		$definitionSource = $workflow->getDefinition()->getSource();
 		$initiator = null;
 		if ( $workflow->getCurrentState() !== Workflow::STATE_NOT_STARTED ) {
-			if ( $workflow->getContext()->getInitiator() instanceof \User ) {
+			if ( $workflow->getContext()->getInitiator() instanceof User ) {
 				$initiator = $workflow->getContext()->getInitiator()->getName();
 			}
 		}

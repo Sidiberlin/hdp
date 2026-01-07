@@ -3,7 +3,8 @@
 		"authors": [
 			"Balyozxane",
 			"Bikarhêner",
-			"George Animal"
+			"George Animal",
+			"Guherto"
 		]
 	},
 	"popups-message": "Pêşdîtin",
@@ -14,16 +15,10 @@
 	"popups-settings-save": "Tomar bike",
 	"popups-settings-help-ok": "Çêbû",
 	"popups-settings-cancel": "Betal bike",
-	"popups-settings-enable": "Mîhengên pêşdîtinê biguhêre",
+	"popups-settings-enable": "Eyarên pêşdîtinê biguhêre",
 	"popups-settings-icon-gear-title": "Eyarên pêşdîtina rûpelê biguhêre",
 	"popups-preview-footer-read": "Here vê rûpelê",
 	"popups-preview-disambiguation": "Ev sernav eleqedarê ji yekî zêdetir rûpelan e",
 	"popups-preview-disambiguation-link": "Rûpelên wek vî bibîne",
-	"prefs-reading": "Tercîhên xwendinê",
-	"popups-refpreview-reference": "Çavkanî",
-	"popups-refpreview-book": "Çavkaniya kitêban",
-	"popups-refpreview-journal": "Çavkaniya kovaran",
-	"popups-refpreview-news": "Çavkaniya nûçeyan",
-	"popups-refpreview-note": "Not",
-	"popups-refpreview-web": "Çavkaniya înternetê"
+	"prefs-reading": "Tercîhên xwendinê"
 }

@@ -1,4 +1,4 @@
-( function( mw, $, bs ) {
+( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.aggregatedStatistics.filter' );
 
 	bs.aggregatedStatistics.filter.CategoryMultiFilter = function ( cfg ) {
@@ -11,7 +11,7 @@
 	bs.aggregatedStatistics.filter.CategoryMultiFilter.prototype.init = function () {
 		this.categoryPicker = new OOJSPlus.ui.widget.CategoryMultiSelectWidget( {
 			classes: [ 'aggregatedStatistics-filter-field' ],
-			indicator: this.required ? 'required': null
+			indicator: this.required ? 'required' : null
 		} );
 
 		this.categoryPicker.on( 'change', this.onFilter.bind( this ) );
@@ -19,7 +19,7 @@
 		this.$element.append(
 			new OO.ui.FieldLayout( this.categoryPicker, {
 				align: 'top',
-				label: mw.message( "bs-statistics-aggregated-report-filter-category-multi" ).text()
+				label: mw.message( 'bs-statistics-aggregated-report-filter-category-multi' ).text()
 			} ).$element
 		);
 	};
@@ -38,4 +38,4 @@
 		this.categoryPicker.setValue( [] );
 	};
 
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

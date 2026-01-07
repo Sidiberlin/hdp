@@ -1,4 +1,4 @@
-( function( mw, $, bs ) {
+( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.aggregatedStatistics.filter' );
 
 	bs.aggregatedStatistics.filter.UserFilter = function ( cfg ) {
@@ -19,7 +19,7 @@
 		this.$element.append(
 			new OO.ui.FieldLayout( this.userPicker, {
 				align: 'top',
-				label: mw.message( "bs-statistics-aggregated-report-filter-user" ).text()
+				label: mw.message( 'bs-statistics-aggregated-report-filter-user' ).text()
 			} ).$element
 		);
 	};
@@ -34,4 +34,4 @@
 		};
 	};
 
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

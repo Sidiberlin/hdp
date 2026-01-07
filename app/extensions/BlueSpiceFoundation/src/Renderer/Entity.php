@@ -2,9 +2,9 @@
 namespace BlueSpice\Renderer;
 
 use BlueSpice\Utility\CacheHelper;
-use Config;
-use FormatJson;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\Linker\LinkRenderer;
 use MWException;
 
@@ -27,8 +27,8 @@ class Entity extends \BlueSpice\TemplateRenderer implements \JsonSerializable {
 	 * @param CacheHelper|null $cacheHelper
 	 */
 	protected function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
-		$name = '', CacheHelper $cacheHelper = null ) {
+		?LinkRenderer $linkRenderer = null, ?IContextSource $context = null,
+		$name = '', ?CacheHelper $cacheHelper = null ) {
 		parent::__construct(
 			$config,
 			$params,
@@ -43,7 +43,7 @@ class Entity extends \BlueSpice\TemplateRenderer implements \JsonSerializable {
 		);
 		if ( !$this->context instanceof IContextSource ) {
 			throw new MWException(
-				'"\IContextSource" must be given by ' . static::PARAM_CONTEXT . ' param'
+				'"IContextSource" must be given by ' . static::PARAM_CONTEXT . ' param'
 			);
 		}
 		$this->entity = $params->get(

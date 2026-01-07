@@ -4,8 +4,8 @@ namespace MWStake\MediaWiki\Component\Events;
 
 use DateTime;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
 use MediaWiki\User\UserIdentity;
-use Message;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 
 interface INotificationEvent {

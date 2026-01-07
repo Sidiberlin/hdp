@@ -4,11 +4,11 @@ namespace MediaWiki\Extension\ImportOfficeFiles\Reader\Tag;
 
 use DOMElement;
 use DOMNode;
-use ExtensionRegistry;
 use MediaWiki\Extension\ImportOfficeFiles\ITagProcessor;
 use MediaWiki\Extension\ImportOfficeFiles\Reader\Component\Word2007DocumentData;
 use MediaWiki\Extension\ImportOfficeFiles\Reader\Property\TagPropertyProcessorBase;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 
 abstract class TagProcessorBase implements ITagProcessor {
 

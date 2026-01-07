@@ -1,11 +1,15 @@
 <?php
 
+namespace MediaWiki\Extension\ImageMapEdit;
+
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Parser\ParserOutput;
 
 class ImageMapEdit {
 
 	/**
-	 * @param \ParserOutput &$parserOutput
+	 * @param ParserOutput &$parserOutput
 	 * @param string &$text
 	 * @return void
 	 */

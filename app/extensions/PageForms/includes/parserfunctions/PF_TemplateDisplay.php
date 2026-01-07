@@ -1,6 +1,9 @@
 <?php
 
+use MediaWiki\Html\Html;
+use MediaWiki\Linker\Linker;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 /**
  * Defines the #template_display parser function.
@@ -172,6 +175,7 @@ class PFTemplateDisplay {
 
 		try {
 			[ $lat, $lon ] = CargoUtils::parseCoordinatesString( $coordinatesStr );
+		// @phan-suppress-next-line PhanUnusedVariableCaughtException
 		} catch ( MWException $e ) {
 			return '';
 		}
@@ -190,6 +194,7 @@ class PFTemplateDisplay {
 			$text = $mappingFormat->display( $valuesTable,
 				$formattedValuesTable, $fieldDescriptions,
 				$displayParams );
+		// @phan-suppress-next-line PhanUnusedVariableCaughtException
 		} catch ( MWException $e ) {
 			return '';
 		}
@@ -216,6 +221,9 @@ class PFTemplateDisplay {
 		$linkRenderer = MediaWikiServices::getInstance()->getLinkRenderer();
 		$namespace = $templateField->getNamespace();
 		$title = Title::makeTitleSafe( $namespace, $value );
+		if ( $title == null ) {
+			return $value;
+		}
 		if ( $title->exists() ) {
 			return PFUtils::makeLink( $linkRenderer, $title );
 		}
@@ -223,6 +231,7 @@ class PFTemplateDisplay {
 		if ( $form == null ) {
 			return PFUtils::makeLink( $linkRenderer, $title );
 		}
+
 		// The page doesn't exist, and a form has been found for this
 		// template field - link to this form for this page.
 		$formSpecialPage = PFUtils::getSpecialPage( 'FormEdit' );

@@ -116,7 +116,7 @@ collabpad.ui.StartSessionDialog.prototype.getActionProcess = function ( action )
  */
 collabpad.ui.StartSessionDialog.prototype.cancel = function () {
 	const fullPageName = mw.config.get( 'wgPageName' );
-	const pageUrl = `${location.protocol}//${location.host}${location.pathname}?title=${fullPageName}`;
+	const pageUrl = `${ location.protocol }//${ location.host }${ location.pathname }?title=${ fullPageName }`;
 	location.href = pageUrl;
 };
 

@@ -15,9 +15,9 @@ StandardDialogs.ui.HistoryInformationPage.prototype.setupOutlineItem = function 
 StandardDialogs.ui.HistoryInformationPage.prototype.setup = function () {
 	const me = this;
 	const dfdData = this.getData();
-	$.when( dfdData ).done( function () {
+	$.when( dfdData ).done( () => {
 		if ( me.pageInfo !== undefined ) {
-			fieldLayout = new OO.ui.FieldsetLayout();
+			const fieldLayout = new OO.ui.FieldsetLayout();
 			const contentTable = $( '<table>' );
 			contentTable.addClass( 'wikitable page-information' );
 
@@ -96,4 +96,4 @@ StandardDialogs.ui.HistoryInformationPage.prototype.getData = function () {
 };
 
 // register
-registryPageInformation.register( 'history_infos', StandardDialogs.ui.HistoryInformationPage );
+registryPageInformation.register( 'history_infos', StandardDialogs.ui.HistoryInformationPage ); // eslint-disable-line no-undef

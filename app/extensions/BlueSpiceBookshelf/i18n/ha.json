@@ -1,8 +1,10 @@
 {
 	"@metadata": {
 		"authors": [
+			"Gwanki",
 			"Hamza DK"
 		]
 	},
-	"bs-bookshelf-booknav-searchbox-placeholder": "Bincike"
+	"bs-bookshelf-booknav-searchbox-placeholder": "Bincike",
+	"bs-bookshelf-search-center-context-books-label": "a cikin {{PLURAL:$1|littafi|littattafai}} '''$2'''"
 }

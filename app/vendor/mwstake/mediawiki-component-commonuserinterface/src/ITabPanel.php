@@ -2,8 +2,8 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface;
 
-use IContextSource;
-use Message;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Message\Message;
 
 interface ITabPanel {
 

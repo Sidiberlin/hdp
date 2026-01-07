@@ -1,4 +1,8 @@
 <?php
+
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Title\Title;
+
 /**
  * This class serves as a backend for the page templates store.
  *
@@ -79,7 +83,7 @@ class BSApiPageTemplatesStore extends BSApiExtJSStoreBase {
 	/**
 	 *
 	 * @param stdClass $filter
-	 * @param type $dataSet
+	 * @param stdClass $dataSet
 	 * @return bool
 	 */
 	public function filterString( $filter, $dataSet ) {

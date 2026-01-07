@@ -24,7 +24,7 @@ class EDConnectorLdap extends EDConnectorBase {
 	private $user;
 	/** @var string Real LDAP password. */
 	private $password;
-	/** @var resource|null Connection to LDAP server. */
+	/** @var \ldap\connection|array|null Connection to LDAP server. */
 	private $connection;
 
 	/**
@@ -36,7 +36,7 @@ class EDConnectorLdap extends EDConnectorBase {
 	protected function __construct( array &$args, Title $title ) {
 		parent::__construct( $args, $title );
 
-		$this->domain = isset( $args[self::ID_PARAM] ) ? $args[self::ID_PARAM] : null;
+		$this->domain = $args[self::ID_PARAM] ?? null;
 
 		// This connector needs an explicit set of fields.
 		if ( !array_key_exists( 'data', $args ) ) {
@@ -62,14 +62,19 @@ class EDConnectorLdap extends EDConnectorBase {
 		} else {
 			$this->error( 'externaldata-ldap-domain-not-defined', $this->domain );
 		}
-		$this->user = isset( $args['user'] ) ? $args['user'] : null;
-		$this->password = isset( $args['password'] ) ? $args['password'] : null;
-		if ( isset( $args['base dn'] ) ) {
-			$this->baseDn = $args['base dn'];
-		} else {
+
+		$this->user = isset( $args['user file'] ) && file_exists( $args['user file'] )
+			? trim( file_get_contents( $args['user file'] ) )
+			: $args['user' ] ?? null;
+		$this->password = isset( $args['password file'] ) && file_exists( $args['password file'] )
+			? trim( file_get_contents( $args['password file'] ) )
+			: $args['password' ] ?? null;
+
+		$this->baseDn = $args['base dn'] ?? null;
+		if ( !$this->baseDn ) {
 			$this->error( 'externaldata-ldap-domain-not-defined', $this->domain );
 		}
-		$this->all = array_key_exists( 'all', $args ) && $args['all'] !== false;
+		$this->all = $args['all'] ?? false;
 	}
 
 	/**
@@ -85,6 +90,10 @@ class EDConnectorLdap extends EDConnectorBase {
 			return false;
 		}
 		$external_values = $this->searchLDAP();
+		if ( !is_array( $external_values ) ) {
+			$this->error( 'externaldata-ldap-unable-to-connect', $this->domain );
+			return false;
+		}
 		$result = [];
 		foreach ( $external_values as $i => $row ) {
 			if ( !is_array( $row ) ) {
@@ -151,10 +160,17 @@ class EDConnectorLdap extends EDConnectorBase {
 	/**
 	 * Search LDAP.
 	 *
-	 * @return array Search results.
+	 * @return array|string Search results or error string.
 	 */
 	private function searchLDAP() {
-		$sr = ldap_search( $this->connection, $this->baseDn, $this->filter, array_values( $this->mappings() ) );
+		self::throwWarnings();
+		try {
+			$sr = ldap_search( $this->connection, $this->baseDn, $this->filter, array_values( $this->mappings() ) );
+		} catch ( MWException $e ) {
+			return $e->getMessage();
+		} finally {
+			self::stopThrowingWarnings();
+		}
 		$results = ldap_get_entries( $this->connection, $sr );
 		return $results;
 	}

@@ -1,4 +1,4 @@
-contentProvisioning.ui.dialog.ContentDiff = function( diffHtml ) {
+contentProvisioning.ui.dialog.ContentDiff = function ( diffHtml ) {
 	contentProvisioning.ui.dialog.ContentDiff.super.call( this, {
 		expanded: false,
 		scrollable: true,
@@ -7,7 +7,7 @@ contentProvisioning.ui.dialog.ContentDiff = function( diffHtml ) {
 	} );
 
 	this.diffHtml = diffHtml;
-}
+};
 
 OO.inheritClass( contentProvisioning.ui.dialog.ContentDiff, OO.ui.ProcessDialog );
 
@@ -24,17 +24,17 @@ contentProvisioning.ui.dialog.ContentDiff.static.actions = [
 contentProvisioning.ui.dialog.ContentDiff.prototype.initialize = function () {
 	contentProvisioning.ui.dialog.ContentDiff.super.prototype.initialize.apply( this, arguments );
 
-	var $headline = $( '<div>' ).addClass( 'diff-headline' );
+	const $headline = $( '<div>' ).addClass( 'diff-headline' );
 
-	var wikiContentLabel = mw.message( 'contentprovisioning-ui-content-diff-headline-wiki-content' ).text();
-	var provisionContentLabel = mw.message( 'contentprovisioning-ui-content-diff-headline-provisioner-content' ).text();
+	const wikiContentLabel = mw.message( 'contentprovisioning-ui-content-diff-headline-wiki-content' ).text();
+	const provisionContentLabel = mw.message( 'contentprovisioning-ui-content-diff-headline-provisioner-content' ).text();
 
 	$headline.append( $( '<h3>' ).addClass( 'diff-headline-label' ).html( wikiContentLabel ) );
 	$headline.append( $( '<h3>' ).addClass( 'diff-headline-label' ).html( provisionContentLabel ) );
 
-	var $contentContainer = $( '<div>' ).addClass( 'diff-content-container' ).html( this.diffHtml );
+	const $contentContainer = $( '<div>' ).addClass( 'diff-content-container' ).html( this.diffHtml );
 
-	var $contentContainerWrapper = $( '<div>' ).addClass( 'diff-content-container-wrapper' );
+	const $contentContainerWrapper = $( '<div>' ).addClass( 'diff-content-container-wrapper' );
 	$contentContainerWrapper.append( $headline );
 	$contentContainerWrapper.append( $contentContainer );
 

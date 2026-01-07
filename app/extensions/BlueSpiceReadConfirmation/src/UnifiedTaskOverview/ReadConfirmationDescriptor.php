@@ -3,11 +3,12 @@
 namespace BlueSpice\ReadConfirmation\UnifiedTaskOverview;
 
 use MediaWiki\Extension\UnifiedTaskOverview\ITaskDescriptor;
+use MediaWiki\Language\RawMessage;
 use MediaWiki\MediaWikiServices;
-use Message;
-use PageProps;
-use RawMessage;
-use Title;
+use MediaWiki\Message\Message;
+use MediaWiki\Page\PageProps;
+use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
 
 class ReadConfirmationDescriptor implements ITaskDescriptor {
 
@@ -25,6 +26,14 @@ class ReadConfirmationDescriptor implements ITaskDescriptor {
 	 * @var int
 	 */
 	private $latestReadRevision = null;
+
+	/**
+	 * Revision to confirm
+	 *
+	 * @var RevisionRecord
+	 */
+	private $revisionToConfirm;
+
 	/**
 	 * @var PageProps
 	 */
@@ -32,12 +41,14 @@ class ReadConfirmationDescriptor implements ITaskDescriptor {
 
 	/**
 	 * @param Title $title Title, which user should mark as "read"
+	 * @param RevisionRecord $revisionToConfirm Revision to confirm
 	 * @param int|null $latestReadRevision <tt>null</tt> if user did not mark any revision of specified article,
 	 * 	or ID of the latest read revision otherwise
 	 */
-	public function __construct( Title $title, int $latestReadRevision = null ) {
+	public function __construct( Title $title, RevisionRecord $revisionToConfirm, ?int $latestReadRevision = null ) {
 		$this->title = $title;
 		$this->pageProps = MediaWikiServices::getInstance()->getPageProps();
+		$this->revisionToConfirm = $revisionToConfirm;
 
 		if ( $latestReadRevision ) {
 			$this->latestReadRevision = $latestReadRevision;
@@ -107,8 +118,10 @@ class ReadConfirmationDescriptor implements ITaskDescriptor {
 		if ( $this->latestReadRevision ) {
 			$query = [
 				'oldid' => $this->latestReadRevision,
-				'diff' => 'cur'
+				'diff' => $this->revisionToConfirm->isCurrent() ? 'cur' : $this->revisionToConfirm->getId()
 			];
+		} elseif ( !$this->revisionToConfirm->isCurrent() ) {
+			$query = [ 'oldid' => $this->revisionToConfirm->getId() ];
 		}
 
 		return $this->title->getFullURL( $query );

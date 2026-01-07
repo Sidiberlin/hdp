@@ -27,10 +27,10 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
-use Config;
-use IContextSource;
-use Parser;
-use PPFrame;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 abstract class ParserGetVariableValueSwitch extends Hook {
 

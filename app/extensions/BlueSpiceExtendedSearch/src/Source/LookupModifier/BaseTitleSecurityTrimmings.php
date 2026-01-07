@@ -5,9 +5,12 @@ namespace BS\ExtendedSearch\Source\LookupModifier;
 use BS\ExtendedSearch\Backend;
 use BS\ExtendedSearch\Lookup;
 use BS\ExtendedSearch\SearchResultSet;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\Title\Title;
 
 class BaseTitleSecurityTrimmings extends LookupModifier {
 	/** @var Backend */
@@ -29,9 +32,9 @@ class BaseTitleSecurityTrimmings extends LookupModifier {
 	 *
 	 * @param Backend $backend
 	 * @param Lookup &$lookup
-	 * @param \IContextSource $context
+	 * @param IContextSource $context
 	 */
-	public function __construct( Backend $backend, &$lookup, \IContextSource $context ) {
+	public function __construct( Backend $backend, &$lookup, IContextSource $context ) {
 		parent::__construct( $lookup, $context );
 		$this->backend = $backend;
 		$this->config = $this->backend->getConfig();
@@ -80,7 +83,7 @@ class BaseTitleSecurityTrimmings extends LookupModifier {
 	 */
 	protected function getExcludesForCurrentPage( $prepLookup, &$excludes ): void {
 		$validCount = 0;
-		$user = \RequestContext::getMain()->getUser();
+		$user = RequestContext::getMain()->getUser();
 		$services = \MediaWiki\MediaWikiServices::getInstance();
 		$spFactory = $services->getSpecialPageFactory();
 		$permManager = $services->getPermissionManager();
@@ -96,36 +99,36 @@ class BaseTitleSecurityTrimmings extends LookupModifier {
 			foreach ( $results->getResults() as $resultObject ) {
 				$searchAfter = $resultObject->getSort();
 				$data = $resultObject->getData();
-				if ( $this->backend->isSharedIndex( $resultObject->getIndex() ) ) {
-					if ( $data['namespace'] !== NS_FILE ) {
+				if ( $this->backend->isForeignIndex( $resultObject->getIndex() ) ) {
+					if ( $resultObject->getType() === 'wikipage' && $data['namespace'] !== NS_FILE ) {
 						$excludes[] = $resultObject->getId();
+						continue;
 					}
+					$validCount++;
 					continue;
 				}
 
 				if ( isset( $data['namespace'] ) == false ) {
-					// If result has no namespace set, \Title creation is N/A
+					// If result has no namespace set, Title creation is N/A
 					// therefore we should allow user to see it
 					$validCount++;
 					continue;
 				}
 
 				if ( isset( $data['prefixed_title'] ) ) {
-					$title = \Title::newFromText( $data['prefixed_title'] );
+					$title = Title::newFromText( $data['prefixed_title'] );
 				} else {
-					$title = \Title::makeTitle( $data['namespace'], $data['basename'] );
+					$title = Title::makeTitleSafe( $data['namespace'], $data['basename'] );
 				}
-				if ( !$title instanceof \Title ) {
-					if ( $title->isContentPage() && $title->exists() == false ) {
-						// I cant think of a good reason to show non-existing title in the search
-						$excludes[] = $resultObject->getId();
-						continue;
-					}
+				if ( !$title ) {
+					$excludes[] = $resultObject->getId();
+					continue;
 				}
 
 				if ( $title->isSpecialPage() ) {
 					$sp = $spFactory->getPage( $title->getDBkey() );
-					if ( !$sp instanceof \SpecialPage ) {
+					if ( !( $sp instanceof SpecialPage ) ) {
+
 						$excludes[] = $resultObject->getId();
 						continue;
 					}
@@ -137,10 +140,9 @@ class BaseTitleSecurityTrimmings extends LookupModifier {
 						$excludes[] = $resultObject->getId();
 						continue;
 					}
-				}
-
-				if ( !$permManager->userCan( 'read', $user, $title ) ) {
+				} elseif ( !$permManager->userCan( 'read', $user, $title ) ) {
 					$excludes[] = $resultObject->getId();
+					continue;
 				}
 
 				$validCount++;

@@ -6,12 +6,12 @@ use BlueSpice\ExtensionAttributeBasedRegistry;
 use BlueSpice\Permission\Lockdown\IModule;
 use BlueSpice\Permission\Lockdown\Module;
 use BlueSpice\Permission\Lockdown\Module\Groups\ISubModule;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use Message;
-use Title;
-use User;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class Groups extends Module {
 
@@ -84,7 +84,7 @@ class Groups extends Module {
 	 */
 	public static function getInstance( Config $config,
 		IContextSource $context, MediaWikiServices $services,
-		ExtensionAttributeBasedRegistry $registry = null ) {
+		?ExtensionAttributeBasedRegistry $registry = null ) {
 		if ( !$registry ) {
 			$registry = new ExtensionAttributeBasedRegistry(
 				'BlueSpiceFoundationPermissionLockdownGroupModuleRegistry'

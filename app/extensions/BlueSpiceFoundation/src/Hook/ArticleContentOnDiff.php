@@ -29,6 +29,9 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Output\OutputPage;
 
 abstract class ArticleContentOnDiff extends Hook {
 
@@ -40,14 +43,14 @@ abstract class ArticleContentOnDiff extends Hook {
 
 	/**
 	 *
-	 * @var \OutputPage
+	 * @var OutputPage
 	 */
 	protected $output = null;
 
 	/**
 	 *
 	 * @param \DiffEngine $diffEngine
-	 * @param \OutputPage $output
+	 * @param OutputPage $output
 	 * @return bool
 	 */
 	public static function callback( $diffEngine, $output ) {
@@ -63,10 +66,10 @@ abstract class ArticleContentOnDiff extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param \DiffEngine $diffEngine
-	 * @param \OutputPage $output
+	 * @param OutputPage $output
 	 */
 	public function __construct( $context, $config, $diffEngine, $output ) {
 		parent::__construct( $context, $config );

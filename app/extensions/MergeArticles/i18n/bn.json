@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Tahmid"
+		]
+	},
+	"mergearticles-type-article": "পাতা",
+	"mergearticles-no-pages-available": "দেখার মত কিছু নেই!",
+	"mergearticles-merge-success-page-label": "লক্ষ্য পাতা: $1",
+	"mergearticles-diff-action-accept": "অনুমোদন করুন",
+	"mergearticles-diff-option-accept-all-label": "সব অনুমোদন করুন"
+}

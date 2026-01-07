@@ -49,11 +49,15 @@
 
 /** NotificationTab **/
 
-.notifications-ui-panel-NotificationTab-no-notifications-label {
-	font-weight: bold;
-	font-size: 18pt;
-	text-align: center;
-	width: 100%;
+.oojsplus-widget-no-content-placeholder .oo-ui-icon-no-notifications {
+	background-image: url( ./../images/icon_no_notifications.svg );
+	background-color: rgba( 62, 83, 137, 0.1 );
+	background-size: 80px;
+	background-repeat: no-repeat;
+	border-radius: 100%;
+	margin: 30px auto 15px;
+	height: 120px;
+	width: 120px;
 }
 
 .notifications-ui-panel-NotificationTab-status-bar-wrapper {
@@ -100,7 +104,7 @@
 	margin-right: 5px !important;
 }
 
-.notifications-ui-widget-FilterWidget {
+.notifications-ui-widget-FilterWidget { // stylelint-disable-line no-duplicate-selectors
 	& .notifications-ui-widget-FilterWidget-item-count {
 		font-weight: bold;
 		color: #777575;
@@ -163,6 +167,10 @@
 	background-color: #fff;
 }
 
+.notifications-ui-widget-NotificationItemWidget-notification-content .oojsplus-user-widget {
+	width: auto;
+}
+
 .notifications-ui-widget-NotificationItemWidget-markAsReadButton {
 	position: absolute;
 	top: 10px;
@@ -202,6 +210,7 @@
 		/** TODO: Uncomment when icons will get returned **/
 		/** margin-left: 30px; **/
 		margin-right: 20px;
+		display: unset;
 
 		.notifications-ui-widget-NotificationItemWidget-content-message-header,
 		.notifications-ui-widget-NotificationItemWidget-user-widget {
@@ -211,8 +220,8 @@
 		}
 
 		.notifications-ui-widget-NotificationItemWidget-content-message-header {
-			margin-left: 5px;
 			padding-top: 5px;
+			padding-left: 5px;
 		}
 	}
 

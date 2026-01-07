@@ -57,17 +57,13 @@
 	"bs-statistics-portlet-numberofpagesdesc": "Statistica del numero de paginas.",
 	"bs-statistics-portlet-numberofarticlesdesc": "Statistica del numero de paginas de contento.",
 	"bs-statistics-portletconfig-periodday": "Heri",
-	"apihelp-bs-statistics-tasks-description": "Forni travalios commun pro statisticas",
 	"apihelp-bs-statistics-tasks-summary": "Forni travalios commun pro statisticas",
-	"apihelp-bs-statistics-available-diagrams-store-description": "Forni un immagazinage con diagrammas disponibile",
 	"apihelp-bs-statistics-available-diagrams-store-summary": "Forni un immagazinage con diagrammas disponibile",
-	"apihelp-bs-statistics-search-options-store-description": "Forni un immagazinage con optiones de recerca disponibile",
 	"apihelp-bs-statistics-search-options-store-summary": "Forni un immagazinage con optiones de recerca disponibile",
 	"action-statistic-viewspecialpage": "acceder al statisticas extendite",
 	"right-statistic-viewspecialpage": "Accesso al statisticas extendite",
 	"bs-statistics-button-label-export": "Exportar",
 	"bs-statistics-panel-title-result": "Resultato",
-	"apihelp-bs-extendedstatistics-collection-store-description": "Forni un immagazinage pro statisticas que pote esser consultate, filtrate e aggregate",
 	"apihelp-bs-extendedstatistics-collection-store-summary": "Forni un immagazinage pro statisticas que pote esser consultate, filtrate e aggregate",
 	"apihelp-bs-extendedstatistics-collection-store-param-aggregate": "Objecto codificate in texto JSON con datos arbitrari pro le aggregation",
 	"aggregatedstatistic": "Statisticas de instantaneos",
@@ -107,6 +103,7 @@
 	"bs-statistics-aggregated-report-loading": "Carga datos…",
 	"bs-statistics-pref-excludeusers-help": "Alcun usatores, p.ex. con derectos de administrator, pote distorquer le statisticas sur le pagina Special:ExtendedStatistics. Illes pote esser excludite del resultatos statistic.",
 	"bs-statistics-tag-progress-desc": "Genera un barra de progresso. Le valor depende del apparentia de un texto date del corpore e de un limite maximal definite per le usator.",
+	"bs-statistics-tag-progress-label-text": "<span class='visually-hidden'>Barra de progresso a </span> $1",
 	"bs-statistics-ve-progressinspector-title": "Progresso",
 	"bs-statistics-ve-progress-attr-basecount-label": "Contator de base",
 	"bs-statistics-ve-progress-attr-basecount-help": "Specifica le numero maxime de vices que le elemento de progresso indicate debe occurrer sur le pagina ante que le barra de progresso es plen.",
@@ -118,5 +115,5 @@
 	"bs-statistics-ve-progress-attr-width-help": "Latitude del barra de progresso in pixels",
 	"bs-statistics-droplet-progress-name": "Progresso",
 	"bs-statistics-droplet-progress-description": "Visualisa progresso contra variabiles de mesura fornite",
-	"bs-statistics-tag-progress-label-text": "<span class='visually-hidden'>Barra de progresso a </span> $1"
+	"apihelp-query+statistics-reports-param-aggregate": "Si le statisticas debe esser aggregate"
 }

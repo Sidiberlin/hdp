@@ -3,22 +3,24 @@
 namespace MediaWiki\Extension\LDAPGroups;
 
 use Exception;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\LDAPProvider\Client;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 use MWException;
-use Status;
 
 class GroupSyncProcess {
 
 	/**
 	 *
-	 * @var \User
+	 * @var User
 	 */
 	protected $user = null;
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $domainConfig = null;
 
@@ -42,8 +44,8 @@ class GroupSyncProcess {
 
 	/**
 	 *
-	 * @param \User $user
-	 * @param \Config $domainConfig
+	 * @param User $user
+	 * @param Config $domainConfig
 	 * @param \MediaWiki\Extension\LDAPProvider\Client $client
 	 * @param array $callbackRegistry
 	 */

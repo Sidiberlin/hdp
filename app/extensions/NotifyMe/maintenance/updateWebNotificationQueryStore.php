@@ -2,6 +2,7 @@
 
 use MediaWiki\Extension\NotifyMe\Storage\NotificationStore;
 use MediaWiki\Extension\NotifyMe\Storage\WebNotificationQueryStore;
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
 
 require_once __DIR__ . '/../../../maintenance/Maintenance.php';

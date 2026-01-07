@@ -1,5 +1,9 @@
 <?php
+
 use MediaWiki\MediaWikiServices;
+use SMW\DIWikiPage;
+use SMW\Query\QueryResult;
+use SMW\Query\ResultPrinters\ResultPrinter;
 
 /**
  * A query printer that uses the dygraphs JavaScript library
@@ -11,10 +15,10 @@ use MediaWiki\MediaWikiServices;
  *
  * @author mwjames
  */
-class SRFDygraphs extends SMWResultPrinter {
+class SRFDygraphs extends ResultPrinter {
 
 	/**
-	 * @see SMWResultPrinter::getName
+	 * @see ResultPrinter::getName
 	 * @return string
 	 */
 	public function getName() {
@@ -22,14 +26,14 @@ class SRFDygraphs extends SMWResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::getResultText
+	 * @see ResultPrinter::getResultText
 	 *
-	 * @param SMWQueryResult $result
+	 * @param QueryResult $result
 	 * @param $outputMode
 	 *
 	 * @return string
 	 */
-	protected function getResultText( SMWQueryResult $result, $outputMode ) {
+	protected function getResultText( QueryResult $result, $outputMode ) {
 		// Output mode is fixed
 		$outputMode = SMW_OUTPUT_HTML;
 
@@ -50,20 +54,20 @@ class SRFDygraphs extends SMWResultPrinter {
 	 *
 	 * @since 1.8
 	 *
-	 * @param SMWQueryResult $result
+	 * @param QueryResult $result
 	 * @param $outputMode
 	 *
 	 * @return array
 	 */
-	protected function getResultData( SMWQueryResult $result, $outputMode ) {
+	protected function getResultData( QueryResult $result, $outputMode ) {
 		$aggregatedValues = [];
 
-		while ( $rows = $result->getNext() ) { // Objects (pages)
+		while ( $rows = $result->getNext() ) {
 			$annotation = [];
 			$dataSource = false;
 
 			/**
-			 * @var SMWResultArray $field
+			 * @var \SMW\Query\Result\ResultArray $field
 			 * @var SMWDataValue $dataValue
 			 */
 			foreach ( $rows as $field ) {
@@ -75,13 +79,7 @@ class SRFDygraphs extends SMWResultPrinter {
 					$aggregatedValues['subject'] = $this->makePageFromTitle( $subject->getTitle() )->getLongHTMLText(
 						$this->getLinker( $field->getResultSubject() )
 					);
-					if ( method_exists( MediaWikiServices::class, 'getRepoGroup' ) ) {
-						$aggregatedValues['url'] = MediaWikiServices::getInstance()->getRepoGroup()->findFile( $subject->getTitle() )->getUrl();
-					} else {
-						// Before  MW 1.34
-						$aggregatedValues['url'] = wfFindFile( $subject->getTitle() )->getUrl();
-					}
-					
+					$aggregatedValues['url'] = MediaWikiServices::getInstance()->getRepoGroup()->findFile( $subject->getTitle() )->getUrl();
 					$dataSource = true;
 				}
 
@@ -93,7 +91,7 @@ class SRFDygraphs extends SMWResultPrinter {
 					continue;
 				}
 
-				while ( ( $dataValue = $field->getNextDataValue() ) !== false ) { // Data values
+				while ( ( $dataValue = $field->getNextDataValue() ) !== false ) {
 
 					// Jump the column (indicated by continue) because we don't want the data source being part of the annotation array
 					$dataItem = $dataValue->getDataItem();
@@ -115,7 +113,7 @@ class SRFDygraphs extends SMWResultPrinter {
 						$aggregatedValues['subject'] = $this->makePageFromTitle(
 							$title
 						)->getLongHTMLText( $this->getLinker( $field->getResultSubject() ) );
-						$aggregatedValues['url'] = wfFindFile( $title )->getUrl();
+						$aggregatedValues['url'] = MediaWikiServices::getInstance()->getRepoGroup()->findFile( $title )->getUrl();
 						$dataSource = true;
 						continue;
 					} elseif ( $dataItem->getDIType() == SMWDataItem::TYPE_URI && $this->params['datasource'] === 'url' && !$dataSource ) {
@@ -155,7 +153,7 @@ class SRFDygraphs extends SMWResultPrinter {
 
 	private function makePageFromTitle( \Title $title ) {
 		$dataValue = new SMWWikiPageValue( '_wpg' );
-		$dataItem = SMWDIWikiPage::newFromTitle( $title );
+		$dataItem = DIWikiPage::newFromTitle( $title );
 		$dataValue->setDataItem( $dataItem );
 		return $dataValue;
 	}
@@ -236,7 +234,7 @@ class SRFDygraphs extends SMWResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::getParamDefinitions
+	 * @see ResultPrinter::getParamDefinitions
 	 *
 	 * @since 1.8
 	 *

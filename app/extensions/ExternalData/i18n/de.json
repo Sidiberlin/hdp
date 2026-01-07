@@ -14,9 +14,9 @@
 	},
 	"getdata": "Daten holen",
 	"externaldata-desc": "Ermöglicht das Abrufen strukturierter Daten von externen URLs, Datenbanken und anderen Quellen",
-	"externaldata-smw-needed": "Fehler: Semantic MediaWiki muss installiert sein, um {{#store_external_table:}} aufrufen zu können.",
 	"externaldata-no-param-specified": "Fehler: Kein Parameter „$1“ angegeben.",
 	"externaldata-param-type-error": "Fehler: Parameter $1 muss vom Typ $2 sein.",
+	"externaldata-processing-exception": "Beim Ausführen des Präprozessors oder Postprozessors ist eine Ausnahme aufgetreten: $1",
 	"externaldata-php-library-missing": "Fehler: Die PHP-Bibliothek $1, die für die Verwendung von $2 benötigt wird, fehlt.",
 	"external-data-no-suitable-connector": "Fehler: Für diese externe Datenabfrage ist keine passende Datenquelle definiert",
 	"externaldata-throttled": "Aufrufe von $1 werden bis {{#time:c|@$2}} gedrosselt.",
@@ -53,9 +53,10 @@
 	"externaldata-url-unknown-error": "Unbekannter Fehler beim Abrufen von Daten von URL $1.",
 	"externaldata-url-not-allowed": "Die URL $1 ist in diesem Wiki nicht erlaubt.",
 	"externaldata-caught-exception-soap": "Ausnahme $1 beim Erstellen des SOAP-Clients abgefangen.",
-	"externaldata-parsing-html-failed": "HTML konnte nicht geparst werden",
+	"externaldata-parsing-html-failed": "HTML konnte nicht geparst werden:\n $1",
 	"externaldata-caught-exception-parsing-html": "Ausnahme beim Parsen von HTML abgefangen. Die Fehlermeldung lautet „$1“.",
 	"externaldata-error-converting-css-to-xpath": "Ausnahme bei der Konvertierung des CSS-Selektors $1 nach XPath abgefangen:\n$2",
+	"externaldata-jsonpath-error": "Ungültiger JSONpath $1",
 	"externaldata-missing-library": "Die Bibliothek $1, die für die Verwendung der Parserfunktion „$2“ oder der Lua-Funktion <code>$3</code> erforderlich ist, fehlt.",
 	"externaldata-undefined-file": "Die Datei $1 ist nicht definiert.",
 	"externaldata-missing-file": "Die Datei $1 fehlt.",
@@ -73,5 +74,5 @@
 	"externaldata-no-local-variable": "Fehler: Es wurde keine lokale Variable „$1“ gesetzt.",
 	"externaldata-no-template": "Fehler: keine Vorlage angegeben.",
 	"externaldata-no-loop-body": "Fehler: Kein Schleifenkörper als erster oder zweiter Parameter gesetzt.",
-	"externaldata-getdata-badurl": "Du musst einen Seitennamen in der URL angeben;\ndie URL muss wie folgt aussehen: „{{#Special:GetData}}/<page name> \"."
+	"externaldata-getdata-badurl": "Du musst einen Seitennamen in der URL angeben. Die URL muss wie folgt aussehen: „{{#Special:GetData}}/Page_name“."
 }

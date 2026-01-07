@@ -57,7 +57,6 @@
 	"enhancedupload-ve-attachmentinspector-categories": "Kategorier",
 	"enhancedupload-ve-attachmentinspector-desc": "Beskrivning",
 	"enhancedupload-ve-attachmentinspector-options": "Hoppa över uppladdningsalternativ",
-	"enhancedupload-attachment-tag-desc": "Med denna tagg kan filer läggas till på den här sidan. Med taggen kan nya filer kan laddas upp och läggas till och även befintliga filer från wikin kan läggas till. En visningstitel kan anges för taggen samt uppladdningsalternativen: ett prefix, kategorier särskiljs med '|' och en beskrivning som automatiskt läggs till när du laddar upp.",
 	"enhancedupload-attachments-tag-grid-editor-label": "Redigerare",
 	"enhancedupload-ve-attachmentinspector-grid-version": "Göm version",
 	"enhancedupload-ve-attachmentinspector-grid-editor": "Göm redigerare",

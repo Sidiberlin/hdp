@@ -12,12 +12,10 @@
 	"bs-countthings-ve-countcharacters-mode-wordsonly": "పదాలు",
 	"bs-countthings-ve-countcharacters-mode-pagesonly": "పేజీలు",
 	"bs-countthings-ve-countcharacters-input-label": "పేజీలు",
-	"bs-countthings-tag-countcharacters-example-1": "పదాల సంఖ్య",
-	"bs-countthings-tag-countcharacters-example-2": "అక్షరాల సంఖ్య",
+	"bs-countthings-droplet-articles-name": "పేజీల సంఖ్య",
 	"bs-countthings-droplet-articles-description": "పేజీల సంఖ్యను చూపు",
 	"bs-countthings-droplet-characters-name": "అక్షరాల సంఖ్య",
 	"bs-countthings-droplet-files-name": "ఫైళ్ల సంఖ్య",
 	"bs-countthings-droplet-user-name": "వాడుకరుల సంఖ్య",
-	"bs-countthings-droplet-user-description": "వినియోగదారులందరి సంఖ్యను చూపు",
-	"bs-countthings-droplet-articles-name": "పేజీల సంఖ్య"
+	"bs-countthings-droplet-user-description": "వినియోగదారులందరి సంఖ్యను చూపు"
 }

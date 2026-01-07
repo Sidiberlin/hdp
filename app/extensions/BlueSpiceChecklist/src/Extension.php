@@ -36,10 +36,10 @@
 
 namespace BlueSpice\Checklist;
 
+use MediaWiki\Content\TextContent;
 use MediaWiki\MediaWikiServices;
-use Parser;
-use TextContent;
-use Title;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Title\Title;
 use WikiPage;
 
 class Extension extends \BlueSpice\Extension {
@@ -90,16 +90,16 @@ class Extension extends \BlueSpice\Extension {
 	 * @param int $nth
 	 * @return mixed
 	 */
-	public static function preg_replace_nth( $pattern, $replacement, $subject, $nth = 1 ) {
+	public static function preg_replace_nth( $pattern, $replacement, $subject, $nth = 1 ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		return preg_replace_callback( $pattern,
 			static function ( $found ) use ( &$pattern, &$replacement, &$nth ) {
 					$nth--;
-					if ( $nth == 0 ) {
-						$sResult = preg_replace( '/value=".*?"(\s*|)/', '', reset( $found ) );
-						$sResult = preg_replace( '/checked=".*?"(\s*|)/', '', $sResult );
-						$sResult = preg_replace( $pattern, $replacement, $sResult );
-						return $sResult;
-					}
+				if ( $nth == 0 ) {
+					$sResult = preg_replace( '/value=".*?"(\s*|)/', '', reset( $found ) );
+					$sResult = preg_replace( '/checked=".*?"(\s*|)/', '', $sResult );
+					$sResult = preg_replace( $pattern, $replacement, $sResult );
+					return $sResult;
+				}
 					return reset( $found );
 			}, $subject, $nth );
 	}
@@ -113,8 +113,8 @@ class Extension extends \BlueSpice\Extension {
 		$titleFactory = $services->getTitleFactory();
 		$wikiPageFactory = $services->getWikiPageFactory();
 		$checklist = new BlueSpiceChecklists( $titleFactory, $wikiPageFactory );
-		$parser->setHook( 'bs:checklist', [ $checklist , 'onBsChecklist' ] );
-		$parser->setHook( 'bs:checkbox', [ $checklist ,'onMagicWordBsChecklist' ] );
+		$parser->setHook( 'bs:checklist', [ $checklist, 'onBsChecklist' ] );
+		$parser->setHook( 'bs:checkbox', [ $checklist, 'onMagicWordBsChecklist' ] );
 		return true;
 	}
 }

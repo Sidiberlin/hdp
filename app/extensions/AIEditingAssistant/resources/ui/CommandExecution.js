@@ -29,11 +29,13 @@ ext.AIEditingAssistant.ui.CommandExecution.prototype.init = function () {
 };
 
 ext.AIEditingAssistant.ui.CommandExecution.prototype.getHeader = function () {
-	var label = new OO.ui.LabelWidget( {
-		label: mw.msg( this.commandData.data.labelMsg ),
-		classes: [ 'ext-AIEditingAssistant-CommandExecution-header-label' ]
-	} ),
+	const label = new OO.ui.LabelWidget( {
+			/* eslint-disable-next-line */
+			label: mw.msg( this.commandData.data.labelMsg ),
+			classes: [ 'ext-AIEditingAssistant-CommandExecution-header-label' ]
+		} ),
 		description = new OO.ui.LabelWidget( {
+			/* eslint-disable-next-line */
 			label: this.commandData.data.descriptionMsg ? mw.msg( this.commandData.data.descriptionMsg ) : '',
 			classes: [ 'ext-AIEditingAssistant-CommandExecution-header-description' ]
 		} );
@@ -42,7 +44,7 @@ ext.AIEditingAssistant.ui.CommandExecution.prototype.getHeader = function () {
 };
 
 ext.AIEditingAssistant.ui.CommandExecution.prototype.getBody = function () {
-	var origText = new OO.ui.LabelWidget( {
+	const origText = new OO.ui.LabelWidget( {
 			classes: [ 'ext-AIEditingAssistant-CommandExecution-body-original' ],
 			label: this.operationalText
 		} ),
@@ -56,7 +58,7 @@ ext.AIEditingAssistant.ui.CommandExecution.prototype.getBody = function () {
 
 	OO.ui.mixin.PendingElement.call( this, { $pending: this.finalTextLabel.$element } );
 
-	var panel = new OO.ui.PanelLayout( {
+	const panel = new OO.ui.PanelLayout( {
 		expanded: false,
 		padded: false,
 		classes: [ 'ext-AIEditingAssistant-CommandExecution-body' ]
@@ -78,58 +80,62 @@ ext.AIEditingAssistant.ui.CommandExecution.prototype.getFinalText = function () 
 
 ext.AIEditingAssistant.ui.CommandExecution.prototype.executeCommand = function () {
 	this.setLoading( true );
-	var msg = this.commandData.data.commandMsg,
+	const msg = this.commandData.data.commandMsg,
+		/* eslint-disable-next-line */
 		msgObject = mw.message( msg );
-
+	/* eslint-disable-next-line */
 	if ( this.commandData.data.hasOwnProperty( 'paramsCallback' ) ) {
-		var params = this.commandData.data.paramsCallback( msg );
+		const params = this.commandData.data.paramsCallback( msg );
 		if ( typeof params === 'object' && params.length > 0 ) {
 			msgObject.params( params );
 		}
 	}
 
-	var command = msgObject.parse();
-	this.bot.initialize( command, this.operationalText ).done( function( result ) {
+	const command = msgObject.parse();
+	this.bot.initialize( command, this.operationalText ).done( ( result ) => {
 		this.finalText = result;
 		this.setLoading( false, true );
-	}.bind( this ) ).fail( function( e ) {
+	} ).fail( ( e ) => {
+		/* eslint-disable-next-line */
 		if ( e.hasOwnProperty( 'error' ) && e.error.hasOwnProperty( 'message' ) ) {
 			this.finalText = e.error.message;
 		}
 		this.setLoading( false, false );
 		this.finalTextLabel.$element.addClass( 'ext-AIEditingAssistant-CommandExecution-body-final-error' );
-	}.bind( this ) );
+	} );
 };
 
 ext.AIEditingAssistant.ui.CommandExecution.prototype.onMorePromptSubmitClick = function () {
-	var prompt = this.morePrompt.getValue().trim();
+	const prompt = this.morePrompt.getValue().trim();
 	if ( prompt === '' ) {
 		return;
 	}
-	var historyEntry = {
+	let historyEntry = {
 		prompt: prompt,
 		// Text at the time of prompt
-		text: this.finalText,
+		text: this.finalText
 	};
 	historyEntry = this.addChatHistory( historyEntry );
 	this.morePromptLayout.setErrors( [] );
 	this.setLoading( true );
-	this.bot.continue( prompt ).done( function( result ) {
+	this.bot.continue( prompt ).done( ( result ) => {
 		this.finalText = result;
 		this.setLoading( false, true );
-	}.bind( this ) ).fail( function( e ) {
+	} ).fail( ( e ) => {
+		/* eslint-disable-next-line */
 		if ( e.hasOwnProperty( 'error' ) && e.error.hasOwnProperty( 'message' ) ) {
 			this.morePromptLayout.setErrors( [ e.error.message ] );
 		}
 		this.setLoading( false, false, false );
 		this.finalTextLabel.setLabel( this.finalText );
 		if ( historyEntry.widget ) {
-			widget.setIcon( 'alert' );
+			historyEntry.widget.setIcon( 'alert' );
 		}
 
-	}.bind( this ) );
+	} );
 };
 
+/* eslint-disable-next-line */
 ext.AIEditingAssistant.ui.CommandExecution.prototype.setLoading = function ( loading, wasSuccessful, isMainCall ) {
 	if ( isMainCall === undefined ) {
 		isMainCall = true;
@@ -141,7 +147,7 @@ ext.AIEditingAssistant.ui.CommandExecution.prototype.setLoading = function ( loa
 		mw.msg( 'aieditingassistant-ui-commandexecution-loading' ) :
 		this.finalText
 	);
-	if( loading ) {
+	if ( loading ) {
 		this.pushPending();
 	} else {
 		this.popPending();
@@ -161,7 +167,7 @@ ext.AIEditingAssistant.ui.CommandExecution.prototype.getChatPanel = function () 
 		enter: 'onMorePromptSubmitClick'
 	} );
 	this.morePromptSubmit = new OO.ui.ButtonWidget( {
-		label: mw.msg( 'aieditingassistant-ui-commandexecution-ask-more-submit' ),
+		label: mw.msg( 'aieditingassistant-ui-commandexecution-ask-more-submit' )
 	} );
 	this.morePromptSubmit.connect( this, {
 		click: 'onMorePromptSubmitClick'
@@ -183,7 +189,7 @@ ext.AIEditingAssistant.ui.CommandExecution.prototype.getChatPanel = function () 
 	} );
 	this.undoButton.$element.hide();
 	this.chatHistoryPanel.$element.append( this.undoButton.$element );
-	var chatLayout = new OO.ui.PanelLayout( {
+	const chatLayout = new OO.ui.PanelLayout( {
 		padded: false,
 		expanded: false,
 		classes: [ 'ext-AIEditingAssistant-CommandExecution-chat' ]
@@ -195,7 +201,7 @@ ext.AIEditingAssistant.ui.CommandExecution.prototype.getChatPanel = function () 
 
 ext.AIEditingAssistant.ui.CommandExecution.prototype.addChatHistory = function ( item ) {
 	this.undoButton.$element.show();
-	var itemLabel = new OO.ui.LabelWidget( {
+	const itemLabel = new OO.ui.LabelWidget( {
 		label: item.prompt,
 		classes: [ 'ext-AIEditingAssistant-CommandExecution-chat-history-item' ]
 	} );
@@ -208,7 +214,7 @@ ext.AIEditingAssistant.ui.CommandExecution.prototype.addChatHistory = function (
 };
 
 ext.AIEditingAssistant.ui.CommandExecution.prototype.undo = function () {
-	var lastItem = this.chatHistory.pop();
+	const lastItem = this.chatHistory.pop();
 	if ( lastItem ) {
 		lastItem.widget.$element.remove();
 		this.finalText = lastItem.text;

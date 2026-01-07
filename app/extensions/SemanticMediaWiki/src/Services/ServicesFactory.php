@@ -2,11 +2,13 @@
 
 namespace SMW\Services;
 
+use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use Onoi\Cache\Cache;
 use Onoi\CallbackContainer\CallbackContainerFactory;
 use Onoi\CallbackContainer\ContainerBuilder;
 use Onoi\EventDispatcher\EventDispatcher;
-use ParserOutput;
 use Psr\Log\LoggerInterface;
 use SMW\CacheFactory;
 use SMW\Connection\ConnectionManager;
@@ -14,49 +16,45 @@ use SMW\ContentParser;
 use SMW\DataItemFactory;
 use SMW\DataUpdater;
 use SMW\DataValueFactory;
-use SMW\DeferredTransactionalCallableUpdate;
 use SMW\EntityCache;
 use SMW\Factbox\FactboxText;
-use SMW\Listener\EventListener\EventHandler;
 use SMW\HierarchyLookup;
 use SMW\InMemoryPoolCache;
-use SMW\InTextAnnotationParser;
 use SMW\IteratorFactory;
+use SMW\Listener\EventListener\EventHandler;
 use SMW\Maintenance\MaintenanceFactory;
 use SMW\MediaWiki\Deferred\CallableUpdate;
+use SMW\MediaWiki\Deferred\TransactionalCallableUpdate;
+use SMW\MediaWiki\HookDispatcher;
 use SMW\MediaWiki\JobFactory;
 use SMW\MediaWiki\JobQueue;
 use SMW\MediaWiki\MediaWikiNsContentReader;
 use SMW\MediaWiki\MwCollaboratorFactory;
 use SMW\MediaWiki\PageCreator;
 use SMW\MediaWiki\PageUpdater;
-use SMW\MediaWiki\TitleFactory;
-use SMW\MediaWiki\HookDispatcher;
-use SMW\NamespaceExaminer;
 use SMW\MediaWiki\Permission\PermissionExaminer;
 use SMW\MediaWiki\Preference\PreferenceExaminer;
-use SMW\SQLStore\RedirectStore;
+use SMW\MediaWiki\TitleFactory;
+use SMW\NamespaceExaminer;
+use SMW\Parser\InTextAnnotationParser;
 use SMW\ParserData;
 use SMW\ParserFunctionFactory;
 use SMW\PostProcHandler;
-use SMW\Property\AnnotatorFactory;
+use SMW\Property\SpecificationLookup;
 use SMW\PropertyLabelFinder;
-use SMW\PropertySpecificationLookup;
+use SMW\Query\Parser as QueryParser;
 use SMW\Query\QuerySourceFactory;
 use SMW\QueryFactory;
-use SMW\Schema\SchemaFactory;
 use SMW\SemanticData;
 use SMW\SerializerFactory;
 use SMW\Settings;
 use SMW\Site;
 use SMW\Store;
-use SMWQueryParser as QueryParser;
-use Title;
 
 /**
  * Application instances access for internal and external use
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.0
  *
  * @author mwjames
@@ -84,7 +82,7 @@ class ServicesFactory {
 	 * @param ContainerBuilder|null $containerBuilder
 	 * @param string $servicesFileDir
 	 */
-	public function __construct( ContainerBuilder $containerBuilder = null, $servicesFileDir = '' ) {
+	public function __construct( ?ContainerBuilder $containerBuilder = null, $servicesFileDir = '' ) {
 		$this->containerBuilder = $containerBuilder;
 		$this->servicesFileDir = $servicesFileDir;
 	}
@@ -104,7 +102,6 @@ class ServicesFactory {
 	 * @return self
 	 */
 	public static function getInstance() {
-
 		if ( self::$instance !== null ) {
 			return self::$instance;
 		}
@@ -152,7 +149,7 @@ class ServicesFactory {
 	 * not to be relied upon for external access.
 	 *
 	 *
-	 * @param string $service
+	 * @param string ...$service
 	 *
 	 * @return mixed
 	 */
@@ -168,7 +165,7 @@ class ServicesFactory {
 	 *
 	 * @since 2.5
 	 *
-	 * @param string $service
+	 * @param string ...$service
 	 *
 	 * @return mixed
 	 */
@@ -183,7 +180,7 @@ class ServicesFactory {
 	 *
 	 * @return PermissionExaminer
 	 */
-	public function newPermissionExaminer( \User $user = null ) : PermissionExaminer {
+	public function newPermissionExaminer( ?User $user = null ): PermissionExaminer {
 		return new PermissionExaminer( $this->containerBuilder->create( 'PermissionManager' ), $user );
 	}
 
@@ -194,49 +191,49 @@ class ServicesFactory {
 	 *
 	 * @return PreferenceExaminer
 	 */
-	public function newPreferenceExaminer( \User $user = null ) : PreferenceExaminer {
+	public function newPreferenceExaminer( ?User $user = null ): PreferenceExaminer {
 		return $this->containerBuilder->create( 'PreferenceExaminer', $user );
 	}
 
 	/**
 	 * @since 2.0
 	 */
-	public function newSerializerFactory() : SerializerFactory {
+	public function newSerializerFactory(): SerializerFactory {
 		return new SerializerFactory();
 	}
 
 	/**
 	 * @since 2.0
 	 */
-	public function newJobFactory() : JobFactory {
+	public function newJobFactory(): JobFactory {
 		return $this->containerBuilder->create( 'JobFactory' );
 	}
 
 	/**
 	 * @since 2.1
 	 */
-	public function newParserFunctionFactory() : ParserFunctionFactory {
+	public function newParserFunctionFactory(): ParserFunctionFactory {
 		return new ParserFunctionFactory();
 	}
 
 	/**
 	 * @since 2.2
 	 */
-	public function newMaintenanceFactory() : MaintenanceFactory {
+	public function newMaintenanceFactory(): MaintenanceFactory {
 		return new MaintenanceFactory();
 	}
 
 	/**
 	 * @since 2.2
 	 */
-	public function newCacheFactory() : CacheFactory {
+	public function newCacheFactory(): CacheFactory {
 		return $this->containerBuilder->create( 'CacheFactory', $this->getSettings()->get( 'smwgMainCacheType' ) );
 	}
 
 	/**
 	 * @since 2.2
 	 */
-	public function getCacheFactory() : CacheFactory {
+	public function getCacheFactory(): CacheFactory {
 		return $this->containerBuilder->singleton( 'CacheFactory', $this->getSettings()->get( 'smwgMainCacheType' ) );
 	}
 
@@ -247,7 +244,7 @@ class ServicesFactory {
 	 *
 	 * @return QuerySourceFactory
 	 */
-	public function getQuerySourceFactory( $source = null ) : QuerySourceFactory {
+	public function getQuerySourceFactory( $source = null ): QuerySourceFactory {
 		return $this->containerBuilder->singleton( 'QuerySourceFactory' );
 	}
 
@@ -256,7 +253,7 @@ class ServicesFactory {
 	 *
 	 * @return Store
 	 */
-	public function getStore( $store = null ) : Store {
+	public function getStore( $store = null ): Store {
 		return $this->containerBuilder->singleton( 'Store', $store );
 	}
 
@@ -265,7 +262,7 @@ class ServicesFactory {
 	 *
 	 * @return Settings
 	 */
-	public function getSettings() : Settings {
+	public function getSettings(): Settings {
 		return $this->containerBuilder->singleton( 'Settings' );
 	}
 
@@ -274,7 +271,7 @@ class ServicesFactory {
 	 *
 	 * @return ConnectionManager
 	 */
-	public function getConnectionManager() : ConnectionManager {
+	public function getConnectionManager(): ConnectionManager {
 		return $this->containerBuilder->singleton( 'ConnectionManager' );
 	}
 
@@ -283,7 +280,7 @@ class ServicesFactory {
 	 *
 	 * @return EventDispatcher
 	 */
-	public function getEventDispatcher() : EventDispatcher {
+	public function getEventDispatcher(): EventDispatcher {
 		return EventHandler::getInstance()->getEventDispatcher();
 	}
 
@@ -292,14 +289,14 @@ class ServicesFactory {
 	 *
 	 * @return HookDispatcher
 	 */
-	public function getHookDispatcher() : HookDispatcher {
+	public function getHookDispatcher(): HookDispatcher {
 		return $this->containerBuilder->singleton( 'HookDispatcher' );
 	}
 
 	/**
 	 * @since 2.0
 	 */
-	public function newTitleFactory() : TitleFactory {
+	public function newTitleFactory(): TitleFactory {
 		return $this->containerBuilder->create( 'TitleFactory', $this->newPageCreator() );
 	}
 
@@ -315,8 +312,7 @@ class ServicesFactory {
 	/**
 	 * @since 2.5
 	 */
-	public function newPageUpdater() : PageUpdater {
-
+	public function newPageUpdater(): PageUpdater {
 		$pageUpdater = $this->containerBuilder->create(
 			'PageUpdater',
 			$this->getStore()->getConnection( 'mw.db' ),
@@ -342,7 +338,7 @@ class ServicesFactory {
 	/**
 	 * @since 2.5
 	 */
-	public function getIteratorFactory() : IteratorFactory {
+	public function getIteratorFactory(): IteratorFactory {
 		return $this->containerBuilder->singleton( 'IteratorFactory' );
 	}
 
@@ -367,7 +363,7 @@ class ServicesFactory {
 	/**
 	 * @since 3.1
 	 */
-	public function getEntityCache() : EntityCache {
+	public function getEntityCache(): EntityCache {
 		return $this->containerBuilder->singleton( 'EntityCache' );
 	}
 
@@ -377,7 +373,6 @@ class ServicesFactory {
 	 * @return InTextAnnotationParser
 	 */
 	public function newInTextAnnotationParser( ParserData $parserData ) {
-
 		$mwCollaboratorFactory = $this->newMwCollaboratorFactory();
 
 		$linksProcessor = $this->containerBuilder->create( 'LinksProcessor' );
@@ -425,7 +420,7 @@ class ServicesFactory {
 	 *
 	 * @return ContentParser
 	 */
-	public function newContentParser( Title $title ) : ContentParser {
+	public function newContentParser( Title $title ): ContentParser {
 		return $this->containerBuilder->create( 'ContentParser', $title );
 	}
 
@@ -437,7 +432,6 @@ class ServicesFactory {
 	 * @return DataUpdater
 	 */
 	public function newDataUpdater( SemanticData $semanticData ) {
-
 		$settings = $this->getSettings();
 
 		$changePropagationNotifier = new \SMW\Property\ChangePropagationNotifier(
@@ -490,42 +484,42 @@ class ServicesFactory {
 	/**
 	 * @since 2.1
 	 */
-	public function getNamespaceExaminer() : NamespaceExaminer {
+	public function getNamespaceExaminer(): NamespaceExaminer {
 		return $this->containerBuilder->create( 'NamespaceExaminer' );
 	}
 
 	/**
 	 * @since 2.4
 	 */
-	public function getPropertySpecificationLookup() : PropertySpecificationLookup {
+	public function getPropertySpecificationLookup(): SpecificationLookup {
 		return $this->containerBuilder->singleton( 'PropertySpecificationLookup' );
 	}
 
 	/**
 	 * @since 2.4
 	 */
-	public function newHierarchyLookup() : HierarchyLookup {
+	public function newHierarchyLookup(): HierarchyLookup {
 		return $this->containerBuilder->create( 'HierarchyLookup' );
 	}
 
 	/**
 	 * @since 2.5
 	 */
-	public function getPropertyLabelFinder() : PropertyLabelFinder {
+	public function getPropertyLabelFinder(): PropertyLabelFinder {
 		return $this->containerBuilder->singleton( 'PropertyLabelFinder' );
 	}
 
 	/**
 	 * @since 2.4
 	 */
-	public function getMediaWikiNsContentReader() : MediaWikiNsContentReader {
+	public function getMediaWikiNsContentReader(): MediaWikiNsContentReader {
 		return $this->containerBuilder->singleton( 'MediaWikiNsContentReader' );
 	}
 
 	/**
 	 * @since 2.4
 	 */
-	public function getInMemoryPoolCache() : InMemoryPoolCache {
+	public function getInMemoryPoolCache(): InMemoryPoolCache {
 		return $this->containerBuilder->singleton( 'InMemoryPoolCache' );
 	}
 
@@ -541,10 +535,9 @@ class ServicesFactory {
 	/**
 	 * @since 2.4
 	 *
-	 * @param callable $callback
+	 * @param callable|null $callback
 	 */
-	public function newDeferredCallableUpdate( callable $callback = null ) : CallableUpdate {
-
+	public function newDeferredCallableUpdate( ?callable $callback = null ): CallableUpdate {
 		$deferredCallableUpdate = $this->containerBuilder->create(
 			'DeferredCallableUpdate',
 			$callback
@@ -568,10 +561,9 @@ class ServicesFactory {
 	/**
 	 * @since 3.0
 	 *
-	 * @param callable $callback
+	 * @param callable|null $callback
 	 */
-	public function newDeferredTransactionalCallableUpdate( callable $callback = null ) : DeferredTransactionalCallableUpdate {
-
+	public function newDeferredTransactionalCallableUpdate( ?callable $callback = null ): TransactionalCallableUpdate {
 		$deferredTransactionalUpdate = $this->containerBuilder->create(
 			'DeferredTransactionalCallableUpdate',
 			$callback,
@@ -606,33 +598,32 @@ class ServicesFactory {
 	/**
 	 * @since 2.5
 	 */
-	public function getDataItemFactory() : DataItemFactory {
+	public function getDataItemFactory(): DataItemFactory {
 		return $this->containerBuilder->singleton( 'DataItemFactory' );
 	}
 
 	/**
 	 * @since 2.5
 	 */
-	public function getQueryFactory() : QueryFactory {
+	public function getQueryFactory(): QueryFactory {
 		return $this->containerBuilder->singleton( 'QueryFactory' );
 	}
 
 	/**
 	 * @since 2.5
 	 */
-	public function getMediaWikiLogger( $channel = 'smw' ) : LoggerInterface {
+	public function getMediaWikiLogger( $channel = 'smw' ): LoggerInterface {
 		return $this->containerBuilder->singleton( 'MediaWikiLogger', $channel, $GLOBALS['smwgDefaultLoggerRole'] );
 	}
 
 	/**
 	 * @since 3.0
 	 */
-	public function getJobQueue() : JobQueue {
+	public function getJobQueue(): JobQueue {
 		return $this->containerBuilder->singleton( 'JobQueue' );
 	}
 
 	private static function newContainerBuilder( CallbackContainerFactory $callbackContainerFactory, $servicesFileDir ) {
-
 		$containerBuilder = $callbackContainerFactory->newCallbackContainerBuilder();
 
 		$containerBuilder->registerCallbackContainer( new SharedServicesContainer() );
@@ -641,7 +632,7 @@ class ServicesFactory {
 		$containerBuilder->registerFromFile( $servicesFileDir . '/' . 'events.php' );
 		$containerBuilder->registerFromFile( $servicesFileDir . '/' . 'cache.php' );
 
-		//	$containerBuilder = $callbackContainerFactory->newLoggableContainerBuilder(
+		// $containerBuilder = $callbackContainerFactory->newLoggableContainerBuilder(
 		//		$containerBuilder,
 		//		$callbackContainerFactory->newBacktraceSniffer( 10 ),
 		//		$callbackContainerFactory->newCallFuncMemorySniffer()
@@ -651,14 +642,14 @@ class ServicesFactory {
 		return $containerBuilder;
 	}
 
-	public function newPostProcHandler( ParserOutput $parserOutput ) : PostProcHandler {
+	public function newPostProcHandler( ParserOutput $parserOutput ): PostProcHandler {
 		return $this->create( 'PostProcHandler', $parserOutput );
 	}
 
 	/**
 	 * @since 4.1.1
 	 */
-	public function getFactboxText() : FactboxText {
+	public function getFactboxText(): FactboxText {
 		return $this->containerBuilder->singleton( 'FactboxText' );
 	}
 

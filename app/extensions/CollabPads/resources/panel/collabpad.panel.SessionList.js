@@ -2,7 +2,7 @@ window.collabpad = window.collabpad || {};
 window.collabpad.panel = window.collabpad.panel || {};
 
 collabpad.panel.SessionList = function ( cfg ) {
-	cfg = $.extend( {
+	cfg = Object.assign( {
 		padded: true,
 		expanded: false
 	}, cfg || {} );
@@ -13,7 +13,7 @@ collabpad.panel.SessionList = function ( cfg ) {
 
 	collabpad.panel.SessionList.parent.call( this, cfg );
 	this.data = [];
-	this.filterData = $.extend(
+	this.filterData = Object.assign(
 		{ state: { type: 'list', operator: 'in', value: [ 'running' ] } }, this.defaultFilter
 	);
 
@@ -79,7 +79,7 @@ collabpad.panel.SessionList.prototype.makeGrid = function () {
 			},
 			s_owner: {
 				headerText: mw.msg( 'collabpads-owner-label' ),
-				type: 'text',
+				type: 'user',
 				valueParser: function ( value ) {
 					return new OOJSPlus.ui.widget.UserWidget( {
 						user_name: value,
@@ -89,7 +89,7 @@ collabpad.panel.SessionList.prototype.makeGrid = function () {
 					} );
 				},
 				filter: {
-					type: 'text'
+					type: 'user'
 				}
 			},
 			s_participants: {
@@ -108,9 +108,6 @@ collabpad.panel.SessionList.prototype.makeGrid = function () {
 						$htmlElement.append( $( '<th>' ).append( widget.$element ) );
 					} );
 					return $htmlElement;
-				},
-				filter: {
-					type: 'text'
 				}
 			}
 		},

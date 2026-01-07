@@ -1,7 +1,7 @@
 {
 	"name": "BlueSpiceFoundation",
 	"license-name": "GPL-3.0-only",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"author": [
 		"[https://www.hallowelt.com Hallo Welt! GmbH]"
 	],
@@ -9,10 +9,9 @@
 	"descriptionmsg": "bluespicefoundation-desc",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"ExtJSBase": ">= 3.0.0",
-			"OOJSPlus": ">= 2.0.0"
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"attributes": {
@@ -28,15 +27,9 @@
 				"ImageExtensions": "\\BlueSpice\\ConfigDefinition\\ImageExtensions::getInstance",
 				"Favicon": "\\BlueSpice\\ConfigDefinition\\Favicon::getInstance"
 			},
-			"DynamicFileRegistry": {
-				"userprofileimage": "\\BlueSpice\\DynamicFileDispatcher\\UserProfileImage",
-				"groupimage": "\\BlueSpice\\DynamicFileDispatcher\\GroupImage",
-				"articlepreviewimage": "\\BlueSpice\\DynamicFileDispatcher\\ArticlePreviewImage"
-			},
 			"EntityRegistry": {},
 			"GraphicalListRegistry": {},
 			"ExtendedSiteToolRegistry": {},
-			"AdminToolRegistry": {},
 			"PageInfoElementRegistry": {},
 			"PageHeaderBeforeContentRegistry": {},
 			"TagRegistry": {},
@@ -110,10 +103,6 @@
 			"TemplateHanderRegistry": {
 				"mustache": "\\BlueSpice\\Template\\Mustache::factory"
 			},
-			"LoadPlaceholders": {
-				"CRUDGrid": "extensions/BlueSpiceFoundation/resources/templates/loadPlaceholder",
-				"ExtJSGeneric": "extensions/BlueSpiceFoundation/resources/templates/loadPlaceholder"
-			},
 			"JSConfigVars": {},
 			"SecondaryDataUpdateRegistry": {}
 		},
@@ -122,6 +111,13 @@
 				"notificationFlag": {
 					"group": "necessary",
 					"addPrefix": true
+				}
+			}
+		},
+		"PDFCreator": {
+			"StylesheetsProvider": {
+				"BlueSpiceFoundationIconFontsStyles": {
+					"class": "BlueSpice\\Integration\\PDFCreator\\StylesheetsProvider\\IconFontsStyles"
 				}
 			}
 		}
@@ -134,7 +130,6 @@
 		"WikiAdmin": "SpecialWikiAdmin"
 	},
 	"APIModules": {
-		"bs-filebackend-store": "BSApiFileBackendStore",
 		"bs-user-store": "BSApiUserStore",
 		"bs-category-store": "BSApiCategoryStore",
 		"bs-adminuser-store": "BSApiAdminUserStore",
@@ -203,106 +198,16 @@
 				"bs-secs-duration",
 				"bs-two-units-ago",
 				"bs-one-unit-ago",
-				"bs-now"
+				"bs-now",
+				"confirm",
+				"bs-title-success",
+				"bs-title-warning"
 			],
 			"dependencies": [
 				"mediawiki.cookie",
 				"mediawiki.api",
 				"mwstake.component.alertbanners"
 			]
-		},
-		"ext.bluespice.extjs": {
-			"class": "BlueSpice\\ResourceModule\\ExtJS",
-			"localBasePath": "resources",
-			"remoteExtPath": "BlueSpiceFoundation/resources",
-			"scripts": [
-				"bluespice.extjs/bluespice.extjs.js",
-				"bluespice.extjs/bluespice.extjs.loadPlaceholder.js",
-				"bluespice.extjs/BS/override/grid/column/Action.js",
-				"bluespice.extjs/BS/override/button/Button.js"
-			],
-			"styles": [
-				"bluespice.extjs/bluespice.extjs.fixes.css",
-				"bluespice.extjs/bluespice.extjs.overrides.less"
-			],
-			"messages": [
-				"bs-extjs-ok",
-				"bs-extjs-cancel",
-				"bs-extjs-yes",
-				"bs-extjs-no",
-				"bs-extjs-save",
-				"bs-extjs-delete",
-				"bs-extjs-edit",
-				"bs-extjs-add",
-				"bs-extjs-remove",
-				"bs-extjs-copy",
-				"bs-extjs-hint",
-				"bs-extjs-error",
-				"bs-extjs-confirm",
-				"bs-extjs-loading",
-				"bs-extjs-pageSize",
-				"bs-extjs-actions-column-header",
-				"bs-extjs-saving",
-				"bs-extjs-warning",
-				"bs-extjs-reset",
-				"bs-extjs-close",
-				"bs-extjs-label-user",
-				"bs-extjs-label-group",
-				"bs-extjs-label-namespace",
-				"bs-extjs-label-page",
-				"bs-extjs-label-directsearch",
-				"bs-extjs-label-specialpage",
-				"bs-extjs-titlecombo-newpagehint",
-				"bs-extjs-confirmNavigationTitle",
-				"bs-extjs-confirmNavigationText",
-				"bs-extjs-allns",
-				"bs-extjs-mainns",
-				"bs-extjs-upload",
-				"bs-extjs-browse",
-				"bs-extjs-uploading",
-				"bs-extjs-filters",
-				"bs-extjs-filter-equals",
-				"bs-extjs-filter-equals-not",
-				"bs-extjs-filter-contains",
-				"bs-extjs-filter-contains-not",
-				"bs-extjs-filter-starts-with",
-				"bs-extjs-filter-ends-with",
-				"bs-extjs-filter-greater-than",
-				"bs-extjs-filter-less-than",
-				"bs-extjs-title-success",
-				"bs-extjs-title-warning",
-				"bs-extjs-filter-bool-yes",
-				"bs-extjs-filter-bool-no",
-				"bs-extjs-categoryboxselect-emptytext",
-				"bs-extjs-categorytree-title",
-				"bs-extjs-filter-date-after",
-				"bs-extjs-filter-date-before",
-				"bs-extjs-filter-date-on",
-				"bs-extjs-filter-date-filter",
-				"bs-extjs-pageexport-dialog-title",
-				"bs-extjs-pageexport-list-name-label",
-				"bs-extjs-pageexport-list-format-label",
-				"bs-extjs-pageexport-list-format-plain-label",
-				"bs-extjs-pageexport-list-format-link-label",
-				"bs-extjs-pageexport-overwrite-label",
-				"bs-extjs-pageexport-general-error",
-				"bs-pagecollection-prefix",
-				"bs-extjs-pageexport-success",
-				"bs-extjs-pageexport-success-text",
-				"bs-extjs-pageexport-required-text",
-				"bs-extjs-export-search-summary-text",
-				"bs-extjs-pageexport-error-invalid-title",
-				"bs-extjs-combo-box-default-placeholder",
-				"bs-extjs-tools-trigger-title",
-				"bs-extjs-tools-trigger-text",
-				"bs-extjs-flyout-tab-thumbs-label",
-				"bs-extjs-flyout-tab-thumbs-title",
-				"bs-extjs-flyout-tab-grid-label",
-				"bs-extjs-flyout-tab-grid-title",
-				"bs-extjs-flyout-add-title",
-				"bs-extjs-flyout-add-label"
-			],
-			"group": "bsextjs"
 		},
 		"ext.bluespice.oojs": {
 			"localBasePath": "resources",
@@ -339,64 +244,37 @@
 				"bs-ooui-key-value-input-widget-add-form-label",
 				"bs-ooui-key-value-input-widget-no-values-label",
 				"bs-ooui-key-value-input-widget-section-label",
-				"bs-ooui-key-value-input-widget-add-section-label"
+				"bs-ooui-key-value-input-widget-add-section-label",
+				"bs-ui-generic-save",
+				"bs-ui-generic-cancel",
+				"bs-ui-generic-yes",
+				"bs-ui-generic-no",
+				"bs-ui-generic-close"
 			]
 		},
-		"ext.bluespice.upload": {
+		"ext.bluespice.oojs.exportDialog": {
 			"localBasePath": "resources",
 			"remoteExtPath": "BlueSpiceFoundation/resources",
-			"styles": [
-				"bluespice.extjs/bluespice.extjs.upload.css"
+			"scripts": [
+				"bluespice.oojs/ui/dialog/ExportPagesDialog.js"
 			],
 			"messages": [
-				"bs-upload-uploaddialogtitle",
-				"bs-upload-uploadbuttontext",
-				"bs-upload-uploadfilefieldlabel",
-				"bs-upload-uploadfileemptytext",
-				"bs-upload-uploaddestfilelabel",
-				"bs-upload-allowedfiletypesare",
-				"bs-upload-license",
-				"bs-upload-uploadwatchthislabel",
-				"bs-upload-uploadignorewarningslabel",
-				"bs-upload-categories",
-				"bs-upload-upload-waitmessage",
-				"bs-upload-error",
-				"bs-upload-descfilelabel",
-				"bs-upload-error-long",
-				"bs-upload-filetypenotsupported",
-				"bs-upload-details",
-				"bs-upload-uploadwarningdialog-title",
-				"bs-upload-uploadwarningdialog-intro",
-				"bs-upload-uploadwarningdialog-outro",
-				"bs-upload-uploadwarningdialog-warning-exists",
-				"bs-upload-uploadwarningdialog-warning-duplicate",
-				"bs-upload-uploadwarningdialog-warning-unknown"
+				"bs-pageexport-list-name-label",
+				"bs-pageexport-list-format-label",
+				"bs-pageexport-list-format-plain-label",
+				"bs-pageexport-list-format-link-label",
+				"bs-pageexport-overwrite-label",
+				"bs-pagecollection-prefix",
+				"bs-export-search-summary-text",
+				"bs-ui-generic-save",
+				"bs-ui-generic-cancel",
+				"bs-ui-generic-close",
+				"bs-exportpages-dialog-title",
+				"bs-exportpages-success-text"
 			],
 			"dependencies": [
-				"mediawiki.api"
-			]
-		},
-		"ext.bluespice.extjs.filerepo": {
-			"localBasePath": "resources",
-			"remoteExtPath": "BlueSpiceFoundation/resources",
-			"messages": [
-				"bs-filerepo-labelupload",
-				"bs-filerepo-labelfilter",
-				"bs-filerepo-headerfilename",
-				"bs-filerepo-headerfilesize",
-				"bs-filerepo-headerpagecategories",
-				"bs-filerepo-headerfilewidth",
-				"bs-filerepo-headerfileheight",
-				"bs-filerepo-headerfilemimetype",
-				"bs-filerepo-headerfileusertext",
-				"bs-filerepo-headerfileextension",
-				"bs-filerepo-headerfiletimestamp",
-				"bs-filerepo-headerfilemediatype",
-				"bs-filerepo-headerfiledescription",
-				"bs-filerepo-headerfilethumbnail",
-				"bs-filerepo-yes",
-				"bs-filerepo-no",
-				"bs-filerepo-pagesize"
+				"oojs-ui",
+				"ext.oOJSPlus.data"
 			]
 		},
 		"ext.bluespice.styles": {
@@ -411,65 +289,6 @@
 				"bluespice/bluespice.loadPlaceholder.less"
 			],
 			"class": "\\BlueSpice\\ResourceModule\\LessVars"
-		},
-		"ext.bluespice.flags.styles": {
-			"localBasePath": "resources",
-			"remoteExtPath": "BlueSpiceFoundation/resources",
-			"styles": [
-				"famfamfam/flags.css"
-			]
-		},
-		"ext.bluespice.extjs.BS.portal": {
-			"localBasePath": "resources",
-			"remoteExtPath": "BlueSpiceFoundation/resources",
-			"dependencies": [
-				"ext.bluespice.extjs"
-			],
-			"messages": [
-				"bs-extjs-portal-config",
-				"bs-extjs-portal-title",
-				"bs-extjs-portal-height",
-				"bs-extjs-portal-count",
-				"bs-extjs-portal-timespan",
-				"bs-extjs-portal-timespan-week",
-				"bs-extjs-portal-timespan-month",
-				"bs-extjs-portal-timespan-alltime"
-			]
-		},
-		"ext.bluespice.extjs.BS.deferred": {
-			"localBasePath": "resources",
-			"remoteExtPath": "BlueSpiceFoundation/resources",
-			"dependencies": [
-				"ext.bluespice.extjs"
-			],
-			"messages": [
-				"bs-deferred-action-status-pending",
-				"bs-deferred-action-status-running",
-				"bs-deferred-action-status-done",
-				"bs-deferred-action-status-error",
-				"bs-deferred-action-apicopypage-description",
-				"bs-deferred-action-apieditpage-description",
-				"bs-deferred-batch-title",
-				"bs-deferred-batch-progress-desc",
-				"bs-deferred-batch-actions",
-				"bs-deferred-batch-description",
-				"bs-deferred-batch-status",
-				"bs-deferred-action-apiaddcategories-description",
-				"bs-deferred-action-apisetcategories-description",
-				"bs-deferred-action-apiremovecategories-description",
-				"bs-deferred-action-apimovepage-description",
-				"bs-deferred-action-apideletepage-description"
-			]
-		},
-		"ext.bluespice.extjs.BS.portal.css": {
-			"localBasePath": "resources",
-			"remoteExtPath": "BlueSpiceFoundation/resources",
-			"styles": [
-				"bluespice.extjs/bluespice.extjs.BS.portal.css"
-			],
-			"dependencies": [
-				"ext.bluespice.extjs"
-			]
 		},
 		"ext.bluespice.html.formfields.sortable": {
 			"localBasePath": "resources",
@@ -530,15 +349,6 @@
 		"BlueSpiceDiagnostics": [
 			"i18n/diagnostics"
 		],
-		"BlueSpice.ExtJS": [
-			"i18n/extjs"
-		],
-		"BlueSpice.ExtJS.Portal": [
-			"i18n/extjs-portal"
-		],
-		"BlueSpice.Deferred": [
-			"i18n/deferred"
-		],
 		"BlueSpice.Validator": [
 			"i18n/validator"
 		],
@@ -569,13 +379,22 @@
 		"mediawikiservices": {
 			"class": "\\BlueSpice\\HookHandler\\MediaWikiServices"
 		},
-		"bs-ue-module-pdf-integration": {
-				"class": "\\BlueSpice\\HookHandler\\PDFExportHandler"
-		},
 		"common-user-interface": {
 			"class": "\\BlueSpice\\HookHandler\\CommonUserInterface",
 			"@note": "For some reason this service is not available at time of initalization",
 			"@services": [ "ConfigFactory " ]
+		},
+		"addUserImage": {
+			"class": "\\BlueSpice\\HookHandler\\AddUserImageToUserStore",
+			"services": [
+				"UserFactory", "BSRendererFactory"
+			]
+		},
+		"permissionLockdown": {
+			"class": "\\BlueSpice\\HookHandler\\PermissionLockdown",
+			"services": [
+				"MainConfig", "PermissionManager", "TitleFactory", "RevisionLookup", "BSUtilityFactory"
+			]
 		}
 	},
 	"Hooks": {
@@ -599,8 +418,7 @@
 		],
 		"LoadExtensionSchemaUpdates": [
 			"BlueSpice\\Hook\\LoadExtensionSchemaUpdates\\AddBlueSpice3SettingsAndMigrationMaintenanceScript::callback",
-			"BlueSpice\\Hook\\LoadExtensionSchemaUpdates\\AddBlueSpiceUserPropertiesMigrationMaintenanceScript::callback",
-			"BlueSpice\\Hook\\LoadExtensionSchemaUpdates\\AddBlueSpiceCleanUpDeletedUsersBlocksMaintenanceScript::callback"
+			"BlueSpice\\Hook\\LoadExtensionSchemaUpdates\\AddBlueSpiceUserPropertiesMigrationMaintenanceScript::callback"
 		],
 		"ParserFirstCallInit": [
 			"BlueSpice\\Hook\\ParserFirstCallInit\\AddTags::callback"
@@ -629,43 +447,22 @@
 		"SearchGetNearMatchComplete": [
 			"BlueSpice\\Hook\\SearchGetNearMatchComplete\\ApplyNearMatchLockdown::callback"
 		],
-		"BeforeParserFetchTemplateAndTitle": [
-			"BlueSpice\\Hook\\BeforeParserFetchTemplateAndTitle\\CheckTransclusionPermissions::callback"
+		"BeforeParserFetchTemplateRevisionRecord": [
+			"permissionLockdown"
+		],
+		"BeforeParserFetchFileAndTitle": "permissionLockdown",
+		"ApiBeforeMain": [
+			"permissionLockdown"
 		],
 		"TitleReadWhitelist": "\\BlueSpice\\Hook\\TitleReadWhitelist\\AddFooterLinks::callback",
 		"MediaWikiServices": "mediawikiservices",
-		"BSUEModulePDFBeforeAddingContent": "bs-ue-module-pdf-integration",
-		"MWStakeCommonUILessVarsInit": "common-user-interface"
+		"MWStakeCommonUILessVarsInit": "common-user-interface",
+		"MWStakeCommonWebAPIsQueryStoreResult": "addUserImage"
 	},
 	"config_prefix": "bsg",
 	"config": {
 		"PermissionConfig": {
 			"value": []
-		},
-		"BlueSpiceExtInfo": {
-			"value": {
-				"name": "BlueSpice",
-				"version": "4.5.2",
-				"status": "stable",
-				"package": "BlueSpice Free",
-				"url": "https://bluespice.com",
-				"desc": "Makes MediaWiki enterprise ready.",
-				"author": [
-					"[https://www.hallowelt.com Hallo Welt! GmbH]"
-				]
-			}
-		},
-		"DefaultUserImage": {
-			"value": "resources/bluespice/images/bs-user-default-image.png",
-			"path": true
-		},
-		"DefaultAnonImage": {
-			"value": "resources/bluespice/images/bs-user-anon-image.png",
-			"path": true
-		},
-		"DefaultGroupImage": {
-			"value": "resources/bluespice/images/bs-group-default-image.png",
-			"path": true
 		},
 		"UIPermissionBlacklist": {
 			"value": [
@@ -690,114 +487,177 @@
 		},
 		"CreditsProgrammers": {
 			"value": [
-				"Markus Glaser",
-				"Radovan Kubani",
-				"Sebastian Ulbricht",
-				"Marc Reymann",
-				"Mathias Scheer",
-				"Thomas Lorenz",
-				"Tobias Weichart",
-				"Robert Vogel",
-				"Erwin Forster",
-				"Karl Waldmannstetter",
-				"Daniel Lynge",
-				"Tobias Davids",
-				"Patric Wirth",
-				"Stephan Muggli",
-				"Stefan Widmann",
-				"Jan Göttlich",
+				"Arwed Beck",
 				"Benedikt Hofmann",
+				"Daniel Lynge",
+				"Daniel Riedmüller",
 				"Daniel Vogel",
-				"Leonid Verhovskij",
-				"Gerhard Diller",
-				"Mannfred Dennerlein",
 				"Dejan Savuljesku",
-				"Josef Konrad",
-				"Philipp Pirzer",
-				"Peter Böhm",
-				"Gökhan Geyik",
-				"Oleksandr Pinchuck",
 				"Dmitry Shevliakov",
-				"Jenya Punchenko"
+				"Erwin Forster",
+				"Fabian Stelzer",
+				"Gerhard Diller",
+				"Gökhan Geyik",
+				"Hamish Slater",
+				"Hua Jing",
+				"Jan Göttlich",
+				"Jenya Punchenko",
+				"Josef Konrad",
+				"Karl Waldmannstetter",
+				"Leonid Verhovskij",
+				"Mannfred Dennerlein",
+				"Marc Reymann",
+				"Markus Glaser",
+				"Mathias Scheer",
+				"Maximilian Kopka",
+				"Miriam Schlindwein",
+				"Oleksandr Pinchuck",
+				"Patric Wirth",
+				"Pavlo Yashchenko",
+				"Peter Böhm",
+				"Peter Starzer",
+				"Philipp Miguel Pirzer",
+				"Radovan Kubani",
+				"Robert Vogel",
+				"Sebastian Ulbricht",
+				"Shivam Shukla",
+				"Stefan Kuehn",
+				"Stefan Widmann",
+				"Stephan Muggli",
+				"Thomas Lorenz",
+				"Tobias Davids",
+				"Tobias Weichart",
+				"Zoran Dori"
 			]
 		},
 		"CreditsDesignAndTesting": {
 			"value": [
-				"Anja Ebersbach",
-				"Richard Heigl",
-				"Nathalie Köpff",
-				"Michael Rödl",
-				"Michael Scherm",
-				"Dardan Diugan",
-				"Christina Glaser",
-				"Christian Graf",
+				"Alexander Ziegltrum",
 				"Angelika Müller",
-				"Karl Skodnik",
+				"Anja Ebersbach",
 				"Astrid Scheffler",
-				"Sabine Gürtler",
-				"Thomas Schnakenberg",
-				"Sabrina Dürr",
-				"Tobias Kornprobst",
-				"Luisa Roth",
-				"Ljubica Sireta",
+				"Christian Graf",
+				"Christina Glaser",
+				"Dardan Diugan",
 				"David Schweiger",
 				"Florian Bäckmann",
-				"Alexander Ziegltrum",
-				"Margit Link-Rodrigue"
+				"Karl Skodnik",
+				"Laetitia Huyghe",
+				"Ljubica Sireta",
+				"Luisa Roth",
+				"Margit Link-Rodrigue",
+				"Michael Rödl",
+				"Michael Scherm",
+				"Monique Gähl",
+				"Nathalie Köpff",
+				"Richard Heigl",
+				"Sabine Gürtler",
+				"Sabrina Dürr",
+				"Thomas Schnakenberg",
+				"Tobias Kornprobst",
+				"Verena Hösl"
 			]
 		},
 		"CreditsContributors": {
 			"value": [
 				"Aaron Schulz",
+				"Abijeet Patro",
 				"Acamicamacaraca",
-				"Alangi Derick",
 				"addshore",
+				"Alangi Derick",
 				"Albert221",
+				"Alexander Vorwerk",
+				"Alexandre Emsenhuber",
+				"Amire80",
+				"Amir E. Aharoni",
 				"Amir Sarabadani",
 				"Ammar",
 				"Ammarpad",
 				"amritsreekumar",
+				"Andre Klapper",
 				"Antoine Musso",
+				"aploe",
 				"Aryeh Gregor",
 				"Aude",
 				"Basil Hershberger",
 				"Bill Pirkle",
+				"Bill Traynor",
 				"Brad Jorsch",
+				"Brion Vibber",
 				"Chad Horohoe",
+				"chaud",
+				"Chiefgeek157",
 				"Christian Aistleitner",
+				"cicalese",
+				"C. Scott Ananian",
+				"Daimona Eaytoy",
+				"daniel",
 				"DannyS712",
 				"David Sn",
 				"Demon",
 				"Derick Alangi",
+				"Dmitry Shevliakov",
+				"dragandanicic0@gmail.com",
+				"Dreamy Jazz",
+				"Dringsim",
 				"DrishyaR",
+				"Ed Sanders",
+				"Federico Leva",
 				"Florian",
 				"Florianschmidtwelzow",
 				"Fomafix",
+				"frankie",
 				"Frederic Mohr",
 				"Gergő Tisza",
+				"Gerhard Diller",
 				"Guycn2",
+				"Hashar",
 				"hexmode",
 				"Holger Knust",
 				"idakuch",
+				"Jack D. Pond",
+				"Jack Phoenix",
 				"James D. Forrester",
+				"James Montalvo",
+				"jamesmontalvo3",
 				"Jayprakash12345",
+				"Jenya Punchenko",
+				"Jeroen De Dauw",
 				"Jforrester",
 				"jhsoby",
+				"Jon Harald Søby",
+				"Jon Robson",
 				"Justin Du",
+				"Klein Muçi",
+				"Krinkle",
 				"Kunal Mehta",
 				"Legoktm",
-				"libraryupgrader",
+				"Leon",
+				"Lucas Savva",
+				"Lucas Werkmeister",
+				"Lucien Murray-Pitts",
+				"Manfred Dennerlein",
 				"MarcoAurelio",
 				"Mark A. Hershberger",
-				"Max Semenik",
+				"Markus Gebert",
 				"MaxSem",
+				"Max Semenik",
+				"Meowcat",
 				"MtDu",
+				"Nikerabbit",
 				"Nikita Rana",
+				"Novem Linguae",
+				"oetterer",
 				"OmkarJ",
 				"Ori Livneh",
 				"Paladox",
+				"Patrick Gaus",
+				"peter-ovchyn",
 				"Phantom42",
+				"Philipp Kolmann",
+				"Pppery",
 				"Prateek Saxena",
+				"ptrcnull",
 				"Purodha",
 				"QChris",
 				"Rafid Aslam",
@@ -805,24 +665,53 @@
 				"Raymond",
 				"RazeSoldier",
 				"Reedy",
+				"Richard Armstrong",
+				"Ricordisamoa",
 				"rlot",
+				"Roan Kattouw",
+				"Rohan-cod",
 				"Rohitt Vashishtha",
+				"Roman Stolar",
+				"sahil",
+				"Sam Reed",
+				"Sanjay Thiyagarajan",
+				"Scott Shambarger",
 				"Siebrand Mazeland",
+				"Stang",
 				"Subin Siby",
+				"Taavi Väänänen",
+				"Techwizzie",
 				"TGC",
+				"Thalia",
+				"TheSandDoctor",
+				"Thiemo Kreuz",
+				"Thomas Daniels",
+				"Timo Tijhof",
+				"Tim Starling",
+				"Tobias Oetterer",
+				"Translation updater bot",
 				"Tulsi Bhagat",
 				"Umherirrender",
+				"vladshapik",
+				"Wandji69",
+				"Warmelink",
+				"withoutaname",
+				"Wout Gevaert",
 				"Yuki Shira",
 				"Yuriy Shnitkovskiy",
-				"withoutaname",
+				"ZabeMath",
+				"Zach",
 				"Zoranzoki21"
 			]
 		},
 		"CreditsTranslation": {
 			"value": [
-				"Siebrand Mazeland",
+				"Miriam Schlindwein",
+				"Laetitia Huyghe",
 				"Raimond Spekking",
-				"Stephan Muggli"
+				"Siebrand Mazeland",
+				"Stephan Muggli",
+				"Verena Hösl"
 			]
 		},
 		"LessVars": {
@@ -898,7 +787,6 @@
 		"BSApiTasksBase": "includes/api/BSApiTasksBase.php",
 		"BSApiExtJSStoreBase": "includes/api/BSApiExtJSStoreBase.php",
 		"BSApiExtJSDBTableStoreBase": "includes/api/BSApiExtJSDBTableStoreBase.php",
-		"BSApiFileBackendStore": "includes/api/BSApiFileBackendStore.php",
 		"BSApiUserStore": "includes/api/BSApiUserStore.php",
 		"BSApiCategoryStore": "includes/api/BSApiCategoryStore.php",
 		"BSApiAdminUserStore": "includes/api/BSApiAdminUserStore.php",
@@ -952,8 +840,7 @@
 		"BSTemplateHelper": "includes/TemplateHelper.php",
 		"BSTasksApiSpec": "includes/utility/BSTasksApiSpec.php",
 		"BSMigrateSettings": "maintenance/BSMigrateSettings.php",
-		"BSMigrateUserProperties": "maintenance/BSMigrateUserProperties.php",
-		"BSCleanUpDeletedUsersBlocks": "maintenance/BSCleanUpDeletedUsersBlocks.php"
+		"BSMigrateUserProperties": "maintenance/BSMigrateUserProperties.php"
 	},
 	"manifest_version": 2,
 	"load_composer_autoloader": true,

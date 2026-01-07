@@ -6,12 +6,12 @@ use File;
 use FormatJson;
 use Html;
 use MediaWiki\MediaWikiServices;
-use SMW\ResultPrinter;
+use SMW\Query\QueryResult;
+use SMW\Query\Result\ResultArray;
+use SMW\Query\ResultPrinters\ResultPrinter;
 use SMWDataItem;
 use SMWDataValue;
 use SMWOutputs;
-use SMWQueryResult;
-use SMWResultArray;
 use SRFUtils;
 use Title;
 
@@ -50,7 +50,7 @@ class MediaPlayer extends ResultPrinter {
 	protected $validMimeTypes = [ 'mp3', 'mp4', 'webm', 'webma', 'webmv', 'ogg', 'oga', 'ogv', 'm4v', 'm4a' ];
 
 	/**
-	 * @see SMWResultPrinter::getName
+	 * @see ResultPrinter::getName
 	 * @return string
 	 */
 	public function getName() {
@@ -58,14 +58,14 @@ class MediaPlayer extends ResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::getResultText
+	 * @see ResultPrinter::getResultText
 	 *
-	 * @param SMWQueryResult $result
+	 * @param QueryResult $result
 	 * @param $outputMode
 	 *
 	 * @return string
 	 */
-	protected function getResultText( SMWQueryResult $result, $outputMode ) {
+	protected function getResultText( QueryResult $result, $outputMode ) {
 		// Data processing
 		$data = $this->getResultData( $result, $outputMode );
 
@@ -88,18 +88,18 @@ class MediaPlayer extends ResultPrinter {
 	 *
 	 * @since 1.9
 	 *
-	 * @param SMWQueryResult $result
+	 * @param QueryResult $result
 	 * @param $outputMode
 	 *
 	 * @return array
 	 */
-	protected function getResultData( SMWQueryResult $result, $outputMode ) {
+	protected function getResultData( QueryResult $result, $outputMode ) {
 		$data = [];
 
 		/**
 		 * Get all values for all rows that belong to the result set
 		 *
-		 * @var SMWResultArray $rows
+		 * @var ResultArray $rows
 		 */
 		while ( $rows = $result->getNext() ) {
 			$rowData = [];
@@ -107,7 +107,7 @@ class MediaPlayer extends ResultPrinter {
 			$mimeType = null;
 
 			/**
-			 * @var SMWResultArray $field
+			 * @var ResultArray $field
 			 * @var SMWDataValue $dataValue
 			 */
 			foreach ( $rows as $field ) {
@@ -128,7 +128,7 @@ class MediaPlayer extends ResultPrinter {
 
 				// Check if the subject itself is a media source
 				if ( $field->getResultSubject()->getTitle()->getNamespace() === NS_FILE && $mimeType === null ) {
-					list( $mediaType, $mimeType, $source ) = $this->getMediaSource(
+					[ $mediaType, $mimeType, $source ] = $this->getMediaSource(
 						$field->getResultSubject()->getTitle()
 					);
 					$rowData[$mimeType] = $source;
@@ -187,7 +187,7 @@ class MediaPlayer extends ResultPrinter {
 			} elseif ( in_array( $extension, [ 'm4v', 'm4a', 'm4p' ] ) ) {
 				$params = [ $extension === 'm4v' ? 'video' : 'audio', $extension, $source->getUrl() ];
 			} else {
-				list( $major, $minor ) = File::splitMime( $source->getMimeType() );
+				[ $major, $minor ] = File::splitMime( $source->getMimeType() );
 				$params = [ $major, $extension, $source->getUrl() ];
 			}
 		} else {
@@ -224,7 +224,7 @@ class MediaPlayer extends ResultPrinter {
 
 					// Identify the media source
 					// and get media information
-					list( $mediaType, $mimeType, $source ) = $this->getMediaSource( $title );
+					[ $mediaType, $mimeType, $source ] = $this->getMediaSource( $title );
 					$label = $mimeType;
 					return $source;
 				} elseif ( $label === 'poster' ) {
@@ -327,7 +327,7 @@ class MediaPlayer extends ResultPrinter {
 	}
 
 	/**
-	 * @see SMWResultPrinter::getParamDefinitions
+	 * @see ResultPrinter::getParamDefinitions
 	 *
 	 * @since 1.9
 	 *
@@ -364,10 +364,6 @@ class MediaPlayer extends ResultPrinter {
 	 * @return bool|File
 	 */
 	private function findFile( Title $title ) {
-		if ( method_exists( MediaWikiServices::class, 'getRepoGroup' ) ) {
-			return MediaWikiServices::getInstance()->getRepoGroup()->findFile( $title );
-		}
-
-		return wfFindFile( $title ); // TODO: Remove when min MW version is 1.34
+		return MediaWikiServices::getInstance()->getRepoGroup()->findFile( $title );
 	}
 }

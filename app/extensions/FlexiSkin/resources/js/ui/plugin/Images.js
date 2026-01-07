@@ -38,11 +38,10 @@ flexiskin.ui.plugin.Images.prototype.provideControls = function () {
 };
 
 flexiskin.ui.plugin.Images.prototype.onPreview = function ( data, itemId ) {
-	var dfd = $.Deferred(),
-		file;
+	const dfd = $.Deferred();
 
 	// Get currently choosen file
-	file = this.getValue();
+	const file = this.getValue();
 	if ( !( file instanceof File ) ) {
 		// Nothing selected
 		return dfd.reject();
@@ -50,10 +49,10 @@ flexiskin.ui.plugin.Images.prototype.onPreview = function ( data, itemId ) {
 
 	// After file is applied reject the promise, since we dont want any
 	// data sent to the backend
-	var reader = new FileReader();
+	const reader = new FileReader();
 	reader.readAsDataURL( file );
 	reader.onloadend = function () {
-		var b64 = reader.result;
+		const b64 = reader.result;
 		if ( itemId === 'images/logo' ) {
 			$( 'a.mw-wiki-logo' ).css( 'background-image', 'url("' + b64 + '")' );
 		}
@@ -74,7 +73,7 @@ flexiskin.ui.plugin.Images.prototype.onSave = function ( data, itemId ) {
 		return a.name === b.name && a.size === b.size && a.type === b.type;
 	}
 
-	function getUploadData( filename, file ) {
+	function getUploadData( filename, file ) { // eslint-disable-line no-shadow
 		return {
 			filename: filename,
 			fileObject: {
@@ -85,22 +84,22 @@ flexiskin.ui.plugin.Images.prototype.onSave = function ( data, itemId ) {
 		};
 	}
 
-	function getTargetFilename( file ) {
-		var nameForFile = itemId.replace( '/', '-' );
-		return 'flexiskin-' + nameForFile + '.' + file.name.split( '.' ).pop()
+	function getTargetFilename( file ) { // eslint-disable-line no-shadow
+		const nameForFile = itemId.replace( '/', '-' );
+		return 'flexiskin-' + nameForFile + '.' + file.name.split( '.' ).pop();
 	}
 
-	var dfd = $.Deferred();
+	const dfd = $.Deferred();
 
 	// Get currently choosen file
-	var file = this.getValue();
+	const file = this.getValue();
 	if ( !( file instanceof File ) ) {
 		// Nothing selected
 		return dfd.reject();
 	}
 
 	// Check if its dirty, if not just resolve to existing file
-	var oldData = this.getData();
+	const oldData = this.getData();
 	if ( oldData && oldData.hasOwnProperty( 'file' ) && compareFile( oldData.file, file ) ) {
 		dfd.resolve( getUploadData( oldData.filename, file ) );
 	} else {
@@ -108,7 +107,7 @@ flexiskin.ui.plugin.Images.prototype.onSave = function ( data, itemId ) {
 		new mw.Api().upload( file, {
 			filename: getTargetFilename( file ),
 			ignorewarnings: 1
-		} ).done( function ( response ) {
+		} ).done( ( response ) => {
 			if ( response.hasOwnProperty( 'upload' ) ) {
 				if ( response.upload.result === 'Success' ) {
 					dfd.resolve( getUploadData( response.upload.filename, file ) );
@@ -116,12 +115,12 @@ flexiskin.ui.plugin.Images.prototype.onSave = function ( data, itemId ) {
 					dfd.reject();
 				}
 			}
-		} ).fail( function ( error, result ) {
-			let filename = getTargetFilename( file );
+		} ).fail( ( error, result ) => {
+			const filename = getTargetFilename( file );
 			if ( error === 'exists' || error === 'fileexists-no-change' || error === 'duplicate' ) {
 				dfd.resolve( getUploadData( filename, file ) );
 			} else if ( result.hasOwnProperty( 'upload' ) && result.upload.hasOwnProperty( 'warnings' ) ) {
-				let warnings = result.upload.warnings;
+				const warnings = result.upload.warnings;
 				if ( warnings.hasOwnProperty( 'exists' ) ) {
 					dfd.resolve( getUploadData( filename, file ) );
 				}
@@ -135,18 +134,18 @@ flexiskin.ui.plugin.Images.prototype.onSave = function ( data, itemId ) {
 	return dfd.promise();
 };
 
-flexiskin.ui.plugin.Images.prototype.onSetValue = function ( data, itemId ) {
+flexiskin.ui.plugin.Images.prototype.onSetValue = function ( data ) {
 	data = data || {};
 
-	if ( $.type( data ) === 'object' && data.hasOwnProperty( 'url' ) ) {
+	if ( $.type( data ) === 'object' && data.hasOwnProperty( 'url' ) ) { // eslint-disable-line no-jquery/no-type
 		// Get the file object from the URL of the file and set appropriate values on widget
-		fetch( data.url ).then( function ( fRes ) {
-			fRes.blob().then( function ( blob ) {
-				var file = new File( [ blob ], data.fileObject.name, data.fileObject );
+		fetch( data.url ).then( ( fRes ) => {
+			fRes.blob().then( ( blob ) => {
+				const file = new File( [ blob ], data.fileObject.name, data.fileObject );
 				this.setValue( [ file ] );
-				this.setData( $.extend( this.getData() || {}, { filename: data.filename, file: data.fileObject } ) );
-			}.bind( this ) );
-		}.bind( this ) );
+				this.setData( Object.assign( this.getData() || {}, { filename: data.filename, file: data.fileObject } ) );
+			} );
+		} );
 	}
 };
 

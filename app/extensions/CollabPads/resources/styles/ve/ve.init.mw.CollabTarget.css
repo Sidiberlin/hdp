@@ -9,7 +9,7 @@
 .ve-init-mw-collabTarget-form {
 	margin: 0 auto;
 	max-width: 40em;
-	margin-top: 2em !important; /* stylelint-disable-line declaration-no-important */
+	margin-top: 2em !important;
 }
 
 /* MW theme hack */
@@ -17,7 +17,6 @@
 	left: 0;
 }
 
-/* stylelint-disable-next-line selector-max-id */
 #ca-pad > span > a {
 	max-width: 15em;
 	overflow: hidden;
@@ -25,7 +24,6 @@
 }
 
 /* Mobile */
-/* stylelint-disable-next-line selector-class-pattern */
 .mw-body .heading-holder {
 	display: none;
 }
@@ -36,25 +34,25 @@
 }
 
 /* Hide cursor label user name */
-.ve-ce-surface-highlights-user-cursor-label {
+.ve-ce-surface-selections-otherUserCursor .ve-ce-surface-selection-label {
 	pointer-events: auto;
 	width: 12px;
-	height: auto;
-	color: transparent;
-	text-shadow: none;
+	height: 1.3em !important;
+	color: transparent !important;
+	text-shadow: none !important;
 }
 
 /* Show cursor label user name on hover */
-.ve-ce-surface-highlights-user-cursor-inactive:hover {
+.ve-ce-surface-selections-otherUserCursor-inactive:hover {
 	opacity: 1;
 }
 
 /* Show cursor label user name on hover */
-.ve-ce-surface-highlights-user-cursor-label:hover {
+.ve-ce-surface-selections-otherUserCursor .ve-ce-surface-selection-label:hover {
 	width: unset;
 	color: black !important;
 	background-color: #f1f3f9 !important;
 	font-family: 'Lato';
-	font-size: 14;
+	font-size: 14px; /* stylelint-disable-line declaration-property-unit-disallowed-list */
 	text-shadow: unset;
 }

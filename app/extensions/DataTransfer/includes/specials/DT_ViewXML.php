@@ -1,6 +1,8 @@
 <?php
 
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 /**
  * Displays an interface to let the user export pages from the wiki in XML form
@@ -54,7 +56,7 @@ class DTViewXML extends SpecialPage {
 			return $top_category;
 		}
 
-		$db = wfGetDB( DB_REPLICA );
+		$db = self::getReadDB();
 		$fname = "getPagesForCategory";
 		$categories = [ $top_category ];
 		$checkcategories = [ $top_category ];
@@ -93,7 +95,7 @@ class DTViewXML extends SpecialPage {
 	}
 
 	static function getPagesForNamespace( $namespace ) {
-		$dbr = wfGetDB( DB_REPLICA );
+		$dbr = self::getReadDB();
 		$titleIDs = $dbr->selectFieldValues( 'page', 'page_id', [ 'page_namespace' => $namespace ], __METHOD__ );
 		$titles = [];
 		foreach ( $titleIDs as $titleID ) {
@@ -251,15 +253,9 @@ class DTViewXML extends SpecialPage {
 			print $text;
 		} else {
 			// Set 'title' as hidden field, in case there's no URL niceness.
-			$mw_namespace_labels = $contLang->getNamespaces();
-			$special_namespace = $mw_namespace_labels[NS_SPECIAL];
-			$text = <<<END
-	<form action="" method="get">
-	<input type="hidden" name="title" value="$special_namespace:ViewXML">
-
-END;
-			$text .= "<p>" . $this->msg( 'dt_viewxml_docu' )->text() . "</p>\n";
-			$text .= "<h2>" . $this->msg( 'dt_viewxml_categories' )->text() . "</h2>\n";
+			$text = Html::hidden( 'title', $this->getPageTitle()->getFullText() ) . "\n";
+			$text .= Html::element( 'p',  null, $this->msg( 'dt_viewxml_docu' )->text() ) . "\n";
+			$text .= Html::element( 'h2', null, $this->msg( 'dt_viewxml_categories' )->text() ) . "\n";
 			$categories = self::getCategoriesList();
 			$linkRenderer = $this->getLinkRenderer();
 			foreach ( $categories as $category ) {
@@ -268,7 +264,7 @@ END;
 				$link = $linkRenderer->makeKnownLink( $title, $title->getText() );
 				$text .= " $link<br />\n";
 			}
-			$text .= "<h2>" . $this->msg( 'dt_viewxml_namespaces' )->text() . "</h2>\n";
+			$text .= "<h2>" . $this->msg( 'dt_viewxml_namespaces' )->escaped() . "</h2>\n";
 			$namespaces = self::getNamespacesList();
 			foreach ( $namespaces as $nsCode ) {
 				if ( $nsCode === '0' ) {
@@ -282,9 +278,11 @@ END;
 				$text .= Html::input( "namespaces[$nsCode]", null, 'checkbox' );
 				$text .= ' ' . str_replace( '_', ' ', $nsName ) . "<br />\n";
 			}
-			$text .= "<br /><p><label><input type=\"checkbox\" name=\"simplified_format\" /> " . $this->msg( 'dt_viewxml_simplifiedformat' )->text() . "</label></p>\n";
+			$simplifiedFormatCheckbox = Html::check( 'simplified_format' );
+			$text .= "<br /><p><label>$simplifiedFormatCheckbox " . $this->msg( 'dt_viewxml_simplifiedformat' )->escaped() . "</label></p>\n";
 			$text .= DTUtils::printSubmitButton( 'viewxml' );
-			$text .= "</form>\n";
+
+			$text = Html::rawElement( 'form', null, $text );
 
 			$out->addHTML( $text );
 		}

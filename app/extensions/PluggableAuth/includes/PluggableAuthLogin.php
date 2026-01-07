@@ -25,10 +25,11 @@ use MediaWiki\Auth\AuthManager;
 use MediaWiki\Extension\PluggableAuth\Group\GroupProcessorRunner;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\SpecialPage\UnlistedSpecialPage;
 use MediaWiki\User\UserIdentityValue;
-use Message;
 use Psr\Log\LoggerInterface;
-use UnlistedSpecialPage;
 use Wikimedia\Timestamp\ConvertibleTimestamp;
 
 class PluggableAuthLogin extends UnlistedSpecialPage {
@@ -98,36 +99,59 @@ class PluggableAuthLogin extends UnlistedSpecialPage {
 		$pluggableauth = $this->pluggableAuthFactory->getInstance();
 		$error = null;
 		if ( $pluggableauth ) {
+			$id = $username = $realname = $email = null;
 			if ( $pluggableauth->authenticate( $id, $username, $realname, $email, $error ) ) {
 				if ( !$id ) {
-					$user->loadDefaults( $username );
-					if ( $realname !== null ) {
-						$user->setRealName( $realname );
+					if ( $username === null ) {
+						$this->logger->debug( 'Missing username for new user' );
+						$error = ( new Message( 'pluggableauth-no-username' ) )->text();
+					} else {
+						$user->loadDefaults( $username );
+						if ( $realname === null ) {
+							$realname = $user->mRealName;
+						} else {
+							$user->mRealName = $realname;
+						}
+						$now = ConvertibleTimestamp::now( TS_UNIX );
+						if ( $email === null ) {
+							$email = $user->mEmail;
+						} else {
+							$user->mEmail = $email;
+							$user->mEmailAuthenticated = $now;
+						}
+						$user->mTouched = $now;
+						$this->logger->debug( 'Authenticated new user: ' . $username );
+						// Group sync is done in `LocalUserCreated` hook
 					}
-					$user->mName = $username;
-					$user->mEmail = $email;
-					$now = ConvertibleTimestamp::now( TS_UNIX );
-					$user->mEmailAuthenticated = $now;
-					$user->mTouched = $now;
-					$this->logger->debug( 'Authenticated new user: ' . $username );
-					// Group sync is done in `LocalUserCreated` hook
 				} else {
 					$user->mId = $id;
 					$user->loadFromId();
 					$this->logger->debug( 'Authenticated existing user: ' . $user->mName );
 					$userIdentity = new UserIdentityValue( $user->getId(), $user->getName() );
 					$this->groupProcessorRunner->run( $userIdentity, $pluggableauth );
+					// ignore username returned from plugin for existing users
+					$username = $user->mName;
+					// if real name is not set by plugin, get it from existing user
+					if ( $realname === null ) {
+						$realname = $user->mRealName;
+					}
+					// if email is not set by plugin, get it from existing user
+					if ( $email === null ) {
+						$email = $user->mEmail;
+					}
 				}
-				$authorized = true;
-				$this->hookRunner->onPluggableAuthUserAuthorization( $user, $authorized );
-				if ( $authorized ) {
-					$this->authManager->setAuthenticationSessionData( self::USERNAME_SESSION_KEY, $username );
-					$this->authManager->setAuthenticationSessionData( self::REALNAME_SESSION_KEY, $realname );
-					$this->authManager->setAuthenticationSessionData( self::EMAIL_SESSION_KEY, $email );
-					$this->logger->debug( 'User is authorized.' );
-				} else {
-					$this->logger->debug( 'Authorization failure.' );
-					$error = ( new Message( 'pluggableauth-not-authorized', [ $username ] ) )->parse();
+				if ( $error === null ) {
+					$authorized = true;
+					$this->hookRunner->onPluggableAuthUserAuthorization( $user, $authorized );
+					if ( $authorized ) {
+						$this->authManager->setAuthenticationSessionData( self::USERNAME_SESSION_KEY, $username );
+						$this->authManager->setAuthenticationSessionData( self::REALNAME_SESSION_KEY, $realname );
+						$this->authManager->setAuthenticationSessionData( self::EMAIL_SESSION_KEY, $email );
+						$this->logger->debug( 'User is authorized.' );
+					} else {
+						$this->logger->debug( 'Authorization failure.' );
+						$error = ( new Message( 'pluggableauth-not-authorized', [ $username ] ) )->parse();
+					}
 				}
 			} else {
 				$this->logger->debug( 'Authentication failure.' );
@@ -148,13 +172,13 @@ class PluggableAuthLogin extends UnlistedSpecialPage {
 		}
 		$returnToUrl = $this->authManager->getRequest()->getSessionData( self::RETURNTOURL_SESSION_KEY );
 		if ( $returnToUrl === null || strlen( $returnToUrl ) === 0 ) {
-			// This should never happen unless there is an issue in the authentication plugin, most
-			// likely resulting in session corruption. Since it is unclear if it is safe to continue,
-			// an error message is shown to the user and the authentication flow is terminated.
+			// This can happen if we've lost session data or the user has a session cookie whose corresponding session
+			// has been culled. In this case, we'll send them back to the login page.
 			$this->logger->debug( 'ERROR: return to URL is null or empty' );
-			$this->getOutput()->wrapWikiMsg( "<div class='error'>\n$1\n</div>", 'pluggableauth-fatal-error' );
-		} else {
-			$this->getOutput()->redirect( $returnToUrl );
+			$returnToUrl = SpecialPage::getTitleFor( 'Userlogin' )->getFullURL( [
+				'error' => 'pluggableauth-fatal-error'
+			] );
 		}
+		$this->getOutput()->redirect( $returnToUrl );
 	}
 }

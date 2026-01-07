@@ -2,13 +2,12 @@
 
 namespace MediaWiki\Extension\ImportOfficeFiles\Rest;
 
-use Config;
-use ConfigFactory;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Extension\ImportOfficeFiles\Process\ImportResultReader;
 use MediaWiki\Extension\ImportOfficeFiles\Workspace;
 use MediaWiki\Rest\Handler;
 use Wikimedia\ParamValidator\ParamValidator;
-use function Sabre\HTTP\decodePath;
 
 class FileContentHandler extends Handler {
 
@@ -41,7 +40,7 @@ class FileContentHandler extends Handler {
 		$uploadId = $request->getPathParam( "uploadId" );
 
 		$params = $request->getUri()->getQuery();
-		$config = json_decode( decodePath( $params ), true );
+		$config = json_decode( $this->decodePath( $params ), true );
 		$title = $config['title'];
 
 		$workspaceDir = $this->uploadDirectory . '/cache/ImportOfficeFiles';
@@ -57,6 +56,23 @@ class FileContentHandler extends Handler {
 		];
 
 		return $this->getResponseFactory()->createJson( $output );
+	}
+
+	/**
+	 * @param string $path
+	 * @return string
+	 */
+	private function decodePath( string $path ): string {
+		$path = rawurldecode( $path );
+
+		if (
+			!mb_check_encoding( $path, 'UTF-8' ) &&
+			mb_check_encoding( $path, 'ISO-8859-1' )
+		) {
+			$path = mb_convert_encoding( $path, 'UTF-8', 'ISO-8859-1' );
+		}
+
+		return $path;
 	}
 
 	/** @inheritDoc */

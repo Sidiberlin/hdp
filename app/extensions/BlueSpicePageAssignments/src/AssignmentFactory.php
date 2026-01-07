@@ -6,7 +6,10 @@ use BlueSpice\Context;
 use BlueSpice\ExtensionAttributeBasedRegistry;
 use BlueSpice\PageAssignments\Data\Assignment\Store;
 use BlueSpice\PageAssignments\Data\Record;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\Filter;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 
@@ -26,7 +29,7 @@ class AssignmentFactory {
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $config = null;
 
@@ -38,7 +41,7 @@ class AssignmentFactory {
 	/**
 	 *
 	 * @param AssignableFactory $assignableFactory
-	 * @param \Config $config
+	 * @param Config $config
 	 * @param ExtensionAttributeBasedRegistry $targetRegistry
 	 */
 	public function __construct( AssignableFactory $assignableFactory, $config,
@@ -50,11 +53,11 @@ class AssignmentFactory {
 
 	/**
 	 *
-	 * @param \Title $title
+	 * @param Title $title
 	 * @return bool|ITarget
 	 * @throws \MWException
 	 */
-	public function newFromTargetTitle( \Title $title ) {
+	public function newFromTargetTitle( Title $title ) {
 		if ( $title->getArticleID() < 1 ) {
 			return false;
 		}
@@ -104,10 +107,10 @@ class AssignmentFactory {
 
 	/**
 	 *
-	 * @param \Title $title
+	 * @param Title $title
 	 * @return ITarget|false
 	 */
-	protected function fromCache( \Title $title ) {
+	protected function fromCache( Title $title ) {
 		if ( isset( $this->targetCache[$title->getArticleID()] ) ) {
 			return $this->targetCache[$title->getArticleID()];
 		}
@@ -116,10 +119,10 @@ class AssignmentFactory {
 
 	/**
 	 *
-	 * @param \Title|null $title
+	 * @param Title|null $title
 	 * @return IAssignment[]
 	 */
-	protected function getAssignments( \Title $title = null ) {
+	protected function getAssignments( ?Title $title = null ) {
 		if ( !$title || $title->getArticleID() < 1 ) {
 			return [];
 		}
@@ -132,7 +135,7 @@ class AssignmentFactory {
 					Filter::KEY_TYPE => 'numeric',
 					Filter::KEY_COMPARISON => Filter::COMPARISON_EQUALS,
 				]
-			] ] )
+			], 'limit' => 999 ] )
 		);
 
 		$assignments = [];
@@ -156,7 +159,7 @@ class AssignmentFactory {
 	 */
 	public function getStore() {
 		return new Store(
-			new Context( \RequestContext::getMain(), $this->config ),
+			new Context( RequestContext::getMain(), $this->config ),
 			MediaWikiServices::getInstance()->getDBLoadBalancer()
 		);
 	}
@@ -177,10 +180,10 @@ class AssignmentFactory {
 	 *
 	 * @param string $type
 	 * @param string $key
-	 * @param \Title $title
+	 * @param Title $title
 	 * @return IAssignment|null
 	 */
-	public function factory( $type, $key, \Title $title ) {
+	public function factory( $type, $key, Title $title ) {
 		$assignable = $this->assignableFactory->factory( $type );
 		if ( !$assignable ) {
 			return null;

@@ -3,9 +3,9 @@
 namespace BlueSpice\Bookshelf\Tag;
 
 use BlueSpice\Tag\Handler;
-use Config;
-use Parser;
-use PPFrame;
+use MediaWiki\Config\Config;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class BookshelfHandler extends Handler {
 

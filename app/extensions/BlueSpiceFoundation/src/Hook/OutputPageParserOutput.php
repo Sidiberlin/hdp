@@ -27,8 +27,10 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
-use OutputPage;
-use ParserOutput;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Parser\ParserOutput;
 
 abstract class OutputPageParserOutput extends Hook {
 
@@ -63,8 +65,8 @@ abstract class OutputPageParserOutput extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param OutputPage $out
 	 * @param ParserOutput $parserOutput
 	 */

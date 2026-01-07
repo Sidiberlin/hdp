@@ -2,20 +2,22 @@
 
 namespace BlueSpice;
 
-use Message;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Message\Message;
 use MessageLocalizer;
 
 abstract class ConfigDefinition implements ISetting, ISettingPaths, MessageLocalizer {
 
 	/**
 	 *
-	 * @var \IContextSource
+	 * @var IContextSource
 	 */
 	protected $context = null;
 
 	/**
 	 *
-	 * @var \Config
+	 * @var Config
 	 */
 	protected $config = null;
 
@@ -27,8 +29,8 @@ abstract class ConfigDefinition implements ISetting, ISettingPaths, MessageLocal
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param string $name
 	 */
 	public function __construct( $context, $config, $name ) {
@@ -39,8 +41,8 @@ abstract class ConfigDefinition implements ISetting, ISettingPaths, MessageLocal
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param string $name
 	 * @return ConfigDefinition
 	 */
@@ -64,7 +66,7 @@ abstract class ConfigDefinition implements ISetting, ISettingPaths, MessageLocal
 
 	/**
 	 *
-	 * @return \Config
+	 * @return Config
 	 */
 	public function getConfig() {
 		return $this->config;
@@ -93,7 +95,7 @@ abstract class ConfigDefinition implements ISetting, ISettingPaths, MessageLocal
 	public function getPaths() {
 		return [
 			static::MAIN_PATH_FEATURE . '/' . static::FEATURE_SYSTEM . '/' . static::EXTENSION_FOUNDATION,
-			static::MAIN_PATH_EXTENSION . '/' . static::EXTENSION_FOUNDATION . '/' . static::FEATURE_SYSTEM ,
+			static::MAIN_PATH_EXTENSION . '/' . static::EXTENSION_FOUNDATION . '/' . static::FEATURE_SYSTEM,
 			static::MAIN_PATH_PACKAGE . '/' . static::PACKAGE_FREE . '/' . static::EXTENSION_FOUNDATION,
 		];
 	}
@@ -123,8 +125,7 @@ abstract class ConfigDefinition implements ISetting, ISettingPaths, MessageLocal
 			'label-message' => $this->getLabelMessageKey(),
 			'parent' => new \HTMLFormEx( [], $this->context ),
 			'help-message' => $this->getHelpMessageKey(),
-			'disabled' => $this->isDisabled(),
-			'help-inline' => false
+			'disabled' => $this->isDisabled()
 		];
 	}
 

@@ -1,6 +1,7 @@
 <?php
 
 use BlueSpice\Api\Response\Standard;
+use MediaWiki\Title\Title;
 
 class ApiBookshelfManage extends BSApiTasksBase {
 
@@ -36,7 +37,7 @@ class ApiBookshelfManage extends BSApiTasksBase {
 	 * @param array $aParams
 	 * @return Standard
 	 */
-	public function task_deleteBook( $aTaskData, $aParams ) {
+	public function task_deleteBook( $aTaskData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$oResult = $this->makeStandardReturn();
 
 		$oTitle = Title::newFromId( $aTaskData->book_page_id );

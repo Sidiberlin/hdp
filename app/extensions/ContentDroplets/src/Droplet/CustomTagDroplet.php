@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\ContentDroplets\Droplet;
 
-use Message;
-use RawMessage;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
 
 class CustomTagDroplet extends TagDroplet {
 

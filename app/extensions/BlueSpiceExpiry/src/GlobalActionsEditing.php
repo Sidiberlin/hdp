@@ -3,7 +3,7 @@
 namespace BlueSpice\Expiry;
 
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
 
 class GlobalActionsEditing extends RestrictedTextLink {
@@ -20,18 +20,9 @@ class GlobalActionsEditing extends RestrictedTextLink {
 		return 'ga-special-expiry';
 	}
 
-	/**
-	 *
-	 * @return array
-	 */
+	/** @inheritDoc */
 	public function getPermissions(): array {
-		$permissions = MediaWikiServices::getInstance()
-			->getSpecialPageFactory()
-			->getPage( 'Expiry' );
-		if ( !$permissions ) {
-			return [];
-		}
-		return [ $permissions->getRestriction() ];
+		return [ 'edit' ];
 	}
 
 	/**

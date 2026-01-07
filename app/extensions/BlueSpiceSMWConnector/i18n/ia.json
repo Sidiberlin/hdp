@@ -6,8 +6,6 @@
 	},
 	"bs-bssmwconnector-desc": "Integra SemanticMediaWiki in BlueSpice",
 	"bs-bssmwconnector-srf-printername-bsgrid": "Grillia BlueSpice",
-	"bs-dlg-choosesmwprop-label": "Proprietate",
-	"bs-dlg-choosesmwprop-type-smwprop": "Proprietate semantic",
 	"bs-extendedsearch-add-filter-group-smwproperty-label": "Proprietates semantic",
 	"bs-extendedsearch-search-center-result-smwproperty-label": "Proprietates semantic:",
 	"bs-smwconnector-extendedsearch-boolean-property-true": "Si",
@@ -53,5 +51,10 @@
 	"bs-smwconnector-decision-overview-title": "Vista general de decisiones",
 	"bs-smwconnector-decision-overview-no-result": "Necun decision trovate con filtros actual",
 	"bs-smwconnector-decision-overview-droplet-title": "Vista general de decisiones",
-	"bs-smwconnector-decision-overview-droplet-description": "Permitte que consultas recipe un vista general de decisiones"
+	"bs-smwconnector-decision-overview-droplet-description": "Permitte que consultas recipe un vista general de decisiones",
+	"bs-smwconnector-decision-overview-table-heading-page-label": "Pagina",
+	"bs-smwconnector-decision-overview-table-heading-decisions-label": "Decisiones",
+	"bs-smwconnector-yes": "Si",
+	"bs-smwconnector-no": "No",
+	"bs-smwconnector-user-input-placeholder": "Per favor digita un littera…"
 }

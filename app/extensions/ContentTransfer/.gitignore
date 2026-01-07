@@ -1,0 +1,5 @@
+vendor
+Thumbs.db
+composer.lock
+node_modules
+.eslintcache

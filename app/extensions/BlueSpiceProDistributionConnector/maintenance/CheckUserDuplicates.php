@@ -1,4 +1,6 @@
 <?php
+
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
 
 $IP = getenv( 'MW_INSTALL_PATH' );
@@ -15,7 +17,12 @@ class CheckUserDuplicates extends Maintenance {
 	public function execute() {
 		$usernameUtils = MediaWikiServices::getInstance()->getUserNameUtils();
 		$dbr = $this->getDB( DB_REPLICA );
-		$res = $dbr->select( 'user', 'user_name' );
+		$res = $dbr->select(
+			'user',
+			'user_name',
+			'',
+			__METHOD__
+		);
 
 		$userMap = [];
 		foreach ( $res as $row ) {

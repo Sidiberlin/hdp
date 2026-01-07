@@ -2,10 +2,10 @@
 
 namespace SMW\Utils;
 
-use Html;
+use MediaWiki\Html\Html;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.0
  *
  * @author mwjames
@@ -130,7 +130,6 @@ class HtmlDivTable {
 	}
 
 	private static function mergeAttributes( $class, $attr ) {
-
 		$attributes = [];
 
 		// A bit of attribute order

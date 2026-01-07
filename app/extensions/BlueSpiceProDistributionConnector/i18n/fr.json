@@ -2,8 +2,12 @@
 	"@metadata": {
 		"authors": [
 			"Gomoko",
+			"JLTRY",
+			"Mahabarata",
+			"SleaY",
 			"Thibaut120094",
-			"Verdy p"
+			"Verdy p",
+			"Wladek92"
 		]
 	},
 	"bs-prodistributionconnector-desc": "Connecte BlueSpice à diverses extensions de MediaWiki",
@@ -47,5 +51,27 @@
 	"bs-pro-distribution-pdfembed-inspector-page-help": "Nombre de pages qui seront affichées après le rendu de l’aperçu",
 	"bs-pro-distribution-pdfembed-inspector-title": "Intégrer un PDF",
 	"bs-pro-distribution-pdfembed-droplet-name": "Aperçu du PDF",
-	"bs-pro-distribution-pdfembed-droplet-description": "Intégrer l’aperçu du fichier PDF dans la page wiki"
+	"bs-pro-distribution-pdfembed-droplet-description": "Intégrer l’aperçu du fichier PDF dans la page wiki",
+	"bs-pro-distribution-config-outh-public-key": "Clé publique OAuth2",
+	"bs-pro-distribution-config-outh-private-key": "Clé privée OAuth2",
+	"bs-pro-distribution-config-comment-streams-enabled": "Commentaires",
+	"bs-pro-distribution-config-link-titles-parse-on-edit": "Analyser les liens lors de l'édition",
+	"bs-pro-distribution-config-link-titles-parse-on-edit-help": "Lors de l'enregistrement, analysez le contenu de la page et créez un lien vers les pages mentionnées dans le contenu",
+	"bs-pro-distribution-config-link-titles-parse-on-render": "Ajouter les liens lors du rendu de la page",
+	"bs-pro-distribution-config-link-titles-parse-on-render-help": "Lors du rendu d'une page, analysez le contenu et créez un lien vers les pages mentionnées dans le contenu. Cela ne modifiera pas le contenu de la page",
+	"bs-pro-distribution-config-link-titles-source-ns": "Espaces de noms source",
+	"bs-pro-distribution-config-link-titles-source-ns-help": "Analyser uniquement les pages dans ces espaces de noms",
+	"bs-pro-distribution-config-link-titles-target-ns": "Espaces de noms cible",
+	"bs-pro-distribution-config-link-titles-target-ns-help": "Ne pointer que vers les pages de ces espaces de noms.",
+	"bs-pro-distribution-config-link-titles-same-ns": "Ne pointer que vers les pages du même espace de noms en tant que pages source",
+	"bs-pro-distribution-droplet-embed-name": "Contenu externe",
+	"bs-pro-distribution-droplet-ec-embed-url-label": "URL",
+	"bs-pro-distribution-droplets-ec-embed-render-label": "Rendu Markdown",
+	"bs-pro-distribution-droplets-ec-embed-lang-label": "Langue du contenu intégré",
+	"bs-pro-distribution-droplets-ec-embed-show-lines-label": "Lignes à afficher",
+	"bs-pro-distribution-droplets-ec-embed-show-line-numbers-label": "Afficher les numéros de ligne",
+	"bs-pro-distribution-ec-config-domain-whitelist": "Liste blanche de domaines",
+	"bs-pro-distribution-ec-config-file-whitelist": "Liste blanche des extensions de fichiers",
+	"bs-pro-distribution-ec-config-file-whitelist-help": "Liste des extensions de fichiers autorisées. Laissez ce champ vide pour ne pas avoir de restriction.",
+	"bs-pro-distribution-ec-config-domain-whitelist-help": "Liste des domaines autorisés pour l'intégration de contenu. N'indiquez pas le protocole, mais uniquement le domaine. Par exemple : « github.com ». Laissez ce champ vide pour ne pas avoir de restriction."
 }

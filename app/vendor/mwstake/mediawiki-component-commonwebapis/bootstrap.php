@@ -1,10 +1,12 @@
 <?php
 
+use MediaWiki\Installer\DatabaseUpdater;
+
 if ( defined( 'MWSTAKE_MEDIAWIKI_COMPONENT_COMMONWEBAPIS_VERSION' ) ) {
 	return;
 }
 
-define( 'MWSTAKE_MEDIAWIKI_COMPONENT_COMMONWEBAPIS_VERSION', '2.0.28' );
+define( 'MWSTAKE_MEDIAWIKI_COMPONENT_COMMONWEBAPIS_VERSION', '3.1.0' );
 
 MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 	->register( 'commonwebapis', static function () {
@@ -22,30 +24,38 @@ MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 
 			$hookContainer->register( 'LoadExtensionSchemaUpdates', static function ( $updater ) {
 				if ( !$updater instanceof DatabaseUpdater ) {
-					throw new \MWException( "LoadExtensionSchemaUpdates hook must be called with a DatabaseUpdater" );
+					throw new LogicException( "LoadExtensionSchemaUpdates hook must be called with a DatabaseUpdater" );
 				}
+
+				$dbType = $updater->getDB()->getType();
 				$updater->addExtensionTable(
 					'mws_user_index',
-					__DIR__ . "/sql/mws_user_index.sql"
+					__DIR__ . "/sql/$dbType/mws_user_index.sql"
 				);
+
 				$updater->addExtensionTable(
 					'mws_title_index',
-					__DIR__ . "/sql/mws_title_index.sql"
+					__DIR__ . "/sql/$dbType/mws_title_index.sql"
 				);
 				$updater->addExtensionField(
 					'mws_title_index',
 					'mti_displaytitle',
-					__DIR__ . "/sql/mws_title_index_displaytitle_patch.sql"
-				);
-				$updater->addExtensionTable(
-					'mws_category_index',
-					__DIR__ . "/sql/mws_category_index.sql"
+					__DIR__ . "/sql/$dbType/mws_title_index_displaytitle_patch.sql"
 				);
 
+				$updater->addExtensionTable(
+					'mws_category_index',
+					__DIR__ . "/sql/$dbType/mws_category_index.sql"
+				);
 				$updater->addExtensionField(
 					'mws_category_index',
 					'mci_page_title',
-					__DIR__ . "/sql/mws_category_index_patch_page_title.sql"
+					__DIR__ . "/sql/$dbType/mws_category_index_patch_page_title.sql"
+				);
+				$updater->addExtensionField(
+					'mws_title_index',
+					'mti_leaf_title',
+					__DIR__ . "/sql/$dbType/mws_title_index_leafpage_patch.sql"
 				);
 
 				$updater->addPostDatabaseUpdateMaintenance(
@@ -67,8 +77,8 @@ MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 			$hookContainer->register( 'PageMoveComplete', [ $categoryIndexUpdater, 'onPageMoveComplete' ] );
 			$hookContainer->register( 'PageDeleteComplete', [ $titleIndexUpdater, 'onPageDeleteComplete' ] );
 			$hookContainer->register( 'PageDeleteComplete', [ $categoryIndexUpdater, 'onPageDeleteComplete' ] );
-			$hookContainer->register( 'ArticleUndelete', [ $titleIndexUpdater, 'onArticleUndelete' ] );
-			$hookContainer->register( 'ArticleUndelete', [ $categoryIndexUpdater, 'onArticleUndelete' ] );
+			$hookContainer->register( 'PageUndeleteComplete', [ $titleIndexUpdater, 'onPageUndeleteComplete' ] );
+			$hookContainer->register( 'PageUndeleteComplete', [ $categoryIndexUpdater, 'onPageUndeleteComplete' ] );
 			$hookContainer->register( 'AfterImportPage', [ $titleIndexUpdater, 'onAfterImportPage' ] );
 			$hookContainer->register( 'AfterImportPage', [ $categoryIndexUpdater, 'onAfterImportPage' ] );
 			$hookContainer->register( 'CategoryAfterPageAdded', [ $categoryIndexUpdater, 'onCategoryAfterPageAdded' ] );

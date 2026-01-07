@@ -8,7 +8,6 @@
 	"bs-player-extension-description": "Sluit een mediaspeler in op een pagina.",
 	"bs-player-pref-autostart": "Video automatisch starten",
 	"bs-player-file-does-not-exist": "Bestand bestaat niet.",
-	"bs-player-tag-showtime-desc": "Met deze tag kunt u een video insluiten.",
 	"bs-player-unsupported-type": "Dit bestandstype wordt niet ondersteund.",
 	"bs-player-config-prefwidth": "Standaardbreedte van video's",
 	"bs-player-config-prefheight": "Standaardhoogte van video's",

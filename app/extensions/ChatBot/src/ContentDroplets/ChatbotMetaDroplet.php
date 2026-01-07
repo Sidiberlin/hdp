@@ -3,7 +3,7 @@
 namespace ChatBot\ContentDroplets;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\TemplateDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class ChatbotMetaDroplet extends TemplateDroplet {
 

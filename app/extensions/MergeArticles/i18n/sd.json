@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mehtab ahmed"
+		]
+	},
+	"mergearticles-type-article": "صفحو",
+	"mergearticles-type-category": "زمرو",
+	"mergearticles-merge-success-page-label": "گهربل صفحو: $1",
+	"mergearticles-diff-item-undo": "اڻڪريو",
+	"mergearticles-term-filter-label": "صفحي جو نالو"
+}

@@ -11,7 +11,7 @@ enhancedUpload.ui.panel.FailedList = function enhancedUploadUiPanelFailedList( c
 OO.inheritClass( enhancedUpload.ui.panel.FailedList, OO.ui.HorizontalLayout );
 
 enhancedUpload.ui.panel.FailedList.prototype.addGrid = function ( data ) {
-	var i, errorType, filename, type, gridCfg, voGrid;
+	let i, errorType, filename, type;
 	for ( i = 0; i < data.length; i++ ) {
 		errorType = data[ i ][ 0 ];
 		type = data[ i ][ 1 ].type;
@@ -24,7 +24,7 @@ enhancedUpload.ui.panel.FailedList.prototype.addGrid = function ( data ) {
 		} );
 	}
 
-	gridCfg = {
+	const gridCfg = {
 		pageSize: 10,
 		border: 'horizontal',
 		toolbar: false,
@@ -45,6 +45,6 @@ enhancedUpload.ui.panel.FailedList.prototype.addGrid = function ( data ) {
 		data: this.data
 	};
 
-	voGrid = new OOJSPlus.ui.data.GridWidget( gridCfg );
+	const voGrid = new OOJSPlus.ui.data.GridWidget( gridCfg );
 	this.$grid.html( voGrid.$element );
 };

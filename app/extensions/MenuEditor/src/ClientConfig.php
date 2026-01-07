@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\MenuEditor;
 
-use Config;
-use ExtensionRegistry;
+use MediaWiki\Config\Config;
+use MediaWiki\Registration\ExtensionRegistry;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 
 class ClientConfig {

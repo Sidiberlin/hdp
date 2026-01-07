@@ -2,22 +2,21 @@
 
 namespace BlueSpice\Discovery\Component;
 
-use IContextSource;
-use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\SpecialPage\SpecialPageFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
-use RawMessage;
-use SpecialPage;
 
 class SpecialSpecialPages extends RestrictedTextLink {
 
 	/** @var SpecialPage|null */
 	private $specialPage;
 
-	public function __construct() {
+	public function __construct( SpecialPageFactory $specialPageFactory ) {
 		parent::__construct( [] );
-		$this->specialPage = MediaWikiServices::getInstance()->getSpecialPageFactory()
-			->getPage( 'Specialpages' );
+		$this->specialPage = $specialPageFactory->getPage( 'Specialpages' );
 	}
 
 	/**
@@ -56,7 +55,7 @@ class SpecialSpecialPages extends RestrictedTextLink {
 	 * @return Message
 	 */
 	public function getText(): Message {
-		return new RawMessage( $this->specialPage->getDescription() );
+		return $this->ensureMessageObject( $this->specialPage->getDescription() );
 	}
 
 	/**
@@ -64,7 +63,7 @@ class SpecialSpecialPages extends RestrictedTextLink {
 	 * @return Message
 	 */
 	public function getTitle(): Message {
-		return new RawMessage( $this->specialPage->getDescription() );
+		return $this->ensureMessageObject( $this->specialPage->getDescription() );
 	}
 
 	/**
@@ -72,6 +71,14 @@ class SpecialSpecialPages extends RestrictedTextLink {
 	 * @return Message
 	 */
 	public function getAriaLabel(): Message {
-		return new RawMessage( $this->specialPage->getDescription() );
+		return $this->ensureMessageObject( $this->specialPage->getDescription() );
+	}
+
+	/**
+	 * @param string|Message $stringOrMessage
+	 * @return Message
+	 */
+	protected function ensureMessageObject( $stringOrMessage ) {
+		return $stringOrMessage instanceof Message ? $stringOrMessage : new RawMessage( $stringOrMessage );
 	}
 }

@@ -5,15 +5,15 @@ namespace BlueSpice\Bookshelf\HookHandler;
 use BlueSpice\Bookshelf\BookContextProviderFactory;
 use BlueSpice\Bookshelf\BookLookup;
 use BlueSpice\Bookshelf\ChapterLookup;
-use Config;
-use ConfigFactory;
 use DOMElement;
 use DOMXPath;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigFactory;
 use MediaWiki\HookContainer\HookContainer;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use PDFFileResolver;
 use RepoGroup;
-use Title;
-use TitleFactory;
 
 class UEModulePDF {
 

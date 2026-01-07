@@ -23,11 +23,21 @@
 	"oojsplus-data-paginator-next": "صفحهٔ بعدی",
 	"oojsplus-data-paginator-previous": "صفحهٔ قبل",
 	"oojsplus-data-grid-toolbar-reload-label": "تازه‌سازی",
-	"oojsplus-data-paginator-page-count": "$1 از $2",
 	"oojsplus-data-grid-filter-boolean": "مقدار",
 	"oojsplus-data-grid-selection-column-label": "انتخاب",
 	"oojsplus-data-grid-filter-update-active-filter": "$1 پالایه {{PLURAL:$1|اعمال شد}}: $2",
 	"oojsplus-data-grid-filter-update-results": "$1 {{PLURAL:$1|نتیجه}} یافت شد",
 	"oojsplus-data-grid-filter-update-no-filter": "پالایه‌ای اعمال نشده است",
-	"oojsplus-data-grid-toolbar-settings-aria-label": "تنظیمات"
+	"oojsplus-data-grid-toolbar-settings-aria-label": "تنظیمات",
+	"oojsplus-toolbar-cancel": "لغو",
+	"oojsplus-toolbar-save": "ذخیره",
+	"oojsplus-toolbar-delete": "حذف",
+	"oojsplus-toolbar-edit": "ویرایش",
+	"oojsplus-toolbar-add": "افزودن",
+	"oojsplus-data-grid-no-results": "هنوز مدخلی موجود نیست",
+	"oojsplus-data-navigation-tree-expander-label": "زیرصفحه‌ها",
+	"oojsplus-data-tree-expander-label": "زیرمنو",
+	"oojsplus-data-sorter-remove": "حذف مرتب‌سازی",
+	"oojsplus-data-sorter-picker": "مرتب‌سازی بر پایهٔ فیلد",
+	"oojsplus-data-filter-picker": "پالایش بر پایهٔ فیلد"
 }

@@ -4,6 +4,7 @@ namespace BlueSpice\Authors;
 
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
 
 class AuthorsList {
 
@@ -15,7 +16,7 @@ class AuthorsList {
 
 	/**
 	 *
-	 * @var \Title
+	 * @var Title
 	 */
 	protected $title = null;
 
@@ -42,7 +43,7 @@ class AuthorsList {
 
 	/**
 	 *
-	 * @param \Title $title
+	 * @param Title $title
 	 * @param array $blacklist
 	 * @param int $limit
 	 * @param \Wikimedia\Rdbms\LoadBalancer|null $loadBalancer

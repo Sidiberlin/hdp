@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface;
 
-use Message;
+use MediaWiki\Message\Message;
 
 interface IDropdownButton extends IComponent {
 

@@ -27,6 +27,12 @@
 
 use BlueSpice\Api\Task;
 use BlueSpice\Utility\WikiTextLinksHelper\CategoryLinksHelper;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Content\TextContent;
+use MediaWiki\Content\WikitextContent;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Request\FauxRequest;
+use MediaWiki\Title\Title;
 
 /**
  * Provides common tasks that can be performed on a WikiPage
@@ -250,11 +256,11 @@ class BSApiWikiPageTasks extends BSApiTasksBase {
 		}
 
 		$req = new FauxRequest( array_merge(
-			[ Task::PARAM_TASK_DATA => \FormatJson::encode( $taskData ) ],
-			[ Task::PARAM_CONTEXT => \FormatJson::encode( $rawContext ) ],
+			[ Task::PARAM_TASK_DATA => FormatJson::encode( $taskData ) ],
+			[ Task::PARAM_CONTEXT => FormatJson::encode( $rawContext ) ],
 			[ 'action' => 'bs-task', Task::PARAM_TASK => $task ]
 		) );
-		$api = new \ApiMain( $req, true );
+		$api = new ApiMain( $req, true );
 		$api->execute();
 		foreach ( [ 'message', 'errors', 'payload', 'payload_count', 'success' ] as $path ) {
 			if ( isset( $api->getResult()->getResultData()[$path] ) ) {
@@ -304,7 +310,7 @@ class BSApiWikiPageTasks extends BSApiTasksBase {
 			$oResponse->message = wfMessage(
 				'bs-wikipage-tasks-error-page-read-not-allowed',
 				$title->getPrefixedText()
-			)->plain();
+			)->text();
 			return $oResponse;
 		}
 
@@ -315,7 +321,7 @@ class BSApiWikiPageTasks extends BSApiTasksBase {
 			$wikitext = ( $content instanceof TextContent ) ? $content->getText() : '';
 
 		} else {
-			$oResponse->message = wfMessage( 'bs-wikipage-tasks-error-contentmodel' )->plain();
+			$oResponse->message = wfMessage( 'bs-wikipage-tasks-error-contentmodel' )->text();
 			return $oResponse;
 		}
 
@@ -422,7 +428,7 @@ class BSApiWikiPageTasks extends BSApiTasksBase {
 		// return title "Special:BadTitle"
 		if ( $oTitle instanceof Title === false ) {
 			throw new MWException(
-				wfMessage( 'bs-wikipage-tasks-error-page-not-valid' )->plain()
+				wfMessage( 'bs-wikipage-tasks-error-page-not-valid' )->text()
 			);
 		}
 
@@ -456,7 +462,7 @@ class BSApiWikiPageTasks extends BSApiTasksBase {
 		$content = $oWikiPage->getContent();
 		if ( $content instanceof WikitextContent === false ) {
 			$oResponse->message =
-				wfMessage( 'bs-wikipage-tasks-error-contentmodel' )->plain();
+				wfMessage( 'bs-wikipage-tasks-error-contentmodel' )->text();
 			return $oResponse;
 		}
 

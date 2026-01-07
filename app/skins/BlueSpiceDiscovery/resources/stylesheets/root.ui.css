@@ -5,14 +5,14 @@
 	--logo-height: 40px;
 	--sidebar-primary-width: 300px;
 	--sidebar-secondary-width: 300px;
-	--sidebar-primary-spacer: var(--sidebar-primary-width);
-	--sidebar-secondary-spacer: var(--sidebar-secondary-width);
+	--sidebar-primary-spacer: var( --sidebar-primary-width );
+	--sidebar-secondary-spacer: var( --sidebar-secondary-width );
 	--button-height: 40px;
 	--content-max-width: 1200px;
 	--footer-height: 80px;
 	--aftercontent-height: 40px;
-	--aftercontent-max-width: var(--content-max-width);
+	--aftercontent-max-width: var( --content-max-width );
 	--navbar-icon-size: 22px;
-	--footer-max-width: var(--content-max-width);
-	--title-nav-bg: var(--content-bg);
+	--footer-max-width: var( --content-max-width );
+	--title-nav-bg: var( --content-bg );
 }

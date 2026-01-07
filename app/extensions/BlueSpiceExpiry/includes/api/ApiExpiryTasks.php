@@ -2,6 +2,9 @@
 
 use BlueSpice\Api\Response\Standard;
 use BlueSpice\Expiry\SpecialLogLogger;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\Title\Title;
 use MediaWiki\User\UserIdentity;
 
 class ApiExpiryTasks extends BSApiTasksBase {
@@ -30,7 +33,7 @@ class ApiExpiryTasks extends BSApiTasksBase {
 	 * @param array $aParams
 	 * @return Standard
 	 */
-	public function task_getDetailsForExpiry( $oTaskData, $aParams ) {
+	public function task_getDetailsForExpiry( $oTaskData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$oResult = $this->makeStandardReturn();
 
 		$iArticleId = isset( $oTaskData->articleId )
@@ -41,7 +44,7 @@ class ApiExpiryTasks extends BSApiTasksBase {
 
 		if ( !$aExpiry ) {
 			$oResult->message = $oResult->errors[]
-				= wfMessage( 'bs-expiry-unknown-page-msg' )->plain();
+				= wfMessage( 'bs-expiry-unknown-page-msg' )->text();
 			return $oResult;
 		}
 
@@ -61,7 +64,7 @@ class ApiExpiryTasks extends BSApiTasksBase {
 	 * @param array $aParams
 	 * @return Standard
 	 */
-	public function task_changeDate( $oTaskData, $aParams ) {
+	public function task_changeDate( $oTaskData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$oResult = $this->makeStandardReturn();
 
 		$expiryIds = $oTaskData->ids ?? [];
@@ -72,7 +75,7 @@ class ApiExpiryTasks extends BSApiTasksBase {
 		$date = DateTime::createFromFormat( "Y-m-d", $oTaskData->date );
 		if ( !$date ) {
 			$oResult->message = $oResult->errors[]
-				= wfMessage( 'bs-expiry-error-invalid-date' )->plain();
+				= wfMessage( 'bs-expiry-error-invalid-date' )->text();
 			return $oResult;
 		}
 
@@ -117,13 +120,13 @@ class ApiExpiryTasks extends BSApiTasksBase {
 	 * @return Standard
 	 * @throws MWException
 	 */
-	public function task_saveExpiry( $oTaskData, $aParams ) {
+	public function task_saveExpiry( $oTaskData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$oResult = $this->makeStandardReturn();
 		$oUser = $this->getUser();
 		$bIsUpdate = false;
 		if ( $oUser->isAnon() ) {
 			$oResult->message = $oResult->errors[]
-				= wfMessage( 'bs-permissionerror' )->plain();
+				= wfMessage( 'bs-permissionerror' )->text();
 			return $oResult;
 		}
 
@@ -142,7 +145,12 @@ class ApiExpiryTasks extends BSApiTasksBase {
 		// (not the overview specialpage) or the edit button on the specialpage
 		// and data needs to be prefilled
 		if ( !$oTitle && empty( $oTaskData->articleId ) && !empty( $oTaskData->id ) ) {
-			$res = $dbr->select( 'bs_expiry', 'exp_page_id', [ 'exp_id' => (int)$oTaskData->id ] );
+			$res = $dbr->select(
+				'bs_expiry',
+				'exp_page_id',
+				[ 'exp_id' => (int)$oTaskData->id ],
+				__METHOD__
+			);
 			if ( !$res ) {
 				$oResult->message = $oResult->errors[] =
 					wfMessage( 'bs-expiry-unknown-page-msg' )->text();
@@ -173,7 +181,7 @@ class ApiExpiryTasks extends BSApiTasksBase {
 		$date = DateTime::createFromFormat( "Y-m-d", $dateRaw );
 		if ( !$date ) {
 			$oResult->message = $oResult->errors[]
-				= wfMessage( 'bs-expiry-error-invalid-date' )->plain();
+				= wfMessage( 'bs-expiry-error-invalid-date' )->text();
 			return $oResult;
 		}
 
@@ -230,7 +238,12 @@ class ApiExpiryTasks extends BSApiTasksBase {
 				return $oResult;
 			}
 		} else {
-			$res = $dbw->update( 'bs_expiry', $aData, [ 'exp_id' => $iExpiryId ] );
+			$res = $dbw->update(
+				'bs_expiry',
+				$aData,
+				[ 'exp_id' => $iExpiryId ],
+				__METHOD__
+			);
 			if ( !$res ) {
 				$oResult->message = $oResult->errors[] =
 					wfMessage( 'bs-expiry-update-error' )->text();
@@ -261,9 +274,9 @@ class ApiExpiryTasks extends BSApiTasksBase {
 				$oTitle,
 				SpecialLogLogger::LOG_ACTION_CHANGE_DATE
 			);
-			$oResult->message = wfMessage( "bs-expiry-update-success" )->plain();
+			$oResult->message = wfMessage( "bs-expiry-update-success" )->text();
 		} else {
-			$oResult->message = wfMessage( "bs-expiry-save-success" )->plain();
+			$oResult->message = wfMessage( "bs-expiry-save-success" )->text();
 		}
 
 		return $oResult;
@@ -275,7 +288,7 @@ class ApiExpiryTasks extends BSApiTasksBase {
 	 * @param array $aParams
 	 * @return Standard
 	 */
-	public function task_deleteExpiry( $oTaskData, $aParams ) {
+	public function task_deleteExpiry( $oTaskData, $aParams ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		$oResult = $this->makeStandardReturn();
 
 		// Check if there is a expiryId
@@ -313,7 +326,7 @@ class ApiExpiryTasks extends BSApiTasksBase {
 		}
 
 		$oResult->success = true;
-		$oResult->message = wfMessage( 'bs-expiry-unexpire-success' )->plain();
+		$oResult->message = wfMessage( 'bs-expiry-unexpire-success' )->text();
 		return $oResult;
 	}
 

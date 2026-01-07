@@ -1,7 +1,4 @@
-ext.bluespice = ext.bluespice || {};
-ext.bluespice.pageassignments = ext.bluespice.pageassignments || {};
-ext.bluespice.pageassignments.ui = ext.bluespice.pageassignments.ui || {};
-ext.bluespice.pageassignments.ui.panel = ext.bluespice.pageassignments.ui.panel || {};
+bs.util.registerNamespace( 'ext.bluespice.pageassignments.ui.panel' );
 
 ext.bluespice.pageassignments.ui.panel.Overview = function ( cfg ) {
 	ext.bluespice.pageassignments.ui.panel.Overview.super.apply( this, cfg );
@@ -15,7 +12,7 @@ ext.bluespice.pageassignments.ui.panel.Overview = function ( cfg ) {
 	this.setup();
 };
 
-OO.inheritClass( ext.bluespice.pageassignments.ui.panel.Overview, OO.ui.PanelLayout ); // eslint-disable-line max-len
+OO.inheritClass( ext.bluespice.pageassignments.ui.panel.Overview, OO.ui.PanelLayout );
 
 ext.bluespice.pageassignments.ui.panel.Overview.prototype.setup = function () {
 	const gridCfg = this.setupGridConfig();
@@ -23,7 +20,7 @@ ext.bluespice.pageassignments.ui.panel.Overview.prototype.setup = function () {
 	this.$element.append( this.grid.$element );
 };
 
-ext.bluespice.pageassignments.ui.panel.Overview.prototype.setupGridConfig = function () { // eslint-disable-line max-len
+ext.bluespice.pageassignments.ui.panel.Overview.prototype.setupGridConfig = function () {
 	const gridCfg = {
 		style: 'differentiate-rows',
 		columns: {
@@ -32,9 +29,7 @@ ext.bluespice.pageassignments.ui.panel.Overview.prototype.setupGridConfig = func
 				type: 'text',
 				sortable: true,
 				filter: { type: 'text' },
-				valueParser: ( val, row ) => {
-					return new OO.ui.HtmlSnippet( row.page_link );
-				}
+				valueParser: ( val, row ) => new OO.ui.HtmlSnippet( row.page_link )
 			}
 		},
 		store: this.store

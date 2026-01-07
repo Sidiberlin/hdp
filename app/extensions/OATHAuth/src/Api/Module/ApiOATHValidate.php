@@ -18,13 +18,14 @@
 
 namespace MediaWiki\Extension\OATHAuth\Api\Module;
 
-use ApiBase;
-use ApiResult;
-use FormatJson;
-use MediaWiki\Extension\OATHAuth\IModule;
+use MediaWiki\Api\ApiBase;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Api\ApiResult;
 use MediaWiki\Extension\OATHAuth\Module\TOTP;
-use MediaWiki\MediaWikiServices;
-use User;
+use MediaWiki\Extension\OATHAuth\OATHUserRepository;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Logger\LoggerFactory;
+use MediaWiki\User\UserFactory;
 use Wikimedia\ParamValidator\ParamValidator;
 
 /**
@@ -34,21 +35,33 @@ use Wikimedia\ParamValidator\ParamValidator;
  * @ingroup Extensions
  */
 class ApiOATHValidate extends ApiBase {
+	private OATHUserRepository $oathUserRepository;
+	private UserFactory $userFactory;
+
+	public function __construct(
+		ApiMain $mainModule,
+		string $moduleName,
+		OATHUserRepository $oathUserRepository,
+		UserFactory $userFactory
+	) {
+		parent::__construct( $mainModule, $moduleName );
+		$this->oathUserRepository = $oathUserRepository;
+		$this->userFactory = $userFactory;
+	}
+
 	public function execute() {
-		// Be extra paranoid about the data that is sent
-		$this->requireAtLeastOneParameter( $this->extractRequestParams(), 'totp', 'data' );
-		$this->requirePostedParameters( [ 'token', 'data', 'totp' ] );
+		$this->requirePostedParameters( [ 'token', 'data' ] );
+		// messages used: right-oathauth-api-all, action-oathauth-api-all,
+		$this->checkUserRightsAny( 'oathauth-api-all' );
 
 		$params = $this->extractRequestParams();
 		if ( $params['user'] === null ) {
-			$params['user'] = $this->getUser()->getName();
-		}
-
-		$this->checkUserRightsAny( 'oathauth-api-all' );
-
-		$user = User::newFromName( $params['user'] );
-		if ( $user === false ) {
-			$this->dieWithError( 'noname' );
+			$user = $this->getUser();
+		} else {
+			$user = $this->userFactory->newFromName( $params['user'] );
+			if ( $user === null ) {
+				$this->dieWithError( 'noname' );
+			}
 		}
 
 		// Don't increase pingLimiter, just check for limit exceeded.
@@ -60,32 +73,38 @@ class ApiOATHValidate extends ApiBase {
 			ApiResult::META_BC_BOOLS => [ 'enabled', 'valid' ],
 			'enabled' => false,
 			'valid' => false,
-			'module' => ''
 		];
 
-		if ( !$user->isAnon() ) {
-			$userRepo = MediaWikiServices::getInstance()->getService( 'OATHUserRepository' );
-			$authUser = $userRepo->findByUser( $user );
-			if ( $authUser ) {
-				$module = $authUser->getModule();
-				if ( $module instanceof IModule ) {
-					$data = [];
-					if ( isset( $params['totp'] ) ) {
-						// Legacy
-						if ( $module instanceof TOTP ) {
-							$data = [
-								'token' => $params['totp']
-							];
-						}
-					} else {
-						$decoded = FormatJson::decode( $params['data'], true );
-						if ( is_array( $decoded ) ) {
-							$data = $decoded;
-						}
+		if ( $user->isNamed() ) {
+			$authUser = $this->oathUserRepository->findByUser( $user );
+			$keys = TOTP::getTOTPKeys( $authUser );
+			if ( $keys ) {
+				$result['enabled'] = true;
+
+				$data = [];
+				$decoded = FormatJson::decode( $params['data'], true );
+				if ( is_array( $decoded ) ) {
+					$data = $decoded;
+				}
+
+				foreach ( $keys as $key ) {
+					if ( $key->verify( $data, $authUser ) !== false ) {
+						$result['valid'] = true;
+						break;
 					}
-					$result['enabled'] = $module->isEnabled( $authUser );
-					$result['valid'] = $module->verify( $authUser, $data ) !== false;
-					$result['module'] = $module->getName();
+				}
+
+				if ( !$result['valid'] ) {
+					// Increase rate limit counter for failed request
+					$user->pingLimiter( 'badoath' );
+
+					LoggerFactory::getInstance( 'authentication' )->info(
+						'OATHAuth user {user} failed OTP token/recovery code from {clientip}',
+						[
+							'user'     => $user,
+							'clientip' => $user->getRequest()->getIP(),
+						]
+					);
 				}
 			}
 		}
@@ -93,10 +112,12 @@ class ApiOATHValidate extends ApiBase {
 		$this->getResult()->addValue( null, $this->getModuleName(), $result );
 	}
 
+	/** @inheritDoc */
 	public function isInternal() {
 		return true;
 	}
 
+	/** @inheritDoc */
 	public function needsToken() {
 		return 'csrf';
 	}
@@ -109,12 +130,9 @@ class ApiOATHValidate extends ApiBase {
 			'user' => [
 				ParamValidator::PARAM_TYPE => 'user',
 			],
-			'totp' => [
-				ParamValidator::PARAM_TYPE => 'string',
-				ParamValidator::PARAM_DEPRECATED => true
-			],
 			'data' => [
-				ParamValidator::PARAM_TYPE => 'string'
+				ParamValidator::PARAM_TYPE => 'string',
+				ParamValidator::PARAM_REQUIRED => true,
 			]
 		];
 	}
@@ -124,10 +142,8 @@ class ApiOATHValidate extends ApiBase {
 	 */
 	protected function getExamplesMessages() {
 		return [
-			'action=oathvalidate&totp=123456&token=123ABC'
+			'action=oathvalidate&data={"token":"123456"}&token=123ABC'
 				=> 'apihelp-oathvalidate-example-1',
-			'action=oathvalidate&user=Example&totp=123456&token=123ABC'
-				=> 'apihelp-oathvalidate-example-2',
 			'action=oathvalidate&user=Example&data={"token":"123456"}&token=123ABC'
 				=> 'apihelp-oathvalidate-example-3',
 		];

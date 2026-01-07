@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Siebrand",
-			"McDutchie"
+			"McDutchie",
+			"Siebrand"
 		]
 	},
 	"loops-desc": "Parserfuncties voor het uitvoeren van herhalingen",

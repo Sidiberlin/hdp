@@ -1,0 +1,14 @@
+{
+	"@metadata": {
+		"authors": [
+			"Yupik"
+		]
+	},
+	"mergearticles-target-new-label": "Ođđa siidu",
+	"mergearticles-type-file": "Fiila",
+	"mergearticles-file-layout-label": "Fiila",
+	"mergearticles-file-info-name": "Namma: $1",
+	"mergearticles-file-diff-header": "Fiila",
+	"mergearticles-term-filter-label": "Siidonamma",
+	"mergearticles-file-info-size": "Sturrodat: $1"
+}

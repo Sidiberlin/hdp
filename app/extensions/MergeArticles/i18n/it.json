@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Beta16"
+		]
+	},
+	"mergearticles": "Unisci voci",
+	"mergearticles-type-file": "File",
+	"mergearticles-type-article": "Pagina",
+	"mergearticles-type-template": "Template",
+	"mergearticles-type-category": "Categoria",
+	"mergearticles-no-pages-available": "Nulla da mostrare!",
+	"mergearticles-action-unknown": "Azione sconosciuta",
+	"mergearticles-request-invalid": "Richiesta non valida",
+	"mergearticles-do-merge-label": "Unisci",
+	"mergearticles-file-layout-label": "File",
+	"mergearticles-file-info-name": "Nome: $1",
+	"mergearticles-file-info-extension": "Estensione: $1",
+	"mergearticles-file-info-mime": "Tipo MIME: $1",
+	"mergearticles-file-info-size": "Dimensione: $1",
+	"mergearticles-diff-action-accept": "Approva",
+	"mergearticles-diff-action-refuse": "Rifiuta",
+	"mergearticles-diff-accepted": "Approvato",
+	"mergearticles-diff-option-accept-all-label": "Approva tutto",
+	"mergearticles-diff-item-undo": "Annulla",
+	"mergearticles-final-text-header-label": "Testo finale",
+	"mergearticles-final-text-header-note": "(può essere modificato)",
+	"mergearticles-file-diff-header": "File",
+	"mergearticles-apihelp-param-pageid": "ID di una pagina",
+	"mergearticles-apihelp-param-targetid": "ID di una pagina",
+	"right-merge-articles": "Unisce pagine"
+}

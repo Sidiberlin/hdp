@@ -77,7 +77,6 @@
 	"bs-discovery-page-does-not-exist-title": "$1 (strona nie istnieje)",
 	"bs-discovery-enhanced-mediawiki-sidebar-header-text": "Nawigacja",
 	"bs-discovery-enhanced-sidebar-edit-button-title": "Edytuj to menu",
-	"bs-discovery-enhanced-sidebar-edit-button-aria-label": "Edytuj $1",
 	"bs-discovery-config-meta-items-header-label": "Elementy pod tytułem strony",
 	"bs-discovery-config-meta-items-header-help": "Wybrane elementy wyświetlane są pod tytułem strony",
 	"bs-discovery-config-meta-items-footer-label": "Elementy pod treścią strony",

@@ -25,8 +25,8 @@
 	"bs-smartlist-week": "Week",
 	"bs-smartlist-month": "Maand",
 	"bs-smartlist-time": "Tijd",
-	"bs-smartlist-title": "Naam",
-	"bs-smartlist-mostvisitedpages": "Meest bekeken pagina's",
+	"bs-smartlist-title": "Titel",
+	"bs-smartlist-mostvisitedpages": "Meest bekeken pagina’s",
 	"bs-smartlist-mosteditedpages": "Meest bewerkte pagina's",
 	"bs-smartlist-mostactiveusers": "Meest actieve gebruikers (door bewerkingen)",
 	"bs-smartlist-lastedits": "Mijn bewerkingen",
@@ -36,7 +36,6 @@
 	"bs-smartlist-mostvisitedpagesdesc": "Lijst van meest bekeken pagina's gesorteerd op aantal keren bekeken",
 	"bs-smartlist-lasteditsdesc": "Lijst met pagina's die u hebt bewerkt.",
 	"bs-smartlist-hitcounter-missing": "De extensie <a target='blank' href='https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:HitCounters'>HitCounters</a> moet geïnstalleerd zijn.",
-	"apihelp-bs-smartlist-tasks-description": "API-functies om portlet-gegevens te bedienen voor pagina- en gebruikersstatistieken",
 	"apihelp-bs-smartlist-tasks-summary": "API-functies om portlet-gegevens te bedienen voor pagina- en gebruikersstatistieken",
 	"bs-smartlist-ve-userlist-title": "Gebruikerslijst",
 	"bs-smartlist-ve-userlistinspector-groups": "Groepen",
@@ -55,5 +54,9 @@
 	"bs-smartlist-droplet-what-links-here-desc": "Lijst met pagina's die naar deze pagina linken",
 	"bs-smartlist-ve-recentchanges-title": "Recente wijzigingen",
 	"bs-smartlist-ve-whatlinkshere-title": "Links naar deze pagina",
-	"bs-smartlist-error-mode-not-found": "Opgegeven modus niet gevonden"
+	"bs-smartlist-error-mode-not-found": "Opgegeven modus niet gevonden",
+	"bs-smartlist-input-validator-invalid mode": "De waarde “$2” voor “$1” is geen juiste SmartList-modus",
+	"bs-smartlist-ve-tab-main": "Algemeen",
+	"bs-smartlist-ve-tab-advanced": "Geavanceerd",
+	"bs-smartlist-ve-tab-appearance": "Uiterlijk"
 }

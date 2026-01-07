@@ -2,7 +2,7 @@
 
 namespace MWStake\MediaWiki\Component\CommonUserInterface;
 
-use Sanitizer;
+use MediaWiki\Parser\Sanitizer;
 
 class HtmlIdRegistry {
 

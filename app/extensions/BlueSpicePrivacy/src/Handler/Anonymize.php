@@ -3,8 +3,11 @@
 namespace BlueSpice\Privacy\Handler;
 
 use BlueSpice\Privacy\IPrivacyHandler;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
-use RequestContext;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use Wikimedia\Rdbms\IDatabase;
 
 class Anonymize implements IPrivacyHandler {
@@ -28,7 +31,7 @@ class Anonymize implements IPrivacyHandler {
 	protected $skipUserTable = false;
 
 	/**
-	 * @var \User
+	 * @var User
 	 */
 	protected $oldUser;
 
@@ -48,7 +51,7 @@ class Anonymize implements IPrivacyHandler {
 	 *
 	 * @param string $oldUsername
 	 * @param string $newUsername
-	 * @return \Status
+	 * @return Status
 	 */
 	public function anonymize( $oldUsername, $newUsername ) {
 		$userFactory = $this->services->getUserFactory();
@@ -66,7 +69,7 @@ class Anonymize implements IPrivacyHandler {
 			// change its User object in the context
 			$this->getContext()->setUser( $newUser );
 		}
-		return \Status::newGood();
+		return Status::newGood();
 	}
 
 	/**
@@ -128,7 +131,7 @@ class Anonymize implements IPrivacyHandler {
 	 */
 	protected function moveUserPage( $newUsername ) {
 		$oldUserPage = $this->oldUser->getUserPage();
-		$newUserPage = \Title::makeTitle( NS_USER, $newUsername );
+		$newUserPage = Title::makeTitle( NS_USER, $newUsername );
 		$util = $this->services->getService( 'BSUtilityFactory' );
 		if ( $oldUserPage->exists() ) {
 			$movePage = $this->services->getMovePageFactory()->newMovePage( $oldUserPage, $newUserPage );
@@ -173,32 +176,33 @@ class Anonymize implements IPrivacyHandler {
 				[
 					'up_property' => $property,
 					'up_user' => $user->getId()
-				]
+				],
+				__METHOD__
 			);
 		}
 	}
 
 	/**
 	 *
-	 * @param \User $userToDelete
-	 * @param \User $deletedUser
-	 * @return \Status
+	 * @param User $userToDelete
+	 * @param User $deletedUser
+	 * @return Status
 	 */
-	public function delete( \User $userToDelete, \User $deletedUser ) {
+	public function delete( User $userToDelete, User $deletedUser ) {
 		// Handled in another handler
-		return \Status::newGood();
+		return Status::newGood();
 	}
 
 	/**
 	 *
 	 * @param array $types
 	 * @param string $format
-	 * @param \User $user
-	 * @return \Status
+	 * @param User $user
+	 * @return Status
 	 */
-	public function exportData( array $types, $format, \User $user ) {
+	public function exportData( array $types, $format, User $user ) {
 		// Handled in another handler
-		return \Status::newGood( [] );
+		return Status::newGood( [] );
 	}
 
 	/**

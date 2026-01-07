@@ -28,9 +28,6 @@ class Rebaser implements LoggerAwareInterface {
 	 */
 	private $session;
 
-	/** @var Change|null */
-	private $sessionChange = null;
-
 	/**
 	 * @param MongoDBCollabSessionDAO $session
 	 */
@@ -56,8 +53,7 @@ class Rebaser implements LoggerAwareInterface {
 	 * @throws Exception
 	 */
 	public function applyChange( int $sessionId, Author $author, int $backtrack, Change $change ): Change {
-		$this->sessionChange = null;
-		$this->logger->debug( "Rebasing change", [
+		$this->logger->info( "Rebasing change", [
 			'author' => json_encode( $author ),
 			'change' => json_encode( $change ),
 			'backtrack' => $backtrack,
@@ -93,14 +89,26 @@ class Rebaser implements LoggerAwareInterface {
 				// exiguitas non caperet).
 				$base = $base->mostRecent( $change->getStart() );
 			}
-			$this->sessionChange = $this->session->getChange( $sessionId );
-			$base = $base->concat( $this->sessionChange->mostRecent( $base->getStart() + $base->getLength() ) );
+			$sessionChange = $this->session->getChange( $sessionId );
+			$base = $base->concat( $sessionChange->mostRecent( $base->getStart() + $base->getLength() ) );
 			$result = $this->rebaseUncommittedChange( $base, $change );
-			$this->logger->debug( "Rebase of uncommited change", $result );
 			$rejections = $result['rejected'] ? $result['rejected']->getLength() : 0;
-			$this->session->changeAuthorDataInSession( $sessionId, $author->getId(), 'rejections', $rejections );
+			if ( !$result['rebased']->isEmpty() ) {
+				// Update session with newly applied change
+				$sessionChange->push( $result['rebased'] );
+				$this->session->replaceHistory( $sessionId, $sessionChange );
+			}
 			$this->session->changeAuthorDataInSession(
-				$sessionId, $author->getId(), 'continueBase', json_encode( $result['transposedHistory'] )
+				$sessionId,
+				$author->getId(),
+				'rejections',
+				$rejections
+			);
+			$this->session->changeAuthorDataInSession(
+				$sessionId,
+				$author->getId(),
+				'continueBase',
+				json_decode( json_encode( $result['transposedHistory'] ), true )
 			);
 			$appliedChange = $result['rebased'];
 		}
@@ -114,13 +122,6 @@ class Rebaser implements LoggerAwareInterface {
 			'rejections' => $rejections
 		] );
 		return $appliedChange;
-	}
-
-	/**
-	 * @return Change|null
-	 */
-	public function getSessionChange(): ?Change {
-		return $this->sessionChange;
 	}
 
 	/**
@@ -140,7 +141,6 @@ class Rebaser implements LoggerAwareInterface {
 				return $this->rebaseUncommittedChange( $base, $uncommited );
 			}
 
-			$this->logger->error( 'Different starts: ' . $base->getStart() . ' and ' . $uncommited->getStart() );
 			throw new Exception( 'Different starts: ' . $base->getStart() . ' and ' . $uncommited->getStart() );
 		}
 
@@ -262,6 +262,12 @@ class Rebaser implements LoggerAwareInterface {
 			$a->adjustRetain( 'start', $infoB['diff'] );
 			$b->adjustRetain( 'end', $infoA['diff'] );
 		} else {
+			$this->logger->error( 'Failed to rebase transactions', [
+				'a' => $a,
+				'b' => $b,
+				'infoA' => $infoA,
+				'infoB' => $infoB
+			] );
 			// The active ranges overlap: conflict
 			return [ null, null ];
 		}

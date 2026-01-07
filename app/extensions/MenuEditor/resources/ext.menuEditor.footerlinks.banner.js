@@ -1,5 +1,5 @@
 ( function ( $, mw ) {
-	var $content = $( '#content' ), // eslint-disable-line no-jquery/no-global-selector
+	const $content = $( '#content' ), // eslint-disable-line no-jquery/no-global-selector
 
 		widget = new OO.ui.MessageWidget( {
 			id: 'footerlinks-notice',

@@ -27,6 +27,10 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Content\Content;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\User\User;
 
 abstract class ArticleDeleteComplete extends Hook {
 
@@ -38,7 +42,7 @@ abstract class ArticleDeleteComplete extends Hook {
 
 	/**
 	 *
-	 * @var \User
+	 * @var User
 	 */
 	protected $user = null;
 
@@ -56,7 +60,7 @@ abstract class ArticleDeleteComplete extends Hook {
 
 	/**
 	 *
-	 * @var \Content
+	 * @var Content
 	 */
 	protected $content = null;
 
@@ -69,10 +73,10 @@ abstract class ArticleDeleteComplete extends Hook {
 	/**
 	 *
 	 * @param \WikiPage &$wikipage
-	 * @param \User &$user
+	 * @param User &$user
 	 * @param string $reason
 	 * @param int $id
-	 * @param \Content $content
+	 * @param Content $content
 	 * @param \LogEntry $logEntry
 	 * @return bool
 	 */
@@ -93,13 +97,13 @@ abstract class ArticleDeleteComplete extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param \WikiPage &$wikipage
-	 * @param \User &$user
+	 * @param User &$user
 	 * @param string $reason
 	 * @param int $id
-	 * @param \Content $content
+	 * @param Content $content
 	 * @param \LogEntry $logEntry
 	 */
 	public function __construct( $context, $config, &$wikipage, &$user, $reason, $id, $content,

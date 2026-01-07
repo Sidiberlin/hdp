@@ -2,22 +2,19 @@
 
 namespace MediaWiki\Extension\NumberHeadings\HookHandler;
 
-use Config;
+use MediaWiki\Config\Config;
+use MediaWiki\Content\Content;
+use MediaWiki\Content\TextContent;
 use MediaWiki\Extension\NumberHeadings\ApplyHeadingNumbering;
 use MediaWiki\HookContainer\HookContainer;
-use NamespaceInfo;
-use OutputPage;
+use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Parser\Parsoid\PageBundleParserOutputConverter;
+use MediaWiki\Title\NamespaceInfo;
+use MediaWiki\Title\Title;
 
 class AddHeadingNumbering {
 
-	/** @var Config */
-	private $config;
-
-	/** @var HookContainer */
-	private $hookContainer;
-
-	/** @var NamespaceInfo */
-	private $namespaceInfo;
+	public const ALREADY_PROCESSED = 'numberheading-already-processed';
 
 	/**
 	 * @param Config $config
@@ -25,26 +22,46 @@ class AddHeadingNumbering {
 	 * @param NamespaceInfo $namespaceInfo
 	 */
 	public function __construct(
-		Config $config, HookContainer $hookContainer, NamespaceInfo $namespaceInfo
+		private readonly Config $config,
+		private readonly HookContainer $hookContainer,
+		private readonly NamespaceInfo $namespaceInfo
 	) {
-		$this->config = $config;
-		$this->hookContainer = $hookContainer;
-		$this->namespaceInfo = $namespaceInfo;
 	}
 
 	/**
-	 * @param OutputPage $out
-	 * @param string &$text
-	 * @return bool
+	 * @param Content $content
+	 * @param Title $title
+	 * @param ParserOutput &$output
+	 * @return void
 	 */
-	public function onOutputPageBeforeHTML( OutputPage $out, &$text ) {
+	public function onContentAlterParserOutput( Content $content, Title $title, ParserOutput &$output ) {
 		if ( !$this->config->get( 'NumberHeadingsEnable' ) ) {
 			return true;
 		}
+		if ( !( $content instanceof TextContent ) ) {
+			return true;
+		}
+		if ( $output->getExtensionData( PageBundleParserOutputConverter::PARSOID_PAGE_BUNDLE_KEY ) !== null ) {
+			return true;
+		}
+		if ( $output->getExtensionData( self::ALREADY_PROCESSED ) !== null ) {
+			return true;
+		}
+		if ( !$output->hasText() ) {
+			return true;
+		}
+		// Intentionally using deprecated `getText`/`setText` here, as new `DefaultOutputPipelineFactory`
+		// is marked as "unstable".
+		// https://github.com/wikimedia/mediawiki/blob/1.43.5/includes/OutputTransform/DefaultOutputPipelineFactory.php#L27
+		// We can not use `getRawText` as it does not provide the required markup.
+		$text = $output->getText();
+
 		$applyHeadingNumbering = new ApplyHeadingNumbering(
-			$out, $this->config, $this->hookContainer, $this->namespaceInfo
+			$this->config, $this->hookContainer, $this->namespaceInfo
 		);
-		$text = $applyHeadingNumbering->apply( $text );
+
+		$output->setText( $applyHeadingNumbering->apply( $title, $text ) );
+		$output->setExtensionData( self::ALREADY_PROCESSED, true );
 
 		return true;
 	}

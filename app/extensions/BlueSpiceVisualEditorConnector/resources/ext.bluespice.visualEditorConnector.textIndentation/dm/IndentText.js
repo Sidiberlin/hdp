@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.dm' );
 
-bs.vec.dm.IndentText = function( element, store ) {
+bs.vec.dm.IndentText = function ( element, store ) {
 	// Parent constructor
 	bs.vec.dm.IndentText.super.apply( this, [ element, store ] );
 };
@@ -15,9 +15,9 @@ bs.vec.dm.IndentText.static.name = 'textStyle/indent-text';
 
 bs.vec.dm.IndentText.static.applyToAppendedContent = true;
 
-bs.vec.dm.IndentText.static.toDomElements = function( data, doc ) {
+bs.vec.dm.IndentText.static.toDomElements = function ( data, doc ) {
 	// Create <dl><dd></dd></dl> structure
-	var dl = doc.createElement( 'dl' ),
+	const dl = doc.createElement( 'dl' ),
 		dd = doc.createElement( 'dd' );
 
 	dl.appendChild( dd );

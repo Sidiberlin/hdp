@@ -2,9 +2,9 @@
 
 namespace MediaWiki\Extension\PageCheckout\Activity;
 
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use MWException;
-use Title;
-use User;
 
 class PageCheckInActivity extends CheckoutActivity {
 	/**
@@ -13,6 +13,9 @@ class PageCheckInActivity extends CheckoutActivity {
 	 * @throws MWException
 	 */
 	protected function doAction( User $user, Title $title ) {
-		$this->manager->checkIn( $title, $user );
+		if ( !$this->manager->isCheckedOut( $title ) ) {
+			return;
+		}
+		$this->manager->checkIn( $title );
 	}
 }

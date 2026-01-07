@@ -2,9 +2,9 @@
 
 namespace BlueSpice\UserManager;
 
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
-use SpecialPage;
 
 class GlobalActionsAdministration extends RestrictedTextLink {
 
@@ -19,15 +19,9 @@ class GlobalActionsAdministration extends RestrictedTextLink {
 		return 'ga-bs-usermanager';
 	}
 
-	/**
-	 * @return array
-	 */
+	/** @inheritDoc */
 	public function getPermissions(): array {
-		$permissions = [
-			'usermanager-viewspecialpage',
-			'usermanager-editpassword'
-		];
-		return $permissions;
+		return [ 'wikiadmin' ];
 	}
 
 	/**

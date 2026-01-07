@@ -27,5 +27,6 @@
 	"simple-tasks-taskreport-state-title-open": "Carga es aperte",
 	"simple-tasks-taskreport-state-title-done": "Carga es facite",
 	"simple-tasks-taskreport-state-filter-done": "Facite",
-	"simple-tasks-taskreport-state-filter-open": "Aperte"
+	"simple-tasks-taskreport-state-filter-open": "Aperte",
+	"simple-tasks-notif-message-with-due-date": "te {{GENDER:$1|ha assignate}} un carga: “$1”. Le carga es debite le $2"
 }

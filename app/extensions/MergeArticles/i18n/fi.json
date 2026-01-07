@@ -1,0 +1,18 @@
+{
+	"@metadata": {
+		"authors": [
+			"MITO",
+			"Pyscowicz",
+			"Yupik"
+		]
+	},
+	"mergearticles-target-new-label": "Uusi sivu",
+	"mergearticles-type-file": "Tiedosto",
+	"mergearticles-type-article": "Sivu",
+	"mergearticles-type-template": "Malline",
+	"mergearticles-type-category": "Luokka",
+	"mergearticles-file-layout-label": "Tiedosto",
+	"mergearticles-file-info-name": "Nimi: $1",
+	"mergearticles-term-filter-label": "Sivun nimi",
+	"mergearticles-file-info-size": "Koko: $1"
+}

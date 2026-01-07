@@ -3,39 +3,41 @@ bs.util.registerNamespace( 'ext.bookshelf.ui.dialog' );
 ext.bookshelf.ui.dialog.AddNewBookDialog = function ( config ) {
 	config = config || {};
 	ext.bookshelf.ui.dialog.AddNewBookDialog.super.call( this, config );
-}
+};
 OO.inheritClass( ext.bookshelf.ui.dialog.AddNewBookDialog, OO.ui.ProcessDialog );
 
 ext.bookshelf.ui.dialog.AddNewBookDialog.static.name = 'AddNewBookDialog';
 ext.bookshelf.ui.dialog.AddNewBookDialog.static.title = mw.message( 'bs-bookshelf-newbook-dlg-title' ).text();
+
 ext.bookshelf.ui.dialog.AddNewBookDialog.static.size = 'large';
+
 ext.bookshelf.ui.dialog.AddNewBookDialog.static.actions = [
 	{
 		action: 'save',
-		label: mw.message( 'bs-bookshelf-metadata-dlg-action-save-label' ).text(),
+		label: mw.message( 'bs-bookshelf-newbook-dlg-action-create-label' ).text(),
 		flags: [ 'primary', 'progressive' ]
 	},
 	{
-		label: mw.message( 'cancel' ).text(),
-		flags: 'safe'
+		title: mw.message( 'cancel' ).text(),
+		flags: [ 'safe', 'close' ]
 	}
 ];
 
-ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.getSetupProcess = function( data ) {
+ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.getSetupProcess = function ( data ) {
 	return ext.bookshelf.ui.dialog.AddNewBookDialog.parent.prototype.getSetupProcess.call( this, data )
-	.next( function() {
-		this.saveAction = this.actions.getSpecial().primary;
-		this.saveAction.setDisabled( true );
-		this.uploadFile = false;
-	}.bind( this ) )
+		.next( () => {
+			this.saveAction = this.actions.getSpecial().primary;
+			this.saveAction.setDisabled( true );
+			this.uploadFile = false;
+		} );
 };
 
 ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.initialize = function () {
 	ext.bookshelf.ui.dialog.AddNewBookDialog.super.prototype.initialize.apply( this, arguments );
-	var bookshelfdata = require( './bookshelfdata.json' );
-	var options = [];
+	const bookshelfdata = require( './bookshelfdata.json' );
+	const options = [];
 	if ( bookshelfdata.length > 0 ) {
-		bookshelfdata.forEach( function ( val ) {
+		bookshelfdata.forEach( ( val ) => {
 			options.push( {
 				data: val
 			} );
@@ -58,14 +60,14 @@ ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.initialize = function () {
 			this.saveAction.setDisabled( true );
 		}
 	} );
-	var bookTitleLayout = new OO.ui.FieldLayout( this.bookTitleInput, {
-		label: mw.message( 'bs-bookshelf-newbook-dlg-input-title-label' ).text(),
+	const bookTitleLayout = new OO.ui.FieldLayout( this.bookTitleInput, {
+		label: mw.message( 'bs-bookshelf-newbook-dlg-input-title-label' ).text()
 	} );
 
 	this.subTitleInput = new OO.ui.TextInputWidget( {
-		placeholder: mw.message( 'bs-bookshelf-newbook-dlg-input-subtitle-placeholder' ).text(),
+		placeholder: mw.message( 'bs-bookshelf-newbook-dlg-input-subtitle-placeholder' ).text()
 	} );
-	var subTitleLayout = new OO.ui.FieldLayout( this.subTitleInput, {
+	const subTitleLayout = new OO.ui.FieldLayout( this.subTitleInput, {
 		label: mw.message( 'bs-bookshelf-newbook-dlg-input-subtitle-label' ).text()
 	} );
 
@@ -74,7 +76,7 @@ ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.initialize = function () {
 		$overlay: this.$overlay,
 		placeholder: mw.message( 'bs-bookshelf-newbook-dlg-input-bookshelf-placeholder' ).text()
 	} );
-	var bookshelfLayout = new OO.ui.FieldLayout( this.bookshelfInput, {
+	const bookshelfLayout = new OO.ui.FieldLayout( this.bookshelfInput, {
 		label: mw.message( 'bs-bookshelf-newbook-dlg-input-bookshelf-label' ).text()
 	} );
 
@@ -88,7 +90,7 @@ ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.initialize = function () {
 };
 
 ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.addCoverImageLayout = function () {
-	var imageLayout = new OO.ui.PanelLayout( {
+	const imageLayout = new OO.ui.PanelLayout( {
 		expanded: false,
 		padded: true,
 		classes: [ 'bs-bookshelf-new-book-image-panel' ]
@@ -104,17 +106,17 @@ ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.addCoverImageLayout = functio
 				this.coverImageFile.setDisabled( true );
 			}
 		}
-	})
-	var coverImageLayout = new OO.ui.FieldLayout( this.coverImageInput, {
-		label: mw.message( 'bs-bookshelf-newbook-dlg-input-image-label' ).text(),
+	} );
+	const coverImageLayout = new OO.ui.FieldLayout( this.coverImageInput, {
+		label: mw.message( 'bs-bookshelf-newbook-dlg-input-image-label' ).text()
 	} );
 	this.coverImageFile = new OOJSPlus.ui.widget.FileSearchWidget( {
 		placeholder: mw.message( 'bs-bookshelf-newbook-dlg-input-image-select-placeholder' ).text(),
 		extensions: [ 'svg', 'png', 'jpg' ]
 	} );
-	var coverImageText = new OO.ui.FieldLayout( new OO.ui.LabelWidget( {
+	const coverImageText = new OO.ui.FieldLayout( new OO.ui.LabelWidget( {
 		label: mw.message( 'bs-bookshelf-newbook-dlg-cover-image-text' ).text()
-	}), {
+	} ), {
 		label: ' '
 	} );
 	this.coverImageFile.connect( this, {
@@ -127,7 +129,7 @@ ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.addCoverImageLayout = functio
 			}
 		}
 	} );
-	var coverImageFileLayout = new OO.ui.FieldLayout( this.coverImageFile, {
+	const coverImageFileLayout = new OO.ui.FieldLayout( this.coverImageFile, {
 		label: ' '
 	} );
 
@@ -138,66 +140,64 @@ ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.addCoverImageLayout = functio
 };
 
 ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.getActionProcess = function ( action ) {
-	var dialog = this;
+	const dialog = this;
 	if ( action ) {
 		dialog.pushPending();
 		dialog.bookData = dialog.getBookData();
-		var uploadDfd = dialog.uploadImage();
-		uploadDfd.done( function () {
-			return dialog.makeSaveProcess();
-		} ).fail( function ( error ) {
-			var handleDfd = dialog.handleUploadErrors( error, arguments );
+		const uploadDfd = dialog.uploadImage();
+		uploadDfd.done( () => dialog.makeSaveProcess() ).fail( function ( error ) {
+			const handleDfd = dialog.handleUploadErrors( error, arguments );
 			handleDfd.done( function ( result ) {
 				if ( result === 'save' ) {
 					return dialog.makeSaveProcess();
 				}
 				this.popPending();
-			}).fail( function ( error ) {
+			} ).fail( ( error ) => { // eslint-disable-line no-shadow
 				dialog.showErrors( new OO.ui.Error( error, { recoverable: false } ) );
 				return;
-			} )
+			} );
 		} );
 	}
 	return ext.bookshelf.ui.dialog.AddNewBookDialog.super.prototype.getActionProcess.call( this, action );
 };
 
 ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.makeSaveProcess = function () {
-	var process = new OO.ui.Process( function () {
-		var dfd = new $.Deferred();
-		this.save().done( function () {
+	const process = new OO.ui.Process( () => {
+		const dfd = new $.Deferred();
+		this.save().done( () => {
 			dfd.resolve();
-		}).fail( function ( error ) {
-			dfd.reject( );
+		} ).fail( ( error ) => {
+			dfd.reject();
 			this.showErrors( new OO.ui.Error( error, { recoverable: false } ) );
-		}.bind( this ) );
+		} );
 		return dfd.promise();
-	}.bind( this ) );
+	} );
 	mw.hook( 'bs.bookshelf.newbook.actionprocess' ).fire( process, this );
-	process.next( function () {
+	process.next( () => {
 		this.close( { action: 'done' } );
 		this.emit( 'book_created', this.bookTitle );
-	}.bind( this ) );
+	} );
 	return process.execute();
 };
 
 ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.getBookData = function () {
-	var bookdata = {};
-	bookdata[ 'title' ] = this.bookTitleInput.getValue();
+	const bookdata = {};
+	bookdata.title = this.bookTitleInput.getValue();
 
-	var subtitleValue = this.subTitleInput.getValue()
+	const subtitleValue = this.subTitleInput.getValue();
 	if ( subtitleValue.length > 0 ) {
-		bookdata[ 'subtitle' ] = subtitleValue;
+		bookdata.subtitle = subtitleValue;
 	}
-	var bookshelf = this.bookshelfInput.getValue()
+	const bookshelf = this.bookshelfInput.getValue();
 	if ( bookshelf.length > 0 ) {
-		bookdata[ 'bookshelf' ] = bookshelf;
+		bookdata.bookshelf = bookshelf;
 	}
-	var file = this.coverImageInput.getFilename()
+	const file = this.coverImageInput.getFilename();
 	if ( file.length > 0 ) {
-		bookdata[ 'bookshelfimage' ] = 'File:' + file;
+		bookdata.bookshelfimage = 'File:' + file;
 		this.uploadFile = true;
 	}
-	var filename = this.coverImageFile.getValue();
+	const filename = this.coverImageFile.getValue();
 	if ( filename.length > 0 && !this.uploadFile ) {
 		bookdata.bookshelfimage = filename;
 	}
@@ -206,39 +206,39 @@ ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.getBookData = function () {
 };
 
 ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.save = function () {
-	var dfd = new $.Deferred();
-	this.saveBook().done( function () {
-		var saveMetadataDfd = this.saveMetadata();
-		saveMetadataDfd.done( function () {
+	const dfd = new $.Deferred();
+	this.saveBook().done( () => {
+		const saveMetadataDfd = this.saveMetadata();
+		saveMetadataDfd.done( () => {
 			this.popPending();
 			dfd.resolve();
-		}.bind( this ) )
-		.fail( function () {
-			this.popPending();
-			dfd.reject( [
-				new OO.ui.Error(
-					mw.message( 'bs-bookshelf-newbook-dlg-error-metadata-save' ).text(),
-					{ recoverable: false }
-			) ] );
-		}.bind( this ) );
-	}.bind( this ) ).fail( function ( error ) {
+		} )
+			.fail( () => {
+				this.popPending();
+				dfd.reject( [
+					new OO.ui.Error(
+						mw.message( 'bs-bookshelf-newbook-dlg-error-metadata-save' ).text(),
+						{ recoverable: false }
+					) ] );
+			} );
+	} ).fail( ( error ) => {
 		this.popPending();
-		var errorMsg = mw.message( 'bs-bookshelf-newbook-dlg-error-book-save' ).text();
+		let errorMsg = mw.message( 'bs-bookshelf-newbook-dlg-error-book-save' ).text();
 		if ( error[ 0 ] === 'articleexists' ) {
 			errorMsg = mw.message( 'bs-bookshelf-newbook-dlg-error-book-exists' ).text();
 			this.bookTitleInput.setValidityFlag( false );
 		} else {
-			console.error( error );
+			console.error( error ); // eslint-disable-line no-console
 		}
 		dfd.reject( errorMsg );
-	}.bind( this ) );
+	} );
 	return dfd.promise();
 };
 
 ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.saveBook = function () {
-	var dfd = new $.Deferred();
+	const dfd = new $.Deferred();
 	this.bookTitle = 'Book:' + this.bookData.title;
-	mw.loader.using( 'mediawiki.api' ).done( function () {
+	mw.loader.using( 'mediawiki.api' ).done( () => {
 		const mwApi = new mw.Api();
 		mwApi.postWithToken( 'csrf', {
 			action: 'edit',
@@ -250,104 +250,104 @@ ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.saveBook = function () {
 		} ).fail( function () {
 			dfd.reject( arguments );
 		} )
-			.done( function ( resp ) {
+			.done( function () {
 				dfd.resolve( arguments );
-		} );
-	}.bind( this ) );
+			} );
+	} );
 	return dfd.promise();
 };
 
 ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.saveMetadata = function () {
-	var dfd = $.Deferred();
-	mw.loader.using( [ 'bluespice.bookshelf.api' ] ).done( function () {
-		var api = new ext.bookshelf.api.Api();
-		api.saveBookMetadata( this.bookTitle, this.bookData ).done( function () {
+	const dfd = $.Deferred();
+	mw.loader.using( [ 'bluespice.bookshelf.api' ] ).done( () => {
+		const api = new ext.bookshelf.api.Api();
+		api.saveBookMetadata( this.bookTitle, this.bookData ).done( () => {
 			dfd.resolve();
-		} ).fail( function () {
+		} ).fail( () => {
 			dfd.reject();
 		} );
-	}.bind( this ) );
+	} );
 
 	return dfd.promise();
 };
 
 ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.uploadImage = function () {
-	var dfd = $.Deferred();
+	const dfd = $.Deferred();
 	if ( !this.bookData.hasOwnProperty( 'bookshelfimage' ) || !this.uploadFile ) {
 		dfd.resolve();
 	} else {
-		mw.loader.using( [ 'mediawiki.api' ] ).done( function () {
-			var file = this.coverImageInput.getValue();
+		mw.loader.using( [ 'mediawiki.api' ] ).done( () => {
+			const file = this.coverImageInput.getValue();
 			const mwApi = new mw.Api();
-			var params = {
+			const params = {
 				filename: file.name,
 				format: file.type,
 				ignorewarnings: false
 			};
 
-			mwApi.upload( file, params ).done( function ( resp ) {
+			mwApi.upload( file, params ).done( () => {
 				dfd.resolve();
-			} ).fail( function ( error, result ) {
-					var errorMessage = this.getErrorMsg( result );
-					dfd.reject( errorMessage, result );
-			}.bind( this ) );
-		}.bind( this ) );
+			} ).fail( ( error, result ) => {
+				const errorMessage = this.getErrorMsg( result );
+				dfd.reject( errorMessage, result );
+			} );
+		} );
 	}
 
 	return dfd.promise();
 };
 
-ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.handleUploadErrors = function ( error, arguments ) {
-	var dfd = new $.Deferred();
+ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.handleUploadErrors = function ( error, arguments ) { // eslint-disable-line no-shadow-restricted-names
+	const dfd = new $.Deferred();
 	if ( error === 'fileexists-no-change' ) {
 		dfd.resolve( 'save' );
 	} else if ( error === 'duplicate' ) {
-		var origFileName = arguments[ 1 ].upload.warnings.duplicate[ 0 ];
+		const origFileName = arguments[ 1 ].upload.warnings.duplicate[ 0 ];
 		OO.ui.confirm(
 			mw.message( 'bs-bookshelf-newbook-dlg-upload-duplicate-confirm-label' ).text() )
-			.done( function ( confirmed ) {
+			.done( ( confirmed ) => {
 				if ( confirmed ) {
 					this.bookData.bookshelfimage = origFileName;
 					dfd.resolve( 'save' );
 				} else {
 					this.coverImageInput.setValue( '' );
-					delete( this.bookData[ 'bookshelfimage' ] );
+					delete ( this.bookData.bookshelfimage );
 					this.saveAction.setDisabled( false );
 					this.popPending();
 					dfd.resolve( 'reset' );
 				}
-			}.bind( this ) );
+			} );
 	} else if ( error === 'exists' ) {
-		var dialog = this;
+		const dialog = this;
 		OO.ui.prompt(
-			mw.message( 'bs-bookshelf-newbook-dlg-upload-title-exists' ).plain(),
+			mw.message( 'bs-bookshelf-newbook-dlg-upload-title-exists' ).text(),
 			{
 				textInput: {
 					value: 'Cover-' + this.bookData.title
 				}
 			} )
-			.done( function ( result ) {
+			.done( ( result ) => {
 				if ( result !== null ) {
-					var file = dialog.coverImageInput.getValue();
-					var fileFormat = dialog.bookData.bookshelfimage.substring(
-						dialog.bookData.bookshelfimage.indexOf( '.' ) + 1
+					const file = dialog.coverImageInput.getValue();
+					const fileFormat = dialog.bookData.bookshelfimage.slice(
+						Math.max( 0, dialog.bookData.bookshelfimage.indexOf( '.' ) + 1 )
 					);
-					var newFileName = result + '.' + fileFormat;
+					const newFileName = result + '.' + fileFormat;
 					const mwApi = new mw.Api();
-					var params = {
+					const params = {
 						filename: newFileName,
 						format: file.type
 					};
-					mwApi.upload( file, params ).done( function ( resp ) {
+					mwApi.upload( file, params ).done( () => {
 						dfd.resolve( 'save' );
-					} ).fail( function ( error, result ) {
-						var errorMessage = dialog.getErrorMsg( result );
+					} ).fail( ( error, result ) => { // eslint-disable-line no-shadow
+						const errorMessage = dialog.getErrorMsg( result );
 						if ( errorMessage === 'fileexists-no-change' || errorMessage === 'duplicate' || errorMessage === 'exists' ) {
-							var handledDdfd = dialog.handleUploadErrors( error, result );
-							handledDdfd.done( function () {
-								dfd.resolve( 'save' )
-							} ).fail( function ( error, result ) {
-								var errorMessage = dialog.getErrorMsg( result );
+							const handledDdfd = dialog.handleUploadErrors( error, result );
+							handledDdfd.done( () => {
+								dfd.resolve( 'save' );
+							} ).fail( ( error, result ) => { // eslint-disable-line no-shadow
+								const errorMessage = dialog.getErrorMsg( result ); // eslint-disable-line no-shadow
 								dialog.popPending();
 								dfd.reject( new OO.ui.Error( errorMessage, { recoverable: false } ) );
 							} );
@@ -355,12 +355,12 @@ ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.handleUploadErrors = function
 							dialog.popPending();
 							dfd.reject( new OO.ui.Error( error, { recoverable: false } ) );
 						}
-					}.bind( this ) );
+					} );
 				} else {
 					this.popPending();
 					dfd.reject();
 				}
-			}.bind( this ) );
+			} );
 	} else {
 		this.popPending();
 		dfd.reject( new OO.ui.Error( error, { recoverable: false } ) );
@@ -373,12 +373,12 @@ ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.getErrorMsg = function ( resu
 	if ( !result.hasOwnProperty( 'upload' ) ) {
 		return 'No upload property during upload';
 	}
-	var upload = result.upload;
+	const upload = result.upload;
 	if ( !upload.hasOwnProperty( 'warnings' ) ) {
 		return 'No warnings during upload';
 	}
-	var warnings = result.upload.warnings,
-		errorMessage = mw.message( 'bs-bookshelf-newbook-dlg-upload-error-unhandled' ).plain();
+	const warnings = result.upload.warnings;
+	let errorMessage = mw.message( 'bs-bookshelf-newbook-dlg-upload-error-unhandled' ).text();
 	if ( 'exists' in warnings || 'exists-normalized' in warnings ) {
 		errorMessage = 'exists';
 		if ( 'nochange' in warnings ) {
@@ -387,7 +387,7 @@ ext.bookshelf.ui.dialog.AddNewBookDialog.prototype.getErrorMsg = function ( resu
 	} else if ( 'duplicate' in warnings ) {
 		errorMessage = 'duplicate';
 	} else if ( 'duplicate-archive' in warnings ) {
-		errorMessage = mw.message( 'bs-bookshelf-newbook-dlg-upload-error-duplicate', upload.filename ).plain();
+		errorMessage = mw.message( 'bs-bookshelf-newbook-dlg-upload-error-duplicate', upload.filename ).text();
 	}
 	return errorMessage;
 };

@@ -2,12 +2,14 @@
 	"@metadata": {
 		"authors": [
 			"DreZhsh",
-			"Gomoko"
+			"Gomoko",
+			"JLTRY"
 		]
 	},
 	"unifiedtaskoverview-desc": "Fournit une page spéciale avec un aperçu des tâches de l'utilisateur.",
 	"unifiedtaskoverview": "Mes tâches",
 	"unifiedtaskoverview-label-no-task": "Il n'y a actuellement aucune tâche à accomplir.",
 	"unifiedtaskoverview-personal-url-my-tasks": "Tâches",
-	"unifiedtaskoverview-search-placeholder": "Rechercher"
+	"unifiedtaskoverview-search-placeholder": "Rechercher",
+	"unifiedtaskoverview-no-login-text": "Veuillez vous connecter pour voir vos tâches"
 }

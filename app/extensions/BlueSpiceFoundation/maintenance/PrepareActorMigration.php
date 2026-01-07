@@ -1,5 +1,6 @@
 <?php
 
+use MediaWiki\Maintenance\Maintenance;
 use Wikimedia\Rdbms\IDatabase;
 
 require_once 'BSMaintenance.php';
@@ -38,7 +39,12 @@ class PrepareActorMigration extends Maintenance {
 	}
 
 	private function fetchAllUsers() {
-		$res = $this->db->select( 'user', [ 'user_id', 'user_name' ] );
+		$res = $this->db->select(
+			'user',
+			[ 'user_id', 'user_name' ],
+			'',
+			__METHOD__
+		);
 		foreach ( $res as $row ) {
 			$this->userIds[] = (int)$row->user_id;
 			$this->userNames[] = $row->user_name;
@@ -55,6 +61,8 @@ class PrepareActorMigration extends Maintenance {
 	private $tablesToFix = [
 		'revision' => [ 'rev_user', 'rev_user_text' ],
 		'archive' => [ 'ar_user', 'ar_user_text' ],
+		// This script is meant for use in legacy version 1.35 only,
+		// therefore the reference to the `ipblocks` table can remain
 		'ipblocks' => [ 'ipb_by', 'ipb_by_text' ],
 		'image' => [ 'img_user', 'img_user_text' ],
 		'oldimage' => [ 'oi_user', 'oi_user_text' ],
@@ -79,7 +87,12 @@ class PrepareActorMigration extends Maintenance {
 	private $orphanedUserIds = [];
 
 	private function checkUserId( $tableName, $fieldName ) {
-		$res = $this->db->select( $tableName, "DISTINCT ($fieldName) AS userid" );
+		$res = $this->db->select(
+			$tableName,
+			"DISTINCT ($fieldName) AS userid",
+			'',
+			__METHOD__
+		);
 		$userIds = [];
 		foreach ( $res as $row ) {
 			$userIds[] = (int)$row->userid;
@@ -93,7 +106,11 @@ class PrepareActorMigration extends Maintenance {
 	private $orphanedUserNames = [];
 
 	private function checkUserText( $tableName, $fieldName ) {
-		$res = $this->db->select( $tableName, "DISTINCT ($fieldName) AS username" );
+		$res = $this->db->select(
+			$tableName, "DISTINCT ($fieldName) AS username",
+			'',
+			__METHOD__
+		);
 		$userNames = [];
 		foreach ( $res as $row ) {
 			$userNames[] = $row->username;
@@ -112,12 +129,14 @@ class PrepareActorMigration extends Maintenance {
 			$this->db->update(
 				$tableName,
 				[ $userIdField => $this->unknownUserId ],
-				[ $userIdField => $this->orphanedUserIds ]
+				[ $userIdField => $this->orphanedUserIds ],
+				__METHOD__
 			);
 			$this->db->update(
 				$tableName,
 				[ $userNameField => $this->unknownUserName ],
-				[ $userNameField => $this->orphanedUserNames ]
+				[ $userNameField => $this->orphanedUserNames ],
+				__METHOD__
 			);
 		}
 	}

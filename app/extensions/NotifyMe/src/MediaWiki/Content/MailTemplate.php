@@ -4,17 +4,16 @@ namespace MediaWiki\Extension\NotifyMe\MediaWiki\Content;
 
 use Article;
 use Exception;
-use Html;
+use MediaWiki\Content\TextContent;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\NotifyMe\Channel\Email\MailContentProvider;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Parser\ParserOutput;
 use MediaWiki\Revision\RevisionLookup;
-use Message;
-use MWException;
-use ParserOptions;
-use ParserOutput;
-use RequestContext;
-use TextContent;
-use Title;
+use MediaWiki\Title\Title;
 
 class MailTemplate extends TextContent {
 	/**
@@ -29,7 +28,7 @@ class MailTemplate extends TextContent {
 	/**
 	 * @param string $text
 	 *
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	public function __construct( $text ) {
 		parent::__construct( $text, 'mail_template' );

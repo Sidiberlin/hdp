@@ -3,9 +3,9 @@
 namespace MediaWiki\Extension\DrawioEditor\Hook;
 
 use File;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use RepoGroup;
-use Title;
-use User;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class ApprovedRevsSetStableFile implements DrawioGetFileHook {
@@ -31,7 +31,7 @@ class ApprovedRevsSetStableFile implements DrawioGetFileHook {
 		if ( !class_exists( 'ApprovedRevs' ) ) {
 			return true;
 		}
-		list( $approvedRevTimestamp, $approvedRevSha1 ) = $this->getApprovedFileInfo( $file->getTitle() );
+		[ $approvedRevTimestamp, $approvedRevSha1 ] = $this->getApprovedFileInfo( $file->getTitle() );
 		if ( ( !$approvedRevTimestamp ) || ( !$approvedRevSha1 ) ) {
 			$isNotApproved = true;
 			$displayFile = $file;

@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\Workflows\Logger;
 
-use Title;
-use User;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 interface ISpecialLogLogger {
 

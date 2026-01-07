@@ -1,25 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80",
 			"McDutchie"
 		]
 	},
 	"bs-usagetracker-desc": "Mantene datos statistic sur le uso del extension",
-	"prefs-usagetracker": "Traciator de uso",
-	"usagetracker": "Traciator de uso",
-	"bs-usagetracker-startjobs": "Actualisar ora",
-	"bs-usagetracker-create-statistics": "Actualisar le statisticas de uso",
-	"bs-usagetracker-col-identifier": "Identificator",
-	"bs-usagetracker-col-desc": "Description",
-	"bs-usagetracker-col-count": "Quantitate",
-	"bs-usagetracker-col-last-updated": "Ultime actualisation",
-	"bs-usagetracker-caution": "Attention: le actualisation de statisticas de uso prende tempore e ressources. Initia solmente le actualisation quando tu absolutemente require datos actual. Le actualisation se face per medio de processos differite, pro isto es possibile que tu debe recargar plure vices usque tote le datos ha essite colligite.",
-	"bs-usagetracker-base-collector-desc": "Numero de paginas que usa $1",
-	"bs-usagetracker-tag-collector-desc": "Numero de paginas que usa le etiquetta <$1>",
-	"bs-usagetracker-db-collector-desc": "Numero de $1",
-	"bs-usagetracker-open-tasks": "Le analyse del sito es ora in curso. {{PLURAL:$1|Un analyse|$1 analyses}} attende ancora. <a href='$2'>Refrescar</a>",
-	"apihelp-bs-usagetracker-store-summary": "Mantene datos statistic sur le uso del extension",
-	"action-usagetracker-update": "re-executar le processo de actualisation que collige tote le datos traciate sur le pagina special [[Special:UsageTracker]]",
-	"right-usagetracker-update": "Accesso pro re-executar le processo de actualisation que collige tote le datos traciate sur le pagina special [[Special:UsageTracker]]"
+	"apihelp-bs-usagetracker-store-summary": "Mantene datos statistic sur le uso del extension"
 }

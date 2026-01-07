@@ -4,7 +4,8 @@
 			"Beta16"
 		]
 	},
-	"importofficefiles-ui-action-import-msword-text": "Importa file Word",
 	"importofficefiles-ui-action-import-msword-title": "Crea pagine da file Microsoft Word",
-	"importofficefiles-api-storage-error-no-valid-module": "Nessun modulo disponibile per gestire questo file"
+	"importofficefiles-api-storage-error-no-valid-module": "Nessun modulo disponibile per gestire questo file",
+	"importofficefiles-ui-dialog-preview-action-close": "Chiudi",
+	"importofficefiles-ui-dialog-preview-btn-title": "Anteprima"
 }

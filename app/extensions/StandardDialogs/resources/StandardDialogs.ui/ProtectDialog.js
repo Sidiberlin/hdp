@@ -9,10 +9,14 @@ OO.inheritClass( StandardDialogs.ui.ProtectDialog, StandardDialogs.ui.BaseDialog
 
 StandardDialogs.ui.ProtectDialog.static.name = 'ext-standard-dialogs-protect';
 StandardDialogs.ui.ProtectDialog.prototype.makeSetupProcessData = function () {
-	data = StandardDialogs.ui.ProtectDialog.super.prototype.makeSetupProcessData.call( this );
+	const data = StandardDialogs.ui.ProtectDialog.super.prototype.makeSetupProcessData.call( this );
 	data.title = mw.message( 'standarddialogs-protect-title', this.getDialogTitlePageName() ).plain();
 
 	return data;
+};
+
+StandardDialogs.ui.ProtectDialog.prototype.getPrimaryActionLabel = function () {
+	return mw.message( 'standarddialogs-protect-btn-label' ).plain();
 };
 
 StandardDialogs.ui.ProtectDialog.prototype.getFormItems = function () {
@@ -161,7 +165,7 @@ StandardDialogs.ui.ProtectDialog.prototype.makeDoneActionProcess = function () {
 	if ( me.protectExpiry.getMenu().findSelectedItem() !== null ) {
 		expiries = me.protectExpiry.getMenu().findSelectedItem().data;
 	}
-	if ( me.moveProtect != '' && me.moveProtect.isDisabled() === false ) {
+	if ( me.moveProtect != '' && me.moveProtect.isDisabled() === false ) { // eslint-disable-line eqeqeq
 		protections += '|move=';
 		if ( me.moveProtect.getValue() === mw.message( 'protect-level-sysop' ).plain() ) {
 			protections += 'sysop';
@@ -177,7 +181,7 @@ StandardDialogs.ui.ProtectDialog.prototype.makeDoneActionProcess = function () {
 	}
 
 	const dfd = new $.Deferred();
-	mw.loader.using( 'mediawiki.api' ).done( function () {
+	mw.loader.using( 'mediawiki.api' ).done( () => {
 		const mwApi = new mw.Api();
 		mwApi.postWithToken( 'csrf', {
 			action: 'protect',
@@ -214,7 +218,7 @@ StandardDialogs.ui.ProtectDialog.prototype.getStandardReasons = function () {
 	let protectReasons = mw.message( 'protect-dropdown' ).plain();
 	protectReasons = protectReasons.split( '\n' );
 
-	otherReason = mw.message( 'protect-otherreason-op' ).plain();
+	const otherReason = mw.message( 'protect-otherreason-op' ).plain();
 	optionsReason.push( new OO.ui.MenuOptionWidget( { label: otherReason, data: otherReason } ) );
 	protectReasons.forEach( ( reason ) => {
 		if ( reason.startsWith( '** ' ) ) {

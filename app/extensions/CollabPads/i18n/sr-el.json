@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"collabpads-start-dialog-show-again": "Ne prikazuj ponovo ovu poruku",
+	"collabpads-toolbar-save-button": "Sačuvaj izmene…",
+	"collabpads-toolbar-save-button-label": "Sačuvaj",
+	"collabpads-save-dialog-title": "Sačuvaj izmene",
+	"collabpads-save-dialog-save-button-label": "Sačuvaj",
+	"collabpads-save-dialog-summary": "Opis:",
+	"collabpads-save-dialog-minor-edit": "Ovo je manja izmena",
+	"collabpads-leave-dialog-leave-button": "Napusti",
+	"collabpads-dialog-cancel-button": "Otkaži",
+	"collabpads-dialog-accept-button": "Prihvatam",
+	"collabpads-leave-tooltip": "Napusti",
+	"collabpads-author-join": "$1 se {{GENDER:$2|pridružio|pridružila}}",
+	"collabpads-author-leave": "$1 je {{GENDER:$2|otišao|otišla}}",
+	"collabpads-author-save": "$1 je {{GENDER:$2|sačuvao|sačuvala}}",
+	"collabpads-namespace-label": "Imenski prostor",
+	"collabpads-owner-label": "Vlasnik",
+	"collabpads-save-complete-notif": "Stranica sačuvana",
+	"collabpads-invalid-change-dialog-delete-button": "Obriši",
+	"collabpads-invalid-change-dialog-save-button": "Sačuvaj"
+}

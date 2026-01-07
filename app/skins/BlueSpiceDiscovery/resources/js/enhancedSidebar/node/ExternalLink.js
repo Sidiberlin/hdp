@@ -20,7 +20,7 @@ bs.skin.enhancedSidebar.tree.node.ExternalLink.prototype.getIcon = function () {
 	return 'linkExternal';
 };
 
-bs.skin.enhancedSidebar.tree.node.ExternalLink.prototype.getCustomFormFields = function ( dialog ) {
+bs.skin.enhancedSidebar.tree.node.ExternalLink.prototype.getCustomFormFields = function ( dialog ) { // eslint-disable-line no-unused-vars
 	return [
 		{
 			name: 'href',

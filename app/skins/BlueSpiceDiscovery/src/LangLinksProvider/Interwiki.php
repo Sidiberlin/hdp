@@ -3,7 +3,7 @@
 namespace BlueSpice\Discovery\LangLinksProvider;
 
 use BlueSpice\Discovery\ILangLinksProvider;
-use Title;
+use MediaWiki\Title\Title;
 
 class Interwiki implements ILangLinksProvider {
 

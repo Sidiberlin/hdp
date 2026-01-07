@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Asma",
+			"Hubaishan",
 			"Meno25",
 			"ديفيد",
 			"محمد أحمد عبد الفتاح"
@@ -29,9 +30,10 @@
 	"bs-pagetemplates-choose-template": "هذه الصفحة غير موجودة بعد، يمكنك إنشاء صفحة جديدة، إذا لم تكن ترغب في القيام بذلك، فانقر فوق زر العودة في متصفحك للعودة إلى الصفحة الأخيرة التي قمت بزيارتها.\n\nيمكنك اختيار {{PLURAL:$1||أحد}} {{PLURAL:$1|القوالب}} التالية:",
 	"bs-pagetemplates-choose-template-empty": "هذه الصفحة غير موجودة بعد. يمكنك إنشاء صفحة جديدة. إذا كنت لا ترغب في القيام بذلك ، فانقر فوق زر الرجوع في متصفحك للعودة إلى آخر صفحة تمت زيارتها.",
 	"bs-pagetemplates-pref-excludens": "لا تظهر القوالب في النطاقات التالية:",
-	"bs-pagetemplates-pref-forcenamespace": "فرض النطاق الهدف",
-	"bs-pagetemplates-pref-hideifnotintargetns": "إخفاء القالب إذا لم يتم إنشاء الصفحة في النطاق الهدف",
-	"bs-pagetemplates-pref-hidedefaults": "إخفاء القوالب الافتراضية",
+	"bs-pagetemplates-config-forcenamespace": "استخدم النطاق من رابط القالب",
+	"bs-pagetemplates-config-forcenamespace-help": "يتم تطبيق النطاق المحدد في رابط القالب عند إنشاء صفحة جديدة",
+	"bs-pagetemplates-config-hideifnotintargetns": "إخفاء القالب للمساحة الاسمية غير المحددة",
+	"bs-pagetemplates-config-hidedefaults": "إخفاء القوالب القياسية",
 	"bs-pagetemplates-headerlabel": "التسمية",
 	"bs-pagetemplates-headertargetnamespace": "النطاق",
 	"bs-pagetemplates-tipeditdetails": "تحرير القالب",
@@ -48,22 +50,19 @@
 	"bs-pagetemplates-remove-message-unknown": "حدث خطأ غير متوقع; تُرجًى المحاولة مرة أخرى.",
 	"bs-pagetemplates-remove-message-success": "تم حذف {{PLURAL:$1|القالب التالي|القوالب التالية}}: $2",
 	"bs-pagetemplates-remove-message-failure": "لا يمكن حذف {{PLURAL:$1|القالب التالي|القوالب التالية}}: $2 (السبب: $3)",
-	"apihelp-bs-pagetemplates-store-description": "يسرد جميع قوالب الصفحة، يتيح الفرز والتصفية وترقيم الصفحات، ينفذ وسائط مخزن ExtJS.",
 	"apihelp-bs-pagetemplates-store-summary": "يسرد جميع قوالب الصفحة، يتيح الفرز والتصفية وترقيم الصفحات، ينفذ وسائط مخزن ExtJS.",
-	"apihelp-bs-pagetemplates-tasks-description": "يتيح معالجة قوالب الصفحة",
 	"apihelp-bs-pagetemplates-tasks-summary": "يسمح بمعالجة قوالب الصفحة",
-	"apihelp-bs-pagetemplate-tags-store-description": "يسرد جميع علامات قوالب الصفحة. يسمح بالفرز والتصفية وتقسيم الصفحات. تنفذ معلمات متجر ExtJS.",
 	"apihelp-bs-pagetemplate-tags-store-summary": "يسرد جميع علامات قوالب الصفحة. يسمح بالفرز والتصفية وتقسيم الصفحات. تنفذ معلمات متجر ExtJS.",
 	"action-pagetemplatesadmin-viewspecialpage": "عرض الصفحة الخاصة \"{{int:pagetemplatesadmin}}\"",
 	"pagetemplatesadmin": "إدارة قوالب الصفحة",
 	"bs-usagetracker-pagetemplates": "قوالب الصفحة",
 	"bs-pagetemplates-nsm-label": "قوالب الصفحة",
 	"right-pagetemplatesadmin-viewspecialpage": "الوصول إلى الصفحة الخاصة [[Special:PageTemplatesAdmin]]، حيث يمكن إدارة قوالب الصفحات.",
-	"bs-pagetemplates-pref-hidedefaults-help": "يزيل النموذج القياسي \"الصفحة الفارغة\" من اختيار قوالب الصفحة أثناء إنشاء الصفحة.",
-	"bs-pagetemplates-pref-forcenamespace-help": "يفرض مساحة الاسم المحددة عبر رابط القالب عند إنشاء صفحة جديدة.",
+	"bs-pagetemplates-config-hidedefaults-help": "يزيل القالب القياسي \"الصفحة الفارغة\" من قائمة قوالب الصفحات المتاحة أثناء إنشاء الصفحة",
 	"bs-pagetemplates-no-matching-results-label": "لم يتم العثور على قالب",
 	"bs-pagetemplates-search-template-placeholder": "اعثر على قالب الصفحة",
 	"bs-pagetemplates-headertags": "العلامات",
 	"bs-pagetemplates-tag-untagged": "بدون علامات",
-	"bs-pagetemplates-ns-undefined": "مساحة اسم غير محددة"
+	"bs-pagetemplates-ns-undefined": "مساحة اسم غير محددة",
+	"bs-pagetemplates-config-hideifnotintargetns-help": "يزيل قالبًا من قائمة قوالب الصفحات المتاحة إذا كانت مساحة اسمه المستهدفة لا تتطابق مع مساحة اسم الصفحة أثناء إنشاء الصفحة"
 }

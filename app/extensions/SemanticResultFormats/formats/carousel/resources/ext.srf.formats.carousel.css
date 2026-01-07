@@ -1,3 +1,10 @@
+.slick-slider {
+	/*
+	*** keep commented to ensure dots are rendered, however
+	double-check if this causes other problems
+	*/
+	/* overflow: hidden; */
+}
 
 .slick-prev:before, 
 .slick-next:before {
@@ -36,6 +43,23 @@
 .slick-slide .slick-slide-content.caption-text a {
 	color: white;
 	text-decoration: underline;
+}
+
+.slick-slider:not( .adaptiveHeight ) .slick-list,
+.slick-slider:not( .adaptiveHeight ) .slick-track,
+.slick-slider:not( .adaptiveHeight ) .slick-slide {
+	height: inherit !important;
+}
+
+.slick-slider:not( .adaptiveHeight ) .slick-track {
+	display: flex !important;
+}
+
+.slick-slider:not( .adaptiveHeight ) .slick-slide {
+	position: relative;
+	display: flex !important;
+	justify-content: center;
+	align-items: center;
 }
 
 @media screen and (max-width: 800px) {

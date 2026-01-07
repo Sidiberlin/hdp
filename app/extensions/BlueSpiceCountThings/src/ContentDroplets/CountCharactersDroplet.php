@@ -3,7 +3,7 @@
 namespace BlueSpice\CountThings\ContentDroplets;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\TagDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class CountCharactersDroplet extends TagDroplet {
 

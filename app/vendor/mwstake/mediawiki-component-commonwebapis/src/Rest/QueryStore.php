@@ -5,6 +5,7 @@ namespace MWStake\MediaWiki\Component\CommonWebAPIs\Rest;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Rest\Handler;
 use MediaWiki\Rest\Response;
+use MWStake\MediaWiki\Component\DataStore\BucketedResultSet;
 use MWStake\MediaWiki\Component\DataStore\IStore;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use MWStake\MediaWiki\Component\DataStore\ResultSet;
@@ -12,7 +13,7 @@ use Wikimedia\ParamValidator\ParamValidator;
 
 abstract class QueryStore extends Handler {
 	/** @var HookContainer */
-	private $hookContainer;
+	protected $hookContainer;
 
 	/**
 	 * @param HookContainer $hookContainer
@@ -87,10 +88,14 @@ abstract class QueryStore extends Handler {
 	protected function returnResult( ResultSet $result ): Response {
 		$this->hookContainer->run( 'MWStakeCommonWebAPIsQueryStoreResult', [ $this, &$result ] );
 		$contentType = $contentType ?? 'application/json';
-		$response = new Response( $this->encodeJson( [
+		$responseData = [
 			'results' => $result->getRecords(),
 			'total' => $result->getTotal(),
-		] ) );
+		];
+		if ( $result instanceof BucketedResultSet ) {
+			$responseData['buckets'] = $result->getBuckets();
+		}
+		$response = new Response( $this->encodeJson( $responseData ) );
 		$response->setHeader( 'Content-Type', $contentType );
 		return $response;
 	}
@@ -100,7 +105,7 @@ abstract class QueryStore extends Handler {
 	 *
 	 * @return false|string
 	 */
-	private function encodeJson( $data ) {
+	protected function encodeJson( $data ) {
 		return json_encode( $data, $this->getFormat() === 'jsonfm' ? JSON_PRETTY_PRINT : 0 );
 	}
 

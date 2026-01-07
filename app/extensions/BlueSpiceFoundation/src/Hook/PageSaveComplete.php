@@ -27,11 +27,9 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
-use MediaWiki\MediaWikiServices;
-use MediaWiki\Revision\RevisionStoreRecord;
+use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
 use MediaWiki\User\UserIdentity;
-use User;
 use WikiPage;
 
 abstract class PageSaveComplete extends Hook {
@@ -44,7 +42,7 @@ abstract class PageSaveComplete extends Hook {
 
 	/**
 	 *
-	 * @var User
+	 * @var UserIdentity
 	 */
 	protected $user = null;
 
@@ -62,7 +60,7 @@ abstract class PageSaveComplete extends Hook {
 
 	/**
 	 *
-	 * @var RevisionStoreRecord
+	 * @var RevisionRecord
 	 */
 	protected $revisionRecord = null;
 
@@ -75,17 +73,15 @@ abstract class PageSaveComplete extends Hook {
 	/**
 	 *
 	 * @param WikiPage $wikiPage
-	 * @param UserIdentity $userIdentity
+	 * @param UserIdentity $user
 	 * @param string $summary
 	 * @param int $flags
-	 * @param RevisionStoreRecord $revisionRecord
+	 * @param RevisionRecord $revisionRecord
 	 * @param EditResult $editResult
 	 * @return bool
 	 */
-	public static function callback( WikiPage $wikiPage, UserIdentity $userIdentity, string $summary, int $flags,
-		RevisionStoreRecord $revisionRecord, EditResult $editResult ) {
-		$userFactory = MediaWikiServices::getInstance()->getUserFactory();
-		$user = $userFactory->newFromUserIdentity( $userIdentity );
+	public static function callback( WikiPage $wikiPage, UserIdentity $user, string $summary, int $flags,
+		RevisionRecord $revisionRecord, EditResult $editResult ) {
 		$className = static::class;
 		$hookHandler = new $className(
 			null,
@@ -105,14 +101,14 @@ abstract class PageSaveComplete extends Hook {
 	 * @param type $context
 	 * @param type $config
 	 * @param WikiPage $wikiPage
-	 * @param User $user
+	 * @param UserIdentity $user
 	 * @param string $summary
 	 * @param int $flags
-	 * @param RevisionStoreRecord $revisionRecord
+	 * @param RevisionRecord $revisionRecord
 	 * @param EditResult $editResult
 	 */
-	public function __construct( $context, $config, WikiPage $wikiPage, User $user, string $summary, int $flags,
-		RevisionStoreRecord $revisionRecord, EditResult $editResult ) {
+	public function __construct( $context, $config, WikiPage $wikiPage, UserIdentity $user, string $summary, int $flags,
+		RevisionRecord $revisionRecord, EditResult $editResult ) {
 		parent::__construct( $context, $config );
 
 		$this->wikiPage = $wikiPage;

@@ -1,10 +1,11 @@
 {
-	"repositories": [{
-		"type": "vcs",
-		"url": "git@gitlab.hallowelt.com:GovTech/mediawiki-exensions-chatbot.git"
-	}],
-	"require": {
-		"hallowelt/chatbot": "dev-main"
-	}
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@gitlab.hallowelt.com:GovTech/mediawiki-extensions-chatbot.git"
+        }
+    ],
+    "require": {
+        "hallowelt/chatbot": "dev-main"
+    }
 }
-

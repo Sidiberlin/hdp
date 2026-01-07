@@ -6,10 +6,10 @@
 namespace BlueSpice\SMWConnector\Hook\SMWRevisionGuard;
 
 use BlueSpice\Hook;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Revision\RevisionRecord;
-use Title;
+use MediaWiki\Title\Title;
 
 abstract class ChangeRevision extends Hook {
 

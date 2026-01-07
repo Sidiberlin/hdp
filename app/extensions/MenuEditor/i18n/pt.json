@@ -17,7 +17,6 @@
 	"menueditor-ui-menu-keyword-label": "Palavra-chave",
 	"menueditor-ui-menu-keyword-label-edit": "Editar palavra-chave",
 	"menueditor-ui-menu-keyword-help": "Uma das '''palavras-chave''' disponíveis, que mostrará o ''widget'' apropriado",
-	"menueditor-ui-edit-node-label": "Editar nó",
 	"menueditor-ui-form-field-keyword": "Palavra-chave",
 	"menueditor-ui-form-field-text": "Texto ou uma chave de mensagem",
 	"menueditor-ui-form-field-target": "Destino da hiperligação",
@@ -33,11 +32,9 @@
 	"menueditor-ui-dialog-title": "Editar elemento",
 	"menueditor-ui-mediawiki-sidebar-keyword-label-edit": "Editar palavra-chave",
 	"menueditor-ui-mediawiki-sidebar-keyword-label": "Palavra-chave",
-	"menueditor-toolbar-submit": "Gravar alterações",
 	"menueditor-toolbar-cancel": "Cancelar edição",
-	"menueditor-toolbar-add": "Adicionar elemento novo",
-	"menueditor-footerlinks-banner-text": "Alguns links podem ser adicionados automaticamente por extensões. Verifique a configuração da extensão para saber mais.",
 	"menueditor-toolbar-add-label": "Adicionar elemento",
 	"menueditor-ui-edit-label": "Editar",
-	"menueditor-ui-add-sub-element-label": "Adicionar subelemento"
+	"menueditor-ui-add-sub-element-label": "Adicionar subelemento",
+	"menueditor-footerlinks-banner-text": "Alguns links podem ser adicionados automaticamente por extensões. Verifique a configuração da extensão para saber mais."
 }

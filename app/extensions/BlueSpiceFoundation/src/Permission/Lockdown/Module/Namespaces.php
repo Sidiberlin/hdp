@@ -5,12 +5,12 @@ namespace BlueSpice\Permission\Lockdown\Module;
 use BlueSpice\Permission\Lockdown\IModule;
 use BlueSpice\Permission\Lockdown\Module;
 use BlueSpice\Permission\RoleManager;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use Message;
-use Title;
-use User;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class Namespaces extends Module {
 
@@ -48,7 +48,7 @@ class Namespaces extends Module {
 	 * @return IModule
 	 */
 	public static function getInstance( Config $config, IContextSource $context,
-		MediaWikiServices $services, RoleManager $manager = null ) {
+		MediaWikiServices $services, ?RoleManager $manager = null ) {
 		if ( !$manager ) {
 			$manager = $services->getService( 'BSRoleManager' );
 		}

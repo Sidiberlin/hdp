@@ -3,39 +3,59 @@
 namespace MediaWiki\Extension\RSS;
 
 use DOMDocument;
+use MediaWiki\Content\TextContent;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\ParserFactory;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
 use MWHttpRequest;
-use Parser;
-use PPFrame;
-use Sanitizer;
-use Status;
-use TextContent;
-use Title;
-use WANObjectCache;
 use Wikimedia\AtEase\AtEase;
+use Wikimedia\ObjectCache\WANObjectCache;
 
 class RSSParser {
+	/** @var int */
 	protected $maxheads = 32;
+	/** @var string */
 	protected $date = "Y-m-d H:i:s";
+	/** @var int */
 	protected $ItemMaxLength = 200;
+	/** @var bool */
 	protected $reversed = false;
+	/** @var string[] */
 	protected $highlight = [];
+	/** @var string[] */
 	protected $filter = [];
+	/** @var string[] */
 	protected $filterOut = [];
+	/** @var string */
 	protected $itemTemplate;
+	/** @var string */
 	protected $url;
+	/** @var string */
 	protected $etag;
+	/** @var int */
 	protected $lastModified;
+	/** @var DOMDocument */
 	protected $xml;
-	protected $error;
+	/** @var string[] */
 	protected $displayFields = [ 'author', 'title', 'encodedContent', 'description' ];
+	/** @var string[] */
 	protected $stripItems;
+	/** @var string */
 	protected $markerString;
 
 	/**
 	 * @var WANObjectCache
 	 */
 	private $cache;
+
+	/**
+	 * @var ParserFactory
+	 */
+	private $parserFactory;
 
 	/**
 	 * @var RSSData
@@ -65,7 +85,7 @@ class RSSParser {
 	 * @param array $args
 	 */
 	public function __construct( $url, $args ) {
-		global $wgRSSDateDefaultFormat,$wgRSSItemMaxLength;
+		global $wgRSSDateDefaultFormat, $wgRSSItemMaxLength;
 
 		$this->url = $url;
 
@@ -73,6 +93,7 @@ class RSSParser {
 		$this->markerString = "'\"" . wfRandomString( 32 );
 		$this->stripItems = [];
 		$this->cache = MediaWikiServices::getInstance()->getMainWANObjectCache();
+		$this->parserFactory = MediaWikiServices::getInstance()->getParserFactory();
 
 		# Get max number of headlines from argument-array
 		if ( isset( $args['max'] ) ) {
@@ -216,7 +237,7 @@ class RSSParser {
 			return false;
 		}
 
-		list( $etag, $lastModified, $rss ) = $data;
+		[ $etag, $lastModified, $rss ] = $data;
 		if ( !isset( $rss->items ) ) {
 			return false;
 		}
@@ -342,7 +363,7 @@ class RSSParser {
 	 * @return string
 	 */
 	protected function sandboxParse( $wikiText, $origParser ) {
-		$myParser = $origParser->getFreshParser();
+		$myParser = $this->parserFactory->getInstance();
 		$result = $myParser->parse(
 			$wikiText,
 			$origParser->getTitle(),
@@ -370,6 +391,7 @@ class RSSParser {
 	 */
 	public function renderFeed( $parser, $frame ) {
 		$renderedFeed = '';
+		$wikitextFeed = '';
 
 		if ( isset( $this->itemTemplate ) && isset( $parser ) && isset( $frame ) ) {
 			$headcnt = 0;
@@ -383,12 +405,12 @@ class RSSParser {
 				}
 
 				if ( $this->canDisplay( $item ) ) {
-					$renderedFeed .= $this->renderItem( $item, $parser ) . "\n";
+					$wikitextFeed .= $this->renderItem( $item, $parser ) . "\n";
 					$headcnt++;
 				}
 			}
 
-			$renderedFeed = $this->sandboxParse( $renderedFeed, $parser );
+			$renderedFeed = $this->sandboxParse( $wikitextFeed, $parser );
 
 		}
 
@@ -417,29 +439,29 @@ class RSSParser {
 		foreach ( array_keys( $item ) as $info ) {
 			if ( $item[$info] != "" ) {
 				switch ( $info ) {
-				// ATOM <id> elements and RSS <link> elements are item link urls
-				case 'id':
-					$txt = $this->sanitizeUrl( $item['id'] );
-					$renderedItem = str_replace( '{{{link}}}', $txt, $renderedItem );
-					break;
-				case 'link':
-					$txt = $this->sanitizeUrl( $item['link'] );
-					$renderedItem = str_replace( '{{{link}}}', $txt, $renderedItem );
-					break;
-				case 'date':
-					$tempTimezone = date_default_timezone_get();
-					date_default_timezone_set( 'UTC' );
-					$txt = date( $this->date,
-						strtotime( $this->escapeTemplateParameter( $item['date'] ) ) );
-					date_default_timezone_set( $tempTimezone );
-					$renderedItem = str_replace( '{{{date}}}', $txt, $renderedItem );
-					break;
-				default:
-					$str = $this->escapeTemplateParameter( $item[$info] );
-					$str = $parser->getFunctionLang()->truncateForVisual( $str, $this->ItemMaxLength );
-					$str = $this->highlightTerms( $str );
-					$renderedItem = str_replace( '{{{' . $info . '}}}',
-						$this->insertStripItem( $str ), $renderedItem );
+					// ATOM <id> elements and RSS <link> elements are item link urls
+					case 'id':
+						$txt = $this->sanitizeUrl( $item['id'] );
+						$renderedItem = str_replace( '{{{link}}}', $txt, $renderedItem );
+						break;
+					case 'link':
+						$txt = $this->sanitizeUrl( $item['link'] );
+						$renderedItem = str_replace( '{{{link}}}', $txt, $renderedItem );
+						break;
+					case 'date':
+						$tempTimezone = date_default_timezone_get();
+						date_default_timezone_set( 'UTC' );
+						$txt = date( $this->date,
+							strtotime( $this->escapeTemplateParameter( $item['date'] ) ) );
+						date_default_timezone_set( $tempTimezone );
+						$renderedItem = str_replace( '{{{date}}}', $txt, $renderedItem );
+						break;
+					default:
+						$str = $this->escapeTemplateParameter( $item[$info] );
+						$str = $parser->getTargetLanguage()->truncateHTML( $str, $this->ItemMaxLength );
+						$str = $this->highlightTerms( $str );
+						$renderedItem = str_replace( '{{{' . $info . '}}}',
+							$this->insertStripItem( $str ), $renderedItem );
 				}
 			}
 		}
@@ -520,8 +542,8 @@ class RSSParser {
 
 			$text = str_replace(
 				[
-					'[',     '|',      ']',     '\'',    'ISBN ',
-					'RFC ',     '://',     "\n=",     '{{',           '}}',
+					'[', '|', ']', '\'', 'ISBN ',
+					'RFC ', '://', "\n=", '{{', '}}',
 				],
 				[
 					'&#91;', '&#124;', '&#93;', '&#39;', 'ISBN&#32;',
@@ -594,12 +616,11 @@ class RSSParser {
 			// if RSS parsed successfully
 			if ( $this->rss && !$this->rss->error ) {
 				$this->etag = $this->client->getResponseHeader( 'Etag' );
-				$this->lastModified =
-					strtotime( $this->client->getResponseHeader( 'Last-Modified' ) );
+				$lastModifiedHeader = $this->client->getResponseHeader( 'Last-Modified' ) ?? '';
+				$this->lastModified = strtotime( $lastModifiedHeader );
 
 				wfDebugLog( 'RSS', 'Stored etag (' . $this->etag . ') and Last-Modified (' .
-					$this->client->getResponseHeader( 'Last-Modified' ) . ') and items (' .
-					count( $this->rss->items ) . ')!' );
+					$lastModifiedHeader . ') and items (' . count( $this->rss->items ) . ')!' );
 				$this->storeInCache( $key );
 			} else {
 				return Status::newFatal( 'rss-parse-error', $this->rss->error );

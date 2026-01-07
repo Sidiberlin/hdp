@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Expiry\Event;
 
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 
 class ExpiryInOneWeek extends ExpiryToday {

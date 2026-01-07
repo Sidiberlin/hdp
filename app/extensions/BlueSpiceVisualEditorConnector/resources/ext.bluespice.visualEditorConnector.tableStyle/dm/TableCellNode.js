@@ -1,10 +1,10 @@
 bs.util.registerNamespace( 'bs.vec.dm' );
 
-bs.vec.dm.TableCellNode = function() {
+bs.vec.dm.TableCellNode = function () {
 	bs.vec.dm.TableCellNode.super.apply( this, arguments );
 	if ( this.element.attributes.style && Array.isArray( this.element.attributes.style ) ) {
 		// Wierd stuff
-		this.element.attributes.style = this.element.attributes.style[0];
+		this.element.attributes.style = this.element.attributes.style[ 0 ];
 	}
 };
 
@@ -15,10 +15,11 @@ OO.inheritClass( bs.vec.dm.TableCellNode, ve.dm.TableCellNode );
 /* Static Methods */
 
 bs.vec.dm.TableCellNode.static.toDataElement = function ( domElements ) {
-	var attributes = {}, result = {};
+	const attributes = {};
+	let result = {};
 
 	ve.dm.TableCellableNode.static.setAttributes( attributes, domElements );
-	this.runTableStyles( 'toDataElement', [ domElements[0], result ] );
+	this.runTableStyles( 'toDataElement', [ domElements[ 0 ], result ] );
 
 	result = $.extend( true, {}, result, {
 		type: this.name,
@@ -29,7 +30,7 @@ bs.vec.dm.TableCellNode.static.toDataElement = function ( domElements ) {
 
 bs.vec.dm.TableCellNode.static.createData = function ( options ) {
 	options = options || {};
-	var opening = {
+	const opening = {
 		type: 'tableCell',
 		attributes: {
 			style: options.style || 'data',
@@ -37,7 +38,7 @@ bs.vec.dm.TableCellNode.static.createData = function ( options ) {
 			colspan: options.colspan || 1
 		}
 	};
-	var content = options.content || [
+	const content = options.content || [
 		{ type: 'paragraph', internal: { generated: 'wrapper' } },
 		{ type: '/paragraph' }
 	];
@@ -45,34 +46,33 @@ bs.vec.dm.TableCellNode.static.createData = function ( options ) {
 };
 
 bs.vec.dm.TableCellNode.static.toDomElements = function ( dataElement, doc ) {
-	var registry = bs.vec.registry.TableStyle.registry;
-	for ( tableStyleKey in registry ) {
-		if ( registry[tableStyleKey].applyTo != 'cell' ) {
+	const registry = bs.vec.registry.TableStyle.registry;
+	for ( const tableStyleKey in registry ) {
+		if ( registry[ tableStyleKey ].applyTo !== 'cell' ) {
 			continue;
 		}
 		if ( dataElement.hasOwnProperty( tableStyleKey ) ) {
-			let style = registry[tableStyleKey].getAttribute();
-			let value = dataElement[tableStyleKey];
+			const style = registry[ tableStyleKey ].getAttribute();
+			const value = dataElement[ tableStyleKey ];
 			if ( typeof value !== 'string' || value === '' ) {
 				continue;
 			}
 
-			dataElement.externalStyle[style] = value;
+			dataElement.externalStyle[ style ] = value;
 		}
 	}
 
-	var tag = dataElement.attributes && dataElement.attributes.style === 'header' ? 'th' : 'td',
+	const tag = dataElement.attributes && dataElement.attributes.style === 'header' ? 'th' : 'td',
 		domElement = doc.createElement( tag ),
 		attributes = dataElement.attributes;
 
 	ve.dm.TableCellableNode.static.applyAttributes( attributes, domElement );
-	this.runTableStyles( 'toDomElements', [ dataElement, domElement, attributes ] );
 
-	var styleParser = new bs.vec.util.StyleAttributeParser(  domElement.getAttribute( 'style' ) ),
+	const styleParser = new bs.vec.util.StyleAttributeParser( domElement.getAttribute( 'style' ) ),
 		externalStyle = dataElement.externalStyle || {};
 
 	if ( Object.keys( externalStyle ).length > 0 ) {
-		for ( var styleKey in externalStyle ) {
+		for ( const styleKey in externalStyle ) {
 			if ( !externalStyle.hasOwnProperty( styleKey ) ) {
 				continue;
 			}
@@ -80,29 +80,33 @@ bs.vec.dm.TableCellNode.static.toDomElements = function ( dataElement, doc ) {
 			if ( styleParser.getValueForAttr( styleKey ) !== null ) {
 				continue;
 			}
-			styleParser.addToStyle( styleKey, externalStyle[styleKey] );
+			styleParser.addToStyle( styleKey, externalStyle[ styleKey ] );
 		}
+	}
 
+	if ( styleParser.toString().length > 0 ) {
 		domElement.setAttribute( 'style', styleParser.toString() );
 	}
+
+	this.runTableStyles( 'toDomElements', [ dataElement, domElement, attributes ] );
 
 	return [ domElement ];
 };
 
-bs.vec.dm.TableCellNode.static.runTableStyles = function( func, params ) {
-	var registry = bs.vec.registry.TableStyle.registry,
-		callback = $.noop,
-		scope = null,
-		callbackParams = [ 'cell' ].concat( params ),
-		tableStyleKey;
+bs.vec.dm.TableCellNode.static.runTableStyles = function ( func, params ) {
+	const registry = bs.vec.registry.TableStyle.registry;
+	let callback = ( function () {} );
+	let scope = null;
+	const callbackParams = [ 'cell' ].concat( params );
+	let tableStyleKey;
 
-	for( tableStyleKey in registry ) {
+	for ( tableStyleKey in registry ) {
 		if ( !registry.hasOwnProperty( tableStyleKey ) ) {
 			continue;
 		}
 
-		scope = registry[tableStyleKey];
-		callback = scope[func];
+		scope = registry[ tableStyleKey ];
+		callback = scope[ func ];
 		callback.apply( scope, callbackParams );
 	}
 };

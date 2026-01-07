@@ -2,7 +2,7 @@
 
 namespace BlueSpice;
 
-use Status;
+use MediaWiki\Status\Status;
 
 interface ITask extends IParamProvider {
 
@@ -11,7 +11,7 @@ interface ITask extends IParamProvider {
 	 * @param Status|null $status
 	 * @return Status
 	 */
-	public function execute( array $params = [], Status $status = null );
+	public function execute( array $params = [], ?Status $status = null );
 
 	/**
 	 * @return string[]

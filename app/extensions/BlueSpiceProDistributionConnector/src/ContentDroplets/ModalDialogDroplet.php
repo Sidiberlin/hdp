@@ -3,7 +3,7 @@
 namespace BlueSpice\ProDistributionConnector\ContentDroplets;
 
 use MediaWiki\Extension\ContentDroplets\Droplet\TemplateDroplet;
-use Message;
+use MediaWiki\Message\Message;
 
 class ModalDialogDroplet extends TemplateDroplet {
 
@@ -24,7 +24,7 @@ class ModalDialogDroplet extends TemplateDroplet {
 			'title' => 'Modal',
 			'btnLabel' => 'label',
 			'body' => 'Content modal body',
-			'bgcolor' => 'blue',
+			'bg-color' => 'blue',
 			'footer' => ''
 		];
 	}

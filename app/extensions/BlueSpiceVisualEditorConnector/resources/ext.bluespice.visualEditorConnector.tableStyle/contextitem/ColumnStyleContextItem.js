@@ -39,11 +39,11 @@ bs.vec.ui.ColumnStyleContextItem = function ( context, model, config ) {
 	bs.vec.ui.ColumnStyleContextItem.super.call( this, context, model, config );
 };
 
-OO.inheritClass( bs.vec.ui.ColumnStyleContextItem, bs.vec.ui.TableContextItem  );
+OO.inheritClass( bs.vec.ui.ColumnStyleContextItem, bs.vec.ui.TableContextItem );
 
 bs.vec.ui.ColumnStyleContextItem.static.name = 'columnStyle';
 
-bs.vec.ui.ColumnStyleContextItem.static.icon =  null;
+bs.vec.ui.ColumnStyleContextItem.static.icon = null;
 
 bs.vec.ui.ColumnStyleContextItem.static.label = OO.ui.deferMsg( 'bs-vec-table-inspector-column' );
 

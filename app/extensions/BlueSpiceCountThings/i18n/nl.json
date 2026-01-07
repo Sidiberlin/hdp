@@ -34,8 +34,6 @@
 	"bs-countthings-tag-countfiles-desc": "Geeft het aantal bestanden op de wiki weer.",
 	"bs-countthings-tag-countcharacters-desc": "Genereert metadata over de inhoud van het aangegeven artikel. De uitvoer is een infobox die in een artikel kan worden geïntegreerd. Met de parameter \"mode\" kunnen verschillende soorten informatie worden weergegeven.",
 	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: Wat geteld moet worden; <code>chars</code> (tekens), <code>words</code> (woorden) of <code>pages</code> (pagina's).",
-	"bs-countthings-tag-countcharacters-example-1": "Aantal woorden",
-	"bs-countthings-tag-countcharacters-example-2": "Aantal tekens",
 	"bs-countthings-droplet-articles-name": "Aantal pagina's",
 	"bs-countthings-droplet-articles-description": "Toont het aantal pagina's",
 	"bs-countthings-droplet-characters-name": "Aantal tekens",

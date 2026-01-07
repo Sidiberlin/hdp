@@ -2,21 +2,25 @@
 
 namespace MediaWiki\Extension\Workflows\Trigger;
 
+use MediaWiki\Extension\Workflows\Definition\DefinitionSource;
 use MediaWiki\Extension\Workflows\Definition\ITask;
 use MediaWiki\Extension\Workflows\Exception\WorkflowExecutionException;
 use MediaWiki\Extension\Workflows\Exception\WorkflowTriggerException;
 use MediaWiki\Extension\Workflows\ITrigger;
+use MediaWiki\Extension\Workflows\Query\WorkflowStateModel;
+use MediaWiki\Extension\Workflows\Query\WorkflowStateStore;
 use MediaWiki\Extension\Workflows\UserInteractiveActivity;
 use MediaWiki\Extension\Workflows\Util\DataPreprocessor;
 use MediaWiki\Extension\Workflows\Util\DataPreprocessorContext;
 use MediaWiki\Extension\Workflows\Workflow;
 use MediaWiki\Extension\Workflows\WorkflowFactory;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
-use Title;
-use TitleFactory;
 
 class GenericTrigger implements ITrigger, LoggerAwareInterface {
 	/** @var WorkflowFactory */
@@ -183,6 +187,9 @@ class GenericTrigger implements ITrigger, LoggerAwareInterface {
 		if ( $this->isAutomatic() ) {
 			$workflow->markAsBotProcess();
 		}
+		if ( $this->getActor() ) {
+			$workflow->setActor( $this->getActor() );
+		}
 		$workflow->start( $contextData );
 		$initializer = $this->getInitializer( $workflow );
 		if ( $initData && $initializer ) {
@@ -262,7 +269,7 @@ class GenericTrigger implements ITrigger, LoggerAwareInterface {
 	 * @return bool
 	 */
 	public function shouldTrigger( $qualifyingData = [] ): bool {
-		return true;
+		return !$this->isAlreadyRunning();
 	}
 
 	/**
@@ -431,4 +438,36 @@ class GenericTrigger implements ITrigger, LoggerAwareInterface {
 
 		return $msg->text();
 	}
+
+	/**
+	 * @return User|null
+	 */
+	protected function getActor(): ?User {
+		return null;
+	}
+
+	/**
+	 * @param Title $title
+	 * @param WorkflowStateStore $workflowStore
+	 * @return bool
+	 */
+	public function checkIsAlreadyRunning( Title $title, WorkflowStateStore $workflowStore ): bool {
+		$running = $workflowStore->active()->complexQuery( [
+			'context' => [ 'pageId' => $title->getArticleID() ],
+		], true );
+		$workflowDefinitions = array_map( static function ( WorkflowStateModel $wf ) {
+			$def = $wf->getPayload()['definition'] ?? null;
+			if ( $def instanceof DefinitionSource ) {
+				return md5( $def->getRepositoryKey() . $def->getName() );
+			} elseif ( is_array( $def ) ) {
+				return md5( $def['repositoryKey'] . $def['name'] );
+			}
+			return null;
+		}, $running );
+
+		$definition = md5( $this->repo . $this->definition );
+
+		return in_array( $definition, $workflowDefinitions );
+	}
+
 }

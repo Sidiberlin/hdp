@@ -7,12 +7,12 @@ use BlueSpice\Bookshelf\BookLookup;
 use BlueSpice\Bookshelf\Panel\BookNavigationTreeContainer;
 use BlueSpice\Bookshelf\Renderer\ComponentRenderer;
 use BlueSpice\Tag\Handler;
-use Html;
-use Message;
+use MediaWiki\Html\Html;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\TreeDataGenerator;
-use Parser;
-use PPFrame;
-use TitleFactory;
 
 class BookNavHandler extends Handler {
 
@@ -99,7 +99,7 @@ class BookNavHandler extends Handler {
 		] );
 		$bookNav .= Html::element( 'h2', [
 			'style' => 'width: 80%; margin: 0; padding: 0;'
-		],	$bookTitle->getText()
+		], $bookTitle->getText()
 		);
 		$bookNav .= $this->buildSearchBox();
 		$bookNav .= Html::closeElement( 'div' );
@@ -175,7 +175,7 @@ class BookNavHandler extends Handler {
 	 */
 	private function buildSubComponentsSegmentHtml( array $subComponents, string &$html ): void {
 		foreach ( $subComponents as $subComponent ) {
-			$label = $subComponent->getText()->plain();
+			$label = $subComponent->getText()->text();
 
 			if ( strpos( $label, $this->chapterInput ) === 0 ) {
 				$html .= $this->componentRenderer->getComponentHtml( $subComponent );

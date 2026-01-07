@@ -5,8 +5,6 @@
 			"Ӏабдуррашид"
 		]
 	},
-	"bs-statistics-day": "Ди",
-	"bs-statistics-filters": "Фильтраш",
-	"bs-statistics-ve-progress-attr-width-label": "Шорал",
-	"bs-statistics-aggregated-report-filter-user-multi": "Доакъашхой"
+	"bs-statistics-aggregated-report-filter-user-multi": "Доакъашхой",
+	"bs-statistics-ve-progress-attr-width-label": "Шорал"
 }

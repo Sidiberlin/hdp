@@ -14,6 +14,7 @@ use MediaWiki\Extension\NotifyMe\SubscriberManager;
 use MediaWiki\Extension\NotifyMe\SubscriptionConfigurator;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 use Psr\Log\LoggerAwareInterface;
 
 return [
@@ -84,7 +85,9 @@ return [
 			$services->getTitleFactory(),
 			$services->getMainConfig(),
 			$services->getRevisionLookup(),
-			$services->getParserFactory()
+			$services->getParserFactory(),
+			$services->getUserOptionsLookup(),
+			$services->getContentLanguage()
 		);
 	},
 	'NotifyMe.WebQueryStore' => static function ( MediaWikiServices $services ) {

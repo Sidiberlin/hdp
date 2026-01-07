@@ -9,8 +9,8 @@ use BlueSpice\ITask;
 use BlueSpice\ParamProcessor\Options;
 use BlueSpice\ParamProcessor\Processor;
 use Exception;
-use FormatJson;
-use Status;
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Status\Status;
 use stdClass;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -56,7 +56,7 @@ class Task extends Api {
 				$this->msg(
 					'apihelp-bs-task-param-taskdata',
 					$paramDefinition->getName()
-				)->plain()
+				)->text()
 			);
 			$options = $this->getParamProcessorOptions();
 			$options->setName( 'arg-' . $paramDefinition->getName() );

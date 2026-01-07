@@ -1,6 +1,6 @@
 {
 	"name": "EventBus",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"author": [
 		"Eric Evans",
 		"Petr Pchelko",
@@ -10,7 +10,7 @@
 	"descriptionmsg": "eventbus-desc",
 	"license-name": "GPL-2.0-or-later",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43"
 	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\EventBus\\": "includes/"
@@ -39,6 +39,9 @@
 		},
 		"EventBusMaxBatchByteSize": {
 			"value": 4194304
+		},
+		"EventBusStreamNamesMap": {
+			"value": {}
 		}
 	},
 	"MessagesDirs": {
@@ -46,19 +49,65 @@
 			"i18n"
 		]
 	},
+	"HookHandlers": {
+		"mediawiki_page_change": {
+			"class": "MediaWiki\\Extension\\EventBus\\HookHandlers\\MediaWiki\\PageChangeHooks",
+			"services": [
+				"EventBus.EventBusFactory",
+				"EventBus.StreamNameMapper",
+				"MainConfig",
+				"GlobalIdGenerator",
+				"UserGroupManager",
+				"TitleFormatter",
+				"WikiPageFactory",
+				"UserFactory",
+				"RevisionStore",
+				"ContentHandlerFactory",
+				"RedirectStore",
+				"PageStore"
+			]
+		},
+		"mediawiki_campaign_change": {
+			"class": "MediaWiki\\Extension\\EventBus\\HookHandlers\\MediaWiki\\CampaignChangeHooks",
+			"services": [
+				"EventBus.StreamNameMapper"
+			]
+		},
+		"main": {
+			"class": "MediaWiki\\Extension\\EventBus\\EventBusHooks"
+		}
+	},
 	"Hooks": {
-		"ArticleDeleteComplete": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onArticleDeleteComplete",
-		"ArticleUndelete": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onArticleUndelete",
-		"PageMoveComplete": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onPageMoveComplete",
-		"ArticleRevisionVisibilitySet": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onArticleRevisionVisibilitySet",
-		"PageSaveComplete": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onPageSaveComplete",
-		"ArticlePurge": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onArticlePurge",
-		"BlockIpComplete": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onBlockIpComplete",
-		"LinksUpdateComplete": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onLinksUpdateComplete",
-		"ArticleProtectComplete": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onArticleProtectComplete",
-		"ChangeTagsAfterUpdateTags": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onChangeTagsAfterUpdateTags",
-		"CentralNoticeCampaignChange": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onCentralNoticeCampaignChange",
-		"RevisionRecordInserted": "MediaWiki\\Extension\\EventBus\\EventBusHooks::onRevisionRecordInserted"
+		"PageSaveComplete": [
+			"main",
+			"mediawiki_page_change"
+		],
+		"PageMoveComplete": [
+			"main",
+			"mediawiki_page_change"
+		],
+		"PageDelete": [
+			"mediawiki_page_change"
+		],
+		"PageDeleteComplete": [
+			"main",
+			"mediawiki_page_change"
+		],
+		"PageUndeleteComplete": [
+			"main",
+			"mediawiki_page_change"
+		],
+		"ArticleRevisionVisibilitySet": [
+			"main",
+			"mediawiki_page_change"
+		],
+		"ArticlePurge": "main",
+		"BlockIpComplete": "main",
+		"LinksUpdateComplete": "main",
+		"ArticleProtectComplete": "main",
+		"ChangeTagsAfterUpdateTags": "main",
+		"CentralNoticeCampaignChange": "mediawiki_campaign_change",
+		"RevisionRecordInserted": "main"
 	},
 	"RestRoutes": [
 		{

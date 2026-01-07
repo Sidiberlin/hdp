@@ -11,6 +11,9 @@ const fetchFactory = function (service) {
 		case 'bilibili':
 			//fetcher = require('./bilibili.js').fetcher;
 			break;
+		case 'ccc':
+			fetcher = oEmbedFetchers.ccc;
+			break;
 		case 'loom':
 			fetcher = oEmbedFetchers.loom;
 			break;
@@ -28,16 +31,32 @@ const fetchFactory = function (service) {
 		case 'spotifyartist':
 			fetcher = oEmbedFetchers.spotifyartist;
 			break;
+		case 'spotify':
 		case 'spotifytrack':
 			fetcher = oEmbedFetchers.spotifytrack;
+			break;
+		case 'spotifyshow':
+			fetcher = oEmbedFetchers.spotifyshow;
+			break;
+		case 'spotifyepisode':
+			fetcher = oEmbedFetchers.spotifyepisode;
+			break;
+		case 'spotifyplaylist':
+			fetcher = oEmbedFetchers.spotifyplaylist;
 			break;
 		case 'vimeo':
 			fetcher = oEmbedFetchers.vimeo;
 			break;
+		case 'wistia':
+			fetcher = oEmbedFetchers.wistia;
+			break;
 		case 'youtube':
+			fetcher = oEmbedFetchers.youtube;
+			break;
 		case 'youtubevideolist':
 		case 'youtubeplaylist':
-			fetcher = oEmbedFetchers.youtube;
+			urlManipulation = false;
+			fetcher = oEmbedFetchers.youtubeplaylist;
 			break;
 
 		// Missing CORS

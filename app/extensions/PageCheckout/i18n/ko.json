@@ -4,5 +4,7 @@
 			"Ykhwong"
 		]
 	},
-	"pagecheckout-error-save-event": "이벤트 저장 실패"
+	"pagecheckout-error-save-event": "이벤트 저장 실패",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "사용자",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "사용자"
 }

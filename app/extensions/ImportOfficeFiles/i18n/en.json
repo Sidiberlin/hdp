@@ -5,7 +5,6 @@
 		]
 	},
 	"importofficefiles-desc": "Allows importing office files as wikipages",
-	"importofficefiles-ui-action-import-msword-text": "Import Word file",
 	"importofficefiles-ui-action-import-msword-title": "Create pages from Microsoft Word file",
 	"importofficefiles-ui-import-dialog-title": "Import file",
 	"importofficefiles-ui-import-completed": "Import completed!",
@@ -17,6 +16,8 @@
 	"importofficefiles-ui-dialog-action-done": "Done",
 	"importofficefiles-ui-dialog-label-select-file": "Select file",
 	"importofficefiles-ui-dialog-configuration-settings-title": "Configure import settings",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-characters": "This title can't be used. It contains a character (\"$1\") that's not allowed.",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-fallback": "This title can't be used.",
 	"importofficefiles-ui-dialog-settings-page-title": "Title",
 	"importofficefiles-ui-dialog-settings-pagetitle-label": "Select a title for the new page",
 	"importofficefiles-ui-dialog-settings-structure-label": "Content structure",
@@ -41,5 +42,8 @@
 	"importofficefiles-ui-progress-import-pages-step": "Importing pages...",
 	"importofficefiles-ui-progress-remove-files-step": "Removing temporary files...",
 	"importofficefiles-ui-import-error": "Some error happened during import.",
-	"importofficefiles-ui-analyze-error": "Analyze process failed for some reason."
+	"importofficefiles-ui-analyze-error": "Analyze process failed for some reason.",
+	"importofficefiles-ui-action-import-msword-label": "New Word file import",
+	"importofficefiles-ui-dialog-preview-action-close": "Close",
+	"importofficefiles-ui-dialog-preview-btn-title": "Preview"
 }

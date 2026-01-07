@@ -2,19 +2,20 @@
 
 namespace SMW\DataValues\ValueFormatters;
 
+use MediaWiki\Html\Html;
 use RuntimeException;
 use SMW\DataValueFactory;
 use SMW\DataValues\ExternalIdentifierValue;
+use SMW\DataValues\PropertyValue;
 use SMW\DataValues\ReferenceValue;
 use SMW\DIWikiPage;
-use SMW\Message;
+use SMW\Localizer\Message;
 use SMWDataValue as DataValue;
 use SMWDITime as DITime;
 use SMWDIUri as DIUri;
-use SMWPropertyValue as PropertyValue;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 2.5
  *
  * @author mwjames
@@ -36,7 +37,6 @@ class ReferenceValueFormatter extends DataValueFormatter {
 	 * {@inheritDoc}
 	 */
 	public function format( $type, $linker = null ) {
-
 		if ( !$this->dataValue instanceof ReferenceValue ) {
 			throw new RuntimeException( "The formatter is missing a valid ReferenceValue object" );
 		}
@@ -50,7 +50,6 @@ class ReferenceValueFormatter extends DataValueFormatter {
 	}
 
 	protected function getOutputText( $type, $linker = null ) {
-
 		if ( !$this->dataValue->isValid() ) {
 			return ( ( $type == self::WIKI_SHORT ) || ( $type == self::HTML_SHORT ) ) ? '' : $this->dataValue->getErrorText();
 		}
@@ -59,7 +58,6 @@ class ReferenceValueFormatter extends DataValueFormatter {
 	}
 
 	private function createOutput( $type, $linker ) {
-
 		$results = $this->getListOfFormattedPropertyDataItems(
 			$type,
 			$linker,
@@ -81,11 +79,11 @@ class ReferenceValueFormatter extends DataValueFormatter {
 		// Add an extra "title" attribute to support nojs environments by allowing
 		// it to display references even without JS, it will be removed when JS is available
 		// to show the "normal" tooltip
-		$result .= \Html::rawElement(
+		$result .= Html::rawElement(
 			'span',
 			[
 				'class' => $class,
-				'data-title'   =>  Message::get( 'smw-ui-tooltip-title-reference', Message::TEXT, Message::USER_LANGUAGE ),
+				'data-title'   => Message::get( 'smw-ui-tooltip-title-reference', Message::TEXT, Message::USER_LANGUAGE ),
 				'data-content' => '<ul><li>' . implode( '</li><li>', $results ) . '</li></ul>',
 				'title' => strip_tags( implode( ', ', $results ) )
 			]
@@ -95,7 +93,6 @@ class ReferenceValueFormatter extends DataValueFormatter {
 	}
 
 	private function getListOfFormattedPropertyDataItems( $type, $linker, $propertyDataItems ) {
-
 		$results = [];
 
 		foreach ( $propertyDataItems as $propertyDataItem ) {
@@ -146,7 +143,6 @@ class ReferenceValueFormatter extends DataValueFormatter {
 	}
 
 	private function findValueOutputFor( $isValue, $type, $dataValue, $linker ) {
-
 		$dataItem = $dataValue->getDataItem();
 
 		// Turn URI, External identifier, or Page links into a href representation

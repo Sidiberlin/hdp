@@ -2,8 +2,9 @@
 
 namespace BlueSpice\Avatars;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\User\User;
 
 class Generator {
 	public const FILE_PREFIX = "BS_avatar_";
@@ -29,7 +30,7 @@ class Generator {
 	 * @param Config $config
 	 * @param AvatarGeneratorFactory|null $factory
 	 */
-	public function __construct( Config $config, AvatarGeneratorFactory $factory = null ) {
+	public function __construct( Config $config, ?AvatarGeneratorFactory $factory = null ) {
 		$this->config = $config;
 		if ( !$factory ) {
 			// deprecated since version 3.1.13 - Use Service BSAvatarsAvatarGenerator
@@ -44,11 +45,11 @@ class Generator {
 
 	/**
 	 *
-	 * @param \User $user
+	 * @param User $user
 	 * @param array $params
 	 * @return string
 	 */
-	public function generate( \User $user, array $params = [] ) {
+	public function generate( User $user, array $params = [] ) {
 		$defaultSize = 1024;
 
 		$oFile = $this->getAvatarFile( $user );
@@ -99,10 +100,10 @@ class Generator {
 
 	/**
 	 * Gets Avatar file from user ID
-	 * @param \User $user
+	 * @param User $user
 	 * @return bool|\File
 	 */
-	public function getAvatarFile( \User $user ) {
+	public function getAvatarFile( User $user ) {
 		return \BsFileSystemHelper::getFileFromRepoName(
 			static::FILE_PREFIX . $user->getId() . ".png",
 			'Avatars'

@@ -1,8 +1,0 @@
-{
-	"@metadata": {
-		"authors": [
-			"Piano1forte2"
-		]
-	},
-	"bs-articleinfo-pref-checkrevisioninterval-help": "Sets the refresh rate for the 'Last edit' value. This value is displayed on the page information under the quality management tools."
-}

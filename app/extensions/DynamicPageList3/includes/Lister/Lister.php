@@ -2,15 +2,17 @@
 
 namespace MediaWiki\Extension\DynamicPageList3\Lister;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\DynamicPageList3\Article;
 use MediaWiki\Extension\DynamicPageList3\LST;
 use MediaWiki\Extension\DynamicPageList3\Parameters;
 use MediaWiki\Extension\DynamicPageList3\UpdateArticle;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use Parser;
-use RequestContext;
-use Sanitizer;
-use Title;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\Title\Title;
 
 class Lister {
 	public const LIST_DEFINITION = 1;
@@ -179,7 +181,8 @@ class Lister {
 	protected $sectionSeparators = [];
 
 	/**
-	 * Section separators that separate transcluded pages/sections that refer to the same chapter or tempalte of wiki text.
+	 * Section separators that separate transcluded pages/sections that refer to
+	 * the same chapter or tempalte of wiki text.
 	 *
 	 * @var array
 	 */
@@ -369,7 +372,7 @@ class Lister {
 	 * @param int $count
 	 */
 	public function setDominantSectionCount( $count = -1 ) {
-		$this->dominantSectionCount = intval( $count );
+		$this->dominantSectionCount = (int)$count;
 	}
 
 	/**
@@ -414,7 +417,7 @@ class Lister {
 	 * @param bool $trim
 	 */
 	public function setTrimIncluded( $trim = false ) {
-		$this->trimIncluded = boolval( $trim );
+		$this->trimIncluded = (bool)$trim;
 	}
 
 	/**
@@ -433,7 +436,7 @@ class Lister {
 	 * @param bool $escape
 	 */
 	public function setEscapeLinks( $escape = true ) {
-		$this->escapeLinks = boolval( $escape );
+		$this->escapeLinks = (bool)$escape;
 	}
 
 	/**
@@ -451,7 +454,7 @@ class Lister {
 	 * @param int|null $index
 	 */
 	public function setTableSortColumn( $index = null ) {
-		$this->tableSortColumn = $index === null ? null : intval( $index );
+		$this->tableSortColumn = $index === null ? null : (int)$index;
 	}
 
 	/**
@@ -487,7 +490,7 @@ class Lister {
 	 * @param int|null $length
 	 */
 	public function setTitleMaxLength( $length = null ) {
-		$this->titleMaxLength = $length === null ? null : intval( $length );
+		$this->titleMaxLength = $length === null ? null : (int)$length;
 	}
 
 	/**
@@ -523,7 +526,7 @@ class Lister {
 	 * @param bool $include
 	 */
 	public function setIncludePageText( $include = false ) {
-		$this->includePageText = boolval( $include );
+		$this->includePageText = (bool)$include;
 	}
 
 	/**
@@ -532,7 +535,7 @@ class Lister {
 	 * @param int|null $length
 	 */
 	public function setIncludePageMaxLength( $length = null ) {
-		$this->includePageMaxLength = $length === null ? null : intval( $length );
+		$this->includePageMaxLength = $length === null ? null : (int)$length;
 	}
 
 	/**
@@ -568,7 +571,7 @@ class Lister {
 	 * @param bool $parse
 	 */
 	public function setIncludePageParsed( $parse = false ) {
-		$this->includePageParsed = boolval( $parse );
+		$this->includePageParsed = (bool)$parse;
 	}
 
 	/**
@@ -596,7 +599,7 @@ class Lister {
 		for ( $i = $start; $i < $start + $count; $i++ ) {
 			$article = $articles[$i];
 
-			if ( empty( $article ) || empty( $article->mTitle ) ) {
+			if ( !$article || empty( $article->mTitle ) ) {
 				continue;
 			}
 
@@ -634,7 +637,8 @@ class Lister {
 			$item .= $date . ' ';
 
 			if ( $article->mRevision > 0 ) {
-				$item .= '[{{fullurl:' . $article->mTitle . '|oldid=' . $article->mRevision . '}} ' . htmlspecialchars( $article->mTitle ) . ']';
+				$item .= '[{{fullurl:' . $article->mTitle . '|oldid=' .
+					$article->mRevision . '}} ' . htmlspecialchars( $article->mTitle ) . ']';
 			} else {
 				$item .= $article->mLink;
 			}
@@ -651,8 +655,10 @@ class Lister {
 
 		if ( $article->mCounter > 0 ) {
 			$contLang = MediaWikiServices::getInstance()->getContentLanguage();
-
-			$item .= ' ' . $contLang->getDirMark() . '(' . wfMessage( 'hitcounters-nviews', $lang->formatNum( $article->mCounter ) )->escaped() . ')';
+			$item .= ' ' . Html::rawElement( 'bdi',
+				[ 'dir' => $contLang->getDir() ],
+				'(' . wfMessage( 'hitcounters-nviews', $lang->formatNum( $article->mCounter ) )->escaped() . ')'
+			);
 		}
 
 		if ( $article->mUserLink ) {
@@ -667,8 +673,9 @@ class Lister {
 			$item .= ' . . [[User:' . $article->mContributor . '|' . $article->mContributor . " $article->mContrib]]";
 		}
 
-		if ( !empty( $article->mCategoryLinks ) ) {
-			$item .= ' . . <small>' . wfMessage( 'categories' ) . ': ' . implode( ' | ', $article->mCategoryLinks ) . '</small>';
+		if ( $article->mCategoryLinks ) {
+			$item .= ' . . <small>' . wfMessage( 'categories' ) . ': ' .
+				implode( ' | ', $article->mCategoryLinks ) . '</small>';
 		}
 
 		if ( $this->getParameters()->getParameter( 'addexternallink' ) && $article->mExternalLink ) {
@@ -812,7 +819,9 @@ class Lister {
 			if ( $article->mSelNamespace == 0 ) {
 				$tag = str_replace( '%PAGESEL%', str_replace( '_', ' ', $article->mSelTitle ), $tag );
 			} else {
-				$tag = str_replace( '%PAGESEL%', $namespaces[$article->mSelNamespace] . ':' . str_replace( '_', ' ', $article->mSelTitle ), $tag );
+				$tag = str_replace( '%PAGESEL%', $namespaces[$article->mSelNamespace] . ':' .
+					str_replace( '_', ' ', $article->mSelTitle ), $tag
+				);
 			}
 		}
 
@@ -831,7 +840,7 @@ class Lister {
 	 * @return string
 	 */
 	protected function replaceTagCategory( $tag, Article $article ) {
-		if ( !empty( $article->mCategoryLinks ) ) {
+		if ( $article->mCategoryLinks ) {
 			$tag = str_replace( '%CATLIST%', implode( ', ', $article->mCategoryLinks ), $tag );
 			$tag = str_replace( '%CATBULLETS%', '* ' . implode( "\n* ", $article->mCategoryLinks ), $tag );
 			$tag = str_replace( '%CATNAMES%', implode( ', ', $article->mCategoryTexts ), $tag );
@@ -856,7 +865,8 @@ class Lister {
 	}
 
 	/**
-	 * Format one single item of an entry in the output list (i.e. one occurence of one item from the include parameter).
+	 * Format one single item of an entry in the output list
+	 * i.e. one occurence of one item from the include parameter
 	 *
 	 * @param array &$pieces
 	 * @param mixed $s Index of the table row position.
@@ -873,7 +883,11 @@ class Lister {
 				} else {
 					$n = strpos( $tableFormat[$s], '|' );
 
-					if ( $n === false || !( strpos( substr( $tableFormat[$s], 0, $n ), '{' ) === false ) || !( strpos( substr( $tableFormat[$s], 0, $n ), '[' ) === false ) ) {
+					if (
+						$n === false ||
+						!( strpos( substr( $tableFormat[$s], 0, $n ), '{' ) === false ) ||
+						!( strpos( substr( $tableFormat[$s], 0, $n ), '[' ) === false )
+					) {
 						$pieces[$key] = str_replace( '%%', $val, $tableFormat[$s] );
 					} else {
 						$pieces[$key] = str_replace( '%%', $val, substr( $tableFormat[$s], $n + 1 ) );
@@ -891,7 +905,8 @@ class Lister {
 	}
 
 	/**
-	 * Format one single template argument of one occurence of one item from the include parameter. This is called via a backlink from LST::includeTemplate().
+	 * Format one single template argument of one occurence of one item from the include parameter.
+	 * This is called via a backlink from LST::includeTemplate().
 	 *
 	 * @param string $arg
 	 * @param mixed	$s Index of the table row position.
@@ -914,7 +929,11 @@ class Lister {
 
 			if ( $s >= 1 && $argNr == 0 && !$firstCall ) {
 				$n = strpos( $tableFormat["$s.$argNr"], '|' );
-				if ( $n === false || !( strpos( substr( $tableFormat["$s.$argNr"], 0, $n ), '{' ) === false ) || !( strpos( substr( $tableFormat["$s.$argNr"], 0, $n ), '[' ) === false ) ) {
+				if (
+					$n === false ||
+					!( strpos( substr( $tableFormat["$s.$argNr"], 0, $n ), '{' ) === false ) ||
+					!( strpos( substr( $tableFormat["$s.$argNr"], 0, $n ), '[' ) === false )
+				) {
 					$n = -1;
 				}
 			}
@@ -970,6 +989,7 @@ class Lister {
 	 */
 	protected function parseImageUrlWithPath( $article ) {
 		$repoGroup = MediaWikiServices::getInstance()->getRepoGroup();
+		$pageImagesEnabled = ExtensionRegistry::getInstance()->isLoaded( 'PageImages' );
 
 		$imageUrl = '';
 		if ( $article instanceof Article ) {
@@ -983,6 +1003,15 @@ class Lister {
 				} else {
 					$fileTitle = Title::makeTitleSafe( NS_FILE, $article->mTitle->getDBKey() );
 					$imageUrl = $repoGroup->getLocalRepo()->newFile( $fileTitle )->getPath();
+				}
+			} elseif ( $pageImagesEnabled ) {
+				$pageImage = self::getPageImage( $article->mID ) ?: false;
+				if ( !$pageImage ) {
+					return '';
+				}
+				$img = $repoGroup->findFile( Title::makeTitle( NS_FILE, $pageImage ) );
+				if ( $img && $img->exists() ) {
+					$imageUrl = $img->getURL();
 				}
 			}
 		} else {
@@ -1013,7 +1042,7 @@ class Lister {
 		$septag = [];
 
 		// include whole article
-		if ( empty( $this->pageTextMatch ) || $this->pageTextMatch[0] == '*' ) {
+		if ( !$this->pageTextMatch || $this->pageTextMatch[0] == '*' ) {
 			$title = $article->mTitle->getPrefixedText();
 
 			if ( $this->getStyle() == self::LIST_USERFORMAT ) {
@@ -1023,7 +1052,18 @@ class Lister {
 			}
 
 			$text = $this->parser->fetchTemplateAndTitle( Title::newFromText( $title ) )[0];
-			if ( ( count( $this->pageTextMatchRegex ) <= 0 || $this->pageTextMatchRegex[0] == '' || !( !preg_match( $this->pageTextMatchRegex[0], $text ) ) ) && ( count( $this->pageTextMatchNotRegex ) <= 0 || $this->pageTextMatchNotRegex[0] == '' || preg_match( $this->pageTextMatchNotRegex[0], $text ) == false ) ) {
+			if (
+				(
+					count( $this->pageTextMatchRegex ) <= 0 ||
+					$this->pageTextMatchRegex[0] == '' ||
+					!( !preg_match( $this->pageTextMatchRegex[0], $text ) )
+				) &&
+				(
+					count( $this->pageTextMatchNotRegex ) <= 0 ||
+					$this->pageTextMatchNotRegex[0] == '' ||
+					preg_match( $this->pageTextMatchNotRegex[0], $text ) == false
+				)
+			) {
 				if ( $this->includePageMaxLength > 0 && ( strlen( $text ) > $this->includePageMaxLength ) ) {
 					$text = LST::limitTranscludedText( $text, $this->includePageMaxLength, ' [[' . $title . '|..→]]' );
 				}
@@ -1034,12 +1074,12 @@ class Lister {
 				$updateRules = $this->getParameters()->getParameter( 'updaterules' );
 				$deleteRules = $this->getParameters()->getParameter( 'deleterules' );
 
-				if ( !empty( $updateRules ) ) {
+				if ( $updateRules ) {
 					$ruleOutput = UpdateArticle::updateArticleByRule( $title, $text, $updateRules );
 
 					// append update message to output
 					$pageText .= $ruleOutput;
-				} elseif ( !empty( $deleteRules ) ) {
+				} elseif ( $deleteRules ) {
 					$ruleOutput = UpdateArticle::deleteArticleByRule( $title, $text, $deleteRules );
 
 					// append delete message to output
@@ -1101,7 +1141,7 @@ class Lister {
 						$fmtSec = explode( '~', substr( $sSecLabel, $limpos + 1, strlen( $sSecLabel ) - $limpos - 2 ) );
 						$sSecLabel = substr( $sSecLabel, 0, $limpos );
 						$cutInfo = explode( ' ', $fmtSec[count( $fmtSec ) - 1], 2 );
-						$maxLength = intval( $cutInfo[0] );
+						$maxLength = (int)$cutInfo[0];
 
 						if ( array_key_exists( '1', $cutInfo ) ) {
 							$cutLink = $cutInfo[1];
@@ -1123,13 +1163,21 @@ class Lister {
 				}
 
 				// find out if the user specified an includematch / includenotmatch condition
-				if ( is_array( $this->pageTextMatchRegex ) && count( $this->pageTextMatchRegex ) > $s && !empty( $this->pageTextMatchRegex[$s] ) ) {
+				if (
+					is_array( $this->pageTextMatchRegex ) &&
+					count( $this->pageTextMatchRegex ) > $s &&
+					!empty( $this->pageTextMatchRegex[$s] )
+				) {
 					$mustMatch = $this->pageTextMatchRegex[$s];
 				} else {
 					$mustMatch = '';
 				}
 
-				if ( is_array( $this->pageTextMatchNotRegex ) && count( $this->pageTextMatchNotRegex ) > $s && !empty( $this->pageTextMatchNotRegex[$s] ) ) {
+				if (
+					is_array( $this->pageTextMatchNotRegex ) &&
+					count( $this->pageTextMatchNotRegex ) > $s &&
+					!empty( $this->pageTextMatchNotRegex[$s] )
+				) {
 					$mustNotMatch = $this->pageTextMatchNotRegex[$s];
 				} else {
 					$mustNotMatch = '';
@@ -1144,17 +1192,30 @@ class Lister {
 				} elseif ( $sSecLabel[0] == '#' || $sSecLabel[0] == '@' ) {
 					$sectionHeading[0] = substr( $sSecLabel, 1 );
 
-					// Uses LST::includeHeading() from LabeledSectionTransclusion extension to include headings from the page
-					$secPieces = LST::includeHeading( $this->parser, $article->mTitle->getPrefixedText(), substr( $sSecLabel, 1 ), '', $sectionHeading, false, $maxLength, $cutLink ?? 'default', $this->getTrimIncluded(), $skipPattern ?? [] );
+					// Uses LST::includeHeading() from LabeledSectionTransclusion extension to
+					// include headings from the page
+					$secPieces = LST::includeHeading(
+						$this->parser,
+						$article->mTitle->getPrefixedText(),
+						substr( $sSecLabel, 1 ),
+						'',
+						$sectionHeading,
+						false,
+						$maxLength,
+						$cutLink ?? 'default',
+						$this->getTrimIncluded(),
+						$skipPattern ?? []
+					);
 
 					if ( $mustMatch != '' || $mustNotMatch != '' ) {
 						$secPiecesTmp = $secPieces;
 						$offset = 0;
 
 						foreach ( $secPiecesTmp as $nr => $onePiece ) {
-							if ( ( $mustMatch != '' && preg_match( $mustMatch, $onePiece ) == false ) || ( $mustNotMatch != '' && preg_match( $mustNotMatch, $onePiece ) != false ) ) {
+							if ( ( $mustMatch != '' && preg_match( $mustMatch, $onePiece ) == false ) ||
+								( $mustNotMatch != '' && preg_match( $mustNotMatch, $onePiece ) != false )
+							) {
 								array_splice( $secPieces, $nr - $offset, 1 );
-
 								$offset++;
 							}
 						}
@@ -1180,13 +1241,23 @@ class Lister {
 					$secPiece[$s] = $secPieces[0];
 					for ( $sp = 1; $sp < count( $secPieces ); $sp++ ) {
 						if ( isset( $this->multiSectionSeparators[$s] ) ) {
-							$secPiece[$s] .= str_replace( '%SECTION%', $sectionHeading[$sp] ?? '', $this->replaceTagCount( $this->multiSectionSeparators[$s], $filteredCount ) );
+							$secPiece[$s] .= str_replace(
+								'%SECTION%', $sectionHeading[$sp] ?? '',
+								$this->replaceTagCount(
+									$this->multiSectionSeparators[$s],
+									$filteredCount
+								)
+							);
 						}
 
 						$secPiece[$s] .= $secPieces[$sp];
 					}
 
-					if ( $this->getDominantSectionCount() >= 0 && $s == $this->getDominantSectionCount() && count( $secPieces ) > 1 ) {
+					if (
+						$this->getDominantSectionCount() >= 0 &&
+						$s == $this->getDominantSectionCount() &&
+						count( $secPieces ) > 1
+					) {
 						$dominantPieces = $secPieces;
 					}
 
@@ -1196,8 +1267,8 @@ class Lister {
 					}
 
 				} elseif ( $sSecLabel[0] == '{' ) {
-					// Uses LST::includeTemplate() from LabeledSectionTransclusion extension to include templates from the page
-					// primary syntax {template}suffix
+					// Uses LST::includeTemplate() from LabeledSectionTransclusion extension to
+					// include templates from the page primary syntax {template}suffix
 					$template1 = trim( substr( $sSecLabel, 1, strpos( $sSecLabel, '}' ) - 1 ) );
 					$template2 = trim( str_replace( '}', '', substr( $sSecLabel, 1 ) ) );
 
@@ -1208,27 +1279,73 @@ class Lister {
 					}
 
 					// Why was defaultTemplateSuffix passed all over the place for just here?
-					$secPieces = LST::includeTemplate( $this->parser, $this, $s, $article, $template1, $template2, $template2 . $this->getTemplateSuffix(), $mustMatch, $mustNotMatch, $this->includePageParsed, implode( ', ', $article->mCategoryLinks ) );
-					$secPiece[$s] = implode( isset( $this->multiSectionSeparators[$s] ) ? $this->replaceTagCount( $this->multiSectionSeparators[$s], $filteredCount ) : '', $secPieces );
+					$secPieces = LST::includeTemplate(
+						$this->parser,
+						$this,
+						$s,
+						$article,
+						$template1,
+						$template2,
+						$template2 . $this->getTemplateSuffix(),
+						$mustMatch,
+						$mustNotMatch,
+						$this->includePageParsed,
+						implode( ', ', $article->mCategoryLinks )
+					);
 
-					if ( $this->getDominantSectionCount() >= 0 && $s == $this->getDominantSectionCount() && count( $secPieces ) > 1 ) {
+					$secPiece[$s] = implode(
+						isset( $this->multiSectionSeparators[$s] ) ?
+						$this->replaceTagCount(
+							$this->multiSectionSeparators[$s],
+							$filteredCount
+						) : '',
+						$secPieces
+					);
+
+					if (
+						$this->getDominantSectionCount() >= 0 &&
+						$s == $this->getDominantSectionCount() &&
+						count( $secPieces ) > 1
+					) {
 						$dominantPieces = $secPieces;
 					}
 
-					if ( ( $mustMatch != '' || $mustNotMatch != '' ) && count( $secPieces ) <= 1 && $secPieces[0] == '' ) {
+					if (
+						( $mustMatch != '' || $mustNotMatch != '' ) &&
+						count( $secPieces ) <= 1 && $secPieces[0] == ''
+					) {
 						$matchFailed = true;
 						break;
 					}
 				} else {
-					// Uses LST::includeSection() from LabeledSectionTransclusion extension to include labeled sections from the page
-					$secPieces = LST::includeSection( $this->parser, $article->mTitle->getPrefixedText(), $sSecLabel, '', false, $this->getTrimIncluded(), $skipPattern ?? [] );
-					$secPiece[$s] = implode( isset( $this->multiSectionSeparators[$s] ) ? $this->replaceTagCount( $this->multiSectionSeparators[$s], $filteredCount ) : '', $secPieces );
+					// Uses LST::includeSection() from LabeledSectionTransclusion extension to
+					// include labeled sections from the page
+					$secPieces = LST::includeSection(
+						$this->parser, $article->mTitle->getPrefixedText(),
+						$sSecLabel, '', false, $this->getTrimIncluded(),
+						$skipPattern ?? []
+					);
+					$secPiece[$s] = implode(
+						$this->replaceTagCount(
+							$this->multiSectionSeparators[$s] ?? '', $filteredCount
+						), $secPieces
+					);
 
-					if ( $this->getDominantSectionCount() >= 0 && $s == $this->getDominantSectionCount() && count( $secPieces ) > 1 ) {
+					if (
+						$this->getDominantSectionCount() >= 0 &&
+						$s == $this->getDominantSectionCount() &&
+						count( $secPieces ) > 1
+					) {
 						$dominantPieces = $secPieces;
 					}
 
-					if ( ( $mustMatch != '' && preg_match( $mustMatch, $secPiece[$s] ) == false ) || ( $mustNotMatch != '' && preg_match( $mustNotMatch, $secPiece[$s] ) != false ) ) {
+					if ( (
+						$mustMatch != '' &&
+						preg_match( $mustMatch, $secPiece[$s] ) == false
+					) || (
+						$mustNotMatch != '' &&
+						preg_match( $mustNotMatch, $secPiece[$s] ) != false
+					) ) {
 						$matchFailed = true;
 						break;
 					}
@@ -1237,15 +1354,27 @@ class Lister {
 				// separator tags
 				if ( is_array( $this->sectionSeparators ) && count( $this->sectionSeparators ) == 1 ) {
 					// If there is only one separator tag use it always
-					$septag[$s * 2] = str_replace( '%SECTION%', $sectionHeading[0], $this->replaceTagCount( $this->sectionSeparators[0], $filteredCount ) );
+					$septag[$s * 2] = str_replace(
+						'%SECTION%', $sectionHeading[0], $this->replaceTagCount(
+							$this->sectionSeparators[0], $filteredCount
+						)
+					);
 				} elseif ( isset( $this->sectionSeparators[$s * 2] ) ) {
-					$septag[$s * 2] = str_replace( '%SECTION%', $sectionHeading[0], $this->replaceTagCount( $this->sectionSeparators[$s * 2], $filteredCount ) );
+					$septag[$s * 2] = str_replace(
+						'%SECTION%', $sectionHeading[0], $this->replaceTagCount(
+							$this->sectionSeparators[$s * 2], $filteredCount
+						)
+					);
 				} else {
 					$septag[$s * 2] = '';
 				}
 
 				if ( isset( $this->sectionSeparators[$s * 2 + 1] ) ) {
-					$septag[$s * 2 + 1] = str_replace( '%SECTION%', $sectionHeading[0], $this->replaceTagCount( $this->sectionSeparators[$s * 2 + 1], $filteredCount ) );
+					$septag[$s * 2 + 1] = str_replace(
+						'%SECTION%', $sectionHeading[0], $this->replaceTagCount(
+							$this->sectionSeparators[$s * 2 + 1], $filteredCount
+						)
+					);
 				} else {
 					$septag[$s * 2 + 1] = '';
 				}
@@ -1265,7 +1394,9 @@ class Lister {
 				foreach ( $dominantPieces as $dominantPiece ) {
 					foreach ( $secPiece as $s => $piece ) {
 						if ( $s == $this->getDominantSectionCount() ) {
-							$pageText .= $this->joinSectionTagPieces( $dominantPiece, $septag[$s * 2], $septag[$s * 2 + 1] );
+							$pageText .= $this->joinSectionTagPieces(
+								$dominantPiece, $septag[$s * 2], $septag[$s * 2 + 1]
+							);
 						} else {
 							$pageText .= $this->joinSectionTagPieces( $piece, $septag[$s * 2], $septag[$s * 2 + 1] );
 						}
@@ -1300,5 +1431,31 @@ class Lister {
 	 */
 	public function getRowCount() {
 		return $this->rowCount;
+	}
+
+	/**
+	 * Get the page image from the page_props table
+	 *
+	 * @param int $pageID
+	 * @return mixed|false
+	 */
+	public function getPageImage( int $pageID ) {
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
+		// In the future, a check could be made for page_image too,
+		// but page_image_free is the default, should do for now.
+		$propValue = $dbr->selectField(
+			// Table to use
+			'page_props',
+			// Field to select
+			'pp_value',
+			// Where conditions
+			[
+				'pp_page' => $pageID,
+				'pp_propname' => 'page_image_free',
+			],
+			__METHOD__
+		);
+
+		return $propValue;
 	}
 }

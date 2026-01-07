@@ -6,8 +6,6 @@
 		]
 	},
 	"bs-qr-code-extension-description": "הצגת קוד QR עם קישור לדף הנוכחי בסרגל הכלים.",
-	"bs-qr-code-title": "קוד QR",
-	"bs-qr-code-text": "סריקת קוד QR לפתיחת הדף הזה במכשיר נייד",
 	"bs-qr-code-action-qr-code-title": "פתיחת תיבת דו־שיח עם קוד QR",
 	"bs-qr-code-action-qr-code-text": "קוד QR",
 	"bs-qr-code-action-qr-code-dialog-title": "קוד QR",

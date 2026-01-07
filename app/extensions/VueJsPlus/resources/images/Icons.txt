@@ -12,3 +12,4 @@ https://commons.wikimedia.org/wiki/File:OOjs_UI_icon_expand.svg
 https://commons.wikimedia.org/wiki/File:OOjs_UI_icon_collapse.svg
 https://commons.wikimedia.org/wiki/File:OOUI-style-expand-tblr.svg
 https://commons.wikimedia.org/wiki/File:OOUI-style-collapse-tblr.svg
+https://commons.wikimedia.org/wiki/File:Codex_icon_close.svg

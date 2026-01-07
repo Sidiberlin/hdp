@@ -2,25 +2,27 @@
 
 namespace MediaWiki\Extension\NotifyMe\Channel;
 
-use Config;
 use Exception;
+use LogicException;
 use MailAddress;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\NotifyMe\Channel\Email\DigestCreator;
 use MediaWiki\Extension\NotifyMe\Channel\Email\MailContentProvider;
 use MediaWiki\Extension\NotifyMe\NotificationSerializer;
 use MediaWiki\Extension\NotifyMe\Storage\NotificationStore;
 use MediaWiki\Extension\NotifyMe\SubscriptionConfigurator;
+use MediaWiki\Language\Language;
 use MediaWiki\MainConfigNames;
+use MediaWiki\Message\Message;
+use MediaWiki\User\Options\UserOptionsLookup;
+use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
-use Message;
-use MWException;
 use MWStake\MediaWiki\Component\Events\Delivery\IExternalChannel;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
 use MWStake\MediaWiki\Component\Events\ITitleEvent;
 use MWStake\MediaWiki\Component\Events\Notification;
 use MWStake\MediaWiki\Component\Events\PriorityEvent;
 use Psr\Log\LoggerInterface;
-use User;
 use UserMailer;
 
 class EmailChannel implements IExternalChannel {
@@ -46,6 +48,12 @@ class EmailChannel implements IExternalChannel {
 	 */
 	private $config;
 
+	/** @var UserOptionsLookup */
+	private $userOptionsLookup;
+
+	/** @var Language */
+	private $language;
+
 	/**
 	 * @param NotificationStore $store
 	 * @param NotificationSerializer $serializer
@@ -53,10 +61,13 @@ class EmailChannel implements IExternalChannel {
 	 * @param SubscriptionConfigurator $configurator
 	 * @param LoggerInterface $logger
 	 * @param Config $mainConfig
+	 * @param UserOptionsLookup $userOptionsLookup
+	 * @param Language $language
 	 */
 	public function __construct(
 		 NotificationStore $store, NotificationSerializer $serializer, MailContentProvider $mailContentProvider,
-		 SubscriptionConfigurator $configurator, LoggerInterface $logger, Config $mainConfig
+		 SubscriptionConfigurator $configurator, LoggerInterface $logger, Config $mainConfig,
+		 UserOptionsLookup $userOptionsLookup, Language $language
 	) {
 		$this->store = $store;
 		$this->serializer = $serializer;
@@ -64,6 +75,8 @@ class EmailChannel implements IExternalChannel {
 		$this->logger = $logger;
 		$this->mailContentProvider = $mailContentProvider;
 		$this->config = $mainConfig;
+		$this->userOptionsLookup = $userOptionsLookup;
+		$this->language = $language;
 	}
 
 	/**
@@ -82,7 +95,7 @@ class EmailChannel implements IExternalChannel {
 	public function deliver( Notification $notification ): bool {
 		$user = $notification->getTargetUser();
 		if ( !$this->canReceiveMail( $user ) ) {
-			throw new MWException( 'User ' . $user->getName() . ' cannot receive mail' );
+			throw new LogicException( 'User ' . $user->getName() . ' cannot receive mail' );
 		}
 		if (
 			!$this->userWantsImmediateEmail( $user ) &&
@@ -102,7 +115,7 @@ class EmailChannel implements IExternalChannel {
 	 * @param string $digestType
 	 *
 	 * @return void|null
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	public function digest( User $user, array $notifications, string $digestType ) {
 		if ( !$this->canReceiveMail( $user ) ) {
@@ -134,7 +147,7 @@ class EmailChannel implements IExternalChannel {
 	 * @return bool
 	 */
 	public function shouldSkip( INotificationEvent $event, UserIdentity $user ): bool {
-		return !$this->isEnabled( $user );
+		return false;
 	}
 
 	/**
@@ -149,7 +162,6 @@ class EmailChannel implements IExternalChannel {
 	 */
 	public function getDefaultConfiguration(): array {
 		return [
-			'enabled' => true,
 			'frequency' => 'daily',
 		];
 	}
@@ -172,7 +184,7 @@ class EmailChannel implements IExternalChannel {
 	 */
 	protected function getSingleMail( Notification $notification, User $user ) {
 		return [
-			'subject' => $this->generateSubject( $notification->getEvent() ),
+			'subject' => $this->generateSubject( $notification->getEvent(), $user ),
 			'body' => $this->mailContentProvider->getFinalEmailHtml(
 				'single',
 				$this->serializer->serializeForOutput( $notification, $user ),
@@ -204,27 +216,16 @@ class EmailChannel implements IExternalChannel {
 	}
 
 	/**
-	 * Is channel enabled for user
-	 * @param UserIdentity $user
-	 *
-	 * @return bool
-	 */
-	private function isEnabled( UserIdentity $user ): bool {
-		$channelConf = $this->subscriptionConfigurator->getChannelConfiguration( $user, $this );
-		return $channelConf['enabled'] ?? false;
-	}
-
-	/**
 	 * @param array $mail
 	 * @param User $user
 	 *
 	 * @return void
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	private function send( array $mail, User $user ) {
 		$from = new MailAddress(
 			$this->config->get( MainConfigNames::PasswordSender ),
-			Message::newFromKey( 'emailsender' )->inContentLanguage()->text()
+			Message::newFromKey( 'emailsender' )->text()
 		);
 		$sendTo = MailAddress::newFromUser( $user );
 		$status = UserMailer::send( $sendTo, $from, $mail['subject'], $mail['body'], $mail['options'] );
@@ -235,11 +236,16 @@ class EmailChannel implements IExternalChannel {
 
 	/**
 	 * @param INotificationEvent $event
+	 * @param User $user
 	 *
 	 * @return string
 	 */
-	private function generateSubject( INotificationEvent $event ): string {
-		$typeMessage = $event->getKeyMessage()->text();
+	private function generateSubject( INotificationEvent $event, User $user ): string {
+		$userLanguage = $this->userOptionsLookup->getOption( $user, 'language' );
+		if ( !$userLanguage ) {
+			$userLanguage = $this->language;
+		}
+		$typeMessage = $event->getKeyMessage()->inLanguage( $userLanguage )->text();
 
 		if ( $event instanceof ITitleEvent ) {
 			return $typeMessage . ' - ' . $event->getTitle()->getPrefixedText();

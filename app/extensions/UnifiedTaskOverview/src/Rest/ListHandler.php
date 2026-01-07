@@ -2,11 +2,11 @@
 
 namespace MediaWiki\Extension\UnifiedTaskOverview\Rest;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\UnifiedTaskOverview\ITaskDescriptor;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Rest\SimpleHandler;
-use RequestContext;
-use User;
+use MediaWiki\User\User;
 
 class ListHandler extends SimpleHandler {
 
@@ -40,7 +40,7 @@ class ListHandler extends SimpleHandler {
 		foreach ( $taskDescs as $taskDesc ) {
 			$responseData[] = [
 				'type' => $taskDesc->getType(),
-				'header' => $taskDesc->getHeader()->plain(),
+				'header' => $taskDesc->getHeader()->parse(),
 				'subheader' => $taskDesc->getSubHeader()->text(),
 				'body' => $taskDesc->getBody()->parse(),
 				'url' => $taskDesc->getURL(),

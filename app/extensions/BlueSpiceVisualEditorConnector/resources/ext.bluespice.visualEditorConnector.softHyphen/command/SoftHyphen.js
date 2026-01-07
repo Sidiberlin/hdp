@@ -1,12 +1,12 @@
 bs.util.registerNamespace( 'bs.vec.command' );
 
-bs.vec.command.SoftHyphen = function() {
+bs.vec.command.SoftHyphen = function () {
 	// Parent constructor
 	bs.vec.command.SoftHyphen.super.call(
 		this, 'bsInsertSoftHyphen'
 	);
 	this.warning = null;
-	this.supportedSelections = ['linear'];
+	this.supportedSelections = [ 'linear' ];
 	this.action = 'content';
 	this.method = 'insert';
 };
@@ -21,7 +21,7 @@ OO.inheritClass( bs.vec.command.SoftHyphen, ve.ui.Command );
  * @inheritdoc
  */
 bs.vec.command.SoftHyphen.prototype.execute = function () {
-	var surfaceModel = ve.init.target.getSurface().getModel();
+	const surfaceModel = ve.init.target.getSurface().getModel();
 	surfaceModel.getFragment()
 		.adjustLinearSelection( 1 )
 		.collapseToStart()

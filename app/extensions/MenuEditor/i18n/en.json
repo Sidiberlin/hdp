@@ -32,10 +32,11 @@
 	"menueditor-ui-dialog-title": "Edit element",
 	"menueditor-ui-mediawiki-sidebar-keyword-label-edit": "Edit keyword",
 	"menueditor-ui-mediawiki-sidebar-keyword-label": "Keyword",
-	"menueditor-toolbar-submit": "Save changes",
 	"menueditor-toolbar-cancel": "Cancel edit",
 	"menueditor-toolbar-add-label": "Add element",
 	"menueditor-ui-edit-label": "Edit",
 	"menueditor-ui-add-sub-element-label": "Add sub element",
-	"menueditor-footerlinks-banner-text": "Some links may be added automatically by extensions. Please check the extension's configuration to learn more."
+	"menueditor-footerlinks-banner-text": "Some links may be added automatically by extensions. Please check the extension's configuration to learn more.",
+	"menueditor-toolbar-save": "Save",
+	"menueditor-ui-cancel-confirmation": "Are you sure you want to cancel the edit? All unsaved changes will be lost."
 }

@@ -3,7 +3,7 @@
 namespace BlueSpice\DistributionConnector\HookHandler;
 
 use MediaWiki\Content\Hook\ContentAlterParserOutputHook;
-use WikitextContent;
+use MediaWiki\Content\WikitextContent;
 
 class AddVariablesPageProperty implements ContentAlterParserOutputHook {
 
@@ -22,7 +22,7 @@ class AddVariablesPageProperty implements ContentAlterParserOutputHook {
 		$regex = '/\{\{#var/';
 
 		if ( preg_match( $regex, $text ) ) {
-			$parserOutput->setPageProperty( 'variables', 1 );
+			$parserOutput->setPageProperty( 'variables', '1' );
 		} else {
 			$parserOutput->unsetPageProperty( 'variables' );
 		}

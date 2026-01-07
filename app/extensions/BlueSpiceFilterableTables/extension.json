@@ -1,14 +1,15 @@
 {
 	"name": "BlueSpiceFilterableTables",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceFilterableTables",
 	"author": "Patric Wirth",
 	"descriptionmsg": "bs-filterabletables-extension-description",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0",
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"type": "bluespice",
@@ -36,10 +37,21 @@
 	"AutoloadNamespaces": {
 		"BlueSpice\\FilterableTables\\": "src/"
 	},
+	"TestAutoloadNamespaces": {
+		"BlueSpice\\FilterableTables\\Tests\\": "tests/phpunit/"
+	},
 	"ResourceModules": {
 		"ext.bluespice.filterabletables": {
 			"scripts": [
 				"bluespice.filterabletables.js"
+			]
+		},
+		"ext.bluespice.filterabletables.grid": {
+			"scripts": [
+				"ui/grid/FilterableTable.js"
+			],
+			"dependencies": [
+				"ext.oOJSPlus.data"
 			]
 		},
 		"ext.bluespice.filterabletables.visualEditorPlugin": {

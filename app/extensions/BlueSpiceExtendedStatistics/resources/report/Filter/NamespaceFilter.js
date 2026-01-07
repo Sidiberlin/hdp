@@ -1,4 +1,4 @@
-( function( mw, $, bs ) {
+( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.aggregatedStatistics.filter' );
 
 	bs.aggregatedStatistics.filter.NamespaceFilter = function ( cfg ) {
@@ -17,8 +17,8 @@
 
 		this.namespaceSelect.on( 'change', this.onFilter.bind( this ) );
 
-		var namespaceLayout = new OO.ui.FieldLayout( this.namespaceSelect, {
-			label: mw.message( "bs-statistics-aggregated-report-filter-namespace" ).text(),
+		const namespaceLayout = new OO.ui.FieldLayout( this.namespaceSelect, {
+			label: mw.message( 'bs-statistics-aggregated-report-filter-namespace' ).text(),
 			align: 'top'
 		} );
 		this.$element.append( namespaceLayout.$element );
@@ -29,24 +29,22 @@
 	};
 
 	bs.aggregatedStatistics.filter.NamespaceFilter.prototype.getOptions = function ( includeNoValue ) {
-		var ids = this.onlyContentNamespaces ?
+		let ids = this.onlyContentNamespaces ?
 			mw.config.get( 'wgContentNamespaces' ) : Object.values( mw.config.get( 'wgNamespaceIds' ) );
-		ids = ids.filter( function( value, index, self ) {
-			return value >= 0 && self.indexOf( value ) === index;
-		} );
-		var names = mw.config.get( 'wgFormattedNamespaces' );
-		var namespaces = [];
+		ids = ids.filter( ( value, index, self ) => value >= 0 && self.indexOf( value ) === index );
+		const names = mw.config.get( 'wgFormattedNamespaces' );
+		const namespaces = [];
 		if ( includeNoValue ) {
 			namespaces.push( {
 				data: '',
 				label: '-'
 			} );
 		}
-		for ( var i = 0; i < ids.length; i++ ) {
-			if ( ids[i] === 0 ) {
+		for ( let i = 0; i < ids.length; i++ ) {
+			if ( ids[ i ] === 0 ) {
 				namespaces.push( { data: '-', label: mw.message( 'bs-ns_main' ).text() } );
-			} else if ( names.hasOwnProperty( ids[i] ) ) {
-				namespaces.push( { data:ids[i], label: names[ids[i]] } );
+			} else if ( names.hasOwnProperty( ids[ i ] ) ) {
+				namespaces.push( { data: ids[ i ], label: names[ ids[ i ] ] } );
 			}
 		}
 
@@ -63,4 +61,4 @@
 		this.namespaceSelect.setValue( '' );
 	};
 
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

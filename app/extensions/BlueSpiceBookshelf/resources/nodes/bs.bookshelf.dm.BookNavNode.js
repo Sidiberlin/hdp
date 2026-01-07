@@ -1,4 +1,4 @@
-( function( mw, $, d, bs ) {
+( function ( mw, $, d, bs ) {
 	bs.util.registerNamespace( 'bs.bookshelf.dm' );
 
 	bs.bookshelf.dm.BookNavNode = function BsBookshelfDmBookNavNode() {
@@ -19,14 +19,12 @@
 	// Name of the parser tag
 	bs.bookshelf.dm.BookNavNode.static.extensionName = 'booknav';
 
-
 	// This tag renders without content
 	bs.bookshelf.dm.BookNavNode.static.childNodeTypes = [];
 	bs.bookshelf.dm.BookNavNode.static.isContent = false;
-
 
 	/* Registration */
 
 	ve.dm.modelRegistry.register( bs.bookshelf.dm.BookNavNode );
 
-})( mediaWiki, jQuery, document, blueSpice );
+}( mediaWiki, jQuery, document, blueSpice ) );

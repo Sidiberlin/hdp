@@ -4,6 +4,7 @@ use MediaWiki\Extension\ContentDroplets\DropletProvider;
 use MediaWiki\Extension\ContentDroplets\DropletSource\RegistrySource;
 use MediaWiki\Extension\ContentDroplets\DropletSource\WikiPageSource;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 
 return [
 	'ContentDropletsProvider' => static function ( MediaWikiServices $services ): DropletProvider {

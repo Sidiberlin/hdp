@@ -3,13 +3,14 @@
 namespace MediaWiki\Extension\LDAPUserInfo\UserInfoModifier;
 
 use MediaWiki\Extension\LDAPUserInfo\IUserInfoConditionalModifier;
-use Status;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 
 class Realname extends Base implements IUserInfoConditionalModifier {
 
 	/**
 	 *
-	 * @param \User $user
+	 * @param User $user
 	 * @param string $rawValue
 	 * @return Status
 	 */

@@ -26,18 +26,20 @@ use Cose\Algorithm\Signature\EdDSA\EdDSA;
 use Cose\Algorithm\Signature\RSA\RS1;
 use Cose\Algorithm\Signature\RSA\RS256;
 use Cose\Algorithm\Signature\RSA\RS512;
+use LogicException;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\OATHAuth\IAuthKey;
 use MediaWiki\Extension\OATHAuth\OATHUser;
 use MediaWiki\Extension\OATHAuth\OATHUserRepository;
+use MediaWiki\Extension\WebAuthn\Module\WebAuthn;
 use MediaWiki\Extension\WebAuthn\Request;
 use MediaWiki\Extension\WebAuthn\WebAuthnCredentialRepository;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 use MWException;
 use Psr\Log\LoggerInterface;
-use Ramsey\Uuid\Uuid;
-use RequestContext;
 use RuntimeException;
+use Symfony\Component\Uid\Uuid;
 use Throwable;
 use Webauthn\AttestationStatement\AndroidKeyAttestationStatementSupport;
 use Webauthn\AttestationStatement\AttestationObjectLoader;
@@ -68,21 +70,23 @@ class WebAuthnKey implements IAuthKey {
 	private const MODE_CREATE = 'webauthn.create';
 	private const MODE_AUTHENTICATE = 'webauthn.authenticate';
 
+	/** @var int|null */
+	private ?int $id;
+
 	/**
 	 * User handle represents unique ID of the user.
+	 *
 	 * It is a randomly generated 64-bit string.
-	 * It can change if user disables and then re-enables
-	 * webauthn module, but MUST be same for each key
-	 * if user has multiple keys set at once
+	 *
+	 * It can change if the user disables and then re-enables
+	 * webauthn module, but MUST be the same for each key
+	 * if the user has multiple keys set at once.
 	 *
 	 * @var string
 	 */
 	protected $userHandle;
 
-	/**
-	 * @var AttestedCredentialData
-	 */
-	protected $attestedCredentialData;
+	protected AttestedCredentialData $attestedCredentialData;
 
 	/**
 	 * @var string
@@ -105,16 +109,6 @@ class WebAuthnKey implements IAuthKey {
 	protected $credentialType = PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY;
 
 	/**
-	 * @var array
-	 */
-	protected $credentialTransports = [
-		PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_USB,
-		PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_NFC,
-		PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_BLE,
-		PublicKeyCredentialDescriptor::AUTHENTICATOR_TRANSPORT_INTERNAL
-	];
-
-	/**
 	 * @var string
 	 */
 	protected $credentialAttestationType = '';
@@ -124,38 +118,38 @@ class WebAuthnKey implements IAuthKey {
 	 */
 	protected $credentialTrustPath;
 
-	/**
-	 * @var LoggerInterface
-	 */
-	protected $logger;
+	protected LoggerInterface $logger;
+
+	protected RequestContext $context;
+
+	protected array $credentialTransports = [];
 
 	/**
-	 * @var RequestContext
-	 */
-	protected $context;
-
-	/**
-	 * Create new empty key instance
-	 * Used for new keys
+	 * Create a new empty key instance.
+	 *
+	 * Used for new keys.
 	 *
 	 * @return WebAuthnKey
 	 */
 	public static function newKey() {
 		return new static(
+			null,
 			static::MODE_CREATE,
 			RequestContext::getMain()
 		);
 	}
 
 	/**
-	 * Create new key instance from given data
-	 * Used for existing keys
+	 * Create a new key instance from given data.
+	 *
+	 * Used for existing keys.
 	 *
 	 * @param array $data
 	 * @return WebAuthnKey
 	 */
 	public static function newFromData( $data ) {
 		$key = new static(
+			$data['id'] ?? null,
 			static::MODE_AUTHENTICATE,
 			RequestContext::getMain()
 		);
@@ -164,15 +158,16 @@ class WebAuthnKey implements IAuthKey {
 	}
 
 	/**
-	 *
+	 * @param int|null $id
 	 * @param string $mode
 	 * @param RequestContext $context
 	 */
-	protected function __construct( $mode, $context ) {
+	protected function __construct( ?int $id, $mode, $context ) {
+		$this->id = $id;
 		$this->mode = $mode;
 		$this->context = $context;
 
-		// There is not documentation on what this trust path is
+		// There is no documentation on what this trust path is
 		// and how it should be used
 		$this->credentialTrustPath = new EmptyTrustPath();
 
@@ -185,15 +180,15 @@ class WebAuthnKey implements IAuthKey {
 	public function jsonSerialize(): array {
 		return [
 			"userHandle" => base64_encode( $this->userHandle ),
-			"publicKeyCredentialId" => base64_encode( $this->attestedCredentialData->getCredentialId() ),
+			"publicKeyCredentialId" => base64_encode( $this->attestedCredentialData->credentialId ),
 			"credentialPublicKey" => base64_encode(
-				(string)$this->attestedCredentialData->getCredentialPublicKey()
+				(string)$this->attestedCredentialData->credentialPublicKey
 			),
-			"aaguid" => $this->attestedCredentialData->getAaguid()->toString(),
+			"aaguid" => (string)$this->attestedCredentialData->getAaguid(),
 			"friendlyName" => $this->friendlyName,
 			"counter" => $this->signCounter,
 			"type" => $this->credentialType,
-			"transports" => $this->credentialTransports,
+			"transports" => $this->getTransports(),
 			"attestationType" => $this->credentialAttestationType,
 			"trustPath" => $this->credentialTrustPath
 		];
@@ -209,11 +204,19 @@ class WebAuthnKey implements IAuthKey {
 		$this->userHandle = base64_decode( $data['userHandle'] );
 		$this->friendlyName = $data['friendlyName'];
 		$this->signCounter = $data['counter'];
+		$this->credentialTransports = $data['transports'];
 		$this->attestedCredentialData = new AttestedCredentialData(
 			Uuid::fromString( $data['aaguid'] ),
 			base64_decode( $data['publicKeyCredentialId'] ),
 			base64_decode( $data['credentialPublicKey'] )
 		);
+	}
+
+	/**
+	 * @return int|null
+	 */
+	public function getId(): ?int {
+		return $this->id;
 	}
 
 	/**
@@ -225,20 +228,16 @@ class WebAuthnKey implements IAuthKey {
 
 	/**
 	 * Sets friendly name
-	 * If value exists, it will be appended with unique suffix
+	 * If value exists, it will be appended with a unique suffix
 	 *
 	 * @param string $name
-	 * @return void
 	 */
 	private function setFriendlyName( $name ) {
 		$this->friendlyName = trim( $name );
 		$this->checkFriendlyName();
 	}
 
-	/**
-	 * @return AttestedCredentialData
-	 */
-	public function getAttestedCredentialData() {
+	public function getAttestedCredentialData(): AttestedCredentialData {
 		return $this->attestedCredentialData;
 	}
 
@@ -258,7 +257,6 @@ class WebAuthnKey implements IAuthKey {
 
 	/**
 	 * @param int $newCount
-	 * @return void
 	 */
 	public function setSignCounter( $newCount ) {
 		$this->signCounter = $newCount;
@@ -271,10 +269,7 @@ class WebAuthnKey implements IAuthKey {
 		return $this->credentialAttestationType;
 	}
 
-	/**
-	 * @return TrustPath
-	 */
-	public function getTrustPath() {
+	public function getTrustPath(): TrustPath {
 		return $this->credentialTrustPath;
 	}
 
@@ -282,15 +277,13 @@ class WebAuthnKey implements IAuthKey {
 	 * @param array $data
 	 * @param OATHUser $user
 	 * @return bool
-	 * @throws MWException
 	 */
 	public function verify( $data, OATHUser $user ) {
 		if ( $this->mode !== static::MODE_AUTHENTICATE ) {
-			$this->logger->error( sprintf(
-				"Authentication attempt by user %s while not in authenticate mode",
-				$user->getUser()->getName()
-			) );
-			throw new MWException( 'webauthn-mode-invalid' );
+			$this->logger->error( 'Authentication attempt by user {user} while not in authenticate mode', [
+				'user' => $user->getUser()->getName(),
+			] );
+			throw new LogicException( 'WebAuthnKey::verify(): invalid mode' );
 		}
 		return $this->authenticationCeremony(
 			$data['credential'],
@@ -305,16 +298,18 @@ class WebAuthnKey implements IAuthKey {
 	 * @param PublicKeyCredentialCreationOptions $registrationObject
 	 * @param OATHUser $user
 	 * @return bool
-	 * @throws MWException
 	 */
-	public function verifyRegistration( $friendlyName, $data,
-		$registrationObject, OATHUser $user ) {
+	public function verifyRegistration(
+		$friendlyName,
+		$data,
+		$registrationObject,
+		OATHUser $user
+	) {
 		if ( $this->mode !== static::MODE_CREATE ) {
-			$this->logger->error( sprintf(
-				"Registration attempt by user %s while not in register mode",
-				$user->getUser()->getName()
-			) );
-			throw new MWException( 'webauthn-mode-invalid' );
+			$this->logger->error( 'Registration attempt by user {user} while not in register mode', [
+				'user' => $user->getUser()->getName(),
+			] );
+			throw new LogicException( 'WebAuthnKey::verifyRegistration(): invalid mode' );
 		}
 		$this->setFriendlyName( $friendlyName );
 		return $this->registrationCeremony( $data, $registrationObject, $user );
@@ -352,10 +347,12 @@ class WebAuthnKey implements IAuthKey {
 
 	/**
 	 * This will not actually work very well, as third same key will
-	 * be name Key #2 #3, should be refactored once we have defined what this
-	 * behaviour should be, for now its just a safety feature
+	 * be named "Key #2 #3".
 	 *
-	 * @param array $names Existing key's friendly names
+	 * It should be refactored once we have defined what this
+	 * behaviour should be, for now it's just a safety feature.
+	 *
+	 * @param array $names Existing keys friendly names
 	 * @param int $inc
 	 * @return void
 	 */
@@ -398,7 +395,7 @@ class WebAuthnKey implements IAuthKey {
 
 		try {
 			$publicKeyCredential = $publicKeyCredentialLoader->load( $data );
-			$response = $publicKeyCredential->getResponse();
+			$response = $publicKeyCredential->response;
 			if ( !$response instanceof AuthenticatorAttestationResponse ) {
 				throw new MWException( 'webauthn-invalid-response' );
 			}
@@ -417,12 +414,12 @@ class WebAuthnKey implements IAuthKey {
 			return false;
 		}
 
-		if ( $response->getAttestationObject()->getAuthData()->hasAttestedCredentialData() ) {
-			$this->userHandle = $registrationObject->getUser()->getId();
-			// @phan-suppress-next-line PhanPossiblyNullTypeMismatchProperty
-			$this->attestedCredentialData = $response->getAttestationObject()
-				->getAuthData()->getAttestedCredentialData();
-			$this->signCounter = $response->getAttestationObject()->getAuthData()->getSignCount();
+		if ( $response->attestationObject->authData->hasAttestedCredentialData() ) {
+			$this->userHandle = $registrationObject->user->id;
+			$this->attestedCredentialData = $response->attestationObject
+				->authData->attestedCredentialData;
+			$this->signCounter = $response->attestationObject->authData->signCount;
+			$this->credentialTransports = $response->transports;
 
 			$this->logger->info(
 				"User {$user->getUser()->getName()} registered new WebAuthn key"
@@ -486,9 +483,9 @@ class WebAuthnKey implements IAuthKey {
 			$request = Request::newFromWebRequest( $this->context->getRequest() );
 			// Check the response against the attestation request
 			$authenticatorAssertionResponseValidator->check(
-				$publicKeyCredential->getRawId(),
+				$publicKeyCredential->rawId,
 				// @phan-suppress-next-line PhanTypeMismatchArgumentSuperType
-				$publicKeyCredential->getResponse(),
+				$publicKeyCredential->response,
 				$publicKeyCredentialRequestOptions,
 				$request,
 				$this->userHandle
@@ -500,5 +497,10 @@ class WebAuthnKey implements IAuthKey {
 			);
 			return false;
 		}
+	}
+
+	/** @inheritDoc */
+	public function getModule(): string {
+		return WebAuthn::MODULE_ID;
 	}
 }

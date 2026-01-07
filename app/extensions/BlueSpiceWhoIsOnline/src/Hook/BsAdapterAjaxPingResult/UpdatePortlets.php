@@ -5,7 +5,7 @@ namespace BlueSpice\WhoIsOnline\Hook\BsAdapterAjaxPingResult;
 use BlueSpice\Renderer\Params;
 use BlueSpice\WhoIsOnline\Renderer\UserList;
 use BlueSpice\WhoIsOnline\Tracer;
-use Title;
+use MediaWiki\Title\Title;
 
 class UpdatePortlets extends \BlueSpice\Hook\BsAdapterAjaxPingResult {
 

@@ -6,7 +6,7 @@ namespace MediaWiki\Extension\MenuEditor;
 
 use MediaWiki\Extension\MenuEditor\Parser\IMenuParser;
 use MediaWiki\Revision\RevisionRecord;
-use Title;
+use MediaWiki\Title\Title;
 
 interface ParsableMenu extends IMenu {
 

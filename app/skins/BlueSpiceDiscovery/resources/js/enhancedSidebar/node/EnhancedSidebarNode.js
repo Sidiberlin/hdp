@@ -10,7 +10,6 @@ bs.skin.enhancedSidebar.tree.node.EnhancedSidebarNode = function ( cfg ) {
 
 OO.inheritClass( bs.skin.enhancedSidebar.tree.node.EnhancedSidebarNode, ext.menueditor.ui.data.node.TreeNode );
 
-
 bs.skin.enhancedSidebar.tree.node.EnhancedSidebarNode.prototype.getFormConfig = function () {
 	// Adapt value of "hidden" field to the format expected by the GroupMultiselect widget
 	return {
@@ -21,7 +20,7 @@ bs.skin.enhancedSidebar.tree.node.EnhancedSidebarNode.prototype.getFormConfig = 
 						data.hidden = '';
 						return data;
 					}
-					data.hidden = '{{#ifingroup: ' + data.hidden.join(',') + '|false|true}}' ;
+					data.hidden = '{{#ifingroup: ' + data.hidden.join( ',' ) + '|false|true}}';
 				}
 				return data;
 			},
@@ -29,16 +28,14 @@ bs.skin.enhancedSidebar.tree.node.EnhancedSidebarNode.prototype.getFormConfig = 
 				if ( this.data.hasOwnProperty( 'hidden' ) ) {
 					// {{#ifingroup: sysop,editor|false|true}}
 					// Regex out group names
-					var groups = this.data.hidden.match( /{{#ifingroup: ([^|]+)\|false\|true}}/ );
+					const groups = this.data.hidden.match( /{{#ifingroup: ([^|]+)\|false\|true}}/ );
 					if ( groups && groups.length > 1 ) {
-						var showForGroups = groups[1].split( ',' );
-						showForGroups = showForGroups.map( function ( group ) {
-							return group.trim();
-						} );
+						let showForGroups = groups[ 1 ].split( ',' );
+						showForGroups = showForGroups.map( ( group ) => group.trim() );
 
 						// This is needed to update the size of the dialog after setting value
 						items.hidden.connect( this, {
-							change: function() {
+							change: function () {
 								this.invokeFormListeners( 'renderComplete' );
 							}
 						} );
@@ -50,7 +47,7 @@ bs.skin.enhancedSidebar.tree.node.EnhancedSidebarNode.prototype.getFormConfig = 
 	};
 };
 
-bs.skin.enhancedSidebar.tree.node.EnhancedSidebarNode.prototype.getCustomFormFields = function ( dialog ) {
+bs.skin.enhancedSidebar.tree.node.EnhancedSidebarNode.prototype.getCustomFormFields = function ( dialog ) { // eslint-disable-line no-unused-vars
 	return [];
 };
 
@@ -62,19 +59,19 @@ bs.skin.enhancedSidebar.tree.node.EnhancedSidebarNode.prototype.getFormFields = 
 			required: true,
 			label: mw.message( 'bs-discovery-enhanced-mediawiki-sidebar-field-text' ).text(),
 			help: mw.message( 'bs-discovery-enhanced-mediawiki-sidebar-field-text-help' ).text()
-		},
+		}
 	].concat( this.getCustomFormFields( dialog ), [
 		{
 			name: 'hidden',
 			type: 'group_multiselect',
 			widget_$overlay: dialog.$overlay,
 			widget_groupTypes: [ 'core-minimal', 'extension-minimal', 'custom' ],
-			label: mw.message( 'bs-discovery-enhanced-mediawiki-sidebar-show-for-groups-text' ).text(),
+			label: mw.message( 'bs-discovery-enhanced-mediawiki-sidebar-show-for-groups-text' ).text()
 		}, {
 			name: 'classes',
 			label: mw.message( 'bs-discovery-enhanced-mediawiki-sidebar-field-classes' ).text(),
 			type: 'tag',
-			widget_allowArbitrary: true,
+			widget_allowArbitrary: true
 		}, {
 			name: 'icon-cls',
 			// Probably too much for users

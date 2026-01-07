@@ -6,9 +6,9 @@
 	},
 	"getdata": "Get data",
 	"externaldata-desc": "Allows for retrieving structured data from external URLs, databases and other sources",
-	"externaldata-smw-needed": "Error: Semantic MediaWiki must be installed in order to call {{#store_external_table:}}.",
 	"externaldata-no-param-specified": "Error: No \"$1\" parameter specified.",
 	"externaldata-param-type-error": "Error: Parameter $1 must be of the type $2.",
+	"externaldata-processing-exception": "An exception was thrown while running preprocessor or postprocessor: $1",
 	"externaldata-php-library-missing": "Error: The PHP library $1, needed to use $2, is missing.",
 	"external-data-no-suitable-connector": "Error: No suitable data source is defined for this external data query",
 	"externaldata-throttled": "Calls to $1 are throttled till {{#time:c|@$2}}.",
@@ -45,9 +45,10 @@
 	"externaldata-url-unknown-error": "Unknown error while fetching data from URL $1.",
 	"externaldata-url-not-allowed": "URL $1 is not allowed on this wiki.",
 	"externaldata-caught-exception-soap": "Caught exception $1 while creating SOAP client.",
-	"externaldata-parsing-html-failed": "Could not parse HTML.",
+	"externaldata-parsing-html-failed": "Could not parse HTML:\n $1",
 	"externaldata-caught-exception-parsing-html": "Caught exception parsing HTML. The error message is &quot;$1&quot;.",
 	"externaldata-error-converting-css-to-xpath": "Caught exception converting CSS selector $1 to XPath:\n$2",
+	"externaldata-jsonpath-error": "Illegal JSONpath $1",
 	"externaldata-missing-library": "The library $1, required to use the '$2' parser function or <code>$3</code> Lua function, is missing.",
 	"externaldata-undefined-file": "File $1 is not defined.",
 	"externaldata-missing-file": "File $1 is missing.",
@@ -65,5 +66,5 @@
 	"externaldata-no-local-variable": "Error: no local variable \"$1\" has been set.",
 	"externaldata-no-template": "Error: no template specified.",
 	"externaldata-no-loop-body": "Error: no loop body set as the first or the second parameter.",
-	"externaldata-getdata-badurl": "You must specify a page name in the URL;\nthe URL should look like \"{{#Special:GetData}}/<page name>\"."
+	"externaldata-getdata-badurl": "You must specify a page name in the URL. The URL should look like \"{{#Special:GetData}}/Page_name\"."
 }

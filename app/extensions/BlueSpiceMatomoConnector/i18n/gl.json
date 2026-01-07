@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"bs-matomoconnector-extension-description": "Permite a integración de Matomo no wiki para crear taboleiros en Matomo",
+	"bs-matomoconnector-pref-bsprivacyintegration": "Integración de BlueSpicePrivacy",
+	"bs-matomoconnector-pref-bsprivacyintegration-help": "Activar a integración de BlueSpicePrivacy. A instalación de Matomo debe ter activado o complemento AjaxOptOut. Consulta docs/PrivacyIntegration.md.",
+	"bs-matomoconnector-pref-siteid": "ID do sitio",
+	"bs-matomoconnector-pref-siteid-help": "ID do sitio de Matomo. Pódese atopar como parámetro URL na barra de enderezos do navegador cando se inicia sesión en Matomo.",
+	"bs-matomoconnector-pref-baseurl": "URL base",
+	"bs-matomoconnector-pref-baseurl-help": "O enderezo URL raíz da instalación de Matomo sen o ID do sitio.",
+	"bs-matomoconnector-pref-authtoken": "Token de autenticación",
+	"bs-matomoconnector-pref-authtoken-help": "O token de autenticación usado para a API HTTP. Pódese atopar en Matomo: Administración -> Persoal -> Seguranza -> Tokens de autenticación.",
+	"bs-matomoconnector-pref-optoutfooter": "Mostrar a ligazón de exclusión no pé de páxina",
+	"bs-matomoconnector-pref-optoutfooter-help": "Mostra a ligazón «Servizo de análise» no pé de páxina do wiki. A páxina do servizo de análise inclúe unha caixa de verificación para a exclusión de Matomo.",
+	"bs-matomoconnector-special-optoutheading": "Servizo de análise",
+	"bs-matomoconnector-special-privacynote": "<p>O noso sitio web usa Matomo, que é un servizo de análise web. Matomo utiliza o que se coñece como «cookies». Trátase de pequenos ficheiros de texto que se gardan no teu ordenador e que nos permiten analizar o uso do noso sitio web. A información de uso xerada polas cookies (incluído o teu enderezo IP abreviado) transmítese ao noso servidor e gárdase para que poidamos analizar o uso do noso sitio web, o que serve para axudarnos a optimizalo. O teu enderezo IP faise anónimo inmediatamente neste procedemento, para que permanezas no anonimato para nós como usuario. A información xerada polas cookies sobre o uso que fas do sitio web non se transferirá a terceiros. Podes evitar o uso de cookies usando a configuración correspondente no teu navegador web. Non obstante, isto pode significar que non poidas usar plenamente todas as funcionalidades do sitio web.</p>\n<br />\n<p>Se non estás de acordo co almacenamento e a avaliación destes datos relativos ao uso que fas do sitio web, podes cancelar este almacenamento e usalo en calquera momento cun clic do rato na parte inferior. Neste caso, gardarase unha cookie chamada «cookie de exclusión» que impide que Matomo garde datos de sesión. Ten en conta: se eliminas as túas cookies, tamén se eliminará a cookie de exclusión, así que posiblemente terás que reactivala.</p>\n<br />\n<h3>Contradición:</h3>",
+	"bs-matomoconnector-optout-footerlink": "Servizo de análise",
+	"bs-matomoconnector-privacy-cookie-group": "Matomo",
+	"bs-matomoconnector-privacy-cookie-group-desc": "O noso sitio web usa Matomo, que é un servizo de análise web. Matomo utiliza o que se coñece como «cookies». Trátase de pequenos ficheiros de texto que se gardan no teu ordenador e que nos permiten analizar o uso do noso sitio web. A información de uso xerada polas cookies (incluído o teu enderezo IP abreviado) transmítese ao noso servidor e gárdase para que poidamos analizar o uso do noso sitio web, o que serve para axudarnos a optimizalo. O teu enderezo IP faise anónimo inmediatamente neste procedemento, para que permanezas no anonimato para nós como usuario. A información xerada polas cookies sobre o uso que fas do sitio web non se transferirá a terceiros."
+}

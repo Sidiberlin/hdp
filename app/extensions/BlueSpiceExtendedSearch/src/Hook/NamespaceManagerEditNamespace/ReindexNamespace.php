@@ -6,7 +6,7 @@ use BlueSpice\NamespaceManager\Hook\NamespaceManagerEditNamespace;
 use BS\ExtendedSearch\Source\Job\UpdateRepoFile;
 use BS\ExtendedSearch\Source\Job\UpdateWikiPage;
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 
 class ReindexNamespace extends NamespaceManagerEditNamespace {
 	protected function skipProcessing() {
@@ -47,8 +47,7 @@ class ReindexNamespace extends NamespaceManagerEditNamespace {
 				[
 					'action' => UpdateRepoFile::ACTION_DELETE,
 					'forceDelete' => true,
-					// We have to get the URL here, by the time job runs, URL is changed
-					'canonicalUrl' => $oldTitle->getCanonicalURL()
+					'documentIdSource' => $this->nsId . '|' . $oldTitle->getDBkey(),
 				]
 			);
 			// Add new

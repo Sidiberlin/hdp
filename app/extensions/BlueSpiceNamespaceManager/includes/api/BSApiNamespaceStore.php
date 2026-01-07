@@ -1,5 +1,8 @@
 <?php
 
+use MediaWiki\Html\Html;
+use MediaWiki\SpecialPage\SpecialPage;
+
 class BSApiNamespaceStore extends BSApiExtJSStoreBase {
 
 	/**
@@ -18,7 +21,7 @@ class BSApiNamespaceStore extends BSApiExtJSStoreBase {
 	 */
 	protected function renderNsLink( $nsId, $linkcontent ) {
 		$href = SpecialPage::getTitleFor( 'Allpages' )->getLinkURL( [ 'namespace' => $nsId ] );
-		return \Html::element( 'a', [ 'title' => $linkcontent, 'href' => $href ], $linkcontent );
+		return Html::element( 'a', [ 'title' => $linkcontent, 'href' => $href ], $linkcontent );
 	}
 
 	/**
@@ -62,6 +65,7 @@ class BSApiNamespaceStore extends BSApiExtJSStoreBase {
 				'isTalkNS' => $this->services->getNamespaceInfo()->isTalk( $iNs ),
 				'pageCount' => $res->numRows(),
 				'allPagesLink' => $this->renderNsLink( $iNs, $res->numRows() ),
+				'content_raw' => ( $wgContentNamespaces && in_array( $iNs, $wgContentNamespaces ) ),
 				'content' => [
 					'value' => ( $wgContentNamespaces && in_array( $iNs, $wgContentNamespaces ) ),
 					'read_only' => ( $iNs === NS_MAIN )

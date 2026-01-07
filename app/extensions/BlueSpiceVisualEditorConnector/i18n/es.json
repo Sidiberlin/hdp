@@ -10,14 +10,13 @@
 	"bs-visualeditorconnector-upload-type-original": "Original",
 	"bs-visualeditorconnector-upload-type-simple": "Simple",
 	"bs-visualeditorconnector-upload-type-one-click": "Un click",
-	"bs-visualeditorconnector-upload-type": "Tipo de carga",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Cancelar edición",
 	"bs-visualeditorconnector-cancel-edit": "Cancelar edición. Se descartarán los cambios no guardados",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "¿Realmente quiere cancelar la edición? Sus cambios no guardados serán descartados.",
 	"bs-visualeditor-nsm-label": "Editor visual",
 	"bs-visualeditorconnector-inspector-tab-common-name": "Comunes",
 	"bs-visualeditorconnector-inspector-tab-advanced-name": "Avanzadas",
-	"bs-visualeditorconnector-ve-style-option-description": "Elige el tipo de tabla",
+	"bs-visualeditorconnector-ve-style-option-description": "{{#FORMAL:Elige|Elija}} el tipo de tabla",
 	"bs-visualeditorconnector-ve-style-option": "Estilo de tabla",
 	"bs-visualeditorconnector-text-style-tool-color-label": "Color del texto",
 	"bs-visualeditorconnector-dialog-media-link": "Enlazar este archivo",
@@ -81,5 +80,6 @@
 	"bs-visualeditorconnector-text-style-tool-align-center-label": "Alinear al centro",
 	"bs-visualeditorconnector-align-center-annotation-desc": "Centra el texto seleccionado",
 	"bs-visualeditorconnector-text-style-indent-label": "Sangrar",
-	"bs-visualeditorconnector-indent-annotation-desc": "Sangra el texto seleccionado"
+	"bs-visualeditorconnector-indent-annotation-desc": "Sangra el texto seleccionado",
+	"bs-visualeditorconnector-upload-type": "Tipo de carga"
 }

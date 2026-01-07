@@ -2,10 +2,10 @@
 
 namespace BlueSpice;
 
-use DeferredUpdates;
+use MediaWiki\Deferred\DeferredUpdates;
 use MediaWiki\MediaWikiServices;
-use Status;
-use Title;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
 
 /**
  * @deprecated since 4.3 - use native MediaWiki functionality instead:

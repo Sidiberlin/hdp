@@ -1,36 +1,51 @@
-bs_smwc_pf_input_usertags_init = function( input_id, params ){
-	mw.loader.using( [ 'ext.BSSMWConnector', 'ext.bluespice.extjs' ] ).done( function() {
-		Ext.onReady( function(){
-			_initUserTags( input_id, params );
-		} );
-	});
+bs_smwc_pf_input_usertags_init = function ( input_id, params ) { // eslint-disable-line camelcase, no-implicit-globals, no-undef
+	mw.loader.using( [ 'ext.BSSMWConnector', 'ext.oOJSPlus.widgets' ] ).done( () => {
+		_initUserTags( input_id, params );
+	} );
 
-	function _initUserTags( input_id, params ) {
-		var userTagField = Ext.create( 'BS.form.field.UserTag', {
-			minWidth: 200,
-			hideLabel: true,
-			style: 'display: inline-block; background-color: transparent'
-		} );
+	function _initUserTags( input_id, params ) { // eslint-disable-line camelcase, no-shadow, no-underscore-dangle
+		const cfg = {
+			$overlay: true
+		};
+		if ( params.groups ) {
+			cfg.groups = params.groups;
+		}
+		cfg.placeholder = params.placeholder;
+		const userPicker = new OOJSPlus.ui.widget.UsersMultiselectWidget( cfg );
+		userPicker.$element.css( 'min-width', '200px' );
 
-		//On multitemplate, the container we are rendering to loses its id,
-		//so it needs to be recreated
-		if( $( '#' + input_id + '_cnt' ).length == 0 ) {
-			$( '#' + input_id ).parent( 'span' ).attr( 'id', input_id + '_cnt' );
+		// On multitemplate, the container we are rendering to loses its id,
+		// so it needs to be recreated
+		let $cnt = $( '#' + input_id + '_cnt' ); // eslint-disable-line camelcase
+		const $input = $( '#' + input_id ); // eslint-disable-line camelcase
+		if ( $cnt.length === 0 ) {
+			$input.parent( 'span' ).attr( 'id', input_id + '_cnt' ); // eslint-disable-line camelcase
+			$cnt = $input.parent();
 		}
 
-		userTagField.render( $( '#' + input_id + '_cnt' )[0] );
-
-		//Update hidden input on change
-		userTagField.addListener( 'select', function( sender, record ) {
-			if( record.length === 0 ) {
-				$( '#' + input_id ).val( '' );
+		userPicker.connect( this, {
+			change: function ( value ) {
+				if ( !value ) {
+					$input.val( '' );
+					return;
+				}
+				const promises = [];
+				for ( let i = 0; i < value.length; i++ ) {
+					promises.push( mws.commonwebapis.user.getByUsername( value[ i ].getData() ) );
+				}
+				$.when.apply( $, promises ).done( function () {
+					const users = [];
+					for ( let i = 0; i < arguments.length; i++ ) {
+						users.push( arguments[ i ].page_prefixed_text );
+					}
+					$input.val( users.join( ',' ) );
+				} );
 			}
-			$( '#' + input_id ).val( userTagField.getValue().join( ',' ) );
 		} );
+		$cnt.append( userPicker.$element );
 
-		//Set value
-		if( params.current_value ) {
-			userTagField.select( params.current_value );
+		if ( params.hasOwnProperty( 'users' ) ) {
+			userPicker.setValue( params.users );
 		}
 	}
 };

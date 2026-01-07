@@ -1,5 +1,5 @@
-contentProvisioning.ui.panel.ContentProvisioningOverview = function( cfg ) {
-	cfg = $.extend( {
+contentProvisioning.ui.panel.ContentProvisioningOverview = function ( cfg ) {
+	cfg = Object.assign( {
 		padded: true,
 		expanded: false
 	}, cfg || {} );
@@ -17,16 +17,16 @@ contentProvisioning.ui.panel.ContentProvisioningOverview = function( cfg ) {
 		pageSize: 25,
 		filter: this.filterData,
 		sorter: {
-			in_sync: {
+			in_sync: { // eslint-disable-line camelcase
 				dir: 'ASC'
 			}
 		}
 	} );
 	this.store.connect( this, {
-		loadFailed: function() {
+		loadFailed: function () {
 			this.emit( 'loadFailed' );
 		},
-		loading: function() {
+		loading: function () {
 			if ( this.isLoading ) {
 				return;
 			}
@@ -36,7 +36,7 @@ contentProvisioning.ui.panel.ContentProvisioningOverview = function( cfg ) {
 	} );
 	this.grid = this.makeGrid();
 	this.grid.connect( this, {
-		datasetChange: function() {
+		datasetChange: function () {
 			this.isLoading = false;
 			this.emit( 'loaded' );
 		}
@@ -47,28 +47,28 @@ contentProvisioning.ui.panel.ContentProvisioningOverview = function( cfg ) {
 
 OO.inheritClass( contentProvisioning.ui.panel.ContentProvisioningOverview, OO.ui.PanelLayout );
 
-contentProvisioning.ui.panel.ContentProvisioningOverview.prototype.makeGrid = function() {
+contentProvisioning.ui.panel.ContentProvisioningOverview.prototype.makeGrid = function () {
 	this.$grid = $( '<div>' );
 
-	var gridCfg = {
+	const gridCfg = {
 		deletable: false,
 		style: 'differentiate-rows',
 		exportable: true,
 		columns: {
-			page_prefixed_text: {
+			page_prefixed_text: { // eslint-disable-line camelcase
 				headerText: mw.message( 'contentprovisioning-ui-overview-grid-section-page' ).text(),
 				type: 'url',
 				urlProperty: 'page_link',
-				valueParser: function( val ) {
+				valueParser: function ( val ) {
 					// Truncate long titles
-					return val.length > 35 ? val.substr( 0, 34 ) + '...' : val;
+					return val.length > 35 ? val.slice( 0, 34 ) + '...' : val;
 				},
 				sortable: true,
 				filter: {
 					type: 'text'
 				}
 			},
-			in_sync: {
+			in_sync: { // eslint-disable-line camelcase
 				headerText: mw.message( 'contentprovisioning-ui-overview-grid-section-in-sync' ).text(),
 				type: 'boolean',
 				sortable: true
@@ -89,20 +89,20 @@ contentProvisioning.ui.panel.ContentProvisioningOverview.prototype.makeGrid = fu
 			}
 		},
 		store: this.store,
-		provideExportData: function() {
-			var dfd = $.Deferred(),
+		provideExportData: function () {
+			const dfd = $.Deferred(),
 				store = new contentProvisioning.store.ContentProvisioning( {
 					pageSize: -1,
 					sorter: {
-						page_prefixed_text: {
+						page_prefixed_text: { // eslint-disable-line camelcase
 							direction: 'ASC'
 						}
 					}
 				} );
-			store.load().done( function( response ) {
-				var $table = $( '<table>' ),
-					$row = $( '<tr>' ),
-					$cell = $( '<td>' );
+			store.load().done( ( response ) => {
+				const $table = $( '<table>' );
+				let $row = $( '<tr>' );
+				let $cell = $( '<td>' );
 
 				$cell.append(
 					mw.message( 'contentprovisioning-ui-overview-grid-section-page' ).text()
@@ -117,11 +117,11 @@ contentProvisioning.ui.panel.ContentProvisioningOverview.prototype.makeGrid = fu
 
 				$table.append( $row );
 
-				for ( var id in response ) {
+				for ( const id in response ) {
 					if ( !response.hasOwnProperty( id ) ) {
 						continue;
 					}
-					var record = response[id];
+					const record = response[ id ];
 					$row = $( '<tr>' );
 
 					$cell = $( '<td>' );
@@ -136,7 +136,7 @@ contentProvisioning.ui.panel.ContentProvisioningOverview.prototype.makeGrid = fu
 				}
 
 				dfd.resolve( '<table>' + $table.html() + '</table>' );
-			} ).fail( function() {
+			} ).fail( () => {
 				dfd.reject( 'Failed to load data' );
 			} );
 
@@ -144,9 +144,9 @@ contentProvisioning.ui.panel.ContentProvisioningOverview.prototype.makeGrid = fu
 		}
 	};
 
-	var grid = new OOJSPlus.ui.data.GridWidget( gridCfg );
+	const grid = new OOJSPlus.ui.data.GridWidget( gridCfg );
 	grid.connect( this, {
-		action: function( action, row ) {
+		action: function ( action, row ) {
 			if ( action === 'forceSync' ) {
 				this.emit( 'sync', row.page_prefixed_text );
 				return;

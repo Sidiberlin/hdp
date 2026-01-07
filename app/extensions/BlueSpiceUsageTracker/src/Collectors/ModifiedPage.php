@@ -3,7 +3,7 @@ namespace BS\UsageTracker\Collectors;
 
 use BS\UsageTracker\CollectorResult;
 use MediaWiki\Revision\RevisionStore;
-use Title;
+use MediaWiki\Title\Title;
 
 class ModifiedPage extends Base {
 

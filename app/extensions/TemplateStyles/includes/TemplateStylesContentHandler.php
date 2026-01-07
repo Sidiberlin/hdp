@@ -7,15 +7,15 @@ namespace MediaWiki\Extension\TemplateStyles;
  * @license GPL-2.0-or-later
  */
 
-use CodeContentHandler;
-use Content;
 use CSSJanus;
+use MediaWiki\Content\CodeContentHandler;
+use MediaWiki\Content\Content;
 use MediaWiki\Content\Renderer\ContentParseParams;
 use MediaWiki\Content\ValidationParams;
 use MediaWiki\MediaWikiServices;
-use Message;
-use ParserOutput;
-use Status;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Status\Status;
 use StatusValue;
 use Wikimedia\CSS\Parser\Parser as CSSParser;
 use Wikimedia\CSS\Util as CSSUtil;
@@ -76,7 +76,7 @@ class TemplateStylesContentHandler extends CodeContentHandler {
 		}
 
 		$output->clearWrapperDivClass();
-		$output->setText( $html );
+		$output->setRawText( $html );
 
 		$status = $this->sanitize( $content, [ 'novalue' => true, 'class' => $parserOptions->getWrapOutputClass() ] );
 		if ( $status->getErrors() ) {
@@ -158,7 +158,8 @@ class TemplateStylesContentHandler extends CodeContentHandler {
 		$sanitizer = Hooks::getSanitizer(
 			$options['class'] ?: 'mw-parser-output', $options['extraWrapper']
 		);
-		$sanitizer->clearSanitizationErrors(); // Just in case
+		// Just in case
+		$sanitizer->clearSanitizationErrors();
 		$stylesheet = $sanitizer->sanitize( $stylesheet );
 		self::processErrors( $status, $sanitizer->getSanitizationErrors(), $options['severity'] );
 		$sanitizer->clearSanitizationErrors();

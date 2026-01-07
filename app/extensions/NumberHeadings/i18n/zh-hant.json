@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"numberheadings-desc": "在內容命名空間中的編號",
+	"numberheadings-conf-exlude-namespaces": "從編號排除命名空間",
+	"numberheadings-conf-enable-numbering": "顯示標頭編號",
+	"numberheadings-conf-enable-numbering-help": "將目錄中的編號加入到頁面標頭中"
+}

@@ -3,20 +3,21 @@
 namespace MediaWiki\Extension\NotifyMe\SubscriberProvider;
 
 use Exception;
-use ExtensionRegistry;
 use MediaWiki\Block\AbstractBlock;
 use MediaWiki\Extension\NotifyMe\BucketProvider;
 use MediaWiki\Extension\NotifyMe\ISubscriberProvider;
 use MediaWiki\Extension\NotifyMe\SubscriberProvider\ManualProvider\ISubscriptionSet;
 use MediaWiki\Extension\NotifyMe\SubscriptionConfigurator;
+use MediaWiki\Message\Message;
+use MediaWiki\Registration\ExtensionRegistry;
+use MediaWiki\SpecialPage\SpecialPage;
+use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
 use MediaWiki\User\UserIdentity;
-use Message;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
 use MWStake\MediaWiki\Component\Events\ITitleEvent;
 use MWStake\MediaWiki\Component\Events\Notification;
-use User;
 use Wikimedia\ObjectFactory\ObjectFactory;
 use Wikimedia\Rdbms\LoadBalancer;
 
@@ -182,10 +183,7 @@ class ManualSubscriberProvider implements ISubscriberProvider {
 		);
 		$users = [];
 		foreach ( $res as $row ) {
-			$user = $this->userFactory->newFromId( $row->user_id );
-			if ( !$user->getBlock() ) {
-				$users[] = $user;
-			}
+			$users[] = $this->userFactory->newFromId( $row->user_id );
 		}
 		return $users;
 	}
@@ -204,7 +202,7 @@ class ManualSubscriberProvider implements ISubscriberProvider {
 	 * @inheritDoc
 	 */
 	public function getConfigurationLink(): ?string {
-		$sp = \SpecialPage::getTitleFor( 'Preferences', false, 'mw-prefsection-notifications' );
+		$sp = SpecialPage::getTitleFor( 'Preferences', false, 'mw-prefsection-notifications' );
 		return $sp->getFullURL();
 	}
 

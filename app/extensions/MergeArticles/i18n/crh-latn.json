@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Don Alessandro"
+		]
+	},
+	"mergearticles-diff-action-accept": "Tasdıqla",
+	"mergearticles-diff-action-refuse": "Red et",
+	"mergearticles-diff-accepted": "Tasdıqlandı",
+	"mergearticles-diff-refused": "Red etildi"
+}

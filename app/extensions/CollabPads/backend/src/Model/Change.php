@@ -79,7 +79,10 @@ class Change implements \JsonSerializable {
 	 * @return Transaction[]
 	 */
 	public function getTransactions(): array {
-		return $this->transactions;
+		// Return clones to prevent modifications
+		return array_map( static function ( Transaction $transaction ) {
+			return new Transaction( $transaction->getOperations(), $transaction->getAuthor() );
+		}, $this->transactions );
 	}
 
 	/**
@@ -129,13 +132,13 @@ class Change implements \JsonSerializable {
 	 */
 	public function concat( Change $otherChange ): Change {
 		if ( $otherChange->getStart() !== $this->start + $this->getLength() ) {
-			throw new Exception( 'this ends at ' . ( $this->start + $this->getLength() ) .
+			throw new Exception( 'Concat: this ends at ' . ( $this->start + $this->getLength() ) .
 				' but other starts at ' . $otherChange->getStart() );
 		}
 
 		return new Change(
 			$this->start,
-			array_merge( $this->transactions, $otherChange->getTransactions() ),
+			array_merge( $this->getTransactions(), $otherChange->getTransactions() ),
 			$otherChange->getSelections(),
 			array_merge( $this->getStores(), $otherChange->getStores() )
 		);
@@ -158,7 +161,7 @@ class Change implements \JsonSerializable {
 	 */
 	public function push( Change $other ) {
 		if ( $other->getStart() !== $this->start + $this->getLength() ) {
-			throw new Exception( 'this ends at ' . ( $this->start + $this->getLength() ) .
+			throw new Exception( 'Push: this ends at ' . ( $this->start + $this->getLength() ) .
 				' but other starts at ' . $other->getStart() );
 		}
 
@@ -238,7 +241,9 @@ class Change implements \JsonSerializable {
 				if ( !$lastInfo ) {
 					continue;
 				}
-				$insertion = str_split( $transaction );
+				$insertion = Transaction::split( $transaction );
+				$this->annotateInsertion( $insertion, $lastInfo );
+
 				$transaction = new Transaction( [
 					[ 'type' => 'retain', 'length' => $lastInfo['end'] ],
 					[ 'type' => 'replace', 'remove' => [], 'insert' => $insertion ],
@@ -288,8 +293,90 @@ class Change implements \JsonSerializable {
 			'start' => $start,
 			'end' => $end,
 			'docLength' => $docLength,
-			'author' => $transaction->getAuthor()
+			'author' => $transaction->getAuthor(),
+			'uniformInsert' => $this->getUniformInsert( $replaceOp['insert'] ?? [] )
 		];
 	}
 
+	/**
+	 * @param array $items
+	 * @return array|null
+	 */
+	private function getUniformInsert( array $items ) {
+		$codeUnits = [];
+		if ( count( $items ) === 0 ) {
+			return null;
+		}
+		$codeUnit = $this->getSingleCodeUnit( $items[0] );
+		if ( $codeUnit === null ) {
+			return null;
+		}
+		$codeUnits[] = $codeUnit;
+		$annotations = $this->getAnnotations( $items[0] );
+		$annotationString = implode( ',', $annotations );
+		for ( $i = 1, $iLen = count( $items ); $i < $iLen; $i++ ) {
+			$codeUnit = $this->getSingleCodeUnit( $items[$i] );
+			if ( $codeUnit === null ) {
+				return null;
+			}
+			$codeUnits[] = $codeUnit;
+			if ( $annotationString !== implode( ',', $this->getAnnotations( $items[$i] ) ) ) {
+				return null;
+			}
+		}
+
+		return [
+			'text' => implode( '', $codeUnits ),
+			'annotations' => $annotations,
+			'annotationString' => $annotationString
+		];
+	}
+
+	/**
+	 * @param mixed $item
+	 * @return mixed|string|null
+	 */
+	private function getSingleCodeUnit( $item ) {
+		if ( is_string( $item ) && mb_strlen( $item ) === 1 ) {
+			return $item;
+		}
+		if ( is_array( $item ) ) {
+			$first = $item[0] ?? null;
+			if ( is_string( $first ) && mb_strlen( $first ) === 1 ) {
+				return $first;
+			}
+		}
+		return null;
+	}
+
+	/**
+	 * @param mixed $item
+	 * @return array
+	 */
+	private function getAnnotations( $item ): array {
+		if ( is_string( $item ) ) {
+			return [];
+		} elseif ( isset( $item['annotations'] ) ) {
+			return $item['annotations'];
+		} elseif ( isset( $item[1] ) ) {
+			return $item[1];
+		} else {
+			return [];
+		}
+	}
+
+	/**
+	 * @param array &$insertion
+	 * @param array $lastInfo
+	 * @return void
+	 */
+	private function annotateInsertion( array &$insertion, array $lastInfo ) {
+		$annotations = $lastInfo['uniformInsert']['annotations'] ?? null;
+		if ( !is_array( $annotations ) || !count( $annotations ) ) {
+			return;
+		}
+		foreach ( $insertion as $i => $item ) {
+			$insertion[$i] = [ $item, array_slice( $annotations, 0 ) ];
+		}
+	}
 }

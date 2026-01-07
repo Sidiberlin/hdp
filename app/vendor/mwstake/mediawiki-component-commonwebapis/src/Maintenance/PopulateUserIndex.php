@@ -2,7 +2,13 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs\Maintenance;
 
-class PopulateUserIndex extends \LoggedUpdateMaintenance {
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
+
+$maintPath = dirname( __DIR__, 5 ) . '/maintenance/Maintenance.php';
+if ( file_exists( $maintPath ) ) {
+	require_once $maintPath;
+}
+class PopulateUserIndex extends LoggedUpdateMaintenance {
 	/**
 	 * @return bool
 	 */
@@ -62,3 +68,6 @@ class PopulateUserIndex extends \LoggedUpdateMaintenance {
 		return 'mws-user-index-init';
 	}
 }
+
+$maintClass = PopulateUserIndex::class;
+require_once RUN_MAINTENANCE_IF_MAIN;

@@ -2,21 +2,12 @@
 
 namespace BlueSpice\InstanceStatus\InstanceStatusProvider;
 
+use BlueSpice\InstanceStatus\IApiStatusProvider;
 use BlueSpice\InstanceStatus\IStatusProvider;
-use Config;
-use ConfigFactory;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\Sanitizer;
 
-class BlueSpiceVersion implements IStatusProvider {
-	/** @var Config */
-	private $config;
-
-	/**
-	 * @param ConfigFactory $configFactory
-	 */
-	public function __construct( ConfigFactory $configFactory ) {
-		$this->config = $configFactory->makeConfig( 'bsg' );
-	}
+class BlueSpiceVersion implements IStatusProvider, IApiStatusProvider {
 
 	/**
 	 * @return string
@@ -29,8 +20,13 @@ class BlueSpiceVersion implements IStatusProvider {
 	 * @return string
 	 */
 	public function getValue(): string {
-		$info = $this->config->get( 'BlueSpiceExtInfo' );
-		return $info['name'] . ' ' . $info['version'];
+		$version = '';
+		$versionFile = $GLOBALS['IP'] . '/BLUESPICE-VERSION';
+		if ( file_exists( $versionFile ) ) {
+			$versionFileContent = file_get_contents( $versionFile );
+			$version = Sanitizer::stripAllTags( $versionFileContent );
+		}
+		return $version;
 	}
 
 	/**
@@ -45,5 +41,19 @@ class BlueSpiceVersion implements IStatusProvider {
 	 */
 	public function getPriority(): int {
 		return 30;
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getKeyForApi(): string {
+		return 'bs-version';
+	}
+
+	/**
+	 * @inheritDoc
+	 */
+	public function getValueForApi() {
+		return $this->getValue();
 	}
 }

@@ -1,7 +1,9 @@
 <?php
 
 use BS\ExtendedSearch\Source\Job\UpdateWikiPage;
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 
 $IP = dirname( dirname( dirname( __DIR__ ) ) );
 

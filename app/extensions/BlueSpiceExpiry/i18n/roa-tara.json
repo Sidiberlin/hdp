@@ -8,8 +8,6 @@
 	"expiry": "Scadenze",
 	"specialexpiry": "Vôsce scadute",
 	"prefs-expiry": "Scadenze",
-	"apihelp-bs-expiry-store-description": "Serve le date pa griglie panorameche Special:Expiry",
-	"apihelp-bs-expiry-tasks-description": "Esegue attivitate cumme aggiornamende e scangellazione pa griglie panorameche Special:Expiry",
 	"bs-expiry-unexpire-article": "'A pàgene ave sacadute",
 	"bs-expiry-do-unexpire-article": "Scangìlle 'a date de scadenze",
 	"bs-expiry-header-pagename": "Pàgene",
@@ -28,17 +26,12 @@
 	"bs-expiry-unexpire-success": "'A scadenze ha state scangellate",
 	"bs-expiry-menu-entry-create": "Scadenze",
 	"bs-expiry-title-delete": "Lìve 'a scadenze",
-	"bs-expiry-nav-link-title-expiry": "Scadenze",
-	"bs-expiry-flyout-title": "Scadenze d'a pàgene",
-	"bs-expiry-flyout-next-comment": "Commende: $1",
+	"bs-expiry-info-dialog-comment": "Commende: $1",
 	"bs-expiry-edit-grid-header-username": "Utende",
 	"bs-expiry-edit-grid-header-date": "Date",
 	"bs-expiry-edit-grid-header-comment": "Commende",
-	"bs-expiry-flyout-body-hint-expired": "scade 'u $1",
-	"bs-expiry-flyout-body-hint-expires": "scade 'u $1",
 	"bs-expiry-pageinfoelement-expired-label": "scadute",
 	"bs-expiry-create-reminder-label": "Ccreje 'u promemorie",
 	"bs-expiry-reminder-type-expiry": "Scadenze",
-	"bs-expiry-do-updateexpirydate-article": "Cange 'a date de scadenze",
-	"bs-expiry-info-dialog-comment": "Commende: $1"
+	"bs-expiry-do-updateexpirydate-article": "Cange 'a date de scadenze"
 }

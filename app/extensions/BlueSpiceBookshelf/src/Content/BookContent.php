@@ -2,8 +2,8 @@
 
 namespace BlueSpice\Bookshelf\Content;
 
+use MediaWiki\Content\TextContent;
 use MWException;
-use TextContent;
 
 class BookContent extends TextContent {
 	/**

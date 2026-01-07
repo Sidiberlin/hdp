@@ -62,7 +62,5 @@ ext.TableTools.ve.TableOptions.prototype.getActionProcess = function ( parentPro
 
 bs.vec.registerComponentPlugin(
 	bs.vec.components.TABLE_DIALOG,
-	function ( component ) {
-		return new ext.TableTools.ve.TableOptions( component );
-	}
+	( component ) => new ext.TableTools.ve.TableOptions( component )
 );

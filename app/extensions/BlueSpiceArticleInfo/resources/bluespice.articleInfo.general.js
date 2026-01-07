@@ -1,37 +1,37 @@
-(function( mw, $, bs, undefined ){
-	if ( mw.config.get( "wgCurRevisionId" ) < 1 ) {
+( function ( mw, $, bs ) {
+	if ( mw.config.get( 'wgCurRevisionId' ) < 1 ) {
 		return;
 	}
 
-	var checkRevisionInterval =
+	const checkRevisionInterval =
 		mw.config.get( 'bsgArticleInfoCheckRevisionInterval' ) * 1000;
 
-	if( checkRevisionInterval < 1000 ) {
+	if ( checkRevisionInterval < 1000 ) {
 		return;
 	}
 
 	BSPing.registerListener(
 		'ArticleInfo',
 		checkRevisionInterval,
-		[ 'checkRevision', mw.config.get( "wgAction" ) ],
+		[ 'checkRevision', mw.config.get( 'wgAction' ) ],
 		_checkRevisionListener
 	);
 
-	function _checkRevisionListener( result, Listener ) {
-		if( result.success !== true ) {
+	function _checkRevisionListener( result, Listener ) { // eslint-disable-line no-underscore-dangle, no-unused-vars
+		if ( result.success !== true ) {
 			return;
 		}
-		if( result.newRevision !== true ) {
+		if ( result.newRevision !== true ) {
 			BSPing.registerListener(
 				'ArticleInfo',
 				checkRevisionInterval,
-				[ 'checkRevision', mw.config.get( "wgAction" ) ],
+				[ 'checkRevision', mw.config.get( 'wgAction' ) ],
 				_checkRevisionListener
 			);
 			return;
 		}
 
-		var $elem = $('<div>').append( result.checkRevisionView );
+		const $elem = $( '<div>' ).append( result.checkRevisionView );
 
 		bs.alerts.add(
 			'bs-articleinfo-newrevision-info',
@@ -39,4 +39,4 @@
 			bs.alerts.TYPE_INFO
 		);
 	}
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

@@ -15,9 +15,9 @@ ext.atMentions.dm.UserMentionAnnotation.static.matchTagNames = [ 'a' ];
 ext.atMentions.dm.UserMentionAnnotation.static.matchRdfaTypes = [ 'mw:WikiLink', 'mw:MediaLink' ];
 ext.atMentions.dm.UserMentionAnnotation.static.allowedRdfaTypes = [ 'mw:Error' ];
 ext.atMentions.dm.UserMentionAnnotation.static.matchFunction = function ( domElement ) {
-	var title = domElement.getAttribute( 'title' ),
-		namespaceIds = mw.config.get( 'wgNamespaceIds' ),
-		titleObject;
+	const title = domElement.getAttribute( 'title' );
+	const namespaceIds = mw.config.get( 'wgNamespaceIds' );
+	let titleObject;
 	if ( !title ) {
 		return false;
 	}
@@ -34,11 +34,11 @@ ext.atMentions.dm.UserMentionAnnotation.static.matchFunction = function ( domEle
 };
 
 ext.atMentions.dm.UserMentionAnnotation.static.toDataElement = function ( domElements, converter ) {
-	var targetData = mw.libs.ve.getTargetDataFromHref(
-			domElements[ 0 ].getAttribute( 'href' ),
-			converter.getTargetHtmlDocument()
-		),
-		label = domElements[ 0 ].textContent;
+	const targetData = mw.libs.ve.getTargetDataFromHref(
+		domElements[ 0 ].getAttribute( 'href' ),
+		converter.getTargetHtmlDocument()
+	);
+	let label = domElements[ 0 ].textContent;
 
 	if ( label === domElements[ 0 ].title ) {
 		label = null;
@@ -76,19 +76,19 @@ ext.atMentions.dm.UserMentionAnnotation.static.dataElementFromUsername = functio
 };
 
 ext.atMentions.dm.UserMentionAnnotation.static.newFromUsername = function ( username ) {
-	var element = this.dataElementFromUsername( username );
+	const element = this.dataElementFromUsername( username );
 
 	return new ext.atMentions.dm.UserMentionAnnotation( element );
 };
 
 ext.atMentions.dm.UserMentionAnnotation.static.newFromUser = function ( user ) {
-	var element = this.dataElementFromUsername( user.getUsername(), user.getDisplayName() );
+	const element = this.dataElementFromUsername( user.getUsername(), user.getDisplayName() );
 
 	return new ext.atMentions.dm.UserMentionAnnotation( element );
 };
 
 ext.atMentions.dm.UserMentionAnnotation.static.getUsername = function ( title ) {
-	var t = mw.Title.newFromText( title );
+	const t = mw.Title.newFromText( title );
 	if ( t ) {
 		return t.getMainText();
 	}

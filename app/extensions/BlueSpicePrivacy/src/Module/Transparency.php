@@ -2,8 +2,13 @@
 
 namespace BlueSpice\Privacy\Module;
 
-use BlueSpice\Privacy\IPrivacyHandler;
 use BlueSpice\Privacy\Module;
+use MediaWiki\Html\TemplateParser;
+use MediaWiki\Language\Language;
+use MediaWiki\Permissions\PermissionManager;
+use MediaWiki\Status\Status;
+use MWStake\MediaWiki\Component\Events\Notifier;
+use Wikimedia\Rdbms\ILoadBalancer;
 
 class Transparency extends Module {
 	public const DATA_TYPE_PERSONAL = 'personal';
@@ -16,14 +21,32 @@ class Transparency extends Module {
 	public const DATA_FORMAT_CSV = 'csv';
 
 	/**
+	 * @var Language
+	 */
+	protected $language;
+
+	/**
+	 * @param ILoadBalancer $lb
+	 * @param Notifier $notifier
+	 * @param PermissionManager $permissionManager
+	 * @param Language $language
+	 */
+	public function __construct(
+		ILoadBalancer $lb, Notifier $notifier, PermissionManager $permissionManager, Language $language
+	) {
+		parent::__construct( $lb, $notifier, $permissionManager );
+		$this->language = $language;
+	}
+
+	/**
 	 *
 	 * @param string $func
 	 * @param array $data
-	 * @return \Status
+	 * @return Status
 	 */
 	public function call( $func, $data ) {
 		if ( !$this->verifyUser() ) {
-			\Status::newFatal( wfMessage( 'bs-privacy-invalid-user' ) );
+			return Status::newFatal( wfMessage( 'bs-privacy-invalid-user' ) );
 		}
 
 		switch ( $func ) {
@@ -33,7 +56,7 @@ class Transparency extends Module {
 				} elseif ( $this->verifyDataTypes( $data['types'] ) ) {
 					$types = $data['types'];
 				} else {
-					return \Status::newFatal( wfMessage( 'bs-privacy-invalid-param', "types" ) );
+					return Status::newFatal( wfMessage( 'bs-privacy-invalid-param', "types" ) );
 				}
 
 				if ( !isset( $data['export_format'] ) ) {
@@ -41,12 +64,12 @@ class Transparency extends Module {
 				} elseif ( $this->verifyExportFormat( $data['export_format'] ) ) {
 					$format = $data['export_format'];
 				} else {
-					return \Status::newFatal( wfMessage( 'bs-privacy-invalid-param', "format" ) );
+					return Status::newFatal( wfMessage( 'bs-privacy-invalid-param', "format" ) );
 				}
 
 				return $this->getData( $types, $format );
 			default:
-				return \Status::newFatal( wfMessage( 'bs-privacy-module-no-function', $func ) );
+				return Status::newFatal( wfMessage( 'bs-privacy-module-no-function', $func ) );
 		}
 	}
 
@@ -54,26 +77,25 @@ class Transparency extends Module {
 	 *
 	 * @param string $action
 	 * @param array $data
-	 * @return \Status
+	 * @return Status
 	 */
 	public function runHandlers( $action, $data ) {
-		$status = \Status::newGood();
-		$db = $this->services->getDBLoadBalancer()->getConnection( DB_PRIMARY );
+		$status = Status::newGood();
+		$db = $this->lb->getConnection( DB_PRIMARY );
 
 		$exportData = [];
-		/** @var IPrivacyHandler $handler */
 		foreach ( $this->getHandlers() as $handler ) {
 			if ( class_exists( $handler ) ) {
 				$handlerObject = new $handler( $db );
 				$result = call_user_func_array( [ $handlerObject, $action ], $data );
 
-				if ( $result instanceof \Status && $result->isOk() === false ) {
+				if ( $result instanceof Status && $result->isOk() === false ) {
 					$status = $result;
 					break;
 				}
 				if ( !$result ) {
 					// An error occurred
-					$status = \Status::newFatal( wfMessage( 'bs-privacy-handler-error', $handler ) );
+					$status = Status::newFatal( wfMessage( 'bs-privacy-handler-error', $handler ) );
 					break;
 				}
 
@@ -87,7 +109,7 @@ class Transparency extends Module {
 
 		if ( $status->isOK() ) {
 			$this->logAction();
-			return \Status::newGood( $exportData );
+			return Status::newGood( $exportData );
 		}
 		return $status;
 	}
@@ -102,7 +124,7 @@ class Transparency extends Module {
 		$status = $this->runHandlers( 'exportData', [
 			$types,
 			$format,
-			$this->context->getUser()
+			$this->user
 		] );
 
 		if ( !$status->isOK() ) {
@@ -176,35 +198,35 @@ class Transparency extends Module {
 	/**
 	 *
 	 * @param array $data
-	 * @return \Status
+	 * @return Status
 	 */
 	protected function getHTML( $data ) {
-		$formattedDate = $this->context->getLanguage()->userTimeAndDate(
+		$formattedDate = $this->language->userTimeAndDate(
 			wfTimestamp(),
-			$this->context->getUser()
+			$this->user
 		);
 		$args = [
-			'title' => wfMessage( 'bs-privacy-transparency-html-export-title', $formattedDate )->plain(),
+			'title' => wfMessage( 'bs-privacy-transparency-html-export-title', $formattedDate )->text(),
 			'groups' => []
 		];
 
 		foreach ( $data as $section => $items ) {
 			$args['groups'][] = [
-				'name' => wfMessage( 'bs-privacy-transparency-type-title-' . $section )->plain(),
+				'name' => wfMessage( 'bs-privacy-transparency-type-title-' . $section )->text(),
 				'items' => $items
 			];
 		}
 
-		$templateParser = new \TemplateParser( dirname( dirname( __DIR__ ) ) . '/resources/templates' );
+		$templateParser = new TemplateParser( dirname( dirname( __DIR__ ) ) . '/resources/templates' );
 		$html = $templateParser->processTemplate(
 			'DataExport',
 			$args
 		);
 
-		$username = $this->context->getUser()->getName();
+		$username = $this->user->getName();
 		$filename = $username . "_" . wfTimestamp( TS_MW ) . ".html";
 
-		return \Status::newGood( [
+		return Status::newGood( [
 			'contents' => $html,
 			'filename' => $filename,
 			'format' => static::DATA_FORMAT_HTML
@@ -214,28 +236,28 @@ class Transparency extends Module {
 	/**
 	 *
 	 * @param array $data
-	 * @return \Status
+	 * @return Status
 	 */
 	protected function getCSV( $data ) {
-		$formattedDate = $this->context->getLanguage()->userTimeAndDate(
+		$formattedDate = $this->language->userTimeAndDate(
 			wfTimestamp(),
-			$this->context->getUser()
+			$this->user
 		);
 
 		$csvData = [
-			wfMessage( 'bs-privacy-transparency-html-export-title', $formattedDate )->plain()
+			wfMessage( 'bs-privacy-transparency-html-export-title', $formattedDate )->text()
 		];
 		foreach ( $data as $section => $items ) {
-			$csvData[] = wfMessage( 'bs-privacy-transparency-type-title-' . $section )->plain();
+			$csvData[] = wfMessage( 'bs-privacy-transparency-type-title-' . $section )->text();
 			foreach ( $items as $item ) {
 				$csvData[] = "$item";
 			}
 		}
 
-		$username = $this->context->getUser()->getName();
+		$username = $this->user->getName();
 		$filename = $username . "_" . wfTimestamp( TS_MW ) . ".csv";
 
-		return \Status::newGood( [
+		return Status::newGood( [
 			'contents' => implode( "\n", $csvData ),
 			'filename' => $filename,
 			'format' => static::DATA_FORMAT_CSV
@@ -256,7 +278,7 @@ class Transparency extends Module {
 
 	/**
 	 * @param string $type
-	 * @return string|array|null
+	 * @return string|null
 	 */
 	public function getUIWidget( $type ) {
 		if ( $type === static::MODULE_UI_TYPE_USER ) {

@@ -6,8 +6,8 @@ use BlueSpice\Renderer\Params;
 use BlueSpice\TagCloud\Data\TagCloud\Record;
 use BlueSpice\TagCloud\Data\TagCloud\ResultSet;
 use BlueSpice\Utility\CacheHelper;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Linker\LinkRenderer;
 use MWStake\MediaWiki\Component\DataStore\ResultSet as DataStoreResultSet;
 
@@ -41,8 +41,8 @@ abstract class Renderer extends \BlueSpice\TemplateRenderer {
 	 * @param CacheHelper|null $cacheHelper
 	 */
 	protected function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
-		$name = '', CacheHelper $cacheHelper = null ) {
+		?LinkRenderer $linkRenderer = null, ?IContextSource $context = null,
+		$name = '', ?CacheHelper $cacheHelper = null ) {
 		parent::__construct(
 			$config,
 			$params,
@@ -185,7 +185,7 @@ abstract class Renderer extends \BlueSpice\TemplateRenderer {
 	 * @param mixed $val
 	 * @return mixed
 	 */
-	protected function render_content( $val ) {
+	protected function render_content( $val ) { // phpcs:ignore MediaWiki.NamingConventions.LowerCamelFunctionsName.FunctionName, Generic.Files.LineLength.TooLong
 		foreach ( $this->result->getRecords() as $record ) {
 			$data = array_filter( (array)$record->getData(), static function ( $e ) {
 				return !empty( $e );

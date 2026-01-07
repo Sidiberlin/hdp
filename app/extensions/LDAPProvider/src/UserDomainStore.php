@@ -3,8 +3,8 @@
 namespace MediaWiki\Extension\LDAPProvider;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
-use User;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class UserDomainStore {
@@ -75,7 +75,8 @@ class UserDomainStore {
 				'ldap_domains',
 				[
 					'user_id' => $userId
-				]
+				],
+				__METHOD__
 			);
 			return $dbw->insert(
 				'ldap_domains',

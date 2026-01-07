@@ -3,18 +3,21 @@
 namespace BlueSpice\HookHandler;
 
 use BlueSpice\Http\HttpRequestFactory;
-use GlobalVarConfig;
+use MediaWiki\Config\GlobalVarConfig;
 use MediaWiki\Hook\MediaWikiServicesHook;
 use MediaWiki\MediaWikiServices as MWMediaWikiServices;
 
 class MediaWikiServices implements MediaWikiServicesHook {
 
 	/**
-	 *
 	 * @param MWMediaWikiServices $services
 	 * @return bool
 	 */
 	public function onMediaWikiServices( $services ) {
+		if ( defined( 'MW_QUIBBLE_CI' ) ) {
+			return;
+		}
+
 		$services->addServiceManipulator(
 			'HttpRequestFactory',
 			static function ( $originalFactory ) {

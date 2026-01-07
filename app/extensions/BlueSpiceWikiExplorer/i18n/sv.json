@@ -17,7 +17,6 @@
 	"bs-wikiexplorer-categories": "Kategorier",
 	"bs-wikiexplorer-linked-files": "Länkade sidor",
 	"bs-wikiexplorer-linked-pages": "Länkade sidor",
-	"apihelp-bs-wikiexplorer-store-description": "Erbjuder all data för tillägget WikiExplorer",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "API-parameter för att ange om MetaData redan har laddats.",
 	"apihelp-bs-wikiexplorer-store-summary": "Erbjuder all data för tillägget WikiExplorer"
 }

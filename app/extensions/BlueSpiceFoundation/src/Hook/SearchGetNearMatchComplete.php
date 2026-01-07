@@ -28,11 +28,14 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Title\Title;
 
 abstract class SearchGetNearMatchComplete extends Hook {
 	/**
 	 *
-	 * @var \Title
+	 * @var Title
 	 */
 	protected $title;
 
@@ -45,7 +48,7 @@ abstract class SearchGetNearMatchComplete extends Hook {
 	/**
 	 *
 	 * @param string $term
-	 * @param \Title &$title
+	 * @param Title &$title
 	 * @return bool
 	 */
 	public static function callback( $term, &$title ) {
@@ -61,10 +64,10 @@ abstract class SearchGetNearMatchComplete extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param string $term
-	 * @param \Title &$title
+	 * @param Title &$title
 	 */
 	public function __construct( $context, $config, $term, &$title ) {
 		parent::__construct( $context, $config );

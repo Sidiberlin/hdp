@@ -12,6 +12,5 @@
 	"menueditor-ui-enhanced-sidebar-external-link-label": "Spoljašnja veza",
 	"menueditor-ui-enhanced-sidebar-internal-link-label": "Unutrašnja veza",
 	"bs-discovery-page-does-not-exist-title": "$1 (stranica ne postoji)",
-	"bs-discovery-enhanced-mediawiki-sidebar-header-text": "Navigacija",
-	"bs-discovery-enhanced-sidebar-edit-button-aria-label": "Uredi $1"
+	"bs-discovery-enhanced-mediawiki-sidebar-header-text": "Navigacija"
 }

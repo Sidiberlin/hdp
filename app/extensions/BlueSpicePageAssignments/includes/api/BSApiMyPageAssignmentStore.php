@@ -1,7 +1,10 @@
 <?php
 
 use BlueSpice\PageAssignments\AssignmentFactory;
+use MediaWiki\Api\ApiMain;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class BSApiMyPageAssignmentStore extends BSApiExtJSStoreBase {
 	/** @var AssignmentFactory */
@@ -78,9 +81,8 @@ class BSApiMyPageAssignmentStore extends BSApiExtJSStoreBase {
 	}
 
 	/**
-	 *
 	 * @param \stdClass $oFilter
-	 * @param array $aDataSet
+	 * @param \stdClass $aDataSet
 	 * @return bool
 	 */
 	public function filterString( $oFilter, $aDataSet ) {
@@ -154,7 +156,7 @@ class BSApiMyPageAssignmentStore extends BSApiExtJSStoreBase {
 		$res = $this->queryAssignments( $conds );
 		$assignments = [];
 		foreach ( $res as $row ) {
-			$title = \Title::newFromRow( $row );
+			$title = Title::newFromRow( $row );
 			$this->titles[$title->getArticleID()] = $title;
 			if ( !isset( $assignments[$title->getArticleID() ] ) ) {
 				$assignments[$title->getArticleID()] = [];

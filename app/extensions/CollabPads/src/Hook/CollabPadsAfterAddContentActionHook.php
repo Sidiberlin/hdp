@@ -3,7 +3,7 @@
 namespace MediaWiki\Extension\CollabPads\Hook;
 
 use BlueSpice\Discovery\ITemplateDataProvider;
-use Title;
+use MediaWiki\Title\Title;
 
 interface CollabPadsAfterAddContentActionHook {
 

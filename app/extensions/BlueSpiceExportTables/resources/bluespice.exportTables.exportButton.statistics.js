@@ -1,42 +1,21 @@
 ( function ( mw ) {
-
-	function _makeHTMLTableProvider( data ) {
-		return {
-			getHTMLTable: function() {
-				var dfd = $.Deferred();
-				html = '<table>';
-				data.forEach(row => {
-					entry = '<tr>';
-					elements = row.split( ',' );
-					elements.forEach( element => {
-						entry += '<td>' + element + '</td>';
-					} );
-					entry += '<tr>';
-					html += entry;
-				});
-				dfd.resolve( html );
-				return dfd;
-			}
-		};
-	}
-
-	function _convertToCsvArray( originData ) {
+	function _convertToCsvArray( originData ) { // eslint-disable-line no-underscore-dangle
 		if ( originData.length === 0 ) {
 			return [];
 		}
-		var keys = Object.keys( originData[0] );
-		var valueKeys = [];
-		keys.forEach( function ( key ) {
-			if ( !Array.isArray( originData[0][ key ] ) ) {
+		const keys = Object.keys( originData[ 0 ] );
+		const valueKeys = [];
+		keys.forEach( ( key ) => {
+			if ( !Array.isArray( originData[ 0 ][ key ] ) ) {
 				valueKeys.push( key );
 			}
 		} );
-		var csvArray = [ valueKeys.toString() ];
+		const csvArray = [ valueKeys.toString() ];
 
-		originData.forEach( function (d) {
-			var dataString = '';
-			valueKeys.forEach( function ( key ) {
-				dataString += d[key] + ',';
+		originData.forEach( ( d ) => {
+			let dataString = '';
+			valueKeys.forEach( ( key ) => {
+				dataString += d[ key ] + ',';
 			} );
 			dataString = dataString.slice( 0, dataString.length - 1 );
 			csvArray.push( dataString );
@@ -45,63 +24,54 @@
 		return csvArray;
 	}
 
-	mw.hook( 'aggregatedstatistics.addUI' ).add( function ( data ) {
-		var $button =  $('#export-statistics');
+	function _createExportTool( data ) { // eslint-disable-line no-underscore-dangle
 		data = _convertToCsvArray( data );
-		if ( $button.length === 0 ) {
-			var exportButton = new OO.ui.ButtonWidget( {
-				id: 'export-statistics',
-				label: mw.message( 'bs-exporttables-statistics-btn-text' ).text(),
-				icon: 'expand',
-				tabIndex: 0
-			} );
-			$( '#statistic-selector' ).after( exportButton.$element );
-			if ( data.length === 0 ) {
-				exportButton.setDisabled( true );
+		const menu = new bs.exportTables.ExportMenu( {
+			dataProvider: function () {
+				const dfd = $.Deferred();
+				let html = '<table>';
+				data.forEach( ( row ) => {
+					let entry = '<tr>';
+					const elements = row.split( ',' );
+					elements.forEach( ( element ) => {
+						entry += '<td>' + element + '</td>';
+					} );
+					entry += '</tr>';
+					html += entry;
+				} );
+				html += '</table>';
+				dfd.resolve( html );
+				return dfd;
 			}
-		} else {
-			if ( data.length === 0 ) {
-				if ( !$button.hasClass( 'oo-ui-widget-disabled') ) {
-					$button.removeClass( 'oo-ui-widget-enabled' );
-					$button.addClass( 'oo-ui-widget-disabled' );
+		} );
 
-					var $icon = $( $button.children()[0] ).children()[0];
-					if ( !$( $icon ).hasClass( 'oo-ui-image-invert' ) ) {
-						$( $icon ).addClass( 'oo-ui-image-invert' );
-					}
-				}
-			} else {
-				if ( !$button.hasClass( 'oo-ui-widget-enabled') ) {
-					$button.removeClass( 'oo-ui-widget-disabled' );
-					$button.addClass( 'oo-ui-widget-enabled' );
-					$button[0].tabIndex = 0;
+		const panel = new OO.ui.PanelLayout( { padded: true, expanded: false } );
+		panel.$element.append( menu.$element );
 
-					var $icon = $( $button.children()[0] ).children()[0];
-					if ( $( $icon ).hasClass( 'oo-ui-image-invert' ) ) {
-						$( $icon ).removeClass( 'oo-ui-image-invert' );
-					}
-				}
+		const exportTool = new OO.ui.PopupButtonWidget( {
+			icon: 'download',
+			indicator: 'down',
+			framed: true,
+			flags: [ 'primary', 'progressive' ],
+			label: mw.message( 'bs-exporttables-statistics-btn-text' ).text(),
+			tabIndex: 0,
+			popup: {
+				$content: panel.$element,
+				padded: false,
+				autoFlip: true,
+				verticalPosition: 'top'
 			}
-		}
+		} );
+		exportTool.setDisabled( data.length === 0 );
 
-		function handleExportStatisticsEvent(e) {
-			var $button = $(e.currentTarget);
-			mw.loader.using('ext.bluespice.extjs').done(function () {
-				Ext.require('BS.ExportTables.menu.TableExport', function () {
-					var menu = new BS.ExportTables.menu.TableExport({
-						htmlTableProvider: _makeHTMLTableProvider(data),
-					});
+		return exportTool;
+	}
 
-					xPos = $button.offset().left;
-					yPos = $button.offset().top + $button.height();
-					menu.showAt(xPos, yPos);
-					menu.focus(menu.items[0]);
-				}, this);
-			});
-		}
-
-		$('#export-statistics').on('click', handleExportStatisticsEvent);
-		$('#export-statistics').on('keypress', handleExportStatisticsEvent);
+	mw.hook( 'aggregatedstatistics.addUI' ).add( ( data ) => {
+		const exportTool = _createExportTool( data );
+		const $selector = $( '#statistic-selector' );
+		$selector.next( '.export-tool' ).remove();
+		$selector.after( exportTool.$element.addClass( 'export-tool' ) );
 	} );
 
 }( mediaWiki ) );

@@ -2,13 +2,14 @@
 
 namespace SMW;
 
+use MediaWiki\SpecialPage\SpecialPage as MWSpecialPage;
 use SMW\Services\ServicesFactory;
 
 /**
  * Semantic MediaWiki SpecialPage base class
  *
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since   1.9
  *
  * @author mwjames
@@ -20,7 +21,7 @@ use SMW\Services\ServicesFactory;
  * @ingroup SpecialPage
  * @codeCoverageIgnore
  */
-class SpecialPage extends \SpecialPage {
+class SpecialPage extends MWSpecialPage {
 
 	/** @var Store */
 	protected $store = null;
@@ -81,10 +82,9 @@ class SpecialPage extends \SpecialPage {
 	 *
 	 * @since 1.9
 	 *
-	 * @return Store
+	 * @return Settings
 	 */
 	public function getSettings() {
-
 		if ( $this->settings === null ) {
 			$this->settings = ServicesFactory::getInstance()->getSettings();
 		}

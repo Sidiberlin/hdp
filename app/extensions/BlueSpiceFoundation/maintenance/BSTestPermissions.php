@@ -1,6 +1,10 @@
 <?php
 
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 require_once 'BSMaintenance.php';
 

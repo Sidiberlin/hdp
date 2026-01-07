@@ -1,0 +1,26 @@
+{
+	"@metadata": {
+		"authors": []
+	},
+	"bs-interwikisearch-desc": "In anderen Wikis suchen",
+	"bs-interwikisearch-label": "Ergebnisse aus anderen Wikis",
+	"bs-interwikisearch-item-button-label": "$1 ($2)",
+	"bs-interwikisearch-results-dialog-title": "Ergebnisse",
+	"bs-interwikisearch-results-dialog-button-go-full": "Volle Suche öffnen",
+	"bs-interwikisearch-results-dialog-button-close": "Schließen",
+	"bs-interwikisearch-results-title-label": "Erste Seite der Ergebnisse auf \"$1\" anzeigen. Um alle Ergebnisse anzuzeigen klicke bitte auf {{int:bs-interwikisearch-results-dialog-button-go-full}}",
+	"bs-interwikisearch-pref-searchinotherwikis": "Interwiki-Suche aktivieren",
+	"bs-interwikisearch-error-generic": "Die Ergebnisse von \"$1\" können nicht abgerufen werden",
+	"bs-interwikisearch-error-generic-with-message": "Die Ergebnisse von \"$1\" können nicht abgerufen werden: $2",
+	"bs-interwikisearch-pref-silentonerror": "Wikis überspringen, die nicht erreichbar sind oder aus anderen Gründen keine Ergebnisse liefern können, ohne sie dem Benutzer zu zeigen",
+	"bs-interwikisearch-login-suggestion": "Wahrscheinlich musst du dich auf \"$1\" anmelden, um die Suchergebnisse sehen zu können. Wenn dies der Fall ist, wirst du nach der Anmeldung von hier \"$1\" suchen können",
+	"bs-interwikisearch-redirect-suggestion": "Für weitere Informationen besuche direkt das Ziel-Wiki, indem du auf den Button unten klickst",
+	"bs-interwikisearch-error-go-to-target": "Gehe zu $1",
+	"bs-interwikisearch-error-open-target-action": "Zu $1 wechseln",
+	"bs-interwikisearch-error-open-login-action": "Bei $1 anmelden",
+	"bs-interwikisearch-error-generic-dlg-title": "Suche fehlgeschlagen",
+	"bs-interwikisearch-error-login-dlg-title": "Anmeldung erforderlich",
+	"bs-interwikisearch-login-suggestion-label": "Die Suche in \"$1\" hat momentan keine Ergebnisse geliefert.\n Möglicherweise bist du nicht bei \"$1\" angemeldet. Nach der Anmeldung kannst du hier erneut suchen.",
+	"bs-interwikisearch-redirect-suggestion-label": "Für weitere Informationen bitte das Ziel-Wiki besuchen.",
+	"bs-interwikisearch-results-desc-label": "Die ersten Ergebnisse aus \"$1\" werden angezeigt. Für die vollständige Liste: \"{{int:bs-interwikisearch-results-dialog-button-go-full}}\""
+}

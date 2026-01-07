@@ -3,11 +3,9 @@
 namespace BlueSpice\RSSFeeder\RSSFeed;
 
 use FeedUtils;
-use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use RecentChange;
 use RSSItemCreator;
-use Title;
-use ViewFormElementInput;
 
 class RecentChanges extends TitleBasedFeed {
 
@@ -30,15 +28,6 @@ class RecentChanges extends TitleBasedFeed {
 	 */
 	public function getDescription() {
 		return $this->context->msg( 'bs-rssstandards-desc-rc' );
-	}
-
-	/**
-	 * @inheritDoc
-	 */
-	public function getViewElement() {
-		$set = parent::getViewElement();
-		$set->addItem( $this->getRCUniqueCheckbox() );
-		return $set;
 	}
 
 	/**
@@ -73,7 +62,7 @@ class RecentChanges extends TitleBasedFeed {
 	 */
 	protected function getConditions() {
 		$conditions = $this->getFeedConditions();
-		MediaWikiServices::getInstance()->getHookContainer()->run(
+		$this->services->getHookContainer()->run(
 			'BSRSSFeederBeforeGetRecentChanges',
 			[
 				&$conditions,
@@ -83,7 +72,9 @@ class RecentChanges extends TitleBasedFeed {
 		$rcUnique = $this->context->getRequest()->getVal( 'rc_unique', false );
 		if ( $rcUnique ) {
 			$rcUniqueIds = $this->getUniqueRecentChangesIds( $conditions, 10 );
-			$conditions[] = 'rc_id IN (' . implode( ',', $rcUniqueIds ) . ')';
+			if ( !empty( $rcUniqueIds ) ) {
+				$conditions[] = 'rc_id IN (' . implode( ',', $rcUniqueIds ) . ')';
+			}
 		}
 		return $conditions;
 	}
@@ -101,10 +92,6 @@ class RecentChanges extends TitleBasedFeed {
 	 * @return RSSItemCreator|false
 	 */
 	protected function getEntry( $title, $row ) {
-		// fake old fields for FeedUtils::formatDiff, because its currently
-		// broken for new fields
-		$row->rc_comment_text = $row->comment_text;
-		$row->rc_comment_data = $row->comment_data;
 		$entry = RSSItemCreator::createItem(
 			$this->getItemTitle( $title, $row ),
 			$title->getFullURL( 'diff=' . $row->rc_this_oldid . '&oldid=prev' ),
@@ -127,7 +114,7 @@ class RecentChanges extends TitleBasedFeed {
 		$res = $dbr->select(
 			$rcQuery['tables'],
 			$rcQuery['fields'],
-			[],
+			$conditions,
 			__METHOD__,
 			[
 				'ORDER BY' => 'rc_timestamp DESC',
@@ -137,20 +124,6 @@ class RecentChanges extends TitleBasedFeed {
 		);
 
 		return $res ?: (object)null;
-	}
-
-	/**
-	 * @return ViewFormElementInput
-	 */
-	protected function getRCUniqueCheckbox() {
-		$checkbox = new ViewFormElementInput();
-		$checkbox->setId( 'RcUnique_' . $this->getId() );
-		$checkbox->setType( 'checkbox' );
-		$checkbox->setLabel(
-			$this->context->msg( 'bs-rssfeeder-rcunique-checkbox' )->plain()
-		);
-
-		return $checkbox;
 	}
 
 	/**
@@ -168,13 +141,19 @@ class RecentChanges extends TitleBasedFeed {
 			$options['LIMIT'] = $limit;
 		}
 		$prefix = $this->context->getConfig()->get( 'DBprefix' );
-		$uniqueRecordsIdsResult = $dbr->select(
-			[ $prefix . 'recentchanges' ],
-			[ 'MAX(rc_id) as id' ],
-			$conditions,
-			__METHOD__,
-			$options
-		);
+		$uniqueRecordsIdsResult = $dbr->newSelectQueryBuilder()
+			->select( [ 'MAX(rc_id) as id' ] )
+			->from( $prefix . 'recentchanges' )
+			->join(
+				$prefix . 'actor',
+				'recentchanges_actor',
+				[ $prefix . 'recentchanges.rc_actor = recentchanges_actor.actor_id' ]
+			)
+			->where( $conditions )
+			->groupBy( [ 'rc_title', 'rc_namespace' ] )
+			->orderBy( 'id', 'DESC' )
+			->caller( __METHOD__ )
+			->fetchResultSet();
 		$rcUniqueIds = [];
 		foreach ( $uniqueRecordsIdsResult as $rc ) {
 			$rcUniqueIds[] = $rc->id;

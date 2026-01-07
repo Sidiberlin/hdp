@@ -4,9 +4,9 @@ namespace BlueSpice\Discovery\MenuProvider;
 
 use BlueSpice\Discovery\Component\MediaWikiLinksPanel;
 use BlueSpice\Discovery\IMenuProvider;
-use Message;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\IComponent;
-use RawMessage;
 
 class MediawikiSidebar implements IMenuProvider {
 

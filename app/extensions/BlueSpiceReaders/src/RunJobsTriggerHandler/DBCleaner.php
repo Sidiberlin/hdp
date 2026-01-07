@@ -3,8 +3,8 @@
 namespace BlueSpice\Readers\RunJobsTriggerHandler;
 
 use BlueSpice\RunJobsTriggerHandler;
-use MWTimestamp;
-use Status;
+use MediaWiki\Status\Status;
+use MediaWiki\Utils\MWTimestamp;
 
 class DBCleaner extends RunJobsTriggerHandler {
 
@@ -38,7 +38,8 @@ class DBCleaner extends RunJobsTriggerHandler {
 		$entriesCount = $dbr->select(
 			'bs_readers',
 			[ 'readers_id' ],
-			[ 'readers_ts < ' . $currentTS ]
+			[ 'readers_ts < ' . $currentTS ],
+			__METHOD__
 		)->numRows();
 
 		if ( $entriesCount < 1 ) {
@@ -49,7 +50,8 @@ class DBCleaner extends RunJobsTriggerHandler {
 			->getConnection( DB_PRIMARY )
 			->delete(
 				'bs_readers',
-				[ 'readers_ts < ' . $currentTS ]
+				[ 'readers_ts < ' . $currentTS ],
+				__METHOD__
 			);
 
 		wfDebugLog(

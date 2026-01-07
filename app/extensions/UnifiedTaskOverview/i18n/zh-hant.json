@@ -8,5 +8,6 @@
 	"unifiedtaskoverview": "我的任務",
 	"unifiedtaskoverview-label-no-task": "目前沒有要完成的任務。",
 	"unifiedtaskoverview-personal-url-my-tasks": "任務",
-	"unifiedtaskoverview-search-placeholder": "搜尋"
+	"unifiedtaskoverview-search-placeholder": "搜尋",
+	"unifiedtaskoverview-no-login-text": "請登入查看您的任務"
 }

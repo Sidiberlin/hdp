@@ -5,7 +5,6 @@
 		]
 	},
 	"bs-watchlist-desc": "Adde un widget e un etiquetta pro le observatorio",
-	"bs-watchlist-title-sidebar": "Observatorio",
 	"bs-watchlist-pref-sort-time": "Hora",
 	"bs-watchlist-pref-sort-title": "Titulo",
 	"bs-watchlist-tag-watchlist-desc": "Monstrar le articulos que ha le modificationes le plus recente e que es in tu observatorio.",
@@ -30,5 +29,6 @@
 	"bs-watchlist-tag-watchlist-attr-pagename-help": "Adjuta sur le nomine de pagina",
 	"bs-watchlist-tag-watchlist-attr-time-help": "Adjuta sur le hora",
 	"bs-watchlist-droplet-name": "Observatorio",
-	"bs-watchlist-droplet-description": "Modificationes recente de paginas includite in le observatorio"
+	"bs-watchlist-droplet-description": "Modificationes recente de paginas includite in le observatorio",
+	"bs-watchlist-usersidebar-title": "Observatorio"
 }

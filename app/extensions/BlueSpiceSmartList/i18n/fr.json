@@ -1,10 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Derugon",
 			"Gomoko",
+			"JLTRY",
 			"Lewis2013",
 			"Ltrlg",
 			"MacOS Weed",
+			"McDutchie",
 			"Trial",
 			"Verdy p",
 			"Wladek92",
@@ -26,11 +29,6 @@
 	"bs-smartlist-month": "Mois",
 	"bs-smartlist-time": "Heure",
 	"bs-smartlist-title": "Titre",
-	"bs-smartlist-tag-smartlist-desc": "Affiche les listes d'articles qui sont automatiquement générées. La configuration est fonction des modes et des paramètres.",
-	"bs-smartlist-tag-smartlist-example-rc": "Mode : changements récents",
-	"bs-smartlist-tag-smartlist-example-whatlinkshere": "Mode : pages liées",
-	"bs-smartlist-tag-newbies-desc": "Affiche les nouveaux utilisateurs du wiki. La liste peut être limitée à un certain nombre d’éléments.",
-	"bs-smartlist-tag-toplist-desc": "Affiche les pages les plus visitées. Peut être limitée par plusieurs paramètres.",
 	"bs-smartlist-mostvisitedpages": "Pages les plus vues",
 	"bs-smartlist-mosteditedpages": "Pages les plus modifiées",
 	"bs-smartlist-mostactiveusers": "Utilisateurs les plus actifs (en nombre de modifications)",
@@ -41,7 +39,6 @@
 	"bs-smartlist-mostvisitedpagesdesc": "Liste des pages les plus vues triées par leurs consultations.",
 	"bs-smartlist-lasteditsdesc": "Liste des pages que vous avez modifiées.",
 	"bs-smartlist-hitcounter-missing": "L’extension <a target=\"blank\" href=\"https://www.mediawiki.org/wiki/Special:MyLanguage/Extension:HitCounters\">HitCounters</a> doit être installée.",
-	"apihelp-bs-smartlist-tasks-description": "Fonctions de l’API pour fournir des données de portlet sur les pages et les statistiques utilisateur.",
 	"apihelp-bs-smartlist-tasks-summary": "Fonctions API pour servir les données de portlet pour la page et les statistiques utilisateur.",
 	"bs-smartlist-ve-userlist-title": "Liste d’utilisateurs",
 	"bs-smartlist-ve-userlistinspector-groups": "Groupes",
@@ -60,5 +57,9 @@
 	"bs-smartlist-droplet-what-links-here-desc": "Liste des pages qui sont liées à cette page",
 	"bs-smartlist-ve-recentchanges-title": "Modifications récentes",
 	"bs-smartlist-ve-whatlinkshere-title": "Liens vers cette page",
-	"bs-smartlist-error-mode-not-found": "Mode spécifié non trouvé"
+	"bs-smartlist-error-mode-not-found": "Mode spécifié non trouvé",
+	"bs-smartlist-input-validator-invalid mode": "La valeur « $2 » pour « $1 » n'est pas un mode SmartList valide",
+	"bs-smartlist-ve-tab-main": "Général",
+	"bs-smartlist-ve-tab-advanced": "Avancé",
+	"bs-smartlist-ve-tab-appearance": "Apparence"
 }

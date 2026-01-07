@@ -1,7 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
+			"Bananax47",
 			"Gomoko",
+			"Mahabarata",
 			"SnowedEarth",
 			"Thibaut120094",
 			"Verdy p",
@@ -15,18 +17,16 @@
 	"prefs-whoisonline": "Qui est en ligne ?",
 	"bs-whoisonline-pref-limitcount": "Nombre maximum d’utilisateurs affichés :",
 	"bs-whoisonline-pref-orderby": "Trier par :",
-	"bs-whoisonline-pref-maxidletime": "Durée en secondes avant qu’un utilisateur ne soit marqué comme hors ligne :",
+	"bs-whoisonline-pref-maxidletime-label": "Délai d'inactivité (en seconde)",
 	"bs-whoisonline-pref-orderby-time": "Durée de fonctionnement",
 	"bs-whoisonline-pref-orderby-name": "Nom",
-	"bs-whoisonline-pref-interval": "Intervalle de mise à jour en secondes :",
-	"bs-whoisonline-tag-whoisonlinecount-desc": "Affiche le nombre d’utilisateurs qui se sont connectés depuis les 10 dernières minutes.",
-	"bs-whoisonline-tag-whoisonlinepopup-desc": "Affiche le nombre d’utilisateurs qui se sont connectés dans les 10 dernières minutes.",
+	"bs-whoisonline-pref-interval-label": "Intervalle de mise à jour (en seconde)",
 	"bs-whoisonline-collection-type-userlogin": "Connexion de l’utilisateur",
 	"bs-whoisonline-collection-var-login": "Identifiant",
 	"bs-whoisonline-statistics-report-login-duration": "Durée de connexion",
 	"bs-whoisonline-statistics-report-login-duration-axis-value": "Durée de connexion (en sec.)",
-	"bs-whoisonline-pref-interval-help": "La liste des utilisateurs est mise à jour toutes les ''x'' secondes.",
-	"bs-whoisonline-pref-maxidletime-help": "Après ce temps en secondes sans activité, un utilisateur est considéré comme déconnecté.",
+	"bs-whoisonline-pref-interval-help-label": "Nombre de secondes après lesquelles la liste des utilisateurs est mise à jour",
+	"bs-whoisonline-pref-maxidletime-help-label": "Nombre de secondes d'inactivité après lesquelles un utilisateur est indiqué comme hors ligne",
 	"bs-whoisonline-tag-whoisonlinecount-description": "Affiche le nombre d’utilisateurs qui se sont connectés lors des 10 dernières minutes",
 	"bs-whoisonline-ve-whoisonlinecountinspector-title": "Compteur de qui est en ligne",
 	"bs-whoisonline-tag-whoisonlinepopup-description": "Affiche tous les utilisateurs qui se sont connectés lors des 10 dernières minutes. La sortie est une bulle de dialogue quand un utilisateur survole le lien associé.",
@@ -36,5 +36,6 @@
 	"bs-whoisonline-droplet-count-name": "Nombre d’utilisateurs connectés",
 	"bs-whoisonline-droplet-count-description": "Nombre d’utilisateurs actuellement connectés",
 	"bs-whoisonline-droplet-popup-name": "Liste des utilisateurs connectés",
-	"bs-whoisonline-droplet-popup-description": "Panneau affichant une liste de tous les utilisateurs actuellement connectés"
+	"bs-whoisonline-droplet-popup-description": "Panneau affichant une liste de tous les utilisateurs actuellement connectés",
+	"bs-whoisonline-statistics-report-login-number-desc": "Connexions quotidiennes pendant la période sélectionnée"
 }

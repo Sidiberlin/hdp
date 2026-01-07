@@ -9,9 +9,8 @@
 	"bs-expiry-article-label": "Paĝo",
 	"bs-expiry-comment-label": "Komento",
 	"bs-expiry-unknown-page-msg": "Paĝo ne ekzistas.",
-	"bs-expiry-flyout-next-comment": "Komento: $1",
+	"bs-expiry-info-dialog-comment": "Komento: $1",
 	"bs-expiry-edit-grid-header-username": "Uzanto",
 	"bs-expiry-edit-grid-header-date": "Dato",
-	"bs-expiry-edit-grid-header-comment": "Komento",
-	"bs-expiry-info-dialog-comment": "Komento: $1"
+	"bs-expiry-edit-grid-header-comment": "Komento"
 }

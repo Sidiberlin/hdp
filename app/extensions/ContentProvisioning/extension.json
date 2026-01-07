@@ -1,14 +1,17 @@
 {
 	"name": "ContentProvisioning",
-	"version": "1.0.6",
+	"version": "2.0.5",
 	"license-name": "GPL-3.0-only",
 	"author": [
-		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+		"[https://www.hallowelt.com Hallo Welt! GmbH]"
 	],
-	"url": "http://www.hallowelt.com",
+	"url": "https://en.wiki.bluespice.com/wiki/Reference:ContentProvisioning",
 	"descriptionmsg": "contentprovisioning-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0",
+		"extensions": {
+			"OOJSPlus": ">= 3.0.0"
+		}
 	},
 	"MessagesDirs": {
 		"ContentProvisioner": "i18n"
@@ -17,7 +20,7 @@
 		"MediaWiki\\Extension\\ContentProvisioning\\": "src/"
 	},
 	"TestAutoloadNamespaces": {
-		"MediaWiki\\Extension\\ContentProvisioning\\Tests\\": "tests/phpunit"
+		"MediaWiki\\Extension\\ContentProvisioning\\Tests\\": "tests/phpunit/"
 	},
 	"attributes": {
 		"PermissionRegistry": {

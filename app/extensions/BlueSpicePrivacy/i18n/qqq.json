@@ -13,7 +13,6 @@
 	},
 	"bs-privacy": "Name of the extension",
 	"bs-privacy-desc": "Description of BlueSpicePrivacy extension.",
-	"bs-privacy-admintool-label": "Privacy Admin",
 	"bs-privacy-admintool-text": "Label for global actions menu\n\n{{Identical|Privacy}}",
 	"bs-privacy-header": "Header for bs-privacy log type",
 	"privacycenter": "Title of {{Special:PrivacyCenter}}",
@@ -173,7 +172,6 @@
 	"bs-privacy-cookie-convenience-group-label": "Label for the cookie type \"convenience\"",
 	"bs-privacy-cookie-convenience-group-desc": "Help etxt for the cookie type \"convenience\"",
 	"bs-privacy-cookie-consent-mw-provider-settings-dialog-save": "Label for button to save settings in cookie consent settings dialog",
-	"bs-privacy-cookie-consent-mw-provider-settings-dialog-cancel": "Label for button to close cookie consent settings dialog",
 	"bs-privacy-consent-cookie-settings-label": "Label for the anchor that opens cookie consent dialog",
 	"bs-privacy-termsofservicepage": "{{doc-important|Copy the word \"Project:\" as is to the translation, without translating it. This is the namespace prefix.}}\nUsed as a link target\n\n{{Identical|Requestaccount-page}}",
 	"bs-privacy-privacypage": "{{doc-important|Copy the word \"Project:\" as is to the translation, without translating it. This is the namespace prefix.}}\nUsed as a link target\n\n{{Identical|Privacypage}}",
@@ -212,5 +210,11 @@
 	"bs-privacy-event-request-submitted-anonymization": "Notification message when user has submitted anonymization request.\n$1 - user name\n$2 - comment",
 	"bs-privacy-event-request-submitted-deletion": "Notification message when user has submitted deletion request.\n$1 - user name\n$2 - comment",
 	"bs-privacy-event-request-submitted-anonymization-desc": "Event type message",
-	"bs-privacy-event-request-submitted-deletion-desc": "Event type message"
+	"bs-privacy-event-request-submitted-deletion-desc": "Event type message",
+	"bs-privacy-consent-type-privacy-policy-short": "Name label for privacy policy consent type",
+	"bs-privacy-consent-type-terms-of-service-short": "Name label for terms of service consent type",
+	"bs-privacy-module-name-anonymization": "Module name label",
+	"bs-privacy-module-name-deletion": "Module name label",
+	"prefs-privacy": "Header of the Privacy options on [[Special:Preferences]]",
+	"bs-privacy-cookie-banner-aria-label": "Aria label for cookie banner to manage cookies"
 }

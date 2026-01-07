@@ -1,6 +1,6 @@
 {
 	"name": "SectionAnchors",
-	"version": "1.0.10",
+	"version": "2.0.5",
 	"author": [
 		"[https://www.hallowelt.com Hallo Welt! GmbH]"
 	],
@@ -9,10 +9,13 @@
 	"license-name": "GPL-3.0-only",
 	"type": "other",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\SectionAnchors\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"MediaWiki\\Extension\\SectionAnchors\\Tests\\": "tests/phpunit/"
 	},
 	"HookHandlers": {
 		"SectionAnchorsHooks": {

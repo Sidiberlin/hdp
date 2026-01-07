@@ -23,11 +23,26 @@ class PrimaryDataProvider extends \BlueSpice\Data\Settings\PrimaryDataProvider {
 			$filterConds,
 			__METHOD__,
 			[
-				 'ORDER BY' => 'chapter_number'
+				'ORDER BY' => 'chapter_number'
 			]
 		);
 
-		foreach ( $res as $row ) {
+		$chapters = iterator_to_array( $res );
+		usort( $chapters, static function ( $a, $b ) {
+			$aParts = array_map( 'intval', explode( '.', $a->chapter_number ) );
+			$bParts = array_map( 'intval', explode( '.', $b->chapter_number ) );
+
+			for ( $i = 0; $i < max( count( $aParts ), count( $bParts ) ); $i++ ) {
+				$aVal = $aParts[$i] ?? 0;
+				$bVal = $bParts[$i] ?? 0;
+				if ( $aVal !== $bVal ) {
+					return $aVal <=> $bVal;
+				}
+			}
+			return 0;
+		} );
+
+		foreach ( $chapters as $row ) {
 			$this->appendRowToData( $row );
 		}
 

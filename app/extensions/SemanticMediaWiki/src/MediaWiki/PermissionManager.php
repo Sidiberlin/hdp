@@ -2,13 +2,13 @@
 
 namespace SMW\MediaWiki;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Permissions\PermissionManager as MwPermissionManager;
-use RequestContext;
-use Title;
-use User;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.2
  *
  * @author mwjames
@@ -44,7 +44,7 @@ class PermissionManager {
 		?User $user,
 		Title $title,
 		string $rigor = MwPermissionManager::RIGOR_SECURE
-	) : bool {
+	): bool {
 		if ( !$user instanceof User ) {
 			$user = RequestContext::getMain()->getUser();
 		}
@@ -60,7 +60,7 @@ class PermissionManager {
 	 *
 	 * @return bool
 	 */
-	public function userHasRight( User $user, string $action = '' ) : bool {
+	public function userHasRight( User $user, string $action = '' ): bool {
 		return $this->permissionManager->userHasRight( $user, $action );
 	}
 

@@ -2,22 +2,25 @@
 
 namespace SMW\Maintenance;
 
-use SMW\Services\ServicesFactory as ApplicationFactory;
-use SMW\StoreFactory;
-use SMW\Store;
-use SMW\Setup;
-use SMW\Options;
-use SMW\Utils\CliMsgFormatter;
 use InvalidArgumentException;
+use MediaWiki\Maintenance\Maintenance;
+use SMW\Options;
+use SMW\Services\ServicesFactory as ApplicationFactory;
+use SMW\Setup;
+use SMW\Store;
+use SMW\StoreFactory;
+use SMW\Utils\CliMsgFormatter;
 
 /**
  * Load the required class
  */
+// @codeCoverageIgnoreStart
 if ( getenv( 'MW_INSTALL_PATH' ) !== false ) {
 	require_once getenv( 'MW_INSTALL_PATH' ) . '/maintenance/Maintenance.php';
 } else {
 	require_once __DIR__ . '/../../../maintenance/Maintenance.php';
 }
+// @codeCoverageIgnoreEnd
 
 /**
  * Recreates all the semantic data in the database, by cycling through all
@@ -56,7 +59,7 @@ if ( getenv( 'MW_INSTALL_PATH' ) !== false ) {
  * @author Yaron Koren
  * @author Markus Krötzsch
  */
-class rebuildData extends \Maintenance {
+class rebuildData extends Maintenance {
 
 	public function __construct() {
 		parent::__construct();
@@ -120,7 +123,6 @@ class rebuildData extends \Maintenance {
 	 * @see Maintenance::execute
 	 */
 	public function execute() {
-
 		if ( $this->canExecute() !== true ) {
 			exit;
 		}
@@ -132,7 +134,7 @@ class rebuildData extends \Maintenance {
 
 		if ( $this->hasOption( 'namespace' ) && !defined( $this->getOption( 'namespace' ) ) ) {
 			throw new InvalidArgumentException(
-				"Expected a namespace constant, `". $this->getOption( 'namespace' ) . "` is unkown!"
+				"Expected a namespace constant, `" . $this->getOption( 'namespace' ) . "` is unkown!"
 			);
 		}
 
@@ -235,7 +237,7 @@ class rebuildData extends \Maintenance {
 			$this->reportMessage( $cliMsgFormatter->section( 'Poolcache report' ) );
 			$this->reportMessage( "\n" );
 
-			foreach ( $stats as $key => $values) {
+			foreach ( $stats as $key => $values ) {
 				$this->reportMessage( "$key ..." . "\n" );
 
 				foreach ( $values as $k => $v ) {
@@ -261,9 +263,8 @@ class rebuildData extends \Maintenance {
 	}
 
 	private function checkForRebuildState( $rebuildResult ) {
-
 		if ( !$rebuildResult ) {
-			$this->reportMessage( $this->mDescription . "\n\n" . 'Use option --help for usage details.' . "\n"  );
+			$this->reportMessage( $this->mDescription . "\n\n" . 'Use option --help for usage details.' . "\n" );
 			return false;
 		}
 
@@ -271,7 +272,6 @@ class rebuildData extends \Maintenance {
 	}
 
 	private function canExecute() {
-
 		if ( !Setup::isEnabled() ) {
 			return $this->reportMessage(
 				"\nYou need to have SMW enabled in order to run the maintenance script!\n"
@@ -289,6 +289,7 @@ class rebuildData extends \Maintenance {
 	}
 
 }
-
-$maintClass = 'SMW\Maintenance\rebuildData';
-require_once ( RUN_MAINTENANCE_IF_MAIN );
+// @codeCoverageIgnoreStart
+$maintClass = rebuildData::class;
+require_once RUN_MAINTENANCE_IF_MAIN;
+// @codeCoverageIgnoreEnd

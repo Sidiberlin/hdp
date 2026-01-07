@@ -1,37 +1,37 @@
-(function( mw, $, bs ){
-	var _instances = {};
+( function ( mw, $, bs ) {
+	const _instances = {}; // eslint-disable-line no-underscore-dangle
 
 	function createEditor( id, cfg ) {
 		cfg.floatable = cfg.floatable || false;
 		cfg.format = cfg.format || 'wikitext';
 		cfg.value = cfg.value || '';
 
-		var dfd = $.Deferred();
+		const dfd = $.Deferred();
 		if ( cfg.format === 'html' ) {
-			_makeEditor( id, cfg ).done( function( target ){
+			_makeEditor( id, cfg ).done( ( target ) => {
 				dfd.resolve( target );
-			});
+			} );
 		} else if ( cfg.format === 'wikitext' ) {
-			_transformToHtml( cfg.value ).done( function( html ) {
+			_transformToHtml( cfg.value ).done( ( html ) => {
 				cfg.value = html;
-				_makeEditor( id, cfg ).done( function( target ){
+				_makeEditor( id, cfg ).done( ( target ) => {
 					dfd.resolve( target );
-				});
-			});
+				} );
+			} );
 		}
 
 		return dfd.promise();
 	}
 
 	function getInstance( id ) {
-		return _instances[id];
+		return _instances[ id ];
 	}
 
-	function _makeEditor( id, cfg ) {
-		var dfd = $.Deferred();
+	function _makeEditor( id, cfg ) { // eslint-disable-line no-underscore-dangle
+		const dfd = $.Deferred();
 
-		ve.init.platform.initialize().done( function () {
-			var target = new ve.init.sa.BlueSpiceTarget();
+		ve.init.platform.initialize().done( () => {
+			const target = new ve.init.sa.BlueSpiceTarget();
 			target.addSurface(
 				ve.dm.converter.getModelFromDom(
 					ve.createDocumentFromHtml( cfg.value )
@@ -41,7 +41,7 @@
 			target.toolbar.floatable = cfg.floatable;
 
 			// save for future reference
-			_instances[id] = target;
+			_instances[ id ] = target;
 
 			// mysteriously, parent is needed here to actually render to the
 			// element, otherwise the toolbar finds no element to attach to,
@@ -49,33 +49,33 @@
 			// element connected to a document"
 			$( cfg.renderTo ).parent().append( target.$element );
 
-			target.getHtml = function() {
-				var dfd = $.Deferred();
-				var value = this.getSurface().getHtml();
+			target.getHtml = function () {
+				const dfd = $.Deferred(); // eslint-disable-line no-shadow
+				const value = this.getSurface().getHtml();
 				dfd.resolve( value );
 				return dfd.promise();
 			};
 
-			target.getWikiText = function() {
-				var dfd = $.Deferred();
-				var value = this.getSurface().getHtml();
-				_transformToWikiText( value ).done( function( data ) {
-						dfd.resolve( data );
-				});
+			target.getWikiText = function () {
+				const dfd = $.Deferred(); // eslint-disable-line no-shadow
+				const value = this.getSurface().getHtml();
+				_transformToWikiText( value ).done( ( data ) => {
+					dfd.resolve( data );
+				} );
 				return dfd.promise();
 			};
 
 			// some extensions, e.g. PageForms, do not support asynchronous
 			// calls. Hence, we need to provide a synchronous function here.
-			target.getWikiTextSync = function() {
-				var textToSubmit = this.getSurface().getHtml(),
-					result = false,
-					// Remove trailing slash
-					origin = window.location.origin.replace( /\/$/, "" ),
-					// Remove leading slash
-					apiPath = mw.util.wikiScript( 'api' ).replace( /^\//, "" );
+			target.getWikiTextSync = function () {
+				const textToSubmit = this.getSurface().getHtml();
+				let result = false;
+				// Remove trailing slash
+				const origin = window.location.origin.replace( /\/$/, '' );
+				// Remove leading slash
+				const apiPath = mw.util.wikiScript( 'api' ).replace( /^\//, '' );
 
- 				$.ajax( {
+				$.ajax( {
 					type: 'POST',
 					url: [ origin, '/', apiPath ].join( '' ),
 					data: {
@@ -87,7 +87,7 @@
 						format: 'json'
 					},
 					dataType: 'json',
-					success:  function( response ) {
+					success: function ( response ) {
 						result = response.visualeditoredit.content;
 					},
 					async: false
@@ -97,21 +97,31 @@
 			};
 
 			dfd.resolve( target );
-		});
+		} );
 
 		return dfd.promise();
 	}
 
-	function _transformToWikiText( fromHtml ) {
+	function _transformToWikiText( fromHtml ) { // eslint-disable-line no-underscore-dangle
 		return _transform( 'html', fromHtml );
 	}
 
-	function _transformToHtml( fromWikiText ) {
-		return _transform( 'wikitext', fromWikiText );
+	function _transformToHtml( fromWikiText ) { // eslint-disable-line no-underscore-dangle
+		const dfd = $.Deferred();
+		_transform( 'wikitext', fromWikiText ).done( ( html ) => {
+			// Remove legacy returned IDs
+			// leads to not editable elements in UI
+			// ERM41142
+			const cleaned = html.replace( /<span[^>]*typeof=["']mw:FallbackId["'][^>]*><\/span>/g, '' );
+
+			dfd.resolve( cleaned );
+		} );
+
+		return dfd.promise();
 	}
 
-	function _transform( from, content ) {
-		var dfd = $.Deferred(),
+	function _transform( from, content ) { // eslint-disable-line no-underscore-dangle
+		const dfd = $.Deferred(),
 			api = new mw.Api(),
 			data = {
 				action: from === 'wikitext' ? 'visualeditor' : 'visualeditoredit',
@@ -121,14 +131,14 @@
 			};
 
 		content = content || '';
-		data[from] = content;
+		data[ from ] = content;
 
 		api.postWithToken( 'csrf', data )
-			.done( function( response ) {
-				var contentObj = from === 'wikitext' ? response.visualeditor : response.visualeditoredit;
+			.done( ( response ) => {
+				const contentObj = from === 'wikitext' ? response.visualeditor : response.visualeditoredit;
 				dfd.resolve( contentObj.content );
 			} )
-			.fail( function() {
+			.fail( () => {
 				dfd.reject();
 			} );
 
@@ -137,13 +147,16 @@
 
 	/**
 	 * HINT:https://www.mediawiki.org/w/index.php?title=VisualEditor/Gadgets&oldid=2776161#Checking_if_VisualEditor_is_in_regular_'visual'_mode_or_'source'_mode
-	 * @param {VeInitTarget} target
-	 * @returns {Array}
+	 *
+	 * @param {ve.init.Target} target
+	 * @return {Array}
 	 */
 	function getCategoriesFromTarget( target ) {
-		var surface, model, document, metadata;
+		let model;
+		let document;
+		let metadata;
 
-		surface = target.getSurface();
+		const surface = target.getSurface();
 
 		if ( surface.getMode() === 'visual' ) {
 			model = surface.getModel();
@@ -157,35 +170,37 @@
 	}
 
 	/**
-	 *
-	 * @param {VeDmMetaItem[]} metadata
-	 * @returns {Array}
+	 * @param {ve.dm.MetaItem[]} metadata
+	 * @return {Array}
 	 */
 	function getCategoriesFromMetadata( metadata ) {
-		var categories, i, item, prefixedCategory, categoryParts;
+		let i;
+		let item;
+		let prefixedCategory;
+		let categoryParts;
 
-		categories = [];
-		for( i = 0; i < metadata.length; i++ ) {
-			item = metadata[i];
-			if( !item || item.type !== 'mwCategory' ) {
+		const categories = [];
+		for ( i = 0; i < metadata.length; i++ ) {
+			item = metadata[ i ];
+			if ( !item || item.type !== 'mwCategory' ) {
 				continue;
 			}
-			//Yes, this is the way to read out categories!
-			//HINT: https://github.com/wikimedia/mediawiki-extensions-VisualEditor/blob/ffaab335cee2d9a45cf6767fc40d3463f599b175/modules/ve-mw/ui/pages/ve.ui.MWCategoriesPage.js#L209
+			// Yes, this is the way to read out categories!
+			// HINT: https://github.com/wikimedia/mediawiki-extensions-VisualEditor/blob/ffaab335cee2d9a45cf6767fc40d3463f599b175/modules/ve-mw/ui/pages/ve.ui.MWCategoriesPage.js#L209
 			prefixedCategory = item.element.attributes.category;
 			categoryParts = prefixedCategory.split( ':', 2 );
-			categories.push( categoryParts[1] );
+			categories.push( categoryParts[ 1 ] );
 		}
 
 		return categories;
 	}
 
 	function getCategoriesFromHtml( html ) {
-		var categories = [],
-			regex = new RegExp( '\\[\\[([^\\[\\]]*)\\]\\]', 'gm' ),
-			singleMatch,
-			title,
-			categoryName;
+		const categories = [];
+		const regex = new RegExp( '\\[\\[([^\\[\\]]*)\\]\\]', 'gm' ); // eslint-disable-line prefer-regex-literals
+		let singleMatch;
+		let title;
+		let categoryName;
 
 		while ( ( singleMatch = regex.exec( html ) ) !== null ) {
 			if ( singleMatch.length !== 2 ) {
@@ -212,24 +227,24 @@
 	bs.vec.transformToWikiText = _transformToWikiText;
 
 	// Hide QM tab
-	var $qmControls;
+	let $qmControls;
 
-	mw.hook( 've.activationComplete' ).add( function () {
-		if( !$qmControls ) {
+	mw.hook( 've.activationComplete' ).add( () => {
+		if ( !$qmControls ) {
 			$qmControls = $( '#bs-qualitymanagement-panel, a[href="#bs-qualitymanagement-panel"]' );
 		}
 		$qmControls.hide();
 	} );
 
-	mw.hook( 've.deactivationComplete' ).add( function () {
-		if( $qmControls ) {
+	mw.hook( 've.deactivationComplete' ).add( () => {
+		if ( $qmControls ) {
 			$qmControls.show();
 		}
 	} );
 
 	// VisualEditorConnector config
-	var configValues = require( './config.json' );
+	const configValues = require( './config.json' );
 	bs.vec.config = new mw.Map();
 	bs.vec.config.set( configValues );
 
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

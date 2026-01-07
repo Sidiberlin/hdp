@@ -1,12 +1,12 @@
 ext.menueditor.ui.data.node.MediawikiSidebarKeywordNode = function ( cfg ) {
 	ext.menueditor.ui.data.node.MediawikiSidebarKeywordNode.parent.call( this, cfg );
 
-	var config = require( './config.json' );
+	const config = require( './config.json' );
 	this.keywords = config.allowedMediawikiSidebarKeywords;
 
 	this.options = [];
-	for ( var i = 0; i < this.keywords.length; i++ ) {
-		var object = {
+	for ( let i = 0; i < this.keywords.length; i++ ) {
+		const object = {
 			data: this.keywords[ i ]
 		};
 		this.options.push( object );
@@ -16,7 +16,7 @@ ext.menueditor.ui.data.node.MediawikiSidebarKeywordNode = function ( cfg ) {
 OO.inheritClass( ext.menueditor.ui.data.node.MediawikiSidebarKeywordNode,
 	ext.menueditor.ui.data.node.KeywordNode );
 
-ext.menueditor.ui.data.node.MediawikiSidebarKeywordNode.prototype.getFormFields = function ( dialog ) { // eslint-disable-line max-len
+ext.menueditor.ui.data.node.MediawikiSidebarKeywordNode.prototype.getFormFields = function ( dialog ) {
 	return [
 		{
 			name: 'keyword',

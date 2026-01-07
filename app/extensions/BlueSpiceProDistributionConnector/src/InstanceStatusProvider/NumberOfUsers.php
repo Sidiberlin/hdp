@@ -4,7 +4,7 @@ namespace BlueSpice\ProDistributionConnector\InstanceStatusProvider;
 
 use BlueSpice\InstanceStatus\IStatusProvider;
 use BlueSpice\ProDistributionConnector\UserCounter;
-use Message;
+use MediaWiki\Message\Message;
 
 class NumberOfUsers implements IStatusProvider {
 	/** @var UserCounter */

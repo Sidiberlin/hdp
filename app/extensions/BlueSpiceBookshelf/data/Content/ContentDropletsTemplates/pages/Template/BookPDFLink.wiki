@@ -1,1 +1,1 @@
-<span class="plainlinks">[{{fullurl:Special:UniversalExport/Book:{{{book|}}}|ue%5Bmodule%5D=bookpdf&ue%5B{{#if:{{{template|}}}|template%5D={{{template}}}|}}<span>{{{label|Book PDF Link}}}</span>}}]</span>
+<exportpdf mode="book" template={{{template|}}} page={{{book|}}} label={{{label|}}}></exportpdf>

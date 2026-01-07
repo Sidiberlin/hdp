@@ -4,6 +4,15 @@
 			"Cabal"
 		]
 	},
+	"bs-bookshelf-action-export-book": "ਕਿਤਾਬ ਬਰਾਮਦ ਕਰੋ",
 	"bs-books-overview-page-edit-book-anchor-title": "$1 ਕਿਤਾਬ ਦਾ ਸੋਧ ਕਰੋ",
-	"bs-books-overview-page-edit-book-anchor-aria-label": "$1 ਕਿਤਾਬ ਦਾ ਸੋਧ ਕਰੋ"
+	"bs-books-overview-page-edit-book-anchor-aria-label": "$1 ਕਿਤਾਬ ਦਾ ਸੋਧ ਕਰੋ",
+	"bs-bookshelf-add-mass-tool-title": "ਕਈ ਸਫ਼ੇ  ਜੋੜੋ",
+	"bs-bookshelf-add-mass-tool-label": "ਇੱਕੋ ਵਾਰ ਕਿਤਾਬ ਵਿੱਚ ਕਈ ਵਰਕੇ ਜੋੜੋ",
+	"bs-bookshelf-books-overview-page-book-action-export-book-title": "ਕਿਤਾਬ $1 ਬਰਾਮਦ ਕਰੋ",
+	"bs-bookshelf-books-overview-page-book-action-export-book-text": "ਬਰਾਮਦ",
+	"bs-bookshelf-book-page-book-action-export-book": "ਬਰਾਮਦ",
+	"bs-bookshelf-droplet-bookpdf-book-label": "ਬਰਾਮਦ ਲਈ ਕਿਤਾਬ",
+	"bs-bookshelf-droplet-bookpdf-template-label": "ਫਰਮਾ ਬਰਾਮਦ ਕਰੋ",
+	"bs-bookshelf-droplet-bookpdf-link-label": "ਬਰਾਮਦ ਕੜੀ ਲਈ ਲਿਖਤ"
 }

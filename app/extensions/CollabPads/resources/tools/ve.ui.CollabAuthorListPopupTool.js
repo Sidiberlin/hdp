@@ -185,6 +185,7 @@ ve.ui.CollabAuthorListPopupTool.prototype.updateAuthorCount = function () {
  */
 ve.ui.CollabAuthorListPopupTool.prototype.onSynchronizerAuthorUpdate = function ( authorId ) {
 	if ( authorId === this.synchronizer.getAuthorId() ) {
+		this.selfItem.update();
 		return;
 	}
 

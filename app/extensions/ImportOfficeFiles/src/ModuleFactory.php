@@ -3,8 +3,8 @@
 namespace MediaWiki\Extension\ImportOfficeFiles;
 
 use Exception;
-use ExtensionRegistry;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 
 class ModuleFactory {
 

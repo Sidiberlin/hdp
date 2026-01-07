@@ -6,7 +6,6 @@
 			"Robin Owain"
 		]
 	},
-	"bs-bookshelf-grouping-template-type-local_storage": "Llyfrau dros dro",
 	"bs-bookshelf-action-editbook": "Golygu ffynhonnell",
 	"bs-bookshelf-action-editbook-create": "Golygu ffynhonnell",
 	"bs-bookshelf-action-export-book": "Allforio'r llyfr",
@@ -16,11 +15,7 @@
 	"bs-bookshelf-editor-no-title-provided": "Ni chafwyd teitl llyfr dilys",
 	"bs-bookshelf-book-grid-title": "Llyfrau",
 	"prefs-bookshelf": "Tudalen arbennig y silff lyfrau",
-	"bs-bookshelf-prof-defaultview": "Y golwg diofyn",
-	"bs-bookshelf-prof-defaultview-grid": "Grid",
-	"bs-bookshelf-prof-defaultview-images": "Delweddau",
 	"bs-bookshelf-action-save-to-local-storage": "Wrthi'n cadw ar storfa leol",
-	"bs-bookshelf-pref-SupressBookNS": "Cuddio rhagddodiad parth erthyglau llyfr mewn allbwn",
 	"bs-bookshelf-search-center-filter-books-label": "Llyfr",
 	"bs-bookshelf-newbook-dlg-input-subtitle-label": "Isdeitl",
 	"bs-books-overview-page-edit-book-anchor-aria-label": "Golygu llyfr $1",

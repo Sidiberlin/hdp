@@ -7,10 +7,10 @@ class Links implements IProcessor {
 	 * @inheritDoc
 	 */
 	public function process( string $text ): string {
-		// plain URL (http://example.com)
-		$this->replaceRawUrl( $text );
 		// [my link](http://example.com)
 		$this->replaceSimpleLinks( $text );
+		// plain URL (http://example.com)
+		$this->replaceRawUrl( $text );
 
 		return $text;
 	}
@@ -20,7 +20,7 @@ class Links implements IProcessor {
 	 */
 	private function replaceSimpleLinks( string &$text ) {
 		$text = preg_replace_callback(
-			'/([\w' . implode( '', static::DELIMITERS ) . ']+)\s*\(<(http\s*[^\)]+\s*)>\)/',
+			'/([^\s<>]+?[' . implode( '', static::DELIMITERS ) . ']?)\s*\(<(http[^\s>]+)>\)/',
 			static function ( $matches ) {
 				$label = $matches[1];
 				$url = $matches[2];
@@ -35,7 +35,7 @@ class Links implements IProcessor {
 	 */
 	private function replaceRawUrl( string &$text ) {
 		$text = preg_replace_callback(
-			'/http\s*[^\s>]+/',
+			'/(?<!<a href=")(http[^\s>]+)(?!<\/a>)/',
 			static function ( $matches ) {
 				$url = $matches[0];
 				return "<a href=\"$url\">$url</a>";

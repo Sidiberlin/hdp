@@ -1,44 +1,44 @@
-bs_smwc_pf_input_usercombo_init = function( input_id, params ) {
-	mw.loader.using( [ 'ext.BSSMWConnector', 'ext.bluespice.extjs' ] ).done( function() {
-		Ext.onReady( function(){
-			_initUserCombo( input_id, params );
-		} );
-	});
+bs_smwc_pf_input_usercombo_init = function ( input_id, params ) { // eslint-disable-line camelcase, no-implicit-globals, no-undef
+	mw.loader.using( [ 'ext.BSSMWConnector', 'ext.oOJSPlus.widgets' ] ).done( () => {
+		_initUserCombo( input_id, params );
+	} );
 
-	function _initUserCombo( input_id, params ) {
-		var userCombo = Ext.create( 'BS.form.UserCombo', {
-			hideLabel: true,
-			value_field: 'user_name',
-			style: 'display: inline-block; background-color: transparent',
-			storeFilters: [
-				{
-					type: 'list',
-					comparison: 'ct',
-					property: 'groups',
-					value: params.groups
-				}
-			]
-		} );
+	function _initUserCombo( input_id, params ) { // eslint-disable-line camelcase, no-shadow, no-underscore-dangle
+		const cfg = {
+			$overlay: true
+		};
+		if ( params.groups ) {
+			cfg.groups = params.groups;
+		}
+		cfg.placeholder = params.placeholder;
+		const userPicker = new OOJSPlus.ui.widget.UserPickerWidget( cfg );
 
-		//On multitemplate, the container we are rendering to loses its id,
-		//so it needs to be recreated
-		if( $( '#' + input_id + '_cnt' ).length == 0 ) {
-			$( '#' + input_id ).parent( 'span' ).attr( 'id', input_id + '_cnt' );
+		// On multitemplate, the container we are rendering to loses its id,
+		// so it needs to be recreated
+		let $cnt = $( '#' + input_id + '_cnt' ); // eslint-disable-line camelcase
+		const $input = $( '#' + input_id ); // eslint-disable-line camelcase
+		if ( $cnt.length === 0 ) {
+			$input.parent( 'span' ).attr( 'id', input_id + '_cnt' ); // eslint-disable-line camelcase
+			$cnt = $input.parent();
 		}
 
-		userCombo.render( $( '#' + input_id + '_cnt' )[0] );
-
-		//Update hidden input on change
-		userCombo.addListener( 'select', function( sender, record ) {
-			if( !record || !record.hasOwnProperty( 'data' ) ) {
-				$( '#' + input_id ).val('');
+		userPicker.connect( this, {
+			change: function ( value ) {
+				const selected = userPicker.getSelectedUser();
+				if ( selected ) {
+					$input.val( selected.userWidget.user.page_prefixed_text );
+				} else if ( !value ) {
+					$input.val( '' );
+				}
+			},
+			choose: function ( item ) {
+				$input.val( item.userWidget.user.page_prefixed_text );
 			}
-			$( '#' + input_id ).val( record.get( 'page_prefixed_text' ) );
 		} );
+		$cnt.append( userPicker.$element );
 
-		//Set value
-		if( params.hasOwnProperty( 'userRecord' ) ) {
-			userCombo.setValue( Ext.create( 'BS.model.User', params.userRecord ) );
+		if ( params.hasOwnProperty( 'username' ) ) {
+			userPicker.setValue( params.username );
 		}
 	}
 };

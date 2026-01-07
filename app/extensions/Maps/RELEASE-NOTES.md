@@ -3,6 +3,27 @@ different releases and which versions of PHP and MediaWiki they support, see the
 [platform compatibility tables](INSTALL.md#platform-compatibility-and-release-status).
 
 
+## Maps 11.0.1
+
+Released on March 16th, 2025.
+
+* Improved compatibility with future Semantic MediaWiki versions
+
+## Maps 11.0.0
+
+Released on March 5th, 2025.
+
+* Improved encoding of the map data in the HTML. Parser cache rebuild is recommended after upgrading
+* Dropped dependence on the Validator library
+
+## Maps 10.3.0
+
+Released on November 28th, 2024.
+
+* Added compatibility with MediaWiki 1.43
+* Added geolocation support for Google Maps with a new `mylocation` parameter
+* Fixed compatibility with recent versions of Cargo
+
 ## Maps 10.2.0
 
 Released on May 13th, 2024.

@@ -10,7 +10,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Изворно",
 	"bs-visualeditorconnector-upload-type-simple": "Просто",
 	"bs-visualeditorconnector-upload-type-one-click": "Еден стисок",
-	"bs-visualeditorconnector-upload-type": "Вид подигање",
 	"bs-visualeditorconnector-cancel-edit": "Откажи уредување",
 	"bs-visualeditor-nsm-label": "Нагледен уредник",
 	"bs-visualeditorconnector-inspector-tab-common-name": "Заеднички",
@@ -34,5 +33,6 @@
 	"bs-visualeditor-linkcontext-label-change": "Промени натпис",
 	"bs-visualeditor-linkcontext-label-label": "Натпис",
 	"bs-visualeditorconnector-text-style-indent-label": "Отстап",
-	"bs-visualeditorconnector-indent-annotation-desc": "Отстапува избран текст"
+	"bs-visualeditorconnector-indent-annotation-desc": "Отстапува избран текст",
+	"bs-visualeditorconnector-upload-type": "Вид подигање"
 }

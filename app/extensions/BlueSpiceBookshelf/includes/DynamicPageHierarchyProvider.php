@@ -13,7 +13,7 @@ class DynamicPageHierarchyProvider extends PageHierarchyProvider {
 		$this->sSourceArticleTitle  = $title;
 		$this->sIndentChar          = $params['indent-char'];
 
-		$this->cache = ObjectCache::getLocalClusterInstance();
+		$this->cache = MediaWikiServices::getInstance()->getObjectCacheFactory()->getLocalClusterInstance();
 		if ( !isset( $params['content'] ) ) {
 			throw new MWException( 'Parameter \"content\" is required"' );
 		}

@@ -10,7 +10,7 @@ ext.visualEditorPlus.ui.UnderlineItalicSequence = function ExtVisualEditorPlusUi
 };
 OO.inheritClass( ext.visualEditorPlus.ui.UnderlineItalicSequence, ext.visualEditorPlus.ui.WrapperSequenceBase );
 
-ext.visualEditorPlus.ui.UnderlineItalicSequence.prototype.execute = function ( surface, range ) {
+ext.visualEditorPlus.ui.UnderlineItalicSequence.prototype.execute = function ( surface, range ) { // eslint-disable-line no-unused-vars
 	if ( surface.getMode() !== 'visual' ) {
 		return null;
 	}

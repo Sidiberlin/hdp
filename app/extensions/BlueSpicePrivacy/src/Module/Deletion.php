@@ -5,31 +5,79 @@ namespace BlueSpice\Privacy\Module;
 use BlueSpice\Privacy\Event\DeletionFailed;
 use BlueSpice\Privacy\Event\DeletionRejected;
 use BlueSpice\Privacy\ModuleRequestable;
+use Exception;
 use MailAddress;
 use MediaWiki\Block\DatabaseBlock;
-use Message;
-use MWException;
+use MediaWiki\Block\DatabaseBlockStore;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Config\ConfigFactory;
+use MediaWiki\Language\Language;
+use MediaWiki\Message\Message;
+use MediaWiki\Permissions\GroupPermissionsLookup;
+use MediaWiki\Permissions\PermissionManager;
+use MediaWiki\SpecialPage\SpecialPageFactory;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
+use MediaWiki\User\UserFactory;
 use MWStake\MediaWiki\Component\Events\NotificationEvent;
+use MWStake\MediaWiki\Component\Events\Notifier;
 use Throwable;
-use User;
 use UserMailer;
+use Wikimedia\Rdbms\ILoadBalancer;
 
 class Deletion extends ModuleRequestable {
+
+	/**
+	 * @var DatabaseBlockStore
+	 */
+	protected $databaseBlockStore;
+
+	/**
+	 * @var Config
+	 */
+	protected $mainConfig;
+
+	/**
+	 * @param ILoadBalancer $lb
+	 * @param Notifier $notifier
+	 * @param PermissionManager $permissionManager
+	 * @param ConfigFactory $configFactory
+	 * @param UserFactory $userFactory
+	 * @param Language $language
+	 * @param SpecialPageFactory $specialPageFactory
+	 * @param GroupPermissionsLookup $groupPermissionsLookup
+	 * @param DatabaseBlockStore $databaseBlockStore
+	 * @param Config $mainConfig
+	 */
+	public function __construct(
+		ILoadBalancer $lb, Notifier $notifier, PermissionManager $permissionManager, ConfigFactory $configFactory,
+		UserFactory $userFactory, Language $language, SpecialPageFactory $specialPageFactory,
+		GroupPermissionsLookup $groupPermissionsLookup, DatabaseBlockStore $databaseBlockStore, Config $mainConfig
+	) {
+		parent::__construct(
+			$lb, $notifier, $permissionManager, $configFactory,
+			$userFactory, $language, $specialPageFactory, $groupPermissionsLookup
+		);
+		$this->databaseBlockStore = $databaseBlockStore;
+		$this->mainConfig = $mainConfig;
+	}
 
 	/**
 	 *
 	 * @param string $func
 	 * @param array $data
-	 * @return \Status
+	 * @return Status
+	 * @throws Exception
 	 */
 	public function call( $func, $data ) {
 		if ( !$this->verifyUser() ) {
-			\Status::newFatal( wfMessage( 'bs-privacy-invalid-user' ) );
+			Status::newFatal( wfMessage( 'bs-privacy-invalid-user' ) );
 		}
 
 		if ( $func === 'delete' ) {
 			if ( !isset( $data['username'] ) ) {
-				return \Status::newFatal( wfMessage( 'bs-privacy-missing-param', "username" ) );
+				return Status::newFatal( wfMessage( 'bs-privacy-missing-param', "username" ) );
 			}
 			return $this->delete( $data['username'] );
 		}
@@ -40,23 +88,22 @@ class Deletion extends ModuleRequestable {
 	/**
 	 *
 	 * @param string $username
-	 * @return \Status
+	 * @return Status
+	 * @throws Exception
 	 */
 	protected function delete( $username ) {
-		$executingUser = $this->context->getUser();
-
-		$user = $this->services->getUserFactory()->newFromName( $username );
+		$user = $this->userFactory->newFromName( $username );
 		if ( !$user || !$user->isRegistered() ) {
-			return \Status::newFatal( 'bs-privacy-invalid-user' );
+			return Status::newFatal( 'bs-privacy-invalid-user' );
 		}
 
-		if ( $this->requestsEnabled === false && $executingUser->getName() !== $user->getName() ) {
-			return \Status::newFatal( 'bs-privacy-api-username-mismatch' );
+		if ( !$this->isRequestable() && $this->user->getName() !== $user->getName() ) {
+			return Status::newFatal( 'bs-privacy-api-username-mismatch' );
 		}
 
 		$deletedUser = $this->assertDeletedUser();
 		if ( !$deletedUser || $deletedUser->getId() === 0 ) {
-			return \Status::newFatal( 'bs-privacy-cannot-assert-deleted-user' );
+			return Status::newFatal( 'bs-privacy-cannot-assert-deleted-user' );
 		}
 
 		$status = $this->runHandlers( 'delete', [
@@ -86,29 +133,28 @@ class Deletion extends ModuleRequestable {
 	/**
 	 *
 	 * @param int $requestId
-	 * @return \Status
+	 * @return Status
 	 */
 	protected function approveRequest( $requestId ) {
 		if ( !$this->checkAdminPermissions() ) {
-			return \Status::newFatal( 'bs-privacy-admin-access-denied' );
+			return Status::newFatal( 'bs-privacy-admin-access-denied' );
 		}
 
 		$request = $this->getRequestById( $requestId );
 		if ( !$request ) {
-			return \Status::newFatal( 'bs-privacy-admin-invalid-request' );
+			return Status::newFatal( 'bs-privacy-admin-invalid-request' );
 		}
 
 		$data = unserialize( $request->pr_data );
 
 		// Send notification while user still exists that deletion process is being carried out
-		$user = $this->services->getUserFactory()->newFromName( $data['username'] );
+		$user = $this->userFactory->newFromName( $data['username'] );
 		if ( $user && $user->canReceiveEmail() ) {
 			try {
 				$this->sendDeletionConfirmation( $user );
 			} catch ( Throwable $ex ) {
 				// Do nothing, failing to send mail does not fail deletion
 			}
-
 		}
 
 		$status = $this->delete( $data['username'] );
@@ -126,15 +172,14 @@ class Deletion extends ModuleRequestable {
 	 * created and exits.
 	 *
 	 * @return User|null if Deleted user cannot be created
-	 * @throws \ConfigException
-	 * @throws MWException
+	 * @throws ConfigException
 	 */
 	protected function assertDeletedUser() {
-		$deletedUsername = $this->services->getConfigFactory()->makeConfig( 'bsg' )->get(
+		$deletedUsername = $this->configFactory->makeConfig( 'bsg' )->get(
 			'PrivacyDeleteUsername'
 		);
 
-		$deletedUser = $this->services->getUserFactory()->newFromName( $deletedUsername );
+		$deletedUser = $this->userFactory->newFromName( $deletedUsername );
 		if ( !$deletedUser ) {
 			return null;
 		}
@@ -148,9 +193,9 @@ class Deletion extends ModuleRequestable {
 			// Block user
 			$block = new DatabaseBlock();
 			$block->setTarget( $deletedUser );
-			$block->setBlocker( $this->context->getUser() );
+			$block->setBlocker( $this->user );
 			$block->setExpiry( 'infinity' );
-			$this->services->getDatabaseBlockStore()->insertBlock( $block );
+			$this->databaseBlockStore->insertBlock( $block );
 		}
 		return $deletedUser;
 	}
@@ -164,11 +209,11 @@ class Deletion extends ModuleRequestable {
 	public function getRequestDeniedNotification( $request, $comment ) {
 		$requestData = unserialize( $request->pr_data );
 
-		$user = $this->services->getUserFactory()->newFromName( $requestData['username'] );
+		$user = $this->userFactory->newFromName( $requestData['username'] );
 		if ( !$user ) {
-			$user = $this->services->getUserFactory()->newAnonymous();
+			$user = $this->userFactory->newAnonymous();
 		}
-		return new DeletionRejected( $this->context->getUser(), $user, $comment );
+		return new DeletionRejected( $this->user, $user, $comment );
 	}
 
 	/**
@@ -199,14 +244,13 @@ class Deletion extends ModuleRequestable {
 	/**
 	 * @param User $user
 	 * @return void
-	 * @throws MWException
 	 */
 	private function sendDeletionConfirmation( User $user ) {
-		$msg = Message::newFromKey( 'bs-privacy-event-deletion-done' )->params( $this->context->getUser()->getName() );
+		$msg = Message::newFromKey( 'bs-privacy-event-deletion-done' )->params( $this->user->getName() );
 		UserMailer::send(
 			MailAddress::newFromUser( $user ),
 			new MailAddress(
-				$this->services->getMainConfig()->get( 'PasswordSender' ),
+				$this->mainConfig->get( 'PasswordSender' ),
 				Message::newFromKey( 'emailsender' )->text()
 			),
 			Message::newFromKey( 'bs-privacy-event-deletion-done-desc' )->text(),

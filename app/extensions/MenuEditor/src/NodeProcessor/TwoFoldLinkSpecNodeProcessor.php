@@ -3,18 +3,19 @@
 namespace MediaWiki\Extension\MenuEditor\NodeProcessor;
 
 use MediaWiki\Extension\MenuEditor\Node\TwoFoldLinkSpec;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\Wikitext\NodeSource\WikitextSource;
 use MWStake\MediaWiki\Lib\Nodes\INode;
 use MWStake\MediaWiki\Lib\Nodes\INodeSource;
 
 class TwoFoldLinkSpecNodeProcessor extends MenuNodeProcessor {
-	/** @var \TitleFactory */
+	/** @var TitleFactory */
 	private $titleFactory;
 
 	/**
-	 * @param \TitleFactory $titleFactory
+	 * @param TitleFactory $titleFactory
 	 */
-	public function __construct( \TitleFactory $titleFactory ) {
+	public function __construct( TitleFactory $titleFactory ) {
 		$this->titleFactory = $titleFactory;
 	}
 

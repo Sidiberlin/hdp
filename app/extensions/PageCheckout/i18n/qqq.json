@@ -46,6 +46,5 @@
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "Field label.\n{{Identical|User}}",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user-help": "Field help message",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Field label.\n{{Identical|Page name}}",
-	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename-help": "Field help message",
-	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-force": "Field label.\n{{Identical|Force?}}"
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename-help": "Field help message"
 }

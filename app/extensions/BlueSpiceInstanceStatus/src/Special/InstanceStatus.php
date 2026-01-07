@@ -2,29 +2,22 @@
 
 namespace BlueSpice\InstanceStatus\Special;
 
-use BlueSpice\InstanceStatus\IStatusProvider;
-use ExtensionRegistry;
-use Html;
-use MediaWiki\Logger\LoggerFactory;
-use Message;
-use MWException;
-use SpecialPage;
-use Wikimedia\ObjectFactory\ObjectFactory;
+use BlueSpice\InstanceStatus\StatusReport;
+use MediaWiki\Html\Html;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
 
 class InstanceStatus extends SpecialPage {
 
-	/**
-	 *
-	 * @var ObjectFactory
-	 */
-	protected $objectFactory = null;
+	/** @var StatusReport */
+	private StatusReport $report;
 
 	/**
-	 * @param ObjectFactory $objectFactory
+	 * @param StatusReport $report
 	 */
-	public function __construct( ObjectFactory $objectFactory ) {
+	public function __construct( StatusReport $report ) {
 		parent::__construct( 'InstanceStatus', 'wikiadmin' );
-		$this->objectFactory = $objectFactory;
+		$this->report = $report;
 	}
 
 	/**
@@ -51,30 +44,7 @@ class InstanceStatus extends SpecialPage {
 	 * @return void
 	 */
 	private function addStatusData() {
-		$logger = LoggerFactory::getInstance( 'BlueSpiceInstanceStatus' );
-		$attribute = ExtensionRegistry::getInstance()->getAttribute( 'BlueSpiceInstanceStatusInstanceStatusProvider' );
-		$statusInfo = [];
-		foreach ( $attribute as $key => $spec ) {
-			$instance = $this->objectFactory->createObject( $spec );
-			if ( !$instance instanceof IStatusProvider ) {
-				throw new MWException( "Invalid factory spec for InstanceStatusProvider $key" );
-			}
-
-			$statusInfo[$key] = [
-				'label' => $instance->getLabel(),
-				'value' => $instance->getValue(),
-				'icon' => $instance->getIcon(),
-				'priority' => $instance->getPriority()
-			];
-		}
-
-		uasort( $statusInfo, static function ( $a, $b ) {
-			if ( $a['priority'] === $b['priority'] ) {
-				return 0;
-			}
-			return ( $a['priority'] < $b['priority'] ) ? -1 : 1;
-		} );
-
+		$statusInfo = $this->report->getReportForUI();
 		$this->getOutput()->addJsConfigVars( 'bsInstanceStatus_StatusData', $statusInfo );
 	}
 }

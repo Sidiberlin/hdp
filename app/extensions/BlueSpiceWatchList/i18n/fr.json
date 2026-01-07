@@ -1,13 +1,13 @@
 {
 	"@metadata": {
 		"authors": [
+			"Derugon",
 			"Gomoko",
 			"Verdy p",
 			"Wladek92"
 		]
 	},
 	"bs-watchlist-desc": "Ajoute un widget et une balise de liste de suivi",
-	"bs-watchlist-title-sidebar": "Liste de suivi",
 	"bs-watchlist-pref-sort-time": "Horodatage",
 	"bs-watchlist-pref-sort-title": "Titre",
 	"bs-watchlist-tag-watchlist-desc": "Affiche les articles qui ont des modifications les plus récentes et qui sont sur votre liste de suivi.",
@@ -32,5 +32,6 @@
 	"bs-watchlist-tag-watchlist-attr-pagename-help": "Aide sur le nom de page",
 	"bs-watchlist-tag-watchlist-attr-time-help": "Aide sur l’heure",
 	"bs-watchlist-droplet-name": "Liste de suivi",
-	"bs-watchlist-droplet-description": "Dernières modifications des pages incluses dans la liste de suivi"
+	"bs-watchlist-droplet-description": "Dernières modifications des pages incluses dans la liste de suivi",
+	"bs-watchlist-usersidebar-title": "Liste de suivi"
 }

@@ -4,8 +4,8 @@ declare( strict_types=1 );
 
 namespace MWStake\MediaWiki\Component\Events\Delivery;
 
+use MediaWiki\Message\Message;
 use MediaWiki\User\UserIdentity;
-use Message;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
 use MWStake\MediaWiki\Component\Events\Notification;
 

@@ -2,11 +2,11 @@
 
 namespace MediaWiki\Extension\CollabPads\Hook\EnhancedChangesListModifyLineData;
 
-use Html;
 use MediaWiki\Extension\CollabPads\CollabRevisionManager;
 use MediaWiki\Hook\EnhancedChangesListModifyBlockLineDataHook;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkRenderer;
-use Title;
+use MediaWiki\Title\Title;
 
 class IntegrateIntoNonGroupedRecentChanges implements EnhancedChangesListModifyBlockLineDataHook {
 

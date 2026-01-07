@@ -26,6 +26,9 @@
  */
 namespace BlueSpice\Hook;
 
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+
 abstract class GetDoubleUnderscoreIDs extends \BlueSpice\Hook {
 
 	/**
@@ -51,8 +54,8 @@ abstract class GetDoubleUnderscoreIDs extends \BlueSpice\Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param array &$doubleUnderscoreIDs
 	 */
 	public function __construct( $context, $config, &$doubleUnderscoreIDs ) {

@@ -74,11 +74,10 @@ class ComponentRendererFactory {
 		// Renderer available for current environment?
 		if ( isset( $this->rendererRegistry[$this->rendererType][$rendererKey] ) ) {
 			$spec = $this->rendererRegistry[$this->rendererType][$rendererKey];
-		}
-		// Try to fall back to "generic" renderer
- elseif ( isset( $this->rendererRegistry['*'][$rendererKey] ) ) {
+		} elseif ( isset( $this->rendererRegistry['*'][$rendererKey] ) ) {
+			// Try to fall back to "generic" renderer
 			$spec = $this->rendererRegistry['*'][$rendererKey];
- }
+		}
 		// Convert simple registration to `ObjectFactory` compatible spec
 		if ( is_string( $spec ) && !empty( $spec ) ) {
 			$callback = $spec;

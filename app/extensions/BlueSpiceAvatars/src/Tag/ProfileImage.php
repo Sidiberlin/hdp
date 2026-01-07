@@ -5,8 +5,8 @@ namespace BlueSpice\Avatars\Tag;
 use BlueSpice\Tag\MarkerType;
 use BlueSpice\Tag\MarkerType\NoWiki;
 use MediaWiki\MediaWikiServices;
-use Parser;
-use PPFrame;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class ProfileImage extends \BlueSpice\Tag\Tag {
 
@@ -81,7 +81,7 @@ class ProfileImage extends \BlueSpice\Tag\Tag {
 			$processedArgs,
 			$parser,
 			$frame,
-			MediaWikiServices::getInstance()->getService( 'BSDynamicFileDispatcherUrlBuilder' ),
+			MediaWikiServices::getInstance()->getService( 'MWStake.DynamicFileDispatcher.Factory' ),
 			MediaWikiServices::getInstance()->getService( 'BSRendererFactory' )
 		);
 	}

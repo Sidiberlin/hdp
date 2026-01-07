@@ -152,11 +152,8 @@ class ExtArrays {
 
 			// if 'singleempty' is NOT set, {{#arraydefine:a|}} will be empty.
 			// by default this would give an empty array (due to historical as well as usability reasons)
-			if ( !array_key_exists( 'singleempty', $arrayOptions ) ) {
-				// there is no other uncomplicated way than this to define a single empty elemented array currently!
-				if ( count( $array ) === 1 && $array[0] === '' ) {
-					$array = [];
-				}
+			if ( !array_key_exists( 'singleempty', $arrayOptions ) && $array === [ '' ] ) {
+				$array = [];
 			}
 
 			/**
@@ -375,7 +372,7 @@ class ExtArrays {
 		$store = self::get( $parser );
 
 		if ( !$store->arrayExists( $arrayId ) ) {
-		   return '';
+			return '';
 		}
 
 		return count( $store->getArray( $arrayId ) );
@@ -571,7 +568,7 @@ class ExtArrays {
 		if ( $array === null
 			|| !is_numeric( $offset ) // don't ignore invalid offset
 		) {
-		   return '';
+			return '';
 		}
 
 		if ( !is_numeric( $length ) ) {
@@ -635,9 +632,9 @@ class ExtArrays {
 		$store = self::get( $parser );
 
 		if ( $store->arrayExists( $arrayId ) ) {
-		   $array = $store->getArray( $arrayId );
-		   $array = self::array_unique( $array );
-		   $store->setArray( $arrayId, $array );
+			$array = $store->getArray( $arrayId );
+			$array = self::array_unique( $array );
+			$store->setArray( $arrayId, $array );
 		}
 		return '';
 	}
@@ -663,7 +660,7 @@ class ExtArrays {
 		$array = $store->getArray( $arrayId );
 
 		if ( $array === null ) {
-		   return '';
+			return '';
 		}
 
 		// sort array and store it
@@ -936,9 +933,15 @@ class ExtArrays {
 	 * same as self::arrayUnique() but without sanitazation, only for internal use.
 	 */
 	protected static function array_unique( array $array ) {
-		return array_filter( array_unique( $array ), static function ( $value ) {
-			return $value !== '';
-		} );
+		$values = [];
+
+		foreach ( array_unique( $array ) as $value ) {
+			if ( $value !== '' ) {
+				$values[] = $value;
+			}
+		}
+
+		return $values;
 	}
 
 	# #############

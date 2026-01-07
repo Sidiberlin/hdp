@@ -1,7 +1,6 @@
-
 bs.util.registerNamespace( 'bs.vec.dm' );
 
-bs.vec.dm.InternalFileLinkAnnotation = function() {
+bs.vec.dm.InternalFileLinkAnnotation = function () {
 	// Parent constructor
 	bs.vec.dm.InternalFileLinkAnnotation.super.apply( this, arguments );
 };
@@ -15,10 +14,10 @@ OO.inheritClass( bs.vec.dm.InternalFileLinkAnnotation, ve.dm.MWInternalLinkAnnot
 bs.vec.dm.InternalFileLinkAnnotation.static.name = 'link/internalFile';
 
 bs.vec.dm.InternalFileLinkAnnotation.static.matchTagNames = [ 'a' ];
-bs.vec.dm.InternalFileLinkAnnotation.static.matchFunction = function( domElement ) {
-	var title = domElement.getAttribute( 'title' ),
-		titleObject,
-		namespaceIds = mw.config.get( 'wgNamespaceIds' );
+bs.vec.dm.InternalFileLinkAnnotation.static.matchFunction = function ( domElement ) {
+	const title = domElement.getAttribute( 'title' );
+	let titleObject;
+	const namespaceIds = mw.config.get( 'wgNamespaceIds' );
 	if ( !title ) {
 		return false;
 	}
@@ -38,7 +37,7 @@ bs.vec.dm.InternalFileLinkAnnotation.static.matchFunction = function( domElement
 };
 
 bs.vec.dm.InternalFileLinkAnnotation.static.toDataElement = function ( domElements, converter ) {
-	var targetData = this.getTargetDataFromHref(
+	const targetData = this.getTargetDataFromHref(
 		domElements[ 0 ].getAttribute( 'href' ),
 		converter.getTargetHtmlDocument()
 	);
@@ -46,11 +45,9 @@ bs.vec.dm.InternalFileLinkAnnotation.static.toDataElement = function ( domElemen
 	return {
 		type: this.name,
 		attributes: {
-			hrefPrefix: targetData.hrefPrefix,
 			title: targetData.title,
 			normalizedTitle: this.normalizeTitle( targetData.title ),
-			lookupTitle: this.getLookupTitle( targetData.title ),
-			origTitle: targetData.rawTitle
+			lookupTitle: this.getLookupTitle( targetData.title )
 		}
 	};
 };
@@ -63,17 +60,16 @@ bs.vec.dm.InternalFileLinkAnnotation.static.toDataElement = function ( domElemen
  * @return {ve.dm.MWInternalLinkAnnotation} The annotation.
  */
 bs.vec.dm.InternalFileLinkAnnotation.static.newFromImageInfo = function ( imageInfo, rawTitle ) {
-	var title = imageInfo.title || imageInfo.canonicaltitle,
-		titleObject = mw.Title.newFromText( title ),
-		element,
-		target = titleObject.toText();
+	const title = imageInfo.title || imageInfo.canonicaltitle;
+	const titleObject = mw.Title.newFromText( title );
+	let target = titleObject.toText();
 
 	if ( titleObject.getNamespaceId() !== bs.ns.NS_FILE ) {
 		return null;
 	}
 
 	target = ':' + target;
-	element = {
+	const element = {
 		type: 'link/internalFile',
 		attributes: {
 			title: target,
@@ -89,8 +85,7 @@ bs.vec.dm.InternalFileLinkAnnotation.static.newFromImageInfo = function ( imageI
 };
 
 bs.vec.dm.InternalFileLinkAnnotation.static.newFromTitle = function ( title, rawTitle ) {
-	var element,
-		target = title.toText();
+	let target = title.toText();
 
 	if ( title.getNamespaceId() !== bs.ns.NS_FILE ) {
 		return null;
@@ -98,7 +93,7 @@ bs.vec.dm.InternalFileLinkAnnotation.static.newFromTitle = function ( title, raw
 
 	target = ':' + target;
 
-	element = {
+	const element = {
 		type: 'link/internalFile',
 		attributes: {
 			title: target,

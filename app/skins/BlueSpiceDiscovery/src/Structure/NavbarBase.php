@@ -9,7 +9,7 @@ use BlueSpice\Discovery\ITemplateDataProvider;
 use BlueSpice\Discovery\ITemplateProvider;
 use BlueSpice\Discovery\Renderer\ComponentRenderer;
 use BlueSpice\Discovery\Renderer\SkinSlotRenderer;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Permissions\PermissionManager;
 
 abstract class NavbarBase implements ISkinStructure, ITemplateProvider, IResourceProvider {

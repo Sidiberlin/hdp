@@ -2,19 +2,23 @@
 
 namespace MediaWiki\Extension\Workflows;
 
-use CommentStoreComment;
-use Content;
-use FormatJson;
+use InvalidArgumentException;
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Content\Content;
 use MediaWiki\Extension\Workflows\MediaWiki\Content\TriggerDefinitionContent;
+use MediaWiki\Extension\Workflows\Query\WorkflowStateStore;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
 use MediaWiki\Storage\PageUpdater;
-use MWException;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
+use MediaWiki\User\User;
+use MediaWiki\User\UserIdentity;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
-use Title;
-use TitleFactory;
+use RuntimeException;
 use Wikimedia\ObjectFactory\ObjectFactory;
 use WikiPage;
 
@@ -35,6 +39,9 @@ class TriggerRepo {
 	/** @var ObjectFactory */
 	private $objectFactory;
 
+	/** @var WorkflowStateStore */
+	private $workflowStore;
+
 	/** @var bool */
 	private $loaded = false;
 
@@ -52,15 +59,16 @@ class TriggerRepo {
 
 	/**
 	 * @param WorkflowFactory $workflowFactory
-	 * @param \TitleFactory $titleFactory
+	 * @param WorkflowStateStore $stateStore
+	 * @param TitleFactory $titleFactory
 	 * @param LoggerInterface $logger
 	 * @param ObjectFactory $objectFactory
 	 * @param string $page
 	 * @param array $triggerTypeRegistry
 	 */
 	public function __construct(
-		WorkflowFactory $workflowFactory, \TitleFactory $titleFactory, LoggerInterface $logger,
-		ObjectFactory $objectFactory, $page, $triggerTypeRegistry
+		WorkflowFactory $workflowFactory, WorkflowStateStore $stateStore, TitleFactory $titleFactory,
+		LoggerInterface $logger, ObjectFactory $objectFactory, $page, $triggerTypeRegistry
 	) {
 		$this->workflowFactory = $workflowFactory;
 		$this->titleFactory = $titleFactory;
@@ -68,6 +76,7 @@ class TriggerRepo {
 		$this->objectFactory = $objectFactory;
 		$this->page = $page;
 		$this->triggerTypeRegistry = $triggerTypeRegistry;
+		$this->workflowStore = $stateStore;
 	}
 
 	/**
@@ -101,7 +110,7 @@ class TriggerRepo {
 	 */
 	public function getActive( $type ): array {
 		$this->assertLoaded();
-		return array_filter( $this->getAllOfType( $type ),  static function ( $trigger ) {
+		return array_filter( $this->getAllOfType( $type ), static function ( $trigger ) {
 			return $trigger->isActive();
 		} );
 	}
@@ -180,6 +189,9 @@ class TriggerRepo {
 			return;
 		}
 		$object->setWorkflowFactory( $this->workflowFactory );
+		if ( $object instanceof NoParallelTrigger ) {
+			$object->setWorkflowStore( $this->workflowStore );
+		}
 		if ( $object instanceof LoggerAwareInterface ) {
 			$object->setLogger( $this->logger );
 		}
@@ -189,14 +201,15 @@ class TriggerRepo {
 
 	/**
 	 * @param string $name
+	 * @param UserIdentity $user
 	 * @return bool
 	 */
-	public function deleteTrigger( $name ) {
+	public function deleteTrigger( $name, $user ) {
 		$this->assertLoaded();
 		$triggers = $this->getRawTriggers();
 		if ( isset( $triggers[$name] ) ) {
 			unset( $triggers[$name] );
-			return $this->setContent( $triggers );
+			return $this->setContent( $triggers, $user );
 		}
 
 		return false;
@@ -207,9 +220,10 @@ class TriggerRepo {
 	 *
 	 * @param string $name
 	 * @param array $data
+	 * @param User $user
 	 * @return bool
 	 */
-	public function upsertTrigger( $name, $data ) {
+	public function upsertTrigger( $name, $data, $user ) {
 		$this->assertLoaded();
 		$triggers = $this->getRawTriggers();
 		if ( isset( $triggers[$name] ) ) {
@@ -218,17 +232,18 @@ class TriggerRepo {
 			$triggers[$name] = $data;
 		}
 
-		return $this->setContent( $triggers );
+		return $this->setContent( $triggers, $user );
 	}
 
 	/**
 	 * @param array $data
+	 * @param UserIdentity $user
 	 * @return bool
 	 */
-	public function setContent( $data ) {
+	public function setContent( $data, $user ) {
 		$this->assertLoaded();
 		$content = new TriggerDefinitionContent( FormatJson::encode( $data ) );
-		$updater = $this->getPageUpdater();
+		$updater = $this->getPageUpdater( $user );
 		$updater->setContent( SlotRecord::MAIN, $content );
 
 		if ( $this->persistContent( $updater ) ) {
@@ -252,8 +267,12 @@ class TriggerRepo {
 		return $this->wikipage->getTitle();
 	}
 
-	private function getPageUpdater() {
-		return $this->wikipage->newPageUpdater( \User::newSystemUser( 'MediaWiki default', [ 'steal' => true ] ) );
+	/**
+	 * @param UserIdentity $user
+	 * @return PageUpdater
+	 */
+	private function getPageUpdater( $user ) {
+		return $this->wikipage->newPageUpdater( $user );
 	}
 
 	/**
@@ -266,7 +285,7 @@ class TriggerRepo {
 	/**
 	 * @param PageUpdater $updater
 	 * @return bool
-	 * @throws MWException
+	 * @throws RuntimeException
 	 */
 	private function persistContent( PageUpdater $updater ) {
 		$revision = $updater->saveRevision(
@@ -287,7 +306,7 @@ class TriggerRepo {
 	}
 
 	/**
-	 * @throws MWException
+	 * @throws InvalidArgumentException
 	 */
 	private function setWikipage() {
 		$title = $this->titleFactory->newFromText( $this->page );

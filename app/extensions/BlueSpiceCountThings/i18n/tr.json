@@ -30,7 +30,5 @@
 	"bs-countthings-tag-countfiles-desc": "Vikideki dosya sayısını görüntüler.",
 	"bs-countthings-tag-countcharacters-desc": "Belirtilen makalenin içeriği hakkında meta veriler oluşturur. Çıktı, bir makaleye entegre edilebilecek bir bilgi kutusudur. \"mode\" parametresi ile farklı türde bilgiler görüntülenebilir.",
 	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: Ne sayılmalıdır <code>chars</code> (karakterler), <code>words</code> (kelimeler) veya <code>pages</code> (sayfalar).",
-	"bs-countthings-tag-countcharacters-example-1": "Kelime sayısı",
-	"bs-countthings-tag-countcharacters-example-2": "Karakter sayısı",
 	"bs-countthings-droplet-articles-name": "Sayfa sayısı"
 }

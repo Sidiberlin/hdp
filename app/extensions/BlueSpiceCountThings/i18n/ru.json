@@ -35,13 +35,11 @@
 	"bs-countthings-tag-countfiles-desc": "Показывает количество файлов в вики.",
 	"bs-countthings-tag-countcharacters-desc": "Генерирует метаданные о содержании указанной статьи. На выходе получается карточка, которая может быть включена в статью. С помощью параметра «mode» можно отображать разные типы информации.",
 	"bs-countthings-tag-countcharacters-desc-param-mode": "<code>mode</code>: Что следует считать <code>chars</code> (символы), <code>words</code> (слова) или <code>pages</code> (страницы).",
-	"bs-countthings-tag-countcharacters-example-1": "Число слов",
-	"bs-countthings-tag-countcharacters-example-2": "Число символов",
 	"bs-countthings-droplet-articles-name": "Количество страниц",
+	"bs-countthings-droplet-articles-description": "Показывает количество страниц",
+	"bs-countthings-droplet-characters-name": "Количество символов",
+	"bs-countthings-droplet-characters-description": "Показывает количество символов или слов на вики-странице.",
 	"bs-countthings-droplet-files-name": "Количество файлов",
 	"bs-countthings-droplet-files-description": "Показывает количество всех загруженных файлов",
-	"bs-countthings-droplet-user-name": "Количество участников",
-	"bs-countthings-droplet-characters-name": "Количество символов",
-	"bs-countthings-droplet-articles-description": "Показывает количество страниц",
-	"bs-countthings-droplet-characters-description": "Показывает количество символов или слов на вики-странице."
+	"bs-countthings-droplet-user-name": "Количество участников"
 }

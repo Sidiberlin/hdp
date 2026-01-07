@@ -14,7 +14,6 @@
 	"bs-visualeditorconnector-upload-type-original": "原有",
 	"bs-visualeditorconnector-upload-type-simple": "簡易",
 	"bs-visualeditorconnector-upload-type-one-click": "點擊一次",
-	"bs-visualeditorconnector-upload-type": "上傳類型",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "取消編輯",
 	"bs-visualeditorconnector-cancel-edit": "取消編輯。尚未保存的更改將會被捨棄",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "您確定要取消編輯嗎？您的尚未保存更改將會被捨棄。",
@@ -86,7 +85,5 @@
 	"bs-vec-insert-line-break-title": "換行（<br />）",
 	"bs-visualeditorconnector-text-style-indent-label": "縮排",
 	"bs-visualeditorconnector-indent-annotation-desc": "縮排已選取的文字",
-	"bs-visualeditorconnector-upload-type-help": "原文：上傳權限已驗證。檔案名稱、命名空間和類別是可編輯的。需要描述。！N！簡單：上傳權限未驗證。檔案名稱、命名空間和類別是可編輯的。描述是可選的。！N！點擊一下：上傳權限未驗證。檔案名稱和類別不可編輯。命名空間是可編輯的。",
-	"bs-visualeditorconnector-text-style-tool-align-center-label": "居中對齊",
-	"bs-visualeditorconnector-align-center-annotation-desc": "縮排已選取的文字"
+	"bs-visualeditorconnector-upload-type": "上傳類型"
 }

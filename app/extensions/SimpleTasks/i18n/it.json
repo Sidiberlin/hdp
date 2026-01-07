@@ -11,7 +11,5 @@
 	"simple-tasks-taskreport-inspector-state-done": "fatto",
 	"simple-tasks-taskreport-inspector-label-namespaces": "Namespace",
 	"simple-tasks-taskreport-inspector-label-state": "Stato",
-	"simple-tasks-taskreport-state-title-open": "L'attività è aperta",
-	"echo-category-title-simple-tasks-notification-cat": "Attività",
-	"simple-tasks-notification-cat-tooltip": "Avvisami quando mi vengono assegnate attività"
+	"simple-tasks-taskreport-state-title-open": "L'attività è aperta"
 }

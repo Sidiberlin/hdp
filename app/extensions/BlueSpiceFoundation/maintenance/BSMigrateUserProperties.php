@@ -2,6 +2,8 @@
 
 require_once 'BSMaintenance.php';
 
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
 
 class BSMigrateUserProperties extends LoggedUpdateMaintenance {
@@ -9,7 +11,12 @@ class BSMigrateUserProperties extends LoggedUpdateMaintenance {
 	protected $oldData = [];
 
 	protected function readOldData() {
-		$res = $this->getDB( DB_REPLICA )->select( 'user_properties', '*' );
+		$res = $this->getDB( DB_REPLICA )->select(
+			'user_properties',
+			'*',
+			'',
+			__METHOD__
+		);
 		foreach ( $res as $row ) {
 			if ( strpos( $row->up_property, "MW::" ) !== 0 ) {
 				continue;

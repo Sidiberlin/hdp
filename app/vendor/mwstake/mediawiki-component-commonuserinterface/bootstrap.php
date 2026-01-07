@@ -1,14 +1,10 @@
 <?php
 
-if ( !defined( 'MEDIAWIKI' ) && !defined( 'MW_PHPUNIT_TEST' ) ) {
-	return;
-}
-
 if ( defined( 'MWSTAKE_MEDIAWIKI_COMPONENT_COMMONUSERINTERFACE_VERSION' ) ) {
 	return;
 }
 
-define( 'MWSTAKE_MEDIAWIKI_COMPONENT_COMMONUSERINTERFACE_VERSION', '5.1.1' );
+define( 'MWSTAKE_MEDIAWIKI_COMPONENT_COMMONUSERINTERFACE_VERSION', '6.0.1' );
 
 MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 ->register( 'commonuserinterface', static function () {
@@ -16,7 +12,6 @@ MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 	 * Allows to register additional component interfaces
 	 */
 	$GLOBALS['mwsgCommonUIComponentRegistry'] = [
-		// phpcs:disable
 		'literal' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\ILiteral',
 		'message-literal' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\IMessageLiteral',
 		'button' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\IButton',
@@ -53,7 +48,6 @@ MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 		'tree-text-node' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\ITreeTextNode',
 		'tree-link-node' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\ITreeLinkNode',
 		'container' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\IContainer',
-		// phpcs:enable
 	];
 
 	/**
@@ -62,7 +56,6 @@ MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 	 */
 	$GLOBALS['mwsgCommonUIComponentRendererRegistry'] = [
 		'*' => [
-			// phpcs:disable
 			'literal' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Renderer\\Literal',
 			'message-literal' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Renderer\\MessageLiteral',
 			'tree-container' => [
@@ -76,10 +69,8 @@ MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 				'services' => [ 'MainConfig' ]
 			],
 			'container' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Renderer\\Container',
-			// phpcs:enable
 		],
 		'bootstrap5' => [
-			// phpcs:disable
 			'button' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Renderer\\Button',
 			'panel' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Renderer\\Card',
 			'dropdown' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Renderer\\Dropdown',
@@ -112,14 +103,13 @@ MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 				'class' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Renderer\\Link',
 				'services' => [ 'MainConfig' ]
 			],
-			'text-link' =>  [
+			'text-link' => [
 				'class' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Renderer\\TextLink',
 				'services' => [ 'MainConfig' ]
 			],
 			'badge' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Renderer\\Badge',
 			'button-group' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Renderer\\ButtonGroup',
 			'media-object' => 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Renderer\\MediaObject',
-			// phpcs:enable
 		]
 	];
 
@@ -159,12 +149,13 @@ MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
 
 	$GLOBALS['wgServiceWiringFiles'][] = __DIR__ . '/includes/ServiceWiring.php';
 
-	$GLOBALS['wgHooks']['BeforePageDisplay'][]
-		= 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Setup::onBeforePageDisplay';
-	$GLOBALS['wgHooks']['SiteNoticeAfter'][]
-		= 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Setup::onSiteNoticeAfter';
-	$GLOBALS['wgHooks']['SkinAfterContent'][]
-		= 'MWStake\\MediaWiki\\Component\\CommonUserInterface\\Setup::onSkinAfterContent';
+	$GLOBALS['wgExtensionFunctions'][] = static function () {
+		$hookContainer = \MediaWiki\MediaWikiServices::getInstance()->getHookContainer();
+		$runner = new \MWStake\MediaWiki\Component\CommonUserInterface\Setup();
+		$hookContainer->register( 'SiteNoticeAfter', [ $runner, 'onSiteNoticeAfter' ] );
+		$hookContainer->register( 'BeforePageDisplay', [ $runner, 'onBeforePageDisplay' ] );
+		$hookContainer->register( 'SkinAfterContent', [ $runner, 'onSkinAfterContent' ] );
+	};
 
 	$GLOBALS['wgResourceModules']['mwstake.component.commonui.tree-component'] = [
 		'localBasePath' => __DIR__ . "/resources/tree/",

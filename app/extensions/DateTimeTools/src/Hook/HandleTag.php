@@ -2,9 +2,12 @@
 
 namespace MediaWiki\Extension\DateTimeTools\Hook;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\DateTimeTools\DateTimeParser;
 use MediaWiki\Hook\ParserFirstCallInitHook;
-use RequestContext;
+use MediaWiki\Html\Html;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class HandleTag implements ParserFirstCallInitHook {
 	/** @var DateTimeParser */
@@ -37,7 +40,7 @@ class HandleTag implements ParserFirstCallInitHook {
 	 *
 	 * @return string
 	 */
-	public function handleTag( $input, array $args, \Parser $parser, \PPFrame $frame ) {
+	public function handleTag( $input, array $args, Parser $parser, PPFrame $frame ) {
 		if ( isset( static::$counter[spl_object_id( $parser )] ) ) {
 			static::$counter[spl_object_id( $parser )]++;
 		} else {
@@ -56,7 +59,7 @@ class HandleTag implements ParserFirstCallInitHook {
 		}
 
 		$parser->getOutput()->addModuleStyles( [ 'ext.dateTimeTools.styles' ] );
-		return \Html::element( 'span', [
+		return Html::element( 'span', [
 			'class' => 'datetime'
 		], $formatted );
 	}

@@ -1,5 +1,7 @@
 <?php
 
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
+
 require_once dirname( dirname( dirname( __DIR__ ) ) ) . '/maintenance/Maintenance.php';
 
 class RenameDefaultFile extends LoggedUpdateMaintenance {

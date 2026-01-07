@@ -29,11 +29,16 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Request\WebRequest;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 abstract class BeforeInitialize extends Hook {
 
 	/**
-	 * @var \Title
+	 * @var Title
 	 */
 	protected $title;
 
@@ -45,17 +50,17 @@ abstract class BeforeInitialize extends Hook {
 	protected $article;
 
 	/**
-	 * @var \OutputPage
+	 * @var OutputPage
 	 */
 	protected $output;
 
 	/**
-	 * @var \User
+	 * @var User
 	 */
 	protected $user;
 
 	/**
-	 * @var \WebRequest
+	 * @var WebRequest
 	 */
 	protected $request;
 
@@ -65,11 +70,11 @@ abstract class BeforeInitialize extends Hook {
 	protected $mediaWiki;
 
 	/**
-	 * @param \Title &$title
+	 * @param Title &$title
 	 * @param \Article|null &$article
-	 * @param \OutputPage &$output
-	 * @param \User &$user
-	 * @param \WebRequest $request
+	 * @param OutputPage &$output
+	 * @param User &$user
+	 * @param WebRequest $request
 	 * @param \MediaWiki $mediaWiki
 	 * @return bool
 	 */
@@ -90,12 +95,12 @@ abstract class BeforeInitialize extends Hook {
 
 	/**
 	 * @param \ContextSource $context
-	 * @param \Config $config
-	 * @param \Title &$title
+	 * @param Config $config
+	 * @param Title &$title
 	 * @param \Article|null &$article
-	 * @param \OutputPage &$output
-	 * @param \User &$user
-	 * @param \WebRequest $request
+	 * @param OutputPage &$output
+	 * @param User &$user
+	 * @param WebRequest $request
 	 * @param \MediaWiki $mediaWiki
 	 */
 	public function __construct( $context, $config, &$title, &$article, &$output, &$user, $request,

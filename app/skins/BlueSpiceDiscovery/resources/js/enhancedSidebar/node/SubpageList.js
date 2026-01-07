@@ -20,7 +20,7 @@ bs.skin.enhancedSidebar.tree.node.SubpageList.prototype.getIcon = function () {
 	return 'listBullet';
 };
 
-bs.skin.enhancedSidebar.tree.node.SubpageList.prototype.getCustomFormFields = function ( dialog ) {
+bs.skin.enhancedSidebar.tree.node.SubpageList.prototype.getCustomFormFields = function ( dialog ) { // eslint-disable-line no-unused-vars
 	return [
 		{
 			name: 'page',
@@ -39,6 +39,6 @@ bs.skin.enhancedSidebar.tree.node.SubpageList.prototype.getCustomFormFields = fu
 			help: mw.message( 'bs-discovery-enhanced-mediawiki-sidebar-field-depth-help' ).text(),
 			widget_min: 1,
 			widget_max: 6
-		},
+		}
 	];
 };

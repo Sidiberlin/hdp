@@ -2,12 +2,12 @@
 
 namespace SMW\MediaWiki;
 
-use Title;
-use RepoGroup;
+use MediaWiki\Title\Title;
 use OldLocalFile;
+use RepoGroup;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since   3.2
  *
  * @author mwjames

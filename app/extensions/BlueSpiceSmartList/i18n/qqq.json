@@ -35,8 +35,6 @@
 	"bs-smartlist-mostvisitedpagesdesc": "Used in [[Special:AdminDashboard]] and [[Special:UserDashboard]], text message for list of most viewed pages sorted by their views.",
 	"bs-smartlist-lasteditsdesc": "Used in [[Special:AdminDashboard]] and [[Special:UserDashboard]], text message for list of pages which you have edited.",
 	"bs-smartlist-hitcounter-missing": "Error and link to extension page when HitCounters is missing. Used on Users Dashboard Widget of SmartList Extension, most visited pages",
-	"apihelp-bs-smartlist-tasks-description": "Help description of API functions offered by SmartList extension.\n{{doc-apihelp-description|bs-smartlist-tasks}}",
-	"apihelp-bs-smartlist-tasks-summary": "Help description of API functions offered by SmartList extension.\n{{doc-apihelp-summary|bs-smartlist-tasks}}",
 	"bs-smartlist-ve-userlist-title": "Title for userlist inspector to set groups",
 	"bs-smartlist-ve-userlistinspector-groups": "Label for input field to set groups",
 	"bs-smartlist-ve-userlistinspector-limit": "Label for input field to set limit to shown results",
@@ -54,5 +52,9 @@
 	"bs-smartlist-droplet-what-links-here-desc": "Description of droplet for template what links here",
 	"bs-smartlist-ve-recentchanges-title": "Title for recent changes inspector",
 	"bs-smartlist-ve-whatlinkshere-title": "Title for what links here inspector",
-	"bs-smartlist-error-mode-not-found": "Error shown if smartlist is passed a mode that doesn't exist"
+	"bs-smartlist-error-mode-not-found": "Error shown if smartlist is passed a mode that doesn't exist",
+	"bs-smartlist-input-validator-invalid mode": "Error message if input for smartlist mode failed.\n* $1 field name\n* $2 specified value",
+	"bs-smartlist-ve-tab-main": "VisualEditor inspector tab label",
+	"bs-smartlist-ve-tab-advanced": "VisualEditor inspector tab label",
+	"bs-smartlist-ve-tab-appearance": "VisualEditor inspector tab label"
 }

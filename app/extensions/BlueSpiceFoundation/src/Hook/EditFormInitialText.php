@@ -27,9 +27,9 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
-use Config;
-use EditPage;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\EditPage\EditPage;
 
 abstract class EditFormInitialText extends Hook {
 

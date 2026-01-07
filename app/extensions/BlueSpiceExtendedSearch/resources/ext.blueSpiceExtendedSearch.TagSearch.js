@@ -1,31 +1,23 @@
-( function( mw, $, bs, d, undefined ){
-	$( '.bs-tagsearch-cnt' ).each( function( key, value ) {
-		var $searchField = $( value );
-		var $searchInput = $searchField.find( '.bs-tagsearch-searchfield' );
-		var $lookupInput = $searchField.find( 'input[name="lookup"]' );
+$( () => {
+	$( '.bs-tagsearch-cnt' ).each( ( key, value ) => {
+		const $searchField = $( value );
+		const $searchInput = $searchField.find( '.bs-tagsearch-searchfield' );
+		const $lookupInput = $searchField.find( 'input[name="lookup"]' );
 
-		var lookupCfg = JSON.parse( $lookupInput.val() );
+		const lookupCfg = JSON.parse( $lookupInput.val() );
 
-		bs.config.getDeferred( [
-			'AutocompleteConfig',
-			'SourceIcons'
-		] ).done( function( response ) {
-			var autocomplete = new bs.extendedSearch.Autocomplete();
-			var searchBar = new bs.extendedSearch.SearchBar( {
-				useNamespacePills: false,
-				cntId: $searchField.attr( 'id' ),
-				inputId: $searchInput.attr( 'id' ),
-				showRecentlyFound: false,
-			} );
-
-			autocomplete.init( {
-				searchBar: searchBar,
-				autocompleteConfig: response.AutocompleteConfig,
-				compact: true,
-				sourceIcons: response.SourceIcons,
-				lookupConfig: lookupCfg
-			} );
+		const searchBar = new bs.extendedSearch.SearchBar( {
+			useNamespacePills: false,
+			useSubpagePills: false,
+			cntId: $searchField.attr( 'id' ),
+			inputId: $searchInput.attr( 'id' ),
+			showRecentlyFound: false
 		} );
 
+		/* eslint-disable no-new */
+		new bs.extendedSearch.Autocomplete( searchBar, {
+			lookupConfig: lookupCfg,
+			enableSearchContexts: false
+		} );
 	} );
-} )( mediaWiki, jQuery, blueSpice, document );
+} );

@@ -2,11 +2,13 @@
 
 namespace MediaWiki\Extension\Forms\Api;
 
+use MediaWiki\Api\ApiBase;
 use MediaWiki\Extension\Forms\DefinitionManager;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Status\Status;
 use Wikimedia\ParamValidator\ParamValidator;
 
-class GetDefinitions extends \ApiBase {
+class GetDefinitions extends ApiBase {
 	public const QUERY_TYPE_QUERY_AVAILABLE = 'query-available';
 	public const QUERY_TYPE_GET_DEFINITION = 'get-definition';
 
@@ -27,7 +29,7 @@ class GetDefinitions extends \ApiBase {
 	protected $validForTime;
 
 	/**
-	 * @var \Status
+	 * @var Status
 	 */
 	protected $status;
 
@@ -37,7 +39,7 @@ class GetDefinitions extends \ApiBase {
 	protected $definitionManager;
 
 	public function execute() {
-		$this->status = \Status::newGood();
+		$this->status = Status::newGood();
 		$this->definitionManager = MediaWikiServices::getInstance()->getService(
 			"FormsDefinitionManager"
 		);
@@ -57,7 +59,7 @@ class GetDefinitions extends \ApiBase {
 				ParamValidator::PARAM_REQUIRED => false,
 				ParamValidator::PARAM_DEFAULT => self::QUERY_TYPE_QUERY_AVAILABLE
 			],
-			'definitionType' => [
+			'definitiontype' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => false,
 				ParamValidator::PARAM_DEFAULT => DefinitionManager::TYPE_CONCRETE
@@ -66,7 +68,7 @@ class GetDefinitions extends \ApiBase {
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => false,
 			],
-			'validForTime' => [
+			'validfortime' => [
 				ParamValidator::PARAM_TYPE => 'string',
 				ParamValidator::PARAM_REQUIRED => false,
 				ParamValidator::PARAM_DEFAULT => ''
@@ -87,7 +89,7 @@ class GetDefinitions extends \ApiBase {
 				$this->getDefinitionContent();
 				break;
 			default:
-				$this->status = \Status::newGood();
+				$this->status = Status::newGood();
 		}
 	}
 
@@ -107,8 +109,8 @@ class GetDefinitions extends \ApiBase {
 	 *
 	 */
 	protected function getAvailableDefinitions() {
-		$type = $this->getParameter( 'definitionType' );
-		$this->status = \Status::newGood(
+		$type = $this->getParameter( 'definitiontype' );
+		$this->status = Status::newGood(
 			$this->definitionManager->getDefinitionKeys( $type )
 		);
 	}
@@ -119,18 +121,18 @@ class GetDefinitions extends \ApiBase {
 	protected function getDefinitionContent() {
 		$name = $this->getParameter( 'name' );
 		if ( !$name ) {
-			$this->status = \Status::newFatal(
+			$this->status = Status::newFatal(
 				$this->msg( 'forms-api-get-definitions-no-name' )
 			);
 		}
 		if ( !$this->definitionManager->definitionExists( $name ) ) {
-			$this->status = \Status::newFatal(
+			$this->status = Status::newFatal(
 				$this->msg( 'forms-api-get-definitions-not-exist', $name )
 			);
 		}
 
-		$validForTime = $this->getParameter( 'validForTime' );
-		$this->status = \Status::newGood( [
+		$validForTime = $this->getParameter( 'validfortime' );
+		$this->status = Status::newGood( [
 			'definition' => $this->definitionManager->getDefinition( $name, $validForTime ),
 			'lang' => $this->definitionManager->getDefinitionLang( $name )
 		] );

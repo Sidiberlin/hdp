@@ -1,9 +1,9 @@
 bs.util.registerNamespace( 'ext.bookshelf.ui.widget' );
 
-ext.bookshelf.ui.widget.BookInputWidget = function( config ) {
+ext.bookshelf.ui.widget.BookInputWidget = function ( config ) {
 	config = config || {};
 	config.$overlay = config.$overlay || true;
-	ext.bookshelf.ui.widget.BookInputWidget.parent.call( this, $.extend( {}, config, { autocomplete: false } ) );
+	ext.bookshelf.ui.widget.BookInputWidget.parent.call( this, Object.assign( {}, config, { autocomplete: false } ) );
 	OO.ui.mixin.LookupElement.call( this, config );
 
 	this.returnProperty = config.returnProperty || 'book_displaytext';
@@ -32,13 +32,11 @@ ext.bookshelf.ui.widget.BookInputWidget.prototype.onLookupMenuChoose = function 
  * @inheritdoc
  */
 ext.bookshelf.ui.widget.BookInputWidget.prototype.focus = function () {
-	var retval;
-
 	// Prevent programmatic focus from opening the menu
 	this.setLookupsDisabled( true );
 
 	// Parent method
-	retval = ext.bookshelf.ui.widget.BookInputWidget.parent.prototype.focus.apply( this, arguments );
+	const retval = ext.bookshelf.ui.widget.BookInputWidget.parent.prototype.focus.apply( this, arguments );
 
 	this.setLookupsDisabled( false );
 
@@ -49,7 +47,7 @@ ext.bookshelf.ui.widget.BookInputWidget.prototype.focus = function () {
  * @inheritdoc
  */
 ext.bookshelf.ui.widget.BookInputWidget.prototype.getLookupRequest = function () {
-	var inputValue = this.value;
+	const inputValue = this.value;
 
 	return new mw.Api().get( {
 		action: 'bs-bookshelf-store',
@@ -62,11 +60,11 @@ ext.bookshelf.ui.widget.BookInputWidget.prototype.getLookupCacheDataFromResponse
 };
 
 ext.bookshelf.ui.widget.BookInputWidget.prototype.getLookupMenuOptionsFromData = function ( data ) {
-	var i, bookData,
-		items = [];
+	let i, bookData;
+	const items = [];
 
 	for ( i = 0; i < data.length; i++ ) {
-		bookData = data[i];
+		bookData = data[ i ];
 		items.push( new OO.ui.MenuOptionWidget( {
 			label: bookData.book_displaytext,
 			data: bookData

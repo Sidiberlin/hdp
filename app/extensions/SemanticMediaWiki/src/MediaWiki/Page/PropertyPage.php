@@ -2,30 +2,31 @@
 
 namespace SMW\MediaWiki\Page;
 
-use Html;
-use ParserOptions;
-use SMW\ParserData;
-use SMW\SemanticData;
-use SMW\Services\ServicesFactory as ApplicationFactory;
+use MediaWiki\Html\Html;
+use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Title\Title;
 use SMW\DataValueFactory;
 use SMW\DataValues\ValueFormatters\DataValueFormatter;
 use SMW\DIProperty;
-use SMW\Message;
+use SMW\Localizer\Localizer;
+use SMW\Localizer\Message;
 use SMW\MediaWiki\Page\ListBuilder\ItemListBuilder;
 use SMW\MediaWiki\Page\ListBuilder\ValueListBuilder;
-use SMW\Localizer;
+use SMW\ParserData;
+use SMW\Property\DeclarationExaminerFactory;
 use SMW\PropertyRegistry;
 use SMW\RequestOptions;
+use SMW\SemanticData;
+use SMW\Services\ServicesFactory as ApplicationFactory;
 use SMW\Store;
 use SMW\StringCondition;
-use SMWDataValue;
-use Title;
 use SMW\Utils\HtmlTabs;
-use SMW\Property\DeclarationExaminerFactory;
 use SMW\Utils\JsonView;
+use SMWDataValue;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.0
  *
  * @author mwjames
@@ -58,12 +59,12 @@ class PropertyPage extends Page {
 	private $itemListBuilder;
 
 	/**
-	 * @var boolean
+	 * @var bool
 	 */
 	private $isLockedView = false;
 
 	/**
-	 * @var integer
+	 * @var int
 	 */
 	private $filterCount = 0;
 
@@ -98,7 +99,6 @@ class PropertyPage extends Page {
 	 * @return string
 	 */
 	protected function initHtml() {
-
 		$redirectTarget = $this->store->getRedirectTarget( $this->property );
 
 		if ( !$redirectTarget->equals( $this->property ) ) {
@@ -145,7 +145,7 @@ class PropertyPage extends Page {
 	 *
 	 * @since 3.0
 	 *
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function isLockedView() {
 		return $this->isLockedView;
@@ -156,10 +156,9 @@ class PropertyPage extends Page {
 	 *
 	 * @since 3.0
 	 *
-	 * @return string|boolean
+	 * @return string|bool
 	 */
 	protected function getRedirectTargetURL() {
-
 		$label = $this->getTitle()->getText();
 
 		if ( ( $key = PropertyRegistry::getInstance()->findPropertyIdByLabel( $label ) ) === false ) {
@@ -187,7 +186,6 @@ class PropertyPage extends Page {
 	 * @return string
 	 */
 	protected function getHtml() {
-
 		if ( !$this->store->getRedirectTarget( $this->property )->equals( $this->property ) ) {
 			return '';
 		}
@@ -197,7 +195,7 @@ class PropertyPage extends Page {
 
 		$matches = [];
 
-		$context->getOutput()->addModuleStyles( [ 'ext.smw.style', 'ext.smw.page.styles' ] );
+		$context->getOutput()->addModuleStyles( [ 'ext.smw.styles', 'ext.smw.page.styles' ] );
 		$context->getOutput()->addModules( [ 'smw.property.page', 'smw.jsonview' ] );
 
 		$context->getOutput()->setPageTitle(
@@ -220,7 +218,7 @@ class PropertyPage extends Page {
 			$this->property->isUserDefined()
 		);
 
-		if ( $this->mParserOutput instanceof \ParserOutput ) {
+		if ( $this->mParserOutput instanceof ParserOutput ) {
 			preg_match_all(
 				"/" . "<section class=\"smw-property-specification\"(.*)?>([\s\S]*?)<\/section>" . "/m",
 				$this->mParserOutput->getText(),
@@ -342,7 +340,6 @@ class PropertyPage extends Page {
 	}
 
 	private function makeItemList( $key, $propertyKey, $checkProperty = true ) {
-
 		// Ignore the list when a filter is present
 		if ( $this->getContext()->getRequest()->getVal( 'filter', '' ) !== '' ) {
 			return [ '', '' ];
@@ -390,7 +387,6 @@ class PropertyPage extends Page {
 	}
 
 	private function makeValueList() {
-
 		$request = $this->getContext()->getRequest();
 		$language = $this->getContext()->getLanguage();
 		$user = $this->getContext()->getUser();
@@ -442,7 +438,6 @@ class PropertyPage extends Page {
 	}
 
 	private function getCount() {
-
 		if ( $this->filterCount !== null ) {
 			return Html::rawElement(
 				'span',

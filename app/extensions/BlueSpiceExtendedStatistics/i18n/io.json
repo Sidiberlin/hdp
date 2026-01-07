@@ -5,25 +5,12 @@
 			"Joao Xavier"
 		]
 	},
-	"bs-statistics-mode": "Modo",
-	"bs-statistics-year": "Yaro",
-	"bs-statistics-month": "Monato",
-	"bs-statistics-day": "Dio",
-	"bs-statistics-label-name": "Nomo",
-	"bs-statistics-label-registration": "Enrejistrado",
-	"bs-statistics-label-page": "Pagino",
-	"bs-statistics-diag-number-of-edits": "Quanto di redakturi",
-	"bs-statistics-filter-category": "Kategorio",
-	"bs-statistics-portlet-numberofedits": "Quanto di redakturi",
-	"bs-statistics-button-label-export": "Exportacar",
-	"bs-statistics-panel-title-result": "Rezulto",
 	"bs-statistics-aggregated-report-filter-category-multi": "Kategorii",
+	"bs-statistics-aggregated-report-filter-interval-day": "Dio",
+	"bs-statistics-aggregated-report-filter-interval-week": "Semano",
 	"bs-statistics-aggregated-report-filter-interval-month": "Monato",
 	"bs-statistics-aggregated-report-filter-namespace": "Nomaro (''namespace'')",
 	"bs-statistics-aggregated-report-filter-namespaces": "Nomari (''namespaces'')",
 	"bs-statistics-aggregated-report-filter-user": "Uzero",
-	"bs-statistics-aggregated-report-filter-user-multi": "Uzeri",
-	"bs-statistics-list": "Listar",
-	"bs-statistics-portletconfig-periodday": "Hiere",
-	"bs-statistics-aggregated-report-filter-interval-day": "Dio"
+	"bs-statistics-aggregated-report-filter-user-multi": "Uzeri"
 }

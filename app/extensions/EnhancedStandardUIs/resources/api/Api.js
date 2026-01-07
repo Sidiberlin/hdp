@@ -20,7 +20,7 @@ ext.enhancedUI.api.Api.prototype.get = function ( path, params ) {
 
 ext.enhancedUI.api.Api.prototype.ajax = function ( path, data, method ) {
 	data = data || {};
-	var dfd = $.Deferred();
+	const dfd = $.Deferred();
 
 	$.ajax( {
 		method: method,
@@ -28,13 +28,13 @@ ext.enhancedUI.api.Api.prototype.ajax = function ( path, data, method ) {
 		data: data,
 		contentType: 'application/json',
 		dataType: 'json'
-	} ).done( function ( response ) {
+	} ).done( ( response ) => {
 		if ( response.success === false ) {
 			dfd.reject();
 			return;
 		}
 		dfd.resolve( response );
-	} ).fail( function ( jgXHR, type, status ) {
+	} ).fail( ( jgXHR, type, status ) => {
 		if ( type === 'error' ) {
 			dfd.reject( {
 				error: jgXHR.responseJSON || jgXHR.responseText
@@ -48,4 +48,8 @@ ext.enhancedUI.api.Api.prototype.ajax = function ( path, data, method ) {
 
 ext.enhancedUI.api.Api.prototype.getFileMetadata = function ( filename ) {
 	return this.get( 'file-metadata/' + encodeURIComponent( filename ) );
+};
+
+ext.enhancedUI.api.Api.prototype.getNamespaces = function () {
+	return this.get( 'namespaces' );
 };

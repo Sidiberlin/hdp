@@ -87,12 +87,13 @@ function updateUserProperties( $aUserStore, $options, $bDry ) {
 			if ( !$bDry ) {
 				$dbw->replace(
 					'user_properties',
-					[ 'up_user' , 'up_property' ],
+					[ 'up_user', 'up_property' ],
 					[
 						'up_user' => $aUserStore[$i]['id'],
 						'up_property' => $options['property'],
 						'up_value' => $options['setvalue']
-					]
+					],
+					__METHOD__
 				);
 			}
 			$aUserStore[$i]['setvalue'] = $options['setvalue'];
@@ -136,9 +137,11 @@ function getMPCUserValue( $aUserStore, $property, $filtervalue = false ) {
 			$conditions[] = "up_value = '" . $filtervalue . "'";
 		}
 
-		$rRes = $dbr->selectRow( 'user_properties',
+		$rRes = $dbr->selectRow(
+			'user_properties',
 			'up_value',
-			$conditions
+			$conditions,
+			__METHOD__
 		);
 
 		if ( !$rRes && $filtervalue ) {
@@ -169,8 +172,9 @@ function getMPCUser( $sGivenUser ) {
 		->getConnection( DB_REPLICA );
 	$rRes = $dbr->select(
 		'user',
-		[ 'user_id','user_name' ],
-		$condition
+		[ 'user_id', 'user_name' ],
+		$condition,
+		__METHOD__
 	);
 
 	if ( !$rRes ) {

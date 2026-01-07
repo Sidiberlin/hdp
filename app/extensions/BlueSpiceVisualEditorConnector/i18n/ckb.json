@@ -8,7 +8,6 @@
 	"bs-visualeditorconnector-upload-type-original": "ڕەسەن",
 	"bs-visualeditorconnector-upload-type-simple": "سادە",
 	"bs-visualeditorconnector-upload-type-one-click": "یەک کرتە",
-	"bs-visualeditorconnector-upload-type": "جۆری بارکردن",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "ھەڵوەشاندنەوەی دەستکاری",
 	"bs-visualeditorconnector-cancel-edit": "دەستکارییەکە ھەڵبوەشێنەوە. گۆڕانکارییە پاشەکەوتنەکراوەکان فڕێ دەدرێن",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "ھەر بەڕاست دەتەوێت دەستکارییەکە ھەڵبوەشێنیتەوە؟ گۆڕانکارییە پاشەکەوتنەکراوەکانت فڕێ دەدرێن.",
@@ -66,5 +65,6 @@
 	"bs-vec-table-border-solid": "سفت",
 	"bs-vec-table-border-dashed": "ھێڵھێڵ",
 	"bs-vec-table-border-dotted": "خاڵخاڵ",
-	"bs-vec-table-border-double": "دووانی"
+	"bs-vec-table-border-double": "دووانی",
+	"bs-visualeditorconnector-upload-type": "جۆری بارکردن"
 }

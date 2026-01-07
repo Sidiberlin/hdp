@@ -7,10 +7,11 @@ use BlueSpice\ParamProcessor\ParamType;
 use BsNamespaceHelper;
 use BsPageContentProvider;
 use BsStringHelper;
-use Category;
+use MediaWiki\Category\Category;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
-use Sanitizer;
-use Title;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Title\Title;
 
 class GenericSmartlistMode extends SmartListBaseMode {
 

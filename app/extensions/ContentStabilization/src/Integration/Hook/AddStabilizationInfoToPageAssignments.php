@@ -2,11 +2,12 @@
 
 namespace MediaWiki\Extension\ContentStabilization\Integration\Hook;
 
-use ApiMain;
 use BlueSpice\PageAssignments\Hook\BSPageAssignmentsOverviewHook;
 use BSApiMyPageAssignmentStore;
+use MediaWiki\Api\ApiMain;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\ContentStabilization\StabilizationLookup;
-use TitleFactory;
+use MediaWiki\Title\TitleFactory;
 
 class AddStabilizationInfoToPageAssignments implements BSPageAssignmentsOverviewHook {
 
@@ -52,18 +53,32 @@ class AddStabilizationInfoToPageAssignments implements BSPageAssignmentsOverview
 	 * @return void
 	 */
 	protected function extendBSApiMyPageAssignmentStore( &$data ) {
+		$context = RequestContext::getMain();
+		$language = $context->getLanguage();
 		foreach ( $data as $dataSet ) {
 			$dataSet->last_stable_date = null;
+			$dataSet->last_stable_date_display = null;
 			$page = $this->titleFactory->newFromID( $dataSet->page_id );
 			if ( !$page ) {
 				continue;
 			}
-			$stable = $this->lookup->getLastStablePoint( $page->toPageIdentity() );
+			$stable = $this->lookup->getLastStableRevision( $page->toPageIdentity() );
 			if ( !$stable ) {
 				continue;
 			}
 
-			$dataSet->last_stable_date = $stable->getRevision()->getTimestamp();
+			$timestamp = $stable->getTimestamp();
+			if ( !$timestamp ) {
+				continue;
+			}
+
+			$formattedDate = $language->userDate(
+				$timestamp,
+				$context->getUser()
+			);
+
+			$dataSet->last_stable_date = $timestamp;
+			$dataSet->last_stable_date_display = $formattedDate;
 		}
 	}
 

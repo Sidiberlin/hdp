@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\StandardDialogs;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 

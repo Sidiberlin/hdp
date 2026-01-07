@@ -24,6 +24,17 @@ abstract class EDConnectorDb extends EDConnectorBase {
 	/** @var array $aliases Column aliases. */
 	protected $aliases = [];
 
+	/** @const string IDENTIFIER */
+	private const IDENTIFIER = <<<'ID'
+		/(?<=\.|^)(?:
+			(?<identifier>[\w$\x{0080}-\x{FFFF}]+) #Unquoted
+		  | (?<quote>`|") (?<identifier> #Quoted
+		        (?:(?!(?P=quote)).
+			  | (?P=quote){2}
+			)+) (?P=quote)
+		)$/uJx
+	ID;
+
 	/**
 	 * Constructor. Analyse parameters and wiki settings; set $this->errors.
 	 *
@@ -45,16 +56,21 @@ abstract class EDConnectorDb extends EDConnectorBase {
 		} else {
 			$this->columns = array_values( $mappings );
 		}
-		// Column aliases: the correspondence $external_variable => $column_name_in_query_result.
-		foreach ( $this->columns as $column ) {
-			// Deal with AS in external names.
-			$chunks = preg_split( '/\bas\s+/i', $column, 2 );
-			$alias = isset( $chunks[1] ) ? trim( $chunks[1] ) : $column;
-			// Deal with table prefixes in column names (internal_var=tbl1.col1).
-			if ( preg_match( '/[^.]+$/', $alias, $matches ) ) {
-				$alias = $matches[0];
+		// Column aliases: the correspondence $column_name_in_query_result => $external_variable.
+		foreach ( $this->columns as $external ) {
+			$column = $external;
+			if ( preg_match( '/^(?<column>.+)\s+as\s+(?<alias>.+)$/i', $column, $matches ) ) {
+				// Deal with AS in external names.
+				$alias = $matches['alias'];
+				$column = $matches['column'];
+			} else {
+				$alias = $column;
 			}
-			$this->aliases[$column] = $alias;
+			// Deal with table prefixes in column names (internal_var=tbl1.col1).
+			if ( $alias === $column && preg_match( self::IDENTIFIER, $column, $matches ) ) {
+				$alias = $matches['identifier'];
+			}
+			$this->aliases[trim( $alias )] = $external;
 		}
 		if ( !$this->dbId ) {
 			return; // further checks and initialisations are impossible.
@@ -75,8 +91,15 @@ abstract class EDConnectorDb extends EDConnectorBase {
 	 * @param array $params Supplemented parameters.
 	 */
 	protected function setCredentials( array $params ) {
-		$this->credentials['user'] = isset( $params['user' ] ) ? $params['user' ] : null;
-		$this->credentials['password'] = isset( $params['password' ] ) ? $params['password' ] : null;
+		$this->credentials['user'] = isset( $params['user file'] ) && file_exists( $params['user file'] )
+				? trim( file_get_contents( $params['user file'] ) )
+				: $params['user' ] ?? null;
+		if ( $this->credentials['user'] === null ) {
+			$this->error( 'externaldata-db-incomplete-information', $this->dbId, 'user/user file' );
+		}
+		$this->credentials['password'] = isset( $params['password file'] ) && file_exists( $params['password file'] )
+			? trim( file_get_contents( $params['password file'] ) )
+			: $params['password' ] ?? null;
 		if ( isset( $params[ 'name' ] ) ) {
 			$this->credentials['dbname'] = $params['name'];
 		} else {
@@ -91,7 +114,7 @@ abstract class EDConnectorDb extends EDConnectorBase {
 	 *
 	 * @return bool True on success, false if error were encountered.
 	 */
-	public function run() {
+	public function run(): bool {
 		if ( !$this->connect() /* late binding. */ ) {
 			return false;
 		}
@@ -100,7 +123,6 @@ abstract class EDConnectorDb extends EDConnectorBase {
 			return false;
 		}
 		$this->add( $this->processRows( $rows, $this->aliases ) );
-		// $this->values = $this->processRows( $rows ); // late binding.
 		$this->disconnect(); // late binding.
 		return true;
 	}
@@ -114,7 +136,7 @@ abstract class EDConnectorDb extends EDConnectorBase {
 	 * Get query text.
 	 * @return string
 	 */
-	abstract protected function getQuery();
+	abstract protected function getQuery(): string;
 
 	/**
 	 * Get query result as a two-dimensional array.
@@ -132,12 +154,10 @@ abstract class EDConnectorDb extends EDConnectorBase {
 		$result = [];
 		foreach ( $rows as $row ) {
 			foreach ( $row as $column => $_ ) {
-				$alias = isset( $aliases[$column] ) ? $aliases[$column] : $column;
-				if ( !isset( $result[$column] ) ) {
-					$result[$column] = [];
-				}
+				$external = $aliases[$column] ?? $column;
+				$result[$external] = $result[$external] ?? [];
 				// Can be both array and object.
-				$result[$column][] = self::processField( ( (array)$row )[$alias] );
+				$result[$external][] = self::processField( ( (array)$row )[$column] );
 			}
 		}
 		return $result;
@@ -146,16 +166,19 @@ abstract class EDConnectorDb extends EDConnectorBase {
 	/**
 	 * Process field value.
 	 *
-	 * @param string|DateTime $value
+	 * @param string|DateTime|null $value
 	 * @return string
 	 */
-	protected static function processField( $value ) {
+	protected static function processField( $value ): string {
+		if ( $value === null ) {
+			return '';
+		}
 		// This can happen with MSSQL.
 		if ( $value instanceof DateTime ) {
 			$value = $value->format( 'Y-m-d H:i:s' );
 		}
 		// Convert the encoding to UTF-8 if necessary.
-		$encoding = mb_detect_encoding( $value, 'UTF-8', true ) ?? 'UTF-8';
+		$encoding = mb_detect_encoding( $value, 'UTF-8', true ) ?: 'UTF-8';
 		return $encoding === 'UTF-8' ? $value : mb_convert_encoding( $value, 'UTF-8', $encoding );
 	}
 
@@ -163,4 +186,14 @@ abstract class EDConnectorDb extends EDConnectorBase {
 	 * Disconnect from DB server.
 	 */
 	abstract protected function disconnect();
+
+	/**
+	 * Return the version of the relevant software to be used at Special:Version.
+	 * @param array $config
+	 * @return array [ 'name', 'version' ]
+	 */
+	public static function version( array $config ): array {
+		[ $name, $_ ] = parent::version( $config );
+		return [ $name, false ]; // We do not want connected databases to appear on Special:Version.
+	}
 }

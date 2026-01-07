@@ -132,6 +132,7 @@ export default class DeepsetApi extends EventEmitter {
 		// Strip the response down to the relevant data
 		return result.map( ( entry: SearchHistoryResponse ) => {
 			const response = entry.response[ 1 ];
+
 			const references = ReferenceFactory.createFromResponseData(
 				response.result.meta,
 				response.documents
@@ -176,29 +177,38 @@ export default class DeepsetApi extends EventEmitter {
 	}> {
 		const response = await fetch( this.historyUrl, {
 			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
 			body: JSON.stringify( {
 				sessionId: sessionId,
 				after: after
 			} ),
 		} );
-		const jsonResponse = await response.json();
 
-		if ( jsonResponse.errors ) {
-			this.emit(
-				DeepsetApi.EVENT_ERROR,
-				mw.message( 'chat-api-error', jsonResponse.errors.join( '. ' ) ).text()
-			);
+		if ( !response.ok ) {
+			const errorMessage = await this.getResponseErrorMessages( response );
+			this.emit( DeepsetApi.EVENT_ERROR, errorMessage );
 		}
 
-		return jsonResponse;
+		return await response.json();
 	}
 
 	public async sendMessage( query: string, sessionId: string, followUpType?: string ): Promise<QueryAnswer> {
-		const chatResponse = await this.stream( this.chatUrl, {
+		const data = {
 			query,
 			sessionId,
 			followUpType
-		} );
+		};
+
+		const chatResponse =  await this.stream( this.chatUrl, data );
+
+		if ( !chatResponse ) {
+			this.emit( DeepsetApi.EVENT_ERROR, mw.message( 'chat-api-response-error' ).text() );
+
+			return;
+		}
+
 		return this.processQueryAnswer( chatResponse, followUpType );
 	}
 
@@ -221,13 +231,8 @@ export default class DeepsetApi extends EventEmitter {
 				}
 			};
 			streaming.onerror = ( error ) => {
-				streaming.close();
-				console.error( error );
-				this.emit(
-					DeepsetApi.EVENT_ERROR,
-					mw.message( 'chat-api-load-error', error ).text()
-				);
-				reject( error );
+				console.log( 'EventSource failed:', error );
+				this.emit( DeepsetApi.EVENT_ERROR, mw.message( 'chat-api-response-error' ).text() );
 			};
 		} );
 	}
@@ -288,6 +293,9 @@ export default class DeepsetApi extends EventEmitter {
 
 		const response = await fetch( `${ this.feedbackUrl + '/' + feedbackID }`, {
 			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
 			body: JSON.stringify( {
 				sessionId: sessionId,
 				feedback: JSON.stringify( {
@@ -300,32 +308,50 @@ export default class DeepsetApi extends EventEmitter {
 			} )
 		} );
 
-		const jsonResponse = await response.json();
+		if ( !response.ok ) {
+			const errorMessage = await this.getResponseErrorMessages( response );
+			this.emit( DeepsetApi.EVENT_ERROR, errorMessage );
 
+			return;
+		}
+
+		const jsonResponse = await response.json();
 		if ( jsonResponse.feedback_id ) {
 			this.browserStorage.setFeedbackId( jsonResponse.feedback_id );
 			this.browserStorage.setFeedbackQueryId( feedback.queryId );
 		}
-
-		if ( jsonResponse.errors ) {
-			this.emit(
-				DeepsetApi.EVENT_ERROR,
-				mw.message( 'chat-api-error', jsonResponse.errors.join( '. ' ) ).text()
-			);
-		}
 	}
 
 	public async fetchSessionId(): Promise<string> {
-		const response = await fetch( this.sessionUrl );
+		const response = await fetch( this.sessionUrl, {
+			headers: {
+				'Content-Type': 'application/json',
+			}
+		} );
+
+		if ( !response.ok ) {
+			const errorMessage = await this.getResponseErrorMessages( response );
+			this.emit( DeepsetApi.EVENT_ERROR, errorMessage );
+
+			return;
+
+		}
+
+		const jsonResponse = await response.json();
+		return jsonResponse.search_session_id;
+	}
+
+	private async getResponseErrorMessages( response: Response ): Promise<string> {
 		const jsonResponse = await response.json();
 
 		if ( jsonResponse.errors ) {
-			this.emit(
-				DeepsetApi.EVENT_ERROR,
-				mw.message( 'chat-api-error', jsonResponse.errors.join( '. ' ) ).text()
-			);
+			return jsonResponse.errors.join( '. ' );
 		}
 
-		return jsonResponse.search_session_id;
+		if ( jsonResponse.error ) {
+			return jsonResponse.error;
+		}
+
+		return 'Unknown error occurred';
 	}
 }

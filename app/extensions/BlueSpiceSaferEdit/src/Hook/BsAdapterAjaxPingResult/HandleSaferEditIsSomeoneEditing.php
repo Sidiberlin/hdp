@@ -4,7 +4,7 @@ namespace BlueSpice\SaferEdit\Hook\BsAdapterAjaxPingResult;
 
 use BlueSpice\Hook\BsAdapterAjaxPingResult;
 use BlueSpice\SaferEdit\EditWarningBuilder;
-use Title;
+use MediaWiki\Title\Title;
 
 class HandleSaferEditIsSomeoneEditing extends BsAdapterAjaxPingResult {
 
@@ -19,7 +19,7 @@ class HandleSaferEditIsSomeoneEditing extends BsAdapterAjaxPingResult {
 			return true;
 		}
 
-		$this->title = Title::newFromText( $this->titleText );
+		$this->title = Title::newFromText( $this->titleText, $this->namespaceIndex ?? NS_MAIN );
 		if ( $this->title === null ) {
 			return true;
 		}
@@ -27,7 +27,6 @@ class HandleSaferEditIsSomeoneEditing extends BsAdapterAjaxPingResult {
 		if ( !$this->title->exists() ) {
 			return true;
 		}
-
 		return false;
 	}
 

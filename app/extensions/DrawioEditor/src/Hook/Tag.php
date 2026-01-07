@@ -2,11 +2,11 @@
 
 namespace MediaWiki\Extension\DrawioEditor\Hook;
 
-use Html;
 use MediaWiki\Extension\DrawioEditor\DrawioEditor;
 use MediaWiki\Hook\ParserFirstCallInitHook;
-use Parser;
-use PPFrame;
+use MediaWiki\Html\Html;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class Tag implements ParserFirstCallInitHook {
 	public const NAME = 'drawio';

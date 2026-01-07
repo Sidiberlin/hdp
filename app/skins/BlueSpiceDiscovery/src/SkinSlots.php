@@ -18,7 +18,7 @@ use BlueSpice\Discovery\SkinSlotRenderer\TitleActionsSkinSlotRenderer;
 use BlueSpice\Discovery\SkinSlotRenderer\ToolbarPanelSkinSlotRenderer;
 use BlueSpice\Discovery\SkinSlotRenderer\ToolsAfterContentSkinSlotRenderer;
 use BlueSpice\Discovery\SkinSlotRenderer\UserMenuCardsSkinSlotRenderer;
-use RequestContext;
+use MediaWiki\Context\RequestContext;
 
 class SkinSlots {
 

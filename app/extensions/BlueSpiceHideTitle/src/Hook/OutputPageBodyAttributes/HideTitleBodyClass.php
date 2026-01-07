@@ -3,7 +3,7 @@
 namespace BlueSpice\HideTitle\Hook\OutputPageBodyAttributes;
 
 use MediaWiki\MediaWikiServices;
-use OutputPage;
+use MediaWiki\Output\OutputPage;
 use Skin;
 
 class HideTitleBodyClass {

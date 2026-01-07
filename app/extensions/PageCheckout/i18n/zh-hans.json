@@ -1,10 +1,21 @@
 {
 	"@metadata": {
 		"authors": [
+			"Peterxy12",
 			"沈澄心"
 		]
 	},
 	"pagecheckout-desc": "允许给用户在页面上的独占权限",
 	"pagecheckout-error-no-title": "无效标题",
-	"pagecheckout-error-no-user": "指定的用户无效"
+	"pagecheckout-error-no-user": "指定的用户无效",
+	"pagecheckout-error-has-checkout": "页面已签出",
+	"pagecheckout-error-save-failed": "签出页面失败",
+	"pagecheckout-error-no-checkout": "无法签入目前尚未签出的页面",
+	"pagecheckout-error-no-checkout-id": "签入失败！未设置签出ID",
+	"pagecheckout-error-db-insert": "插入签出失败",
+	"pagecheckout-action-clear-label": "清除签出",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "用户",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename": "页面名称",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "用户",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "页面名称"
 }

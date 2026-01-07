@@ -1,14 +1,14 @@
 {
 	"name": "MenuEditor",
-	"version": "2.1.2",
+	"version": "3.1.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
-		"[http://www.hallowelt.com Hallo Welt! GmbH]"
+		"[https://www.hallowelt.com Hallo Welt! GmbH]"
 	],
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:MenuEditor",
 	"descriptionmsg": "menueditor-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"MessagesDirs": {
 		"MenuEditor": "i18n"
@@ -52,19 +52,19 @@
 				}
 			},
 			"ToolbarTools": {
-				"newItem": {
-					"classname": "ext.menueditor.ui.tools.NewItemTool",
+				"cancel": {
+					"classname": "ext.menueditor.ui.tools.CancelTool",
 					"group": {
 						"name": "new",
 						"priority": 1
 					},
 					"module": "ext.menuEditor.tools"
 				},
-				"cancel": {
-					"classname": "ext.menueditor.ui.tools.CancelTool",
+				"newItem": {
+					"classname": "ext.menueditor.ui.tools.NewItemTool",
 					"group": {
-						"name": "page-actions",
-						"priority": 10
+						"name": "new",
+						"priority": 1
 					},
 					"module": "ext.menuEditor.tools"
 				},
@@ -102,6 +102,9 @@
 			],
 			"styles": [
 				"styles/toolbar.css"
+			],
+			"messages": [
+				"menueditor-ui-cancel-confirmation"
 			]
 		},
 		"ext.menuEditor.boostrap": {
@@ -162,6 +165,7 @@
 			],
 			"dependencies": [
 				"ext.menuEditor.tree",
+				"oojs-ui.styles.icons-editing-core",
 				"oojs-ui.styles.icons-editing-styling",
 				"oojs-ui.styles.icons-editing-advanced"
 			],
@@ -209,7 +213,7 @@
 				}
 			],
 			"messages": [
-				"menueditor-toolbar-submit",
+				"menueditor-toolbar-save",
 				"menueditor-toolbar-cancel",
 				"menueditor-toolbar-add-label"
 			],

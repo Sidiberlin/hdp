@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Bookshelf;
 
-use Title;
+use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\LoadBalancer;
 
@@ -43,7 +43,8 @@ class BookMetaLookup {
 			'*',
 			[
 				'm_book_id' => $bookID
-			]
+			],
+			__METHOD__
 		);
 
 		foreach ( $results as $result ) {
@@ -70,7 +71,8 @@ class BookMetaLookup {
 			[
 				'm_book_id' => $bookID,
 				'm_key' => $key
-			]
+			],
+			__METHOD__
 		);
 
 		foreach ( $results as $result ) {
@@ -92,7 +94,8 @@ class BookMetaLookup {
 			'm_value',
 			[
 				'm_key' => $key
-			]
+			],
+			__METHOD__
 		);
 
 		foreach ( $results as $result ) {

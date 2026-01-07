@@ -7,22 +7,24 @@ namespace MediaWiki\Extension\NotifyMe;
 use DateTime;
 use Exception;
 use InvalidArgumentException;
-use Language;
 use MediaWiki\Extension\NotifyMe\Channel\WebChannel;
 use MediaWiki\Extension\NotifyMe\Grouping\NotificationGroup;
+use MediaWiki\Language\Language;
 use MediaWiki\Languages\LanguageFactory;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\User\Options\UserOptionsLookup;
+use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
 use MediaWiki\User\UserIdentity;
-use MediaWiki\User\UserOptionsLookup;
-use MWException;
 use MWStake\MediaWiki\Component\Events\BotAgent;
 use MWStake\MediaWiki\Component\Events\Delivery\NotificationStatus;
 use MWStake\MediaWiki\Component\Events\EventLink;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
 use MWStake\MediaWiki\Component\Events\Notification;
+use RuntimeException;
 use stdClass;
 use Throwable;
-use User;
 
 final class NotificationSerializer {
 	/** @var UserFactory */
@@ -233,7 +235,7 @@ final class NotificationSerializer {
 	 * @param UserIdentity $user For which user to serialize the notification
 	 *
 	 * @return array
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	public function serializeForOutput( Notification $notification, UserIdentity $user ): array {
 		$lang = $this->getUserLanguage( $user );
@@ -254,16 +256,10 @@ final class NotificationSerializer {
 			'icon' => $notification->getEvent()->getIcon(),
 			'user_timestamp' => $lang->userTimeAndDate(
 				$notification->getEvent()->getTime()->format( 'YmdHis' ),
-				$user
+				$user,
+				[ 'timecorrection' => true ]
 			),
 			'timestamp' => $notification->getEvent()->getTime()->format( 'c' ),
-			'timestamp_ago' => $lang->userTimeAndDate(
-				$notification->getEvent()->getTime()->format( 'YmdHis' ),
-				$user,
-				[
-					'timecorrection' => true
-				]
-			),
 			'status' => $notification->getStatus()->getStatus(),
 			'target_user' => $this->getUserOutputInfo( $user ),
 			'channel' => $channel->getKey(),
@@ -293,7 +289,7 @@ final class NotificationSerializer {
 	 * @param UserIdentity $user For which user to serialize the notification
 	 *
 	 * @return array
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	public function serializeNotificationGroupForOutput( NotificationGroup $group, UserIdentity $user ): array {
 		$lang = $this->getUserLanguage( $user );
@@ -312,12 +308,10 @@ final class NotificationSerializer {
 			'message' => $message,
 			'icon' => $mostRecent->getEvent()->getIcon(),
 			'timestamp' => $mostRecent->getEvent()->getTime()->format( 'c' ),
-			'timestamp_ago' => $lang->userTimeAndDate(
+			'user_timestamp' => $lang->userTimeAndDate(
 				$mostRecent->getEvent()->getTime()->format( 'YmdHis' ),
 				$user,
-				[
-					'timecorrection' => true
-				]
+				[ 'timecorrection' => true ]
 			),
 			'count' => $count,
 			'target_user' => $this->getUserOutputInfo( $user ),
@@ -407,7 +401,7 @@ final class NotificationSerializer {
 			if ( isset( $value['public'] ) && !$value['public'] ) {
 				return null;
 			}
-			$value['desc'] = \Message::newFromKey( $value['desc'] )->plain();
+			$value['desc'] = Message::newFromKey( $value['desc'] )->text();
 			$value['example'] = htmlspecialchars( $value['example'] ?? '' );
 			if ( isset( $value['schemaKey'] ) ) {
 				$value['items'] = $this->getPublicSchemaFor( $value['schemaKey'] );
@@ -423,12 +417,12 @@ final class NotificationSerializer {
 	 * @param INotificationEvent $event
 	 *
 	 * @return string
-	 * @throws MWException
+	 * @throws RuntimeException
 	 */
 	public function serializeEvent( INotificationEvent $event ): string {
 		set_error_handler( static function ( $errno, $errstr ) use ( $event ) {
 			$class = get_class( $event );
-			throw new MWException( "Serialization of event $class failed: $errstr ($errno)" );
+			throw new RuntimeException( "Serialization of event $class failed: $errstr ($errno)" );
 		}, E_WARNING | E_NOTICE );
 
 		$serializableSpec = $this->eventFactory->getSerializableSpec( $event );
@@ -485,7 +479,7 @@ final class NotificationSerializer {
 	 * @param Language $lang
 	 *
 	 * @return array
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	private function serializeLinks( array $links, Language $lang ): array {
 		$isPrimary = true;
@@ -504,7 +498,7 @@ final class NotificationSerializer {
 	 * @param UserIdentity $user
 	 *
 	 * @return Language
-	 * @throws MWException
+	 * @throws Exception
 	 */
 	private function getUserLanguage( UserIdentity $user ): Language {
 		$langCode = $this->userOptionsLookup->getOption( $user, 'language' );
@@ -537,7 +531,7 @@ final class NotificationSerializer {
 		if ( !( $user instanceof User ) ) {
 			$user = $this->userFactory->newFromUserIdentity( $user );
 		}
-		$realName = $user->getRealName();
+		$realName = Sanitizer::stripAllTags( $user->getRealName() );
 
 		return [
 			'display_name' => $realName ?: $user->getName(),

@@ -1,0 +1,16 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac",
+			"Yasen igra"
+		]
+	},
+	"contenttransfer-namespace-filter-input-label": "Именно пространство",
+	"contenttransfer-category-filter-input-label": "Категория",
+	"contenttransfer-dialog-push-action-cancel-label": "Отказ",
+	"contenttransfer-dialog-push-action-done-label": "Готово",
+	"contenttransfer-dialog-push-report-layout-label": "Отчет",
+	"contenttransfer-dialog-push-preview-page-group-label-wikipage": "Страница ($1)",
+	"contenttransfer-dialog-push-preview-page-group-label-file": "Файл ($1)",
+	"content-transfer-push-related-pages": "Свързани страници"
+}

@@ -6,11 +6,12 @@ use BS\ExtendedSearch\ISearchResultFormatter;
 use BS\ExtendedSearch\ISearchSource;
 use BS\ExtendedSearch\SearchResult;
 use BS\ExtendedSearch\Wildcarder;
-use ConfigException;
-use IContextSource;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Html\Html;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Title\Title;
 use MWException;
-use Title;
 
 class Base implements ISearchResultFormatter {
 	/**
@@ -25,9 +26,8 @@ class Base implements ISearchResultFormatter {
 	 */
 	public const MORE_VALUES_TEXT = '...';
 
-	public const AC_RANK_NORMAL = 'normal';
+	public const AC_RANK_PRIMARY = 'primary';
 	public const AC_RANK_SECONDARY = 'secondary';
-	public const AC_RANK_TOP = 'top';
 
 	/**
 	 *
@@ -100,16 +100,18 @@ class Base implements ISearchResultFormatter {
 		$resultData['id'] = $resultObject->getId();
 		$resultData['type'] = $resultObject->getType();
 		$resultData['score'] = $resultObject->getScore();
+		$resultData['_index'] = $resultObject->getIndex();
+		$resultData['_is_foreign'] = $this->source->getBackend()->isForeignIndex( $resultObject->getIndex() );
 
-		// Experimental
-		$user = $this->getContext()->getUser();
-		if ( $user->isRegistered() ) {
-			$resultRelevance = new \BS\ExtendedSearch\ResultRelevance( $user, $resultObject->getId() );
-			$resultData['user_relevance'] = $resultRelevance->getValue();
-		} else {
-			$resultData['user_relevance'] = 0;
+		if ( !$resultData['_is_foreign'] ) {
+			$user = $this->getContext()->getUser();
+			if ( $user->isRegistered() ) {
+				$resultRelevance = new \BS\ExtendedSearch\ResultRelevance( $user, $resultObject->getId() );
+				$resultData['user_relevance'] = (int)$resultRelevance->getValue();
+			} else {
+				$resultData['user_relevance'] = false;
+			}
 		}
-		// End Experimental
 
 		$type = $resultData['type'];
 		$resultData['typetext'] = $this->getTypeText( $type );
@@ -153,7 +155,7 @@ class Base implements ISearchResultFormatter {
 	protected function getTypeText( $type ) {
 		$typeText = $type;
 		if ( wfMessage( "bs-extendedsearch-source-type-$type-label" )->exists() ) {
-			$typeText = wfMessage( "bs-extendedsearch-source-type-$type-label" )->plain();
+			$typeText = wfMessage( "bs-extendedsearch-source-type-$type-label" )->text();
 		}
 
 		return $typeText;
@@ -168,20 +170,18 @@ class Base implements ISearchResultFormatter {
 	 *
 	 * @param array &$results
 	 * @param array $searchData
+	 * @throws MWException
 	 */
 	public function rankAutocompleteResults( &$results, $searchData ): void {
-		$top = $this->getACHighestScored( $results );
 		foreach ( $results as &$result ) {
 			if ( $result['is_ranked'] === true ) {
-				return;
+				continue;
 			}
 
 			$lcBasename = mb_strtolower( $result['basename'] );
 			$lcSearchTerm = mb_strtolower( $searchData['value'] );
-			if ( strpos( $lcBasename, $lcSearchTerm ) === 0 && $top['_id'] === $result['_id'] ) {
-				$result['rank'] = self::AC_RANK_TOP;
-			} elseif ( $this->matchTokenized( $lcBasename, $lcSearchTerm ) ) {
-				$result['rank'] = self::AC_RANK_NORMAL;
+			if ( $this->matchTokenized( $lcBasename, $lcSearchTerm ) ) {
+				$result['rank'] = self::AC_RANK_PRIMARY;
 			} else {
 				$result['rank'] = self::AC_RANK_SECONDARY;
 			}
@@ -244,6 +244,17 @@ class Base implements ISearchResultFormatter {
 	 * @param bool $fieldsWithANDEnabled
 	 */
 	public function formatFilters( &$aggs, &$filterCfg, $fieldsWithANDEnabled = false ): void {
+		if ( isset( $filterCfg['namespace'] ) ) {
+			foreach ( $filterCfg['namespace']['buckets'] as &$bucket ) {
+				$id = (int)$bucket['key'];
+				if ( $id === NS_MAIN ) {
+					$bucket['label'] = wfMessage( 'blanknamespace' )->text();
+				} else {
+					$bucket['label'] = $this->getContext()->getLanguage()->getNsText( $id );
+				}
+				$bucket['key'] = (string)$bucket['key'];
+			}
+		}
 	}
 
 	/**
@@ -266,21 +277,28 @@ class Base implements ISearchResultFormatter {
 	 * Get page anchor that can be traced
 	 * @param Title $title
 	 * @param string $text
-	 *
 	 * @return string
 	 */
-	public function getTraceablePageAnchor( Title $title, $text ): string {
+	public function getTraceablePageAnchor( Title $title, string $text ): string {
 		$data = [
 			'dbkey' => $title->getDBkey(),
 			'namespace' => $title->getNamespace(),
 			'url' => $title->getFullURL()
 		];
+		if ( $text ) {
+			$display = $text;
+		} else {
+			$display = $title->getText();
+			if ( $title->isSubpage() ) {
+				$display = $title->getSubpageText();
+			}
+		}
 
-		return \Html::element( 'a', [
+		return Html::element( 'a', [
 			'href' => $title->getLocalURL(),
 			'class' => 'bs-traceable-link',
 			'data-bs-traceable-page' => json_encode( $data ),
 			'data-title' => $title->getPrefixedText()
-		], $text );
+		], $display );
 	}
 }

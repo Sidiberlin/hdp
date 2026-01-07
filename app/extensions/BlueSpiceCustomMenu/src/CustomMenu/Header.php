@@ -2,7 +2,9 @@
 
 namespace BlueSpice\CustomMenu\CustomMenu;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
 use MenuParser;
 use MWStake\MediaWiki\Component\DataStore\Record;
 use MWStake\MediaWiki\Component\DataStore\RecordSet;
@@ -14,7 +16,7 @@ class Header extends \BlueSpice\CustomMenu\CustomMenu {
 	 * @return Record[]
 	 */
 	protected function getRecords() {
-		$title = \Title::makeTitle(
+		$title = Title::makeTitle(
 			NS_MEDIAWIKI,
 			// 'TopBarMenu' in the past
 			"CustomMenu/Header"
@@ -48,8 +50,8 @@ class Header extends \BlueSpice\CustomMenu\CustomMenu {
 	 * @return Record[]
 	 */
 	protected function getDefaultRecords( $records = [] ) {
-		$currentTitle = \RequestContext::getMain()->getTitle();
-		$mainPage = \Title::newMainPage();
+		$currentTitle = RequestContext::getMain()->getTitle();
+		$mainPage = Title::newMainPage();
 		$active = $currentTitle ? $currentTitle->equals( $mainPage ) : false;
 		$menu = [ [
 			'id' => 'nt-wiki',
@@ -109,7 +111,7 @@ class Header extends \BlueSpice\CustomMenu\CustomMenu {
 	 * @return string
 	 */
 	public function getEditURL() {
-		$title = \Title::makeTitle(
+		$title = Title::makeTitle(
 			NS_MEDIAWIKI,
 			"CustomMenu/Header"
 		);

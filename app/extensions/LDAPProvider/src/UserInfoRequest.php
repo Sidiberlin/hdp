@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\LDAPProvider;
 
-use Config;
+use MediaWiki\Config\Config;
 use MWException;
 
 class UserInfoRequest {
@@ -26,8 +26,7 @@ class UserInfoRequest {
 	protected $userBaseDN = '';
 
 	/**
-	 *
-	 * @var string
+	 * @var string Typically "uid"
 	 */
 	protected $searchAttribute = '';
 

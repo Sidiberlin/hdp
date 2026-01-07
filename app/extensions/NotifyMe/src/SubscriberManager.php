@@ -4,12 +4,12 @@ namespace MediaWiki\Extension\NotifyMe;
 
 use InvalidArgumentException;
 use MediaWiki\Extension\NotifyMe\Channel\WebChannel;
-use MediaWiki\Extension\NotifyMe\Event\NotifyAgentEvent;
+use MediaWiki\User\User;
 use MediaWiki\User\UserIdentity;
 use MWStake\MediaWiki\Component\Events\Delivery\IChannel;
 use MWStake\MediaWiki\Component\Events\ForcedEvent;
 use MWStake\MediaWiki\Component\Events\INotificationEvent;
-use User;
+use MWStake\MediaWiki\Component\Events\NotifyAgentEvent;
 
 final class SubscriberManager {
 	/** @var ISubscriberProvider[] */

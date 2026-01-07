@@ -30,7 +30,6 @@
 	"bs-interwikilinks-insertlink-labelprefix": "البادئة",
 	"bs-interwikilink-select-a-prefix": "اختر بادئة",
 	"bs-interwikilinks-link-edited": "عدلت وصلة اللغة",
-	"apihelp-bs-interwikilinks-tasks-description": "يقدم المهام لامتداد InterWikiLinks.",
 	"apihelp-bs-interwikilinks-tasks-summary": "يقدم المهام لامتداد InterWikiLinks.",
 	"action-interwikilinks-viewspecialpage": "عرض الصفحة الخاصة \"{{int:bs-interwikilinks-label}}\"",
 	"interwikilinks": "وصلات الإنترويكي",

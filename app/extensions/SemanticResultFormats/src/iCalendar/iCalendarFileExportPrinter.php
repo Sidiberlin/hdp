@@ -2,13 +2,13 @@
 
 namespace SRF\iCalendar;
 
+use MediaWiki\MediaWikiServices;
+use SMW\DataValueFactory;
+use SMW\Query\QueryResult;
 use SMW\Query\Result\ResultArray;
-use SMWDataValueFactory as DataValueFactory;
-use SMWExportPrinter as FileExportPrinter;
+use SMW\Query\ResultPrinters\FileExportPrinter;
 use SMWQuery as Query;
 use SMWQueryProcessor as QueryProcessor;
-use SMWQueryResult as QueryResult;
-use WikiPage;
 
 /**
  * Printer class for iCalendar exports
@@ -204,7 +204,8 @@ class iCalendarFileExportPrinter extends FileExportPrinter {
 
 		if ( array_key_exists( 'limit', $this->params ) ) {
 			$link->setParameter( $this->params['limit'], 'limit' );
-		} else { // use a reasonable default limit
+		} else {
+			// use a reasonable default limit
 			$link->setParameter( 20, 'limit' );
 		}
 
@@ -219,12 +220,12 @@ class iCalendarFileExportPrinter extends FileExportPrinter {
 	 *
 	 * @param ResultArray[] $row
 	 *
-	 * @return
+	 * @return array
 	 */
 	private function getEventParams( array $row ) {
 		$result = '';
-
-		$subject = $row[0]->getResultSubject(); // get the object
+		// get the object
+		$subject = $row[0]->getResultSubject();
 		$dataValue = DataValueFactory::getInstance()->newDataValueByItem( $subject, null );
 
 		$params = [
@@ -234,7 +235,7 @@ class iCalendarFileExportPrinter extends FileExportPrinter {
 		$params['from'] = null;
 		$params['to'] = null;
 
-		foreach ( $row as /* SMWResultArray */ $field ) {
+		foreach ( $row as $field ) {
 			$this->filterField( $field, $params );
 		}
 
@@ -246,7 +247,8 @@ class iCalendarFileExportPrinter extends FileExportPrinter {
 		$title = $subject->getTitle();
 
 		$params['url'] = $title->getFullURL();
-		$params['timestamp'] = WikiPage::factory( $title )->getTimestamp();
+		$params['timestamp'] = MediaWikiServices::getInstance()->getWikiPageFactory()
+			->newFromTitle( $title )->getTimestamp();
 		$params['sequence'] = $title->getLatestRevID();
 
 		return $params;

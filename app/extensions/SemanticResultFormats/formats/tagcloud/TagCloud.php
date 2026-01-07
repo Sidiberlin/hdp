@@ -3,12 +3,12 @@
 namespace SRF;
 
 use Html;
-use SMW\ResultPrinter;
+use SMW\Query\PrintRequest;
+use SMW\Query\QueryResult;
+use SMW\Query\Result\ResultArray;
+use SMW\Query\ResultPrinters\ResultPrinter;
 use SMWDataValue;
 use SMWOutputs;
-use SMWPrintRequest;
-use SMWQueryResult;
-use SMWResultArray;
 use SRFUtils;
 use Title;
 
@@ -45,12 +45,12 @@ class TagCloud extends ResultPrinter {
 	/**
 	 * Return serialised results in specified format
 	 *
-	 * @param SMWQueryResult $queryResult
+	 * @param QueryResult $queryResult
 	 * @param $outputmode
 	 *
 	 * @return string
 	 */
-	public function getResultText( SMWQueryResult $queryResult, $outputmode ) {
+	public function getResultText( QueryResult $queryResult, $outputmode ) {
 		$tags = $this->getTags( $queryResult, $outputmode );
 
 		if ( $tags === [] ) {
@@ -93,25 +93,26 @@ class TagCloud extends ResultPrinter {
 	/**
 	 * Returns an array with the tags (keys) and the number of times they occur (values).
 	 *
-	 * @param SMWQueryResult $queryResult
+	 * @param QueryResult $queryResult
 	 * @param $outputMode
 	 *
 	 * @return array
 	 */
-	private function getTags( SMWQueryResult $queryResult, $outputMode ) {
+	private function getTags( QueryResult $queryResult, $outputMode ) {
 		$tags = [];
 		$excludetags = explode( ';', $this->params['excludetags'] );
 
 		/**
-		 * @var SMWResultArray $row
+		 * @var ResultArray $row
 		 * @var SMWDataValue $dataValue
 		 */
-		while ( $row = $queryResult->getNext() ) { // Objects (pages)
-			for ( $i = 0, $n = count( $row ); $i < $n; $i++ ) { // SMWResultArray for a sinlge property
+		while ( $row = $queryResult->getNext() ) {
+			// ResultArray for a sinlge property
+			for ( $i = 0, $n = count( $row ); $i < $n; $i++ ) {
+				// Data values
+				while ( ( $dataValue = $row[$i]->getNextDataValue() ) !== false ) {
 
-				while ( ( $dataValue = $row[$i]->getNextDataValue() ) !== false ) { // Data values
-
-					$isSubject = $row[$i]->getPrintRequest()->getMode() == SMWPrintRequest::PRINT_THIS;
+					$isSubject = $row[$i]->getPrintRequest()->getMode() == PrintRequest::PRINT_THIS;
 
 					// If the main object should not be included, skip it.
 					if ( $i == 0 && !$this->params['includesubject'] && $isSubject ) {
@@ -242,7 +243,8 @@ class TagCloud extends ResultPrinter {
 				$tags = $newTags;
 				break;
 			case 'unchanged':
-			default: // Restore the original order.
+			// Restore the original order.
+			default:
 				$changedTags = $tags;
 				$tags = [];
 

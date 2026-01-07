@@ -3,9 +3,13 @@
 namespace BlueSpice;
 
 use MediaWiki\Auth\AuthManager;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\SpecialPage\SpecialPage as MediaWikiSpecialPage;
 
-abstract class SpecialPage extends \SpecialPage {
+abstract class SpecialPage extends MediaWikiSpecialPage {
 
 	/** @var MediaWikiServices */
 	protected $services = null;
@@ -25,7 +29,7 @@ abstract class SpecialPage extends \SpecialPage {
 		parent::__construct(
 			$name, $restriction, $listed,
 			$function, $file, $includable
-	);
+		);
 		$this->services = MediaWikiServices::getInstance();
 	}
 
@@ -53,7 +57,7 @@ abstract class SpecialPage extends \SpecialPage {
 
 	/**
 	 * Shortcut to get main config object
-	 * @return \Config
+	 * @return Config
 	 * @since 1.24
 	 */
 	public function getConfig() {

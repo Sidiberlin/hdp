@@ -4,10 +4,6 @@
 			"Piano1forte2"
 		]
 	},
-	"bs-prodistributionconnector-desc": "Connects BlueSpice to various MediaWiki extensions",
 	"bs-pro-distribution-droplet-modal-dialog-desc": "Configurable button which opens a customisable modal dialogue",
-	"droplets-modal-dialog-title-label": "Title for dialogue",
-	"droplets-modal-dialog-body-label": "Content for dialogue",
-	"droplets-modal-dialog-footer-label": "Footer for dialogue",
 	"droplets-modal-dialog-bg-color-label": "Button background colour"
 }

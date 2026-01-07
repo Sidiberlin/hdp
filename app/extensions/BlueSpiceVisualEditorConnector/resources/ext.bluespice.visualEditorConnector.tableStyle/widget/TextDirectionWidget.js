@@ -1,12 +1,11 @@
 /* INACTIVE CODE!!!! - Disabled due to incompatibility with Chrome and PDF export */
 bs.util.registerNamespace( 'bs.vec.ui.widget' );
 
-bs.vec.ui.widget.TextDirectionwidget = function( contextItem ) {
-	var styles;
+bs.vec.ui.widget.TextDirectionwidget = function ( contextItem ) {
 	bs.vec.ui.widget.TextDirectionwidget.parent.call( this, contextItem );
 
-	styles = contextItem.getStyles();
-	this.textDirection = styles.hasOwnProperty('textDirection' ) ? styles.textDirection : null;
+	const styles = contextItem.getStyles();
+	this.textDirection = styles.hasOwnProperty( 'textDirection' ) ? styles.textDirection : null;
 
 	this.directionToggle = new OO.ui.ToggleButtonWidget( {
 		title: OO.ui.deferMsg( 'bs-vec-widget-text-direction-tooltip' ),
@@ -25,7 +24,7 @@ bs.vec.ui.widget.TextDirectionwidget = function( contextItem ) {
 
 OO.inheritClass( bs.vec.ui.widget.TextDirectionwidget, bs.vec.ui.widget.CommandWidget );
 
-bs.vec.ui.widget.TextDirectionwidget.prototype.executeAction = function() {
+bs.vec.ui.widget.TextDirectionwidget.prototype.executeAction = function () {
 	if ( !this.shouldExecute() ) {
 		return;
 	}

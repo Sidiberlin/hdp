@@ -18,12 +18,13 @@ ext.menueditor.ui.data.node.WikilinkNode.prototype.getIcon = function ( data ) {
 	return 'wikiText';
 };
 
-// eslint-disable-next-line no-unused-vars
 ext.menueditor.ui.data.node.WikilinkNode.prototype.getFormFields = function ( dialog ) {
 	return [
 		{
 			name: 'target',
 			type: 'title',
+			// eslint-disable-next-line camelcase
+			widget_$overlay: dialog.$overlay,
 			required: true,
 			label: mw.message( 'menueditor-ui-form-field-target' ).text(),
 			help: mw.message( 'menueditor-ui-menu-wiki-link-help' ).text()

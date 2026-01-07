@@ -1,16 +1,19 @@
 {
 	"@metadata": {
 		"authors": [
+			"Amire80",
 			"Crochet.david",
 			"DreZhsh",
 			"Florian COLLIN",
 			"Golmore",
 			"Gomoko",
 			"IAlex",
+			"MacOS Weed",
 			"McDutchie",
 			"Pamputt",
 			"PieRRoMaN",
 			"Shirayuki",
+			"Terio legale",
 			"Thibaut120094",
 			"Verdy p",
 			"Wladek92"
@@ -18,9 +21,9 @@
 	},
 	"getdata": "Obtenir des données",
 	"externaldata-desc": "Permet de récupérer des données structurées à partir d’URL externes, de bases de données et d’autres sources",
-	"externaldata-smw-needed": "Erreur : Semantic MediaWiki doit être installé afin d’appeler {{#store_external_table:}}.",
 	"externaldata-no-param-specified": "Erreur : aucun paramètre « $1 » spécifié.",
 	"externaldata-param-type-error": "Erreur : le paramètre $1 doit être de type $2.",
+	"externaldata-processing-exception": "Une exception a été générée lors de l'exécution du préprocesseur ou du postprocesseur : $1",
 	"externaldata-php-library-missing": "Erreur : la bibliothèque PHP $1, nécessaire pour utiliser $2, est absente.",
 	"external-data-no-suitable-connector": "Erreur : aucune source de données appropriée n’est définie pour cette requête de données externes",
 	"externaldata-throttled": "Les appels à $1 sont limités jusqu’à {{#time:c|@$2}}.",
@@ -57,9 +60,10 @@
 	"externaldata-url-unknown-error": "Erreur inconnue lors de la récupération des données depuis l’URL $1.",
 	"externaldata-url-not-allowed": "L’URL $1 n’est pas autorisée sur ce wiki.",
 	"externaldata-caught-exception-soap": "Exception $1 interceptée en créant le client SOAP.",
-	"externaldata-parsing-html-failed": "Échec de l’analyse du HTML.",
+	"externaldata-parsing-html-failed": "Ne peut pas lire HTML:$1",
 	"externaldata-caught-exception-parsing-html": "Exception interceptée lors de l’analyse du HTML. Le message d’erreur est « $1 ».",
 	"externaldata-error-converting-css-to-xpath": "Exception interceptée lors de la conversion du sélecteur CSS $1 en XPath :\n$2",
+	"externaldata-jsonpath-error": "JSONPath $1 non valide.",
 	"externaldata-missing-library": "Il manque la bibliothèque $1 nécessaire pour utiliser la fonction « $2 » de l’analyseur syntaxique, ou bien la fonction Lua <code>$3</code>.",
 	"externaldata-undefined-file": "Le fichier $1 n’est pas défini.",
 	"externaldata-missing-file": "Le fichier $1 est manquant.",
@@ -77,5 +81,5 @@
 	"externaldata-no-local-variable": "Erreur : aucune variable locale « $1 » n’a été définie.",
 	"externaldata-no-template": "Erreur : aucun modèle spécifié.",
 	"externaldata-no-loop-body": "Erreur : aucun corps de boucle défini comme premier ou deuxième paramètre.",
-	"externaldata-getdata-badurl": "Vous devez spécifier un nom de page dans l’URL ;\nl’URL doit être de la forme « {{#Special:GetData}}/<nom de page> »."
+	"externaldata-getdata-badurl": "Vous devez spécifier un nom de page dans l’URL. L’URL doit être de la forme « {{#Special:GetData}}/Nom_de_page »."
 }

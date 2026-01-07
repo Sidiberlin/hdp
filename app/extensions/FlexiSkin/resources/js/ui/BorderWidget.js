@@ -46,7 +46,7 @@ flexiskin.ui.widget.BorderWidget.prototype.getValue = function () {
 		return 'none';
 	}
 
-	var color = this.colorWidget.getValue();
+	let color = this.colorWidget.getValue();
 	if ( !color ) {
 		color = 'currentColor';
 	}
@@ -63,13 +63,13 @@ flexiskin.ui.widget.BorderWidget.prototype.setValue = function ( value ) {
 		return;
 	}
 
-	var bits = value.split( ' ' );
+	const bits = value.split( ' ' );
 	if ( bits.length !== 3 ) {
 		return;
 	}
-	var color = bits.pop(),
-		type = bits.pop(),
-		size = bits.pop();
+	let color = bits.pop();
+	const type = bits.pop();
+	const size = bits.pop();
 
 	if ( color === 'currentColor' ) {
 		if ( this.currentColorWidget ) {

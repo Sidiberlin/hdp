@@ -21,10 +21,10 @@ bs.skin.enhancedSidebar.tree.node.PanelHeading.prototype.getIcon = function () {
 };
 
 bs.skin.enhancedSidebar.tree.node.PanelHeading.prototype.getFormFields = function ( dialog ) {
-	var fields = bs.skin.enhancedSidebar.tree.node.PanelHeading.parent.prototype.getFormFields.call( this, dialog );
+	const fields = bs.skin.enhancedSidebar.tree.node.PanelHeading.parent.prototype.getFormFields.call( this, dialog );
 
 	// Find field with name `text` and modify it
-	for ( var i = 0; i < fields.length; i++ ) {
+	for ( let i = 0; i < fields.length; i++ ) {
 		if ( fields[ i ].name === 'text' ) {
 			fields[ i ].label = mw.message( 'bs-discovery-enhanced-mediawiki-sidebar-field-heading' ).text();
 			fields[ i ].help = mw.message( 'bs-discovery-enhanced-mediawiki-sidebar-field-heading-help' ).text();

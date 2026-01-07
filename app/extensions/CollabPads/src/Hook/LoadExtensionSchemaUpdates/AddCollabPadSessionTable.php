@@ -11,19 +11,11 @@ class AddCollabPadSessionTable implements LoadExtensionSchemaUpdatesHook {
 	 */
 	public function onLoadExtensionSchemaUpdates( $updater ) {
 		$dbType = $updater->getDB()->getType();
-		$dir = "{$this->getExtensionPath()}/maintenance/db";
+		$dir = dirname( __DIR__, 3 );
 
 		$updater->addExtensionTable(
 			'collabpad_session',
-			"$dir/sql/$dbType/collabpad_session-generated.sql"
+			"$dir/maintenance/db/$dbType/collabpad_session.sql"
 		);
-	}
-
-	/**
-	 *
-	 * @return string
-	 */
-	protected function getExtensionPath() {
-		return dirname( dirname( dirname( __DIR__ ) ) );
 	}
 }

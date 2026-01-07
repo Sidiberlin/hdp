@@ -2,7 +2,8 @@
 
 namespace MediaWiki\Extension\WebAuthn\HTMLField;
 
-use HTMLFormField;
+use MediaWiki\Html\Html;
+use MediaWiki\HTMLForm\HTMLFormField;
 use OOUI\ButtonInputWidget;
 use OOUI\Exception;
 use OOUI\HorizontalLayout;
@@ -20,7 +21,7 @@ class RegisteredKeyLayout extends HTMLFormField {
 		$nameValue = $value['name'];
 
 		$name = new LabelWidget( [
-			'label' => new HtmlSnippet( '<b>' . $nameValue . '</b>' )
+			'label' => new HtmlSnippet( Html::element( 'b', [], $nameValue ) )
 		] );
 		$removeButton = new ButtonInputWidget( [
 			'framed' => false,

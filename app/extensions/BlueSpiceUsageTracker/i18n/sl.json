@@ -5,20 +5,5 @@
 		]
 	},
 	"bs-usagetracker-desc": "Hrani statistične podatke o uporabi razširitev",
-	"prefs-usagetracker": "Sledilnik uporabe",
-	"usagetracker": "Sledilnik uporabe",
-	"bs-usagetracker-startjobs": "Posodobi zdaj",
-	"bs-usagetracker-create-statistics": "Posodobi statistiko uporabe",
-	"bs-usagetracker-col-identifier": "Identifikator",
-	"bs-usagetracker-col-desc": "Opis",
-	"bs-usagetracker-col-count": "Število",
-	"bs-usagetracker-col-last-updated": "Zadnja posodobitev",
-	"bs-usagetracker-caution": "Pozor: posodabljanje statistike uporabe lahko traja nekaj časa in zahteva nekaj virov. Posodobitev sprožite le, ko res, res potrebujete trenutne podatke. Izvede se prek odloženih opravil, zato boste morda morali stran večkrat znova naložiti, dokler podatki ne bodo v celoti zbrani.",
-	"bs-usagetracker-base-collector-desc": "Število strani, ki uporabljajo $1",
-	"bs-usagetracker-tag-collector-desc": "Število strani z značko <$1>",
-	"bs-usagetracker-db-collector-desc": "Število $1",
-	"bs-usagetracker-open-tasks": "Trenutno poteka analiza mesta. {{PLURAL:$1|Ena analiza je še odprta|$1 analizi sta še odprti|$1 analize so še odprte}}. <a href='$2'>(Osveži)</a>",
-	"apihelp-bs-usagetracker-store-summary": "Hrani statistične podatke o uporabi razširitev",
-	"action-usagetracker-update": "ponovni zagon postopka posodobitve, ki zbere vse sledene podatke na posebni strani [[Special:UsageTracker]]",
-	"right-usagetracker-update": "Dostop do ponovnega zagona postopka posodobitve, ki zbere vse sledene podatke na posebni strani [[Special:UsageTracker]]."
+	"apihelp-bs-usagetracker-store-summary": "Hrani statistične podatke o uporabi razširitev"
 }

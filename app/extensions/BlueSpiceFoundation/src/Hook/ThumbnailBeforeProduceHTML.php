@@ -27,6 +27,8 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 abstract class ThumbnailBeforeProduceHTML extends Hook {
 
@@ -68,8 +70,8 @@ abstract class ThumbnailBeforeProduceHTML extends Hook {
 
 	/**
 	 *
-	 * @param \IContextSource $context
-	 * @param \Config $config
+	 * @param IContextSource $context
+	 * @param Config $config
 	 * @param \ThumbnailImage $thumbnail
 	 * @param array &$attribs
 	 * @param array &$linkAttribs

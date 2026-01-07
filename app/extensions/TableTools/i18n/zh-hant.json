@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"tabletools-desc": "為內容表格添加額外功能",
+	"tabletools-ve-plugin-table-style-sticky": "固定標頭"
+}

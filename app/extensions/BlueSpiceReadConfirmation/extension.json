@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceReadConfirmation",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"Robert Vogel",
@@ -72,10 +72,10 @@
 		}
 	},
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3",
-			"BlueSpicePageAssignments": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0",
+			"BlueSpicePageAssignments": ">= 5.0.0"
 		}
 	},
 	"TestAutoloadNamespaces": {
@@ -137,7 +137,6 @@
 			],
 			"dependencies": [
 				"ext.bluespice",
-				"ext.bluespice.extjs",
 				"ext.oOJSPlus.dialogs"
 			]
 		},

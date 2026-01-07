@@ -4,5 +4,8 @@
 			"Chinamoonroll"
 		]
 	},
-	"action-categorymanager-viewspecialpage": "cingak ménéjer Kategori"
+	"action-categorymanager-viewspecialpage": "cingak ménéjer Kategori",
+	"bs-categorymanager-text": "Kategori",
+	"bs-categorymanager-collection-var-categorizedpages": "Kaca sareng kategori",
+	"bs-categorymanager-collection-var-uncategorizedpages": "Kaca tanpa kategori"
 }

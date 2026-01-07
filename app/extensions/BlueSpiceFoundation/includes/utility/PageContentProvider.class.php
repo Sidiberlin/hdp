@@ -6,9 +6,22 @@
  * @subpackage Utility
  */
 
+use MediaWiki\Content\ContentHandler;
+use MediaWiki\Content\TextContent;
+use MediaWiki\Context\DerivativeContext;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Output\OutputPage;
+use MediaWiki\Parser\ParserOptions;
+use MediaWiki\Parser\Sanitizer;
+use MediaWiki\Request\DerivativeRequest;
+use MediaWiki\Request\WebRequest;
 use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Revision\RevisionRecord;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class BsPageContentProvider {
 	protected $oOriginalGlobalOutputPage = null;
@@ -233,7 +246,10 @@ class BsPageContentProvider {
 
 		$this->bEncapsulateContent = $bOldValueOfEncapsulateContent;
 
+		libxml_use_internal_errors(true);
 		$oDOMDoc->loadHTML( '<?xml encoding="utf-8" ?>' . $sHtmlContent );
+		libxml_clear_errors();
+		libxml_use_internal_errors(false);
 
 		$oPreTags = $oDOMDoc->getElementsByTagName( 'pre' );
 		foreach( $oPreTags as $oPreTag ) {
@@ -428,7 +444,7 @@ class BsPageContentProvider {
 	}
 
 	/**
-	 * @param \Title $oTitle
+	 * @param Title $oTitle
 	 * @return string
 	 */
 	protected function getWrapperAttributes( $oTitle ) {
@@ -488,11 +504,7 @@ class BsPageContentProvider {
 	 * @return Title
 	 */
 	public function getRedirectTargetRecursiveFrom( Title $oTitle, $aParams = array() ) {
-		return ContentHandler::makeContent(
-			$this->getWikiTextContentFor( $oTitle, $aParams ),
-			null,
-			CONTENT_MODEL_WIKITEXT
-		)->getUltimateRedirectTarget();
+		return $this->services->getRedirectLookUp()->getRedirectTarget( $oTitle );
 	}
 
 	/**
@@ -502,11 +514,7 @@ class BsPageContentProvider {
 	 * @return Array_of_Title
 	 */
 	public function getRedirectChainRecursiveFrom( Title $oTitle, $aParams = array() ) {
-		return ContentHandler::makeContent(
-			$this->getWikiTextContentFor( $oTitle, $aParams ),
-			null,
-			CONTENT_MODEL_WIKITEXT
-		)->getRedirectChain();
+		return [ $this->services->getRedirectLookUp()->getRedirectTarget( $oTitle ) ];
 	}
 
 	/**
@@ -554,6 +562,7 @@ class BsPageContentProvider {
 
 		$wgParser = $this->services->getParserFactory()->create();
 		$wgParser->setOptions( $this->getParserOptions() );
+		$wgParser->setPage( $oTitle );
 		$globalParser = MediaWikiServices::getInstance()->getParser();
 		$globalParser->setOptions( $wgParser->getOptions() );
 		$globalParser->setPage( $wgParser->getPage() );

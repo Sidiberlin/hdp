@@ -53,20 +53,18 @@
 	"logentry-bs-namespace-manager-rename": "$1 {{GENDER:$2|ha rinominato}} il namespace $4 in $5",
 	"logentry-bs-namespace-manager-remove": "$1 {{GENDER:$2|ha rimosso}} il namespace $4",
 	"bs-namespacemanager-ns-config-saved": "La configurazione del namespace è stata salvata.",
-	"apihelp-bs-namespace-store-description": "Elenca tutti i namespace e configurazione arbitraria. Consente ordinamento, filtraggio e impaginazione. Implementa parametri ExtJS Store.",
 	"apihelp-bs-namespace-store-summary": "Elenca tutti i namespace e configurazione arbitraria. Consente ordinamento, filtraggio e impaginazione. Implementa parametri ExtJS Store.",
-	"apihelp-bs-namespace-tasks-description": "Permette di modificare la configurazione del namespace.",
 	"apihelp-bs-namespace-tasks-summary": "Permette di modificare la configurazione del namespace.",
 	"action-namespacemanager-viewspecialpage": "visualizza la pagina speciale di gestione namespace",
 	"namespacemanager": "Gestore namespace",
 	"bs-namespacemanager-nodeletetalk": "Il namespace Discussione non può essere cancellato",
 	"bs-namespacemanager-label-istalk": "Discussione",
 	"right-namespacemanager-viewspecialpage": "Accede alla pagina speciale [[Special:NamespaceManager]]",
-	"bs-namespacemanager-hide-talk-label": "Nascondi namespace di discussione",
-	"bs-namespacemanager-hide-non-content-ns-label": "Nascondi namespace non di contenuto",
 	"bs-namespacemanager-labelnsalias": "Alias",
 	"bs-namespacemanager-invalid-namespace": "Il namespace in fase di modifica non è valido",
 	"bs-namespacemanager-icon-tristate-disabled-aria-label": "disabilitato",
 	"bs-namespacemanager-icon-tristate-true-aria-label": "selezionato",
-	"bs-namespacemanager-icon-tristate-false-aria-label": "deselezionato"
+	"bs-namespacemanager-icon-tristate-false-aria-label": "deselezionato",
+	"bs-namespacemanager-hide-talk-label": "Nascondi namespace di discussione",
+	"bs-namespacemanager-hide-non-content-ns-label": "Nascondi namespace non di contenuto"
 }

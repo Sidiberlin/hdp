@@ -12,8 +12,8 @@ ext.bookshelf.ui.data.tree.BookEditorTree = function ( cfg ) {
 		nodeAdded: 'updateNodeNumbers'
 	} );
 
-	mw.hook( 'menueditor.toolbar' ).add( function ( menuToolbar ) {
-		this.metadataManager.load().done( function ( data ) {
+	mw.hook( 'menueditor.toolbar' ).add( ( menuToolbar ) => {
+		this.metadataManager.load().done( ( data ) => {
 			menuToolbar.toolbar.data = data;
 		} );
 		menuToolbar.toolbar.connect( this, {
@@ -21,18 +21,16 @@ ext.bookshelf.ui.data.tree.BookEditorTree = function ( cfg ) {
 				this.metadataManager.setData( metadata );
 				menuToolbar.toolbar.data = metadata;
 			},
-			mass_add_pages: function ( pages ) {
+			mass_add_pages: function ( pages ) { // eslint-disable-line camelcase
 				this.buildLinks( pages );
 			}
 		} );
-	}.bind( this ) );
+	} );
 };
 
-// eslint-disable-next-line max-len
 OO.inheritClass( ext.bookshelf.ui.data.tree.BookEditorTree, ext.menueditor.ui.data.tree.Tree );
 
-// eslint-disable-next-line max-len
-ext.bookshelf.ui.data.tree.BookEditorTree.prototype.getPossibleNodesForLevel = function ( lvl ) {
+ext.bookshelf.ui.data.tree.BookEditorTree.prototype.getPossibleNodesForLevel = function ( lvl ) { // eslint-disable-line no-unused-vars
 	return [ 'bs-bookshelf-chapter-wikilink-with-alias', 'bs-bookshelf-chapter-plain-text' ];
 };
 
@@ -41,7 +39,7 @@ ext.bookshelf.ui.data.tree.BookEditorTree.prototype.getMaxLevels = function () {
 };
 
 ext.bookshelf.ui.data.tree.BookEditorTree.prototype.createItemWidget = function ( item, lvl, isLeaf ) {
-	var classname = ext.menueditor.registry.node.registry[ item.type ];
+	let classname = ext.menueditor.registry.node.registry[ item.type ];
 	if ( !classname ) {
 		// eslint-disable-next-line no-console
 		console.error( 'Node of type ' + item.type + ' is not registered' );
@@ -49,7 +47,7 @@ ext.bookshelf.ui.data.tree.BookEditorTree.prototype.createItemWidget = function 
 	}
 
 	classname = ext.menueditor.util.callbackFromString( classname );
-	var maxLevels = this.getMaxLevels();
+	const maxLevels = this.getMaxLevels();
 	// eslint-disable-next-line new-cap
 	return new classname( {
 		name: this.randomName( item.type ),
@@ -57,49 +55,47 @@ ext.bookshelf.ui.data.tree.BookEditorTree.prototype.createItemWidget = function 
 		tree: this,
 		nodeData: item,
 		leaf: isLeaf,
-		// eslint-disable-next-line max-len
+
 		allowAdditions: this.allowAdditions && ( maxLevels ? lvl + 1 < maxLevels : true ) && classname.static.canHaveChildren,
 		allowEdits: this.editable,
 		allowDeletions: this.allowDeletions
 	} );
 };
 
-ext.bookshelf.ui.data.tree.BookEditorTree.prototype.onDragStop = function( item, $target, e, ui ) {
+ext.bookshelf.ui.data.tree.BookEditorTree.prototype.onDragStop = function ( item, $target, e, ui ) {
 	ext.bookshelf.ui.data.tree.BookEditorTree.parent.prototype.onDragStop.call( this, item, $target, e, ui );
 	this.updateNodeNumbers();
 };
 
 ext.bookshelf.ui.data.tree.BookEditorTree.prototype.getNodes = function () {
-	var nodes = ext.menueditor.ui.data.tree.Tree.parent.prototype.getNodes.call( this );
-	nodes = nodes.map( function ( e ) {
-		return $.extend( e.getNodeData(), { level: e.getLevel() + 1, name: e.getName() } );
-	} );
+	let nodes = ext.menueditor.ui.data.tree.Tree.parent.prototype.getNodes.call( this );
+	nodes = nodes.map( ( e ) => $.extend( e.getNodeData(), { level: e.getLevel() + 1, name: e.getName() } ) ); // eslint-disable-line no-jquery/no-extend
 
 	return { nodes: nodes, metadata: this.metadataManager.getData() };
 };
 
 ext.bookshelf.ui.data.tree.BookEditorTree.prototype.updateNodeNumbers = function () {
-	var allNodes = this.getNodes();
-	var data = allNodes.nodes;
-	var numberings = this.numberProcessor.calculateNumbersFromList( data );
+	const allNodes = this.getNodes();
+	const data = allNodes.nodes;
+	const numberings = this.numberProcessor.calculateNumbersFromList( data );
 
 	if ( numberings.length === 0 ) {
 		return;
 	}
 
-	for ( var i in data ) {
-		var name = data[ i ].name;
-		var item = this.flat[ name ];
+	for ( const i in data ) {
+		const name = data[ i ].name;
+		const item = this.flat[ name ]; // eslint-disable-line es-x/no-array-prototype-flat
 		item.updateNumber( numberings[ i ] );
-	};
+	}
 };
 
 ext.bookshelf.ui.data.tree.BookEditorTree.prototype.buildLinks = function ( pages ) {
-	pages.forEach( function ( page ) {
+	pages.forEach( ( page ) => {
 		this.addSubnodeWithData( {
 			type: 'bs-bookshelf-chapter-wikilink-with-alias',
 			target: page.prefixed_text,
 			label: ''
-		} , '' );
-	}.bind( this ) );
+		}, '' );
+	} );
 };

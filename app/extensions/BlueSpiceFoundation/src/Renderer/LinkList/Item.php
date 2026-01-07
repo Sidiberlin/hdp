@@ -3,9 +3,9 @@
 namespace BlueSpice\Renderer\LinkList;
 
 use BlueSpice\Renderer\Params;
-use Config;
 use HtmlArmor;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\Linker\LinkTarget;
 
@@ -21,7 +21,7 @@ class Item extends \BlueSpice\Renderer\SimpleList\Item {
 	 * @param string $name
 	 */
 	protected function __construct( Config $config, Params $params,
-		LinkRenderer $linkRenderer = null, IContextSource $context = null,
+		?LinkRenderer $linkRenderer = null, ?IContextSource $context = null,
 		$name = '' ) {
 		parent::__construct( $config, $params, $linkRenderer, $context, $name );
 		$this->args[static::PARAM_TARGET] = $params->get(

@@ -13,19 +13,19 @@ bs.vec.ui.ForeignStructuredUpload.BookletLayoutSimple.prototype.renderUploadForm
 };
 
 bs.vec.ui.ForeignStructuredUpload.BookletLayoutSimple.prototype.removeMyOwnWorkCheckbox = function () {
-	var items = this.uploadForm.getItems();
-	//items[0] === OO.ui.FieldsetLayout
-	var fieldlayouts = items[0].getItems();
-	//fieldlayouts = [
-	//	0 = this.selectFileWidget
-	//	1 = this.ownWorkCheckbox
-	//	3 = this.messageLabel
-	//]
-	fieldlayouts[1].$element.hide();
+	const items = this.uploadForm.getItems();
+	// items[0] === OO.ui.FieldsetLayout
+	const fieldlayouts = items[ 0 ].getItems();
+	// fieldlayouts = [
+	// 0 = this.selectFileWidget
+	// 1 = this.ownWorkCheckbox
+	// 3 = this.messageLabel
+	// ]
+	fieldlayouts[ 1 ].$element.hide();
 };
 
 bs.vec.ui.ForeignStructuredUpload.BookletLayoutSimple.prototype.onUploadFormChange = function () {
-	var file = this.selectFileWidget.getValue(),
+	const file = this.selectFileWidget.getValue(),
 		valid = !!file;
 	this.emit( 'uploadValid', valid );
 };
@@ -37,12 +37,11 @@ bs.vec.ui.ForeignStructuredUpload.BookletLayoutSimple.prototype.renderInfoForm =
 };
 
 bs.vec.ui.ForeignStructuredUpload.BookletLayoutSimple.prototype.onInfoFormChange = function () {
-	var layout = this;
 	$.when(
 		this.filenameWidget.getValidity()
-	).done( function () {
-		layout.emit( 'infoValid', true );
-	} ).fail( function () {
-		layout.emit( 'infoValid', false );
+	).done( () => {
+		this.emit( 'infoValid', true );
+	} ).fail( () => {
+		this.emit( 'infoValid', false );
 	} );
 };

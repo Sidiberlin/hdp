@@ -1,11 +1,11 @@
 .plyr {
-    min-width: 320px;
+	min-width: 320px;
 }
 
-.plyr:fullscreen {
-    height: 100% !important;
+.plyr:fullscreen { /* stylelint-disable-line plugin/no-unsupported-browser-features */
+	height: 100% !important; /* stylelint-disable-line declaration-no-important */
 }
 
-.plyr:fullscreen video {
-    height: 100% !important;
+.plyr:fullscreen video { /* stylelint-disable-line plugin/no-unsupported-browser-features */
+	height: 100% !important; /* stylelint-disable-line declaration-no-important */
 }

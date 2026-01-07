@@ -12,6 +12,5 @@
 	"bs-countthings-ve-countcharacters-mode-pagesonly": "pàggini",
 	"bs-countthings-ve-countcharacters-input-label": "Pàggini",
 	"bs-countthings-error-not-exist": "La pàggina \"$1\" nun esisti.",
-	"bs-countthings-tag-countusers-desc": "Ammustra lu nùmmiri di l'utenti riggistrati.",
-	"bs-countthings-tag-countcharacters-example-1": "Nùmmiri di palori"
+	"bs-countthings-tag-countusers-desc": "Ammustra lu nùmmiri di l'utenti riggistrati."
 }

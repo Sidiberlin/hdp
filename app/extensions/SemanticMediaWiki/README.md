@@ -1,14 +1,16 @@
 # Semantic MediaWiki
 
 [![CI](https://github.com/SemanticMediaWiki/SemanticMediaWiki/actions/workflows/main.yml/badge.svg)](https://github.com/SemanticMediaWiki/SemanticMediaWiki/actions/workflows/main.yml)
-![Latest Stable Version](https://img.shields.io/packagist/v/mediawiki/semantic-media-wiki.svg)
-![Total Download Count](https://img.shields.io/packagist/dt/mediawiki/semantic-media-wiki.svg)
+[![Latest Stable Version](https://poser.pugx.org/mediawiki/semantic-media-wiki/v/stable)](https://packagist.org/packages/mediawiki/semantic-media-wiki)
+[![Download count](https://poser.pugx.org/mediawiki/semantic-media-wiki/downloads)](https://packagist.org/packages/mediawiki/semantic-media-wiki)
+[![codecov](https://codecov.io/gh/SemanticMediaWiki/SemanticMediaWiki/graph/badge.svg?token=yl1GVLwRwo)](https://codecov.io/gh/SemanticMediaWiki/SemanticMediaWiki)
+[![License](https://poser.pugx.org/mediawiki/semantic-media-wiki/license)](COPYING)
 
 **Semantic MediaWiki** (a.k.a. SMW) is a free, open-source extension to [MediaWiki](https://www.semantic-mediawiki.org/wiki/MediaWiki) – the wiki software that
 powers Wikipedia – that lets you store and query data within the wiki's pages.
 
-Semantic MediaWiki is also a full-fledged framework, in conjunction with
-many spinoff extensions, that can turn a wiki into a powerful and flexible
+Semantic MediaWiki is also a full-fledged framework with
+many spinoff extensions that can turn a wiki into a powerful and flexible
 knowledge management system. All data created within SMW can easily be
 published via the [Semantic Web](https://www.semantic-mediawiki.org/wiki/Semantic_Web),
 allowing other systems to use this data seamlessly.
@@ -19,10 +21,8 @@ browse the [wiki](https://www.semantic-mediawiki.org) for a more comprehensive i
 
 ## Requirements
 
-Semantic MediaWiki requires MediaWiki and its dependencies, such as PHP.
-
-Supported MediaWiki, PHP and database versions depend on the version of Semantic MediaWiki.
-See the [compatibility matrix](docs/COMPATIBILITY.md) for details.
+Semantic MediaWiki requires MediaWiki and its dependencies, such as PHP. For supported versions,
+see the [compatibility matrix](docs/COMPATIBILITY.md).
 
 ## Installation
 
@@ -71,9 +71,44 @@ have a look at the contribution guidelines.
 
 ## Tests
 
-This extension provides unit and integration tests and is usually run by a [continuous integration platform][travis]
-but can also be executed locally using the shortcut command `composer phpunit` from the extension base directory. A more
-comprehensive introduction can be found under the [test section](/tests/README.md#running-tests).
+This extension is tested using [GitHub Actions for Continuous Integration (CI)](https://github.com/SemanticMediaWiki/SemanticMediaWiki/actions). Each time changes are pushed to the repository, GitHub Actions automatically runs a series of tests to ensure the code remains reliable and functional.
+
+> **INFO**:
+> This repository contains submodules. Make sure to clone with `--recursive` option in Git.
+>
+> ```
+> git clone --recursive <REPO>
+> ```
+> 
+> If not done when cloning, it can be done by
+>
+> ```
+> git submodule init
+> git submodule update
+> ```
+
+### Step 1: Clone the Repository
+
+### Step 2: Ensure test container is running
+This repository supports ["docker-compose-ci" based CI and testing for MediaWiki extensions](https://github.com/gesinn-it-pub/docker-compose-ci).
+
+The "docker-compose-ci" repository has already been integrated into the Semantic MediaWiki repository as a Git submodule. It uses "Make" as main entry point and command line interface.
+
+Ensure, you have `Make` and `Docker` installed:
+```
+make --version
+docker --version
+```
+
+### Step 3: Run lint, phpcs and tests
+
+```
+make ci
+```
+
+For more information about
+- docker-compose-ci, see https://github.com/gesinn-it-pub/docker-compose-ci
+- tests in Semantic MediaWiki in general, see the [test documentation](/tests/README.md#running-tests).
 
 ## License
 

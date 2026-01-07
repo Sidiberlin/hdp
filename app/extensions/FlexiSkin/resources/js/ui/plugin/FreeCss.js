@@ -26,13 +26,13 @@ flexiskin.ui.plugin.FreeCss.prototype.provideControls = function () {
 	};
 };
 
-flexiskin.ui.plugin.FreeCss.prototype.onInit = function ( data, itemId ) {
+flexiskin.ui.plugin.FreeCss.prototype.onInit = function ( data ) {
 	data = data || {};
 
 	if ( data instanceof flexiskin.ui.Configurator ) {
 		data.connect( this, {
 			renderComplete: function ( sender ) {
-				var freeCss = sender.items['free_css/css'],
+				const freeCss = sender.items[ 'free_css/css' ],
 					width = freeCss.$element.parents( '.fs-group' ).width() - 20;
 				freeCss.$element.css( {
 					width: width,

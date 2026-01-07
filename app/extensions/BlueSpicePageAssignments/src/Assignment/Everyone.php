@@ -3,8 +3,10 @@ namespace BlueSpice\PageAssignments\Assignment;
 
 use BlueSpice\TargetCache\Title\Target;
 use BsPageContentProvider;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
 
 class Everyone extends \BlueSpice\PageAssignments\Assignment {
 
@@ -19,7 +21,7 @@ class Everyone extends \BlueSpice\PageAssignments\Assignment {
 	 * @return string
 	 */
 	protected function makeAnchor() {
-		return \Html::element(
+		return Html::element(
 			'span',
 			[ 'class' => 'bs-pa-special-everyone' ],
 			$this->getText()
@@ -31,9 +33,9 @@ class Everyone extends \BlueSpice\PageAssignments\Assignment {
 	 * @return string
 	 */
 	public function getText() {
-		return \Message::newFromKey(
+		return Message::newFromKey(
 			'bs-pageassignments-assignee-special-everyone-label'
-		)->plain();
+		)->text();
 	}
 
 	/**
@@ -50,7 +52,9 @@ class Everyone extends \BlueSpice\PageAssignments\Assignment {
 		$loadBalancer = $services->getDBLoadBalancer();
 		$res = $loadBalancer->getConnection( DB_REPLICA )->select(
 			'user',
-			[ 'user_id', 'user_name' ]
+			[ 'user_id', 'user_name' ],
+			'',
+			__METHOD__
 		);
 
 		$blacklistedUsers = [];

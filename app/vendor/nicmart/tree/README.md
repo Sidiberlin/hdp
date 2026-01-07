@@ -1,27 +1,19 @@
-# Tree 
+# Tree
 
-[![Build Status](https://travis-ci.org/nicmart/Tree.svg?branch=master)](https://travis-ci.org/nicmart/Tree)
-[![Latest Stable Version](https://poser.pugx.org/nicmart/tree/v/stable)](https://packagist.org/packages/nicmart/tree) 
-[![Total Downloads](https://poser.pugx.org/nicmart/tree/downloads)](https://packagist.org/packages/nicmart/tree) 
+[![Integrate](https://github.com/nicmart/Tree/workflows/Integrate/badge.svg?branch=master)](https://github.com/nicmart/Tree/actions)
+[![Release](https://github.com/nicmart/Tree/workflows/Release/badge.svg?branch=master)](https://github.com/nicmart/Tree/actions)
+
+[![Latest Stable Version](https://poser.pugx.org/nicmart/tree/v/stable)](https://packagist.org/packages/nicmart/tree)
+[![Total Downloads](https://poser.pugx.org/nicmart/tree/downloads)](https://packagist.org/packages/nicmart/tree)
 [![License](https://poser.pugx.org/nicmart/tree/license)](https://packagist.org/packages/nicmart/tree)
+
+[![Type Coverage](https://shepherd.dev/github/nicmart/tree/coverage.svg)](https://shepherd.dev/github/nicmart/tree)
 
 In Tree you can find a basic but flexible tree data structure for php together with and an handful Builder class, that enables you to build tree in a fluent way.
 
-## Changelog
- - 0.2.7 Pre-order and post-order visitors ([PR 24](https://github.com/nicmart/Tree/pull/24)), thanks to [localheinz](https://github.com/localheinz)
- - 0.2.6 New getSize method ([PR 17](https://github.com/nicmart/Tree/pull/17)), thanks to  [djuki](https://github.com/Djuki)
- - 0.2.5 New getDepth and getHeight methods ([Issue 9](https://github.com/nicmart/Tree/issues/9))
- - 0.2.4 New accessor methods  ([PR 6](https://github.com/nicmart/Tree/pull/6), thanks to [mdwheele](https://github.com/mdwheele))
- - 0.2.3 Node::getAncestors now does not return the current node ([Issue 4](https://github.com/nicmart/Tree/issues/4))
- - 0.2.2 Fixed a bug in the builder ([Issue 3](https://github.com/nicmart/Tree/issues/3))
- - 0.2.1 root() and isRoot() methods
- - 0.2.0 Dropped php 5.3 support. Node implemented as a trait.
- - 0.1.2 Added YieldVisitor, to get the yield of the tree
- - 0.1.1 Parent and neighbors methods (thanks to https://github.com/jdeniau)
-
 ## The tree data structure
 
-The `Tree\Node\NodeInterface` interface abstracts the concept of a tree node. In `Tree` a Node has essentially two things: 
+The `Tree\Node\NodeInterface` interface abstracts the concept of a tree node. In `Tree` a Node has essentially two things:
 a set of children (that implements the same `NodeInterface` interface) and a value.
 
 On the other hand, the `Tree\Node\Node` gives a straight implementation for that interface.
@@ -160,7 +152,7 @@ $node->getHeight();
 ## The Builder
 
 The builder provides a convenient way to build trees. It is provided by the ```Builder``` class,
-but you can implement your own builder making an implementation of the ```BuilderInterface```class.  
+but you can implement your own builder making an implementation of the ```BuilderInterface```class.
 
 ### Example
 
@@ -173,7 +165,7 @@ Let's see how to build the following tree, where the nodes label are represents 
         /|\
        D E F
       /|
-     G H   
+     G H
 ```
 
 And here is the code:
@@ -213,7 +205,7 @@ Add to the current node a new child whose value is ```$value```, and set the new
 
 ### Builder::end()
 
-Returns to the context the builder was before the call to ```tree```method, 
+Returns to the context the builder was before the call to ```tree```method,
 i.e. make the builder go one level up.
 
 ### Builder::getNode()
@@ -266,30 +258,10 @@ $yield = $node->accept($visitor);
 
 ## Install
 
-The best way to install Tree is [through composer](http://getcomposer.org).
+Run
 
-Just create a composer.json file for your project:
-
-```JSON
-{
-    "require": {
-        "nicmart/tree": "~0.2"
-    }
-}
 ```
-
-Then you can run these two commands to install it:
-
-    $ curl -s http://getcomposer.org/installer | php
-    $ php composer.phar install
-
-or simply run `composer install` if you have have already [installed the composer globally](http://getcomposer.org/doc/00-intro.md#globally).
-
-Then you can include the autoloader, and you will have access to the library classes:
-
-```php
-<?php
-require 'vendor/autoload.php';
+$ composer require nicmart/tree
 ```
 
 # Tests
@@ -297,3 +269,17 @@ require 'vendor/autoload.php';
 ```
 phpunit
 ```
+
+## Changelog
+
+Please have a look at [`CHANGELOG.md`](CHANGELOG.md).
+
+## Contributing
+
+Please have a look at [`CONTRIBUTING.md`](.github/CONTRIBUTING.md).
+
+## License
+
+This package is licensed using the MIT License.
+
+Please have a look at [`LICENSE.md`](LICENSE.md).

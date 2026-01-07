@@ -9,14 +9,14 @@ ext.contentdroplets.object.TextBox.prototype.templateMatches = function ( templa
 	if ( !templateData ) {
 		return false;
 	}
-	// eslint-disable-next-line vars-on-top
-	var target = templateData.target.wt;
+
+	const target = templateData.target.wt;
 	return target.trim( '\n' ) === 'Textbox' &&
 		'text-box-' + templateData.params.boxtype.wt === this.getKey();
 };
 
 ext.contentdroplets.object.TextBox.prototype.getFormItems = function () {
-	var data = this.getDropdownData();
+	const data = this.getDropdownData();
 	return [
 		{
 			name: 'icon',
@@ -45,10 +45,10 @@ ext.contentdroplets.object.TextBox.prototype.getFormItems = function () {
 };
 
 ext.contentdroplets.object.TextBox.prototype.getDropdownData = function () {
-
-	var types = require( './textboxtypes.json' ), // eslint-disable-line no-shadow
-		data = [], type; // eslint-disable-line no-shadow
-	if ( types !== [] ) {
+	const types = require( './textboxtypes.json' ); // eslint-disable-line no-shadow
+	const data = [];
+	let type; // eslint-disable-line no-shadow
+	if ( Array.isArray( types ) ) {
 		for ( type in types ) {
 			data.push( {
 				data: types[ type ],
@@ -69,8 +69,8 @@ ext.contentdroplets.object.TextBox.prototype.getDropdownData = function () {
 ext.contentdroplets.object.TextBox.prototype.modifyFormDataBeforeSubmission =
 	function ( dataPromise ) {
 		// Convert true/false from checkbox control, to yes/no expected by the Textbox template
-		var dfd = $.Deferred();
-		dataPromise.done( function ( data ) {
+		const dfd = $.Deferred();
+		dataPromise.done( ( data ) => {
 			data.icon = data.icon ? 'yes' : 'no';
 			dfd.resolve( data );
 		} ).fail( function () {
@@ -93,8 +93,8 @@ ext.contentdroplets.object.TextBox.prototype.getForm = function ( data ) {
 ext.contentdroplets.object.TextBox.prototype.registerContentEditable =
 	function ( suffix ) {
 		suffix = suffix || '';
-		// eslint-disable-next-line vars-on-top
-		var droplet = this,
+
+		const droplet = this,
 			classname = this.getClassname( suffix );
 
 		ext.contentdroplets.ce[ classname ] = function ( model, config ) {
@@ -112,8 +112,8 @@ ext.contentdroplets.object.TextBox.prototype.registerContentEditable =
 
 ext.contentdroplets.object.TextBox.prototype.registerDataModel = function ( suffix ) {
 	suffix = suffix || '';
-	// eslint-disable-next-line vars-on-top
-	var classname = this.getClassname( suffix ),
+
+	const classname = this.getClassname( suffix ),
 		droplet = this;
 
 	ext.contentdroplets.dm[ classname ] = function ( config ) {
@@ -144,7 +144,7 @@ ext.contentdroplets.object.TextBox.prototype.registerDataModel = function ( suff
 	}
 
 	ext.contentdroplets.dm[ classname ].static.getWikitext = function ( content ) {
-		var i, len, part, template, param,
+		let i, len, part, template, param,
 			wikitext = '';
 
 		// eslint-disable-next-line no-prototype-builtins
@@ -182,8 +182,9 @@ ext.contentdroplets.object.TextBox.prototype.registerDataModel = function ( suff
 };
 
 // Register all droplets that use this class
-// eslint-disable-next-line vars-on-top, no-implicit-globals
-var types = require( './textboxtypes.json' ), type;
+
+const types = require( './textboxtypes.json' );
+let type;
 for ( type in types ) {
 	ext.contentdroplets.registry.register( 'text-box-' + types[ type ], ext.contentdroplets.object.TextBox );
 }

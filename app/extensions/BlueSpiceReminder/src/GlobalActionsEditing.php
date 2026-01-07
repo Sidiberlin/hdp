@@ -2,10 +2,9 @@
 
 namespace BlueSpice\Reminder;
 
-use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
-use SpecialPage;
 
 class GlobalActionsEditing extends RestrictedTextLink {
 
@@ -21,18 +20,9 @@ class GlobalActionsEditing extends RestrictedTextLink {
 		return 'ga-bs-reminder';
 	}
 
-	/**
-	 *
-	 * @return array
-	 */
+	/** @inheritDoc */
 	public function getPermissions(): array {
-		$permissions = MediaWikiServices::getInstance()
-			->getSpecialPageFactory()
-			->getPage( 'Reminder' );
-		if ( !$permissions ) {
-			return [];
-		}
-		return [ $permissions->getRestriction() ];
+		return [ 'read' ];
 	}
 
 	/**

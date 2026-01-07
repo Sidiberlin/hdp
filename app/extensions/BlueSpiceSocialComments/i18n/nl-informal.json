@@ -1,8 +1,0 @@
-{
-	"@metadata": {
-		"authors": [
-			"McDutchie"
-		]
-	},
-	"bs-social-notifications-email-comment-owner-edit-body": "Gebruiker {{GENDER:$1|$2}} heeft een reactie op jouw bericht bewerkt. Het nieuwe bericht is:\n$3"
-}

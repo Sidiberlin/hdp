@@ -6,12 +6,12 @@ ext.notifyme.ui.widget.DatedNotificationsWidget = function ( cfg ) {
 
 	ext.notifyme.ui.widget.DatedNotificationsWidget.parent.call( this, cfg );
 	OO.EventEmitter.call( this );
-	const itemMoment = moment.utc( cfg.timestamp ),
+	const itemMoment = moment.utc( cfg.timestamp );
 
-	 timestampWidget = new OO.ui.LabelWidget( {
-			$element: $( '<h2>' ),
-			label: itemMoment.format( 'D MMMM YYYY' )
-		} );
+	const timestampWidget = new OO.ui.LabelWidget( {
+		$element: $( '<h2>' ),
+		label: itemMoment.format( 'D MMMM YYYY' )
+	} );
 	timestampWidget.$element.addClass( 'notifications-ui-widget-DatedNotificationsWidget-date-label' );
 	this.$element.append( timestampWidget.$element );
 
@@ -49,10 +49,10 @@ ext.notifyme.ui.widget.DatedNotificationsWidget.prototype.markGroup = function (
 	const notificationsToMark = {};
 
 	this.$element.find( '.notifications-ui-widget-NotificationItemWidget' ).each( function () {
-		const $this = $( this ),
+		const $this = $( this );
 
-		 isUnread = $this.attr( 'data-unread' ) === 'true',
-		 id = $this.attr( 'data-id' );
+		const isUnread = $this.attr( 'data-unread' ) === 'true';
+		const id = $this.attr( 'data-id' );
 
 		notificationsToMark[ id ] = isUnread;
 	} );
@@ -62,7 +62,7 @@ ext.notifyme.ui.widget.DatedNotificationsWidget.prototype.markGroup = function (
 		for ( const id in notifications ) {
 			const isProcessed = notifications[ id ];
 			if ( !isProcessed ) {
-				console.error( 'Failed to change read status of notification: ' + id );
+				console.error( 'Failed to change read status of notification: ' + id ); // eslint-disable-line no-console
 			}
 		}
 

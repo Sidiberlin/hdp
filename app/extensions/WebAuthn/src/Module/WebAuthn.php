@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\WebAuthn\Module;
 
-use IContextSource;
-use MediaWiki\Auth\AbstractSecondaryAuthenticationProvider;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\OATHAuth\HTMLForm\IManageForm;
 use MediaWiki\Extension\OATHAuth\IAuthKey;
 use MediaWiki\Extension\OATHAuth\IModule;
@@ -16,9 +16,7 @@ use MediaWiki\Extension\WebAuthn\HTMLForm\WebAuthnAddKeyForm;
 use MediaWiki\Extension\WebAuthn\HTMLForm\WebAuthnDisableForm;
 use MediaWiki\Extension\WebAuthn\HTMLForm\WebAuthnManageForm;
 use MediaWiki\Extension\WebAuthn\Key\WebAuthnKey;
-use Message;
-use MWException;
-use RequestContext;
+use MediaWiki\Message\Message;
 
 class WebAuthn implements IModule {
 	/**
@@ -26,80 +24,51 @@ class WebAuthn implements IModule {
 	 */
 	public const ACTION_ADD_KEY = 'addkey';
 
+	public const MODULE_ID = "webauthn";
+
 	public static function factory() {
 		return new static();
 	}
 
 	/**
-	 * Name of the module
-	 * @return string
+	 * @return WebAuthnKey[]
 	 */
-	public function getName() {
-		return 'webauthn';
+	public static function getWebAuthnKeys( OATHUser $user ): array {
+		// @phan-suppress-next-line PhanTypeMismatchReturn
+		return $user->getKeysForModule( self::MODULE_ID );
 	}
 
-	/**
-	 * @return Message
-	 */
+	/** @inheritDoc */
+	public function getName() {
+		return self::MODULE_ID;
+	}
+
+	/** @inheritDoc */
 	public function getDisplayName() {
 		return wfMessage( 'webauthn-module-label' );
 	}
 
 	/**
-	 *
 	 * @param array $data
-	 * @return IAuthKey
+	 * @return WebAuthnKey
 	 */
 	public function newKey( array $data = [] ) {
-		if ( empty( $data ) ) {
+		if ( !$data ) {
 			return WebAuthnKey::newKey();
 		}
 		return WebAuthnKey::newFromData( $data );
 	}
 
 	/**
-	 * @param OATHUser $user
-	 * @return array
-	 * @throws MWException
-	 */
-	public function getDataFromUser( OATHUser $user ) {
-		$keys = $user->getKeys();
-		$data = [];
-		foreach ( $keys as $key ) {
-			if ( !$key instanceof WebAuthnKey ) {
-				throw new MWException( 'webauthn-key-type-missmatch' );
-			}
-			$data[] = $key->jsonSerialize();
-		}
-
-		return [
-			'keys' => $data
-		];
-	}
-
-	/**
-	 * @return AbstractSecondaryAuthenticationProvider
+	 * @return WebAuthnSecondaryAuthenticationProvider
 	 */
 	public function getSecondaryAuthProvider() {
 		return new WebAuthnSecondaryAuthenticationProvider();
 	}
 
-	/**
-	 * Is this module currently enabled for the given user
-	 * Arguably, module is enabled just by the fact its set on user
-	 * but it might not be true for all future modules
-	 *
-	 * @param OATHUser $user
-	 * @return bool
-	 */
+	/** @inheritDoc */
 	public function isEnabled( OATHUser $user ) {
-		if ( $user->getModule() instanceof WebAuthn ) {
-			$key = $user->getFirstKey();
-			if ( $key !== null && $key instanceof WebAuthnKey ) {
-				return true;
-			}
-		}
-		return false;
+		return (bool)self::getWebAuthnKeys( $user );
 	}
 
 	/**
@@ -110,7 +79,7 @@ class WebAuthn implements IModule {
 	 * @return bool
 	 */
 	public function verify( OATHUser $user, array $data ) {
-		$keys = $user->getKeys();
+		$keys = self::getWebAuthnKeys( $user );
 		foreach ( $keys as $key ) {
 			// Pass if any of the keys matches
 			if ( $key->verify( $data, $user ) === true ) {
@@ -121,36 +90,44 @@ class WebAuthn implements IModule {
 	}
 
 	/**
+	 * Returns the appropriate form for the given action.
+	 * If the ability to add nenw credentials is disabled by configuration,
+	 * the empty string will be returned for any action other than ACTION_DISABLE.
+	 * The value null will be returned If no suitable form is found otherwise.
+	 *
 	 * @param string $action
 	 * @param OATHUser $user
 	 * @param OATHUserRepository $repo
 	 * @param IContextSource|null $context optional for backwards compatibility
-	 * @return IManageForm|null if no form is available for given action
+	 * @return IManageForm|string|null
 	 */
 	public function getManageForm(
 		$action,
 		OATHUser $user,
 		OATHUserRepository $repo,
-		IContextSource $context = null
+		?IContextSource $context = null
 	) {
 		$module = $this;
 		$context = $context ?: RequestContext::getMain();
-		$enabledForUser = $user->getModule() instanceof self;
+		$enabledForUser = $this->isEnabled( $user );
 		if ( $action === OATHManage::ACTION_DISABLE && $enabledForUser ) {
 			return new WebAuthnDisableForm( $user, $repo, $module, $context );
 		}
-		if ( $action === OATHManage::ACTION_ENABLE && !$enabledForUser ) {
-			return new WebAuthnAddKeyForm( $user, $repo, $module, $context );
-		}
-		if ( $action === static::ACTION_ADD_KEY && $enabledForUser ) {
-			return new WebAuthnAddKeyForm( $user, $repo, $module, $context );
-		}
 
-		if ( $enabledForUser ) {
-			return new WebAuthnManageForm( $user, $repo, $module, $context );
+		if ( $context->getConfig()->get( 'WebAuthnNewCredsDisabled' ) === false ) {
+			if ( $action === OATHManage::ACTION_ENABLE && !$enabledForUser ) {
+				return new WebAuthnAddKeyForm( $user, $repo, $module, $context );
+			}
+			if ( $action === static::ACTION_ADD_KEY && $enabledForUser ) {
+				return new WebAuthnAddKeyForm( $user, $repo, $module, $context );
+			}
+			if ( $enabledForUser ) {
+				return new WebAuthnManageForm( $user, $repo, $module, $context );
+			}
+			return null;
+		} else {
+			return '';
 		}
-
-		return null;
 	}
 
 	/**
@@ -159,10 +136,7 @@ class WebAuthn implements IModule {
 	 * @return IAuthKey|null
 	 */
 	public function findKeyByCredentialId( $id, $user ) {
-		foreach ( $user->getKeys() as $key ) {
-			if ( !( $key instanceof WebAuthnKey ) ) {
-				continue;
-			}
+		foreach ( self::getWebAuthnKeys( $user ) as $key ) {
 			if ( $key->getAttestedCredentialData()->getCredentialId() === $id ) {
 				return $key;
 			}
@@ -171,25 +145,21 @@ class WebAuthn implements IModule {
 	}
 
 	/**
-	 * Remove single key by its friendly name
-	 * This will just make changes in memory, not persist them!
+	 * Get a single key by its name.
 	 *
 	 * @param string $name
 	 * @param OATHUser $user
 	 *
-	 * @return bool
+	 * @return WebAuthnKey|null
 	 */
-	public function removeKeyByFriendlyName( $name, $user ) {
-		$keys = $user->getKeys();
-		$newKeys = array_filter( $keys, static function ( $key ) use ( $name ) {
-			if ( !( $key instanceof WebAuthnKey ) ) {
-				return false;
+	public function getKeyByFriendlyName( string $name, OATHUser $user ): ?WebAuthnKey {
+		foreach ( self::getWebAuthnKeys( $user ) as $key ) {
+			if ( $key->getFriendlyName() === $name ) {
+				return $key;
 			}
-			return $key->getFriendlyName() !== $name;
-		} );
+		}
 
-		$user->setKeys( $newKeys );
-		return $newKeys !== $keys;
+		return null;
 	}
 
 	/**
@@ -199,9 +169,7 @@ class WebAuthn implements IModule {
 		return new WebAuthnConfig();
 	}
 
-	/**
-	 * @inheritDoc
-	 */
+	/** @inheritDoc */
 	public function getDescriptionMessage() {
 		return wfMessage( 'webauthn-module-description' );
 	}

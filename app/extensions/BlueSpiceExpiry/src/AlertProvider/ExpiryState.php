@@ -4,6 +4,7 @@ namespace BlueSpice\Expiry\AlertProvider;
 
 use BlueSpice\AlertProviderBase;
 use DateTime;
+use MediaWiki\Message\Message;
 
 class ExpiryState extends AlertProviderBase {
 
@@ -34,7 +35,7 @@ class ExpiryState extends AlertProviderBase {
 			$this->getUser()
 		);
 
-		return \Message::newFromKey( 'bs-expiry-alert-body-expired' )
+		return Message::newFromKey( 'bs-expiry-alert-body-expired' )
 			->params( $ts )->text();
 	}
 

@@ -2,21 +2,21 @@
 
 namespace MediaWiki\Extension\Workflows\MediaWiki\Maintenance;
 
-use CommentStoreComment;
 use Exception;
-use LoggedUpdateMaintenance;
+use MediaWiki\CommentStore\CommentStoreComment;
 use MediaWiki\Extension\Workflows\Definition\Repository\FileRepository;
 use MediaWiki\Extension\Workflows\Definition\Repository\IDefinitionRepository;
 use MediaWiki\Extension\Workflows\MediaWiki\Content\TriggerDefinitionContent;
 use MediaWiki\Extension\Workflows\Trigger\PageRelatedTrigger;
 use MediaWiki\Extension\Workflows\TriggerRepo;
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
-use Message;
-use MWException;
-use Title;
-use User;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
+use RuntimeException;
 
 require_once dirname( dirname( dirname( dirname( dirname( __DIR__ ) ) ) ) ) . '/maintenance/Maintenance.php';
 
@@ -49,7 +49,7 @@ class CreateDefaultTriggersPage extends LoggedUpdateMaintenance {
 	/**
 	 * @param Title $title
 	 * @param TriggerRepo $triggerRepo
-	 * @throws MWException
+	 * @throws RuntimeException
 	 * @return bool
 	 */
 	private function createPage( Title $title, TriggerRepo $triggerRepo ) {

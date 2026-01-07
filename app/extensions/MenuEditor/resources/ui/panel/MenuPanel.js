@@ -5,7 +5,7 @@ ext.menueditor.ui.panel.MenuPanel = function ( cfg, treeData, menuType ) {
 	this.toolbarItems = cfg.toolbar;
 
 	this.allowEdit = cfg.mode && cfg.mode === 'edit';
-	var classname = ext.menueditor.util.callbackFromString(
+	const classname = ext.menueditor.util.callbackFromString(
 		ext.menueditor.registry.menu.registry[ menuType ]
 	);
 
@@ -26,8 +26,8 @@ ext.menueditor.ui.panel.MenuPanel = function ( cfg, treeData, menuType ) {
 	} );
 
 	if ( this.allowEdit ) {
-		mw.loader.using( [ 'ext.menuEditor.toolbar' ] ).done( function () {
-			var menuToolbar = new ext.menueditor.ui.widget.MenuToolbar( {
+		mw.loader.using( [ 'ext.menuEditor.toolbar' ] ).done( () => {
+			const menuToolbar = new ext.menueditor.ui.widget.MenuToolbar( {
 				toolbarItems: this.toolbarItems
 			} );
 			this.$element.prepend( menuToolbar.toolbar.$element );
@@ -42,7 +42,7 @@ ext.menueditor.ui.panel.MenuPanel = function ( cfg, treeData, menuType ) {
 				save: 'saveEdit'
 			} );
 			mw.hook( 'menueditor.toolbar' ).fire( menuToolbar );
-		}.bind( this ) );
+		} );
 	}
 
 	this.$element.append( this.tree.$element );
@@ -55,11 +55,11 @@ ext.menueditor.ui.panel.MenuPanel.prototype.getTree = function () {
 };
 
 ext.menueditor.ui.panel.MenuPanel.prototype.saveEdit = function () {
-	var data = this.tree.getNodes();
+	const data = this.tree.getNodes();
 
-	ext.menueditor.api.save( this.pagename, data ).done( function () {
+	ext.menueditor.api.save( this.pagename, data ).done( () => {
 		this.emit( 'saveSuccess' );
-	}.bind( this ) ).fail( function ( error ) {
+	} ).fail( ( error ) => {
 		this.emit( 'saveFailed', error );
-	}.bind( this ) );
+	} );
 };

@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"McDutchie"
+		]
+	},
+	"bs-matomoconnector-extension-description": "Maakt de integratie van Matomo in de wiki mogelijk om dashboards in Matomo te creëren",
+	"bs-matomoconnector-pref-bsprivacyintegration": "BlueSpicePrivacy-integratie",
+	"bs-matomoconnector-pref-bsprivacyintegration-help": "Schakel BlueSpicePrivacy-integratie in. De installatie van Matomo moet de AjaxOptOut-plug-in ingeschakeld hebben. Zie docs/PrivacyIntegration.md",
+	"bs-matomoconnector-pref-siteid": "Site-ID",
+	"bs-matomoconnector-pref-siteid-help": "Site-ID van Matomo. Deze is te vinden als URL-parameter in de adresbalk van uw browser wanneer u bent aangemeld bij Matomo.",
+	"bs-matomoconnector-pref-baseurl": "Basis-URL",
+	"bs-matomoconnector-pref-baseurl-help": "De root-URL van de Matomo-installatie zonder site-ID.",
+	"bs-matomoconnector-pref-authtoken": "Auth-token",
+	"bs-matomoconnector-pref-authtoken-help": "Het auth-token dat gebruikt wordt voor de HTTP API. Dit is te vinden in Matomo: Beheer -> Persoonlijk -> Beveiliging -> Auth-tokens.",
+	"bs-matomoconnector-pref-optoutfooter": "Koppeling voor afmelden in voettekst opnemen",
+	"bs-matomoconnector-pref-optoutfooter-help": "Neemt de koppeling \"Analysedienst\" in de wiki-voettekst op. De pagina met de analysedienst bevat een selectievakje om zich van Matomo af te melden.",
+	"bs-matomoconnector-special-optoutheading": "Analysedienst",
+	"bs-matomoconnector-special-privacynote": "<p>Onze website maakt gebruik van Matomo, een webanalysedienst. Matomo maakt gebruik van zogenaamde \"cookies\". Dit zijn kleine tekstbestandjes die op uw computer worden opgeslagen en waarmee wij het gebruik van onze website kunnen analyseren. De door de cookies gegenereerde gebruiksinformatie (waaronder uw verkorte IP-adres) wordt doorgestuurd naar onze server en opgeslagen, zodat wij het gebruik van onze website kunnen analyseren en onze website kunnen optimaliseren. Uw IP-adres wordt hierbij direct geanonimiseerd, zodat u als gebruiker anoniem blijft. De door de cookies gegenereerde informatie over uw gebruik van de website wordt niet aan derden doorgegeven. U kunt het gebruik van cookies voorkomen door de daarvoor geëigende instellingen in uw browser te wijzigen. Dit kan er echter toe leiden dat u niet alle functies van de website volledig kunt gebruiken.</p> \n<br /> \n<p>Als u niet akkoord gaat met de opslag en evaluatie van deze gegevens met betrekking tot uw gebruik van de website, kunt u zich te allen tijde met een muisklik hieronder afmelden voor deze opslag en dit gebruik. In dat geval wordt een zogenaamde “opt-out cookie” geplaatst, die Matomo verhindert sessiegegevens op te slaan. Let op: als u uw cookies verwijdert, verwijdert u ook de opt-out cookie, die u vervolgens mogelijk opnieuw moet activeren.</p> \n<br /> \n<h3>Tegenspraak:</h3>",
+	"bs-matomoconnector-optout-footerlink": "Analysedienst",
+	"bs-matomoconnector-privacy-cookie-group": "Matomo",
+	"bs-matomoconnector-privacy-cookie-group-desc": "Onze website maakt gebruik van Matomo, een webanalysedienst. Matomo maakt gebruik van zogenaamde “cookies”. Dit zijn kleine tekstbestandjes die op uw computer worden opgeslagen en waarmee wij het gebruik van onze website kunnen analyseren. De door de cookies gegenereerde gebruiksinformatie (waaronder uw verkorte IP-adres) wordt doorgestuurd naar onze server en opgeslagen, zodat wij het gebruik van onze website kunnen analyseren, wat ons helpt onze website te optimaliseren. Uw IP-adres wordt in deze procedure direct geanonimiseerd, zodat u als gebruiker anoniem blijft. De door de cookies gegenereerde informatie over uw gebruik van de website wordt niet aan derden doorgegeven."
+}

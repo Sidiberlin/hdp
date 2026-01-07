@@ -2,13 +2,13 @@
 
 namespace BlueSpice\Discovery;
 
-use Html;
-use Language;
+use MediaWiki\Html\Html;
+use MediaWiki\Language\Language;
+use MediaWiki\Message\Message;
 use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Revision\RevisionRecord;
-use Message;
-use Title;
-use User;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class PageVersionPager {
 

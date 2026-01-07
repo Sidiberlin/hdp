@@ -1,5 +1,9 @@
 <?php
 
+use MediaWiki\Title\Title;
+use SMW\DIProperty;
+use SMW\StoreFactory;
+
 class BSSMWPropertyPageProvider implements BlueSpice\Bookshelf\MassAdd\IHandler {
 	/**
 	 * Property based on which pages
@@ -14,13 +18,13 @@ class BSSMWPropertyPageProvider implements BlueSpice\Bookshelf\MassAdd\IHandler 
 	 * @return array
 	 */
 	public function getData() {
-		$store = \SMW\StoreFactory::getStore();
-		$property = new \SMW\DIProperty( $this->root );
+		$store = StoreFactory::getStore();
+		$property = new DIProperty( $this->root );
 		$values = $store->getAllPropertySubjects( $property );
 
 		$pagesRes = [];
 		foreach ( $values as $value ) {
-			$title = \Title::newFromText( $value->getDBkey(), $value->getNamespace() );
+			$title = Title::newFromText( $value->getDBkey(), $value->getNamespace() );
 			if ( !( $title instanceof Title ) ) {
 				continue;
 			}

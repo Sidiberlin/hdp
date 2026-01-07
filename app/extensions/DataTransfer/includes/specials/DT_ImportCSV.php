@@ -1,6 +1,9 @@
 <?php
 
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Permissions\PermissionStatus;
+use MediaWiki\Title\Title;
 
 /**
  * Lets the user import a CSV file to turn into wiki pages
@@ -14,7 +17,7 @@ class DTImportCSV extends SpecialPage {
 	 * Constructor
 	 */
 	public function __construct( $name = 'ImportCSV' ) {
-		parent::__construct( $name );
+		parent::__construct( $name, 'datatransferimport' );
 	}
 
 	public function doesWrites() {
@@ -23,15 +26,28 @@ class DTImportCSV extends SpecialPage {
 
 	function execute( $query ) {
 		$this->setHeaders();
+
+		// We call isDefinitelyAllowed() here because, unlike other
+		// permission checks, this one also checks whether the user is
+		// currently blocked.
+		if ( method_exists( $this->getAuthority(), 'isDefinitelyAllowed' ) ) {
+			// MW 1.41+
+			$status = PermissionStatus::newEmpty();
+			$this->getAuthority()->isDefinitelyAllowed( 'datatransferimport', $status );
+			if ( !$status->isGood() ) {
+				throw new PermissionsError( 'datatransferimport' );
+			}
+		} else {
+			if ( !$this->getUser()->isAllowed( 'datatransferimport' ) ) {
+				throw new PermissionsError( 'datatransferimport' );
+			}
+		}
+
 		$out = $this->getOutput();
 		$out->enableOOUI();
 		$out->addModuleStyles( 'ext.datatransfer' );
 
-		if ( !$this->getUser()->isAllowed( 'datatransferimport' ) ) {
-			throw new PermissionsError( 'datatransferimport' );
-		}
-
-		if ( $this->getRequest()->getCheck( 'import_file' ) ) {
+		if ( $this->getRequest()->wasPosted() && $this->getRequest()->getCheck( 'import_file' ) ) {
 			$text = $this->importFromUploadAndModifyPages();
 		} else {
 			$text = $this->printForm();
@@ -41,6 +57,15 @@ class DTImportCSV extends SpecialPage {
 	}
 
 	protected function importFromUploadAndModifyPages() {
+		$editToken = $this->getRequest()->getVal( 'wpEditToken' );
+		if ( !$this->getContext()->getCsrfTokenSet()->matchToken( $editToken ) ) {
+			// @todo - ideally, this should output a prefilled form with a new
+			// edit token ready to go for more convenient resubmitting. This
+			// would be best done by outputting the form using Codex, OOUI or
+			// HTMLForm.
+			return $this->msg( 'import-token-mismatch' )->parse();
+		}
+
 		$text = DTUtils::printImportingMessage();
 		$uploadResult = ImportStreamSource::newFromUpload( "file_name" );
 
@@ -84,11 +109,12 @@ class DTImportCSV extends SpecialPage {
 		$formText .= "\t" . Html::rawElement(
 			'p',
 			null,
-			$this->msg( 'dt_import_encodingtype', 'CSV' )->text() . " " . $encodingSelectText
+			$this->msg( 'dt_import_encodingtype', 'CSV' )->escaped() . " " . $encodingSelectText
 		) . "\n";
 		$formText .= "\t" . '<hr style="margin: 10px 0 10px 0" />' . "\n";
 		$formText .= DTUtils::printExistingPagesHandling();
 		$formText .= DTUtils::printImportSummaryInput( $this->getFiletype() );
+		$formText .= DTUtils::printEditTokenInput( $this->getContext()->getCsrfTokenSet() );
 		$formText .= DTUtils::printSubmitButton();
 		$text = "\t" . Html::rawElement( 'form',
 			[
@@ -106,7 +132,7 @@ class DTImportCSV extends SpecialPage {
 		}
 
 		if ( $csvString == '' ) {
-			return $this->msg( 'emptyfile' )->text();
+			return $this->msg( 'emptyfile' )->escaped();
 		}
 
 		// Get rid of the "byte order mark", if it's there - this is
@@ -174,7 +200,7 @@ class DTImportCSV extends SpecialPage {
 			&& !in_array( $headerVal, $slotLabels )
 			&& $headerVal !== ''
 			&& !preg_match( '/^[^\[\]]+\[[^\[\]]+]$/', $headerVal ) ) {
-				$errorMsg = $this->msg( 'dt_importcsv_badheader', $i, $headerVal, $titleLabels[0], $freeTextLabels[0] )->text();
+				$errorMsg = $this->msg( 'dt_importcsv_badheader', $i, $headerVal, $titleLabels[0], $freeTextLabels[0] )->escaped();
 				return $errorMsg;
 			}
 		}
@@ -216,7 +242,7 @@ class DTImportCSV extends SpecialPage {
 		foreach ( $pages as $page ) {
 			$title = Title::newFromText( $page->getName() );
 			if ( $title === null ) {
-				$text .= '<p>' . $this->msg( 'img-auth-badtitle', $page->getName() )->text() . "</p>\n";
+				$text .= '<p>' . $this->msg( 'img-auth-badtitle', $page->getName() )->escaped() . "</p>\n";
 				continue;
 			}
 			$jobParams['text'] = $page->createText();

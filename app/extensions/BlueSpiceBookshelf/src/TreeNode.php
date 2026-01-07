@@ -15,8 +15,6 @@ class TreeNode extends ArrayObject {
 		return (array)$this;
 	}
 
-	// TODO: Maybe implement some getter/setters
-
 	private function init() {
 		$this['type'] = '';
 		$this['title'] = '';
@@ -27,4 +25,6 @@ class TreeNode extends ArrayObject {
 			'type' => 'text'
 		];
 	}
+
+	// TODO: Maybe implement some getter/setters
 }

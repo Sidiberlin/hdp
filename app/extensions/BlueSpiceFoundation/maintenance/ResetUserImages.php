@@ -1,5 +1,6 @@
 <?php
 
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
 
 require_once __DIR__ . '/Maintenance.php';
@@ -14,7 +15,12 @@ class ResetUserImages extends Maintenance {
 
 	public function execute() {
 		$dbw = $this->getDB( DB_PRIMARY );
-		$res = $dbw->select( 'user', 'user_id' );
+		$res = $dbw->select(
+			'user',
+			'user_id',
+			'',
+			__METHOD__
+		);
 		$userFactory = MediaWikiServices::getInstance()->getUserFactory();
 		foreach ( $res as $row ) {
 			$oUser = $userFactory->newFromId( $row->user_id );
@@ -25,7 +31,8 @@ class ResetUserImages extends Maintenance {
 				[
 					'up_user' => $oUser->getId(),
 					'up_property' => 'MW::UserImage'
-				]
+				],
+				__METHOD__
 			);
 			$dbw->insert(
 				'user_properties',

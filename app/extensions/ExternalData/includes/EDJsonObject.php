@@ -97,7 +97,7 @@ class EDJsonObject {
 	 *
 	 * @return void
 	 *
-	 * @throws MWException
+	 * @throws EDParserException
 	 */
 	public function __construct( $json = null ) {
 		if ( $json === null ) {
@@ -105,14 +105,14 @@ class EDJsonObject {
 		} elseif ( is_string( $json ) ) {
 			$this->jsonObject = json_decode( $json, true );
 			if ( $this->jsonObject === null ) {
-				throw new MWException( wfMessage( 'externaldata-invalid-format', 'JSON' )->text() );
+				throw new EDParserException( 'externaldata-invalid-format', 'JSON', $json );
 			}
 		} elseif ( is_array( $json ) ) {
 			$this->jsonObject = $json;
 		} elseif ( is_object( $json ) ) {
 			$this->jsonObject = json_decode( json_encode( $json ), true );
 		} else {
-			throw new MWException( wfMessage( 'externaldata-invalid-format', 'JSON' )->text() );
+			throw new EDParserException( wfMessage( 'externaldata-invalid-format', 'JSON' )->text() );
 		}
 	}
 
@@ -138,8 +138,7 @@ class EDJsonObject {
 	 */
 	public function get( $jsonPath ) {
 		$this->hasDiverged = false;
-		$result = $this->getReal( $this->jsonObject, $jsonPath );
-		return $result;
+		return $this->getReal( $this->jsonObject, $jsonPath );
 	}
 
 	/**
@@ -373,6 +372,9 @@ class EDJsonObject {
 	 * @throws MWException
 	 */
 	private function opChildSelector( &$json_object, $contents, &$result, $create_nonexistent = false ) {
+		if ( $contents == '' ) {
+			throw new MWException( 'empty selector' );
+		}
 		if ( is_array( $json_object ) ) {
 			$match = [];
 			$contents_len = strlen( $contents );
@@ -467,7 +469,7 @@ class EDJsonObject {
 					}
 				}
 			} else {
-				throw new MWException( wfMessage( 'externaldata-jsonpath-error' )->text() );
+				throw new MWException();
 			}
 			return true;
 		}
@@ -506,7 +508,7 @@ class EDJsonObject {
 	private function getReal( &$json_object, $json_path, $create_nonexistent = false ) {
 		$match = [];
 		if ( !preg_match( self::RE_ROOT_OBJECT, $json_path, $match ) ) {
-			throw new MWException( wfMessage( 'externaldata-jsonpath-error' )->text() );
+			throw new MWException();
 		}
 		$json_path = $match[1];
 		$root_object_prev = &$this->jsonObject;
@@ -520,7 +522,7 @@ class EDJsonObject {
 				}
 				unset( $current_object );
 				if (
-					empty( $new_selection ) &&
+					!$new_selection &&
 					preg_match( self::RE_PARENT_LENGTH, $match[0] )
 				) {
 					if ( count( $selection ) > 1 ) {
@@ -537,7 +539,7 @@ class EDJsonObject {
 						}
 					}
 				}
-				if ( empty( $new_selection ) ) {
+				if ( !$new_selection ) {
 					$selection = false;
 					break;
 				} else {
@@ -550,7 +552,7 @@ class EDJsonObject {
 					$this->opChildSelector( $current_object, $contents, $new_selection, $create_nonexistent );
 				}
 				unset( $current_object );
-				if ( empty( $new_selection ) ) {
+				if ( !$new_selection ) {
 					$selection = false;
 					break;
 				} else {
@@ -559,7 +561,7 @@ class EDJsonObject {
 			} elseif ( preg_match( self::RE_RECURSIVE_SELECTOR, $json_path, $match ) ) {
 				$this->hasDiverged = true;
 				$this->opRecursiveSelector( $selection, $match[1], $new_selection );
-				if ( empty( $new_selection ) ) {
+				if ( !$new_selection ) {
 					$selection = false;
 					break;
 				} else {

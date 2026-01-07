@@ -8,6 +8,7 @@ use MediaWiki\Rest\SimpleHandler;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class Chat extends SimpleHandler {
+
 	/** @var ChatApi */
 	private ChatApi $chatApi;
 
@@ -37,6 +38,13 @@ class Chat extends SimpleHandler {
 				'errors' => [ $e->getMessage() ],
 			];
 		}
+	}
+
+	/**
+	 * @return string[]
+	 */
+	public function getSupportedRequestTypes(): array {
+		return [ 'text/event-stream' ];
 	}
 
 	public function needsReadAccess() {

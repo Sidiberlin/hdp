@@ -2,6 +2,7 @@
 
 use MediaWiki\Extension\ContentStabilization\StabilizationBot;
 use MediaWiki\Extension\ContentStabilization\StablePoint;
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Permissions\Authority;
 
@@ -104,7 +105,12 @@ class BatchStabilize extends Maintenance {
 				$this->fatalError( "Invalid namespace" );
 			}
 			return $this->getDB( DB_REPLICA )
-				->select( 'page', [ 'page_id', 'page_title' ], [ 'page_namespace' => $namespace ] );
+				->select(
+					'page',
+					[ 'page_id', 'page_title' ],
+					[ 'page_namespace' => $namespace ],
+					__METHOD__
+				);
 		}
 		return [];
 	}

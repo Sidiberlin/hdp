@@ -3,7 +3,7 @@
 namespace MediaWiki\Extension\Workflows\Definition;
 
 use JsonSerializable;
-use Message;
+use MediaWiki\Message\Message;
 
 class DefinitionSource implements JsonSerializable {
 	/** @var string */
@@ -58,9 +58,13 @@ class DefinitionSource implements JsonSerializable {
 	}
 
 	public function getTitle(): string {
-		return Message::newFromKey(
+		$msg = Message::newFromKey(
 			"workflows-{$this->repositoryKey}-definition-{$this->name}-title"
-		)->text();
+		);
+		if ( $msg->exists() ) {
+			return $msg->text();
+		}
+		return $this->name;
 	}
 
 	public function getDescription(): string {

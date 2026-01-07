@@ -3,7 +3,8 @@
 namespace BlueSpice\Html\Descriptor;
 
 use Exception;
-use RawMessage;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
 
 class SimpleLink implements ILink {
 
@@ -64,7 +65,7 @@ class SimpleLink implements ILink {
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabel() {
 		return new RawMessage( $this->getFromData( static::LABEL, '' ) );
@@ -72,7 +73,7 @@ class SimpleLink implements ILink {
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getTooltip() {
 		return new RawMessage( $this->getFromData( static::TOOLTIP, '' ) );

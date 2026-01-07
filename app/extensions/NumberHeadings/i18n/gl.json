@@ -1,0 +1,11 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"numberheadings-desc": "Numerar as cabeceiras nos espazos de nomes de contido",
+	"numberheadings-conf-exlude-namespaces": "Excluír os espazos de nomes da numeración de cabeceiras",
+	"numberheadings-conf-enable-numbering": "Mostrar a numeración de cabeceiras",
+	"numberheadings-conf-enable-numbering-help": "Engade os números da táboa de contidos ás cabeceiras das páxinas"
+}

@@ -4,16 +4,17 @@ declare( strict_types=1 );
 
 namespace MediaWiki\Extension\EmbedVideo;
 
-use Config;
-use ConfigException;
 use InvalidArgumentException;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\ConfigException;
 use MediaWiki\Extension\EmbedVideo\EmbedService\AbstractEmbedService;
 use MediaWiki\Extension\EmbedVideo\EmbedService\EmbedHtmlFormatter;
 use MediaWiki\Extension\EmbedVideo\EmbedService\EmbedServiceFactory;
 use MediaWiki\Extension\EmbedVideo\EmbedService\OEmbedServiceInterface;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
-use Parser;
-use PPFrame;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 use RuntimeException;
 
 class EmbedVideo {
@@ -81,6 +82,29 @@ class EmbedVideo {
 	}
 
 	/**
+	 * {{#evu}} parser function that tries to extract the service from the host name
+	 *
+	 * @param Parser $parser
+	 * @param PPFrame $frame
+	 * @param array $args
+	 * @param bool $fromTag
+	 * @return array
+	 */
+	public static function parseEVU( Parser $parser, PPFrame $frame, array $args, bool $fromTag = false ): array {
+		$host = parse_url( $args[0] ?? '', PHP_URL_HOST ) ?? '';
+
+		if ( is_string( $host ) ) {
+			$host = explode( '.', trim( strtolower( $host ), 'w.' ) );
+			array_pop( $host );
+			$host = implode( '.', $host ?? '' );
+		}
+
+		array_unshift( $args, $host );
+
+		return self::parseEV( $parser, $frame, $args, $fromTag );
+	}
+
+	/**
 	 * Parse the values input from the {{#ev}} parser function
 	 *
 	 * @param Parser $parser The active Parser instance
@@ -106,6 +130,78 @@ class EmbedVideo {
 	}
 
 	/**
+	 * Parse the values input from the {{#evl}} or {{#vlink}} parser function
+	 *
+	 * @param Parser $parser The active Parser instance
+	 * @param PPFrame $frame Frame
+	 * @param array $args Arguments
+	 *
+	 * @return array Parser options and the HTML comments of cached attributes
+	 */
+	public static function parseEVL( Parser $parser, PPFrame $frame, array $args ): array {
+		$expandedArgs = [
+			'id' => null,
+			'text' => null,
+			'player' => null,
+			'service' => null,
+			'urlArgs' => null,
+		];
+
+		$keys = array_keys( $expandedArgs );
+
+		foreach ( $args as $key => $arg ) {
+			$value = trim( $frame->expand( $arg ) );
+
+			if ( str_contains( $value, '=' ) ) {
+				$parts = array_map( 'trim', explode( '=', $value, 2 ) );
+
+				$expandedArgs[$parts[0]] = $parts[1] ?? null;
+			} else {
+				$expandedArgs[$keys[$key]] = $value;
+			}
+		}
+
+		if ( empty( $expandedArgs['service'] ) ) {
+			$expandedArgs['service'] = 'youtube';
+		}
+
+		$ev = new EmbedVideo( $parser, $expandedArgs, true );
+
+		try {
+			$ev->init();
+			$ev->addModules();
+
+			if ( empty( $ev->args['text'] ) ) {
+				throw new InvalidArgumentException( $ev->error( 'missingparams', $ev->args['service'] )[0] );
+			}
+		} catch ( InvalidArgumentException $e ) {
+			return [
+				$e->getMessage(),
+				'noparse' => true,
+				'isHTML' => true
+			];
+		}
+
+		$linkConfig = [
+			'data-mw-iframeconfig' => $ev->service->getIframeConfig( $ev->args['width'], $ev->args['height'] ),
+			'data-service' => $ev->args['service'],
+			'data-player' => $ev->args['player'] ?? 'default',
+			'class' => 'embedvideo-evl vplink',
+			'href' => '#',
+		];
+
+		if ( MediaWikiServices::getInstance()->getMainConfig()->get( 'EmbedVideoRequireConsent' ) === true ) {
+			$linkConfig['data-privacy-url'] = $ev->service->getPrivacyPolicyUrl();
+		}
+
+		return [
+			Html::element( 'a', $linkConfig, $ev->args['text'] ),
+			'noparse' => true,
+			'isHTML' => true
+		];
+	}
+
+	/**
 	 * Parse a service tag like <youtube>
 	 *
 	 * @param string $input The content of the tag i.e. the video id
@@ -115,9 +211,51 @@ class EmbedVideo {
 	 * @return array
 	 */
 	public static function parseEVTag( $input, array $args, Parser $parser, PPFrame $frame ): array {
-		if ( !isset( $args['id'] ) ) {
+		if ( !isset( $args['id'] ) && !empty( $input ) ) {
 			$args['id'] = $input;
 		}
+
+		return self::parseEV( $parser, $frame, $args, true );
+	}
+
+	/**
+	 * Parse a service tag like <evlplayer> or <vplayer>
+	 *
+	 * @param string $input The content of the tag i.e. the video id
+	 * @param array $args
+	 * @param Parser $parser
+	 * @param PPFrame $frame
+	 * @return array
+	 */
+	public static function parseEVLTag( $input, array $args, Parser $parser, PPFrame $frame ): array {
+		// Prefer explicit player attribute, fall back to id for backwards compatibility
+		$args['player'] = $args['player'] ?? ( $args['id'] ?? 'default' );
+		$args['id'] = $args['defaultid'] ?? null;
+		$args['service'] = $args['service'] ?? 'youtube';
+
+		if ( empty( $args['id'] ) ) {
+			$args['id'] = '-1';
+			$args['service'] = 'videolink';
+		}
+
+		if ( !isset( $args['title'] ) ) {
+			$args['title'] = $input;
+		}
+
+		if ( !isset( $args['service'] ) ) {
+			$args['service'] = 'youtube';
+		}
+
+		$args['width'] = $args['w'] ?? null;
+		$args['height'] = $args['h'] ?? null;
+		$args['class'] = ( $args['class'] ?? '' ) . ' evlplayer evlplayer-' . $args['player'];
+
+		$args = array_filter( $args );
+
+		$parser->getOutput()?->addModules( [
+			'ext.embedVideo.videolink',
+			'ext.embedVideo.messages',
+		] );
 
 		return self::parseEV( $parser, $frame, $args, true );
 	}
@@ -129,8 +267,8 @@ class EmbedVideo {
 	 * @param array $arguments Method arguments
 	 */
 	public static function __callStatic( $name, $arguments ) {
-		if ( strpos( $name, 'parseTag' ) !== 0 ) {
-			return;
+		if ( !str_starts_with( $name, 'parseTag' ) ) {
+			return '';
 		}
 
 		[
@@ -151,9 +289,7 @@ class EmbedVideo {
 	 * @return array
 	 */
 	public function output(): array {
-		[
-			'service' => $service,
-		] = $this->args;
+		$service = $this->args['service'] ?? null;
 
 		try {
 			$enabledServices = $this->config->get( 'EmbedVideoEnabledServices' ) ?? [];
@@ -180,7 +316,8 @@ class EmbedVideo {
 			// This does the whole HTML generation
 			EmbedHtmlFormatter::toHtml(
 				$this->service,
-				$this->makeHtmlFormatConfig( $this->service )
+				$this->makeHtmlFormatConfig( $this->service ),
+				$this->args
 			),
 			'noparse' => true,
 			'isHTML' => true
@@ -212,16 +349,14 @@ class EmbedVideo {
 		];
 
 		if ( $fromTag === true ) {
+			$supportedArgs['service'] = $args['service'] ?? null;
+
 			return array_merge( $supportedArgs, $args );
 		}
 
 		$keys = array_keys( $supportedArgs );
 
-		if ( $fromTag ) {
-			$serviceName = $args['service'] ?? null;
-		} else {
-			$serviceName = array_shift( $args );
-		}
+		$serviceName = str_replace( 'service=', '', array_shift( $args ) ?? '' );
 
 		$counter = 0;
 
@@ -233,10 +368,10 @@ class EmbedVideo {
 			$pair = [ $arg ];
 			// Only split arg if it is not an url and not urlArgs
 			// phpcs:ignore Generic.Files.LineLength.TooLong
-			if ( ( $keys[$counter] !== 'urlArgs' || strpos( $arg, 'urlArgs' ) !== false ) && preg_match( '/https?:/', $arg ) !== 1 ) {
+			if ( ( $keys[$counter] !== 'urlArgs' || str_contains( $arg, 'urlArgs' ) ) && preg_match( '/https?:/', $arg ) !== 1 ) {
 				$pair = explode( '=', $arg, 2 );
 			}
-			$pair = array_map( 'trim', $pair );
+			$pair = array_map( 'strip_tags', array_map( 'trim', $pair ) );
 
 			// We are handling a named argument
 			if ( count( $pair ) === 2 ) {
@@ -254,7 +389,7 @@ class EmbedVideo {
 			++$counter;
 		}
 
-		$supportedArgs['service'] = $serviceName;
+		$supportedArgs['service'] = empty( $serviceName ) ? false : $serviceName;
 
 		// An intentional weak check
 		if ( $supportedArgs['autoresize'] == true ) {
@@ -294,6 +429,7 @@ class EmbedVideo {
 			'dimensions' => $dimensions,
 			'alignment' => $alignment,
 			'description' => $description,
+			'container' => $container,
 			'urlArgs' => $urlArgs,
 			'width' => $width,
 			'height' => $height,
@@ -303,11 +439,15 @@ class EmbedVideo {
 			'title' => $title,
 		] = $this->args;
 
-		// I am not using $parser->parseWidthParam() since it can not handle height only.  Example: x100
-		if ( stripos( $dimensions, 'x' ) !== false ) {
-			$dimensions = strtolower( $dimensions );
-			[ $width, $height ] = explode( 'x', $dimensions );
-		} elseif ( is_numeric( $dimensions ) ) {
+		$rpl = fn( $input ) => preg_replace( '/[a-z]/i', '', (string)$input );
+
+		// Height only
+		if ( !empty( $dimensions ) && strtolower( $dimensions )[0] === 'x' ) {
+			$height = $dimensions;
+		// Width and height
+		} elseif ( preg_match( '/[0-9]+(?:px)?x[0-9]+(?:px)?/i', $dimensions ?? '' ) ) {
+			[ $width, $height ] = array_map( fn( $dim ) => $rpl( $dim ), array_filter( explode( 'x', $dimensions ) ) );
+		} elseif ( is_numeric( $rpl( $dimensions ) ) ) {
 			$width = $dimensions;
 		}
 
@@ -318,9 +458,8 @@ class EmbedVideo {
 		$this->service = EmbedServiceFactory::newFromName( $service, $id );
 
 		// Let the service automatically handle bad dimensional values.
-		$this->service->setWidth( $width );
-
-		$this->service->setHeight( $height );
+		$this->service->setWidth( $rpl( (string)$width ) );
+		$this->service->setHeight( $rpl( (string)$height ) );
 
 		if ( $this->config->get( 'EmbedVideoRequireConsent' ) === true ) {
 			$this->service->setUrlArgs( $this->service->getAutoplayParameter() );
@@ -336,8 +475,8 @@ class EmbedVideo {
 			$this->setDescriptionNoParse( $description );
 		}
 
-		if ( !$this->setContainer( $this->container ) ) {
-			throw new InvalidArgumentException( $this->error( 'container', $this->container )[0] );
+		if ( !$this->setContainer( $container ) ) {
+			throw new InvalidArgumentException( $this->error( 'container', $container )[0] );
 		}
 
 		if ( !$this->setAlignment( $alignment ) ) {
@@ -368,7 +507,22 @@ class EmbedVideo {
 	 * @return void
 	 */
 	private function setDescription( string $description, Parser $parser ): void {
-		$this->description = ( !$description ? false : $parser->recursiveTagParse( $description ) );
+		if ( !$description ) {
+			$this->description = false;
+			return;
+		}
+
+		// Parse the description using the MediaWiki parser to allow wikitext,
+		// but strip a single outer <p> wrapper so the caption matches
+		// expectations like "<figcaption>Example description</figcaption>".
+		$parsed = $parser->recursiveTagParseFully( $description );
+		$trimmed = trim( $parsed );
+		if ( preg_match( '/^<p>(.*)<\/p>$/s', $trimmed, $m ) ) {
+			$content = $m[1];
+		} else {
+			$content = $trimmed;
+		}
+		$this->description = trim( $content );
 	}
 
 	/**
@@ -449,10 +603,15 @@ class EmbedVideo {
 		$classString = implode( ' ', array_filter( [
 			'embedvideo',
 			// This should probably be added as a RL variable
-			$this->config->get( 'EmbedVideoFetchExternalThumbnails' ) ? '' : 'no-fetch'
+			$this->config->get( 'EmbedVideoFetchExternalThumbnails' ) ? '' : 'no-fetch',
+			strip_tags( $this->args['class'] ?? '' ),
 		] ) );
 		$serviceString = $embedService::getServiceName();
 		$styleString = '';
+
+		if ( $this->container === 'frame' ) {
+			$classString .= ' frame';
+		}
 
 		if ( $this->alignment !== false ) {
 			$classString .= sprintf( ' mw-halign-%s', $this->alignment );
@@ -487,22 +646,22 @@ class EmbedVideo {
 		$defaultSrcArr = $this->service->getCSPUrls();
 		if ( !empty( $defaultSrcArr ) ) {
 			foreach ( $defaultSrcArr as $defaultSrc ) {
-				$out->addExtraCSPDefaultSrc( $defaultSrc );
+				$out?->addExtraCSPDefaultSrc( $defaultSrc );
 			}
 		}
 
-		$out->addModuleStyles( [ 'ext.embedVideo.styles' ] );
+		$out?->addModuleStyles( [ 'ext.embedVideo.styles' ] );
 
 		if ( MediaWikiServices::getInstance()->getMainConfig()->get( 'EmbedVideoRequireConsent' ) === true ) {
-			$out->addModules( [
+			$out?->addModules( [
 				'ext.embedVideo.consent',
 			] );
 
 			$serviceAttributes = $this->service->getIframeAttributes();
-			$serviceAttributes['height'] = $this->service->getDefaultHeight();
 			$serviceAttributes['width'] = $this->service->getDefaultWidth();
+			$serviceAttributes['height'] = $this->service->getDefaultHeight();
 
-			$this->parser->getOutput()->setJsConfigVar(
+			$this->parser->getOutput()?->setJsConfigVar(
 				sprintf( 'ev-%s-config', $this->service::getServiceName() ),
 				$serviceAttributes
 			);

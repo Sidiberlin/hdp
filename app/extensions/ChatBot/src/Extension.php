@@ -5,7 +5,7 @@ namespace ChatBot;
 use ChatBot\Util\RoleAssignments;
 
 class Extension {
-	public const GROUP_BMBF = 'BMBF';
+	public const GROUP_BMBF = 'Ministerium';
 	public const GROUP_PROJECT_SPONSOR = 'Projektträger';
 
 	public const GROUP_MAINTAINER = 'Maintainer';

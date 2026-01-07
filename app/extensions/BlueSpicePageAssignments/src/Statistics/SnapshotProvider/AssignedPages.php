@@ -6,7 +6,7 @@ use BlueSpice\ExtendedStatistics\ISnapshotProvider;
 use BlueSpice\ExtendedStatistics\Snapshot;
 use BlueSpice\ExtendedStatistics\SnapshotDate;
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class AssignedPages implements ISnapshotProvider {
@@ -47,7 +47,7 @@ class AssignedPages implements ISnapshotProvider {
 
 		$resNamespaces = $db->select(
 			[ 'page', 'bs_pageassignments' ],
-			[ 'COUNT(page_title) as pages', 'page_namespace','pa_page_id' ],
+			[ 'COUNT(page_title) as pages', 'page_namespace', 'pa_page_id' ],
 			[],
 			__METHOD__,
 			[

@@ -3,6 +3,7 @@
 namespace MediaWiki\Extension\ImportOfficeFiles\Process;
 
 use Exception;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\ImportOfficeFiles\AnalyzerResult;
 use MediaWiki\Extension\ImportOfficeFiles\ConverterResult;
 use MediaWiki\Extension\ImportOfficeFiles\IModule;
@@ -22,6 +23,11 @@ class FileConvertProcessStep implements IProcessStep, LoggerAwareInterface {
 	 * @var LoggerInterface
 	 */
 	private $logger;
+
+	/**
+	 * @var Config
+	 */
+	private $config;
 
 	/**
 	 * @var IModule
@@ -85,7 +91,10 @@ class FileConvertProcessStep implements IProcessStep, LoggerAwareInterface {
 		string $conflict,
 		string $username
 	) {
-		$config = MediaWikiServices::getInstance()->getMainConfig();
+		$logger = LoggerFactory::getInstance( 'ImportOfficeFiles' );
+		$this->setLogger( $logger );
+
+		$this->config = MediaWikiServices::getInstance()->getMainConfig();
 
 		// We need integer "split" parameter
 		$splitMap = [
@@ -108,7 +117,7 @@ class FileConvertProcessStep implements IProcessStep, LoggerAwareInterface {
 			$this->uncollide = false;
 		}
 
-		$workspaceDirectory = $config->get( 'UploadDirectory' ) . '/cache/ImportOfficeFiles';
+		$workspaceDirectory = $this->config->get( 'UploadDirectory' ) . '/cache/ImportOfficeFiles';
 
 		$this->uploadId = $uploadId;
 
@@ -117,15 +126,14 @@ class FileConvertProcessStep implements IProcessStep, LoggerAwareInterface {
 
 		$this->baseTitle = $title;
 
+		$this->logger->debug( "Looking for source file - '$sourceFilePath'..." );
+
 		if ( !file_exists( $sourceFilePath ) ) {
 			throw new Exception( 'File does not exist' );
 		}
 		$this->source = new SplFileInfo( $sourceFilePath );
 
 		$this->username = $username;
-
-		$logger = LoggerFactory::getInstance( 'ImportOfficeFiles' );
-		$this->setLogger( $logger );
 
 		$this->logger->debug( "Convert process launched." );
 	}
@@ -197,8 +205,7 @@ class FileConvertProcessStep implements IProcessStep, LoggerAwareInterface {
 	 * @return void
 	 */
 	private function setWorkspace( $path ) {
-		$config = MediaWikiServices::getInstance()->getMainConfig();
-		$this->workspace = new Workspace( $config );
+		$this->workspace = new Workspace( $this->config );
 		$workspaceInfo = $this->workspace->init( $this->uploadId, $path );
 		$workspacePath = $workspaceInfo['id'];
 
@@ -246,7 +253,8 @@ class FileConvertProcessStep implements IProcessStep, LoggerAwareInterface {
 			'categories' => $result->getCategories(),
 			'ns-filerepo-compat' => $result->getNsFileRepoCompat(),
 			'title-map' => $result->getTitleMap(),
-			'username' => $this->username
+			'username' => $this->username,
+			'image-width-threshold' => $this->config->get( 'ImportOfficeFilesWord2007ImageWidthThreshold' )
 		];
 
 		$workspace->addToBucket( MSOfficeWord::BUCKET_CONVERTER_PARAMS, $params );

@@ -2,6 +2,8 @@
 
 require_once 'BSMaintenance.php';
 
+use MediaWiki\Json\FormatJson;
+use MediaWiki\Maintenance\LoggedUpdateMaintenance;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\Rdbms\DBQueryError;
 
@@ -12,7 +14,7 @@ class BSMigrateSettings extends LoggedUpdateMaintenance {
 	 * @return bool
 	 */
 	protected function noDataToMigrate() {
-		return $this->getDB( DB_REPLICA )->tableExists( 'bs_settings' ) === false;
+		return $this->getDB( DB_REPLICA )->tableExists( 'bs_settings', __METHOD__ ) === false;
 	}
 
 	/**
@@ -22,7 +24,12 @@ class BSMigrateSettings extends LoggedUpdateMaintenance {
 	protected $oldData = [];
 
 	protected function readOldData() {
-		$res = $this->getDB( DB_REPLICA )->select( 'bs_settings', '*' );
+		$res = $this->getDB( DB_REPLICA )->select(
+			'bs_settings',
+			'*',
+			'',
+			__METHOD__
+		);
 		foreach ( $res as $row ) {
 			$this->oldData[$row->key] = $row->value;
 		}
@@ -157,7 +164,11 @@ class BSMigrateSettings extends LoggedUpdateMaintenance {
 		}
 
 		try {
-			$this->getDB( DB_PRIMARY )->insert( 'bs_settings3', $dbValues );
+			$this->getDB( DB_PRIMARY )->insert(
+				'bs_settings3',
+				$dbValues,
+				__METHOD__
+			);
 			MediaWikiServices::getInstance()->getHookContainer()->run(
 				'BSMigrateSettingsSaveNewSettings',
 				[

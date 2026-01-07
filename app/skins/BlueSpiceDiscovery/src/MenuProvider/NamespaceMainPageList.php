@@ -4,10 +4,10 @@ namespace BlueSpice\Discovery\MenuProvider;
 
 use BlueSpice\Discovery\Component\NamespaceMainPages;
 use BlueSpice\Discovery\IMenuProvider;
-use Message;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Message\Message;
+use MediaWiki\Page\PageProps;
 use MWStake\MediaWiki\Component\CommonUserInterface\IComponent;
-use PageProps;
-use RawMessage;
 
 class NamespaceMainPageList implements IMenuProvider {
 

@@ -58,10 +58,10 @@ ext.datetimetools.ui.DateTimeToolsInspector.prototype.createFields = function ()
 	this.dateInput = new mw.widgets.DateInputWidget( {
 		$overlay: true
 	} );
-	this.dateInput.on( 'change', function () {
-		var value = this.dateInput.getValue();
+	this.dateInput.on( 'change', () => {
+		const value = this.dateInput.getValue();
 		this.input.setValue( value );
-	}.bind( this ) );
+	} );
 };
 
 ext.datetimetools.ui.DateTimeToolsInspector.prototype.setLayouts = function () {

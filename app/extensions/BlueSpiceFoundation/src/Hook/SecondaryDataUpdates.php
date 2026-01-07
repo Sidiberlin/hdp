@@ -28,11 +28,11 @@
 namespace BlueSpice\Hook;
 
 use BlueSpice\Hook;
-use Config;
-use Content;
-use IContextSource;
-use ParserOutput;
-use Title;
+use MediaWiki\Config\Config;
+use MediaWiki\Content\Content;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Title\Title;
 
 abstract class SecondaryDataUpdates extends Hook {
 

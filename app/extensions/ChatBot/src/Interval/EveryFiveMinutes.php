@@ -12,6 +12,7 @@ class EveryFiveMinutes implements Interval {
 	 * @param array $options
 	 *
 	 * @return DateTime
+	 * @throws \DateMalformedStringException
 	 */
 	public function getNextTimestamp( $currentRunTimestamp, $options ): DateTime {
 		$nextTimestamp = clone $currentRunTimestamp;

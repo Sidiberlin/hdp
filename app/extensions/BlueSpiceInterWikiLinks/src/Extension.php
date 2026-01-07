@@ -32,7 +32,7 @@
 namespace BlueSpice\InterWikiLinks;
 
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 
 class Extension extends \BlueSpice\Extension {
 
@@ -46,7 +46,8 @@ class Extension extends \BlueSpice\Extension {
 		$res = $dbr->select(
 			'iwlinks',
 			[ 'iwl_from', 'iwl_prefix' ],
-			[ 'iwl_prefix' => $iwPrefix ]
+			[ 'iwl_prefix' => $iwPrefix ],
+			__METHOD__
 		);
 
 		foreach ( $res as $row ) {

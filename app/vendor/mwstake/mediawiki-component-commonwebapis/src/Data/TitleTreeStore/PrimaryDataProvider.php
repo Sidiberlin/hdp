@@ -2,6 +2,11 @@
 
 namespace MWStake\MediaWiki\Component\CommonWebAPIs\Data\TitleTreeStore;
 
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Language\Language;
+use MediaWiki\Permissions\PermissionManager;
+use MediaWiki\Title\NamespaceInfo;
+use MediaWiki\Title\Title;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use MWStake\MediaWiki\Component\DataStore\Schema;
 use Wikimedia\Rdbms\IDatabase;
@@ -11,16 +16,21 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 	private $query = null;
 	/** @var array|null */
 	private $expandPaths = null;
+	/** @var array */
+	private $subpageData = [];
+	/** @var array */
+	private $nodeCache = [];
 
-	/** @var \NamespaceInfo */
-	private $nsInfo;
+	/** @var PermissionManager */
+	private $permissionManager;
 
 	/**
 	 * @inheritDoc
 	 */
-	public function __construct( IDatabase $db, Schema $schema, \Language $language, \NamespaceInfo $nsInfo ) {
+	public function __construct( IDatabase $db, Schema $schema, Language $language,
+		NamespaceInfo $nsInfo, PermissionManager $permissionManager ) {
 		parent::__construct( $db, $schema, $language, $nsInfo );
-		$this->nsInfo = $nsInfo;
+		$this->permissionManager = $permissionManager;
 	}
 
 	/**
@@ -32,6 +42,7 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 		if ( $params->getExpandPaths() ) {
 			$this->expandPaths = $params->getExpandPaths();
 		}
+
 		if ( $params->getNode() !== '' ) {
 			$node = $params->getNode();
 			$node = $this->splitNode( $node );
@@ -40,7 +51,25 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 			}
 		}
 
-		return array_values( parent::makeData( $params ) );
+		$this->data = [];
+		$res = $this->db->select(
+			$this->getTableNames(),
+			$this->getFields(),
+			$this->makePreFilterConds( $params ),
+			__METHOD__,
+			$this->makePreOptionConds( $params ),
+			$this->getJoinConds( $params )
+		);
+
+		$this->subpageData = [];
+		foreach ( $res as $row ) {
+			$this->subpageData[ $row->page_namespace . '|' . $row->page_title ] = $row;
+		}
+		foreach ( $res as $row ) {
+			$this->appendRowToData( $row );
+		}
+
+		return array_values( $this->data );
 	}
 
 	/**
@@ -63,6 +92,12 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 	protected function appendRowToData( \stdClass $row ) {
 		$indexTitle = $row->mti_title;
 		$uniqueId = $this->getUniqueId( $row );
+
+		$user = RequestContext::getMain()->getUser();
+		if ( !$this->permissionManager->userCan( 'read', $user, Title::newFromRow( $row ) ) ) {
+			return;
+		}
+
 		if ( $this->isSubpage( $indexTitle ) &&
 			$this->nsInfo->hasSubpages( (int)$row->page_namespace ) ) {
 			if (
@@ -129,6 +164,7 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 			TitleTreeRecord::PAGE_TITLE => $row->page_title,
 			TitleTreeRecord::PAGE_DBKEY => $row->page_title,
 			TitleTreeRecord::IS_CONTENT_PAGE => in_array( $row->page_namespace, $this->contentNamespaces ),
+			TitleTreeRecord::PAGE_CONTENT_MODEL => $row->page_content_model,
 			TitleTreeRecord::ALLOWS_SUBPAGES => $this->nsInfo->hasSubpages( (int)$row->page_namespace ),
 			TitleTreeRecord::LEAF => false,
 			TitleTreeRecord::EXPANDED => $expanded,
@@ -168,7 +204,7 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 		// Check only if last part matches, ie.
 		// query = 'foo' matches `Bar/foo`, but not `Bar/foo/baz`
 		$last = array_pop( $exploded );
-		return strpos( $last, $this->query ) !== false;
+		return $this->compareTitleMatchQuery( $last );
 	}
 
 	/**
@@ -201,9 +237,9 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 		$parentRow = new \stdClass();
 		$parentRow->page_title = $parentTitle;
 		$parentRow->page_namespace = $row->page_namespace;
+		$parentRow->page_content_model = $row->page_content_model;
 		$parentRow->children = $this->getChildren(
 			$parentRow,
-			$this->makeRecord( $row, $uniqueId, !$fromQuery, !$fromQuery, ),
 			$fromQuery
 		);
 		$this->insertParents( $parentRow, $this->getUniqueId( $parentRow ) );
@@ -211,30 +247,49 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 
 	/**
 	 * @param \stdClass $row
-	 * @param TitleTreeRecord|null $loadedChild
 	 * @param bool|null $fromQuery
-	 *
+	 * @param bool $skipRecursive
 	 * @return TitleTreeRecord[]
 	 */
-	private function getChildren( \stdClass $row, ?TitleTreeRecord $loadedChild, $fromQuery = null ): array {
+	private function getChildren( \stdClass $row, $fromQuery = null, $skipRecursive = false ): array {
 		$childRows = $this->getSubpages( $row );
-		$children = $loadedChild ? [ $loadedChild ] : [];
+		$children = [];
 		foreach ( $childRows as $childRow ) {
 			$uniqueChildId = $this->getUniqueId( $childRow );
-			if ( $loadedChild && $loadedChild->get( TitleTreeRecord::ID ) === $uniqueChildId ) {
+
+			if ( $fromQuery && !$this->compareTitleMatchQuery( $childRow->page_title ) ) {
 				continue;
 			}
-			if ( !$this->isDirectChildOf( $row->page_title, $childRow->page_title ) ) {
-				continue;
-			}
-			if ( $fromQuery && strpos( $childRow->page_title, $this->query ) === false ) {
-				continue;
+			if ( !$skipRecursive ) {
+				if ( isset( $this->nodeCache[ $uniqueChildId] ) ) {
+					$childRow->children = $this->nodeCache[ $uniqueChildId ];
+				} else {
+					$childRow->children = $this->getChildren(
+						$childRow,
+						$fromQuery
+					);
+					$this->nodeCache[ $uniqueChildId ] = $childRow->children;
+				}
+			} else {
+				if ( ( substr_count( $row->page_title, '/' ) + 1 ) !== substr_count( $childRow->page_title, '/' ) ) {
+					continue;
+				}
 			}
 			$child = $this->makeRecord( $childRow, $uniqueChildId, false, false );
 			$children[] = $child;
 		}
-
 		return $children;
+	}
+
+	/**
+	 *
+	 * @param string $title
+	 * @return bool
+	 */
+	private function compareTitleMatchQuery( $title ) {
+		$title = mb_strtolower( $title );
+		$query = mb_strtolower( $this->query );
+		return str_contains( $title, $query );
 	}
 
 	/**
@@ -243,47 +298,44 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 	 * @return \Wikimedia\Rdbms\IResultWrapper
 	 */
 	private function getSubpages( \stdClass $row ) {
-		$res = $this->db->select(
-			[ 'page' ],
-			[ 'page_title', 'page_namespace' ],
-			[
-				'page_namespace' => $row->page_namespace,
-				'page_title LIKE ' . $this->db->addQuotes( $row->page_title . '/%' )
-			],
-			__METHOD__,
-			[ 'ORDER BY' => 'page_title' ]
-		);
-
 		$pages = [];
-		foreach ( $res as $subpageRow ) {
-			$pages[] = $subpageRow;
+		foreach ( $this->subpageData as $subpageRow ) {
+			if ( str_starts_with( $subpageRow->page_title, $row->page_title . '/' ) ) {
+				$subpage = substr( $subpageRow->page_title, strlen( $row->page_title . '/' ) );
+				if ( str_contains( $subpage, '/' ) ) {
+					continue;
+				}
+				if ( $subpageRow->page_namespace !== $row->page_namespace ) {
+					continue;
+				}
+				$pages[] = $subpageRow;
+			}
 		}
+
+		if ( empty( $this->subpageData ) ) {
+			$res = $this->db->select(
+				[ 'page' ],
+				[ 'page_title', 'page_namespace', 'page_content_model' ],
+				[
+					'page_namespace' => $row->page_namespace,
+					'page_title LIKE ' . $this->db->addQuotes( $row->page_title . '/%' )
+				],
+				__METHOD__,
+				[ 'ORDER BY' => 'page_title' ]
+			);
+
+			foreach ( $res as $subpageRow ) {
+				$this->subpageData[ $subpageRow->page_namespace . '|' . $subpageRow->page_title ] = $subpageRow;
+				$pages[] = $subpageRow;
+			}
+		}
+
 		$pages = $this->insertNonExistingPages( $pages, $row->page_title );
 		usort( $pages, static function ( $a, $b ) {
 			return strcmp( $a->page_title, $b->page_title );
 		} );
 
 		return $pages;
-	}
-
-	/**
-	 * @param string $parent
-	 * @param string $child
-	 *
-	 * @return bool
-	 */
-	private function isDirectChildOf( string $parent, string $child ): bool {
-		$parentBits = explode( '/', $parent );
-		$childBits = explode( '/', $child );
-		if ( count( $childBits ) !== count( $parentBits ) + 1 ) {
-			return false;
-		}
-		for ( $i = 0; $i < count( $parentBits ); $i++ ) {
-			if ( $parentBits[$i] !== $childBits[$i] ) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	/**
@@ -313,7 +365,31 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 	 * @return array|TitleTreeRecord[]
 	 */
 	private function dataFromNode( array $node ): array {
-			return $this->getChildren( (object)$node, null );
+		$nodes = $this->getChildren( (object)$node, null, true );
+		return $this->expandChildrenNodes( $nodes );
+	}
+
+	/**
+	 * @param TitleTreeRecord[] $nodes
+	 * @return TitleTreeRecord[]
+	 */
+	private function expandChildrenNodes( $nodes ) {
+		if ( $this->expandPaths ) {
+			foreach ( $nodes as $node ) {
+				foreach ( $this->expandPaths as $path ) {
+					$pathParts = $this->splitNode( $path );
+					if (
+						$node->get( TitleTreeRecord::PAGE_TITLE ) === $pathParts['page_title'] &&
+						$node->get( TitleTreeRecord::PAGE_NAMESPACE ) === $pathParts['page_namespace']
+					) {
+						$children = $this->expandChildrenNodes( $this->getChildren( (object)$pathParts, null, true ) );
+						$node->set( TitleTreeRecord::CHILDREN, $children );
+						$node->set( TitleTreeRecord::EXPANDED, true );
+					}
+				}
+			}
+		}
+		return $nodes;
 	}
 
 	/**
@@ -362,14 +438,7 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 	 * @return bool
 	 */
 	private function checkPageExists( \stdClass $row, string $title ): bool {
-		return (bool)$this->db->selectRow(
-			'page',
-			[ 'page_title' ],
-			[
-				'page_namespace' => $row->page_namespace,
-				'page_title' => $title
-			],
-		);
+		return isset( $this->subpageData[ $row->page_namespace . '|' . $title ] );
 	}
 
 	/**
@@ -384,7 +453,8 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 			if ( $nonExistingPage ) {
 				$res[] = (object)[
 					'page_title' => $nonExistingPage,
-					'page_namespace' => $row->page_namespace
+					'page_namespace' => $row->page_namespace,
+					'page_content_model' => $row->page_content_model
 				];
 			}
 		}
@@ -406,19 +476,10 @@ class PrimaryDataProvider extends \MWStake\MediaWiki\Component\CommonWebAPIs\Dat
 		if ( count( $matches ) === 0 ) {
 			return null;
 		}
-		$exists = $this->db->selectRow(
-			'page',
-			[ 'page_title' ],
-			[
-				'page_namespace' => $namespace,
-				'page_title' => $matches[0]
-			],
-		);
-
-		if ( !$exists ) {
-			return $matches[0];
+		if ( isset( $this->subpageData[ $namespace . '|' . $matches[0] ] ) ) {
+			return null;
 		}
-		return null;
+		return $matches[0];
 	}
 
 	/**

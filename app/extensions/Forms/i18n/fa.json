@@ -5,13 +5,12 @@
 			"Jeeputer"
 		]
 	},
-	"forms-createforminstance-form-name": "ایجاد $1",
 	"formeditor": "ویرایشگر فرم",
 	"forms-form-edit-title": "ویرایش $1",
 	"forms-form-editor-title": "ویرایشگر فرم",
 	"forms-form-editor-prop-title": "عنوان",
 	"forms-form-editor-prop-showtitle": "عنوان ظاهری",
-	"forms-form-editor-prop-showFormName": "نمایش نام فرم",
+	"forms-form-editor-prop-showformname": "نمایش نام فرم",
 	"forms-form-editor-prop-categories": "رده‌ها",
 	"forms-form-editor-prop-buttonsfloat": "شناورسازی دکمه‌ها",
 	"forms-form-editor-prop-enableprogresssave": "فعال‌سازی ذخیرهٔ متوسط",
@@ -28,6 +27,7 @@
 	"forms-form-editor-prop-targetafteractiontyperedirect": "تغییرمسیر",
 	"forms-formelement-group-input": "ورودی‌ها",
 	"forms-formelement-group-other": "سایر",
+	"forms-label-appearance": "ظاهر",
 	"forms-label-target": "هدف",
 	"forms-label-company-name": "نام شرکت",
 	"forms-label-employees-number": "شمار کارکنان",
@@ -50,6 +50,5 @@
 	"forms-form-editor-prop-target-email-receiver": "دریافت‌کننده",
 	"forms-form-editor-prop-target-email-subject": "موضوع",
 	"forms-form-editor-prop-target-email-body": "محتوا",
-	"forms-error-target-mail-send-failed": "ارسال نامه ناموفق",
-	"forms-label-appearance": "ظاهر"
+	"forms-error-target-mail-send-failed": "ارسال نامه ناموفق"
 }

@@ -9,15 +9,16 @@ use BlueSpice\Bookshelf\BookLookup;
 use BlueSpice\Bookshelf\BookSourceParser;
 use BlueSpice\Bookshelf\BookViewTreeDataBuilder;
 use BlueSpice\Bookshelf\Content\BookContent;
-use Content;
-use Html;
+use Exception;
+use MediaWiki\Content\Content;
 use MediaWiki\Content\Renderer\ContentParseParams;
+use MediaWiki\Content\TextContentHandler;
+use MediaWiki\Html\Html;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 use MWException;
-use ParserOutput;
-use TextContentHandler;
-use Title;
-use TitleFactory;
 
 class BookContentHandler extends TextContentHandler {
 
@@ -69,7 +70,6 @@ class BookContentHandler extends TextContentHandler {
 
 		try {
 			$pageRef = $cpoParams->getPage();
-
 			$titleFactory = $services->getTitleFactory();
 			$book = $titleFactory->castFromPageReference( $pageRef );
 
@@ -95,9 +95,8 @@ class BookContentHandler extends TextContentHandler {
 				$this->setHtmlFrame( $output );
 				$output->addModules( [ 'ext.bluespice.bookshelf.view' ] );
 			}
-		}
-		catch ( MWException $e ) {
-			$output->addWarningMsg( "bs-bookshelf-warning", $e->getText() );
+		} catch ( Exception $e ) {
+			$output->addWarningMsg( "bs-bookshelf-warning", $e->getMessage() );
 		}
 	}
 

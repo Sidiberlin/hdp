@@ -4,41 +4,25 @@
  * @class Transclude
  */
 class Transclude {
-	constructor( activeTabpanel, cacheExpiration = 3600 ) {
+	constructor( activeTabpanel, cacheExpiration ) {
 		this.activeTabpanel = activeTabpanel;
-		this.pageTitle = this.activeTabpanel.dataset.mwTabberPageTitle;
-		this.url = this.activeTabpanel.dataset.mwTabberLoadUrl;
-		this.cacheKey = `tabber-transclude-${ encodeURIComponent( this.pageTitle ) }_v1`;
-		this.cacheExpiration = cacheExpiration;
-	}
-
-	/**
-	 * Validates the URL format.
-	 *
-	 * @return {Promise} A Promise that resolves if the URL is valid, and rejects with an Error if the URL is empty, null, or in an invalid format.
-	 */
-	validateUrl() {
-		const urlPattern = /^(https?):\/\/[^\s/$.?#][^\s]*$/;
-		if ( !this.url || this.url.trim() === '' ) {
-			return Promise.reject( new Error( '[TabberNeue] URL is empty or null' ) );
-		}
-		if ( !urlPattern.test( this.url ) ) {
-			return Promise.reject( new Error( `[TabberNeue] Invalid URL format : ${ this.url }` ) );
-		}
-		return Promise.resolve();
-	}
-
-	/**
-	 * Checks the session storage for cached data using the cache key.
-	 *
-	 * @return {Object|null} The cached data if found, or null if no cached data is found.
-	 */
-	checkCache() {
-		const cachedData = mw.storage.session.getObject( this.cacheKey );
-		if ( cachedData ) {
-			return cachedData;
-		}
-		return null;
+		this.transclusionElement = this.activeTabpanel.querySelector( '.tabber__transclusion' );
+		this.pageName = this.transclusionElement.dataset.mwTabberPage; // This is mainly used for error logging
+		this.revision = this.transclusionElement.dataset.mwTabberRevision;
+		this.apiParameters = {
+			action: 'parse',
+			format: 'json',
+			formatversion: 2,
+			oldid: this.revision,
+			redirects: true,
+			prop: 'text',
+			disablelimitreport: true,
+			disabletoc: true,
+			disableeditsection: true,
+			wrapoutputclass: '',
+			maxage: cacheExpiration,
+			smaxage: cacheExpiration
+		};
 	}
 
 	/**
@@ -47,69 +31,33 @@ class Transclude {
 	 * @return {Promise} A Promise that resolves with the response text if the network request is successful,
 	 *                    and rejects with an Error if there is an issue with the network request.
 	 */
-	async fetchDataFromUrl() {
+	async fetchDataFromApi() {
+		const api = new mw.Api();
 		try {
-			const response = await fetch( this.url, { method: 'GET', timeout: 5000, credentials: 'same-origin' } );
-			if ( !response.ok ) {
-				throw new Error( `Network response was not ok: ${ response.status } - ${ response.statusText }` );
-			}
-			return Promise.resolve( response.text() );
+			const data = await api.get( this.apiParameters, { timeout: 5000 } );
+			return data;
 		} catch ( error ) {
-			return Promise.reject( `[TabberNeue] Error fetching data from URL: ${ this.url }`, error );
+			mw.log.error( `[TabberNeue] Error fetching data for page ${ this.pageName }: ${ error }` );
+			throw error;
 		}
 	}
 
 	/**
-	 * Parses the JSON data and extracts the 'parse.text' property.
-	 *
-	 * @param {string} data - The JSON data to be parsed.
-	 * @return {string} The parsed 'parse.text' property from the JSON data.
-	 * @throws {Error} If an error occurs while parsing the JSON data.
-	 */
-	parseData( data ) {
-		let parsedData;
-		try {
-			parsedData = JSON.parse( data );
-			parsedData = parsedData.parse.text;
-		} catch ( error ) {
-			mw.log.error( `[TabberNeue] Error occurred while parsing JSON data: ${ error }` );
-			return Promise.reject( new Error( `Error parsing JSON data: ${ error }` ) );
-		}
-		return parsedData;
-	}
-
-	/**
-	 * Caches the parsed data in the session storage using the cache key.
-	 *
-	 * @param {string} parsedData - The parsed data to be cached.
-	 * @return {string} The cached parsed data.
-	 */
-	cacheData( parsedData ) {
-		mw.storage.session.setObject( this.cacheKey, parsedData, this.cacheExpiration );
-		return parsedData;
-	}
-
-	/**
-	 * Fetches data by validating the URL, checking the cache, fetching data from the URL,
-	 * parsing the data, and caching the parsed data if not found in the cache.
+	 * Fetches data by validating the page name, checking the cache, fetching data from the API,
+	 * and caching the parsed data if not found in the cache.
 	 *
 	 * @return {Promise} A Promise that resolves with the fetched and cached data,
 	 *                    or rejects with an error message if any step fails.
 	 */
 	async fetchData() {
-		try {
-			await this.validateUrl();
-			const cachedData = this.checkCache();
-			if ( cachedData ) {
-				return cachedData;
-			}
+		const data = await this.fetchDataFromApi();
 
-			const data = await this.fetchDataFromUrl();
-			const parsedData = this.parseData( data );
-			return this.cacheData( parsedData );
-		} catch ( error ) {
-			return Promise.reject( `[TabberNeue] Error fetching data: ${ error }` );
+		if ( !( data && data.parse && data.parse.text !== undefined ) ) {
+			mw.log.error( '[TabberNeue] Error occurred while processing API data: Unexpected structure' );
+			throw new Error( 'Invalid data structure received from server.' );
 		}
+
+		return data.parse.text;
 	}
 
 	/**
@@ -119,18 +67,43 @@ class Transclude {
 	 * @return {void}
 	 */
 	async loadPage() {
+		if ( !this.pageName ) {
+			mw.log.error(
+				`[TabberNeue] Attempted to load page for ${ this.activeTabpanel.id || 'unknown tab' } without a valid page name.`
+			);
+			return;
+		}
+
+		let loadingTimerId = null;
 		try {
-			this.activeTabpanel.classList.add( 'tabber__panel--loading' );
+			// Only show the loader immediately if the fetch takes longer than 250ms
+			loadingTimerId = setTimeout( () => {
+				this.activeTabpanel.classList.add( 'tabber__panel--loading' );
+			}, 250 );
+
 			const data = await this.fetchData();
-			if ( data ) {
-				delete this.activeTabpanel.dataset.mwTabberLoadUrl;
-				this.activeTabpanel.classList.remove( 'tabber__panel--loading' );
-				this.activeTabpanel.innerHTML = data;
-			} else {
-				mw.log.error( `[TabberNeue] No valid API response or missing 'parse' field for ${ this.pageTitle } from: ${ this.url }` );
-			}
+			this.activeTabpanel.classList.remove( 'tabber__panel--loading' );
+			clearTimeout( loadingTimerId );
+
+			this.activeTabpanel.innerHTML = data;
+
+			// Fire the wikipage.content hook for potential consumers of the hook
+			// eslint-disable-next-line no-jquery/no-jquery-constructor, no-undef
+			mw.hook( 'wikipage.content' ).fire( $( this.activeTabpanel ) );
 		} catch ( error ) {
-			mw.log.error( `[TabberNeue] Failed to load data for ${ this.pageTitle }: ${ error }` );
+			this.activeTabpanel.classList.remove( 'tabber__panel--loading' );
+			clearTimeout( loadingTimerId );
+			mw.log.error( `[TabberNeue] Failed to load content for ${ this.activeTabpanel.id } (page: ${ this.pageName }, revision: ${ this.revision }):`, error );
+
+			this.transclusionElement.innerHTML = '';
+			this.transclusionElement.appendChild(
+				mw.util.messageBox(
+					mw.html.escape( ( error instanceof Error && error.message ) ?
+						error.message : 'An unexpected error occurred while loading content.'
+					),
+					'error'
+				)
+			);
 		}
 	}
 }

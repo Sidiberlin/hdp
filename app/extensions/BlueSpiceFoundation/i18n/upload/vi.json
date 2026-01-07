@@ -6,7 +6,6 @@
 			"SongNgu.xyz"
 		]
 	},
-	"bs-upload-upload-waitmessage": "Đang tải lên…",
 	"bs-upload-uploaddialogtitle": "Tải tập tin lên",
 	"bs-upload-uploadbuttontext": "Duyệt",
 	"bs-upload-uploadfilefieldlabel": "Tên tập tin",
@@ -17,6 +16,7 @@
 	"bs-upload-uploadwatchthislabel": "Theo dõi tập tin này",
 	"bs-upload-uploadignorewarningslabel": "Bỏ qua cảnh báo",
 	"bs-upload-categories": "Thể loại",
+	"bs-upload-upload-waitmessage": "Đang tải lên…",
 	"bs-upload-error": "Lỗi",
 	"bs-upload-descfilelabel": "Miêu tả",
 	"bs-upload-error-long": "Lỗi trong quá trình tải lên",

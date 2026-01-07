@@ -4,12 +4,12 @@
 			"Joao Xavier"
 		]
 	},
+	"forms-form-edit-title": "Redaktez $1",
 	"forms-form-editor-prop-title": "Titulo",
 	"forms-form-editor-prop-categories": "Kategorii",
 	"forms-form-editor-prop-targettitle": "Titulo",
 	"forms-formelement-group-other": "Altra",
 	"forms-label-city": "Urbo",
 	"forms-label-contacts": "Kontakti",
-	"forms-label-email": "E-postal adreso",
-	"forms-form-edit-title": "Redaktez $1"
+	"forms-label-email": "E-postal adreso"
 }

@@ -11,7 +11,6 @@
 	"bs-visualeditorconnector-upload-type-original": "اصلی",
 	"bs-visualeditorconnector-upload-type-simple": "ساده",
 	"bs-visualeditorconnector-upload-type-one-click": "یک کلیک",
-	"bs-visualeditorconnector-upload-type": "نوع بارگذاری",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "لغو ویرایش",
 	"bs-visualeditorconnector-cancel-edit": "لغو ویرایش. تغییرات ذخیره‌نشده دور ریخته می‌شوند.",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "آیا از لغو ویرایش مطمئن هستید؟ تغییرات ذخیره‌نشدهٔ شما دور ریخته خواهند شد.",
@@ -84,5 +83,6 @@
 	"bs-visualeditorconnector-text-style-tool-align-center-label": "تراز وسط",
 	"bs-visualeditorconnector-align-center-annotation-desc": "متن انتخاب‌شده را در وسط قرار می‌دهد",
 	"bs-visualeditorconnector-text-style-indent-label": "تورفتگی",
-	"bs-visualeditorconnector-indent-annotation-desc": "تورفتگی متن انتخاب‌شده"
+	"bs-visualeditorconnector-indent-annotation-desc": "تورفتگی متن انتخاب‌شده",
+	"bs-visualeditorconnector-upload-type": "نوع بارگذاری"
 }

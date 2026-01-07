@@ -2,15 +2,15 @@
 	"name": "ImportOfficeFiles",
 	"license-name": "GPL-3.0-only",
 	"author": [
-		"[http://www.hallowelt.com Hallo Welt! GmbH]",
+		"[https://www.hallowelt.com Hallo Welt! GmbH]",
 		"Daniel Vogel",
 		"Alexei Kulbii"
 	],
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:ImportOfficeFiles",
-	"version": "2.0.10",
+	"version": "3.1.4",
 	"descriptionmsg": "importofficefiles-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43.0"
 	},
 	"MessagesDirs": {
 		"ImportOfficeFiles": "i18n"
@@ -93,8 +93,10 @@
 		}
 	},
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\ImportOfficeFiles\\": "src/",
-		"MediaWiki\\Extension\\ImportOfficeFiles\\Tests\\": "tests/phpunit"
+		"MediaWiki\\Extension\\ImportOfficeFiles\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"MediaWiki\\Extension\\ImportOfficeFiles\\Tests\\": "tests/phpunit/"
 	},
 	"ResourceModules": {
 		"ext.importofficefiles.bootstrap": {
@@ -129,6 +131,8 @@
 				"importofficefiles-ui-dialog-action-done",
 				"importofficefiles-ui-dialog-label-select-file",
 				"importofficefiles-ui-dialog-configuration-settings-title",
+				"importofficefiles-ui-dialog-configuration-settings-title-invalid-characters",
+				"importofficefiles-ui-dialog-configuration-settings-title-invalid-fallback",
 				"importofficefiles-ui-dialog-settings-page-title",
 				"importofficefiles-ui-dialog-settings-pagetitle-label",
 				"importofficefiles-ui-dialog-settings-structure-label",
@@ -248,6 +252,10 @@
 		},
 		"ImportOfficeFilesWord2007TagPropertyProcessorPipeline": {
 			"value": [ "style", "color", "justify", "highlight", "shadow", "verticalalign", "italic", "strikethrough", "underline", "bold" ],
+			"public": true
+		},
+		"ImportOfficeFilesWord2007ImageWidthThreshold": {
+			"value": 700,
 			"public": true
 		}
 	},

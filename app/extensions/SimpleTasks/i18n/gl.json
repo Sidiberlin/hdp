@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Toliño"
+		]
+	},
+	"simple-tasks-desc": "Crear tarefas para os usuarios",
+	"simple-tasks-task-duedate": "Data de vencemento: $1",
+	"simple-tasks-task-desc": "Tarefa creada no contido da páxina",
+	"simple-tasks-notif-key": "Asignación de tarefa",
+	"simple-tasks-notif-message": "{{GENDER:$1|asignouche}} unha tarefa: «$1»",
+	"simple-tasks-notif-message-with-due-date": "{{GENDER:$1|asignouche}} unha tarefa: «$1». A tarefa ten como data límite o $2.",
+	"simple-tasks-taskreport-no-results": "Non se atoparon tarefas cos filtros seleccionados",
+	"simple-tasks-taskreport-header-task": "Tarefa",
+	"simple-tasks-taskreport-header-assignee": "Asignada a",
+	"simple-tasks-taskreport-header-page": "Aparece na páxina",
+	"simple-tasks-taskreport-header-due-to": "Data de vencemento",
+	"simple-tasks-taskreport-header-state": "Estado",
+	"simple-tasks-droplet-taskreport-name": "Informe de tarefa",
+	"simple-tasks-droplet-taskreport-description": "Crea unha visión xeral das tarefas",
+	"simple-tasks-taskreport-inspector-title": "Informe de tarefa",
+	"simple-tasks-taskreport-inspector-state-done": "feita",
+	"simple-tasks-taskreport-inspector-state-open": "aberta",
+	"simple-tasks-taskreport-inspector-label-user": "Asignada a",
+	"simple-tasks-taskreport-inspector-label-namespaces": "Espazos de nomes",
+	"simple-tasks-taskreport-inspector-label-due-date": "Data límite",
+	"simple-tasks-taskreport-inspector-label-state": "Estado",
+	"simple-tasks-taskreport-state-title-open": "A tarefa está aberta",
+	"simple-tasks-taskreport-state-title-done": "A tarefa está feita",
+	"simple-tasks-taskreport-state-filter-done": "Feita",
+	"simple-tasks-taskreport-state-filter-open": "Aberta"
+}

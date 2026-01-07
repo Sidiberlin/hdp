@@ -28,5 +28,6 @@
 	"simple-tasks-taskreport-state-title-open": "Taak is geopend",
 	"simple-tasks-taskreport-state-title-done": "Taak is afgerond",
 	"simple-tasks-taskreport-state-filter-done": "Afgerond",
-	"simple-tasks-taskreport-state-filter-open": "Open"
+	"simple-tasks-taskreport-state-filter-open": "Open",
+	"simple-tasks-notif-message-with-due-date": "heeft een taak aan u {{GENDER:$1|toegewezen}}: “$1”. Moet op $2 klaar zijn."
 }

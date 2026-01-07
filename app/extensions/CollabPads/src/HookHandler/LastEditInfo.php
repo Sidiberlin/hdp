@@ -4,8 +4,8 @@ namespace MediaWiki\Extension\CollabPads\HookHandler;
 
 use BlueSpice\Discovery\Hook\LastEditInfoHook;
 use ChangeTags;
+use MediaWiki\Message\Message;
 use MediaWiki\Revision\RevisionRecord;
-use Message;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class LastEditInfo implements LastEditInfoHook {

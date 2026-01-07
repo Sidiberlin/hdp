@@ -4,13 +4,13 @@ namespace AtMentions\Hook;
 
 use AtMentions\Mention;
 use AtMentions\MentionStore;
-use Html;
-use Language;
 use MediaWiki\Hook\ParserFirstCallInitHook;
+use MediaWiki\Html\Html;
+use MediaWiki\Language\Language;
 use MediaWiki\Linker\LinkRenderer;
+use MediaWiki\Message\Message;
+use MediaWiki\Parser\Parser as MWParser;
 use MediaWiki\User\UserFactory;
-use Message;
-use Parser as MWParser;
 
 class ProcessTags implements ParserFirstCallInitHook {
 
@@ -36,7 +36,6 @@ class ProcessTags implements ParserFirstCallInitHook {
 	 * @param MWParser $parser
 	 *
 	 * @return bool|void
-	 * @throws \MWException
 	 */
 	public function onParserFirstCallInit( $parser ): bool {
 		$parser->setHook( 'mentionslist', [ $this, 'render' ] );

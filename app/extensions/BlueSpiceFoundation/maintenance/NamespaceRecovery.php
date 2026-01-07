@@ -87,7 +87,12 @@ function getDataFromNSBackup( $sTable, $aConditions = [], $aReturn = [] ) {
 
 	$sTable = 'bs_namespacemanager_backup_' . $sTable;
 
-	$rRes = $dbr->select( $sTable, '*', $aConditions );
+	$rRes = $dbr->select(
+		$sTable,
+		'*',
+		$aConditions,
+		__METHOD__
+	);
 	if ( empty( $rRes ) ) {
 		return [];
 	}
@@ -127,9 +132,16 @@ function setDataFromNSBackup( $aPages, $aRevisions, $aTexts, $bDry, $options ) {
 		for ( $iR = 0; $iR < $numRevisions; $iR++ ) {
 			echo 'Revision';
 			if ( !$bDry && $options['execute'] ) {
-				$dbw->insert( 'text', $aTexts[$iP][$iR][0] );
-				$dbw->insert( 'revision', $aRevisions[$iP][$iR] );
-				// var_dump($aRevisions[$iP][$iR]);
+				$dbw->insert(
+					'text',
+					$aTexts[$iP][$iR][0],
+					__METHOD__
+				);
+				$dbw->insert(
+					'revision',
+					$aRevisions[$iP][$iR],
+					__METHOD__
+				);
 			}
 
 		}

@@ -7,10 +7,10 @@ if ( defined( 'MWSTAKE_MEDIAWIKI_COMPONENT_WIKITEXT_VERSION' ) ) {
 	return;
 }
 
-define( 'MWSTAKE_MEDIAWIKI_COMPONENT_WIKITEXT_VERSION', '6.0.1' );
+define( 'MWSTAKE_MEDIAWIKI_COMPONENT_WIKITEXT_VERSION', '7.0.2' );
 
 MWStake\MediaWiki\ComponentLoader\Bootstrapper::getInstance()
-	->register( 'wikitext', function () {
+	->register( 'wikitext', static function () {
 		wfLoadExtension( 'Parsoid', $GLOBALS['IP'] . '/vendor/wikimedia/parsoid/extension.json' );
 
 		$GLOBALS['wgServiceWiringFiles'][] = __DIR__ . '/ServiceWiring.php';

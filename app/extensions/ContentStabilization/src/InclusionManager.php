@@ -2,17 +2,18 @@
 
 namespace MediaWiki\Extension\ContentStabilization;
 
-use Config;
-use GlobalVarConfig;
 use HashBagOStuff;
+use IDBAccessObject;
+use MediaWiki\Config\Config;
+use MediaWiki\Config\GlobalVarConfig;
+use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Linker\LinkTarget;
 use MediaWiki\Page\PageIdentity;
 use MediaWiki\Page\WikiPageFactory;
+use MediaWiki\Parser\ParserFactory;
 use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Revision\RevisionRecord;
-use ParserFactory;
 use RepoGroup;
-use Title;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class InclusionManager {
@@ -41,6 +42,9 @@ class InclusionManager {
 	/** @var array */
 	private $inclusionModes;
 
+	/** @var HookContainer */
+	private $hookContainer;
+
 	/** @var HashBagOStuff */
 	private $cache;
 
@@ -51,12 +55,13 @@ class InclusionManager {
 	 * @param RepoGroup $repoGroup
 	 * @param GlobalVarConfig $config
 	 * @param ParserFactory $parserFactory
+	 * @param HookContainer $hookContainer
 	 * @param array $inclusionModes
 	 */
 	public function __construct(
 		ILoadBalancer $loadBalancer, WikiPageFactory $wikiPageFactory,
 		RevisionLookup $revisionLookup, RepoGroup $repoGroup, Config $config,
-		ParserFactory $parserFactory, array $inclusionModes
+		ParserFactory $parserFactory, HookContainer $hookContainer, array $inclusionModes
 	) {
 		$this->loadBalancer = $loadBalancer;
 		$this->wikiPageFactory = $wikiPageFactory;
@@ -65,6 +70,7 @@ class InclusionManager {
 		$this->config = $config;
 		$this->parserFactory = $parserFactory;
 		$this->inclusionModes = $inclusionModes;
+		$this->hookContainer = $hookContainer;
 		$this->cache = new HashBagOStuff();
 	}
 
@@ -199,11 +205,14 @@ class InclusionManager {
 		$page = $this->wikiPageFactory->newFromLinkTarget( $target );
 		$parserOptions = $page->makeParserOptions( 'canonical' );
 		$parser = $this->parserFactory->create();
-		// Only clear state if the Parser is not in the middle of parsing already (called recursively)
-		$clearState = $parser->getOutput() === null || $parser->getStripState() === null;
+
 		$parserOutput = $parser->parse(
-			$page->getContent()->getWikitextForTransclusion(), $page->getTitle(), $parserOptions,
-			true, $clearState, $page->getTitle()->getLatestRevID()
+			$page->getContent()->getWikitextForTransclusion(),
+			$page->getTitle(),
+			$parserOptions,
+			/* $linestart = */ true,
+			/* $clearstate = */ true,
+			$page->getTitle()->getLatestRevID()
 		);
 		$transclusions = $parserOutput->getTemplates();
 		$images = $parserOutput->getImages();
@@ -235,12 +244,14 @@ class InclusionManager {
 				continue;
 			}
 			$res['images'][] = [
-				'revision' => $image->getTitle()->getLatestRevID( Title::READ_LATEST ),
+				'revision' => $image->getTitle()->getLatestRevID( IDBAccessObject::READ_LATEST ),
 				'name' => $image->getName(),
 				'timestamp' => $image->getTimestamp(),
 				'sha1' => $image->getSha1(),
 			];
 		}
+
+		$this->hookContainer->run( 'ContentStabilizationGetCurrentInclusions', [ $page, &$res ] );
 
 		return $res;
 	}

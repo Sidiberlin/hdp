@@ -3,13 +3,12 @@
 namespace MediaWiki\Extension\ImportOfficeFiles\Rest;
 
 use Exception;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\ImportOfficeFiles\Process\FileConvertProcessStep;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Rest\SimpleHandler;
 use MWStake\MediaWiki\Component\ProcessManager\ManagedProcess;
-use RequestContext;
 use Wikimedia\ParamValidator\ParamValidator;
-use function Sabre\HTTP\decodePath;
 
 class FileAnalyzeHandler extends SimpleHandler {
 
@@ -22,7 +21,7 @@ class FileAnalyzeHandler extends SimpleHandler {
 		$file = $request->getPathParam( "filename" );
 
 		$params = $request->getUri()->getQuery();
-		$config = json_decode( decodePath( $params ), true );
+		$config = json_decode( $this->decodePath( $params ), true );
 		$title = $config['config']['title'];
 		$structure = $config['config']['structure'];
 		$conflict = $config['config']['conflict'];
@@ -59,6 +58,23 @@ class FileAnalyzeHandler extends SimpleHandler {
 			'success' => true,
 			'processId' => $processId
 		] );
+	}
+
+	/**
+	 * @param string $path
+	 * @return string
+	 */
+	private function decodePath( string $path ): string {
+		$path = rawurldecode( $path );
+
+		if (
+			!mb_check_encoding( $path, 'UTF-8' ) &&
+			mb_check_encoding( $path, 'ISO-8859-1' )
+		) {
+			$path = mb_convert_encoding( $path, 'UTF-8', 'ISO-8859-1' );
+		}
+
+		return $path;
 	}
 
 	/** @inheritDoc */

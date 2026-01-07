@@ -20,9 +20,6 @@
 	"bs-interwikilinks-labelprefix": "Πρόθεμα",
 	"bs-interwikilinks-titledeleteinterwikilink": "Διαγραφή διαγλωσσικού σύνδεσμου",
 	"bs-interwikilinks-confirmdeleteinterwikilink": "Είστε σίγουρος ότι θέλετε να διαγράψετε αυτό το διαγλωσσικό σύνδεσμο;",
-	"bs-interwikilinks-insertlink-tabtitle": "Σύνδεσμος σε άλλο βίκι",
-	"bs-interwikilinks-insertlink-labelprefix": "Πρόθεμα",
-	"bs-interwikilink-select-a-prefix": "Επιλογή προθέματος",
 	"bs-interwikilinks-link-edited": "Ο διαγλωσσικός σύνδεσμος έχει επεξεργαστεί",
 	"interwikilinks": "Σύνδεσμοι interwiki"
 }

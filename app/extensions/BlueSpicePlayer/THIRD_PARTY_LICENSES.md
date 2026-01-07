@@ -7,7 +7,7 @@ Software
 
 | Software | Author | Version | License |
 |:--------|:-------|:--------|:-------|
-| [VideoJS](https://github.com/videojs/video.js) | Brightcove | 5.11.0 | [Apache 2.0](https://github.com/videojs/video.js/blob/master/LICENSE) |
+| [Plyr](https://github.com/sampotts/plyr) | Sam Potts | 3.7.8 | [MIT](https://github.com/sampotts/plyr?tab=MIT-1-ov-file#readme) |
 
 License texts
 =============

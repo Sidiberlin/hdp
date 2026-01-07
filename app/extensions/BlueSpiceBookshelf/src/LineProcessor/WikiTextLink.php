@@ -4,9 +4,8 @@ namespace BlueSpice\Bookshelf\LineProcessor;
 
 use BlueSpice\Bookshelf\ILineProcessor;
 use BlueSpice\Bookshelf\TreeNode;
-use Content;
 use MediaWiki\MediaWikiServices;
-use Title;
+use MediaWiki\Title\Title;
 
 class WikiTextLink extends LineProcessorBase implements ILineProcessor {
 	/**
@@ -31,7 +30,7 @@ class WikiTextLink extends LineProcessorBase implements ILineProcessor {
 		$link = $this->getLink( $line );
 		$this->parseLink( $link );
 		$this->parseTitle();
-		if ( !$this->title instanceof Title ) {
+		if ( !( $this->title instanceof Title ) ) {
 			$this->result['type'] = 'plain-text';
 			return $this->result;
 		}
@@ -97,21 +96,24 @@ class WikiTextLink extends LineProcessorBase implements ILineProcessor {
 		$this->title = Title::newFromText( $this->result['title'] );
 	}
 
-	/**
-	 *
-	 */
 	protected function handleRedirect() {
 		$this->result['is-redirect'] = $this->title->isRedirect();
-		if ( $this->title->isRedirect() ) {
-			$wikiPage = MediaWikiServices::getInstance()->getWikiPageFactory()->newFromTitle( $this->title );
-			$content = $wikiPage->getContent();
-			if ( $content instanceof Content ) {
-				$tagetTitle = $content->getRedirectTarget();
-				if ( $tagetTitle instanceof Title ) {
-					$this->result['redirected-from'] = $this->title->getPrefixedText();
-					$this->title = $tagetTitle;
-				}
-			}
+		if ( !$this->title->isRedirect() ) {
+			return;
 		}
+
+		$redirectTarget = MediaWikiServices::getInstance()->getRedirectLookUp()
+			->getRedirectTarget( $this->title );
+		if ( !$redirectTarget ) {
+			return;
+		}
+
+		$targetTitle = Title::castFromLinkTarget( $redirectTarget );
+		if ( !$targetTitle ) {
+			return;
+		}
+
+		$this->result['redirected-from'] = $this->title->getPrefixedText();
+		$this->title = $targetTitle;
 	}
 }

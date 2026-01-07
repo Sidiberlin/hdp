@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Discovery;
 
-use Config;
+use MediaWiki\Config\Config;
 use MWStake\MediaWiki\Component\ManifestRegistry\ManifestObjectFactory;
 
 class LangLinksProviderFactory {

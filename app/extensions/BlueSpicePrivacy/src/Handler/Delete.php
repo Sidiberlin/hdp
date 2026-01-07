@@ -3,12 +3,15 @@
 namespace BlueSpice\Privacy\Handler;
 
 use BlueSpice\Privacy\IPrivacyHandler;
-use RequestContext;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Status\Status;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 use Wikimedia\Rdbms\IDatabase;
 
 class Delete extends Anonymize implements IPrivacyHandler {
 	/**
-	 * @var \User
+	 * @var User
 	 */
 	protected $userToDelete;
 
@@ -16,7 +19,7 @@ class Delete extends Anonymize implements IPrivacyHandler {
 	 * User that all data from the user we are deleting
 	 * will be moved to
 	 *
-	 * @var \User
+	 * @var User
 	 */
 	protected $groupingDeletedUser;
 
@@ -74,11 +77,11 @@ class Delete extends Anonymize implements IPrivacyHandler {
 
 	/**
 	 *
-	 * @param \User $userToDelete
-	 * @param \User $deletedUser
-	 * @return \Status
+	 * @param User $userToDelete
+	 * @param User $deletedUser
+	 * @return Status
 	 */
-	public function delete( \User $userToDelete, \User $deletedUser ) {
+	public function delete( User $userToDelete, User $deletedUser ) {
 		$this->userToDelete = $userToDelete;
 		$this->groupingDeletedUser = $deletedUser;
 		// First anonymize to deleted user
@@ -87,29 +90,29 @@ class Delete extends Anonymize implements IPrivacyHandler {
 			$deletedUser->getName()
 		);
 		if ( !$anonymizeStatus->isOK() ) {
-			return \Status::newFatal( 'bs-privacy-deletion-failed' );
+			return Status::newFatal( 'bs-privacy-deletion-failed' );
 		}
 		$this->removeUserPage();
 		$this->moveToDeletedUser();
 		$this->deleteFromTables();
 
-		return \Status::newGood();
+		return Status::newGood();
 	}
 
 	/**
 	 *
 	 * @param array $types
 	 * @param string $format
-	 * @param \User $user
-	 * @return \Status
+	 * @param User $user
+	 * @return Status
 	 */
-	public function exportData( array $types, $format, \User $user ) {
-		return \Status::newGood( [] );
+	public function exportData( array $types, $format, User $user ) {
+		return Status::newGood( [] );
 	}
 
 	protected function removeUserPage() {
 		$userpage = $this->userToDelete->getUserPage();
-		if ( $userpage instanceof \Title && $userpage->exists() ) {
+		if ( $userpage instanceof Title && $userpage->exists() ) {
 			$wikiPage = $this->services->getWikiPageFactory()->newFromTitle( $userpage );
 			$deletePage = $this->services->getDeletePageFactory()
 				->newDeletePage( $wikiPage, RequestContext::getMain()->getUser() );

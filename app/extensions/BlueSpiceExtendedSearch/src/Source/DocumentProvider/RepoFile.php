@@ -4,7 +4,7 @@ namespace BS\ExtendedSearch\Source\DocumentProvider;
 
 use BS\ExtendedSearch\Source\DocumentProvider\File as FileBase;
 use File;
-use Title;
+use MediaWiki\Title\Title;
 
 class RepoFile extends FileBase {
 
@@ -45,7 +45,7 @@ class RepoFile extends FileBase {
 			return '';
 		}
 		if ( $title->getNamespace() === NS_MAIN ) {
-			return wfMessage( 'bs-ns_main' )->plain();
+			return wfMessage( 'bs-ns_main' )->text();
 		}
 		return $title->getNsText();
 	}

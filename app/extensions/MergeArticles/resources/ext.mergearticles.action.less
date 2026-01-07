@@ -1,0 +1,454 @@
+.oo-ui-buttonWidget.oo-ui-flaggedElement-primary:not( .oo-ui-buttonElement-frameless ) {
+	a,
+	span {
+		color: white;
+	}
+}
+
+.merge-articles {
+	position: relative;
+
+	&.review,
+	&.compare {
+		.oo-ui-textInputWidget {
+			max-width: 100% !important;
+		}
+
+		textarea {
+			width: 100%;
+		}
+	}
+
+	#ma-overview-button {
+		position: absolute;
+		top: 10px;
+		left: 10px;
+	}
+
+	.ma-no-diff-message {
+		padding: 20px;
+		font-weight: bold;
+	}
+
+	.ma-merge-help {
+		padding: 10px;
+
+		.oo-ui-icon-info {
+			vertical-align: top;
+			margin-top: 10px;
+			margin-right: 5px;
+		}
+
+		span {
+			vertical-align: middle;
+		}
+
+		.oo-ui-labelWidget {
+			width: 70%;
+		}
+
+		.oo-ui-buttonWidget {
+			float: right;
+		}
+	}
+
+	.ma-review-pb {
+		margin: auto;
+	}
+
+	.ma-page-names {
+		background-color: #eaefff;
+		padding: 10px;
+		text-align: center;
+
+		.oo-ui-labelWidget {
+			vertical-align: middle;
+			font-size: 20px;
+		}
+	}
+
+	.ma-page-content {
+		margin-top: 10px;
+
+		.oo-ui-textInputWidget {
+			max-width: 100% !important;
+		}
+	}
+
+	.ma-review-no-content {
+		padding: 10px;
+		font-weight: bold;
+	}
+
+	.ma-file-diff {
+		.ma-origin-file,
+		.ma-target-file {
+			width: 45%;
+			padding: 2%;
+			display: inline-block;
+
+			.ma-file-header-label {
+				font-weight: bold;
+			}
+
+			.ma-file-layout {
+				.ma-review-file-info {
+					width: 40%;
+					display: inline-block;
+					vertical-align: top;
+
+					span {
+						display: block;
+					}
+				}
+
+				.ma-file-preview-image {
+					width: 60%;
+					height: 150px;
+					background-size: contain;
+					background-repeat: no-repeat;
+					background-position-x: right;
+					display: inline-block;
+					vertical-align: top;
+				}
+			}
+		}
+	}
+
+	.ma-review-buttons {
+		padding: 20px;
+		text-align: center;
+
+		.oo-ui-buttonWidget {
+			a {
+				color: white;
+				font-size: 1.1em;
+			}
+		}
+	}
+
+	.ma-action-result {
+		padding: 20px;
+		text-align: center;
+
+		span,
+		a {
+			font-size: 1.2em;
+			margin-top: 10px;
+		}
+
+		a {
+			margin-left: 5px;
+		}
+
+		>div {
+			.oo-ui-iconWidget {
+				width: 150px;
+				height: 150px;
+			}
+
+			.oo-ui-labelWidget {
+				font-size: 1.6em;
+				display: block;
+			}
+		}
+	}
+
+	.ma-diff-header,
+	.ma-review-header {
+		font-size: 1.3em;
+		font-weight: bold;
+		padding: 10px;
+		background-color: #d5d5d5;
+
+		.ma-diff-header-expand {
+			vertical-align: top;
+			color: black;
+			font-size: 0.9em;
+			margin-right: 0;
+
+			a,
+			span {
+				vertical-align: inherit;
+			}
+		}
+
+		.oo-ui-labelWidget {
+			font-size: 0.9em;
+			font-weight: normal;
+			margin-left: 5px;
+		}
+
+		span.ma-diff-header-stats {
+			float: right;
+
+			.ma-diff-header-added {
+				color: green;
+				margin-right: 5px;
+
+				&::before {
+					content: '+';
+				}
+			}
+
+			.ma-diff-header-deleted {
+				color: red;
+
+				&::before {
+					content: '-';
+				}
+			}
+		}
+
+		.oo-ui-horizontalLayout {
+			display: inline-block;
+			margin-left: 80px;
+
+			.oo-ui-checkboxInputWidget {
+				width: 1em;
+				height: 1em;
+				margin-right: 5px;
+
+				.oo-ui-inputWidget-input {
+					width: 1em;
+					height: 1em;
+				}
+
+				span {
+					width: 1em;
+					height: 1em;
+				}
+			}
+
+			.ma-diff-option-accept-all {
+				font-size: 0.8em;
+				font-weight: normal;
+				height: 22px;
+				margin-left: 20px;
+				vertical-align: top;
+
+				a {
+					vertical-align: inherit;
+					height: inherit;
+
+					span {
+						vertical-align: inherit;
+						line-height: 0.4;
+						height: inherit;
+						color: black;
+					}
+				}
+			}
+		}
+
+		&.diff-file {
+			position: relative;
+
+			.diff-file-action {
+				position: absolute;
+				top: 0;
+				right: 10px;
+			}
+
+			.oo-ui-labelWidget {
+				font-weight: bold;
+				top: 10px;
+
+				&.approve {
+					color: green;
+				}
+
+				&.reject {
+					color: red;
+				}
+			}
+
+			.ma-no-diff-message {
+				position: relative;
+				display: inline-block;
+				right: 0;
+				top: 0;
+				padding: 0;
+				margin-left: 20px;
+			}
+		}
+	}
+
+	.ma-diff {
+		background-color: #f0f0f0;
+		padding-top: 15px;
+		padding-bottom: 15px;
+
+		.ma-same-block {
+			padding: 10px;
+			color: grey;
+		}
+
+		.ma-diff-wrapper {
+			display: table;
+			width: 100%;
+
+			p {
+				padding-left: 10px;
+				padding-right: 10px;
+				display: inline-block;
+				vertical-align: top;
+				width: 700px;
+				min-height: 20px;
+				margin: 0;
+			}
+
+			.ma-diff-change {
+				display: table-cell;
+				vertical-align: top;
+			}
+
+			.ma-diff-add {
+				background-color: #b6fbb6;
+
+				&::before {
+					content: '+ ';
+				}
+			}
+
+			.ma-diff-delete {
+				background-color: #ff8c8c;
+
+				&::before {
+					content: '- ';
+				}
+			}
+
+			.ma-diff-change,
+			.ma-diff-add,
+			.ma-diff-delete {
+				span {
+					display: block;
+
+					&:first-of-type {
+						display: inline;
+					}
+				}
+
+				span.empty-line {
+					height: 1.3em;
+				}
+			}
+
+			.ma-diff-item-action {
+				width: 177px;
+				padding-right: 20px;
+				display: table-cell;
+				vertical-align: middle;
+				text-align: right;
+
+				.diff-undo {
+					margin-left: 5px;
+				}
+
+				span {
+					vertical-align: middle;
+				}
+			}
+
+			&.ma-diff-refused {
+				.ma-diff-item-action span {
+					font-weight: bold;
+					color: red;
+				}
+
+				.ma-diff-change {
+					.ma-diff-add {
+						text-decoration: line-through;
+					}
+				}
+
+				.ma-diff-add {
+					text-decoration: line-through;
+				}
+
+				.ma-diff-delete {
+					background-color: #f8d4d4;
+				}
+
+				&.ma-diff-both {
+					.ma-diff-change {
+						.ma-diff-add,
+						.ma-diff-delete {
+							text-decoration: line-through;
+						}
+					}
+				}
+			}
+
+			&.ma-diff-accepted {
+				.ma-diff-item-action span {
+					font-weight: bold;
+					color: green;
+				}
+
+				.ma-diff-change {
+					.ma-diff-delete {
+						text-decoration: line-through;
+					}
+				}
+
+				&.ma-diff-both {
+					.ma-diff-delete {
+						text-decoration: none;
+					}
+				}
+
+				.ma-diff-delete {
+					text-decoration: line-through;
+				}
+			}
+
+			.ma-diff-copy {
+				span {
+					display: block;
+
+					&.empty-line {
+						height: 20px;
+					}
+				}
+			}
+		}
+	}
+
+	.show-final-text-layout {
+		padding: 10px;
+		margin-top: 20px;
+		vertical-align: middle;
+		background-color: #91f896;
+		min-height: 40px;
+
+		.oo-ui-buttonWidget {
+			margin: 0 !important;
+			margin-left: 20px;
+		}
+
+		.oo-ui-labelWidget {
+			font-weight: bold;
+			max-width: 670px;
+		}
+	}
+
+	.final-text-container {
+		margin-top: 30px;
+
+		.final-text-header {
+			font-size: 1.3em;
+			font-weight: bold;
+			padding: 10px;
+			background-color: #d5d5d5;
+
+			.oo-ui-labelWidget small {
+				font-size: 0.7em;
+				vertical-align: middle;
+				margin-left: 5px;
+				font-weight: normal;
+			}
+		}
+	}
+}

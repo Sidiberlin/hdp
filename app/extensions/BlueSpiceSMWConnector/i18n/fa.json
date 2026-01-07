@@ -4,11 +4,10 @@
 			"Amir1arch",
 			"Ebrahim",
 			"Ebraminio",
-			"Jeeputer"
+			"Jeeputer",
+			"LordProfo"
 		]
 	},
-	"bs-dlg-choosesmwprop-label": "ویژگی",
-	"bs-dlg-choosesmwprop-type-smwprop": "ویژگی معنایی",
 	"bs-extendedsearch-add-filter-group-smwproperty-label": "ویژگی‌های معنایی",
 	"bs-extendedsearch-search-center-result-smwproperty-label": "ویژگی‌های معنایی:",
 	"bs-smwconnector-extendedsearch-boolean-property-true": "بله",
@@ -20,5 +19,6 @@
 	"bs-smwconnector-dataquery-modified-operator-all": "همه",
 	"bs-smwconnector-dataquery-modified-operator-since": "از",
 	"bs-smwconnector-dataquery-modified-operator-before": "قبل از",
-	"bs-smwconnector-dataquery-count-label": "شماره"
+	"bs-smwconnector-dataquery-count-label": "شماره",
+	"bs-smwconnector-decision-overview-namespaces-label": "فضاهای نام"
 }

@@ -2,18 +2,18 @@
 
 namespace SMW;
 
-use Html;
+use MediaWiki\Html\Html;
+use MediaWiki\Linker\Linker;
+use MediaWiki\SpecialPage\QueryPage as MWQueryPage;
+use MediaWiki\Xml\Xml;
 use SMW\MediaWiki\MessageBuilder;
-use SMWRequestOptions;
-use SMWStringCondition;
-use Xml;
 
 /**
  * An abstract query page base class that supports array-based
  * data retrieval instead of the SQL-based access used by MW.
  *
  *
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since   ??
  *
  * @author Markus Krötzsch
@@ -27,7 +27,7 @@ use Xml;
  * @ingroup SMW
  * @ingroup QueryPage
  */
-abstract class QueryPage extends \QueryPage {
+abstract class QueryPage extends MWQueryPage {
 
 	/** @var MessageFormatter */
 	protected $msgFormatter;
@@ -70,7 +70,6 @@ abstract class QueryPage extends \QueryPage {
 	 * @return array
 	 */
 	public function linkParameters() {
-
 		$parameters = [];
 		$property   = $this->getRequest()->getVal( 'property' );
 
@@ -95,7 +94,6 @@ abstract class QueryPage extends \QueryPage {
 	 * @return MessageFormatter
 	 */
 	public function getMessageFormatter() {
-
 		if ( !isset( $this->msgFormatter ) ) {
 			$this->msgFormatter = new MessageFormatter( $this->getLanguage() );
 		}
@@ -111,7 +109,6 @@ abstract class QueryPage extends \QueryPage {
 	 * @return Linker
 	 */
 	public function getLinker() {
-
 		if ( $this->linker === null ) {
 			$this->linker = smwfGetLinker();
 		}
@@ -129,7 +126,6 @@ abstract class QueryPage extends \QueryPage {
 	 * @return string
 	 */
 	public function getSearchForm( $property = '', $cacheDate = '', $propertySearch = true, $filter = '' ) {
-
 		$this->useSerchForm = true;
 		$this->getOutput()->addModules( 'ext.smw.autocomplete.property' );
 
@@ -137,9 +133,9 @@ abstract class QueryPage extends \QueryPage {
 		// during doQuery() which is processed before this form is generated
 		$limit = $this->selectOptions['limit'];
 		$offset = $this->selectOptions['offset'];
-		$resultCount = wfMessage( 'smw-showingresults' )->numParams( $limit, $offset + 1 )->parse();
+		$resultCount = $this->msg( 'smw-showingresults' )->numParams( $limit, $offset + 1 )->parse();
 
-		$msgBuilder =  new MessageBuilder( $this->getLanguage() );
+		$msgBuilder = new MessageBuilder( $this->getLanguage() );
 		$selection = $msgBuilder->prevNextToText(
 			$this->getContext()->getTitle(),
 			$limit,
@@ -191,13 +187,13 @@ abstract class QueryPage extends \QueryPage {
 		$out  = $this->getOutput();
 		$sk   = $this->getSkin();
 
-		$options = new SMWRequestOptions();
+		$options = new RequestOptions();
 		$options->limit = $limit;
 		$options->offset = $offset;
 		$options->sort = true;
 
 		if ( $property ) {
-			$options->addStringCondition( $property, SMWStringCondition::STRCOND_MID );
+			$options->addStringCondition( $property, StringCondition::STRCOND_MID );
 		}
 
 		if ( ( $filter = $this->getRequest()->getVal( 'filter' ) ) === 'unapprove' ) {
@@ -227,7 +223,7 @@ abstract class QueryPage extends \QueryPage {
 
 		if ( $num > 0 ) {
 			$s = [];
-			if ( ! $this->listoutput ) {
+			if ( !$this->listoutput ) {
 				$s[] = $this->openList( $offset );
 			}
 
@@ -238,7 +234,7 @@ abstract class QueryPage extends \QueryPage {
 				}
 			}
 
-			if ( ! $this->listoutput ) {
+			if ( !$this->listoutput ) {
 				$s[] = $this->closeList();
 			}
 			$str = $this->listoutput ? $this->getLanguage()->listToText( $s ) : implode( '', $s );
@@ -250,5 +246,12 @@ abstract class QueryPage extends \QueryPage {
 		}
 
 		return $num;
+	}
+
+	/**
+	 * @return array|null
+	 */
+	public function getQueryInfo(): ?array {
+		return null;
 	}
 }

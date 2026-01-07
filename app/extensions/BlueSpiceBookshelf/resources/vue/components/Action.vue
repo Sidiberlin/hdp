@@ -20,14 +20,16 @@ module.exports = {
 .bs-card-actions > li > a {
 	display: inline-block;
 	height: 100%;
-	padding: 3px 10px;
+	padding: 0 15px;
 	color: #666 !important;
 }
+
 .bs-card-actions > li > a:focus-visible {
-	outline: var(--bs-books-overview-page-focus-visible-color) solid 1px;
+	outline: var( --bs-books-overview-page-focus-visible-color ) solid 1px;
 }
+
 .bs-card-actions > li > a i {
 	display: inline-block;
-	width: 32px;
+	margin-right: 15px;
 }
 </style>

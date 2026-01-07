@@ -1,5 +1,6 @@
 <?php
 
+use MediaWiki\Maintenance\Maintenance;
 use MediaWiki\MediaWikiServices;
 use Wikimedia\Rdbms\IDatabase;
 
@@ -46,14 +47,24 @@ class FixActorMigration extends Maintenance {
 	}
 
 	private function fetchAllTempActorRevs() {
-		$res = $this->db->select( 'revision_actor_temp', 'revactor_rev' );
+		$res = $this->db->select(
+			'revision_actor_temp',
+			'revactor_rev',
+			'',
+			__METHOD__
+		);
 		foreach ( $res as $row ) {
 			$this->actorTempRevIds[] = (int)$row->revactor_rev;
 		}
 	}
 
 	private function fetchAllRevisions() {
-		$res = $this->db->select( 'revision', [ 'rev_id', 'rev_page', 'rev_timestamp' ] );
+		$res = $this->db->select(
+			'revision',
+			[ 'rev_id', 'rev_page', 'rev_timestamp' ],
+			'',
+			__METHOD__
+		);
 		foreach ( $res as $row ) {
 			$this->revisionIds[] = (int)$row->rev_id;
 			$this->revisionData[(int)$row->rev_id] = [
@@ -90,6 +101,8 @@ class FixActorMigration extends Maintenance {
 
 	private $tablesToFix = [
 		'archive' => 'ar_actor',
+		// This script is meant for use in legacy version 1.35 only,
+		// therefore the reference to the `ipblocks` table can remain
 		'ipblocks' => 'ipb_by_actor',
 		'image' => 'img_actor',
 		'oldimage' => 'oi_actor',
@@ -104,7 +117,8 @@ class FixActorMigration extends Maintenance {
 			$numberOfBadRows = $this->db->selectRowCount(
 				$tableName,
 				'*',
-				[ $foreignKeyName => 0 ]
+				[ $foreignKeyName => 0 ],
+				__METHOD__
 			);
 			if ( $numberOfBadRows === 0 ) {
 				$this->output( " - no bad entries found" );
@@ -113,7 +127,8 @@ class FixActorMigration extends Maintenance {
 			$this->db->update(
 				$tableName,
 				[ $foreignKeyName => $this->actorId ],
-				[ $foreignKeyName => 0 ]
+				[ $foreignKeyName => 0 ],
+				__METHOD__
 			);
 			$this->output( " - $numberOfBadRows bad entries fixed" );
 		}

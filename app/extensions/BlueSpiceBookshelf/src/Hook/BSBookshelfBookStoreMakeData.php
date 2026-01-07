@@ -27,8 +27,8 @@
 namespace BlueSpice\Bookshelf\Hook;
 
 use BlueSpice\Hook;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 
 abstract class BSBookshelfBookStoreMakeData extends Hook {
 

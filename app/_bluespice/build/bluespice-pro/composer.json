@@ -1,0 +1,30 @@
+{
+	"repositories": [{
+			"type": "composer",
+			"url": "https://packages.bluespice.com/"
+		}],
+	"require": {
+		"bluespice/bookshelf": "5.1.*",
+		"bluespice/categorycheck": "5.1.*",
+		"bluespice/categorymanager": "5.1.*",
+		"bluespice/expiry": "5.1.*",
+		"bluespice/exporttables": "5.1.*",
+		"bluespice/filterabletables": "5.1.*",
+		"bluespice/interwikisearch": "5.1.*",
+		"bluespice/matomoconnector": "5.1.*",
+		"bluespice/nsfilerepoconnector": "5.1.*",
+		"bluespice/package-wikifarm": "5.1.*",
+		"bluespice/pageformsconnector": "5.1.*",
+		"bluespice/player": "5.1.*",
+		"bluespice/privacy": "5.1.*",
+		"bluespice/prodistributionconnector": "5.1.*",
+		"bluespice/rating": "5.1.*",
+		"bluespice/readconfirmation": "5.1.*",
+		"bluespice/reminder": "5.1.*",
+		"bluespice/signhere": "5.1.*",
+		"bluespice/smwconnector": "5.1.*",
+		"bluespice/translationtransfer": "5.1.*",
+		"bluespice/uemoduletable2excel": "5.1.*",
+		"bluespice/wikiexplorer": "5.1.*"
+	}
+}

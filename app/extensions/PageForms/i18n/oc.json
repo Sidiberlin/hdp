@@ -5,6 +5,7 @@
 			"Cedric31",
 			"DannyS712",
 			"Fitoschido",
+			"Lhanars",
 			"McDutchie"
 		]
 	},
@@ -103,7 +104,7 @@
 	"pf_editsource": "Editar la font",
 	"pf_formedit_edittitle": "Editar $1 : $2",
 	"pf_formedit_morethanoneform": "Avertiment : Mai d’un formulari per defaut es especificat per aquesta pagina.",
-	"pf_formedit_formwarning": "Atencion : aquesta pagina [[$1|existís ja]], mas utiliza pas aqueste formulari.",
+	"pf_formedit_formwarning": "Atencion  aquesta pagina [[$1|existís ja]], mas non utiliza aqueste formulari.",
 	"pf_formedit_remove": "Levar aquesta instància",
 	"pf_formedit_addanother": "Apondre un autre",
 	"pf_formedit_none": "Cap",
@@ -124,7 +125,6 @@
 	"pf_bad_integer_error": "deu èsser un nombre entièr",
 	"pf_bad_date_error": "deu èsser una data valida",
 	"pf_pipe_error": "« | » es pas autorizat, levat a l’interior de {{...}} o de [[...]].",
-	"uploadwindow": "Fenèstra de mandadís",
 	"pf_deletionlog": "Istoric de las supressions",
 	"pf-preview-header": "Previsualizacion del formulari",
 	"pf-preview-note": "Aquí vesètz a qué se semblarà lo formulari un còp utilizat :",

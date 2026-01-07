@@ -3,19 +3,18 @@
 namespace BlueSpice\Task;
 
 use BlueSpice\Task;
-use CommentStoreComment;
-use DeferredUpdates;
-use EditPage;
 use Exception;
+use MediaWiki\CommentStore\CommentStoreComment;
+use MediaWiki\Content\TextContent;
+use MediaWiki\Content\WikitextContent;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Deferred\DeferredUpdates;
+use MediaWiki\EditPage\EditPage;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\SlotRecord;
-use MWCallableUpdate;
+use MediaWiki\Status\Status;
 use MWException;
-use RequestContext;
-use Status;
-use TextContent;
-use WikitextContent;
 
 abstract class WikiPage extends Task {
 
@@ -47,14 +46,10 @@ abstract class WikiPage extends Task {
 			$cookieName = EditPage::POST_EDIT_COOKIE_KEY_PREFIX . $revision->getId();
 			// Must use main, since $this->getContext() returns different context
 			$response = RequestContext::getMain()->getRequest()->response();
-			DeferredUpdates::addUpdate(
-				new MWCallableUpdate(
-					static function () use (
-						$cookieName, $response
-					) {
-						$response->clearCookie( $cookieName );
-					}
-				)
+			DeferredUpdates::addCallableUpdate(
+				static function () use ( $cookieName, $response ) {
+					$response->clearCookie( $cookieName );
+				}
 			);
 		}
 		return $status;
@@ -77,7 +72,7 @@ abstract class WikiPage extends Task {
 		$content = $this->getWikiPage()->getContent();
 		if ( $content instanceof WikitextContent === false ) {
 			throw new Exception(
-				$this->msg( 'bs-wikipage-tasks-error-contentmodel' )->plain()
+				$this->msg( 'bs-wikipage-tasks-error-contentmodel' )->text()
 			);
 		}
 		$wikitext = ( $content instanceof TextContent ) ? $content->getText() : '';

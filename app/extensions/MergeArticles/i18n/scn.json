@@ -1,0 +1,29 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf"
+		]
+	},
+	"mergearticles": "Junci vuci",
+	"mergearticles-target-new-label": "Pàggina nova",
+	"mergearticles-type-file": "File",
+	"mergearticles-type-article": "Pàggina",
+	"mergearticles-type-template": "Template",
+	"mergearticles-type-category": "Catigurìa",
+	"mergearticles-no-pages-available": "Necca d'ammustrari!",
+	"mergearticles-action-unknown": "Azzioni scanusciuta",
+	"mergearticles-file-layout-label": "File",
+	"mergearticles-file-info-name": "Nomu: $1",
+	"mergearticles-file-info-mime": "Tipu MIME: $1",
+	"mergearticles-same-block-label": "{{PLURAL:$1|$1 bloccu nìtificu ammucciatu|$1 blocchi nìtifichi ammucciati}}",
+	"mergearticles-diff-option-hide-identical-blocks-label": "Ammuccia li blocchi nìtifichi",
+	"mergearticles-diff-item-undo": "Annulla",
+	"mergearticles-show-final-text-button-label": "Ammustra lu testu finali",
+	"mergearticles-final-text-header-note": "(pò èssiri canciatu)",
+	"mergearticles-file-diff-header": "File",
+	"mergearticles-apihelp-param-pageid": "ID di na pàggina",
+	"mergearticles-apihelp-param-targetid": "ID di na pàggina",
+	"action-merge-articles": "jùnciri sta vuci",
+	"right-merge-articles": "Junci pàggini",
+	"mergearticles-term-filter-label": "Nomu dâ pàggina"
+}

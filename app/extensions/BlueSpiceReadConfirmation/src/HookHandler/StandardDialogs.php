@@ -2,7 +2,7 @@
 
 namespace BlueSpice\ReadConfirmation\HookHandler;
 
-use Config;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\StandardDialogs\Hook\StandardDialogsRegisterPageInfoPanelModules;
 use MediaWiki\ResourceLoader\Context as ResourceLoaderContext;
 

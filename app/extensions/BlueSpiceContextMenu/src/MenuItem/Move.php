@@ -2,7 +2,9 @@
 
 namespace BlueSpice\ContextMenu\MenuItem;
 
-use SpecialPage;
+use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
 
 class Move extends Base {
 
@@ -11,12 +13,12 @@ class Move extends Base {
 	 * @return string
 	 */
 	public function getIconClass() {
-		return 'bs-icon-shuffle';
+		return 'share';
 	}
 
 	/**
 	 *
-	 * @return \Message
+	 * @return Message
 	 */
 	public function getLabelMessage() {
 		return wfMessage( 'bs-contextmenu-page-move' );
@@ -39,12 +41,10 @@ class Move extends Base {
 	}
 
 	/**
-	 *
-	 * @param \Context $context
-	 * @return type
+	 * @inheritDoc
 	 */
 	public function shouldList( $context ) {
-		return \MediaWiki\MediaWikiServices::getInstance()
+		return MediaWikiServices::getInstance()
 			->getPermissionManager()
 			->userCan( 'move', $context->getUser(), $this->title ) && $this->title->isMovable();
 	}

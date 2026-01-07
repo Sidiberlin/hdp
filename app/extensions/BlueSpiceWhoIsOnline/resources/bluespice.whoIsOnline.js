@@ -1,117 +1,108 @@
-/**
- * Js for WhoIsOnline extension
- *
- * @author     Patric Wirth
- * @package    Bluespice_Extensions
- * @subpackage WhoIsOnline
- * @copyright  Copyright (C) 2016 Hallo Welt! GmbH, All rights reserved.
- * @license    http://www.gnu.org/copyleft/gpl.html GPL-3.0-only
- * @filesource
- */
-( function( mw, $, bs, d ){
-	var interval = mw.config.get( 'bsgWhoIsOnlineInterval', 0 ) * 1000;
+( function ( mw, $ ) {
+	const interval = mw.config.get( 'bsgWhoIsOnlineInterval', 0 ) * 1000;
 	if ( interval < 1 ) {
 		return;
 	}
 	if ( !String.prototype.startsWith ) {
 		// old browsers
-		Object.defineProperty( String.prototype, 'startsWith', {
-			value: function(search, rawPos) {
-				var pos = rawPos > 0 ? rawPos|0 : 0;
-				return this.substring(pos, pos + search.length) === search;
+		Object.defineProperty( String.prototype, 'startsWith', { // eslint-disable-line no-extend-native
+			value: function ( search, rawPos ) {
+				const pos = rawPos > 0 ? rawPos | 0 : 0; // eslint-disable-line no-bitwise
+				return this.substring( pos, pos + search.length ) === search; // eslint-disable-line unicorn/prefer-string-slice
 			}
 		} );
 	}
-	var markers = {};
-	var onlineMarkers = function() {
-		$( '.bs-userminiprofile[data-bs-whoisonline-marker]' ).each( function() {
-			var userName = $( this ).data( 'bs-whoisonline-marker' );
+	let markers = {};
+	const onlineMarkers = function () {
+		$( '.bs-userminiprofile[data-bs-whoisonline-marker]' ).each( function () {
+			const userName = $( this ).data( 'bs-whoisonline-marker' );
 			if ( !userName || userName.length < 1 ) {
 				return;
 			}
-			markers[userName] = 'unchecked';
+			markers[ userName ] = 'unchecked';
 		} );
 		return markers;
 	};
-	var listener = function( result, Listener ) {
-		if( result.success !== true ) {
+	const listener = function ( result, Listener ) { // eslint-disable-line no-unused-vars
+		if ( result.success !== true ) {
 			return;
 		}
 
-		markers = result['onlinemarkers'];
-		$( '.bs-userminiprofile[data-bs-whoisonline-marker]' ).removeClass( function ( index, classString ) {
-			var classes = classString.split(" "),
+		markers = result.onlinemarkers;
+		$( '.bs-userminiprofile[data-bs-whoisonline-marker]' ).removeClass( ( index, classString ) => { // eslint-disable-line mediawiki/class-doc
+			const classes = classString.split( ' ' ),
 				remove = [];
-			for ( var i = 0; classes.length > i; i++ ) {
-				if ( classes[i].startsWith( 'bs-whoisonline-marker-' ) !== true ) {
+			for ( let i = 0; classes.length > i; i++ ) {
+				if ( classes[ i ].startsWith( 'bs-whoisonline-marker-' ) !== true ) {
 					continue;
 				}
-				remove.push( classes[i] );
+				remove.push( classes[ i ] );
 			}
-			return remove.join(" ");
+			return remove.join( ' ' );
 		} );
 
-		$( '.bs-userminiprofile[data-bs-whoisonline-marker]' ).each( function() {
-			var userName = $( this ).data( 'bs-whoisonline-marker' );
+		$( '.bs-userminiprofile[data-bs-whoisonline-marker]' ).each( function () {
+			const userName = $( this ).data( 'bs-whoisonline-marker' );
 			if ( !userName || userName.length < 1 ) {
 				return;
 			}
-			var userMarker = ( markers[userName] ? markers[userName] : 'unchecked' );
-			$( this ).addClass( 'bs-whoisonline-marker-' + userMarker );
+			const userMarker = ( markers[ userName ] ? markers[ userName ] : 'unchecked' );
+			$( this ).addClass( 'bs-whoisonline-marker-' + userMarker ); // eslint-disable-line mediawiki/class-doc
 			if ( userMarker !== 'unchecked' ) {
 				$( this ).find( 'a' ).attr( 'aria-label', userName + ' ' + userMarker );
+				$( this ).find( 'div.bs-social-entity-profileimage-wrapper' ).attr( 'aria-label', userName + ' ' + userMarker );
 			}
 		} );
 
-		$( '.bs-whoisonline-portlet' ).each( function(){
-			var portlet = result['portletItems'];
+		$( '.bs-whoisonline-portlet' ).each( function () {
+			const portlet = result.portletItems;
 			$( this ).html( portlet );
-		});
+		} );
 
-		$( '.bs-whoisonline-count').each( function(){
-			$( this ).html( result['count'] );
+		$( '.bs-whoisonline-count' ).each( function () {
+			$( this ).html( result.count );
 		} );
 
 		BSPing.registerListener(
 			'WhoIsOnline',
 			interval,
-			[ { 'onlinemarkers': onlineMarkers() } ],
+			[ { onlinemarkers: onlineMarkers() } ],
 			listener
 		);
 	};
 	BSPing.registerListener(
 		'WhoIsOnline',
 		interval,
-		[ { 'onlinemarkers': onlineMarkers() } ],
+		[ { onlinemarkers: onlineMarkers() } ],
 		listener
 	);
 
 	let whoIsOnlinePopup = null;
 
 	function getPopupContent( data ) {
-		let panel = $( '<div>' );
+		const $panel = $( '<div>' );
 		if ( data.length > 0 ) {
 			data = data.split( ',' );
-			for ( let key in data ) {
-				let userWidget = new OOJSPlus.ui.widget.UserWidget( {
-					user_name: data[ key ],
+			for ( const key in data ) {
+				const userWidget = new OOJSPlus.ui.widget.UserWidget( {
+					user_name: data[ key ], // eslint-disable-line camelcase
 					showLink: true,
 					showRawUsername: false
 				} );
-				panel.append( userWidget.$element );
+				$panel.append( userWidget.$element );
 			}
 		} else {
-			$span = $( '<span>' ).text( mw.message( 'bs-whoisonline-nousers' ).text() );
-			panel.append( $span );
+			const $span = $( '<span>' ).text( mw.message( 'bs-whoisonline-nousers' ).text() );
+			$panel.append( $span );
 		}
-		return panel;
+		return $panel;
 	}
 
 	function showPopup( element ) {
-		let targetId = '#' + $( element ).attr( 'data-target-id' );
-		let targetData = $( element ).attr( 'data-target' );
+		const targetId = '#' + $( element ).attr( 'data-target-id' );
+		const targetData = $( element ).attr( 'data-target' );
 		if ( !whoIsOnlinePopup ) {
-			let content = getPopupContent( targetData );
+			const content = getPopupContent( targetData );
 			whoIsOnlinePopup = new OO.ui.PopupWidget( {
 				$content: content,
 				padded: true,
@@ -146,4 +137,4 @@
 			closePopup( e.currentTarget );
 		}
 	} );
-} )( mediaWiki, jQuery, blueSpice, document );
+}( mediaWiki, jQuery ) );

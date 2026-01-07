@@ -1,6 +1,6 @@
 bs.util.registerNamespace( 'bs.vec.dm' );
 
-bs.vec.dm.TextAlignmentCenter = function( element, store ) {
+bs.vec.dm.TextAlignmentCenter = function ( element, store ) {
 	// Parent constructor
 	bs.vec.dm.TextAlignmentCenter.super.apply( this, [ element, store ] );
 };
@@ -20,10 +20,9 @@ bs.vec.dm.TextAlignmentCenter.static.matchFunction = function ( domElement ) {
 
 bs.vec.dm.TextAlignmentCenter.static.applyToAppendedContent = true;
 
-
 bs.vec.dm.TextAlignmentCenter.static.toDomElements = function ( dataElement, doc ) {
 	// Cannot wrap in <p> because it will be removed by the sanitizer
-	var el = doc.createElement( 'span' );
+	const el = doc.createElement( 'span' );
 	el.style.textAlign = 'center';
 	el.style.display = 'block';
 	return [ el ];

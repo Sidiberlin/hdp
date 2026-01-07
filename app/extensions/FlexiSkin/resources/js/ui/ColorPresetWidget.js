@@ -1,4 +1,4 @@
-flexiskin.ui.ColorPresetWidget = function ( cfg ) {
+flexiskin.ui.ColorPresetWidget = function () {
 	flexiskin.ui.ColorPresetWidget.parent.apply( this );
 
 	/* Actual layouts of fields */
@@ -34,13 +34,13 @@ flexiskin.ui.ColorPresetWidget.prototype.init = function () {
 };
 
 flexiskin.ui.ColorPresetWidget.prototype.initPresets = function () {
-	var options = [];
-	for ( var key in this.colorPresets ) {
+	const options = [];
+	for ( const key in this.colorPresets ) {
 		if ( !this.colorPresets.hasOwnProperty( key ) ) {
 			continue;
 		}
 
-		var optionItem = new flexiskin.ui.ColorPresetOptionWidget( {
+		const optionItem = new flexiskin.ui.ColorPresetOptionWidget( {
 			data: key,
 			label: key,
 			colors: this.colorPresets[ key ],
@@ -86,7 +86,7 @@ flexiskin.ui.ColorPresetWidget.prototype.createCustomSection = function () {
 	this.$wrapper.hide();
 };
 
-flexiskin.ui.ColorPresetWidget.prototype.getValue = function() {
+flexiskin.ui.ColorPresetWidget.prototype.getValue = function () {
 	return this.selectedPreset;
 };
 
@@ -115,7 +115,7 @@ flexiskin.ui.ColorPresetWidget.prototype.setColorItems = function ( items ) {
 		delete ( items[ 'colors/color_presets/preset' ] );
 	}
 	this.colorItems = items;
-	for ( var key in this.colorItems ) {
+	for ( const key in this.colorItems ) {
 		if ( !this.colorItems.hasOwnProperty( key ) ) {
 			continue;
 		}
@@ -132,7 +132,7 @@ flexiskin.ui.ColorPresetWidget.prototype.updateControls = function ( presetValue
 	if ( !presetValues ) {
 		presetValues = this.colorPresets[ this.selectedPreset ];
 	}
-	for ( var key in presetValues ) {
+	for ( const key in presetValues ) {
 		if ( !presetValues.hasOwnProperty( key ) ) {
 			continue;
 		}
@@ -143,8 +143,8 @@ flexiskin.ui.ColorPresetWidget.prototype.updateControls = function ( presetValue
 };
 
 flexiskin.ui.ColorPresetWidget.prototype.getColorsFromControls = function () {
-	var values = {};
-	for ( var key in this.colorItems ) {
+	const values = {};
+	for ( const key in this.colorItems ) {
 		if ( !this.colorItems.hasOwnProperty( key ) ) {
 			continue;
 		}
@@ -161,19 +161,19 @@ flexiskin.ui.ColorPresetWidget.prototype.onPresetSelected = function ( selected 
 
 	if ( this.customInitial && this.isCustomDirty( this.customInitial ) ) {
 		OO.ui.confirm( mw.message( 'flexiskin-ui-plugin-color-presets-custom-dirty-warning' ).text() )
-			.done( function ( confirmed ) {
+			.done( ( confirmed ) => {
 				if ( confirmed ) {
 					return this.doSelectPreset( selected );
 				}
 				this.presetSelector.unselectItem( this.presetSelector.findSelectedItem() );
-			}.bind( this ) );
+			} );
 	} else {
 		this.doSelectPreset( selected );
 	}
 };
 
 flexiskin.ui.ColorPresetWidget.prototype.doSelectPreset = function ( selected ) {
-	var presetName = selected.getData();
+	const presetName = selected.getData();
 
 	this.listenToControlChanges = false;
 	this.customInitial = null;
@@ -183,7 +183,7 @@ flexiskin.ui.ColorPresetWidget.prototype.doSelectPreset = function ( selected ) 
 	this.updateControls();
 };
 
-flexiskin.ui.ColorPresetWidget.prototype.showCustomColorsPanel = function( colors, isFromInit ) {
+flexiskin.ui.ColorPresetWidget.prototype.showCustomColorsPanel = function ( colors, isFromInit ) {
 	this.selectedPreset = 'custom';
 
 	this.presetSelector.unselectItem( this.presetSelector.findSelectedItem() );
@@ -207,8 +207,8 @@ flexiskin.ui.ColorPresetWidget.prototype.isCustomDirty = function ( testSet ) {
 	if ( testSet === true ) {
 		return testSet;
 	}
-	var controlColors = this.getColorsFromControls();
-	for ( var key in testSet ) {
+	const controlColors = this.getColorsFromControls();
+	for ( const key in testSet ) {
 		if ( !testSet.hasOwnProperty( key ) ) {
 			continue;
 		}

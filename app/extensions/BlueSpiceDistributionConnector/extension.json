@@ -1,7 +1,7 @@
 {
 	"name": "BlueSpiceDistributionConnector",
 	"license-name": "GPL-3.0-only",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceDistributionConnector",
 	"author": [
 		"Robert Vogel",
@@ -15,9 +15,10 @@
 	"descriptionmsg": "bs-distributionconnector-extension-description",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0",
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"attributes": {
@@ -133,6 +134,9 @@
 			},
 			"SettingPathRegistry": {
 				"authentication": "bs-distributionconnector-setting-path-authentication"
+			},
+			"TagRegistry": {
+				"uenoexport": "BlueSpice\\DistributionConnector\\Tag\\UENoExport"
 			}
 		},
 		"VisualEditor": {
@@ -163,7 +167,11 @@
 			"SnapshotProviders": {
 				"dc-pagehits": {
 					"class": "\\BlueSpice\\DistributionConnector\\Statistics\\SnapshotProvider\\PageHits",
-					"services": [ "DBLoadBalancer", "ExtendedStatisticsSnapshotStore" ]
+					"services": [
+						"DBLoadBalancer",
+						"ExtendedStatisticsSnapshotStore",
+						"ExtendedStatisticsSnapshotFactory"
+					]
 				}
 			},
 			"Reports": {
@@ -198,8 +206,23 @@
 				"buttonlink": {
 					"class": "\\BlueSpice\\DistributionConnector\\ContentDroplets\\ButtonLinkDroplet"
 				},
+				"video": {
+					"class": "\\BlueSpice\\DistributionConnector\\ContentDroplets\\VideoDroplet",
+					"requires": {
+						"EmbedVideo": "*"
+					}
+				},
+				"createInput": {
+					"class": "\\BlueSpice\\DistributionConnector\\ContentDroplets\\CreateInputDroplet",
+					"requires": {
+						"InputBox": "*"
+					}
+				},
 				"pdflink": {
-					"class": "\\BlueSpice\\DistributionConnector\\ContentDroplets\\PDFLinkDroplet"
+					"class": "\\BlueSpice\\DistributionConnector\\ContentDroplets\\PDFLinkDroplet",
+					"requires": {
+						"PDFCreator": "*"
+					}
 				}
 			}
 		},
@@ -221,6 +244,20 @@
 			"PluginModules": [
 				"ext.bluespice.distribution.wikiExplorer.columns"
 			]
+		},
+		"PDFCreator": {
+			"TemplateProvider": {
+				"legacy": {
+					"class": "BlueSpice\\DistributionConnector\\Integration\\PDFCreator\\TemplateProvider\\Legacy",
+					"services": [ "ConfigFactory" ]
+				}
+			},
+			"Processors": {
+				"PDFHandler": {
+					"class": "\\BlueSpice\\DistributionConnector\\Integration\\PDFCreator\\Processor\\PDFHandlerProcessor",
+					"services": [ "TitleFactory", "MainConfig", "RepoGroup", "UrlUtils" ]
+				}
+			}
 		}
 	},
 	"GroupPermissions": {
@@ -249,11 +286,14 @@
 	"AutoloadNamespaces": {
 		"BlueSpice\\DistributionConnector\\": "src/"
 	},
-	"SpecialPages": {
-		"CheckPermissions": "BlueSpice\\DistributionConnector\\Specials\\CheckPermissions"
+	"TestAutoloadNamespaces": {
+		"BlueSpice\\DistributionConnector\\Tests\\": "tests/phpunit/"
 	},
-	"AutoloadClasses": {
-		"BlueSpiceDistributionHooks": "includes/BlueSpiceDistributionHooks.php"
+	"SpecialPages": {
+		"CheckPermissions": {
+			"class": "BlueSpice\\DistributionConnector\\Specials\\CheckPermissions",
+			"services": [ "PermissionManager", "TitleFactory", "UserFactory" ]
+		}
 	},
 	"ResourceModules": {
 		"ext.bluespice.distribution.styles": {
@@ -298,10 +338,13 @@
 			],
 			"messages": [
 				"bs-distributionconnector-statistics-report-page-hits",
+				"bs-distributionconnector-statistics-report-page-hits-desc",
 				"bs-distributionconnector-statistics-report-page-hits-axis-label",
 				"bs-distributionconnector-statistics-report-page-trends",
+				"bs-distributionconnector-statistics-report-page-trends-desc",
 				"bs-distributionconnector-statistics-report-page-trends-axis-value",
 				"bs-distributionconnector-statistics-report-page-hits-relation",
+				"bs-distributionconnector-statistics-report-page-hits-relation-desc",
 				"bs-distributionconnector-statistics-report-page-hits-relation-axis-label"
 			]
 		},
@@ -345,18 +388,15 @@
 		},
 		"ext.bluespice.distribution.usermanager.invite": {
 			"scripts": [
-				"usermanager/bluespice.distribution.invite.js",
-				"usermanager/InviteDialog.js"
-			],
-			"styles": [
-				"usermanager/bluespice.usermanager.css"
+				"usermanager/bluespice.distribution.invite.js"
 			],
 			"dependencies": [
-				"ext.bluespice.extjs"
+				"ext.bluespice",
+				"oojs-ui",
+				"oojs-ui.styles.icons-alerts"
 			],
 			"messages": [
 				"bs-distributionconnector-invite-signup-btn-tooltip-label",
-				"bs-distributionconnector-invite-signup-dialog-title",
 				"bs-distributionconnector-invite-signup-dialog-text"
 			]
 		},
@@ -375,12 +415,19 @@
 				"bs-distributionconnector-videodropletinspector-service-help",
 				"bs-distributionconnector-videodropletinspector-video-link-label",
 				"bs-distributionconnector-videodropletinspector-title",
+				"bs-distributionconnector-videodropletinspector-title-label",
+				"bs-distributionconnector-videodropletinspector-title-help",
+				"bs-distributionconnector-videodropletinspector-title-placeholder",
 				"bs-distributionconnector-videodropletinspector-description-label",
 				"bs-distributionconnector-videodropletinspector-description-help",
 				"bs-distributionconnector-videodropletinspector-description-placeholder",
+				"bs-distributionconnector-videodropletinspector-cover-label",
+				"bs-distributionconnector-videodropletinspector-cover-help",
+				"bs-distributionconnector-videodropletinspector-cover-placeholder",
 				"bs-distributionconnector-videodropletinspector-dimension-label",
 				"bs-distributionconnector-videodropletinspector-dimension-help",
 				"bs-distributionconnector-videodropletinspector-alignment-label",
+				"bs-distributionconnector-videodropletinspector-alignment-inline",
 				"bs-distributionconnector-videodropletinspector-alignment-left",
 				"bs-distributionconnector-videodropletinspector-alignment-center",
 				"bs-distributionconnector-videodropletinspector-alignment-right",
@@ -484,8 +531,12 @@
 			]
 		},
 		"ext.bluespice.distribution.droplet.pdflink": {
-			"scripts": [
-				"object/PDFLinkDroplet.js"
+			"packageFiles": [
+				"object/PDFLinkDroplet.js",
+				{
+					"name": "object/config.json",
+					"callback": "\\BlueSpice\\DistributionConnector\\ClientConfig::getPDFTemplates"
+				}
 			],
 			"styles": [
 				"stylesheets/bluespice.contentdroplets.pdflink.css"
@@ -543,6 +594,12 @@
 			"value": "eventbus",
 			"descriptionmsg": "bs-distributionconnector-pref-eventbus-eventservicedefault",
 			"public": true
+		},
+		"PDFCreatorLegacyTemplateDirectory": {
+			"value": ""
+		},
+		"PDFCreatorDefaultLegacyTemplate": {
+			"value": ""
 		}
 	},
 	"Hooks": {
@@ -551,7 +608,6 @@
 			"\\BlueSpice\\DistributionConnector\\Hook\\BeforePageDisplay\\AddEmbedVideoServices::callback"
 		],
 		"OutputPageBodyAttributes": "\\BlueSpice\\DistributionConnector\\Hook\\OutputPageBodyAttributes\\InitRcFilters::onOutputPageBodyAttributes",
-		"BaseTemplateToolbox": "BlueSpiceDistributionHooks::onBaseTemplateToolbox",
 		"LoadExtensionSchemaUpdates": [
 			"BlueSpice\\DistributionConnector\\Hook\\LoadExtensionSchemaUpdates\\AddTemplateUserPageStandardContent::callback",
 			"migrate-pluggable-auth-config",

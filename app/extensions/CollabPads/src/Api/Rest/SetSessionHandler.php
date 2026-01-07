@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\CollabPads\Api\Rest;
 
-use RequestContext;
+use MediaWiki\Context\RequestContext;
 
 class SetSessionHandler extends CollabSessionHandlerBase {
 
@@ -12,7 +12,7 @@ class SetSessionHandler extends CollabSessionHandlerBase {
 
 		$args = json_decode( $request->getBody()->getContents(), JSON_UNESCAPED_SLASHES );
 
-		$pageName = str_replace( " ", "_",  $args['pageTitle'] );
+		$pageName = str_replace( " ", "_", $args['pageTitle'] );
 		$session = $this->collabSessionManager->getSession( $args['pageNamespace'], $pageName );
 
 		if ( $session['sessionId'] ) {

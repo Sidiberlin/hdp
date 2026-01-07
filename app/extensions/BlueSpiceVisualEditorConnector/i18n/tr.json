@@ -12,7 +12,6 @@
 	"bs-visualeditorconnector-upload-type-original": "Orijinal",
 	"bs-visualeditorconnector-upload-type-simple": "Basit",
 	"bs-visualeditorconnector-upload-type-one-click": "Tek tık",
-	"bs-visualeditorconnector-upload-type": "Yükleme türü",
 	"bs-visualeditorconnector-cancel-edit-no-unsaved-changes": "Düzenlemeyi iptal et",
 	"bs-visualeditorconnector-cancel-edit": "Düzenlemeyi iptal et. Kaydedilmemiş değişiklikler atılacak",
 	"bs-visualeditorconnector-cancel-edit-confirm-message": "Düzenlemeyi gerçekten iptal etmek istiyor musunuz? Kaydedilmemiş değişiklikleriniz silinecek.",
@@ -80,5 +79,6 @@
 	"bs-vec-table-border-dashed": "Kesik",
 	"bs-vec-table-border-dotted": "Noktalı",
 	"bs-vec-table-border-double": "Çift",
-	"bs-vec-insert-softhyphen-title": "Esnek kısa çizgi"
+	"bs-vec-insert-softhyphen-title": "Esnek kısa çizgi",
+	"bs-visualeditorconnector-upload-type": "Yükleme türü"
 }

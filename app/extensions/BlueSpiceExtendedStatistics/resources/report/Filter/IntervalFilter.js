@@ -1,4 +1,4 @@
-( function( mw, $, bs ) {
+( function ( mw, $, bs ) {
 	bs.util.registerNamespace( 'bs.aggregatedStatistics.filter' );
 
 	bs.aggregatedStatistics.filter.IntervalFilter = function ( cfg ) {
@@ -9,21 +9,21 @@
 	OO.inheritClass( bs.aggregatedStatistics.filter.IntervalFilter, bs.aggregatedStatistics.filter.Filter );
 
 	bs.aggregatedStatistics.filter.IntervalFilter.prototype.init = function () {
-		var intervalDays = new OO.ui.MenuOptionWidget( {
+		const intervalDays = new OO.ui.MenuOptionWidget( {
 			data: 'day',
-			label: mw.message( "bs-statistics-aggregated-report-filter-interval-day" ).text()
+			label: mw.message( 'bs-statistics-aggregated-report-filter-interval-day' ).text()
 		} );
-		var intervalWeek = new OO.ui.MenuOptionWidget( {
+		const intervalWeek = new OO.ui.MenuOptionWidget( {
 			data: 'week',
-			label: mw.message( "bs-statistics-aggregated-report-filter-interval-week" ).text()
+			label: mw.message( 'bs-statistics-aggregated-report-filter-interval-week' ).text()
 		} );
-		var intervalMonth = new OO.ui.MenuOptionWidget( {
+		const intervalMonth = new OO.ui.MenuOptionWidget( {
 			data: 'month',
-			label: mw.message( "bs-statistics-aggregated-report-filter-interval-month" ).text()
+			label: mw.message( 'bs-statistics-aggregated-report-filter-interval-month' ).text()
 		} );
-		var intervalYear = new OO.ui.MenuOptionWidget( {
+		const intervalYear = new OO.ui.MenuOptionWidget( {
 			data: 'year',
-			label: mw.message( "bs-statistics-aggregated-report-filter-interval-year" ).text()
+			label: mw.message( 'bs-statistics-aggregated-report-filter-interval-year' ).text()
 		} );
 		this.intervalWidget = new OO.ui.DropdownWidget( {
 			menu: { items: [ intervalDays, intervalWeek, intervalMonth, intervalYear ] },
@@ -36,7 +36,7 @@
 
 		this.$element.append( new OO.ui.FieldLayout( this.intervalWidget, {
 			align: 'top',
-			label: mw.message( "bs-statistics-aggregated-report-filter-interval" ).text(),
+			label: mw.message( 'bs-statistics-aggregated-report-filter-interval' ).text()
 		} ).$element );
 	};
 
@@ -57,4 +57,4 @@
 		this.intervalWidget.getMenu().selectItemByData( value );
 	};
 
-})( mediaWiki, jQuery, blueSpice );
+}( mediaWiki, jQuery, blueSpice ) );

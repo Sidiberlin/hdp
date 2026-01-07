@@ -1,19 +1,18 @@
 {
 	"name": "EnhancedUpload",
-	"version": "2.0.10",
+	"version": "4.0.4",
 	"license-name": "GPL-3.0-only",
 	"author": [
-		"[http://www.hallowelt.com Hallo Welt! GmbH]",
+		"[https://www.hallowelt.com Hallo Welt! GmbH]",
 		"Miriam Schlindwein",
 		"Patric Wirth"
 	],
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:EnhancedUpload",
 	"descriptionmsg": "enhancedupload-desc",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"OOJSPlus": ">= 2.0.0",
-			"VisualEditor": "*"
+			"OOJSPlus": ">= 3.0.0"
 		}
 	},
 	"callback": "mwsInitComponents",
@@ -38,7 +37,8 @@
 		},
 		"VisualEditor": {
 			"PluginModules": [
-				"ext.enhancedUpload.attachments.visualEditor"
+				"ext.enhancedUpload.attachments.visualEditor",
+				"ext.enhancedUpload.ve.bootstrap"
 			]
 		},
 		"ContentDroplets": {
@@ -61,7 +61,9 @@
 		"EnhancedUpload": "MediaWiki\\Extension\\EnhancedUpload\\Special\\EnhancedUpload"
 	},
 	"AutoloadNamespaces": {
-		"MediaWiki\\Extension\\EnhancedUpload\\": "src/",
+		"MediaWiki\\Extension\\EnhancedUpload\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
 		"MediaWiki\\Extension\\EnhancedUpload\\Tests\\": "tests/phpunit"
 	},
 	"Hooks": {
@@ -134,6 +136,11 @@
 				"ext.enhancedUpload.uploadWidget"
 			]
 		},
+		"ext.enhancedUpload.special.skeleton.styles": {
+			"styles": [
+				"ext.enhancedUpload.skeleton.css"
+			]
+		},
 		"ext.enhancedUpload.uploadWidget": {
 			"packageFiles": [
 				"ui/UploadWidget.js",
@@ -147,7 +154,8 @@
 				"enhancedupload-upload-warning-duplicate",
 				"enhancedupload-upload-warning-was-deleted",
 				"enhancedupload-toggle-details-button-hide-label",
-				"enhancedupload-toggle-details-button-show-label"
+				"enhancedupload-toggle-details-button-show-label",
+				"enhancedupload-reset-button-label"
 			],
 			"dependencies": [
 				"oojs-ui",
@@ -285,16 +293,18 @@
 				"ext.visualEditor.mwimage",
 				"oojs-ui",
 				"ext.visualEditor.mwlink",
-				"ext.enhancedUpload.paramsProcessor"
+				"ext.enhancedUpload.paramsProcessor",
+				"ext.oOJSPlus.widgets"
 			],
 			"messages": [
-				"enhancedupload-ve-dialog-title",
-				"enhancedupload-ve-dialog-filename-label",
+				"enhancedupload-ve-file-dialog-title",
+				"enhancedupload-ve-file-dialog-filename-label",
 				"enhancedupload-ve-dialog-title-exists",
 				"enhancedupload-ve-dialog-duplicate-confirm",
 				"enhancedupload-upload-error-duplicate",
 				"enhancedupload-upload-error-badfilename",
-				"enhancedupload-upload-error-unhandled"
+				"enhancedupload-upload-error-unhandled",
+				"enhancedupload-details-categories-label"
 			]
 		},
 		"ext.enhancedUpload.attachments.addMediaDialog": {

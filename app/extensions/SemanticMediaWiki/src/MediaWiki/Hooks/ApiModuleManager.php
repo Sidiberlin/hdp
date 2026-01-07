@@ -2,11 +2,12 @@
 
 namespace SMW\MediaWiki\Hooks;
 
+use MediaWiki\Api\ApiModuleManager as mwApiModuleManager;
 use SMW\MediaWiki\HookListener;
 use SMW\OptionsAwareTrait;
 
 /**
- * @license GNU GPL v2+
+ * @license GPL-2.0-or-later
  * @since 3.1
  *
  * @author mwjames
@@ -18,10 +19,9 @@ class ApiModuleManager implements HookListener {
 	/**
 	 * @since 3.1
 	 *
-	 * @param ApiModuleManager $apiModuleManager
+	 * @param mwApiModuleManager $apiModuleManager
 	 */
-	public function process( \ApiModuleManager $apiModuleManager ) {
-
+	public function process( mwApiModuleManager $apiModuleManager ) {
 		if ( $this->getOption( 'SMW_EXTENSION_LOADED' ) === false ) {
 			return;
 		}

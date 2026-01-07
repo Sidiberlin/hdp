@@ -18,12 +18,18 @@ use BS\ExtendedSearch\Plugin\ISearchPlugin;
 use BS\ExtendedSearch\SearchResult;
 use BS\ExtendedSearch\Source\DocumentProvider\WikiPage as WikiPageProvider;
 use BS\ExtendedSearch\Source\WikiPages;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\MediaWikiServices;
-use Message;
-use RequestContext;
-use Title;
-use User;
+use MediaWiki\Message\Message;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
+use SMW\DIWikiPage;
+use SMW\StoreFactory;
+use SMWDataItem;
+use SMWDIBoolean;
+use SMWDINumber;
+use SMWDITime;
 
 class SMWData implements
 	ISearchPlugin,
@@ -234,8 +240,8 @@ class SMWData implements
 	 * @param \WikiPage $wikipage
 	 */
 	private function getSemanticData( $wikipage ) {
-		$subject = \SMW\DIWikiPage::newFromTitle( $wikipage->getTitle() );
-		$store = \SMW\StoreFactory::getStore();
+		$subject = DIWikiPage::newFromTitle( $wikipage->getTitle() );
+		$store = StoreFactory::getStore();
 
 		$properties = $store->getProperties( $subject );
 
@@ -271,21 +277,21 @@ class SMWData implements
 
 	/**
 	 *
-	 * @param \SMWDataItem $value
+	 * @param SMWDataItem $value
 	 * @param string &$type
 	 * @return string
 	 */
 	private function parseSemanticValue( $value, &$type ) {
-		if ( $value instanceof \SMW\DIWikiPage && $value->getTitle() instanceof \Title ) {
+		if ( $value instanceof DIWikiPage && $value->getTitle() instanceof Title ) {
 			$type = 'title';
 			return $value->getTitle()->getPrefixedText();
-		} elseif ( $value instanceof \SMWDINumber ) {
+		} elseif ( $value instanceof SMWDINumber ) {
 			$type = 'numeric';
 			return (string)$value->getNumber();
-		} elseif ( $value instanceof \SMWDIBoolean ) {
+		} elseif ( $value instanceof SMWDIBoolean ) {
 			$type = 'boolean';
 			return (string)$value->getBoolean() ? 1 : 0;
-		} elseif ( $value instanceof \SMWDITime ) {
+		} elseif ( $value instanceof SMWDITime ) {
 			$type = 'datetime';
 			return $value->getMwTimestamp( TS_ISO_8601 );
 		} else {

@@ -28,6 +28,8 @@
 namespace BlueSpice;
 
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 /**
  * UtilityFactory class for BlueSpice
@@ -51,7 +53,7 @@ class UtilityFactory {
 	/**
 	 *
 	 * @param array $params
-	 * @param \Title[] $default
+	 * @param Title[] $default
 	 * @return \BlueSpice\Utility\TitleParamsResolver
 	 */
 	public function getTitleParamsResolver( $params, $default = [] ) {
@@ -70,7 +72,7 @@ class UtilityFactory {
 	}
 
 	/**
-	 * @param \User|null $user
+	 * @param User|null $user
 	 * @return \BlueSpice\Utility\UserHelper
 	 */
 	public function getUserHelper( $user = null ) {
@@ -107,11 +109,11 @@ class UtilityFactory {
 	}
 
 	/**
-	 * @param \Title $title
+	 * @param Title $title
 	 * @return \BlueSpice\Utility\PagePropHelper
 	 * @deprecated since 4.3 Use MediaWiki core `\PageProps` instead
 	 */
-	public function getPagePropHelper( \Title $title ) {
+	public function getPagePropHelper( Title $title ) {
 		wfDeprecated( __METHOD__, '4.3' );
 		return new \BlueSpice\Utility\PagePropHelper( $this->services, $title );
 	}
@@ -133,6 +135,8 @@ class UtilityFactory {
 		$groupTypes = $config->get( 'GroupTypes' );
 		$dbr = $this->services->getDBLoadBalancer()->getConnection( DB_REPLICA );
 
-		return new \BlueSpice\Utility\GroupHelper( $groupManager, $additionalGroups, $groupTypes, $dbr );
+		return new \BlueSpice\Utility\GroupHelper(
+			$groupManager, $additionalGroups, $groupTypes, $dbr, $this->services->getUserFactory()
+		);
 	}
 }

@@ -28,8 +28,8 @@ namespace BlueSpice\Bookshelf\Hook;
 
 use BlueSpice\Bookshelf\BookEditData;
 use BlueSpice\Hook;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use stdClass;
 
 abstract class BSBookshelfGetBookData extends Hook {

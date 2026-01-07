@@ -12,7 +12,7 @@
 		bs.readers.info.ReadersInformationPage.super.prototype.setupOutlineItem.apply( this, arguments );
 
 		if ( this.outlineItem ) {
-			this.outlineItem.setLabel( mw.message( 'bs-readers-info-dialog' ).plain() );
+			this.outlineItem.setLabel( mw.message( 'bs-readers-info-dialog' ).text() );
 		}
 	};
 
@@ -22,6 +22,16 @@
 
 	bs.readers.info.ReadersInformationPage.prototype.onInfoPanelSelect = async function () {
 		if ( !this.readerGrid ) {
+			const rights = await mw.user.getRights();
+			if ( !rights.includes( 'viewreaders' ) ) {
+				const message = mw.message( 'bs-readers-permission-error' ).text();
+				this.readerGrid = new OO.ui.LabelWidget( {
+					label: message
+				} );
+				this.$element.append( this.readerGrid.$element );
+				return;
+			}
+
 			await mw.loader.using( [ 'ext.oOJSPlus.data', 'oojs-ui.styles.icons-user' ] );
 
 			let readersStore;
@@ -38,7 +48,7 @@
 
 				readersStore = new OOJSPlus.ui.data.store.RemoteStore( {
 					action: 'bs-readers-page-readers-store',
-					pageSize: 25
+					pageSize: 10
 				} );
 				readersStore.filter( new OOJSPlus.ui.data.filter.String( {
 					value: pageId,
@@ -61,6 +71,8 @@
 		}
 	};
 
-	registryPageInformation.register( 'readers_infos', bs.readers.info.ReadersInformationPage ); // eslint-disable-line no-undef
+	if ( mw.config.get( 'bsViewReadersRight' ) ) {
+		registryPageInformation.register( 'readers_infos', bs.readers.info.ReadersInformationPage ); // eslint-disable-line no-undef
+	}
 
 } )( mediaWiki, blueSpice );

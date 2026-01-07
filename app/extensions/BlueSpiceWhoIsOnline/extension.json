@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceWhoIsOnline",
-	"version": "4.5.2",
+	"version": "5.1.4",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceWhoIsOnline",
 	"author": [
@@ -10,9 +10,9 @@
 	"descriptionmsg": "bs-whoisonline-desc",
 	"type": "bluespice",
 	"requires": {
-		"MediaWiki": ">= 1.39.0",
+		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"BlueSpiceFoundation": ">= 4.3"
+			"BlueSpiceFoundation": ">= 5.0.0"
 		}
 	},
 	"attributes": {
@@ -113,7 +113,8 @@
 			],
 			"messages": [
 				"bs-whoisonline-statistics-report-login-number-axis-value",
-				"bs-whoisonline-statistics-report-login-number"
+				"bs-whoisonline-statistics-report-login-number",
+				"bs-whoisonline-statistics-report-login-number-desc"
 			]
 		},
 		"ext.bluespice.whoisonlinecount.visualEditorTagDefinition": {
@@ -124,6 +125,9 @@
 			"messages": [
 				"bs-whoisonline-tag-whoisonlinecount-description",
 				"bs-whoisonline-ve-whoisonlinecountinspector-title"
+			],
+			"dependencies": [
+				"ext.bluespice.visualEditorConnector.tags.classes"
 			]
 		},
 		"ext.bluespice.whoisonlinepopup.visualEditorTagDefinition": {
@@ -134,6 +138,9 @@
 			"messages": [
 				"bs-whoisonline-tag-whoisonlinepopup-description",
 				"bs-whoisonline-ve-whoisonlinepopupinspector-title"
+			],
+			"dependencies": [
+				"ext.bluespice.visualEditorConnector.tags.classes"
 			]
 		}
 	},

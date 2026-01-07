@@ -1,4 +1,4 @@
-$( function () {
+$( () => {
 	const $cnt = $( '#contentstabilization' );
 	if ( $cnt.length === 0 ) {
 		return;
@@ -43,8 +43,7 @@ $( function () {
 				headerText: mw.message( 'contentstabilization-overview-header-has-changed-last-approver' ).text(),
 				type: 'user',
 				sortable: true,
-				filter: { type: 'text' },
-				autoClosePopup: true
+				filter: { type: 'user' }
 			},
 			last_stable_ts: {
 				headerText: mw.message( 'contentstabilization-overview-header-has-changed-last-stable-ts' ).text(),
@@ -69,14 +68,13 @@ $( function () {
 			const dfd = $.Deferred(),
 				store = new OOJSPlus.ui.data.store.RemoteRestStore( {
 					path: 'content_stabilization/list',
-					pageSize: -1,
 					sorter: {
 						page_title: {
 							direction: 'ASC'
 						}
 					}
 				} );
-			store.load().done( function ( response ) {
+			store.loadAll().done( ( response ) => {
 				const $table = $( '<table>' );
 				let $row = $( '<tr>' ),
 					$cell = $( '<td>' );
@@ -149,7 +147,7 @@ $( function () {
 				}
 
 				dfd.resolve( '<table>' + $table.html() + '</table>' );
-			} ).fail( function () {
+			} ).fail( () => {
 				dfd.reject( 'Failed to load data' );
 			} );
 

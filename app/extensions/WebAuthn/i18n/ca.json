@@ -1,8 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Jlrb+",
-			"Amire80"
+			"Amire80",
+			"Jlrb+"
 		]
 	},
 	"webauthn-desc": "Proporciona ajuda a l'autenticació amb el protocol WebAuthn",
@@ -13,11 +13,9 @@
 	"webauthn-error-browser-unsupported-console": "Aquest navegador no és compatible amb WebAuthentication o no és disponible per a aquest lloc web",
 	"webauthn-error-auth-generic": "S'ha interromput el procés d'autenticació. Recomenceu el procés d'autenticació",
 	"webauthn-error-reg-generic": "No s'ha pogut verificar la teva clau. Recomença el procés d'inscripció",
-	"webauthn-key-type-missmatch": "L'usuari té claus de múltiples tipus inscrites",
 	"oathauth-webauthn-registered-keys-section-name": "Claus inscrites",
 	"webuathn-ui-remove-key": "Suprimeix",
 	"webauthn-error-module-not-enabled": "El mòdul \"$1\" no és habilitat per a {{GENDER:$2|user \"$2\"}}",
-	"webauthn-error-invalid-key": "{{GENDER:$1| User \"$1\"}} té habilitat el mòdul WebAuthn, però s'ha introduït una clau no vàlida.",
 	"webauthn-error-verification-failed": "La verificació ha fallat",
 	"webauthn-error-cannot-register": "{{GENDER:$1| Usuari \"$1\"}} no pot registrar una nova credencial",
 	"webauthn-error-invalid-new-key": "La nova clau generada pel mòdul no és del tipus demanat",

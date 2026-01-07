@@ -10,10 +10,10 @@ use BlueSpice\Tag\Tag;
 use BS\ExtendedSearch\Param\Definition\SearchResultTypeListParam;
 use BSCategoryListParam;
 use BSNamespaceListParam;
-use ConfigException;
+use MediaWiki\Config\ConfigException;
 use MediaWiki\MediaWikiServices;
-use Parser;
-use PPFrame;
+use MediaWiki\Parser\Parser;
+use MediaWiki\Parser\PPFrame;
 
 class TagSearch extends Tag {
 	public const PARAM_NAMESPACE = 'ns';
@@ -24,8 +24,7 @@ class TagSearch extends Tag {
 	public const PARAM_OPERATOR = 'operator';
 	public const PARAM_TYPE = 'type';
 
-	/** @var int */
-	protected $tagCounter = 0;
+	protected static int $tagCounter = 0;
 
 	/**
 	 * @param mixed $processedInput
@@ -44,7 +43,6 @@ class TagSearch extends Tag {
 		$config = MediaWikiServices::getInstance()
 			->getConfigFactory()
 			->makeConfig( 'bsg' );
-		$this->tagCounter++;
 
 		return new TagSearchHandler(
 			$processedInput,
@@ -52,8 +50,12 @@ class TagSearch extends Tag {
 			$parser,
 			$frame,
 			$config,
-			$this->tagCounter
+			$this->nextTagId()
 		);
+	}
+
+	protected function nextTagId(): int {
+		return self::$tagCounter++;
 	}
 
 	/**
@@ -99,7 +101,7 @@ class TagSearch extends Tag {
 			new ParamDefinition(
 				ParamType::STRING,
 				static::PARAM_PLACEHOLDER,
-				wfMessage( 'bs-extendedsearch-tagsearch-searchfield-placeholder' )->plain()
+				wfMessage( 'bs-extendedsearch-tagsearch-searchfield-placeholder' )->text()
 			),
 			new ParamDefinition(
 				ParamType::STRING,

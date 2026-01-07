@@ -3,8 +3,8 @@
 namespace BlueSpice\Bookshelf\ContextProvider;
 
 use BlueSpice\Bookshelf\IBookContextProvider;
-use Title;
-use TitleFactory;
+use MediaWiki\Title\Title;
+use MediaWiki\Title\TitleFactory;
 
 class DefaultProvider implements IBookContextProvider {
 

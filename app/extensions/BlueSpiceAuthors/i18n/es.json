@@ -3,6 +3,7 @@
 		"authors": [
 			"Carlosmg.dg",
 			"Fitoschido",
+			"JaimeDes",
 			"Jakeukalane",
 			"Macofe",
 			"MarleneR329",
@@ -16,14 +17,10 @@
 	"bs-authors-profileimage": "Imagen de perfil",
 	"bs-authors-profileimage-change": "Cambiar imagen de perfil",
 	"bs-authors-show-all-authors": "Más autores disponibles",
-	"bs-authors-pref-show": "Mostrar autores",
-	"bs-authors-switch-description": "Oculta los autores de esta página.",
 	"bs-authors-navigation-link-title": "Autores de esta página",
 	"bs-authors-navigation-link-text": "Autores",
-	"bs-authors-flyout-title": "Autores de esta página",
-	"bs-authors-author-type-originator": "Autor original",
-	"bs-authors-author-type-editor": "Editor",
 	"apihelp-bs-pageauthors-store-summary": "Lista todos los autores de una página proporcionada en el contexto",
-	"bs-authors-pref-show-help": "Muestra los editores de la página en la información de la página en las herramientas de gestión de calidad.",
-	"bs-authors-info-dialog": "Autores de esta página"
+	"bs-authors-info-dialog": "Autores de esta página",
+	"bs-authors-info-dialog-grid-column-author": "Autor",
+	"bs-authors-info-dialog-grid-column-type": "Tipo de autor"
 }

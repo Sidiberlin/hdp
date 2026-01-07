@@ -5,7 +5,7 @@ namespace BlueSpice\SMWConnector\SmartListMode;
 use BlueSpice\ParamProcessor\ParamDefinition;
 use BlueSpice\ParamProcessor\ParamType;
 use BlueSpice\SmartList\Mode\BaseMode;
-use RequestContext;
+use MediaWiki\Context\RequestContext;
 use SMW\DIProperty;
 use SMW\DIWikiPage;
 use SMW\Query\QueryResult;
@@ -14,7 +14,6 @@ use SMW\Store;
 use SMWDataItem;
 use SMWDIBoolean;
 use SMWDITime;
-use SMWDIWikiPage;
 use SMWQuery;
 use SMWQueryProcessor;
 
@@ -201,7 +200,7 @@ class DataQueryMode extends BaseMode {
 		$propertiesData = [];
 		$semanticData = $store->getSemanticData( $DIWikiPage );
 		$DIProperties = $semanticData->getProperties();
-		/** @var \SMW\DIProperty $standardProperty */
+		/** @var DIProperty $standardProperty */
 		foreach ( $DIProperties as $DIProperty ) {
 			$propertiesData[] = $this->getPropertyData( $DIWikiPage, $DIProperty, $printouts, $store );
 		}
@@ -249,7 +248,7 @@ class DataQueryMode extends BaseMode {
 				$values[] = date( 'd F Y H:i:s', $timestamp );
 			} elseif ( $DIValue instanceof SMWDIBoolean ) {
 				$values[] = $DIValue->getBoolean() ? 'true' : 'false';
-			} elseif ( $DIValue instanceof SMWDIWikiPage ) {
+			} elseif ( $DIValue instanceof DIWikiPage ) {
 				$values[] = "[[{$DIValue->getTitle()->getPrefixedText()}]]";
 			} else {
 				$value = $DIValue->getSerialization();

@@ -21,7 +21,7 @@ ext.menueditor.ui.dialog.NodeDialog.static.actions = [
 	},
 	{
 		label: mw.message( 'menueditor-ui-dialog-action-cancel' ).text(),
-		flags: 'safe'
+		flags: [ 'safe', 'close' ]
 	}
 ];
 
@@ -33,14 +33,14 @@ ext.menueditor.ui.dialog.NodeDialog.prototype.initialize = function () {
 	} );
 	if ( this.node ) {
 		this.pushPending();
-		this.node.getForm( this ).done( function ( form ) {
+		this.node.getForm( this ).done( ( form ) => {
 			this.content.$element.append( form.$element );
 			this.setForm( form );
-		}.bind( this ) );
+		} );
 	} else {
 		this.actions.setAbilities( { done: false } );
-		var selectionItems = this.getAllowedNodeOptions();
-		var selector = new OO.ui.DropdownWidget( {
+		const selectionItems = this.getAllowedNodeOptions();
+		const selector = new OO.ui.DropdownWidget( {
 			menu: {
 				items: selectionItems
 			},
@@ -64,11 +64,11 @@ ext.menueditor.ui.dialog.NodeDialog.prototype.initialize = function () {
 		this.formCnt = new OO.ui.PanelLayout( { padded: false, expanded: false } );
 		this.content.$element.append( this.formCnt.$element );
 
-		var internal = selector.getMenu().findItemFromData( 'enhanced-sidebar-internal-link' );
+		const internal = selector.getMenu().findItemFromData( 'enhanced-sidebar-internal-link' );
 		if ( internal ) {
 			selector.getMenu().selectItem( internal );
 		} else {
-			var first = selector.getMenu().findFirstSelectableItem();
+			const first = selector.getMenu().findFirstSelectableItem();
 			if ( first ) {
 				selector.getMenu().selectItem( first );
 			}
@@ -78,14 +78,14 @@ ext.menueditor.ui.dialog.NodeDialog.prototype.initialize = function () {
 };
 
 ext.menueditor.ui.dialog.NodeDialog.prototype.initializeItems = function () {
-	for ( var i = 0; i < this.allowedValid.length; i++ ) {
-		var type = this.allowedValid[ i ];
-		var classname = ext.menueditor.util.callbackFromString(
+	for ( let i = 0; i < this.allowedValid.length; i++ ) {
+		const type = this.allowedValid[ i ];
+		const classname = ext.menueditor.util.callbackFromString(
 			ext.menueditor.registry.node.registry[ type ]
 		);
-		var params = { nodeData: { type: type }, tree: this.tree };
+		const params = { nodeData: { type: type }, tree: this.tree };
 		// eslint-disable-next-line new-cap
-		var node = new classname( params );
+		const node = new classname( params );
 		if ( !node.shouldRender() ) {
 			this.allowedValid.splice( this.allowedValid.indexOf( node ), 2 );
 		} else {
@@ -96,18 +96,19 @@ ext.menueditor.ui.dialog.NodeDialog.prototype.initializeItems = function () {
 };
 
 ext.menueditor.ui.dialog.NodeDialog.prototype.getAllowedNodeOptions = function () {
-	var all = Object.keys( ext.menueditor.registry.node.registry ),
+	const all = Object.keys( ext.menueditor.registry.node.registry ),
 		allowedConfig = this.allowedNodes;
 	this.allowedValid = this.allowedNodes.length === 0 ?
-		[] : all.filter( function ( x ) { return allowedConfig.indexOf( x ) >= 0; } );
+		[] : all.filter( ( x ) => allowedConfig.indexOf( x ) >= 0 );
+
 	this.initializeItems();
-	return this.allowedValid.map( function ( x ) {
+	return this.allowedValid.map( ( x ) => {
 		// The following messages are used here
 		// * menueditor-ui-menu-wiki-link-label
 		// * menueditor-ui-menu-two-fold-link-spec-label
 		// * menueditor-ui-menu-raw-text-label
 		// * menueditor-ui-menu-keyword-label
-		var msg = mw.message( 'menueditor-ui-' + x + '-label' ),
+		let msg = mw.message( 'menueditor-ui-' + x + '-label' ),
 			label = msg.exists() ? msg.text() : x;
 
 		// Allow other extensions to show a readable name
@@ -126,12 +127,12 @@ ext.menueditor.ui.dialog.NodeDialog.prototype.getAllowedNodeOptions = function (
 ext.menueditor.ui.dialog.NodeDialog.prototype.setItem = function ( type ) {
 	this.pushPending();
 
-	var node = this.items[ type ];
+	const node = this.items[ type ];
 
-	node.getForm( this ).done( function ( form ) {
+	node.getForm( this ).done( ( form ) => {
 		this.formCnt.$element.html( form.$element );
 		this.setForm( form );
-	}.bind( this ) );
+	} );
 };
 
 ext.menueditor.ui.dialog.NodeDialog.prototype.setForm = function ( form ) {
@@ -169,6 +170,6 @@ ext.menueditor.ui.dialog.NodeDialog.prototype.getActionProcess = function ( acti
 		} );
 		this.form.submit();
 	}
-	// eslint-disable-next-line max-len
+
 	return ext.menueditor.ui.dialog.NodeDialog.super.prototype.getActionProcess.call( this, action );
 };

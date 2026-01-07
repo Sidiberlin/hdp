@@ -3,7 +3,7 @@ ext.enhancedUI.booklet.HistoryPage = function ( name, cfg ) {
 	ext.enhancedUI.booklet.HistoryPage.parent.call( this, name, cfg );
 
 	this.versions = [];
-	this.getElements().done( function () {
+	this.getElements().done( () => {
 		this.gridCfg = {
 			pageSize: 10,
 			columns: {
@@ -31,7 +31,7 @@ ext.enhancedUI.booklet.HistoryPage = function ( name, cfg ) {
 		this.grid = new OOJSPlus.ui.data.GridWidget( this.gridCfg );
 		this.$element.append( this.grid.$element );
 		this.emit( 'update' );
-	}.bind( this ) );
+	} );
 };
 
 OO.inheritClass( ext.enhancedUI.booklet.HistoryPage, OO.ui.PageLayout );
@@ -43,8 +43,8 @@ ext.enhancedUI.booklet.HistoryPage.prototype.setupOutlineItem = function () {
 };
 
 ext.enhancedUI.booklet.HistoryPage.prototype.getElements = function () {
-	var dfd = $.Deferred();
-	var title = mw.Title.newFromText( 'File:' + this.fileName ),
+	const dfd = $.Deferred();
+	const title = mw.Title.newFromText( 'File:' + this.fileName ),
 		imageInfoApi = new mw.Api(),
 		apiParams = {
 			action: 'query',
@@ -55,13 +55,14 @@ ext.enhancedUI.booklet.HistoryPage.prototype.getElements = function () {
 			titles: title.getPrefixedText()
 		};
 
-	imageInfoApi.get( apiParams ).done( function ( data ) {
-		var pages = data.query.pages, p;
+	imageInfoApi.get( apiParams ).done( ( data ) => {
+		const pages = data.query.pages;
+		let p;
 		for ( p in pages ) {
-			for ( var v in pages[ p ].imageinfo ) {
-				var timestamp = this.convertTimestamp( pages[ p ].imageinfo[ v ].timestamp );
-				var size = this.calculateSize( pages[ p ].imageinfo[ v ].size );
-				var version = {
+			for ( const v in pages[ p ].imageinfo ) {
+				const timestamp = this.convertTimestamp( pages[ p ].imageinfo[ v ].timestamp );
+				const size = this.calculateSize( pages[ p ].imageinfo[ v ].size );
+				const version = {
 					version: timestamp,
 					url: pages[ p ].imageinfo[ v ].url,
 					user: pages[ p ].imageinfo[ v ].user,
@@ -73,7 +74,7 @@ ext.enhancedUI.booklet.HistoryPage.prototype.getElements = function () {
 		}
 
 		dfd.resolve();
-	}.bind( this ) ).fail( function ( error ) {
+	} ).fail( ( error ) => {
 		dfd.reject( new OO.ui.Error( error ) );
 	} );
 
@@ -81,27 +82,27 @@ ext.enhancedUI.booklet.HistoryPage.prototype.getElements = function () {
 };
 
 ext.enhancedUI.booklet.HistoryPage.prototype.convertTimestamp = function ( timestamp ) {
-	var dateSetting = mw.user.options.values.date;
-	var monthID = timestamp.slice( 5, 7 ) - 1;
+	const dateSetting = mw.user.options.values.date;
+	const monthID = timestamp.slice( 5, 7 ) - 1;
 
 	if ( dateSetting === 'ISO 8601' ) {
 		return timestamp;
 	}
-	var date = new Date( timestamp ).toLocaleDateString();
+	const date = new Date( timestamp ).toLocaleDateString();
 	return this.insertMonth( date, monthID );
 };
 
 ext.enhancedUI.booklet.HistoryPage.prototype.insertMonth = function ( date, monthID ) {
-	var month = ' ' + mw.language.months.names[ monthID ] + ' ';
-	var posStart = date.indexOf( '.' ) + 1;
-	var posEnd = date.lastIndexOf( '.' ) + 1;
+	const month = ' ' + mw.language.months.names[ monthID ] + ' ';
+	const posStart = date.indexOf( '.' ) + 1;
+	const posEnd = date.lastIndexOf( '.' ) + 1;
 	date = date.slice( 0, posStart ) + month + date.slice( posEnd );
 	return date;
 };
 
 ext.enhancedUI.booklet.HistoryPage.prototype.calculateSize = function ( bytes ) {
-	var i = 0,
-		units = [ ' b', ' KB', ' MB', ' GB', ' TB', ' PB' ];
+	let i = 0;
+	const units = [ ' b', ' KB', ' MB', ' GB', ' TB', ' PB' ];
 
 	if ( bytes > 0 ) {
 		for ( i = 0; bytes >= 1024; bytes /= 1024 ) {

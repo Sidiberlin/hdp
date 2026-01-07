@@ -4,22 +4,24 @@
 	display: block;
 	position: fixed;
 	right: 20px;
-	top: calc(100vh - 100px);
+	top: calc( 100vh - 100px );
 	text-decoration: none;
 	z-index: 1000;
 }
+
 #back-to-top.collapsed {
-	right: calc( var(--sidebar-secondary-width) - 20px );
+	right: calc( var( --sidebar-secondary-width ) - 20px );
 }
+
 #back-to-top::before {
-	content: "\f01b";
-	font-family: 'fontawesome';
 	font-size: 250%;
-	color: var(--back-to-top-fg);
+	color: var( --back-to-top-fg );
 }
+
 #back-to-top:hover::before {
-	color: var(--back-to-top-fg--hover);
+	color: var( --back-to-top-fg--hover );
 }
+
 #back-to-top:focus {
-	border: 2px solid var(--focus-visible);
+	border: 2px solid var( --focus-visible );
 }

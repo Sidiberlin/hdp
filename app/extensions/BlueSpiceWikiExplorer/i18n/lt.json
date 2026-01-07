@@ -16,7 +16,6 @@
 	"bs-wikiexplorer-categories": "Kategorijos",
 	"bs-wikiexplorer-linked-files": "Susieti failai",
 	"bs-wikiexplorer-linked-pages": "Susieti puslapiai",
-	"apihelp-bs-wikiexplorer-store-description": "Pateikia visus WikiExplorer plėtinio duomenis",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "API parametras, nurodantis, ar metaduomenys jau buvo įkelti.",
 	"apihelp-bs-wikiexplorer-store-summary": "Pateikia visus WikiExplorer plėtinio duomenis",
 	"bs-wikiexplorer-icon-bool-true-aria-label": "pažymėta",

@@ -93,7 +93,7 @@ class Transclusion extends TextNode {
 	/**
 	 * @return array
 	 */
-	public function jsonSerialize() {
+	public function jsonSerialize(): array {
 		return [
 			'type' => $this->getType(),
 			'target' => $this->getTarget(),

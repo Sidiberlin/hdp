@@ -1,0 +1,28 @@
+[
+	{
+		"name": "collabpad_acl_token",
+		"comment": "Collabpads - Stores collabpad 'access list' tokens",
+		"columns": [
+			{
+				"name": "cat_user_id",
+				"type": "integer",
+				"options": { "length": 6, "unsigned": true, "notnull": true }
+			},
+			{
+				"name": "cat_prefixed_page_title",
+				"type": "binary",
+				"options": { "length": 255, "notnull": true }
+			},
+			{
+				"name": "cat_token",
+				"type": "binary",
+				"options": { "length": 32, "notnull": true }
+			}
+		],
+		"indexes": [],
+		"pk": [
+			"cat_user_id",
+			"cat_prefixed_page_title"
+		]
+	}
+]

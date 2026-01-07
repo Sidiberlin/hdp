@@ -1,16 +1,25 @@
 {
 	"@metadata": {
 		"authors": [
-			"Fraxinus.cs"
+			"Fraxinus.cs",
+			"Jrobicek"
 		]
 	},
+	"bs-expiry-dialog-title": "Upravit vypršení platnosti",
 	"bs-expiry-menu-entry-create": "Nastavení platnosti",
 	"bs-expiry-menu-entry-manage": "Upravit platnost",
+	"bs-expiry-edit-grid-header-username": "Uživatel",
+	"bs-expiry-edit-grid-header-date": "Datum",
+	"bs-expiry-edit-grid-header-comment": "Komentář",
+	"bs-expiry-edit-grid-title": "Úpravy od vypršení platnosti této stránky",
+	"bs-expiry-edit-grid-empty": "Žádné úpravy od vypršení platnosti stránky",
 	"bs-expiry-info-dialog": "Platnost článku",
 	"bs-expiry-info-dialog-button-label": "Správa platnosti",
 	"bs-expiry-dialog-delete-prompt": "Opravdu chcete vymazat platnost pro tento článek?",
 	"bs-expiry-error-invalid-date": "Neplatné datum",
 	"bs-expiry-dialog-create-reminder-prompt": "Přejete si vytvořit upozornění pro tento článek?",
 	"bs-expiry-dialog-create-reminder-title": "Vytvořit upozornění",
-	"bs-expiry-dialog-action-no": "Ne"
+	"bs-expiry-dialog-action-no": "Ne",
+	"bs-expiry-title-edit": "Upravit vypršení platnosti",
+	"bs-expiry-header-action-edit": "Upravit"
 }

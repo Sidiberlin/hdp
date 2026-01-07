@@ -19,25 +19,30 @@
 
 namespace MediaWiki\Extension\WebAuthn;
 
-use ConfigException;
 use Cose\Algorithms;
-use FormatJson;
-use IContextSource;
+use MediaWiki\Config\ConfigException;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Exception\ErrorPageError;
 use MediaWiki\Extension\OATHAuth\IModule;
-use MediaWiki\Extension\OATHAuth\OATHAuth;
+use MediaWiki\Extension\OATHAuth\OATHAuthModuleRegistry;
 use MediaWiki\Extension\OATHAuth\OATHUser;
 use MediaWiki\Extension\OATHAuth\OATHUserRepository;
 use MediaWiki\Extension\WebAuthn\Key\WebAuthnKey;
 use MediaWiki\Extension\WebAuthn\Module\WebAuthn;
+use MediaWiki\Json\FormatJson;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Request\WebRequest;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
+use MediaWiki\Utils\UrlUtils;
+use MediaWiki\WikiMap\WikiMap;
 use MWException;
+use ParagonIE\ConstantTime\Base64;
+use ParagonIE\ConstantTime\Base64UrlSafe;
 use Psr\Log\LoggerInterface;
-use RequestContext;
-use Status;
 use stdClass;
-use User;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\PublicKeyCredentialCreationOptions;
 use Webauthn\PublicKeyCredentialDescriptor;
@@ -45,8 +50,6 @@ use Webauthn\PublicKeyCredentialParameters;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialRpEntity;
 use Webauthn\PublicKeyCredentialUserEntity;
-use WebRequest;
-use WikiMap;
 
 /**
  * This class serves as an authentication/registration
@@ -94,6 +97,8 @@ class Authenticator {
 	 */
 	protected $context;
 
+	private UrlUtils $urlUtils;
+
 	/**
 	 * @param User $user
 	 * @param WebRequest|null $request
@@ -102,46 +107,41 @@ class Authenticator {
 	 * @throws MWException
 	 */
 	public static function factory( $user, $request = null ) {
-		/** @var OATHAuth $oath */
-		$oath = MediaWikiServices::getInstance()->getService( 'OATHAuth' );
+		$services = MediaWikiServices::getInstance();
+		/** @var OATHAuthModuleRegistry $moduleRegistry */
+		$moduleRegistry = $services->getService( 'OATHAuthModuleRegistry' );
 		/** @var OATHUserRepository $userRepo */
-		$userRepo = MediaWikiServices::getInstance()->getService( 'OATHUserRepository' );
-		/** @var WebAuthn $module */
-		$module = $oath->getModuleByKey( 'webauthn' );
-		$oathUser = $userRepo->findByUser( $user );
-		$context = RequestContext::getMain();
-		$logger = LoggerFactory::getInstance( 'authentication' );
-		if ( $request === null ) {
-			$request = RequestContext::getMain()->getRequest();
-		}
+		$userRepo = $services->getService( 'OATHUserRepository' );
 
 		return new static(
 			$userRepo,
-			$module,
-			$oathUser,
-			$context,
-			$logger,
-			$request
+			$moduleRegistry->getModuleByKey( 'webauthn' ),
+			$userRepo->findByUser( $user ),
+			RequestContext::getMain(),
+			LoggerFactory::getInstance( 'authentication' ),
+			$request ?? RequestContext::getMain()->getRequest(),
+			$services->getUrlUtils()
 		);
 	}
 
 	/**
-	 * Authenticator constructor.
 	 * @param OATHUserRepository $userRepo
 	 * @param IModule $module
 	 * @param OATHUser|null $oathUser
 	 * @param IContextSource $context
 	 * @param LoggerInterface $logger
 	 * @param WebRequest $request
+	 * @param UrlUtils $urlUtils
 	 * @throws ConfigException
 	 */
-	protected function __construct( $userRepo, $module, $oathUser, $context, $logger, $request ) {
+	protected function __construct( $userRepo, $module, $oathUser, $context, $logger, $request, $urlUtils ) {
 		$this->userRepo = $userRepo;
 		$this->module = $module;
 		$this->oathUser = $oathUser;
 		$this->context = $context;
 		$this->logger = $logger;
 		$this->request = $request;
+		$this->urlUtils = $urlUtils;
 		$this->serverId = $this->getServerId();
 	}
 
@@ -163,13 +163,6 @@ class Authenticator {
 				$this->oathUser->getUser()->getName()
 			);
 		}
-		$firstKey = $this->oathUser->getFirstKey();
-		if ( !( $firstKey instanceof WebAuthnKey ) ) {
-			return Status::newFatal(
-				'webauthn-error-invalid-key',
-				$this->oathUser->getUser()->getName()
-			);
-		}
 
 		return Status::newGood();
 	}
@@ -178,7 +171,7 @@ class Authenticator {
 	 * @return Status
 	 */
 	public function canRegister() {
-		if ( $this->oathUser->getUser()->isAllowed( 'oathauth-enable' ) ) {
+		if ( $this->context->getUser()->isAllowed( 'oathauth-enable' ) ) {
 			return Status::newGood();
 		}
 
@@ -226,12 +219,9 @@ class Authenticator {
 			return $canAuthenticate;
 		}
 
-		if ( $authInfo === null ) {
-			$authInfo = $this->getSessionData(
-				PublicKeyCredentialRequestOptions::class
-			);
-		}
-		$verificationData['authInfo'] = $authInfo;
+		$verificationData['authInfo'] = $authInfo ?? $this->getSessionData(
+			PublicKeyCredentialRequestOptions::class
+		);
 		$this->clearSessionData();
 
 		if ( $this->module->verify( $this->oathUser, $verificationData ) ) {
@@ -314,24 +304,35 @@ class Authenticator {
 			);
 			if ( $registered ) {
 				$maxKeysPerUser = $this->module->getConfig()->get( 'maxKeysPerUser' );
-				if ( count( $this->oathUser->getKeys() ) >= (int)$maxKeysPerUser ) {
+				if ( count( WebAuthn::getWebAuthnKeys( $this->oathUser ) ) >= (int)$maxKeysPerUser ) {
 					return Status::newFatal(
 						wfMessage( 'webauthn-error-max-keys-reached', $maxKeysPerUser )
 					);
 				}
 
 				// If user has another module already activated, clear all keys for than module
-				if ( !$this->oathUser->getModule() instanceof WebAuthn ) {
-					$this->oathUser->clearAllKeys();
+				$userModule = $this->oathUser->getModule();
+				if ( $userModule !== null && !$userModule instanceof WebAuthn ) {
+					// TODO: find a way of doing this without using persist(), but
+					// without sending broken 'you have disabled two-factor authentication'
+					// notifications. (Or, just add support for multiple different types of
+					// authentication so we don't have to worry about this at all.)
+					$this->oathUser->disable();
+					$this->userRepo->persist( $this->oathUser, $this->request->getIP() );
 				}
-				$this->oathUser->setModule( $this->module );
-				$this->oathUser->addKey( $key );
-				$this->userRepo->persist( $this->oathUser, $this->request->getIP() );
+
+				$this->userRepo->createKey(
+					$this->oathUser,
+					$this->module,
+					$key->jsonSerialize(),
+					$this->request->getIP()
+				);
+
 				$this->clearSessionData();
 				return Status::newGood();
 			}
-		} catch ( MWException $exception ) {
-			return Status::newFatal( $exception->getMessage() );
+		} catch ( ErrorPageError $error ) {
+			return Status::newFatal( $error->getMessageObject() );
 		}
 		return Status::newFatal( 'webauthn-error-registration-failed' );
 	}
@@ -369,52 +370,52 @@ class Authenticator {
 		}
 		if ( array_key_exists( static::SESSION_KEY, $authData ) ) {
 			$json = $authData[static::SESSION_KEY];
-			$factory = [ $returnClass, 'createFromString' ];
-			if ( !is_callable( $factory ) ) {
-				return null;
+			$data = json_decode( $json, associative: true, flags: JSON_THROW_ON_ERROR );
+			// FIXME webauthn-lib uses different encoding to serialize (base64url unpadded)
+			//   and unserialize (base64) the challenge and user.id and JSON fields :/
+			/** @var array $data */'@phan-var array{challenge:string} $data';
+			$data['challenge'] = Base64::encode( Base64UrlSafe::decode( $data['challenge'] ) );
+			if ( $returnClass === PublicKeyCredentialCreationOptions::class ) {
+				/** @var array $data */'@phan-var array{challenge:string,user:array{id:string}} $data';
+				$data['user']['id'] = Base64::encode( Base64UrlSafe::decode( $data['user']['id'] ) );
 			}
-			return call_user_func_array( $factory, [ $json ] );
+			$factory = match ( $returnClass ) {
+				PublicKeyCredentialRequestOptions::class => PublicKeyCredentialRequestOptions::createFromArray( ... ),
+				PublicKeyCredentialCreationOptions::class => PublicKeyCredentialCreationOptions::createFromArray( ... ),
+			};
+			return $factory( $data );
 		}
 		return null;
 	}
 
 	/**
-	 * Information to be sent to client to start auth process
+	 * Information to be sent to the client to start the authentication process
 	 *
 	 * @return PublicKeyCredentialRequestOptions
 	 * @throws MWException
 	 */
 	protected function getAuthInfo() {
-		$extensions = new AuthenticationExtensionsClientInputs();
-
-		$keys = $this->oathUser->getKeys();
+		$keys = WebAuthn::getWebAuthnKeys( $this->oathUser );
 		$credentialDescriptors = [];
 		foreach ( $keys as $key ) {
-			if ( !$key instanceof WebAuthnKey ) {
-				throw new MWException( 'webauthn-key-type-missmatch' );
-			}
-			$credentialDescriptors[$key->getFriendlyName()] = new PublicKeyCredentialDescriptor(
+			$credentialDescriptors[] = new PublicKeyCredentialDescriptor(
 				$key->getType(),
-				$key->getAttestedCredentialData()->getCredentialId(),
+				$key->getAttestedCredentialData()->credentialId,
 				$key->getTransports()
 			);
 		}
-		$registeredPublicKeyCredentialDescriptors = $credentialDescriptors;
 
-		$publicKeyCredentialRequestOptions = new PublicKeyCredentialRequestOptions(
+		return PublicKeyCredentialRequestOptions::create(
 			random_bytes( 32 ),
-			static::CLIENT_ACTION_TIMEOUT,
 			$this->serverId,
-			$registeredPublicKeyCredentialDescriptors,
+			$credentialDescriptors,
 			PublicKeyCredentialRequestOptions::USER_VERIFICATION_REQUIREMENT_PREFERRED,
-			$extensions
+			static::CLIENT_ACTION_TIMEOUT
 		);
-
-		return $publicKeyCredentialRequestOptions;
 	}
 
 	/**
-	 * Information to be sent to client to start registration process
+	 * Information to be sent to the client to start the registration process
 	 *
 	 * @return PublicKeyCredentialCreationOptions
 	 * @throws ConfigException
@@ -424,64 +425,79 @@ class Authenticator {
 		$rpEntity = new PublicKeyCredentialRpEntity( $serverName, $this->serverId );
 
 		$mwUser = $this->context->getUser();
-		/** @var OATHUserRepository $userRepo */
-		$userRepo = MediaWikiServices::getInstance()->getService( 'OATHUserRepository' );
-		/** @var OATHUser $oathUser */
-		$oathUser = $userRepo->findByUser( $mwUser );
-		$key = $oathUser->getFirstKey();
-		// If user already has webauthn enabled, and is just registering another key,
+
+		// Exclude all already registered keys for user
+		$excludedPublicKeyDescriptors = [];
+
+		// If the user already has webauthn enabled, and is just registering another key,
 		// make sure userHandle remains the same across keys
-		if ( $key !== null && $key instanceof WebAuthnKey ) {
+		$userHandle = null;
+
+		foreach ( WebAuthn::getWebAuthnKeys( $this->oathUser ) as $key ) {
 			$userHandle = $key->getUserHandle();
-		} else {
+
+			$excludedPublicKeyDescriptors[] = new PublicKeyCredentialDescriptor(
+				PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
+				$key->getAttestedCredentialData()->credentialId
+			);
+		}
+
+		if ( !$userHandle ) {
 			$userHandle = random_bytes( 64 );
 		}
 
-		$realName = $mwUser->getRealName() ? : $mwUser->getName();
+		$realName = $mwUser->getRealName() ?: $mwUser->getName();
 		$userEntity = new PublicKeyCredentialUserEntity(
 			$mwUser->getName(),
 			$userHandle,
 			$realName
 		);
 
-		$challenge = random_bytes( 32 );
-
-		// Exclude all already registered keys for user
-		$excludedPublicKeyDescriptors = [];
-		foreach ( $this->oathUser->getKeys() as $key ) {
-			if ( !( $key instanceof WebAuthnKey ) ) {
-				continue;
-			}
-			$excludedPublicKeyDescriptors[] = new PublicKeyCredentialDescriptor(
-				PublicKeyCredentialDescriptor::CREDENTIAL_TYPE_PUBLIC_KEY,
-				$key->getAttestedCredentialData()->getCredentialId()
-			);
-		}
-
 		$publicKeyCredParametersList = [
 			new PublicKeyCredentialParameters(
 				'public-key',
 				Algorithms::COSE_ALGORITHM_ES256
-			)
+			),
+			new PublicKeyCredentialParameters(
+				'public-key',
+				Algorithms::COSE_ALGORITHM_ES512
+			),
+			new PublicKeyCredentialParameters(
+				'public-key',
+				Algorithms::COSE_ALGORITHM_EDDSA
+			),
+			new PublicKeyCredentialParameters(
+				'public-key',
+				Algorithms::COSE_ALGORITHM_RS1
+			),
+			new PublicKeyCredentialParameters(
+				'public-key',
+				Algorithms::COSE_ALGORITHM_RS256
+			),
+			new PublicKeyCredentialParameters(
+				'public-key',
+				Algorithms::COSE_ALGORITHM_RS512
+			),
 		];
 
-		$extensions = new AuthenticationExtensionsClientInputs();
-		// Add extensions if needed
-
-		$authenticatorSelectionCriteria = new AuthenticatorSelectionCriteria();
-		$publicKeyCredentialCreationOptions = new PublicKeyCredentialCreationOptions(
-			$rpEntity,
-			$userEntity,
-			$challenge,
-			$publicKeyCredParametersList,
-			static::CLIENT_ACTION_TIMEOUT,
-			$excludedPublicKeyDescriptors,
-			$authenticatorSelectionCriteria,
-			PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
-			$extensions
+		$authenticatorAttachment = $this->context->getConfig()->get( 'WebAuthnLimitPasskeysToRoaming' )
+			? AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM
+			: null;
+		$authSelectorCriteria = AuthenticatorSelectionCriteria::create(
+			$authenticatorAttachment,
 		);
 
-		return $publicKeyCredentialCreationOptions;
+		$pubKeyCredCreationOptions = PublicKeyCredentialCreationOptions::create(
+			$rpEntity,
+			$userEntity,
+			random_bytes( 32 ),
+			$publicKeyCredParametersList,
+			$authSelectorCriteria,
+			PublicKeyCredentialCreationOptions::ATTESTATION_CONVEYANCE_PREFERENCE_NONE,
+			$excludedPublicKeyDescriptors,
+			static::CLIENT_ACTION_TIMEOUT
+		);
+		return $pubKeyCredCreationOptions;
 	}
 
 	/**
@@ -496,8 +512,8 @@ class Authenticator {
 		}
 
 		$server = $this->context->getConfig()->get( 'Server' );
-		$serverBits = wfParseUrl( $server );
-		if ( $serverBits !== false ) {
+		$serverBits = $this->urlUtils->parse( $server );
+		if ( $serverBits !== null ) {
 			return $serverBits['host'];
 		}
 

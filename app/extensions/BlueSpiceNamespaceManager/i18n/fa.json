@@ -30,7 +30,7 @@
 	"bs-namespacemanager-label-system": "سامانه",
 	"bs-namespacemanager-hide-system-ns": "پنهان‌سازی فضاهای نام سامانه",
 	"bs-namespacemanager-hide-talk-ns": "پنهان‌سازی فضاهای نام بحث",
-	"bs-namespacemanager-nsadded": "فضای نام اضافه شد.",
+	"bs-namespacemanager-nsadded": "فضای نام افزوده شد.",
 	"bs-namespacemanager-nsremoved": "فضای نام حذف شد.",
 	"bs-namespacemanager-nsedited": "فضای نام ویرایش شد.",
 	"bs-namespacemanager-tipadd": "افزودن فضای نام",
@@ -58,7 +58,7 @@
 	"bs-namespacemanager-nodeletetalk": "فضای نام بحث را نمی‌توان حذف کرد",
 	"bs-namespacemanager-label-istalk": "بحث",
 	"right-namespacemanager-viewspecialpage": "دسترسی به صفحهٔ ویژهٔ [[Special:NamespaceManager]]",
-	"bs-namespacemanager-hide-talk-label": "پنهان‌سازی فضاهای نام بحث",
 	"bs-namespacemanager-labelnsalias": "نام مستعار",
-	"bs-namespacemanager-invalid-namespace": "فضای نام مورد ویرایش نامعتبر است"
+	"bs-namespacemanager-invalid-namespace": "فضای نام مورد ویرایش نامعتبر است",
+	"bs-namespacemanager-hide-talk-label": "پنهان‌سازی فضاهای نام بحث"
 }

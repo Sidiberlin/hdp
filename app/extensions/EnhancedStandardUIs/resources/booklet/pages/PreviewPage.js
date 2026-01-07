@@ -7,14 +7,14 @@ ext.enhancedUI.booklet.PreviewPage = function ( name, cfg ) {
 	this.fileHeight = cfg.height || 'auto';
 	ext.enhancedUI.booklet.PreviewPage.parent.call( this, name, cfg );
 
-	var mimeType = this.fileData.img_mime_major;
+	const mimeType = this.fileData.img_mime_major;
 	if ( mimeType !== 'image' ) {
 		this.fileUrl = this.fileData.preview_url;
 		this.fileWidth = 120;
 		this.fileHeight = 'auto';
 	}
 
-	var $image = $( '<img>' ).addClass( 'file-info-image' )
+	const $image = $( '<img>' ).addClass( 'file-info-image' )
 		.attr( 'alt', this.fileName )
 		.attr( 'src', this.fileUrl )
 		.attr( 'width', this.fileWidth )

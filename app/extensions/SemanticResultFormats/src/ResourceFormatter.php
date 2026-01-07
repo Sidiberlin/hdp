@@ -2,11 +2,11 @@
 
 namespace SRF;
 
-use Html;
+use MediaWiki\ResourceLoader\ResourceLoader;
 use RequestContext;
-use SMWOutputs as ResourceManager;
-use SMWQueryResult as QueryResult;
 use SMW\Query\PrintRequest;
+use SMW\Query\QueryResult;
+use SMWOutputs as ResourceManager;
 use SRFUtils;
 
 /**
@@ -65,8 +65,8 @@ class ResourceFormatter {
 	public static function encode( $id, $data ) {
 		ResourceManager::requireHeadItem(
 			$id,
-			\ResourceLoader::makeInlineScript(
-				\ResourceLoader::makeConfigSetScript(
+			ResourceLoader::makeInlineScript(
+				ResourceLoader::makeConfigSetScript(
 					[
 						$id => json_encode( $data )
 					]
@@ -82,20 +82,19 @@ class ResourceFormatter {
 	 * @return array
 	 */
 	private static function appendPreferredPropertyLabel( $printRequests, $ask ) {
-
 		// @see formats/calendar/resources/ext.srf.formats.eventcalendar.js
 		// method "init"
-		// 
+		//
 		// var datePropertyList = _calendar.api.query.printouts.search.type(
 		// 	data.query.ask.printouts,
 		// 	data.query.result.printrequests,
 		// 	['_dat'] );
-		// 
+		//
 		// and search.type.normalize in resources/ext.srf.api.query.js
 		// which calls getTypeId in resources/ext.srf.api.results.js
 		// and expects that the printrequest label and printouts custom label
 		// retrieved from the below, match
-		// 
+		//
 		// @TODO all this method can be removed as long as the issue
 		// can be fixed at SMW level: PrintRequest's Serializer -> doSerializeProp
 
@@ -151,4 +150,3 @@ class ResourceFormatter {
 	}
 
 }
-

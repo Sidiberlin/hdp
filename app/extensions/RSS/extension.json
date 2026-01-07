@@ -16,7 +16,7 @@
 	],
 	"version": "2.25.1",
 	"requires": {
-		"MediaWiki": ">= 1.39.0"
+		"MediaWiki": ">= 1.43"
 	},
 	"license-name": "GPL-2.0-or-later",
 	"url": "https://www.mediawiki.org/wiki/Extension:RSS",
@@ -31,9 +31,12 @@
 		"MediaWiki\\Extension\\RSS\\": "includes/"
 	},
 	"Hooks": {
-		"ParserFirstCallInit": [
-			"MediaWiki\\Extension\\RSS\\Hooks::onParserFirstCallInit"
-		]
+		"ParserFirstCallInit": "main"
+	},
+	"HookHandlers": {
+		"main": {
+			"class": "MediaWiki\\Extension\\RSS\\Hooks"
+		}
 	},
 	"TrackingCategories": [
 		"rss-tracking-category"

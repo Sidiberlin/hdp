@@ -2,14 +2,13 @@
 
 namespace MediaWiki\Extension\NotifyMe\Rest;
 
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\NotifyMe\Storage\NotificationStore;
 use MediaWiki\Rest\HttpException;
 use MediaWiki\Rest\Response;
 use MediaWiki\Rest\SimpleHandler;
-use MediaWiki\Rest\Validator\JsonBodyValidator;
+use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\Events\Delivery\NotificationStatus;
-use RequestContext;
-use User;
 use Wikimedia\ParamValidator\ParamValidator;
 
 class ChangeWebNotificationStatus extends SimpleHandler {
@@ -123,20 +122,14 @@ class ChangeWebNotificationStatus extends SimpleHandler {
 		return $notifications;
 	}
 
-	/**
-	 * @param string $contentType
-	 *
-	 * @return JsonBodyValidator
-	 * @throws HttpException
-	 */
-	public function getBodyValidator( $contentType ) {
-		if ( $contentType === 'application/json' ) {
-			return new JsonBodyValidator( [
-				'notifications' => [
-					ParamValidator::PARAM_REQUIRED => true,
-				]
-			] );
-		}
-		throw new HttpException( 'Invalid content type', 400 );
+	/** @inheritDoc */
+	public function getBodyParamSettings(): array {
+		return [
+			'notifications' => [
+				static::PARAM_SOURCE => 'body',
+				ParamValidator::PARAM_TYPE => 'array',
+				ParamValidator::PARAM_REQUIRED => true,
+			]
+		];
 	}
 }

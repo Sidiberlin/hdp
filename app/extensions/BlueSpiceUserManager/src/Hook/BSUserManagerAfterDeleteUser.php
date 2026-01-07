@@ -31,10 +31,10 @@ namespace BlueSpice\UserManager\Hook;
 
 use BlueSpice\Hook;
 use BlueSpice\UserManager\Extension as UserManager;
-use Config;
-use IContextSource;
-use Status;
-use User;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
+use MediaWiki\Status\Status;
+use MediaWiki\User\User;
 
 /**
  * Located in \BlueSpice\UserManager\Extension::deleteUser after a user was deleted

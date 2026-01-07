@@ -1,3 +1,19 @@
 {
-	"contentprovisioning-desc": "Description of ContentProvisioning for [[Special:Version]]"
+	"@metadata": {
+		"authors": [
+			"HalloWelt! GmbH"
+		]
+	},
+	"contentprovisioning-desc": "Description of ContentProvisioning for [[Special:Version]]",
+	"contentprovisioning": "Special page name",
+	"right-contentprovisioning-viewspecialpage": "{{doc-right|contentprovisioning-viewspecialpage}}",
+	"action-contentprovisioning-viewspecialpage": "{{doc-action|contentprovisioning-viewspecialpage}}",
+	"contentprovisioning-ui-overview-grid-section-page": "Label for the 'Page' column in the ContentProvisioning overview grid.",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "Label for the 'In sync?' column in the ContentProvisioning overview grid; indicates if the local page matches the remote manifest.",
+	"contentprovisioning-ui-overview-grid-action-force-sync": "Tooltip and action label for the button that forces synchronization of the wiki page with the manifest.",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "Tooltip and action label for the button that shows the difference between the wiki page content and the provisioner content.",
+	"contentprovisioning-diff-no-change": "Message displayed when there are no differences between the wiki page and the provisioner content.",
+	"contentprovisioning-ui-content-diff-title": "Title of the dialog displaying content differences between wiki and provisioner.",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "Label used above the section showing the wiki page content in the content difference dialog.",
+	"contentprovisioning-ui-content-diff-headline-provisioner-content": "Label used above the section showing the provisioner (remote) content in the content difference dialog."
 }

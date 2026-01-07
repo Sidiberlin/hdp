@@ -2,7 +2,7 @@
 
 namespace MediaWiki\Extension\ContentProvisioning\Hook\BeforePageDisplay;
 
-use MediaWiki\Hook\BeforePageDisplayHook;
+use MediaWiki\Output\Hook\BeforePageDisplayHook;
 
 class AddModules implements BeforePageDisplayHook {
 

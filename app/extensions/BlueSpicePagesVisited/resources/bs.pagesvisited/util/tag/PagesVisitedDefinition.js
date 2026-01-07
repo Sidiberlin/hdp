@@ -7,8 +7,8 @@ bs.pagesvisited.util.tag.PagesVisitedDefinition = function BsVecUtilPagesVisited
 OO.inheritClass( bs.pagesvisited.util.tag.PagesVisitedDefinition, bs.vec.util.tag.Definition );
 
 bs.pagesvisited.util.tag.PagesVisitedDefinition.prototype.getCfg = function () {
-	var cfg = bs.pagesvisited.util.tag.PagesVisitedDefinition.super.prototype.getCfg.call( this );
-	return $.extend( cfg, {
+	const cfg = bs.pagesvisited.util.tag.PagesVisitedDefinition.super.prototype.getCfg.call( this );
+	return $.extend( cfg, { // eslint-disable-line no-jquery/no-extend
 		classname: 'Pagesvisited',
 		name: 'pagesvisited',
 		tagname: 'bs:pagesvisited',

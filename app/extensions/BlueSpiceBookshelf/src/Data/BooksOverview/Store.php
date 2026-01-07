@@ -4,19 +4,19 @@ namespace BlueSpice\Bookshelf\Data\BooksOverview;
 
 use BlueSpice\Bookshelf\BookMetaLookup;
 use BlueSpice\Bookshelf\ChapterLookup;
-use Config;
-use IContextSource;
+use MediaWiki\Config\Config;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Permissions\PermissionManager;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\DataStore\IStore;
 use MWStake\MediaWiki\Component\DataStore\NoWriterException;
 use RepoGroup;
-use TitleFactory;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class Store implements IStore {
 
-	/** @var \IContextSource */
+	/** @var IContextSource */
 	protected $context = null;
 
 	/** @var Config */

@@ -2,8 +2,8 @@
 
 namespace BlueSpice\Discovery\Hook;
 
+use MediaWiki\Message\Message;
 use MediaWiki\Revision\RevisionRecord;
-use Message;
 
 interface LastEditInfoHook {
 

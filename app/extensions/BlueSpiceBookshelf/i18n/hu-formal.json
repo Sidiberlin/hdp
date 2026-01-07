@@ -1,11 +1,15 @@
 {
 	"@metadata": {
 		"authors": [
-			"Krisztina"
+			"Krisztina",
+			"Tacsipacsi"
 		]
 	},
-	"bs-bookshelf-tag-bookshelf-desc": "Egy könyv fejezet szerinti navigációját szúrja be a könyv lapjába. Ezen a címkén keresztül az említett lapok bekerülnek a könyvbe. A számozás automatikusan a tartalomjegyzékhez igazodik.",
 	"bs-bookshelf-tagerror-no-attribute-given": "Nincs megadott attribútum! Használja a <strong>src</strong> hogy beállítsa a  tartalomjegyzéket.",
-	"bs-bookshelf-add-to-book-added": "\"$1\" könyvhöz hozzáadta a lapot.",
-	"bs-bookshelf-tag-bookshelf-box-desc": "Egy könyv fejezet szerinti navigációját szúrja be a könyv lapjába, amely nem része a könyvnek. A számozás automatikusan a tartalomjegyzékhez igazodik."
+	"bs-bookshelf-add-to-book-added": "A lap hozzáadva a(z) „$1” könyvhöz.",
+	"bs-bookshelf-tag-bookshelf-box-desc": "Egy könyv fejezet szerinti navigációját szúrja be a könyv lapjába, amely nem része a könyvnek. A számozás automatikusan a tartalomjegyzékhez igazodik.",
+	"bs-books-overview-page-bookshelf-empty-text": "Jelenleg nincsenek könyvek. Hozza létre az elsőt most!",
+	"bs-bookshelf-newbook-dlg-upload-title-exists": "Már létezik egy ilyen nevű fájl. Kérjük, adjon meg egy új fájlnevet.",
+	"bs-bookshelf-tag-searchinbook-error": "Adjon meg egy érvényes könyvnevet",
+	"bs-bookshelf-droplet-search-book-help": "A könyv neve, amelyben keres"
 }

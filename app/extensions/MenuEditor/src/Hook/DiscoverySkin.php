@@ -4,8 +4,8 @@ namespace MediaWiki\Extension\MenuEditor\Hook;
 
 use BlueSpice\Discovery\Hook\BlueSpiceDiscoveryTemplateDataProviderAfterInit;
 use BlueSpice\Discovery\ITemplateDataProvider;
+use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\MenuEditor\MenuFactory;
-use RequestContext;
 
 class DiscoverySkin implements BlueSpiceDiscoveryTemplateDataProviderAfterInit {
 

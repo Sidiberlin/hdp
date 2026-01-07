@@ -2,8 +2,9 @@
 
 namespace MediaWiki\Extension\Workflows\Activity\SendMail;
 
-use Config;
+use Exception;
 use MailAddress;
+use MediaWiki\Config\Config;
 use MediaWiki\Extension\Workflows\Activity\ExecutionStatus;
 use MediaWiki\Extension\Workflows\Activity\GenericActivity;
 use MediaWiki\Extension\Workflows\Definition\ITask;
@@ -12,9 +13,8 @@ use MediaWiki\Extension\Workflows\Logger\SpecialLogLoggerAwareInterface;
 use MediaWiki\Extension\Workflows\WorkflowContext;
 use MediaWiki\Mail\IEmailer;
 use MediaWiki\MediaWikiServices;
-use MWException;
-use Title;
-use User;
+use MediaWiki\Title\Title;
+use MediaWiki\User\User;
 
 class SendMailActivity extends GenericActivity implements SpecialLogLoggerAwareInterface {
 
@@ -60,7 +60,7 @@ class SendMailActivity extends GenericActivity implements SpecialLogLoggerAwareI
 	 * @param array $data
 	 * @param WorkflowContext $context
 	 * @return ExecutionStatus
-	 * @throws MWException In cases of some invalid values
+	 * @throws Exception In cases of some invalid values
 	 */
 	public function execute( $data, WorkflowContext $context ): ExecutionStatus {
 		$to = $data['recipient'];
@@ -88,10 +88,18 @@ class SendMailActivity extends GenericActivity implements SpecialLogLoggerAwareI
 		$from = $this->fromAddress;
 		$subject = $data['subject'];
 		$bodyText = $data[ 'body' ];
+		$format = $data['format'] ?? 'plaintext';
 
-		$bodyText = strip_tags( $bodyText );
+		$options = [];
+		$htmlBody = null;
+		if ( $format === 'html' ) {
+			$htmlBody = $this->wrapHtml( $bodyText );
+			$options['contentType'] = 'text/html;charset=UTF-8';
+		} else {
+			$bodyText = strip_tags( $bodyText );
+		}
 
-		$status = $this->emailer->send( $to, $from, $subject, $bodyText );
+		$status = $this->emailer->send( $to, $from, $subject, $bodyText, $htmlBody, $options );
 		if ( $status->isGood() ) {
 			$this->getSpecialLogLogger()->addEntry(
 				'sendmail-send',
@@ -122,4 +130,17 @@ class SendMailActivity extends GenericActivity implements SpecialLogLoggerAwareI
 
 		return new ExecutionStatus( static::STATUS_COMPLETE );
 	}
+
+	/**
+	 * @param string $body
+	 * @return string
+	 */
+	private function wrapHtml( string $body ): string {
+		// Make a valid html mail
+		$res = '<html><head><meta charset="UTF-8"></head><body>';
+		$res .= $body;
+		$res .= '</body></html>';
+		return $res;
+	}
+
 }

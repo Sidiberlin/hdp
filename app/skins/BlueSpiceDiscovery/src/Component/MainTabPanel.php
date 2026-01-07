@@ -3,9 +3,9 @@
 namespace BlueSpice\Discovery\Component;
 
 use BlueSpice\Discovery\MenuManager;
-use IContextSource;
+use MediaWiki\Context\IContextSource;
 use MediaWiki\MediaWikiServices;
-use Message;
+use MediaWiki\Message\Message;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\ComponentBase;
 use MWStake\MediaWiki\Component\CommonUserInterface\IComponent;
 use MWStake\MediaWiki\Component\CommonUserInterface\IRestrictedComponent;

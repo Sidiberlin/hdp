@@ -7,6 +7,9 @@
 		]
 	},
 	"bs-pro-distribution-droplet-chem-name": "化学式",
+	"droplets-modal-dialog-title-label": "ダイアログのタイトル",
+	"droplets-modal-dialog-body-label": "ダイアログの内容",
+	"droplets-modal-dialog-footer-label": "ダイアログのフッター",
 	"droplets-modal-dialog-bg-color-blue": "青",
 	"droplets-modal-dialog-bg-color-red": "赤",
 	"droplets-modal-dialog-bg-color-neutral": "白",
@@ -14,8 +17,5 @@
 	"bs-pro-distribution-pdfembed-inspector-width-label": "幅",
 	"bs-pro-distribution-pdfembed-inspector-height-label": "高さ",
 	"bs-pro-distribution-pdfembed-inspector-title": "PDFを埋め込む",
-	"bs-pro-distribution-pdfembed-droplet-name": "PDFプレビュー",
-	"droplets-modal-dialog-title-label": "ダイアログのタイトル",
-	"droplets-modal-dialog-body-label": "ダイアログの内容",
-	"droplets-modal-dialog-footer-label": "ダイアログのフッター"
+	"bs-pro-distribution-pdfembed-droplet-name": "PDFプレビュー"
 }

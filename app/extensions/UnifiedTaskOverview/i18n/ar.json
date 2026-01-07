@@ -8,5 +8,6 @@
 	"unifiedtaskoverview": "مهامي",
 	"unifiedtaskoverview-label-no-task": "حاليا لا توجد مهام لإكمالها.",
 	"unifiedtaskoverview-personal-url-my-tasks": "مهام",
-	"unifiedtaskoverview-search-placeholder": "يبحث"
+	"unifiedtaskoverview-search-placeholder": "يبحث",
+	"unifiedtaskoverview-no-login-text": "الرجاء تسجيل الدخول لرؤية مهامك"
 }

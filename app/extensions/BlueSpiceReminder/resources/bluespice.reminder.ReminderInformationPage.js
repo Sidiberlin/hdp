@@ -12,7 +12,7 @@
 		bs.reminder.info.ReminderInformationPage.super.prototype.setupOutlineItem.apply( this, arguments );
 
 		if ( this.outlineItem ) {
-			this.outlineItem.setLabel( mw.message( 'bs-reminder-info-dialog' ).plain() );
+			this.outlineItem.setLabel( mw.message( 'bs-reminder-info-dialog' ).text() );
 		}
 	};
 
@@ -29,17 +29,14 @@
 				pageSize: 25
 			} );
 			reminderStore.filter( new OOJSPlus.ui.data.filter.String( {
-				value: this.pageName,
+				value: this.pageName.replace( /_/g, ' ' ),
 				operator: 'eq',
 				type: 'string'
 			} ), 'page_title' );
 
-			const rights = await mw.user.getRights();
 			const specialPageButton = new OO.ui.ButtonWidget( {
 				label: mw.message( 'bs-reminder-info-dialog-button-label' ).text(),
-				href: rights.includes( 'remindereditall' ) ?
-					mw.util.getUrl( 'Special:Reminder' ) :
-					mw.util.getUrl( 'Special:MyReminder' )
+				href: mw.util.getUrl( 'Special:Reminder' )
 			} );
 
 			this.reminderGrid = new OOJSPlus.ui.data.GridWidget( {

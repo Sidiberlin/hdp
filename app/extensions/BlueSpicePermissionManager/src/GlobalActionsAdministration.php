@@ -2,9 +2,9 @@
 
 namespace BlueSpice\PermissionManager;
 
-use Message;
+use MediaWiki\Message\Message;
+use MediaWiki\SpecialPage\SpecialPage;
 use MWStake\MediaWiki\Component\CommonUserInterface\Component\RestrictedTextLink;
-use SpecialPage;
 
 class GlobalActionsAdministration extends RestrictedTextLink {
 
@@ -28,10 +28,7 @@ class GlobalActionsAdministration extends RestrictedTextLink {
 	 * @return array
 	 */
 	public function getPermissions(): array {
-		$permissions = [
-			'permissionmanager-viewspecialpage'
-		];
-		return $permissions;
+		return [ 'wikiadmin' ];
 	}
 
 	/**

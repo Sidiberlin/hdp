@@ -4,7 +4,6 @@
 			"Yupik"
 		]
 	},
-	"forms-createforminstance-form-name": "Raaj seeid $1",
 	"forms-form-edit-title": "Muuʹtt $1",
 	"forms-error-target-db-save-failed": "Ruõkkmõš teâttvuõđđu ij oʹnnstam.",
 	"forms-form-editor-prop-categories": "Kategoria",
@@ -16,5 +15,6 @@
 	"forms-label-email": "E-pååʹšt",
 	"forms-form-editor-prop-targettypetemplate": "Mall",
 	"forms-action-editsource": "Muuʹtt wikiteeʹkst",
-	"forms-form-editor-prop-targettypeemail": "E-pååʹštaddrõs"
+	"forms-form-editor-prop-targettypeemail": "E-pååʹštaddrõs",
+	"forms-editor-toolbar-save-label": "Ruõkk"
 }

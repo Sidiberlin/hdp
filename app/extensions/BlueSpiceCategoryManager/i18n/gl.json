@@ -2,18 +2,41 @@
 	"@metadata": {
 		"authors": [
 			"Banjo",
-			"Elisardojm"
+			"Elisardojm",
+			"Toliño"
 		]
 	},
 	"bluespicecategorymanager": "Xestor de categorías",
 	"bluespicecategorymanager-desc": "Ferramenta visual para xestionar categorías",
 	"action-categorymanager-viewspecialpage": "ver o xestor de categorías",
-	"bs-categorymanager-draganddrop-text": "Arrastra e solta para reorganizar",
 	"bs-categorymanager-label": "Xestor de categorías",
 	"bs-categorymanager-dlg-new-title": "Crear categoría",
-	"bs-categorymanager-dlg-new-prompt": "Por favor, indique o nomeː",
-	"bs-categorymanager-removecategoryconfirm-text": "Está seguro de que quere eliminar esta categoría?",
-	"bs-categorymanager-removecategoryconfirm-title": "Eliminar categoría",
+	"bs-categorymanager-removecategoryconfirm-text": "Queres eliminar esta categoría?",
+	"bs-categorymanager-removecategoryconfirm-title": "Eliminar a categoría",
 	"bs-categorymanager-addcategory-dialog-error-title": "Fallou a creación da categoría",
-	"bs-categorymanager-action-show-category": "Amosar a categoría"
+	"bs-categorymanager-text": "Categorías",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-title": "A categoría xa existe",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Proba cun nome de categoría diferente",
+	"right-categorymanager-viewspecialpage": "Acceso á páxina especial [[Special:BlueSpiceCategoryManager]]",
+	"bs-categorymanager-collection-type-categorizedpages": "Asignación de categorías",
+	"bs-categorymanager-collection-var-namespacename": "Espazo de nomes",
+	"bs-categorymanager-collection-var-categorizedpages": "Páxinas con categorías",
+	"bs-categorymanager-collection-var-uncategorizedpages": "Páxinas sen categorías",
+	"bs-categorymanager-rename-category": "Renomear a categoría",
+	"bs-categorymanager-rename-category-new-name": "Nome de categoría novo",
+	"bs-categorymanager-statistics-report-category-pages": "Páxinas en categorías",
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "Número de páxinas",
+	"bs-categorymanager-dialog-action-add-label": "Engadir",
+	"bs-categorymanager-removecategory-confirm": "Eliminouse a categoría «$1»",
+	"bs-categorymanager-dialog-create-category-placeholder": "Engadir unha categoría nova",
+	"bs-categorymanager-add-category-label": "Nome da categoría",
+	"bs-configmanager-tool-create-category-label": "Crear unha categoría",
+	"bs-categorymanager-movecategory-confirm": "Trasladouse a categoría «$1»",
+	"bs-categorymanager-category-item-rename-label": "Renomear",
+	"bs-categorymanager-category-item-view-label": "Ver a páxina da categoría",
+	"bs-categorymanager-category-item-delete-label": "Eliminar",
+	"bs-categorymanager-dlg-add-title": "Engadir unha categoría",
+	"bs-categorymanager-dialog-action-rename-label": "Renomear",
+	"bs-categorymanager-statistics-report-category-pages-desc": "Número de páxinas nunha categoría no período e intervalo seleccionados, filtrables por espazo de nomes",
+	"bs-categorymanager-dlg-create-category-exists-label": "Xa existe unha categoría con este nome. Escolle outro nome."
 }

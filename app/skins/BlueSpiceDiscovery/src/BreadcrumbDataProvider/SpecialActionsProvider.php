@@ -2,8 +2,8 @@
 
 namespace BlueSpice\Discovery\BreadcrumbDataProvider;
 
-use RawMessage;
-use Title;
+use MediaWiki\Language\RawMessage;
+use MediaWiki\Title\Title;
 
 class SpecialActionsProvider extends BaseBreadcrumbDataProvider {
 
@@ -18,7 +18,7 @@ class SpecialActionsProvider extends BaseBreadcrumbDataProvider {
 	 * @return Title
 	 */
 	public function getRelevantTitle( $title ): Title {
-		if ( isset( $this->webRequestValues['target'] ) ) {
+		if ( isset( $this->webRequestValues['target'] ) && !$title->isSpecialPage() ) {
 			$pagename = $this->webRequestValues['target'];
 			$this->action = $title->getBaseText();
 		} elseif ( isset( $this->webRequestValues['page'] ) ) {
@@ -98,6 +98,14 @@ class SpecialActionsProvider extends BaseBreadcrumbDataProvider {
 			$this->webRequestValues['page'] != "" ) {
 			return true;
 		}
+		return false;
+	}
+
+	/**
+	 *
+	 * @inheritDoc
+	 */
+	public function isSelfLink( $node ): bool {
 		return false;
 	}
 }

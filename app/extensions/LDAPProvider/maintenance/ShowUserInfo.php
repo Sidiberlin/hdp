@@ -2,8 +2,8 @@
 
 namespace MediaWiki\Extension\LDAPProvider\Maintenance;
 
-use Maintenance;
 use MediaWiki\Extension\LDAPProvider\ClientFactory;
+use MediaWiki\Maintenance\Maintenance;
 
 $maintPath = ( getenv( 'MW_INSTALL_PATH' ) !== false
 		? getenv( 'MW_INSTALL_PATH' )
@@ -51,6 +51,10 @@ class ShowUserInfo extends Maintenance {
 		$this->showValue( $userInfo );
 	}
 
+	/**
+	 * @param array $obj
+	 * @param int $recursion
+	 */
 	private function showValue( array $obj, $recursion = 0 ) {
 		foreach ( $obj as $key => $value ) {
 			for ( $i = 0; $i < $recursion; $i++ ) {
