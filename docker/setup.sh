@@ -68,6 +68,17 @@ if [ ! -f vendor/autoload.php ] || [ ! -f vendor/autoload_real.php ]; then
     echo ""
     echo "[1/4] Resolving Composer dependencies..."
 
+    # Force HTTPS-only GitHub access. composer.lock pins several packages'
+    # VCS source to the SSH form (git@github.com:...) — the github-protocols
+    # config alone does NOT rewrite an already-pinned SSH URL, so fresh
+    # containers (no SSH client/keys) crash on those packages with either
+    # "cannot run ssh: No such file or directory" or a Composer-internal
+    # TypeError in Git::runCommand(). Rewriting composer.lock's URLs to
+    # https:// avoids the SSH path entirely — works with zero credentials
+    # for every one of this project's public GitHub-hosted dependencies.
+    sed -i 's#git@github\.com:#https://github.com/#g' composer.lock
+    composer config --global github-protocols https
+
     # Backup and neutralize composer.local.json (disables MWStake merge-plugin
     # which declares the VCS repos for the private packages)
     if [ -f composer.local.json ]; then
@@ -201,6 +212,23 @@ echo "  Re-running update.php with data dirs in place..."
 php maintenance/run.php update.php --quick --skip-config-validation 2>&1 | tail -5
 
 echo "[4/4] Done."
+
+# ─── Step 4b: Populate main page (first install only) ─────────────
+# Replace the generic upstream BlueSpice welcome boilerplate with usage
+# instructions + an auto-updating content overview (DynamicPageList-driven
+# "recently edited" list). Runs only once, guarded by a marker file, so
+# later manual edits by wiki admins are never overwritten on container
+# restart.
+if [ -f /hauptseite.wiki ] && [ ! -f cache/.hauptseite-populated ]; then
+    echo ""
+    echo "[4/4] Populating main page with usage instructions..."
+    php maintenance/run.php edit.php \
+        --user Admin \
+        --summary "Initial setup: populate main page with usage instructions" \
+        Hauptseite < /hauptseite.wiki \
+        && touch cache/.hauptseite-populated \
+        || echo "  WARNING: main page population failed (non-fatal, continuing)"
+fi
 
 echo ""
 echo "============================================"

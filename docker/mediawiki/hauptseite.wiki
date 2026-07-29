@@ -1,0 +1,48 @@
+== Willkommen im HDP-Wiki ==
+
+Dieses Wiki kombiniert eine durchsuchbare Wissensdatenbank mit einem KI-gestützten Chatbot, der Fragen zu den hier gespeicherten Inhalten in natürlicher Sprache beantwortet.
+
+=== So nutzen Sie den Chatbot ===
+
+Der Chat-Assistent ist auf jeder Seite unten rechts erreichbar (Sprechblasen-Symbol). Er durchsucht ausschließlich den tatsächlichen Wiki-Inhalt und gibt Antworten mit Quellenangaben — er erfindet keine Fakten und weist explizit darauf hin, wenn keine passende Information gefunden wird.
+
+# Klicken Sie auf das Chat-Symbol, um das Chat-Fenster zu öffnen.
+# Stellen Sie Ihre Frage in normaler Sprache, z. B. „Was ist [Thema]?“ oder „Erkläre mir [Konzept]“.
+# Antworten erscheinen mit Quellenverweisen auf die zugrunde liegenden Wiki-Seiten.
+# Über die Buttons unter einer Antwort können Sie eine kürzere/längere Fassung, Stichpunkte oder eine Fassung mit direkten Zitaten anfordern.
+
+'''Hinweis:''' Der Chatbot kann nur Fragen zu Inhalten beantworten, die bereits in dieses Wiki eingepflegt und indiziert wurden. Neu hinzugefügte Seiten stehen dem Chatbot erst nach dem nächsten Ingestion-Lauf zur Verfügung (siehe [[#Inhalte hinzufügen|Inhalte hinzufügen]] unten).
+
+=== Aufbau des Wikis ===
+
+Inhalte sind in drei Namensräumen organisiert:
+
+{| class="wikitable"
+! Namensraum !! Verwendung
+|-
+| '''(Hauptnamensraum)''' || Allgemeine Wissensdatenbank-Artikel
+|-
+| '''Ministerium''' || Inhalte mit Bezug zum Ministerium
+|-
+| '''Projektträger''' || Inhalte mit Bezug zu Projektträgern
+|}
+
+Eine vollständige, nach Kategorien sortierte Übersicht aller Seiten finden Sie unter [[Spezial:Kategorien|Kategorien]]. Alle Seiten unsortiert listet [[Spezial:Alle_Seiten|Alle Seiten]].
+
+=== Zuletzt bearbeitete Seiten ===
+
+{{#dpl: namespace=|count=10|ordermethod=lastedit|order=descending|mode=unordered|noresultsheader=''Noch keine Seiten vorhanden — dies ist eine frische Installation ohne Inhalt.''}}
+
+=== Nach Kategorie durchsuchen ===
+
+Eine vollständige Übersicht aller vergebenen Kategorien und wie viele Seiten sie jeweils enthalten, finden Sie unter [[Spezial:Kategorien|Kategorienübersicht]]. Kategorien werden automatisch aus den Inhalten der importierten Seiten übernommen — es ist keine manuelle Pflege nötig.
+
+=== Inhalte hinzufügen ===
+
+Neue Wiki-Seiten werden ganz normal über die MediaWiki-Bearbeitungswerkzeuge angelegt (Button „Neuen Inhalt erzeugen“ oben rechts). Damit der Chatbot neue oder geänderte Seiten kennt, muss anschließend der Ingestion-Lauf ausgeführt werden:
+
+<pre>
+docker compose exec haystack python3 ingest_hdp_wiki.py --missing-only
+</pre>
+
+Details und weitere Optionen (vollständiger Reindex, Embedding-Provider-Wahl, etc.) siehe <code>README-DOCKER.md</code> und <code>docs/embedding-providers.md</code> im Projekt-Repository.

@@ -7,3 +7,16 @@ $GLOBALS['wgObjectCacheSessionExpiry'] = 3 * 60 * 60;
 $GLOBALS['wgContentHandlers']['BSSocial'] = 'FallbackContentHandler';
 $GLOBALS['wgContentHandlers']['BSSocialDiscussion'] = 'FallbackContentHandler';
 $GLOBALS['wgContentHandlers']['BSSocialProfile'] = 'FallbackContentHandler';
+
+// The Wikimedia dev image's PlatformSettings.php (required early in
+// LocalSettings.php, before this settings.d/ loader) sets
+// $wgSQLMode = 'STRICT_ALL_TABLES,ONLY_FULL_GROUP_BY' via DevelopmentSettings.php
+// (T108255). ONLY_FULL_GROUP_BY breaks several BlueSpice extensions that run
+// non-standard GROUP BY queries — e.g. BlueSpiceUserSidebar's "recently
+// visited pages" widget fails with "Error 1055: ... isn't in GROUP BY" on
+// every single logged-in page load (including the main page). Since this
+// global is applied by MediaWiki's PHP DB layer on every connection, fixing
+// only the MariaDB server-side sql_mode (see docker/mariadb/sql-mode.cnf) is
+// not sufficient — $wgSQLMode always wins. Drop ONLY_FULL_GROUP_BY here,
+// after PlatformSettings.php has already run.
+$GLOBALS['wgSQLMode'] = 'STRICT_ALL_TABLES';

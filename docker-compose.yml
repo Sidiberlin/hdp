@@ -50,6 +50,7 @@ services:
       - ./app:/var/www/html/w:cached
       - ./docker/wiki/www.conf:/etc/php/8.3/fpm/pool.d/www.conf:ro
       - ./docker/setup.sh:/setup.sh:ro
+      - ./docker/mediawiki/hauptseite.wiki:/hauptseite.wiki:ro
       - ./docker/infisical-loader.sh:/infisical-loader.sh:ro
     env_file: .env
     environment:
