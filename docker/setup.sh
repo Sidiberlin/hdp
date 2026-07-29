@@ -43,7 +43,7 @@ echo ""
 
 # ─── Step 0: Wait for MariaDB ──────────────────────────────────────
 echo "[0/4] Waiting for MariaDB at ${DB_HOST}..."
-max_wait=60
+max_wait=120
 waited=0
 while ! mariadb -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASS}" -e "SELECT 1" "${DB_NAME}" &>/dev/null; do
     if [ "$waited" -ge "$max_wait" ]; then
