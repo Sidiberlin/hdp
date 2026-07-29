@@ -1,0 +1,284 @@
+# BlueSpice HDP Edition — Docker Compose
+# MediaWiki 1.43.5 + BlueSpice Pro + Haystack RAG + OpenSearch + MariaDB
+#
+# Secrets are loaded from Infisical at container start — no plaintext
+# passwords in .env. The .env file contains only the Infisical machine
+# identity (non-secret client ID + URL) and non-secret configuration.
+#
+# Usage:
+#   1. cp .env.example .env  (then edit Infisical credentials + non-secret config)
+#   2. docker compose up -d
+#   3. docker compose exec mediawiki bash /setup.sh
+#   4. Open http://localhost:8080/w/
+
+services:
+  # ─── MariaDB ──────────────────────────────────────────────────────
+  mariadb:
+    image: mariadb:10.11
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: ${HDP_MARIADB_MEM_LIMIT:-1g}
+    environment:
+      # Passwords injected by entrypoint from Infisical
+      MARIADB_ROOT_PASSWORD: "${HDP_DB_ROOT_PASSWORD}"
+      MARIADB_DATABASE: bluespice
+      MARIADB_USER: bluespice
+      MARIADB_PASSWORD: "${HDP_DB_PASSWORD}"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "healthcheck.sh --connect --innodb_initialized || mysqladmin ping -h localhost -u root -p$$MARIADB_ROOT_PASSWORD"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+      start_period: 15s
+    networks:
+      - hdp
+
+  # ─── MediaWiki / BlueSpice (PHP-FPM) ──────────────────────────────
+  mediawiki:
+    image: docker-registry.wikimedia.org/dev/bookworm-php83-fpm:1.0.0
+    user: "${MW_DOCKER_UID:-0}:${MW_DOCKER_GID:-0}"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: ${HDP_MEDIAWIKI_MEM_LIMIT:-1g}
+    volumes:
+      - ./app:/var/www/html/w:cached
+      - ./docker/wiki/www.conf:/etc/php/8.3/fpm/pool.d/www.conf:ro
+      - ./docker/setup.sh:/setup.sh:ro
+      - ./docker/infisical-loader.sh:/infisical-loader.sh:ro
+    env_file: .env
+    environment:
+      COMPOSER_CACHE_DIR: '/var/www/html/w/cache/composer'
+      MW_SERVER: 'http://localhost:${MW_DOCKER_PORT:-8080}'
+      MW_DOCKER_PORT: '${MW_DOCKER_PORT:-8080}'
+      MW_SCRIPT_PATH: '/w'
+      MW_DOCKER_UID: '${MW_DOCKER_UID:-0}'
+      MW_DOCKER_GID: '${MW_DOCKER_GID:-0}'
+      MW_LANG: '${MW_LANG:-de}'
+      MW_SITENAME: '${MW_SITENAME:-BlueSpice HDP}'
+      MW_LOG_DIR: /var/www/html/w/cache
+      # Infisical machine identity (non-secret — used to fetch real secrets)
+      INFISICAL_URL: '${INFISICAL_URL}'
+      INFISICAL_PROJECT_ID: '${INFISICAL_PROJECT_ID}'
+      INFISICAL_CLIENT_ID: '${INFISICAL_CLIENT_ID}'
+      INFISICAL_CLIENT_SECRET: '${INFISICAL_CLIENT_SECRET}'
+      INFISICAL_ENV: '${INFISICAL_ENV:-prod}'
+      # Secrets resolved from Infisical by setup.sh at runtime
+      MW_DB_NAME: bluespice
+      MW_DB_USER: bluespice
+      MW_DB_PASS: '${HDP_DB_PASSWORD}'
+      WIKI_ADMIN_PASS: '${HDP_ADMIN_PASSWORD}'
+    healthcheck:
+      # PHP-FPM has no HTTP endpoint of its own; a TCP connect to the FastCGI
+      # port confirms the master process is accepting connections. Full
+      # request-level health is covered by mediawiki-web's healthcheck.
+      test: ["CMD-SHELL", "timeout 2 bash -c 'cat < /dev/null > /dev/tcp/127.0.0.1/9000' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      opensearch:
+        condition: service_healthy
+    networks:
+      - hdp
+
+  # ─── Apache Web Server ────────────────────────────────────────────
+  mediawiki-web:
+    image: docker-registry.wikimedia.org/dev/bookworm-apache2:1.0.1
+    user: "${MW_DOCKER_UID:-33}:${MW_DOCKER_GID:-33}"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: ${HDP_MEDIAWIKI_WEB_MEM_LIMIT:-512m}
+    ports:
+      - "${MW_DOCKER_PORT:-8080}:8080"
+    volumes:
+      - ./app:/var/www/html/w:cached
+    env_file: .env
+    environment:
+      MW_LOG_DIR: /var/www/html/w/cache
+      MW_DOCKER_PORT: '${MW_DOCKER_PORT:-8080}'
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -o /dev/null http://localhost:${MW_DOCKER_PORT:-8080}/w/ || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 30s
+    depends_on:
+      mediawiki:
+        condition: service_started
+    networks:
+      - hdp
+
+  # ─── MediaWiki Job Runner ─────────────────────────────────────────
+  mediawiki-jobrunner:
+    image: docker-registry.wikimedia.org/dev/bookworm-php83-jobrunner:1.0.0
+    user: "${MW_DOCKER_UID:-33}:${MW_DOCKER_GID:-33}"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: ${HDP_JOBRUNNER_MEM_LIMIT:-512m}
+    volumes:
+      - ./app:/var/www/html/w:cached
+    env_file: .env
+    environment:
+      MW_LOG_DIR: /var/www/html/w/cache
+      MW_INSTALL_PATH: /var/www/html/w
+    healthcheck:
+      # No HTTP endpoint — the runner is a bash loop invoking runJobs.php.
+      # Confirm the entrypoint's bash process is still alive as PID 1.
+      test: ["CMD-SHELL", "[ \"$(cat /proc/1/comm 2>/dev/null)\" = 'bash' ] || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+    depends_on:
+      mediawiki:
+        condition: service_started
+    networks:
+      - hdp
+
+  # ─── OpenSearch (Search + RAG vector store) ───────────────────────
+  opensearch:
+    image: opensearchproject/opensearch:2.18.0
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          # Give headroom above the 512m JVM heap (OPENSEARCH_JAVA_OPTS below)
+          # for off-heap/native memory — OpenSearch OOMs badly if this is too tight.
+          memory: ${HDP_OPENSEARCH_MEM_LIMIT:-1536m}
+    environment:
+      - discovery.type=single-node
+      - bootstrap.memory_lock=false
+      - "OPENSEARCH_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "OPENSEARCH_INITIAL_ADMIN_PASSWORD=${HDP_OPENSEARCH_PASSWORD}"
+    ulimits:
+      nofile:
+        soft: 65536
+        hard: 65536
+    volumes:
+      - opensearch_data:/usr/share/opensearch/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sk -u admin:${HDP_OPENSEARCH_PASSWORD} https://localhost:9200/_cluster/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 20s
+    networks:
+      - hdp
+
+  # ─── Haystack RAG Pipeline (hayhooks) ─────────────────────────────
+  haystack:
+    build:
+      context: .
+      dockerfile: docker/haystack/Dockerfile
+      args:
+        HAYSTACK_DEVICE: ${HAYSTACK_DEVICE:-cpu}
+    restart: unless-stopped
+    ports:
+      - "${HAYHOOKS_PORT:-1416}:1416"
+      - "1417:1417"
+    deploy:
+      resources:
+        limits:
+          memory: ${HDP_HAYSTACK_MEM_LIMIT:-3g}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf -o /dev/null http://localhost:1417/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 20
+      # Generous start_period: cold start downloads/loads embedding + ranker
+      # models and deploys the pipeline before either port responds.
+      start_period: 90s
+    environment:
+      # OpenSearch connection
+      OPENSEARCH_HOST: opensearch
+      OPENSEARCH_PORT: "9200"
+      OPENSEARCH_PASSWORD: "${HDP_OPENSEARCH_PASSWORD}"
+      # Infisical machine identity (for fetching LLM API key at startup)
+      INFISICAL_URL: '${INFISICAL_URL}'
+      INFISICAL_PROJECT_ID: '${INFISICAL_PROJECT_ID}'
+      INFISICAL_CLIENT_ID: '${INFISICAL_CLIENT_ID}'
+      INFISICAL_CLIENT_SECRET: '${INFISICAL_CLIENT_SECRET}'
+      INFISICAL_ENV: '${INFISICAL_ENV:-prod}'
+      # LLM config (non-secret — the key itself comes from Infisical)
+      HDP_LLM_BASE_URL: '${HDP_LLM_BASE_URL:-https://open.bigmodel.cn/api/paas/v4}'
+      HDP_LLM_MODEL: '${HDP_LLM_MODEL:-glm-4.7}'
+      HAYSTACK_DEVICE: '${HAYSTACK_DEVICE:-cpu}'
+      # LLM API key — .env fallback for users without Infisical.
+      # If Infisical IS configured, infisical-loader.sh overwrites this at
+      # container start with the value fetched from Infisical (source of truth).
+      HDP_LLM_API_KEY: '${HDP_LLM_API_KEY:-}'
+      # Embedding provider config (non-secret — keys/tokens come from Infisical)
+      # See .env.example for the three supported modes: local | remote | hf_space
+      HDP_EMBEDDING_PROVIDER: '${HDP_EMBEDDING_PROVIDER:-local}'
+      HDP_EMBEDDING_MODEL: '${HDP_EMBEDDING_MODEL:-mixedbread-ai/deepset-mxbai-embed-de-large-v1}'
+      HDP_EMBEDDING_DIM: '${HDP_EMBEDDING_DIM:-1024}'
+      HDP_EMBEDDING_BASE_URL: '${HDP_EMBEDDING_BASE_URL:-}'
+      HDP_EMBEDDING_HF_SPACE_ID: '${HDP_EMBEDDING_HF_SPACE_ID:-}'
+      # Embedding secrets — .env fallback for users without Infisical (same
+      # override-at-runtime behavior as HDP_LLM_API_KEY above).
+      HDP_EMBEDDING_API_KEY: '${HDP_EMBEDDING_API_KEY:-}'
+      HDP_EMBEDDING_HF_TOKEN: '${HDP_EMBEDDING_HF_TOKEN:-}'
+      # Database access for ingestion script
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      DB_NAME: bluespice
+      DB_USER: bluespice
+      HDP_DB_PASSWORD: "${HDP_DB_PASSWORD}"
+      # MediaWiki API access for ingestion
+      MW_API_URL: "http://mediawiki-web:8080/w/api.php"
+      MW_ADMIN_USER: "Admin"
+      HDP_ADMIN_PASSWORD: "${HDP_ADMIN_PASSWORD}"
+    volumes:
+      - haystack_models:/root/.cache/huggingface
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    networks:
+      - hdp
+
+  # ─── ChatBot Proxy (Deepset → Haystack adapter) ───────────────────
+  chatbot-proxy:
+    build:
+      context: ./docker/chatbot-proxy
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: ${HDP_CHATBOT_PROXY_MEM_LIMIT:-256m}
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8080/', timeout=3)"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 15s
+    environment:
+      HAYHOOKS_URL: "http://haystack:1417"
+      PIPELINE_NAME: "hdp_pipeline"
+      CHATBOT_PROXY_PORT: "8080"
+    depends_on:
+      - haystack
+    networks:
+      - hdp
+
+volumes:
+  mariadb_data:
+  opensearch_data:
+  haystack_models:
+
+networks:
+  hdp:
+    driver: bridge

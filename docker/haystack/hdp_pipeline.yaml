@@ -1,0 +1,277 @@
+# BlueSpice HDP — Haystack RAG Pipeline (YAML for hayhooks)
+# This pipeline provides retrieval-augmented generation over wiki content.
+# It uses:
+#   - OpenSearch for document storage + BM25 + embedding retrieval (hybrid search)
+#   - Sentence-Transformers for German embeddings + cross-encoder ranking
+#   - Azure OpenAI (GPT-4o) for answer generation
+#
+# Environment variables consumed:
+#   OPENSEARCH_HOST — OpenSearch hostname (default: opensearch)
+#   OPENSEARCH_PORT — OpenSearch port (default: 9200)
+#   OPENSEARCH_PASSWORD — admin password (default: admin)
+#   HDP_LLM_API_KEY — z.ai API key
+#   HDP_LLM_BASE_URL — e.g. https://api.z.ai/api/paas/v4
+#   HDP_LLM_MODEL — model name (default: glm-4.7)
+
+components:
+  followup_elaborate:
+    type: haystack.components.builders.prompt_builder.PromptBuilder
+    init_parameters:
+      template: &detailed_prompt |
+        Du bist ein technischer Experte.
+        Du beantwortest die Fragen wahrheitsgemäß auf Grundlage der vorgelegten Dokumente.
+        Antworte detailliert, abwägend und ausführlich.
+        Nehme auch Zusatzinformationen und Kontext aus den Dokumenten in deine Antwort auf.
+        Wenn die Antwort in mehreren Dokumenten enthalten ist, fasse diese zusammen.
+        Verwende ausschließlich Verweise in der Form [NUMMER DES DOKUMENTS], wenn du Informationen aus einem Dokument verwendest, z. B. [3] für Dokument[3].
+        Nenne niemals die Dokumente, sondern gib immer nur eine Zahl in eckigen Klammern als Referenz an.
+        Der Verweis darf sich nur auf die Nummer beziehen, die in eckigen Klammern hinter der Passage steht.
+        Ignoriere Dokumente, die keine Antwort auf die Frage enthalten.
+        Antworte nur auf der Grundlage der vorgelegten Dokumente. Erfinde keine Fakten.
+        Wenn in dem Dokument keine Informationen zu der Frage gefunden werden können, gib dies an.
+        Hier sind die Dokumente:
+
+        {% for document in documents %}
+        Dokument[{{ loop.index }}]:
+        {{ document.meta.title_level_1 }}
+        {{ document.meta.title_level_2 }}
+        {{ document.meta.title_level_3 }}
+        {{ document.meta.title_level_4 }}
+        {{ document.meta.title_level_5 }}
+
+        {{ document.content }}
+        {% endfor %}
+
+        Frage: {{ question }}
+        Antwort:
+      required_variables: ["documents", "question"]
+
+  chat_summary_prompt_builder:
+    type: haystack.components.builders.prompt_builder.PromptBuilder
+    init_parameters:
+      template: |
+        NUR wenn die Chathistorie angegeben ist, formuliere die folgende Frage (Current Question) so um, dass sie gut für die Websearch geeignet ist.
+        Wenn die Chathistorie leer ist, formuliere die Frage NICHT neu.
+        Füge nur falls notwendig Kontext zur Current Question hinzu.
+        Wenn du keine Änderungen vornehmen möchtest, gib einfach die Current Question aus.
+        Chathistorie: {{ question }}
+        Umformulierte Frage:
+      required_variables: "*"
+
+  replies_to_query:
+    type: haystack.components.converters.output_adapter.OutputAdapter
+    init_parameters:
+      template: "{{ replies[0] }}"
+      output_type: str
+
+  bm25_retriever:
+    type: haystack_integrations.components.retrievers.opensearch.bm25_retriever.OpenSearchBM25Retriever
+    init_parameters:
+      top_k: 30
+      document_store:
+        type: haystack_integrations.document_stores.opensearch.document_store.OpenSearchDocumentStore
+        init_parameters:
+          hosts:
+            - "${OPENSEARCH_HOST}:${OPENSEARCH_PORT}"
+          use_ssl: true
+          verify_certs: false
+          http_auth:
+            - admin
+            - "${OPENSEARCH_PASSWORD}"
+          index: hdp_wiki
+          embedding_dim: ${HDP_EMBEDDING_DIM}
+          similarity: cosine
+
+  # ── HDP_EMBEDDER_BLOCK_START ──────────────────────────────────────
+  # This block is regenerated at container start by render_pipeline.py
+  # based on HDP_EMBEDDING_PROVIDER (local | remote). Do not hand-edit
+  # the component type/init_parameters here — edit render_pipeline.py
+  # instead so the change survives a container restart. See .env.example.
+  query_embedder:
+    type: haystack.components.embedders.sentence_transformers_text_embedder.SentenceTransformersTextEmbedder
+    init_parameters:
+      model: "${HDP_EMBEDDING_MODEL}"
+      prefix: "query: "
+  # ── HDP_EMBEDDER_BLOCK_END ────────────────────────────────────────
+
+  embedding_retriever:
+    type: haystack_integrations.components.retrievers.opensearch.embedding_retriever.OpenSearchEmbeddingRetriever
+    init_parameters:
+      top_k: 40
+      efficient_filtering: true
+      document_store:
+        type: haystack_integrations.document_stores.opensearch.document_store.OpenSearchDocumentStore
+        init_parameters:
+          hosts:
+            - "${OPENSEARCH_HOST}:${OPENSEARCH_PORT}"
+          use_ssl: true
+          verify_certs: false
+          http_auth:
+            - admin
+            - "${OPENSEARCH_PASSWORD}"
+          index: hdp_wiki
+          embedding_dim: ${HDP_EMBEDDING_DIM}
+          similarity: cosine
+
+  document_joiner:
+    type: haystack.components.joiners.document_joiner.DocumentJoiner
+    init_parameters:
+      join_mode: concatenate
+
+  ranker:
+    type: haystack.components.rankers.sentence_transformers_similarity.SentenceTransformersSimilarityRanker
+    init_parameters:
+      model: PM-AI/bi-encoder_msmarco_bert-base_german
+      top_k: 14
+      meta_fields_to_embed:
+        - document.meta.chatbotmeta
+        - document.meta.display_title
+        - document.meta.sections
+
+  qa_prompt_builder:
+    type: haystack.components.builders.prompt_builder.PromptBuilder
+    init_parameters:
+      template: *detailed_prompt
+      required_variables: ["documents", "question"]
+
+  chat_summary_llm:
+    type: haystack.components.generators.openai.OpenAIGenerator
+    init_parameters:
+      api_key:
+        type: env_var
+        env_vars:
+          - HDP_LLM_API_KEY
+        strict: false
+      api_base_url: "${HDP_LLM_BASE_URL}"
+      model: "${HDP_LLM_MODEL}"
+      timeout: 300
+      generation_kwargs:
+        temperature: 0
+
+  answerllm:
+    type: haystack.components.generators.openai.OpenAIGenerator
+    init_parameters:
+      api_key:
+        type: env_var
+        env_vars:
+          - HDP_LLM_API_KEY
+        strict: false
+      api_base_url: "${HDP_LLM_BASE_URL}"
+      model: "${HDP_LLM_MODEL}"
+      timeout: 300
+      generation_kwargs:
+        temperature: 0
+
+  conditional_router:
+    type: haystack.components.routers.conditional_router.ConditionalRouter
+    init_parameters:
+      routes:
+        - condition: "{{ path == 'rag' }}"
+          output: "{{ question }}"
+          output_name: "normal"
+          output_type: str
+        - condition: "{{ path == 'followup_short' }}"
+          output: "{{ question }}"
+          output_name: "followup_short"
+          output_type: str
+        - condition: "{{ path == 'followup_elaborate' }}"
+          output: "{{ question }}"
+          output_name: "followup_elaborate"
+          output_type: str
+        - condition: "{{ path == 'followup_bulletpoints' }}"
+          output: "{{ question }}"
+          output_name: "followup_bulletpoints"
+          output_type: str
+        - condition: "{{ path == 'followup_onlytext' }}"
+          output: "{{ question }}"
+          output_name: "followup_onlytext"
+          output_type: str
+        - condition: "{{ path == 'followup_citations' }}"
+          output: "{{ question }}"
+          output_name: "followup_citations"
+          output_type: str
+
+  string_joiner:
+    type: haystack.components.joiners.string_joiner.StringJoiner
+
+  output_adapter:
+    type: haystack.components.converters.output_adapter.OutputAdapter
+    init_parameters:
+      template: "{{ strings[0] }}"
+      output_type: str
+
+  answer_builder:
+    type: haystack.components.builders.answer_builder.AnswerBuilder
+
+  answer_builder_chatsummary:
+    type: haystack.components.builders.answer_builder.AnswerBuilder
+
+  answer_joiner:
+    type: haystack.components.joiners.answer_joiner.AnswerJoiner
+
+connections:
+  # Query reformulation
+  - sender: chat_summary_prompt_builder.prompt
+    receiver: chat_summary_llm.prompt
+  - sender: chat_summary_llm.replies
+    receiver: replies_to_query.replies
+  - sender: replies_to_query.output
+    receiver: bm25_retriever.query
+  - sender: replies_to_query.output
+    receiver: query_embedder.text
+  - sender: replies_to_query.output
+    receiver: ranker.query
+  - sender: replies_to_query.output
+    receiver: conditional_router.question
+
+  # Retrieval
+  - sender: bm25_retriever.documents
+    receiver: document_joiner.documents
+  - sender: query_embedder.embedding
+    receiver: embedding_retriever.query_embedding
+  - sender: embedding_retriever.documents
+    receiver: document_joiner.documents
+  - sender: document_joiner.documents
+    receiver: ranker.documents
+
+  # Routing to prompt builders
+  - sender: ranker.documents
+    receiver: qa_prompt_builder.documents
+  - sender: ranker.documents
+    receiver: followup_elaborate.documents
+  - sender: conditional_router.normal
+    receiver: qa_prompt_builder.question
+  - sender: conditional_router.followup_elaborate
+    receiver: followup_elaborate.question
+
+  # Prompt assembly
+  - sender: qa_prompt_builder.prompt
+    receiver: string_joiner.strings
+  - sender: followup_elaborate.prompt
+    receiver: string_joiner.strings
+  - sender: string_joiner.strings
+    receiver: output_adapter.strings
+  - sender: output_adapter.output
+    receiver: answerllm.prompt
+
+  # Answer building
+  - sender: ranker.documents
+    receiver: answer_builder.documents
+  - sender: answerllm.replies
+    receiver: answer_builder.replies
+  - sender: replies_to_query.output
+    receiver: answer_builder.query
+  - sender: answer_builder.answers
+    receiver: answer_joiner.answers
+  - sender: chat_summary_llm.replies
+    receiver: answer_builder_chatsummary.replies
+  - sender: answer_builder_chatsummary.answers
+    receiver: answer_joiner.answers
+
+inputs:
+  question: "chat_summary_prompt_builder.question"
+  query: "answer_builder_chatsummary.query"
+  path: "conditional_router.path"
+
+outputs:
+  answers: "answer_joiner.answers"
