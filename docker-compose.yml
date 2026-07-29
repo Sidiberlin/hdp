@@ -189,7 +189,7 @@ services:
     restart: unless-stopped
     ports:
       - "${HAYHOOKS_PORT:-1416}:1416"
-      - "1417:1417"
+      - "${HDP_PDF_PORT:-1417}:1417"
     deploy:
       resources:
         limits:

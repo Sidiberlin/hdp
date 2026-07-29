@@ -40,8 +40,8 @@ open http://localhost:8080/w/
 | `chatbot-proxy` | Custom build (`docker/chatbot-proxy/`) | Bridges BlueSpice ChatBot extension's Deepset-API format to Haystack's API |
 
 Ports published to the host: `${MW_DOCKER_PORT:-8080}` (wiki),
-`${HAYHOOKS_PORT:-1416}` (hayhooks admin/docs UI), `1417` (Haystack RAG
-query API, used by `chatbot-proxy` and directly testable).
+`${HAYHOOKS_PORT:-1416}` (hayhooks admin/docs UI), `${HDP_PDF_PORT:-1417}`
+(Haystack RAG query API, used by `chatbot-proxy` and directly testable).
 
 ## What `setup.sh` Does
 
