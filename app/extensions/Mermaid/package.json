@@ -1,0 +1,54 @@
+{
+  "type": "module",
+  "name": "mediawiki-mermaid",
+  "version": "10.9.4",
+  "description": "Markdownish syntax for generating flowcharts, sequence diagrams, class diagrams, gantt charts and git graphs.",
+  "main": "lib/mermaid.core.js",
+  "keywords": [
+    "diagram",
+    "markdown",
+    "flowchart",
+    "sequence diagram",
+    "gantt",
+    "class diagram",
+    "git graph"
+  ],
+  "scripts": {
+    "build": "rollup -c",
+    "postinstall": "npm run build && node resources/utility/inject-nomin.cjs && npx tsx scripts/generateConfigMap.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/SemanticMediaWiki/Mermaid"
+  },
+  "author": "Tyler Gibson",
+  "license": "GPL-2.0-or-later",
+  "standard": {
+    "globals": [
+      "page"
+    ]
+  },
+  "dependencies": {
+    "mermaid": "10.9.4",
+    "node-fetch": "^2.7.0",
+    "ts-morph": "^26.0.0"
+  },
+  "files": [
+    "lib",
+    "resources"
+  ],
+  "copyFilesSettings": {
+    "whenFileExists": "overwrite"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@types/node": "^24.0.12",
+    "@types/node-fetch": "^2.6.12",
+    "copy-files-from-to": "^3.12.1",
+    "insert-line": "^1.1.0",
+    "rollup": "^4.0.0",
+    "tsx": "^4.20.3"
+  }
+}
