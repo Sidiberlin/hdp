@@ -1,4 +1,14 @@
+# Upstream MediaWiki ignores everything under skins/ so a fresh checkout
+# can drop in third-party skins without polluting the repo. HDP ships a
+# fixed set of skins vendored into the repo — whitelist them explicitly
+# so contributors don't need `git add -f` for edits under these dirs.
 /*
 !/.gitignore
 !/.vsls.json
 !/README
+!/BlueSpiceDiscovery/
+!/hdp/
+!/MinervaNeue/
+!/MonoBook/
+!/Timeless/
+!/Vector/
