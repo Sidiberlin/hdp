@@ -1,0 +1,31 @@
+== Hilfebereich — Inhaltsverzeichnis ==
+
+Diese Seite listet die von [https://github.com/anthropics/codewiki codewiki]
+aus dem Projekt-Quelltext generierte technische Dokumentation. Die
+Quelldateien liegen im Repository unter <code>docs/wiki/</code> und werden
+beim ersten Container-Boot in den Wiki-Hilfebereich importiert.
+
+=== Übersicht ===
+
+* [[Help:Technische_Dokumentation]] — Projektüberblick und Komponentenkarte
+* [[Help:Architektur]] — Systemdiagramm und Design-Entscheidungen
+* [[Help:Erste_Schritte]] — Installation, Erststart, wichtige Workflows
+
+=== Module ===
+
+* [[Help:Modul/ChatBot-Extension]] — REST-Routen, Deepset-Connector, Chat-UI
+* [[Help:Modul/Haystack-Pipeline]] — YAML-Pipeline, hayhooks, hdp_api_server
+* [[Help:Modul/Ingestion]] — Wiki → Sections → Embeddings → OpenSearch
+* [[Help:Modul/Embedding-Provider]] — Lokales Modell / Remote / HuggingFace Space
+* [[Help:Modul/Docker-Services]] — docker-compose.yml, Volumes, Netzwerk, Health-Checks
+* [[Help:Modul/Settings.d]] — BlueSpice-Extension-Loader und HDP-Overrides
+
+=== Diagramme ===
+
+* [[Help:Diagramme/Sequenzen]] — Chat-Query, Ingestion, First-Boot als sequenceDiagram
+* [[Help:Diagramme/Klassendiagramm]] — Warum kein klassisches Klassendiagramm passt
+
+=== Weiterführend ===
+
+* [[Chatbot-FAQ]] — Endbenutzer-FAQ zum Chatbot
+* [[Hauptseite]] — Wiki-Hauptseite

@@ -1,0 +1,59 @@
+= Module: Ingestion =
+
+[https://github.com/Sidiberlin/hdp/blob/main/docker/haystack/ingest_hdp_wiki.py <code>docker/haystack/ingest_hdp_wiki.py</code>]
+is the script that actually populates the RAG chatbot’s knowledge base. It
+is '''not''' a background service — it’s invoked manually (or by whatever
+external scheduler an operator sets up) via
+<code>docker compose exec haystack python3 ingest_hdp_wiki.py</code>, and is
+idempotent/safe to re-run at any time. See
+[[Help:Architektur#key-design-decisions|architecture.md]] for why this
+script exists instead of the ChatBot extension’s own built-in indexing
+job.
+
+== Responsibilities ==
+
+* Read the list of indexable wiki pages directly from MariaDB.
+* Render each page’s current content via the MediaWiki <code>action=parse</code> API (so it reflects wikitext, templates, and extensions the same way a reader would see it).
+* Split each rendered page into sections by heading (<code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code>).
+* Embed each section’s text with the configured embedding provider.
+* Write the resulting documents into OpenSearch’s <code>hdp_wiki</code> index.
+
+== Key Files ==
+
+* [https://github.com/Sidiberlin/hdp/blob/main/docker/haystack/ingest_hdp_wiki.py <code>docker/haystack/ingest_hdp_wiki.py</code>] — the entire ingestion pipeline in one script (~560 lines)
+
+== Public API / Interfaces ==
+
+Command-line, run inside the <code>haystack</code> container:
+
+<syntaxhighlight lang="bash">python3 ingest_hdp_wiki.py                    # Full reindex, configured embedder
+python3 ingest_hdp_wiki.py --page "Hauptseite"  # Single page (substring match on title)
+python3 ingest_hdp_wiki.py --dry-run           # Preview only, no writes
+python3 ingest_hdp_wiki.py --missing-only      # Only pages whose page_id isn't already in OpenSearch
+python3 ingest_hdp_wiki.py --provider remote   # Override HDP_EMBEDDING_PROVIDER for this run
+python3 ingest_hdp_wiki.py --provider hf_space  # One-off fast bulk embed via a HuggingFace Space</syntaxhighlight>
+<code>--provider</code> defaults to <code>$HDP_EMBEDDING_PROVIDER</code> (itself defaulting to
+<code>local</code>) if not given.
+
+== Internal Structure ==
+
+# '''<code>get_namespace_pages(conn)</code>''' — <code>SELECT</code> from MariaDB’s <code>page</code> table: non-redirect pages in namespaces <code>[0, 5000, 5002]</code> (<code>INDEXABLE_NAMESPACES</code> — main, <code>Ministerium</code>, <code>Projektträger</code>) with <code>page_content_model = 'wikitext'</code> (or <code>NULL</code>).
+# '''<code>mw_api_login()</code>''' — logs into the MediaWiki API as <code>MW_ADMIN_USER</code> (default <code>Admin</code>) via <code>action=clientlogin</code>, handling the BlueSpice Privacy consent multi-step UI flow (auto-accepts any checkbox fields presented).
+# '''<code>render_page(session, prefixed_title)</code>''' — <code>action=parse</code> with <code>prop=text|displaytitle|categories|sections|properties|externallinks</code>, TOC/edit-section/limit-report disabled.
+# '''<code>split_by_sections(html_text)</code>''' — regex-splits the rendered HTML on <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code> boundaries (mirroring the ChatBot extension’s own <code>IndexDeepset::getRawPageContentBySections()</code> logic — see [[Help:Modul/ChatBot-Extension|chatbot-extension]]), strips tags, keeps an “Intro” section for text before the first heading, and falls back to a single “Full Page” section if no headings are found.
+# '''<code>build_metadata(parsed, page, section_name)</code>''' — builds the same metadata shape the query pipeline’s prompt and ranker expect: <code>title_level_1</code>..<code>title_level_5</code> (from splitting the prefixed title on <code>/</code>), <code>chatbotmeta</code> (from the page’s <code>Chatbotmeta</code> semantic property, if set — see the <code>ContentDroplets</code> template in <code>app/extensions/ChatBot/data/Content/ContentDropletsTemplates/</code>), <code>display_title</code>, <code>sections</code>, <code>categories</code>, <code>namespace</code>/<code>namespace_text</code>, <code>page_id</code>, and a <code>uri</code> built from <code>MW_API_URL</code>’s host.
+# '''<code>process_page(...)</code>''' — renders, splits, builds one <code>Document</code> per section (<code>id</code> = first 32 hex chars of <code>sha256(page_id:section_name)</code>, making re-ingestion of an unchanged section a stable overwrite), embeds the batch, and writes to OpenSearch with <code>DuplicatePolicy.OVERWRITE</code>.
+# '''<code>main()</code>''' — parses CLI args, connects to MariaDB, fetches the page list (optionally filtered by <code>--page</code> or <code>--missing-only</code>), logs into MediaWiki, builds the embedder (<code>make_embedder()</code>), opens the <code>OpenSearchDocumentStore</code>, and processes each page with a <code>0.2s</code> delay between pages (API rate limiting). A single page’s failure is logged and skipped — the run continues.
+
+== Dependencies ==
+
+* '''Uses:''' MariaDB (page list, via <code>pymysql</code>), the MediaWiki <code>action=parse</code> and <code>action=clientlogin</code> APIs (<code>MW_API_URL</code>, default <code>http://mediawiki-web:8080/w/api.php</code>), one of <code>LocalEmbedder</code>/<code>RemoteEmbedder</code>/<code>HFSpaceEmbedder</code> (see [[Help:Modul/Embedding-Provider|embedding-providers]]), <code>OpenSearchDocumentStore</code> (<code>haystack_integrations</code>).
+* '''Used by:''' nothing programmatically — it’s an operator-invoked maintenance script, documented as the “re-run after content changes” step in [[Help:Erste_Schritte|getting-started.md]] and README-DOCKER.md.
+
+== Notable Patterns / Gotchas ==
+
+* '''Not triggered by page saves.''' Unlike the ChatBot extension’s own (inert, in this deployment) <code>UpdateIndexTable</code>/<code>IndexDeepset</code> pipeline, this script has no hook into MediaWiki’s edit flow. Content is stale in the chatbot until someone re-runs it — <code>--missing-only</code> makes routine re-runs cheap by skipping already-indexed <code>page_id</code>s.
+* '''TLS verification disabled''' when querying OpenSearch’s aggregation endpoint directly in <code>get_indexed_page_ids()</code> (<code>ssl.CERT_NONE</code>) — matches <code>OpenSearchDocumentStore(verify_certs=False)</code> used elsewhere in this file; safe only because OpenSearch is reachable exclusively on the internal Docker network.
+* '''Deterministic document IDs.''' Because <code>doc_id</code> is a hash of <code>page_id:section_name</code> (not a random UUID), re-ingesting an unchanged page produces identical IDs and <code>DuplicatePolicy.OVERWRITE</code> makes the write a no-op update rather than a duplicate — but if a page’s ''section headings change'' (renamed/added/removed), the old sections’ documents are '''not''' deleted, only new ones are added/overwritten, so a full reindex (not <code>--missing-only</code>) is needed to fully reflect heading restructuring. There is no explicit stale-section cleanup in this script.
+* '''<code>--missing-only</code> only checks page-level presence''', via an OpenSearch terms aggregation on <code>page_id</code> (capped at 1000 buckets) — it does not detect a page whose ''content'' changed but which already has at least one document indexed; use a full reindex (no flag) after editing existing pages, <code>--missing-only</code> is for resuming an interrupted first run.
+* '''HTML stripping is hand-rolled''' (<code>HTMLStripper(HTMLParser)</code>), explicitly written as “equivalent to PHP <code>strip_tags()</code>” to match the ChatBot extension’s own PHP-side section splitting as closely as possible.

@@ -1,0 +1,113 @@
+= Sequence Diagrams =
+
+Three key workflows, with real participants only (no invented services).
+See [[Help:Architektur|architecture.md]] for the system-level picture and
+[https://github.com/Sidiberlin/hdp/blob/main/docs/wiki/modules modules/] for per-component detail.
+
+== (a) Chatbot Query ==
+
+{{#mermaid:sequenceDiagram
+    participant Browser
+    participant REST as MediaWiki REST<br>/bmbf/*
+    participant ChatApi as ChatBot\DeepsetApi\ChatApi
+    participant Proxy as chatbot-proxy
+    participant API as hdp_api_server<br>:1417
+    participant OS as OpenSearch
+    participant LLM as LLM API
+
+    Browser->>REST: GET /bmbf/session
+    REST->>Proxy: GET / (via SessionApi)
+    Proxy-->>REST: {"pipeline_id": "hdp_pipeline"}
+    REST->>Proxy: POST /session {pipeline_id}
+    Proxy-->>REST: {"search_session_id": "..."}
+    REST-->>Browser: search_session_id
+
+    Browser->>REST: GET /bmbf/chat?query=...&sessionId=...&followUpType=rag
+    REST->>ChatApi: Chat::execute() -> ChatApi::request(query, sessionId, followUpType)
+    ChatApi->>ChatApi: sendSSEHeaders() (disable output buffering)
+    ChatApi->>Proxy: POST /chat-stream<br>{search_session_id, query, params.ConditionalRouter.path, filters?}
+    Proxy->>API: POST /hdp_pipeline/run<br>{question, query, path:"rag" (hardcoded by proxy)}
+    API->>OS: BM25 + embedding retrieval (hdp_wiki index)
+    OS-->>API: top-ranked documents
+    API->>LLM: chat completions (query reformulation, then grounded answer, temp=0)
+    LLM-->>API: reformulated query + generated answer
+    API-->>Proxy: JSON {answer_joiner: {answers: [reformulated, answer]}}
+    Proxy-->>ChatApi: SSE: data: {"type":"delta","content":"..."} (repeated), then {"type":"result", result:{...}}
+    ChatApi-->>Browser: SSE passthrough (echo + ob_flush + flush per line)
+}}
+=== Walkthrough ===
+
+# On chat widget open, the frontend calls <code>GET /bmbf/session</code> ([https://github.com/Sidiberlin/hdp/blob/main/app/extensions/ChatBot/src/Rest/Session.php <code>src/Rest/Session.php</code>]), which invokes [https://github.com/Sidiberlin/hdp/blob/main/app/extensions/ChatBot/src/DeepsetApi/SessionApi.php <code>SessionApi::request()</code>]: first <code>GET</code> the configured <code>BmbfDeepsetApiChatUrl</code> (<code>http://chatbot-proxy:8080</code>) for a <code>pipeline_id</code>, then <code>POST</code> it to <code>BmbfDeepsetApiSearchSessionsUrl</code> (<code>.../session</code>) to get a <code>search_session_id</code>. Both are served by [https://github.com/Sidiberlin/hdp/blob/main/docker/chatbot-proxy/server.py <code>docker/chatbot-proxy/server.py</code>]’s <code>do_GET</code>/<code>do_POST</code> handlers.
+# The user submits a question. The widget calls <code>GET /bmbf/chat?query=...&amp;sessionId=...&amp;followUpType=...</code>, routed by <code>extension.json</code> to [https://github.com/Sidiberlin/hdp/blob/main/app/extensions/ChatBot/src/Rest/Chat.php <code>src/Rest/Chat.php</code>], which delegates to [https://github.com/Sidiberlin/hdp/blob/main/app/extensions/ChatBot/src/DeepsetApi/ChatApi.php <code>ChatApi::request()</code>].
+# <code>ChatApi</code> disables PHP output buffering, sends SSE headers, and opens a '''streaming''' <code>POST</code> to <code>chatbot-proxy</code>’s <code>/chat-stream</code>, including a namespace-based access filter from <code>ChatApi::getFilter()</code> (see the gotcha in [[Help:Modul/ChatBot-Extension|chatbot-extension]] — this filter is currently not read by the proxy).
+# <code>chatbot-proxy</code>’s <code>_handle_chat_stream()</code> reads only the <code>query</code> field and calls <code>call_hayhooks()</code>, which always sends <code>&quot;path&quot;: &quot;rag&quot;</code> to <code>hdp_api_server</code>’s <code>POST /hdp_pipeline/run</code> — see [[Help:Modul/Haystack-Pipeline|haystack-pipeline]].
+# The pipeline reformulates the query, retrieves + ranks documents from OpenSearch, and generates a grounded answer citing <code>[N]</code> documents (see the Pipeline Flow diagram in [[Help:Modul/Haystack-Pipeline|haystack-pipeline]]).
+# <code>chatbot-proxy</code>’s <code>build_result_from_haystack()</code> reshapes the pipeline’s response into a Deepset-shaped result, splits the answer into 5-word chunks, and streams them as <code>type:&quot;delta&quot;</code> SSE events, followed by one <code>type:&quot;result&quot;</code> event carrying the full answer + source documents.
+# <code>ChatApi::request()</code> reads the upstream SSE response line-by-line and echoes each line straight to the browser — no re-parsing — so the SSE event shape <code>chatbot-proxy</code> emits is exactly what the frontend (<code>resources/ts/utils/MessageParser.ts</code>) must understand.
+
+== (b) Ingestion ==
+
+{{#mermaid:sequenceDiagram
+    participant Op as Operator
+    participant Script as ingest_hdp_wiki.py
+    participant DB as MariaDB
+    participant MW as MediaWiki API<br>(mediawiki-web)
+    participant Emb as Embedder<br>(local/remote/hf_space)
+    participant OS as OpenSearch
+
+    Op->>Script: docker compose exec haystack python3 ingest_hdp_wiki.py
+    Script->>DB: SELECT page list<br>(namespaces 0, 5000, 5002; non-redirect)
+    DB-->>Script: page rows
+    Script->>MW: action=clientlogin (Admin)
+    MW-->>Script: authenticated session
+    loop for each page
+        Script->>MW: action=parse (prefixed_title)
+        MW-->>Script: rendered HTML, categories, properties
+        Script->>Script: split_by_sections() -> Document objects
+        Script->>Emb: embed_documents(documents)
+        Emb-->>Script: documents with .embedding set
+        Script->>OS: write_documents(policy=OVERWRITE)
+    end
+    Script-->>Op: log: total documents indexed + final count
+}}
+=== Walkthrough ===
+
+# An operator runs <code>ingest_hdp_wiki.py</code> inside the <code>haystack</code> container — see [[Help:Modul/Ingestion|ingestion]] and [[Help:Erste_Schritte|getting-started.md]] for the full CLI flag set (<code>--page</code>, <code>--dry-run</code>, <code>--missing-only</code>, <code>--provider</code>).
+# <code>get_namespace_pages()</code> queries MariaDB directly for indexable pages (main namespace <code>0</code>, <code>Ministerium</code> <code>5000</code>, <code>Projektträger</code> <code>5002</code>).
+# <code>mw_api_login()</code> authenticates to the MediaWiki API as <code>Admin</code> via <code>action=clientlogin</code>, auto-accepting any BlueSpice Privacy consent UI step it’s presented with.
+# For each page, <code>render_page()</code> calls <code>action=parse</code> to get the same rendered HTML a reader would see, then <code>split_by_sections()</code> breaks it into heading-delimited chunks (falling back to a single “Full Page” chunk if there are no headings).
+# <code>process_page()</code> builds one Haystack <code>Document</code> per section (metadata shaped to match what the query pipeline’s prompt/ranker expect — see [[Help:Modul/Ingestion|ingestion]]), embeds the batch via whichever embedder <code>make_embedder()</code> constructed (see [[Help:Modul/Embedding-Provider|embedding-providers]]), and writes them to OpenSearch’s <code>hdp_wiki</code> index with <code>DuplicatePolicy.OVERWRITE</code>.
+# A <code>0.2s</code> sleep between pages rate-limits the MediaWiki API calls. A single page’s failure is logged and the run continues to the next page.
+
+== (c) First-Boot Setup (<code>setup.sh</code>) ==
+
+{{#mermaid:sequenceDiagram
+    participant Op as Operator
+    participant Setup as setup.sh<br>(mediawiki container)
+    participant DB as MariaDB
+    participant Installer as maintenance/install.php<br>+ update.php
+    participant FS as LocalSettings.php /<br>settings.d loader
+
+    Op->>Setup: docker compose exec mediawiki bash /setup.sh
+    Setup->>DB: poll SELECT 1 (max 120s)
+    DB-->>Setup: connection OK
+    Setup->>Setup: rewrite composer.lock SSH->HTTPS,<br>strip 2 private packages, composer install
+    Setup->>Installer: php maintenance/install.php --dbtype mysql ...
+    Installer->>DB: create bluespice schema
+    Installer-->>FS: writes LocalSettings.php<br>(with auto wfLoadExtension() calls)
+    Setup->>FS: strip wfLoadExtension() lines,<br>append require LocalSettings.BlueSpice.php
+    Setup->>Installer: php maintenance/run.php update.php --quick
+    Installer->>DB: create ~130 BlueSpice extension tables
+    Setup->>Setup: mkdir data dirs, chown www-data,<br>stub tests/qunit/QUnitTestResources.php
+    Setup->>Installer: re-run update.php --quick (data dirs now exist)
+    Setup->>FS: edit.php Hauptseite < hauptseite.wiki<br>(first install only, marker-guarded)
+    Setup-->>Op: "Setup complete!" + wiki URL + Admin login
+}}
+=== Walkthrough ===
+
+# <code>setup.sh</code> waits up to 120s for MariaDB to accept a <code>SELECT 1</code> as the <code>bluespice</code> user — this is a real connectivity check, distinct from Docker’s own MariaDB healthcheck (see the gotcha this addresses in <code>docs/QA-REPORT.md</code> Bug 7).
+# '''Composer fix''': <code>hallowelt/chatbot</code> and <code>mediawiki/page-header</code> are pinned in <code>composer.lock</code> to a private GitLab and (for several other packages) SSH-form GitHub URLs. The script rewrites those to HTTPS, temporarily neutralizes <code>composer.local.json</code> (which declares the private VCS repos via the MWStake merge-plugin), strips the two private packages from the lockfile, and runs <code>composer install</code> — their actual source is already vendored under <code>app/extensions/</code>, so nothing is missing functionally.
+# '''MediaWiki install''': <code>maintenance/install.php</code> is called directly (not via <code>run.php</code>, which would look in the wrong path) against MariaDB, generating a fresh <code>LocalSettings.php</code>. Its auto-<code>wfLoadExtension()</code> lines are then stripped and replaced with a <code>require_once &quot;$IP/LocalSettings.BlueSpice.php&quot;</code> — handing extension loading over to [[Help:Modul/Settings.d|settings.d]] instead, to avoid “extension loaded twice” fatals (e.g. <code>Echo</code>, loaded both natively and via a BlueSpice shim).
+# '''<code>update.php</code>''' runs twice: once immediately after install (creates most BlueSpice extension tables), and again after step 5 fixes permissions and creates data directories some extensions (e.g. SemanticMediaWiki) need to complete their own setup.
+# '''Permission/stub fixes''': creates <code>extensions/BlueSpiceFoundation/data</code> and <code>extensions/SemanticMediaWiki/data</code>, <code>chown</code>s them plus <code>cache/</code>/<code>images/</code>/<code>tests/</code> to <code>www-data</code>, and stubs <code>tests/qunit/QUnitTestResources.php</code> (normally generated by Wikimedia dev tooling, not part of this repo — without it, every page load fatals under the Wikimedia dev image’s ResourceLoader).
+# '''Main page population''' (first install only): replaces the generic upstream welcome page with [https://github.com/Sidiberlin/hdp/blob/main/docker/mediawiki/hauptseite.wiki <code>docker/mediawiki/hauptseite.wiki</code>] via <code>maintenance/run.php edit.php</code>, guarded by a <code>cache/.hauptseite-populated</code> marker file so subsequent container restarts (or re-running <code>setup.sh</code>, which is idempotent) never overwrite an admin’s later edits to the main page.

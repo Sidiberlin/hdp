@@ -1,0 +1,248 @@
+= Module: Haystack RAG Pipeline =
+
+The RAG query pipeline lives in
+[https://github.com/Sidiberlin/hdp/blob/main/docker/haystack <code>docker/haystack/</code>] and runs inside the
+<code>haystack</code> container. It’s a [https://haystack.deepset.ai/ Haystack] 2.x
+pipeline, defined declaratively in YAML, that does query reformulation →
+hybrid retrieval → cross-encoder ranking → grounded LLM answer generation.
+It is exposed through '''two separate HTTP servers in the same container''' —
+this is the module’s single most important gotcha, see below.
+
+== Responsibilities ==
+
+* '''Query reformulation''' — rewrite the (possibly chat-history-carrying) question into a search-friendly form via an LLM call.
+* '''Hybrid retrieval''' — parallel BM25 (<code>bm25_retriever</code>, top 30) and embedding similarity (<code>embedding_retriever</code>, top 40) search against OpenSearch, merged by <code>document_joiner</code>.
+* '''Cross-encoder ranking''' — re-rank the merged set down to the top 14 with a German bi-encoder similarity model.
+* '''Multi-mode generation''' — a <code>conditional_router</code> selects between answer styles based on a <code>path</code> input.
+* '''Grounded answer generation''' — a strict German prompt instructing the LLM to answer only from the provided documents, cite them as <code>[N]</code>, and say so if no answer is found.
+
+== Key Files ==
+
+* [https://github.com/Sidiberlin/hdp/blob/main/docker/haystack/hdp_pipeline.yaml <code>docker/haystack/hdp_pipeline.yaml</code>] — the pipeline definition (components + connections + inputs/outputs), deployed by hayhooks
+* [https://github.com/Sidiberlin/hdp/blob/main/docker/haystack/render_pipeline.py <code>docker/haystack/render_pipeline.py</code>] — rewrites the <code>query_embedder</code> component block in the YAML at container start based on <code>HDP_EMBEDDING_PROVIDER</code>
+* [https://github.com/Sidiberlin/hdp/blob/main/docker/haystack/hdp_api_server.py <code>docker/haystack/hdp_api_server.py</code>] — a custom FastAPI wrapper that loads the pipeline directly and exposes <code>POST /hdp_pipeline/run</code> on port '''1417''' (this, not hayhooks, is what <code>chatbot-proxy</code> actually calls)
+* [https://github.com/Sidiberlin/hdp/blob/main/docker/haystack/entrypoint.sh <code>docker/haystack/entrypoint.sh</code>] — container startup: Infisical secrets → wait for OpenSearch → pre-download models → render embedder block → start hayhooks (1416) → deploy pipeline via <code>POST /deploy-yaml</code> → start <code>hdp_api_server.py</code> (1417)
+* [https://github.com/Sidiberlin/hdp/blob/main/docker/haystack/Dockerfile <code>docker/haystack/Dockerfile</code>] — multi-stage build; <code>HAYSTACK_DEVICE</code> build arg (<code>cpu</code>/<code>gpu</code>) selects the PyTorch variant
+* [https://github.com/Sidiberlin/hdp/blob/main/pipeline/haystack-pipeline.py <code>pipeline/haystack-pipeline.py</code>] — a standalone Python (not YAML) build of an equivalent pipeline, kept for local testing/reference; '''not''' what the <code>haystack</code> container runs
+
+== Pipeline Components ==
+
+{| class="wikitable"
+|-
+! Component
+! Type
+! Purpose
+|-
+| <code>chat_summary_prompt_builder</code>
+| <code>PromptBuilder</code>
+| Builds the reformulation prompt from chat history
+|-
+| <code>chat_summary_llm</code>
+| <code>OpenAIGenerator</code>
+| Reformulates the query (temp=0), any OpenAI-compatible endpoint via <code>HDP_LLM_BASE_URL</code>
+|-
+| <code>replies_to_query</code>
+| <code>OutputAdapter</code>
+| Extracts the reformulated query string from the LLM reply
+|-
+| <code>bm25_retriever</code>
+| <code>OpenSearchBM25Retriever</code>
+| Lexical search against <code>hdp_wiki</code>, top 30
+|-
+| <code>query_embedder</code>
+| <code>SentenceTransformersTextEmbedder</code> (local) or <code>OpenAITextEmbedder</code> (remote)
+| Embeds the query — swapped by <code>render_pipeline.py</code>, see [[Help:Modul/Embedding-Provider|embedding-providers]]
+|-
+| <code>embedding_retriever</code>
+| <code>OpenSearchEmbeddingRetriever</code>
+| Dense search against <code>hdp_wiki</code>, top 40, <code>efficient_filtering: true</code>
+|-
+| <code>document_joiner</code>
+| <code>DocumentJoiner</code> (<code>concatenate</code>)
+| Merges BM25 + embedding hits
+|-
+| <code>ranker</code>
+| <code>SentenceTransformersSimilarityRanker</code>
+| Cross-encoder re-rank with <code>PM-AI/bi-encoder_msmarco_bert-base_german</code>, top 14
+|-
+| <code>conditional_router</code>
+| <code>ConditionalRouter</code>
+| Six routes on <code>path</code> (<code>rag</code>, <code>followup_*</code>), but only <code>rag</code>/<code>normal</code> and <code>followup_elaborate</code> connect to an actual <code>PromptBuilder</code>
+|-
+| <code>qa_prompt_builder</code>
+| <code>PromptBuilder</code>
+| The default grounded-answer prompt (<code>rag</code> path)
+|-
+| <code>followup_elaborate</code>
+| <code>PromptBuilder</code>
+| Same prompt template, wired for the <code>followup_elaborate</code> path
+|-
+| <code>string_joiner</code> / <code>output_adapter</code>
+| Joiners
+| Collapse whichever prompt builder fired into a single string
+|-
+| <code>answerllm</code>
+| <code>OpenAIGenerator</code>
+| Generates the final answer (temp=0)
+|-
+| <code>answer_builder</code> / <code>answer_builder_chatsummary</code> / <code>answer_joiner</code>
+| <code>AnswerBuilder</code>/<code>AnswerJoiner</code>
+| Package the reformulated query and the real answer into a two-element <code>answers</code> list
+|}
+
+== ML Models Used ==
+
+{| class="wikitable"
+|-
+! Model
+! Role
+! Notes
+|-
+| <code>mixedbread-ai/deepset-mxbai-embed-de-large-v1</code> (default)
+| Query + document embedding (German)
+| Configurable via <code>HDP_EMBEDDING_MODEL</code>; dimension via <code>HDP_EMBEDDING_DIM</code> (default 1024)
+|-
+| <code>PM-AI/bi-encoder_msmarco_bert-base_german</code>
+| Cross-encoder re-ranking
+| Hardcoded in <code>hdp_pipeline.yaml</code>, always downloaded locally regardless of embedding provider
+|-
+| Whatever <code>HDP_LLM_MODEL</code> points to (default <code>gpt-4o</code>)
+| Query reformulation + answer generation
+| Any OpenAI-compatible chat completions endpoint via <code>HDP_LLM_BASE_URL</code>
+|}
+
+== Answer Modes (<code>conditional_router</code> paths) ==
+
+{| class="wikitable"
+|-
+! Path
+! Description
+! Actually reachable via chatbot-proxy?
+|-
+| <code>rag</code>
+| Default — detailed grounded answer
+| Yes — the only path <code>chatbot-proxy</code> ever sends, see [[Help:Modul/ChatBot-Extension|chatbot-extension]]
+|-
+| <code>followup_short</code>, <code>followup_bulletpoints</code>, <code>followup_onlytext</code>, <code>followup_citations</code>
+| Declared as router outputs (and in <code>ChatApi</code>’s docblock)
+| Not wired to a <code>PromptBuilder</code> in <code>hdp_pipeline.yaml</code> at all
+|-
+| <code>followup_elaborate</code>
+| Same prompt template as <code>rag</code>, separate router branch
+| Wired in the pipeline, but unreachable via <code>chatbot-proxy</code> today (hardcodes <code>path: &quot;rag&quot;</code>)
+|}
+
+== Two Ports, Two Ways to Run the Same Pipeline ==
+
+<code>entrypoint.sh</code> starts '''both''':
+
+# '''hayhooks on port 1416''' — the general-purpose Haystack pipeline server. The entrypoint deploys <code>hdp_pipeline.yaml</code> to it via <code>POST /deploy-yaml</code> at container start. It also serves <code>/docs</code> (used by the entrypoint’s own readiness check).
+# '''<code>hdp_api_server.py</code> on port 1417''' — a small custom FastAPI app that independently calls <code>Pipeline.loads()</code> on the same (<code>envsubst</code>-rendered) YAML at import time, and exposes <code>POST /hdp_pipeline/run</code> / <code>GET /health</code>. It converts Haystack’s <code>Document</code>/<code>Answer</code> objects and any <code>numpy</code> types in the result into plain JSON (<code>to_native()</code>), which the raw hayhooks response would not otherwise guarantee.
+
+<code>chatbot-proxy</code> and the <code>README-DOCKER.md</code>-documented <code>curl</code> examples both
+target '''1417'''. Port 1416 exists for pipeline deployment/administration,
+not as the query path this deployment actually uses.
+
+== Pipeline Flow ==
+
+{{#mermaid:flowchart TD
+    Input(["POST /hdp_pipeline/run<br>question, query, path"])
+    CS["chat_summary_prompt_builder"]
+    CSLLM["chat_summary_llm<br>query reformulation"]
+    RTQ["replies_to_query"]
+    BM25["bm25_retriever<br>top 30"]
+    QE["query_embedder"]
+    ER["embedding_retriever<br>top 40"]
+    DJ["document_joiner"]
+    RANK["ranker<br>top 14"]
+    CR["conditional_router"]
+    QAP["qa_prompt_builder<br>rag path"]
+    FUP["followup_elaborate<br>path"]
+    SJ["string_joiner"]
+    OA["output_adapter"]
+    ALLM["answerllm"]
+    AB["answer_builder"]
+    ABCS["answer_builder_chatsummary"]
+    AJ["answer_joiner"]
+    Output(["answers[0] = reformulated query<br>answers[1] = answer"])
+
+    Input -->|"question"| CS
+    Input -->|"query"| ABCS
+    Input -->|"path"| CR
+    CS --> CSLLM
+    CSLLM -->|"replies"| RTQ
+    CSLLM -->|"replies"| ABCS
+    RTQ --> BM25
+    RTQ --> QE
+    RTQ --> CR
+    RTQ -->|"query"| AB
+    QE --> ER
+    BM25 --> DJ
+    ER --> DJ
+    DJ --> RANK
+    RANK -->|"documents"| QAP
+    RANK -->|"documents"| FUP
+    RANK -->|"documents"| AB
+    CR -->|"normal"| QAP
+    CR -->|"followup_elaborate"| FUP
+    QAP --> SJ
+    FUP --> SJ
+    SJ --> OA
+    OA --> ALLM
+    ALLM -->|"replies"| AB
+    AB -->|"answers"| AJ
+    ABCS -->|"answers"| AJ
+    AJ --> Output
+}}
+== Environment Variables ==
+
+{| class="wikitable"
+|-
+! Variable
+! Default
+! Description
+|-
+| <code>OPENSEARCH_HOST</code> / <code>OPENSEARCH_PORT</code>
+| <code>opensearch</code> / <code>9200</code>
+| OpenSearch connection
+|-
+| <code>OPENSEARCH_PASSWORD</code>
+| —
+| OpenSearch <code>admin</code> password
+|-
+| <code>HDP_LLM_BASE_URL</code> / <code>HDP_LLM_MODEL</code> / <code>HDP_LLM_API_KEY</code>
+| <code>https://open.bigmodel.cn/api/paas/v4</code> / <code>glm-4.7</code> (compose defaults; <code>.env.example</code> recommends <code>https://api.openai.com/v1</code> / <code>gpt-4o</code>)
+| LLM endpoint used by both <code>chat_summary_llm</code> and <code>answerllm</code>
+|-
+| <code>HDP_EMBEDDING_PROVIDER</code>
+| <code>local</code>
+| <code>local</code> | <code>remote</code> — see [[Help:Modul/Embedding-Provider|embedding-providers]]
+|-
+| <code>HDP_EMBEDDING_MODEL</code> / <code>HDP_EMBEDDING_DIM</code>
+| <code>mixedbread-ai/deepset-mxbai-embed-de-large-v1</code> / <code>1024</code>
+| Embedding model + vector dimension
+|-
+| <code>HAYHOOKS_PORT</code>
+| <code>1416</code>
+| hayhooks admin/deploy port
+|-
+| <code>HAYSTACK_DEVICE</code>
+| <code>cpu</code>
+| <code>cpu</code> or <code>gpu</code> PyTorch build
+|}
+
+== Dependencies ==
+
+* <code>haystack-ai==2.15.0</code>, <code>haystack-experimental==0.19.0.post1</code>, <code>hayhooks==1.10.0</code>, <code>opensearch-haystack==5.1.0</code>, <code>sentence-transformers==5.6.1</code>, <code>transformers==5.14.1</code>, <code>accelerate==1.14.0</code>, <code>pymysql==1.2.0</code>, <code>gradio_client</code> (pinned in [https://github.com/Sidiberlin/hdp/blob/main/docker/haystack/Dockerfile <code>docker/haystack/Dockerfile</code>])
+* '''Upstream:''' OpenSearch (retrieval), an OpenAI-compatible LLM API (generation), optionally HuggingFace Hub (model downloads)
+* '''Downstream:''' <code>chatbot-proxy</code> (the only in-repo caller of port 1417)
+
+== Notable Patterns / Gotchas ==
+
+* '''<code>chatbot-proxy</code> hardcodes <code>path: &quot;rag&quot;</code>.''' Regardless of what <code>followUpType</code>/<code>path</code> the ChatBot extension sends, <code>chatbot-proxy</code>’s <code>call_hayhooks()</code> always requests the <code>rag</code> answer mode — see [[chatbot-extension.md#notable-patterns--gotchas|chatbot-extension]].
+* '''<code>filters</code> are not forwarded either.''' <code>chatbot-proxy</code> only reads <code>body[&quot;query&quot;]</code> from the incoming request; the ChatBot extension’s namespace access-control filter never reaches the pipeline in this deployment.
+* '''SSL verification is disabled''' on the OpenSearch connection (<code>verify_certs: false</code>, both retrievers) because the OpenSearch container runs with a self-signed certificate — acceptable only because it’s reachable exclusively on the internal <code>hdp</code> Docker network.
+* '''<code>answers</code> is a two-element list, not one answer.''' <code>answer_joiner</code> combines <code>answer_builder_chatsummary</code>’s answer (the reformulated query, <code>answers[0]</code>) with <code>answer_builder</code>’s answer (the real generated answer, <code>answers[1]</code>) — both <code>chatbot-proxy</code> and <code>hdp_api_server.py</code>’s callers need to know to take the ''last'' element, not the first.
+* '''Model pre-download happens at container start''', not lazily, to avoid a slow/timing-out first user query — skipped for the embedding model when <code>HDP_EMBEDDING_PROVIDER=remote</code> (no local model), but the cross-encoder ranker is always pre-downloaded regardless of embedding provider.
+* '''LLM timeout is 300s.''' Both <code>OpenAIGenerator</code> components set <code>timeout: 300</code> — reasoning-heavy models can take 1-2 minutes to answer with 14 documents in context; see the Troubleshooting section of README-DOCKER.md.
+* '''Temperature 0''' on both LLM calls, for reproducible outputs.

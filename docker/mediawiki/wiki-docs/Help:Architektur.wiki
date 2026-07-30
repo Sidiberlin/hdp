@@ -1,0 +1,98 @@
+= Architecture =
+
+== System Shape ==
+
+HDP is two systems wired together: a MediaWiki/BlueSpice wiki (the content
+system of record) and a Haystack-based RAG chatbot (a read-only consumer of
+that content). They share no code and only one narrow integration surface —
+HTTP. The wiki never calls into the RAG stack directly; the '''ChatBot'''
+MediaWiki extension exposes REST endpoints under <code>/bmbf/*</code> that a browser
+chat widget calls, and those handlers proxy to '''chatbot-proxy''', a small
+translation shim that reshapes the extension’s Deepset-Cloud-style API calls
+into calls the Haystack container understands. The Haystack container itself
+retrieves from '''OpenSearch''' and generates answers via an OpenAI-compatible
+'''LLM API''' (defaults to <code>gpt-4o</code>, configurable to any compatible endpoint
+via <code>HDP_LLM_BASE_URL</code>).
+
+Data enters the wiki side normally — editors create/edit pages, stored in
+'''MariaDB''' by MediaWiki. Data enters the ''chatbot’s'' knowledge base through
+a completely separate path: the standalone
+[https://github.com/Sidiberlin/hdp/blob/main/docker/haystack/ingest_hdp_wiki.py <code>ingest_hdp_wiki.py</code>] script,
+run manually (or on a schedule an operator sets up), logs into the
+MediaWiki API, renders each page, splits it into sections, embeds the text,
+and writes documents straight into OpenSearch’s <code>hdp_wiki</code> index. The
+ChatBot extension does ship its own built-in indexing pipeline
+(<code>UpdateIndexTable</code> → <code>bmbf_index_pages</code> queue → <code>IndexDeepset</code> background
+job every 5 minutes, targeting <code>BmbfDeepsetApiIndexUrl</code>), but in this
+deployment that URL is configured empty (see
+[[Help:Modul/Settings.d|settings-d]]) — it is inert. <code>ingest_hdp_wiki.py</code> is
+the only thing that actually populates the search index.
+
+State lives in three places with three different lifecycles: MariaDB (wiki
+content, durable, edited constantly), OpenSearch (a derived, rebuildable
+index of wiki content, refreshed by re-running ingestion), and the
+<code>haystack_models</code> Docker volume (a HuggingFace model cache, purely a
+performance optimization — safe to delete and let re-download). Everything
+else is stateless request/response.
+
+== Components ==
+
+* '''mediawiki-web''' — Apache reverse proxy, the only container with a published host port for the wiki (<code>${MW_DOCKER_PORT}</code>, default 8080).
+* '''mediawiki''' — PHP-FPM application server running MediaWiki + ~130 BlueSpice extensions + the ChatBot extension.
+* '''mediawiki-jobrunner''' — continuously drains MediaWiki’s job queue (notifications, search index maintenance, ChatBot’s — inert — 5-minute indexing cycle).
+* '''mariadb''' — the wiki’s relational database.
+* '''opensearch''' — full-text + vector search; backs both BlueSpice’s native search and the RAG pipeline’s <code>hdp_wiki</code> index.
+* '''chatbot-proxy''' — stateless Python HTTP shim translating Deepset API shape ↔ Haystack API shape.
+* '''haystack''' — runs the RAG pipeline two ways: <code>hayhooks</code> (port 1416, admin/deploy API) and a custom FastAPI wrapper, <code>hdp_api_server.py</code> (port 1417, the actual query API <code>chatbot-proxy</code> and <code>ingest_hdp_wiki.py</code>’s callers use).
+* '''ingest_hdp_wiki.py''' — not a long-running service; a script invoked via <code>docker compose exec haystack python3 ingest_hdp_wiki.py</code>.
+
+== System Diagram ==
+
+{{#mermaid:flowchart TD
+    Browser((User Browser))
+    Admin((Operator / CLI))
+
+    Web["mediawiki-web<br>Apache"]
+    MW["mediawiki<br>PHP-FPM"]
+    ChatBotExt["ChatBot extension<br>/bmbf/* REST routes"]
+    JobRunner["mediawiki-jobrunner"]
+    Proxy["chatbot-proxy"]
+    Haystack["haystack<br>hayhooks :1416 +<br>hdp_api_server :1417"]
+    OS[("OpenSearch<br>hdp_wiki index")]
+    DB[("MariaDB<br>bluespice")]
+    LLM[["LLM API<br>OpenAI-compatible"]]
+    Ingest["ingest_hdp_wiki.py"]
+    HFHub[["HuggingFace Hub"]]
+
+    Browser -->|"HTTP :8080"| Web
+    Web -->|"FastCGI"| MW
+    MW --> ChatBotExt
+    ChatBotExt -->|"GET/POST :8080"| Proxy
+    Proxy -->|"POST /hdp_pipeline/run :1417"| Haystack
+    Haystack -->|"BM25 + embedding retrieval"| OS
+    Haystack -->|"chat completions"| LLM
+    Haystack -.->|"model download (first boot)"| HFHub
+    MW --> DB
+    JobRunner --> DB
+    JobRunner -.->|"runJobs.php loop"| MW
+    Admin -.->|"docker compose exec setup.sh"| MW
+    Admin -.->|"docker compose exec ingest_hdp_wiki.py"| Ingest
+    Ingest -->|"action=parse via /w/api.php"| Web
+    Ingest -->|"read page list (SQL)"| DB
+    Ingest -->|"write embedded documents"| OS
+    Ingest -.->|"download embedding model (local mode)"| HFHub
+}}
+== Data Flow ==
+
+# '''Authoring''': an editor writes/edits a page in the wiki UI → MediaWiki writes it to MariaDB.
+# '''Ingestion (manual/scheduled, not automatic)''': an operator runs <code>ingest_hdp_wiki.py</code> → it queries MariaDB for indexable pages (namespaces <code>0</code>, <code>5000</code>, <code>5002</code>), calls MediaWiki’s <code>action=parse</code> API for rendered HTML per page, splits by <code>&lt;h1&gt;</code>–<code>&lt;h6&gt;</code> headings into sections, embeds each section, and writes them to OpenSearch’s <code>hdp_wiki</code> index (<code>DuplicatePolicy.OVERWRITE</code>, keyed by a hash of page ID + section name).
+# '''Query''': a reader asks a question in the chat widget → <code>GET /bmbf/chat</code> on the MediaWiki REST API → <code>ChatApi::request()</code> opens an SSE connection to <code>chatbot-proxy</code> → <code>chatbot-proxy</code> calls the Haystack <code>hdp_api_server</code> → the pipeline reformulates the question, retrieves top documents from OpenSearch via BM25 ''and'' embedding similarity, re-ranks with a cross-encoder, and prompts the LLM to answer using only those documents, citing them as <code>[N]</code>.
+# '''Response''': the answer streams back through the same chain as SSE — Haystack → <code>chatbot-proxy</code> (re-chunked into word-batches) → MediaWiki REST → the browser’s chat widget, which renders <code>[N]</code> citations as clickable source links.
+
+== Key Design Decisions ==
+
+* '''A proxy shim instead of forking the extension.''' The ChatBot extension was originally built against Deepset Cloud’s hosted API shape (session creation, <code>pipeline_id</code>, <code>search_session_id</code>, a specific SSE event format). Rather than modifying the extension’s PHP, <code>chatbot-proxy</code> reproduces just enough of that shape in front of the self-hosted Haystack pipeline — see [[Help:Modul/ChatBot-Extension|chatbot-extension]] and [[Help:Modul/Docker-Services|docker-services]].
+* '''Ingestion is a script, not a live job.''' The extension’s own <code>IndexDeepset</code> background job (queue table + 5-minute cron-like handler) is left in place but pointed at an empty URL, and a separate Python script does the real indexing directly against OpenSearch. This keeps the RAG indexing logic (chunking, embedding, metadata shape) in one inspectable, dry-run-able, re-runnable place instead of split across PHP hooks and a job queue. The tradeoff: indexing is '''not''' automatic on page save — see [[Help:Modul/Ingestion|ingestion]].
+* '''Two ports into the same pipeline logic.''' <code>hayhooks</code> (1416) deploys and manages the pipeline (used for <code>POST /deploy-yaml</code> at container start); <code>hdp_api_server.py</code> (1417) independently loads the same <code>hdp_pipeline.yaml</code> via Haystack’s Python <code>Pipeline.loads()</code> and exposes a numpy/Haystack-object-safe JSON wrapper around it. <code>chatbot-proxy</code> and the documented <code>curl</code> examples all target 1417, not the hayhooks-managed endpoint on 1416 — see [[Help:Modul/Haystack-Pipeline|haystack-pipeline]].
+* '''Embedding provider is a runtime switch, not a rebuild.''' Because Haystack pipeline YAML declares component ''types'' statically, <code>render_pipeline.py</code> text-substitutes the <code>query_embedder</code> component block between sentinel comments before <code>hayhooks</code>/<code>hdp_api_server</code> ever parse the YAML, so <code>local</code> vs <code>remote</code> embedding is a <code>.env</code> change plus a container recreate, not a code change — see [[Help:Modul/Embedding-Provider|embedding-providers]].
+* '''Secrets are Infisical-first with a plaintext fallback.''' Every container that needs a secret sources <code>infisical-loader.sh</code> at startup, which overwrites <code>.env</code>-provided values with Infisical-fetched ones if Infisical credentials are configured — otherwise it’s a no-op and <code>.env</code> plaintext is used as-is.
