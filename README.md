@@ -1,6 +1,6 @@
 # Quality of life fork
 
-in order to be able to easily evaluate this project this fork adds a number of Quality of Life improvements (AGENTS.MD,working docker- compose.yml, example.env, codewiki generated docs, default content, etc.) which allow you to easily deploy this in your local environment with a for of this repo, edits to some env and a docker compose up. more information in README-DOCKER.MD 
+in order to be able to easily evaluate this project this fork adds a number of Quality of Life improvements (AGENTS.md, working docker-compose.yml, .env.example, codewiki-generated docs, default content, etc.) which allow you to easily deploy this in your local environment with a fork of this repo, edits to some env and a docker compose up. more information in README-DOCKER.md 
 
 Disclaimer: The original repo has a hard dependency on the deepset cloud platform for ingestion - this has been removed with a vibecoded ingestion mechanism, which is probably a lot worse than what deepset cloud would offer.
 
