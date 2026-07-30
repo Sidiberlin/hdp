@@ -46,8 +46,8 @@ docker compose ps
 docker compose exec haystack python3 ingest_hdp_wiki.py
 
 # Check index populated
-docker compose exec opensearch curl -sk -u "admin:${HDP_OPENSEARCH_PASSWORD}" \
-  "https://localhost:9200/hdp_wiki/_count"
+docker compose exec opensearch bash -c \
+  'curl -sk -u "admin:$OPENSEARCH_INITIAL_ADMIN_PASSWORD" https://localhost:9200/hdp_wiki/_count'
 
 # Test chatbot directly (bypasses wiki UI)
 docker compose exec haystack curl -s -X POST http://localhost:1417/hdp_pipeline/run \
@@ -83,7 +83,7 @@ docker compose exec haystack curl -s -X POST http://localhost:1417/hdp_pipeline/
 
 ### Known Gotchas for Claude Code
 
-1. **`app/skins/.gitignore` has `/*`** — To commit skin files, use `git add -f app/skins/...`
+1. **`app/skins/.gitignore` has `/*`** — Six shipped skins are whitelisted (BlueSpiceDiscovery, hdp, MinervaNeue, MonoBook, Timeless, Vector). To add a new skin dir, add a matching `!/NewSkin/` line or use `git add -f`.
 2. **Bind mounts are live** — Editing files under `app/` affects running containers immediately (no rebuild)
 3. **Infisical shadows `.env`** — If using Infisical, `HDP_*` secrets override `.env` at every container start
 4. **MariaDB volume persistence** — If `HDP_DB_PASSWORD` changes, run `docker compose down -v` to reset
