@@ -1,0 +1,70 @@
+== Chatbot-FAQ ==
+
+Diese Seite beantwortet häufige Fragen zum HDP-Chatbot. Der Chatbot ist über das Sprechblasen-Symbol unten rechts auf jeder Wiki-Seite erreichbar.
+
+== Wie funktioniert der Chatbot? ==
+
+Der HDP-Chatbot ist ein sogenanntes '''Retrieval-Augmented-Generation-System''' (RAG). Er beantwortet Ihre Fragen ausschließlich anhand des tatsächlichen Wiki-Inhalts — nicht anhand von allgemeinem Trainingswissen eines Sprachmodells.
+
+Bei jeder Frage passiert Folgendes:
+
+# Der Chatbot durchsucht den Wiki-Index nach thematisch passenden Passagen (semantische Suche).
+# Die gefundenen Passagen werden dem Sprachmodell zusammen mit Ihrer Frage übergeben.
+# Das Sprachmodell formuliert eine Antwort '''nur auf Basis dieser Passagen''' und verweist per Fußnote auf die Quellen.
+
+Was nicht im Wiki steht, kann der Chatbot nicht beantworten. Das ist Absicht: Antworten sollen belegbar und überprüfbar sein.
+
+== Welche Fragen kann ich stellen? ==
+
+Am besten funktionieren Fragen zu konkreten Themen, die im Wiki dokumentiert sind. Beispiele:
+
+* „Was ist [Thema]?"
+* „Wie funktioniert [Prozess]?"
+* „Welche Schritte sind für [Aufgabe] nötig?"
+* „Fasse mir [Themenbereich] zusammen."
+* „Vergleiche [A] und [B]."
+
+Auch komplexere Fragen sind möglich, solange die Antwort aus dem Wiki-Inhalt hergeleitet werden kann. Fragen zu Themen '''außerhalb''' des Wiki-Inhalts (aktuelles Weltgeschehen, allgemeines Fachwissen, private Meinungen) beantwortet der Chatbot bewusst nicht.
+
+== Warum sagt der Chatbot, dass er es nicht weiß? ==
+
+Wenn der Chatbot antwortet „Dazu finde ich im Wiki keine Informationen" oder ähnlich, gibt es meist einen dieser Gründe:
+
+* '''Das Thema ist (noch) nicht dokumentiert.''' Das Wiki enthält keine passende Seite. Legen Sie sie an oder ergänzen Sie eine bestehende Seite.
+* '''Die Seite existiert, ist aber noch nicht indiziert.''' Nach neuen oder geänderten Seiten muss der Ingestion-Lauf (<code>docker compose exec haystack python3 ingest_hdp_wiki.py</code>) ausgeführt werden, bevor der Chatbot die Änderungen kennt. Siehe [[Hauptseite#Inhalte hinzufügen|Inhalte hinzufügen]].
+* '''Die Frage passt nicht zur Formulierung im Wiki.''' Versuchen Sie es mit anderen Suchbegriffen, mehr Kontext oder einer präziseren Formulierung.
+* '''Die Frage bezieht sich auf Themen außerhalb dieses Wikis.''' Der Chatbot antwortet bewusst nur zu wiki-internen Inhalten.
+
+Die ehrliche Antwort „ich weiß es nicht" ist ein Feature, kein Bug — sie schützt Sie davor, erfundene Fakten (sogenannte „Halluzinationen") als Wahrheit zu übernehmen.
+
+== Wie werden Antworten belegt? ==
+
+Jede Antwort enthält Fußnoten der Form <code>[1]</code>, <code>[2]</code>, … die auf die konkreten Wiki-Seiten verweisen, aus denen die Information stammt. Klicken Sie eine Fußnote an, um direkt zur Quellseite zu gelangen.
+
+Über die Buttons unter einer Antwort können Sie zusätzlich zwischen verschiedenen Ansichten wählen:
+
+* '''Kürzer / Länger''' — Zusammenfassung oder ausführlichere Fassung
+* '''Stichpunkte''' — Antwort als Bulletliste
+* '''Mit Zitaten''' — Antwort mit wörtlichen Zitaten aus den Quellen
+
+Wenn Ihnen eine Antwort seltsam vorkommt, prüfen Sie unbedingt die Quellen. Der Chatbot ist gut, aber nicht unfehlbar.
+
+== Datenschutz — was passiert mit meiner Frage? ==
+
+Ihre Frage wird an das konfigurierte Sprachmodell übermittelt, damit dieses eine Antwort formulieren kann. Was das im Detail bedeutet, hängt von der Konfiguration Ihrer HDP-Installation ab:
+
+* '''Self-hosted-Modell (empfohlen für sensible Inhalte)''' — Ihre Frage verlässt die eigene Infrastruktur nicht.
+* '''Externer LLM-Provider''' — Ihre Frage wird an den konfigurierten Provider gesendet. Die Provider-Datenschutzbestimmungen gelten.
+
+Zusätzlich zu Ihrer Frage werden dem Sprachmodell die für die Antwort verwendeten Wiki-Passagen übergeben. Der Chat-Verlauf wird für die Dauer Ihrer Sitzung im Browser gespeichert, damit Folgefragen im Kontext beantwortet werden können.
+
+Details zur konkreten Konfiguration Ihrer Installation entnehmen Sie bitte der [[Help:Technische_Dokumentation|technischen Dokumentation]] und den Datenschutzhinweisen Ihrer Organisation.
+
+== Weiterführende Links ==
+
+* [[Hauptseite]] — Wiki-Übersicht
+* [[Help:Technische_Dokumentation|Technische Dokumentation]]
+* [[Help:Erste_Schritte|Erste Schritte]]
+* [[Spezial:Suche|Volltextsuche]]
+
+[[Kategorie:Hilfe]]
