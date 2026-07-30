@@ -80,12 +80,17 @@ $GLOBALS['mwsgCommonWebAPIsComponentUserStoreExcludeUsers'] = array_merge(
 );
 
 
-// Set default Permissions-Policy header
+// Set default Permissions-Policy header.
+// NOTE: 'document-domain' and 'web-share' were removed because current
+// Chromium versions no longer recognize them as Permissions-Policy
+// features and emit a "Unrecognized feature" console warning for each.
+// 'document-domain' has been deprecated / removed from the spec entirely.
+// 'web-share' remains valid in some browsers but is inconsistently
+// implemented; if you need to restrict it, add it back conditionally.
 $GLOBALS['bsgDefaultPermissionsPolicyHeader'] = [
 	'autoplay' => '',
 	'camera' => '',
 	'display-capture' => '',
-	'document-domain' => '',
 	'encrypted-media' => '',
 	'geolocation' => '',
 	'microphone' => '',
@@ -94,7 +99,6 @@ $GLOBALS['bsgDefaultPermissionsPolicyHeader'] = [
 	'publickey-credentials-get' => '',
 	'screen-wake-lock' => '',
 	'usb' => '',
-	'web-share' => '',
 	'xr-spatial-tracking' => ''
 ];
 $GLOBALS['wgHooks']['BeforePageDisplay'][] = function() {
