@@ -1,0 +1,136 @@
+= Module: Embedding Providers =
+
+The embedder used both by the live RAG query pipeline’s <code>query_embedder</code>
+component and by [[Help:Modul/Ingestion|<code>ingest_hdp_wiki.py</code>]]’s document embedding
+step is configurable across three modes via <code>HDP_EMBEDDING_PROVIDER</code> in
+<code>.env</code>. This module explains each mode, when to use it, and how the
+type-level swap works under the hood.
+
+== Responsibilities ==
+
+* Provide a single configuration knob (<code>HDP_EMBEDDING_PROVIDER</code>) that changes how both ingestion and live queries turn text into vectors.
+* Keep the choice consistent: whatever embedded the documents at ingestion time must produce vectors in the same space the live query embedder produces, or retrieval quality silently degrades.
+
+== Key Files ==
+
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/haystack/render_pipeline.py <code>docker/haystack/render_pipeline.py</code>] — swaps the live pipeline’s <code>query_embedder</code> component type (<code>local</code> vs <code>remote</code>) at container start
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/haystack/hdp_pipeline.yaml <code>docker/haystack/hdp_pipeline.yaml</code>] — contains the <code>HDP_EMBEDDER_BLOCK_START</code>/<code>_END</code> sentinel comments <code>render_pipeline.py</code> rewrites between
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/haystack/ingest_hdp_wiki.py <code>docker/haystack/ingest_hdp_wiki.py</code>] — <code>LocalEmbedder</code> / <code>RemoteEmbedder</code> / <code>HFSpaceEmbedder</code> classes + <code>make_embedder()</code> factory
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/haystack/entrypoint.sh <code>docker/haystack/entrypoint.sh</code>] — validates <code>HDP_EMBEDDING_PROVIDER</code> at container start and pre-downloads the local model if needed
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/.env.example <code>.env.example</code>] — the full <code>HDP_EMBEDDING_*</code> variable reference
+
+== Public API / Interfaces ==
+
+{| class="wikitable"
+|-
+! Mode
+! <code>HDP_EMBEDDING_PROVIDER</code>
+! Valid for live pipeline?
+! Valid for ingestion?
+|-
+| Local (default)
+| <code>local</code>
+| Yes
+| Yes
+|-
+| Remote
+| <code>remote</code>
+| Yes
+| Yes
+|-
+| HF Space
+| <code>hf_space</code>
+| '''No''' — <code>render_pipeline.py</code> raises <code>SystemExit</code> if set
+| Yes (<code>--provider hf_space</code>)
+|}
+
+=== Mode: <code>local</code> (default) ===
+
+Runs [https://www.sbert.net/ sentence-transformers] in-container, CPU by
+default (GPU if built with <code>HAYSTACK_DEVICE=gpu</code>). Zero extra config beyond
+the default <code>HDP_EMBEDDING_MODEL</code>/<code>HDP_EMBEDDING_DIM</code>. This is what
+upstream BlueSpice HDP ships with.
+
+<syntaxhighlight lang="bash">HDP_EMBEDDING_PROVIDER=local
+HDP_EMBEDDING_MODEL=mixedbread-ai/deepset-mxbai-embed-de-large-v1   # default
+HDP_EMBEDDING_DIM=1024                                              # default</syntaxhighlight>
+Tradeoff: bulk ingestion is slow on constrained hosts — each page’s chunks
+are embedded synchronously, one page at a time, so a large wiki can take
+hours on CPU-only hardware. Query-time embedding (one short question) is
+fast regardless of hardware, so this only matters for the initial bulk
+ingestion run, not for live chatbot responsiveness.
+
+=== Mode: <code>remote</code> ===
+
+Points the embedder at any OpenAI-compatible embeddings API — a self-hosted
+[https://github.com/huggingface/text-embeddings-inference Text-Embeddings-Inference]
+server, or a commercial embeddings API.
+
+<syntaxhighlight lang="bash">HDP_EMBEDDING_PROVIDER=remote
+HDP_EMBEDDING_BASE_URL=https://api.openai.com/v1     # or your TEI server URL
+HDP_EMBEDDING_MODEL=text-embedding-3-small
+HDP_EMBEDDING_DIM=1536                               # must match the model's real output dim
+HDP_EMBEDDING_API_KEY=                                # blank if the endpoint needs no auth</syntaxhighlight>
+<code>HDP_EMBEDDING_DIM</code> is baked into the OpenSearch <code>hdp_wiki</code> index mapping
+(<code>embedding_dim</code>) — changing it after the index already has documents from
+a different-dimension model requires a full re-ingest into a fresh index,
+since old and new vectors aren’t comparable.
+
+=== Mode: <code>hf_space</code> (ingestion/testing only) ===
+
+Embeds via a HuggingFace [https://huggingface.co/docs/hub/spaces-zerogpu ZeroGPU]
+Gradio Space through <code>gradio_client</code>. Useful for a one-off fast bulk
+re-index without provisioning a dedicated GPU host.
+
+<syntaxhighlight lang="bash"># NOT valid as HDP_EMBEDDING_PROVIDER for the live pipeline — pass via --provider instead:
+docker compose exec haystack python3 ingest_hdp_wiki.py --provider hf_space</syntaxhighlight>
+requires <code>HDP_EMBEDDING_HF_SPACE_ID</code> (e.g.
+<code>your-username/your-embedder-space</code>) and optionally
+<code>HDP_EMBEDDING_HF_TOKEN</code>/<code>HF_TOKEN</code>. <code>HFSpaceEmbedder.__init__()</code> runs a
+smoke-test call (<code>[&quot;ping&quot;]</code>) so a broken Space fails fast, before touching
+MariaDB or the wiki. <code>HFSpaceEmbedder._call()</code> retries up to 5 times with
+increasing backoff (<code>(attempt+1)*15</code>s) on quota-exceeded errors.
+
+== Why <code>hf_space</code> Is Ingestion-Only ==
+
+<code>render_pipeline.py</code>’s <code>BLOCKS</code> dict only defines <code>local</code> and <code>remote</code> — if
+<code>HDP_EMBEDDING_PROVIDER=hf_space</code> is passed to the live pipeline, the
+<code>haystack</code> container’s entrypoint validation step
+(<code>entrypoint.sh</code>’s <code>case &quot;$HDP_EMBEDDING_PROVIDER&quot; in ... *) ... exit 1</code>)
+refuses to start, with the same reasoning <code>render_pipeline.py</code>’s docstring
+gives: HF Spaces cold-start (10-60s on an idle Space) and enforce
+per-account/session usage quotas — both unacceptable for a live, 24/7 chat
+query path, but tolerable for a bounded, supervised, occasional batch job.
+
+== How the Swap Works (Implementation Notes) ==
+
+Haystack pipeline YAML declares component '''types''' statically —
+<code>SentenceTransformersTextEmbedder</code> (local) and <code>OpenAITextEmbedder</code>
+(remote) are different Python classes with different required
+<code>init_parameters</code>, so plain <code>${VAR}</code> substitution via <code>envsubst</code> (which can
+only swap parameter ''values'') can’t switch between them.
+
+<code>render_pipeline.py</code> solves this with a text-replace: it finds the block
+between the <code>HDP_EMBEDDER_BLOCK_START</code>/<code>_END</code> sentinel comments in
+<code>hdp_pipeline.yaml</code> and replaces it wholesale with the correct
+component-type block for the configured provider — '''before''' <code>envsubst</code>
+and hayhooks/<code>hdp_api_server.py</code> ever parse the file. This runs once, at
+container start (<code>entrypoint.sh</code>), so switching <code>HDP_EMBEDDING_PROVIDER</code>
+only requires <code>docker compose up -d --force-recreate haystack</code>, not a
+manual YAML edit.
+
+<code>ingest_hdp_wiki.py</code> uses a different mechanism for the same problem — a
+small Python class hierarchy (<code>LocalEmbedder</code>/<code>RemoteEmbedder</code>/
+<code>HFSpaceEmbedder</code>, selected by <code>make_embedder()</code>) — since it’s plain Python
+and has no YAML-vs-class-instantiation constraint to work around.
+
+== Dependencies ==
+
+* '''Uses:''' <code>sentence-transformers</code> (local), an OpenAI-compatible HTTP API (remote), <code>gradio_client</code> + a user-deployed HF Space (hf_space)
+* '''Used by:''' [[Help:Modul/Haystack-Pipeline|haystack-pipeline]]’s <code>query_embedder</code> component; [[Help:Modul/Ingestion|ingestion]]’s document embedding step
+
+== Notable Patterns / Gotchas ==
+
+* '''Infisical shadowing applies here too.''' <code>HDP_EMBEDDING_MODEL</code>/ <code>HDP_EMBEDDING_PROVIDER</code> are non-secret config, but if they also exist as Infisical secrets, <code>infisical-loader.sh</code> overwrites <code>.env</code> with the Infisical values on every container start — see [[docker-services.md#notable-patterns--gotchas|docker-services]].
+* '''Ranker model is always local''', regardless of embedding provider — <code>PM-AI/bi-encoder_msmarco_bert-base_german</code> is hardcoded in <code>hdp_pipeline.yaml</code> and pre-downloaded by <code>entrypoint.sh</code> even when <code>HDP_EMBEDDING_PROVIDER=remote</code>.
+* '''Dimension mismatch is a silent-until-query-time failure mode.''' Nothing in <code>ingest_hdp_wiki.py</code> or <code>render_pipeline.py</code> validates that <code>HDP_EMBEDDING_DIM</code> actually matches the chosen model’s real output dimensionality — a mismatch surfaces as OpenSearch mapping errors or garbage similarity scores, not a clear startup error.

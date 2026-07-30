@@ -1,0 +1,93 @@
+= Class Diagram =
+
+== Scope ==
+
+Most of this codebase doesn’t benefit from a class diagram: <code>app/</code> is ~130
+largely-independent, mostly-configuration-driven BlueSpice extensions
+(documented structurally in [[Help:Modul/Settings.d|settings-d]] instead,
+since their relationships are ''load order'', not inheritance), and the RAG
+pipeline ([[Help:Modul/Haystack-Pipeline|haystack-pipeline]]) is a
+declarative YAML component graph, not an object hierarchy — its natural
+diagram is the <code>flowchart</code> already in that module’s doc. Force-fitting a
+class diagram onto either would just restate the module docs in a worse
+format.
+
+One piece of this codebase ''is'' a genuine, useful class hierarchy: the
+ChatBot extension’s <code>DeepsetApi</code> HTTP client layer
+([https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/extensions/ChatBot/src/DeepsetApi <code>app/extensions/ChatBot/src/DeepsetApi/</code>]).
+A single base class handles all outbound HTTP to <code>chatbot-proxy</code>, and six
+purpose-specific subclasses each implement one REST use case. This is
+worth diagramming because the shared base class is exactly what explains a
+real gotcha: every subclass sends the same <code>Authorization: Bearer {apiKey}</code> header and reads the same <code>BmbfDeepsetApi*</code> config, regardless of
+which specific proxy endpoint it targets.
+
+== <code>DeepsetApi</code> Client Hierarchy ==
+
+{{#mermaid:classDiagram
+    class Connector {
+        #string apiKey
+        #string sessionApiUrl
+        #string apiUrl
+        #string indexUrl
+        #string feedbackUrl
+        #string tagUrl
+        #string pipelineStatsUrl
+        #HttpRequestFactory requestFactory
+        +__construct(Config, HttpRequestFactory)
+        +get(url, contentType) array
+        +post(url, options, contentType) array
+        +patch(url, options, contentType) array
+        +delete(url, options, contentType) array
+        +stream(url, options) ResponseInterface
+        -executeRequest(url, options, method, contentType) ResponseInterface
+    }
+
+    class ChatApi {
+        -RoleLookup roleLookup
+        +request(query, sessionId, followUpType) void
+        -sendSSEHeaders() void
+        -getFilter() array
+    }
+
+    class SessionApi {
+        +request() array
+    }
+
+    class HistoryApi {
+        -FETCH_LIMIT
+        +request(sessionId, after) array
+    }
+
+    class FeedbackApi {
+        +request(feedbackId, after) array
+        +getStats() array
+        -getTagId(tag) array
+    }
+
+    class ListApi {
+        -LIST_LIMIT
+        +getFiles(titles) array
+        -getFilter(titles) string
+    }
+
+    class IndexApi {
+        -ListApi listApi
+        +pushPage(indexName, contents, meta) Status
+        +pushFile(filePath, meta) Status
+        +batchDelete(toDelete) Status
+        +purgeIndex() Status
+    }
+
+    Connector <|-- ChatApi
+    Connector <|-- SessionApi
+    Connector <|-- HistoryApi
+    Connector <|-- FeedbackApi
+    Connector <|-- ListApi
+    Connector <|-- IndexApi
+    IndexApi --> ListApi : uses (constructor-injected)
+}}
+== Notes ==
+
+* Every subclass is wired via MediaWiki’s DI container in [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/extensions/ChatBot/includes/ServiceWiring.php <code>includes/ServiceWiring.php</code>] (service names <code>DeepsetChatApi</code>, <code>DeepsetSessionApi</code>, <code>DeepsetHistoryApi</code>, <code>DeepsetFeedbackApi</code>, <code>DeepsetListApi</code>, <code>DeepsetIndexApi</code>), constructed with <code>MainConfig</code> + <code>HttpRequestFactory</code> (and, for <code>ChatApi</code>, <code>BmbfRoleLookup</code>; for <code>IndexApi</code>, <code>DeepsetListApi</code>) — not instantiated directly by callers.
+* <code>ChatApi</code> is the only subclass whose <code>request()</code> writes directly to the HTTP response (<code>echo</code>/<code>ob_flush</code>/<code>flush</code>) rather than returning data — every other subclass returns an <code>array</code> (or <code>Status</code> for <code>IndexApi</code>, whose methods are also the only ones in this hierarchy actually invoked in this deployment’s day-to-day chat flow that fail silently: they’re called by the (inert here — see [[Help:Modul/ChatBot-Extension|chatbot-extension]]) <code>IndexDeepset</code> background job against an empty <code>BmbfDeepsetApiIndexUrl</code>).
+* <code>Connector::executeRequest()</code> is the single chokepoint for every outbound call in this hierarchy: it always sets a <code>Bearer {apiKey}</code> Authorization header (from <code>$wgBmbfDeepsetApiKey</code>, <code>&quot;not-needed&quot;</code> in this deployment, since <code>chatbot-proxy</code> doesn’t check it) and a 120s timeout, via a freshly-constructed Guzzle <code>Client</code> per call.

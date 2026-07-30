@@ -1,0 +1,117 @@
+= Module: <code>settings.d/</code> =
+
+[https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d <code>app/settings.d/</code>] contains numbered PHP
+configuration files, auto-loaded in ascending filename order by
+[https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/LocalSettings.BlueSpice.php <code>app/LocalSettings.BlueSpice.php</code>],
+which <code>setup.sh</code> appends a <code>require_once</code> for at the end of the generated
+<code>LocalSettings.php</code>. This mechanism enables ~130 BlueSpice extensions in a
+specific order with their configuration, and is where this fork’s two
+critical infrastructure fixes and the ChatBot→<code>chatbot-proxy</code> wiring live.
+
+== Responsibilities ==
+
+* Enable MediaWiki/BlueSpice extensions and skins (<code>wfLoadExtension()</code> / <code>wfLoadSkin()</code>) in dependency order.
+* Configure extension-specific settings (<code>$GLOBALS</code> overrides).
+* Layer configuration in tiers: core → MWStake → MediaWiki defaults → Free → Pro → Farm → fixes → Discovery skin → GovTech (ChatBot) → ChatBot config.
+
+== Key Files ==
+
+Loaded in this exact order (PHP’s <code>glob()</code> returns results sorted
+alphabetically, so the numeric prefix controls load order):
+
+{| class="wikitable"
+|-
+! File
+! Purpose
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/010-Logging.php <code>010-Logging.php</code>]
+| Monolog logger configuration
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/010-MWStakeComponents.php <code>010-MWStakeComponents.php</code>]
+| Initializes the MWStake component framework
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/020-DefaultSettings.php <code>020-DefaultSettings.php</code>]
+| Core MediaWiki defaults (uploads, CSP, permissions, reserved usernames)
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/020-MediaWikiDistribution.php <code>020-MediaWikiDistribution.php</code>]
+| Standard MediaWiki extensions
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/030-BlueSpiceFree.php <code>030-BlueSpiceFree.php</code>]
+| BlueSpice Free tier extensions
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/030-BlueSpiceFreeDistribution.php <code>030-BlueSpiceFreeDistribution.php</code>]
+| Free tier distribution connector
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/040-BlueSpicePro.php <code>040-BlueSpicePro.php</code>]
+| BlueSpice Pro tier extensions
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/040-BlueSpiceProDistribution.php <code>040-BlueSpiceProDistribution.php</code>]
+| Pro tier: third-party extensions (SemanticMediaWiki, LDAP, OAuth, PageForms, etc.)
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/050-BlueSpiceFarm.php <code>050-BlueSpiceFarm.php</code>]
+| WikiFarm (multi-instance) support
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/050-BlueSpiceFarmDistribution.php <code>050-BlueSpiceFarmDistribution.php</code>]
+| WikiFarm distribution connector
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/050-Fixes.php <code>050-Fixes.php</code>]
+| '''This fork’s fixes''': session expiry, legacy content-model fallback, and the <code>$wgSQLMode</code> <code>ONLY_FULL_GROUP_BY</code> fix
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/080-BlueSpiceDiscovery.php <code>080-BlueSpiceDiscovery.php</code>]
+| BlueSpice Discovery skin (default) + footer/logo config
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/090-GovTech.php <code>090-GovTech.php</code>]
+| '''HDP-specific''': <code>wfLoadExtension('ChatBot')</code> — 3 lines, nothing else
+|-
+| [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/100-ChatBot.php <code>100-ChatBot.php</code>]
+| '''This fork’s fix''': points the ChatBot extension at <code>chatbot-proxy</code> instead of Deepset Cloud
+|}
+
+== Loading Mechanism ==
+
+[https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/LocalSettings.BlueSpice.php <code>app/LocalSettings.BlueSpice.php</code>]:
+
+<syntaxhighlight lang="php">$settingsDir = "$IP/settings.d";
+foreach ( glob( $settingsDir . "/*.php" ) as $conffile ) {
+    $searchString = preg_replace( '/\.[^.\s]{3,4}$/', '', $conffile ) . ".local.php";
+    if ( file_exists( $searchString ) ) {
+        $conffile = $searchString;   // e.g. 100-ChatBot.local.php overrides 100-ChatBot.php
+    }
+    if ( !in_array( $conffile, $loaded ) ) {
+        require_once $conffile;
+    }
+}</syntaxhighlight>
+A <code>NNN-Name.local.php</code> file next to any <code>NNN-Name.php</code> is loaded ''instead''
+of the base file — an environment-specific override mechanism, unused by
+default in this repo.
+
+== Load Order &amp; Dependency Graph ==
+
+{{#mermaid:flowchart TD
+    S010a["010-Logging.php"] --> S010b["010-MWStakeComponents.php"]
+    S010b --> S020a["020-DefaultSettings.php"]
+    S020a --> S020b["020-MediaWikiDistribution.php"]
+    S020b --> S030a["030-BlueSpiceFree.php"]
+    S030a --> S030b["030-BlueSpiceFreeDistribution.php"]
+    S030b --> S040a["040-BlueSpicePro.php"]
+    S040a --> S040b["040-BlueSpiceProDistribution.php"]
+    S040b --> S050a["050-BlueSpiceFarm.php"]
+    S050a --> S050c["050-BlueSpiceFarmDistribution.php"]
+    S050c --> S050b["050-Fixes.php<br>SQL mode fix"]
+    S050b --> S080["080-BlueSpiceDiscovery.php"]
+    S080 --> S090["090-GovTech.php<br>wfLoadExtension ChatBot"]
+    S090 --> S100["100-ChatBot.php<br>points at chatbot-proxy"]
+
+    S030a -->|"enables"| BSF["BlueSpiceFoundation"]
+    BSF -->|"required by"| BSE["BlueSpiceExtendedSearch"]
+    BSE -->|"ExternalIndexRegistry hook"| CB["ChatBot extension"]
+    S090 --> CB
+    S100 -->|"configures"| CB
+}}
+== Notable Patterns / Gotchas ==
+
+* '''<code>config_prefix</code> matters.''' <code>app/extensions/ChatBot/extension.json</code> declares no <code>config_prefix</code>, so MediaWiki’s default <code>GlobalVarConfig</code> reads '''<code>wg</code>-prefixed''' globals for this extension’s config (<code>$config-&gt;get('BmbfDeepsetApiChatUrl')</code> reads <code>$GLOBALS['wgBmbfDeepsetApiChatUrl']</code>, not <code>$GLOBALS['BmbfDeepsetApiChatUrl']</code>). <code>100-ChatBot.php</code> sets the <code>wg</code>-prefixed names explicitly, with a comment recording that this was previously a silent no-op bug (unprefixed globals set, extension reading <code>wg</code>-prefixed ones and always getting the <code>extension.json</code> default <code>&quot;&quot;</code>) — see <code>docs/QA-REPORT.md</code> Bug 5. This is exactly the gotcha described in [[chatbot-extension.md#configuration-wg-prefixed-mediawiki-globals|chatbot-extension]].
+* '''<code>$wgSQLMode</code> beats the MariaDB server config.''' The Wikimedia dev image’s <code>PlatformSettings.php</code> (required before <code>settings.d/</code> loads) sets <code>$wgSQLMode = 'STRICT_ALL_TABLES,ONLY_FULL_GROUP_BY'</code>. Because MediaWiki’s DB layer applies <code>$wgSQLMode</code> on every connection, fixing only the server-side <code>sql_mode</code> (<code>docker/mariadb/sql-mode.cnf</code>) is not enough — <code>050-Fixes.php</code> strips <code>ONLY_FULL_GROUP_BY</code> from <code>$wgSQLMode</code> itself, ''after'' <code>PlatformSettings.php</code> has already run, which is the layer that actually wins.
+* '''Number prefix is a hard dependency order, not just a display order.''' <code>090-GovTech.php</code> loads <code>ChatBot</code> after <code>030-</code>/<code>040-</code> have already enabled <code>BlueSpiceFoundation</code> and <code>BlueSpiceExtendedSearch</code>, because <code>ChatBot</code>’s <code>extension.json</code> registers into <code>BlueSpiceExtendedSearch</code>’s <code>ExternalIndexRegistry</code> attribute at registration time.
+* '''<code>100-ChatBot.php</code> is the newest file (highest number)''', added by this fork specifically to override the four <code>BmbfDeepsetApi*</code> URLs after <code>090-GovTech.php</code> has loaded the extension — config files can safely load after the extension that reads them, since MediaWiki only evaluates <code>$config-&gt;get()</code> at request time, not at extension-registration time.
+* '''<code>090-GovTech.php</code> is intentionally tiny''' — 3 lines, just <code>wfLoadExtension('ChatBot')</code>. All actual ChatBot configuration lives in the separate <code>100-ChatBot.php</code>, keeping “load the extension” and “configure it for this deployment” as distinct, independently-overridable files.

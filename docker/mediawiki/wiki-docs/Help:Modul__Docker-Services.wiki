@@ -1,0 +1,121 @@
+= Module: Docker Services =
+
+[https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker-compose.yml <code>docker-compose.yml</code>] defines the entire HDP
+deployment: 7 services, 3 named volumes, 1 bridge network. Supporting build
+context and scripts live under [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker <code>docker/</code>].
+
+== Responsibilities ==
+
+* Orchestrate the wiki (MediaWiki PHP-FPM + Apache + job runner), its database (MariaDB), the search/vector store (OpenSearch), and the RAG stack (Haystack + chatbot-proxy).
+* Build the Haystack image with CPU or GPU PyTorch via a build arg.
+* Manage persistent volumes for the database, the search index, and the HuggingFace model cache.
+* Load secrets from Infisical (if configured) or fall back to plaintext <code>.env</code>.
+
+== Key Files ==
+
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker-compose.yml <code>docker-compose.yml</code>] — the compose file: 7 services, <code>mariadb_data</code>/<code>opensearch_data</code>/<code>haystack_models</code> volumes, <code>hdp</code> bridge network
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/setup.sh <code>docker/setup.sh</code>] — first-boot install script, run manually inside the <code>mediawiki</code> container (see [[Help:Erste_Schritte|getting-started.md]])
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/infisical-loader.sh <code>docker/infisical-loader.sh</code>] — sourced by <code>setup.sh</code> and the Haystack entrypoint; fetches <code>HDP_*</code>-prefixed secrets from Infisical
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/mariadb/sql-mode.cnf <code>docker/mariadb/sql-mode.cnf</code>] — server-side SQL mode (superseded in practice by <code>$wgSQLMode</code> in [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/050-Fixes.php <code>050-Fixes.php</code>], see [[Help:Modul/Settings.d|settings-d]])
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/mediawiki/hauptseite.wiki <code>docker/mediawiki/hauptseite.wiki</code>] — custom main-page wikitext installed by <code>setup.sh</code>
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/wiki/www.conf <code>docker/wiki/www.conf</code>] — PHP-FPM pool config (user/group, worker counts, <code>clear_env=no</code> so container env vars reach PHP)
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/chatbot-proxy <code>docker/chatbot-proxy/</code>] — see [[Help:Modul/ChatBot-Extension|chatbot-extension]] and [[Help:Modul/Haystack-Pipeline|haystack-pipeline]]
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/haystack <code>docker/haystack/</code>] — see [[Help:Modul/Haystack-Pipeline|haystack-pipeline]] and [[Help:Modul/Ingestion|ingestion]]
+* [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/.env.example <code>.env.example</code>] — the full commented variable reference
+
+== Service Topology ==
+
+{{#mermaid:flowchart TD
+    Browser([User Browser])
+
+    subgraph net["Docker network: hdp"]
+        Web["mediawiki-web<br>Apache"]
+        MW["mediawiki<br>PHP-FPM 8.3"]
+        JR["mediawiki-jobrunner<br>PHP 8.3"]
+        MDB[("mariadb<br>MariaDB 10.11")]
+        OS[("opensearch<br>OpenSearch 2.18")]
+        HS["haystack<br>hayhooks + hdp_api_server"]
+        Proxy["chatbot-proxy"]
+    end
+
+    subgraph vol["Volumes"]
+        MDBV[("mariadb_data")]
+        OSV[("opensearch_data")]
+        HSV[("haystack_models")]
+    end
+
+    LLM[["LLM API<br>OpenAI-compatible"]]
+
+    Browser -->|":8080"| Web
+    Web -->|"FastCGI :9000"| MW
+    JR -->|"runJobs.php loop"| MW
+    MW --> MDB
+    JR --> MDB
+    MW -->|"chat REST"| Proxy
+    Proxy -->|":1417"| HS
+    HS --> OS
+    HS --> LLM
+
+    MDBV -.-> MDB
+    OSV -.-> OS
+    HSV -.-> HS
+}}
+== Service Details ==
+
+=== mariadb ===
+
+* '''Image:''' <code>mariadb:10.11</code>
+* '''Role:''' the <code>bluespice</code> database — pages, revisions, users, all BlueSpice extension tables
+* '''Health check:''' <code>healthcheck.sh --connect --innodb_initialized</code> (falls back to <code>mysqladmin ping</code>)
+* '''Volume:''' <code>mariadb_data:/var/lib/mysql</code>
+
+=== mediawiki (PHP-FPM) ===
+
+* '''Image:''' <code>docker-registry.wikimedia.org/dev/bookworm-php83-fpm:1.0.0</code>
+* '''Volumes:''' <code>./app:/var/www/html/w</code> (bind mount, shared with <code>mediawiki-web</code> and <code>mediawiki-jobrunner</code>), plus <code>docker/wiki/www.conf</code>, <code>docker/setup.sh</code>, <code>docker/mediawiki/hauptseite.wiki</code>, <code>docker/infisical-loader.sh</code> mounted read-only
+* '''Depends on:''' <code>mariadb</code> (healthy), <code>opensearch</code> (healthy)
+* '''Health check:''' TCP connect to <code>127.0.0.1:9000</code> (FastCGI has no HTTP endpoint of its own)
+
+=== mediawiki-web (Apache) ===
+
+* '''Image:''' <code>docker-registry.wikimedia.org/dev/bookworm-apache2:1.0.1</code>
+* '''Ports:''' <code>${MW_DOCKER_PORT:-8080}:8080</code> — the only host-published wiki port
+* '''Health check:''' <code>curl http://localhost:${MW_DOCKER_PORT}/w/</code>
+
+=== mediawiki-jobrunner ===
+
+* '''Image:''' <code>docker-registry.wikimedia.org/dev/bookworm-php83-jobrunner:1.0.0</code>
+* '''Role:''' continuously drains MediaWiki’s job queue (search index updates, notifications, and the ChatBot extension’s — inert in this deployment, see [[Help:Architektur|architecture.md]] — 5-minute indexing job)
+* '''Health check:''' confirms the entrypoint’s bash process is still PID 1 (no HTTP endpoint)
+
+=== opensearch ===
+
+* '''Image:''' <code>opensearchproject/opensearch:2.18.0</code>
+* '''Config:''' single-node, <code>bootstrap.memory_lock=false</code>, 512MB JVM heap (<code>-Xms512m -Xmx512m</code>)
+* '''Auth:''' <code>admin</code> / <code>HDP_OPENSEARCH_PASSWORD</code> (set via <code>OPENSEARCH_INITIAL_ADMIN_PASSWORD</code>)
+* '''Indices:''' <code>hdp_wiki</code> (RAG documents, written by [[Help:Modul/Ingestion|ingestion]]) plus BlueSpice’s own ExtendedSearch indices
+* '''Volume:''' <code>opensearch_data:/usr/share/opensearch/data</code>
+
+=== haystack ===
+
+* '''Build:''' [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/haystack/Dockerfile <code>docker/haystack/Dockerfile</code>] — multi-stage: <code>python:3.11-slim-bookworm</code> base, <code>HAYSTACK_DEVICE</code> build arg selects CPU-only or CUDA PyTorch, then installs <code>haystack-ai==2.15.0</code>, <code>hayhooks==1.10.0</code>, <code>opensearch-haystack</code>, <code>sentence-transformers</code>, etc.
+* '''Ports:''' <code>${HAYHOOKS_PORT:-1416}:1416</code> (hayhooks admin/deploy API), <code>${HDP_PDF_PORT:-1417}:1417</code> (the actual query API used by <code>chatbot-proxy</code> — see [[Help:Modul/Haystack-Pipeline|haystack-pipeline]] for why there are two ports)
+* '''Volume:''' <code>haystack_models:/root/.cache/huggingface</code> — persists downloaded embedding/ranker models across restarts
+* '''Depends on:''' <code>opensearch</code> (healthy)
+* '''Health check:''' <code>curl http://localhost:1417/health</code>, with a generous 90s <code>start_period</code> since cold start downloads models and deploys the pipeline
+
+=== chatbot-proxy ===
+
+* '''Build:''' [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/chatbot-proxy/Dockerfile <code>docker/chatbot-proxy/Dockerfile</code>] — <code>python:3.12-slim</code>, stdlib-only <code>server.py</code> (no dependencies)
+* '''Role:''' translates the ChatBot extension’s Deepset-Cloud-shaped requests into calls against <code>haystack:1417</code> — see [[Help:Modul/ChatBot-Extension|chatbot-extension]]
+* '''Depends on:''' <code>haystack</code>
+* '''Health check:''' a Python one-liner <code>urllib.request.urlopen</code> against <code>/</code>
+
+== Notable Patterns / Gotchas ==
+
+* '''Shared bind mount''' — All three MediaWiki containers (FPM, web, jobrunner) mount <code>./app</code> at <code>/var/www/html/w</code>. Code changes under <code>app/</code> are visible to all three without rebuilding images; <code>LocalSettings.php</code> and <code>app/vendor/</code> are generated/modified in-place by <code>setup.sh</code> inside this shared mount.
+* '''<code>MW_DOCKER_UID</code>/<code>MW_DOCKER_GID</code>''' — the <code>mediawiki</code> (FPM master) container defaults to running as root (UID 0) so it can spawn <code>www-data</code> FPM workers per [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/wiki/www.conf <code>docker/wiki/www.conf</code>]; <code>mediawiki-web</code> and <code>mediawiki-jobrunner</code> default to <code>33:33</code> (<code>www-data</code>).
+* '''Two ports on <code>haystack</code>''' — 1416 is <code>hayhooks</code>’ own admin/deploy API (used once at container start to <code>POST /deploy-yaml</code>); 1417 is a separate custom FastAPI process (<code>hdp_api_server.py</code>) that independently loads the same pipeline YAML. <code>chatbot-proxy</code>’s <code>HAYHOOKS_URL</code> env var, despite the name, points at port '''1417'''. See [[Help:Modul/Haystack-Pipeline|haystack-pipeline]].
+* '''Memory limits are all overridable''' — every service’s <code>deploy.resources.limits.memory</code> reads an <code>HDP_*_MEM_LIMIT</code> env var with a sensible default; bump these in <code>.env</code> if a container gets OOM-killed on a constrained host.
+* '''Infisical shadows <code>.env</code>''' — <code>infisical-loader.sh</code> fetches ''every'' secret prefixed <code>HDP_</code> from Infisical and exports it, overriding whatever was passed via <code>.env</code>/<code>environment:</code> — including non-secret config like <code>HDP_LLM_MODEL</code> if it happens to also exist as an Infisical secret. See the Troubleshooting section of README-DOCKER.md.
+* '''<code>restart: unless-stopped</code> isn’t a supervisor everywhere''' — on some nested/sandboxed Docker hosts the documented restart policy doesn’t actually fire after an OOM kill; see the last Troubleshooting entry in README-DOCKER.md.

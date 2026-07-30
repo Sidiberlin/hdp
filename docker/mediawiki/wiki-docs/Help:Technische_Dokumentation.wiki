@@ -1,0 +1,107 @@
+= BlueSpice HDP — Technical Wiki =
+
+== What HDP Is ==
+
+HDP (“Hallo Welt! Digitale Plattform” / BMBF-sponsored HDP Edition) is a fork
+of [https://en.wikipedia.org/wiki/BlueSpice BlueSpice] — a MediaWiki-based
+enterprise wiki distribution — extended with a self-hosted '''Retrieval-Augmented
+Generation (RAG) chatbot'''. Editors write and organize content as normal wiki
+pages; a separate ingestion pipeline indexes that content into a vector
+search store, and a chat widget embedded in the wiki UI lets readers ask
+natural-language questions that are answered by an LLM grounded in — and
+citing — the indexed wiki pages.
+
+The whole stack (wiki + database + search + RAG pipeline) ships as a
+Docker Compose deployment that a new user can bring up with <code>docker compose up</code> plus one setup script — see [[Help:Erste_Schritte]].
+
+== Key Concepts ==
+
+* '''BlueSpice / MediaWiki''' (<code>app/</code>) — the wiki engine itself: MediaWiki core plus ~130 vendored BlueSpice extensions and skins, loaded via <code>app/settings.d/*.php</code> (see [[Help:Modul/Settings.d|settings-d]]).
+* '''ChatBot extension''' (<code>app/extensions/ChatBot/</code>) — the MediaWiki extension that renders the chat widget, exposes <code>/bmbf/*</code> REST endpoints, and proxies chat requests to the RAG backend. See [[Help:Modul/ChatBot-Extension|chatbot-extension]].
+* '''chatbot-proxy''' (<code>docker/chatbot-proxy/</code>) — a small Python HTTP service that translates between the ChatBot extension’s Deepset-Cloud-shaped API calls and the Haystack pipeline’s own API, so the extension needs no code changes to talk to a self-hosted pipeline. See [[Help:Modul/Docker-Services|docker-services]].
+* '''Haystack RAG pipeline''' (<code>docker/haystack/</code>) — a [https://haystack.deepset.ai/ Haystack] pipeline (query reformulation → hybrid BM25 + embedding retrieval → cross-encoder ranking → grounded LLM answer generation) served by <code>hayhooks</code>. See [[Help:Modul/Haystack-Pipeline|haystack-pipeline]].
+* '''Ingestion''' (<code>docker/haystack/ingest_hdp_wiki.py</code>) — a standalone script that reads wiki pages straight from MediaWiki’s API/database, splits them into sections, embeds them, and writes them into OpenSearch. This is the ''only'' thing that populates the chatbot’s knowledge base in this deployment — see [[Help:Modul/Ingestion|ingestion]].
+* '''Embedding providers''' — the embedding step (used by both the live pipeline and ingestion) is swappable between a local CPU model, a remote OpenAI-compatible endpoint, or a one-off HuggingFace Space. See [[Help:Modul/Embedding-Provider|embedding-providers]].
+* '''OpenSearch''' — stores wiki content as vector + BM25-searchable documents in the <code>hdp_wiki</code> index; also backs BlueSpice’s own full-text search.
+* '''MariaDB''' — the wiki’s relational database (pages, revisions, users, BlueSpice extension tables).
+
+== Entry Points ==
+
+{| class="wikitable"
+|-
+! Entry point
+! What happens
+|-
+| <code>docker compose up -d --build</code>
+| Builds/starts all 6 containers ([https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker-compose.yml docker-compose.yml])
+|-
+| <code>docker compose exec mediawiki bash /setup.sh</code>
+| First-boot install: Composer fix, MediaWiki install, BlueSpice tables, main page ([https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/setup.sh docker/setup.sh])
+|-
+| <code>http://localhost:8080/w/</code>
+| The wiki itself (browser entry point)
+|-
+| <code>docker compose exec haystack python3 ingest_hdp_wiki.py</code>
+| Populates/refreshes the chatbot’s search index from wiki content
+|-
+| <code>GET /bmbf/chat</code> (MediaWiki REST, called by the chat widget)
+| A user’s chat question, streamed back as SSE
+|-
+| <code>POST http://localhost:1417/hdp_pipeline/run</code>
+| Direct HTTP entry point into the Haystack pipeline, bypassing the wiki UI
+|}
+
+== High-Level Architecture ==
+
+A user’s browser talks only to the wiki (Apache → PHP-FPM). The ChatBot
+extension’s REST endpoints proxy chat requests to <code>chatbot-proxy</code>, which
+calls the Haystack pipeline; the pipeline retrieves from OpenSearch and
+generates an answer with an OpenAI-compatible LLM, streamed back through the
+same chain as Server-Sent Events. Wiki content reaches OpenSearch only via
+the separate <code>ingest_hdp_wiki.py</code> script, run against the live MediaWiki API.
+See [[Help:Architektur]] for the full diagram and design
+decisions.
+
+== Module Map ==
+
+{| class="wikitable"
+|-
+! Module
+! Doc
+! Covers
+|-
+| Docker services
+| [[Help:Modul/Docker-Services]]
+| <code>docker-compose.yml</code>, all 7 services, volumes, networking, health checks
+|-
+| ChatBot extension
+| [[Help:Modul/ChatBot-Extension]]
+| <code>app/extensions/ChatBot/</code> — REST routes, <code>DeepsetApi</code> connector, chat UI, indexing hooks
+|-
+| Haystack pipeline
+| [[Help:Modul/Haystack-Pipeline]]
+| <code>docker/haystack/hdp_pipeline.yaml</code>, <code>hdp_api_server.py</code>, <code>entrypoint.sh</code> — the RAG query pipeline
+|-
+| Ingestion
+| [[Help:Modul/Ingestion]]
+| <code>docker/haystack/ingest_hdp_wiki.py</code> — wiki → sections → embeddings → OpenSearch
+|-
+| Embedding providers
+| [[Help:Modul/Embedding-Provider]]
+| <code>local</code> / <code>remote</code> / <code>hf_space</code> embedding modes and the YAML-rendering trick that makes them swappable
+|-
+| settings.d
+| [[Help:Modul/Settings.d]]
+| <code>app/settings.d/*.php</code> — BlueSpice’s ordered extension/config loader, incl. the ChatBot + MariaDB fixes
+|}
+
+== Diagrams ==
+
+* [[Help:Architektur]] — system-level <code>flowchart TD</code>
+* [[Help:Diagramme/Sequenzen]] — chatbot query, ingestion, and first-boot setup as <code>sequenceDiagram</code>s
+* [[Help:Diagramme/Klassendiagramm]] — why a class diagram isn’t the right fit here, plus the small pieces of PHP class structure worth knowing
+
+== Getting Started ==
+
+See [[Help:Erste_Schritte]] for prerequisites, installation,
+first run, and common workflows.

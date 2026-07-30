@@ -1,0 +1,142 @@
+= Getting Started =
+
+== Prerequisites ==
+
+* Docker + Docker Compose v2 (<code>docker compose</code>, not the legacy <code>docker-compose</code>)
+* Enough host RAM for the default memory limits: MariaDB 1g, MediaWiki 1g, MediaWiki-web 512m, jobrunner 512m, OpenSearch 1536m, Haystack 3g, chatbot-proxy 256m — roughly '''8GB''' total headroom is a safe minimum (all overridable via <code>HDP_*_MEM_LIMIT</code> in <code>.env</code>, see [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker-compose.yml docker-compose.yml])
+* An API key for an OpenAI-compatible chat completions endpoint (OpenAI, z.ai/GLM, Nebius, etc.) for the LLM
+* Optionally, an [https://infisical.com/ Infisical] project, if you want centrally-managed secrets instead of a plaintext <code>.env</code>
+
+== Installation ==
+
+<syntaxhighlight lang="bash">git clone <this repo>
+cd hdp
+
+# 1. Configure environment
+cp .env.example .env
+# Edit .env: at minimum set HDP_DB_ROOT_PASSWORD, HDP_DB_PASSWORD,
+# HDP_ADMIN_PASSWORD, HDP_OPENSEARCH_PASSWORD, and HDP_LLM_API_KEY
+# (or configure the INFISICAL_* block instead — see .env.example header)
+
+# 2. Build and start all services
+docker compose up -d --build
+
+# 3. Wait for MariaDB and OpenSearch to report healthy
+docker compose ps
+
+# 4. Run first-boot setup (installs MediaWiki + ~130 BlueSpice extensions)
+docker compose exec mediawiki bash /setup.sh
+
+# 5. Open the wiki
+open http://localhost:8080/w/</syntaxhighlight>
+Login as <code>Admin</code> with the <code>HDP_ADMIN_PASSWORD</code> you set. See
+README-DOCKER.md for the full reference,
+including reset/reinstall and troubleshooting.
+
+== What <code>setup.sh</code> Actually Does ==
+
+[https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/setup.sh <code>docker/setup.sh</code>] runs inside the <code>mediawiki</code>
+container and is idempotent (safe to re-run):
+
+# '''Waits for MariaDB''' to accept connections (up to 120s).
+# '''Fixes Composer''': two packages (<code>hallowelt/chatbot</code>, <code>mediawiki/page-header</code>) are pinned in <code>composer.lock</code> to a private GitLab and to SSH-form GitHub URLs; their full source is already committed under <code>app/extensions/</code>, so the script rewrites SSH→HTTPS, strips those two packages from the lockfile, and reinstalls.
+# '''Installs MediaWiki''' via <code>maintenance/install.php</code> against MariaDB, then strips the installer’s auto-generated <code>wfLoadExtension()</code> calls from <code>LocalSettings.php</code> and appends <code>require_once &quot;$IP/LocalSettings.BlueSpice.php&quot;;</code> instead — this hands extension loading over to [[Help:Modul/Settings.d|settings.d]], which loads BlueSpice’s ~130 extensions in a specific order with the right config (skipped entirely on re-run if <code>LocalSettings.php</code> already exists).
+# '''Runs <code>update.php</code>''' to create all BlueSpice extension tables (run twice — once before, once after fixing directory permissions, since some extensions like SemanticMediaWiki need writable data dirs that don’t exist until the first pass creates them).
+# '''Populates the main page''' from [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/docker/mediawiki/hauptseite.wiki <code>docker/mediawiki/hauptseite.wiki</code>] — once only, guarded by a <code>cache/.hauptseite-populated</code> marker so later admin edits are never overwritten.
+
+== First Run: Create Content and Ask the Chatbot ==
+
+<ol style="list-style-type: decimal;">
+<li><p>Create a few wiki pages (through the UI, or <code>maintenance/edit.php</code> for
+bulk/scripted content).</p></li>
+<li><p>Index them into the chatbot’s search backend:</p>
+<syntaxhighlight lang="bash">docker compose exec haystack python3 ingest_hdp_wiki.py</syntaxhighlight></li>
+<li><p>Verify indexing:</p>
+<syntaxhighlight lang="bash">docker compose exec opensearch curl -sk -u "admin:${HDP_OPENSEARCH_PASSWORD}" \
+  "https://localhost:9200/hdp_wiki/_count"</syntaxhighlight></li>
+<li><p>Open the wiki, log in, and use the chat widget (bottom-right chat icon)
+to ask a question about the content you just indexed. Expect roughly
+60-110s for a <code>gpt-4o</code>-class model, longer for reasoning-heavy models —
+see the Troubleshooting section of
+README-DOCKER.md.</p></li></ol>
+
+== Common Workflows ==
+
+=== Create page → ingest → ask chatbot ===
+
+The core loop. Indexing is '''not''' automatic on save (see
+[[architecture.md#key-design-decisions|Key Design Decisions]]) — re-run
+ingestion after content changes:
+
+<syntaxhighlight lang="bash"># Reindex everything
+docker compose exec haystack python3 ingest_hdp_wiki.py
+
+# Or just the pages not yet indexed (fast resume after a partial run)
+docker compose exec haystack python3 ingest_hdp_wiki.py --missing-only
+
+# Or a single page you just edited
+docker compose exec haystack python3 ingest_hdp_wiki.py --page "Hauptseite"</syntaxhighlight>
+See [[Help:Modul/Ingestion|ingestion]] for what the script does internally.
+
+=== Query the RAG pipeline directly (bypassing the wiki UI) ===
+
+Useful when debugging retrieval/generation issues in isolation from the
+PHP/proxy layer:
+
+<syntaxhighlight lang="bash">docker compose exec haystack curl -s -X POST http://localhost:1417/hdp_pipeline/run \
+  -H "Content-Type: application/json" \
+  -d '{"question":"Your question here","query":"Your question here","path":"rag"}'</syntaxhighlight>
+=== Switch embedding provider ===
+
+Edit <code>HDP_EMBEDDING_PROVIDER</code> (and its related <code>HDP_EMBEDDING_*</code> vars) in
+<code>.env</code>, then:
+
+<syntaxhighlight lang="bash">docker compose up -d --force-recreate haystack</syntaxhighlight>
+See [[Help:Modul/Embedding-Provider|embedding-providers]] for the three
+modes and their tradeoffs.
+
+== Configuration ==
+
+All runtime configuration is in <code>.env</code> (start from <code>.env.example</code>). The
+variables that matter most day-to-day:
+
+{| class="wikitable"
+|-
+! Variable
+! Purpose
+|-
+| <code>HDP_DB_ROOT_PASSWORD</code>, <code>HDP_DB_PASSWORD</code>
+| MariaDB root / <code>bluespice</code> app user passwords
+|-
+| <code>HDP_ADMIN_PASSWORD</code>
+| Wiki <code>Admin</code> account password
+|-
+| <code>HDP_OPENSEARCH_PASSWORD</code>
+| OpenSearch <code>admin</code> password (needed even with Infisical, since Compose creates the container before any secret-loader runs)
+|-
+| <code>HDP_LLM_BASE_URL</code>, <code>HDP_LLM_MODEL</code>, <code>HDP_LLM_API_KEY</code>
+| The OpenAI-compatible chat completions endpoint used for query reformulation + answer generation
+|-
+| <code>HDP_EMBEDDING_PROVIDER</code>, <code>HDP_EMBEDDING_MODEL</code>, <code>HDP_EMBEDDING_DIM</code>
+| Which embedder the live pipeline and ingestion use — see [[Help:Modul/Embedding-Provider|embedding-providers]]
+|-
+| <code>MW_DOCKER_PORT</code>, <code>HAYHOOKS_PORT</code>, <code>HDP_PDF_PORT</code>
+| Host ports for the wiki, hayhooks admin API, and the Haystack query API respectively
+|-
+| <code>INFISICAL_URL</code> / <code>INFISICAL_PROJECT_ID</code> / <code>INFISICAL_CLIENT_ID</code> / <code>INFISICAL_CLIENT_SECRET</code>
+| Optional: pulls every <code>HDP_</code>-prefixed secret from Infisical at container start, overriding <code>.env</code>
+|}
+
+⚠️ If you use Infisical: it fetches '''every''' secret whose name starts with
+<code>HDP_</code>, not just credentials — a stale <code>HDP_LLM_BASE_URL</code> or
+<code>HDP_EMBEDDING_MODEL</code> left over in Infisical from an earlier config will
+silently win over your <code>.env</code> edit on every container start. Either keep
+non-secret config out of Infisical, or keep both in sync.
+
+Application-level (as opposed to deployment-level) configuration lives in
+[https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d <code>app/settings.d/*.php</code>], loaded in filename order by
+<code>app/LocalSettings.BlueSpice.php</code> — most relevantly
+[https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/050-Fixes.php <code>050-Fixes.php</code>] (MariaDB SQL-mode fix)
+and [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/100-ChatBot.php <code>100-ChatBot.php</code>] (points the
+ChatBot extension at <code>chatbot-proxy</code>). See
+[[Help:Modul/Settings.d|settings-d]].
