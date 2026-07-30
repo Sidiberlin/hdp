@@ -1,0 +1,15 @@
+{
+  "repo_name": "hdp",
+  "source_path": "/root/hdp",
+  "source_sha": "305490a90029ed15147927bfb60df7ca59e239e4",
+  "generated_at": "2026-07-30T08:04:12Z",
+  "generator": "claude-code codewiki",
+  "modules_documented": [
+    "docker-services",
+    "chatbot-extension",
+    "haystack-pipeline",
+    "ingestion",
+    "embedding-providers",
+    "settings-d"
+  ]
+}
