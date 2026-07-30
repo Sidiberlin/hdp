@@ -236,6 +236,21 @@ if [ -f /hauptseite.wiki ] && [ ! -f cache/.hauptseite-populated ]; then
         || echo "  WARNING: main page population failed (non-fatal, continuing)"
 fi
 
+# ─── Step 4c: Populate Chatbot-FAQ (first install only) ───────────
+# Ships a German FAQ page explaining how the chatbot works, what it
+# can/can't answer, source attribution, and privacy. Guarded by a
+# marker file so admin edits are never overwritten on restart.
+if [ -f /chatbot-faq.wiki ] && [ ! -f cache/.chatbot-faq-populated ]; then
+    echo ""
+    echo "[4/4] Populating Chatbot-FAQ page..."
+    php maintenance/run.php edit.php \
+        --user Admin \
+        --summary "Initial setup: populate Chatbot-FAQ page" \
+        Chatbot-FAQ < /chatbot-faq.wiki \
+        && touch cache/.chatbot-faq-populated \
+        || echo "  WARNING: Chatbot-FAQ population failed (non-fatal, continuing)"
+fi
+
 echo ""
 echo "============================================"
 echo " ✓ Setup complete!"
