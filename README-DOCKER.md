@@ -101,8 +101,8 @@ docker compose exec haystack python3 ingest_hdp_wiki.py --dry-run
 ```
 
 By default this uses the `local` embedding provider (CPU, in-container,
-zero extra config) — expect roughly 1-3 minutes per page depending on host
-CPU. For a large wiki, see
+zero extra config) — expect anywhere from a few seconds to a few minutes
+per page depending on page size and host CPU. For a large wiki, see
 [`docs/embedding-providers.md`](docs/embedding-providers.md) for the
 `remote` (dedicated GPU server) or `hf_space` (one-off ZeroGPU) options,
 both significantly faster.
@@ -110,8 +110,8 @@ both significantly faster.
 Verify the index after ingestion:
 
 ```bash
-docker compose exec opensearch curl -sk -u "admin:${HDP_OPENSEARCH_PASSWORD}" \
-  "https://localhost:9200/hdp_wiki/_count"
+docker compose exec opensearch bash -c \
+  'curl -sk -u "admin:$OPENSEARCH_INITIAL_ADMIN_PASSWORD" https://localhost:9200/hdp_wiki/_count'
 ```
 
 ## Testing the RAG Pipeline Directly
@@ -164,6 +164,8 @@ class HookRunner {
 **LLM calls time out / retry repeatedly in `haystack` logs:** Reasoning-heavy models (e.g. GLM's chain-of-thought) can take 1-2 minutes to answer a RAG prompt with retrieved documents in context. Both `OpenAIGenerator` components in `hdp_pipeline.yaml` are set to `timeout: 300` — if you're still seeing timeouts with a different/slower model, increase this value. Faster models (e.g. `gpt-4o`) typically respond in 60-110s for a full RAG query.
 
 **"I changed `.env` but the container is still using the old LLM/embedding provider":** If you use Infisical, `infisical-loader.sh` fetches every secret whose name starts with `HDP_` — if you have stale `HDP_LLM_BASE_URL`/`HDP_LLM_MODEL`/etc. stored as Infisical secrets from an earlier config, they silently override `.env` on every container start. Check your Infisical project for stale `HDP_*` entries, or use `.env`-only config (don't create Infisical secrets with the same names as your non-secret config vars).
+
+**PHP Notice `"Spezialseiten" alias for special page 'EnhancedSpecialPages' conflicts with page from Specialpages` during setup:** Harmless and expected. The `EnhancedStandardUIs` extension registers the German alias `Spezialseiten` for its `EnhancedSpecialPages` page, which collides with MediaWiki core's own `Special:Spezialseiten` alias — MediaWiki logs a Notice and keeps the core mapping. This is an upstream issue in `app/extensions/EnhancedStandardUIs/languages/EnhancedSpecialPages.i18n.alias.php` (the extension ships the conflicting alias). No fix applied here to avoid divergence from vendored upstream; ignore the notice.
 
 **Port 1417 already in use:** An old `haystack` container process may still be bound to it. `docker compose down haystack && docker compose up -d haystack`.
 
