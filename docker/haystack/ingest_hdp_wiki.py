@@ -31,6 +31,18 @@ from urllib.parse import quote
 
 import requests
 import pymysql
+import warnings
+
+# Silence noise that clutters ingestion output without hiding real errors:
+#   - InsecureRequestWarning: expected — OpenSearch uses a self-signed cert
+#     on the internal docker-compose network (verify_certs=False is
+#     intentional; see get_indexed_page_ids and OpenSearchDocumentStore
+#     initialization below).
+try:
+    from urllib3.exceptions import InsecureRequestWarning
+    warnings.filterwarnings("ignore", category=InsecureRequestWarning)
+except Exception:
+    pass
 from haystack.dataclasses import Document
 from haystack_integrations.document_stores.opensearch.document_store import (
     OpenSearchDocumentStore,
