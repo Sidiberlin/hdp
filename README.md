@@ -1,3 +1,7 @@
+# Quality of life fork
+
+in order to be able to easily evaluate this project this fork adds a number of Quality of Life improvements (docker compose, codewiki generated docs, default content, etc.) which allow you to easily deploy this in your local environment with a for of this repo, edits to some env and a docker compose up. more information in DOCKER-README.MD 
+
 # Chatbot für Handbuch der Projektförderung
 
 Der Ordner `/app` enthält ein erweitertes Open-Source-Enterprise-Wiki BlueSpice (BlueSpice HDP Edition), die zugehörige KI-Pipeline findet sich im Ordner `/pipeline`.
