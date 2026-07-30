@@ -57,8 +57,8 @@ MW_API_URL = os.environ.get("MW_API_URL", "http://mediawiki-web:8080/w/api.php")
 MW_ADMIN_USER = os.environ.get("MW_ADMIN_USER", "Admin")
 MW_ADMIN_PASS = os.environ.get("HDP_ADMIN_PASSWORD", "")
 
-# Content namespaces to index (from ChatBot extension.json)
-INDEXABLE_NAMESPACES = [0, 5000, 5002]
+# Content namespaces to index (from ChatBot extension.json, plus Help namespace)
+INDEXABLE_NAMESPACES = [0, 12, 5000, 5002]
 
 # Namespace ID → text mapping (from LocalSettings + extension.json)
 NAMESPACE_TEXT = {
