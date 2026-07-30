@@ -52,6 +52,10 @@ services:
       - ./docker/setup.sh:/setup.sh:ro
       - ./docker/mediawiki/hauptseite.wiki:/hauptseite.wiki:ro
       - ./docker/mediawiki/chatbot-faq.wiki:/chatbot-faq.wiki:ro
+      # Codewiki-generated Help-namespace pages (see scripts/convert-docs.sh).
+      # setup.sh iterates every *.wiki file here and populates the wiki via
+      # edit.php on first boot only (guarded by cache/.wiki-docs-populated).
+      - ./docker/mediawiki/wiki-docs:/wiki-docs:ro
       - ./docker/infisical-loader.sh:/infisical-loader.sh:ro
     env_file: .env
     environment:

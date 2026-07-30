@@ -251,6 +251,32 @@ if [ -f /chatbot-faq.wiki ] && [ ! -f cache/.chatbot-faq-populated ]; then
         || echo "  WARNING: Chatbot-FAQ population failed (non-fatal, continuing)"
 fi
 
+# ─── Step 4d: Populate codewiki Help-namespace docs (first install only) ─
+# Ships the docs/wiki/*.md tree (converted to wikitext by
+# scripts/convert-docs.sh, checked into docker/mediawiki/wiki-docs/) into
+# the Help namespace so the main-page links to Help:Technische_Dokumentation,
+# Help:Architektur, Help:Erste_Schritte, Help:Modul/*, Help:Diagramme/*
+# and Help:Inhaltsverzeichnis are no longer red. Uses '__' in filenames as
+# a stand-in for '/' in subpage names (see convert-docs.sh).
+# Guarded by a marker file so admin edits are never overwritten on restart.
+if [ -d /wiki-docs ] && [ ! -f cache/.wiki-docs-populated ]; then
+    echo ""
+    echo "[4/4] Populating codewiki Help pages..."
+    for f in /wiki-docs/*.wiki; do
+        [ -f "$f" ] || continue
+        base="$(basename "$f" .wiki)"
+        # Turn 'Help:Modul__Ingestion' into 'Help:Modul/Ingestion'.
+        page="${base//__//}"
+        echo "  -> ${page}"
+        php maintenance/run.php edit.php \
+            --user Admin \
+            --summary "Initial setup: populate codewiki-generated Help page" \
+            "${page}" < "$f" \
+            || echo "  WARNING: population of ${page} failed (non-fatal, continuing)"
+    done
+    touch cache/.wiki-docs-populated
+fi
+
 echo ""
 echo "============================================"
 echo " ✓ Setup complete!"
