@@ -1,0 +1,33 @@
+flowchart TD
+    Browser((User Browser))
+    Admin((Operator / CLI))
+
+    Web["mediawiki-web<br>Apache"]
+    MW["mediawiki<br>PHP-FPM"]
+    ChatBotExt["ChatBot extension<br>/bmbf/* REST routes"]
+    JobRunner["mediawiki-jobrunner"]
+    Proxy["chatbot-proxy"]
+    Haystack["haystack<br>hayhooks :1416 +<br>hdp_api_server :1417"]
+    OS[("OpenSearch<br>hdp_wiki index")]
+    DB[("MariaDB<br>bluespice")]
+    LLM{{"LLM API<br>OpenAI-compatible"}}
+    Ingest["ingest_hdp_wiki.py"]
+    HFHub{{"HuggingFace Hub"}}
+
+    Browser -->|"HTTP :8080"| Web
+    Web -->|"FastCGI"| MW
+    MW --> ChatBotExt
+    ChatBotExt -->|"GET/POST :8080"| Proxy
+    Proxy -->|"POST /hdp_pipeline/run :1417"| Haystack
+    Haystack -->|"BM25 + embedding retrieval"| OS
+    Haystack -->|"chat completions"| LLM
+    Haystack -.->|"model download (first boot)"| HFHub
+    MW --> DB
+    JobRunner --> DB
+    JobRunner -.->|"runJobs.php loop"| MW
+    Admin -.->|"docker compose exec setup.sh"| MW
+    Admin -.->|"docker compose exec ingest_hdp_wiki.py"| Ingest
+    Ingest -->|"action=parse via /w/api.php"| Web
+    Ingest -->|"read page list (SQL)"| DB
+    Ingest -->|"write embedded documents"| OS
+    Ingest -.->|"download embedding model (local mode)"| HFHub
