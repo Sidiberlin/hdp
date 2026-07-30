@@ -27,6 +27,20 @@ open http://localhost:8080/w/
 
 **Login:** `Admin` / (the `HDP_ADMIN_PASSWORD` you set in `.env` or Infisical)
 
+### Accessing from other machines
+
+By default the wiki is configured for `localhost` access only. If you want it
+reachable from other devices in your LAN, set `MW_SERVER` in `.env` to the
+host's IP or hostname **before** running setup.sh:
+
+```bash
+# In .env — replace with your server's actual IP/hostname
+MW_SERVER=http://192.168.1.50:8080
+```
+
+Without this, logins and redirects send browsers to their own `localhost`
+and fail with `ERR_CONNECTION_REFUSED`.
+
 ## Architecture
 
 | Service | Image / Build | Purpose |
