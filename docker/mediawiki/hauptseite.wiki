@@ -57,6 +57,18 @@ Das Wiki ist in drei Namensräumen organisiert:
 
 Eine vollständige, unsortierte Übersicht aller Seiten finden Sie unter [[Spezial:Alle_Seiten|Alle Seiten]].
 
+== Dokumentation und Hilfe ==
+
+Eine ausführliche technische Dokumentation, QA-Berichte und Entwickler-Handbücher finden Sie im [[Help:Inhaltsverzeichnis|Hilfebereich]].
+
+Die Hilfe-Dokumentation umfasst:
+
+* [[Help:Technische_Dokumentation|Technische Dokumentation]] — Projektübersicht und Komponenten
+* [[Help:Architektur|Architektur]] — Systemdiagramm und Designentscheidungen
+* [[Help:Erste_Schritte|Erste Schritte]] — Installation und Workflows
+* [[Help:Fuer_Entwickler|Für Entwickler]] — Betriebshandbuch und Konfiguration
+* [[Help:QA_Bericht|QA-Bericht]] — Behobene Bugs und Verifizierung
+
 == Zuletzt bearbeitete Seiten ==
 
 {{#dpl: namespace=|count=10|ordermethod=lastedit|order=descending|mode=unordered|noresultsheader=''Noch keine Seiten vorhanden — dies ist eine frische Installation ohne Inhalt.''}}
