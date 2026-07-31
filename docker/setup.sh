@@ -321,9 +321,10 @@ if [ ! -f cache/.extendedsearch-initialized ]; then
     echo ""
     echo "[4/4] Initializing ExtendedSearch index..."
     echo "  This queues background indexing jobs and may take a few minutes..."
-    php maintenance/run.php initBackends.php --quick 2>/dev/null \
+    ES_MAINT="$MW/extensions/BlueSpiceExtendedSearch/maintenance"
+    php maintenance/run.php "$ES_MAINT/initBackends.php" --quick 2>/dev/null \
         || echo "  WARNING: initBackends failed (may already be initialized)"
-    php maintenance/run.php rebuildIndex.php --quick 2>/dev/null \
+    php maintenance/run.php "$ES_MAINT/rebuildIndex.php" --quick 2>/dev/null \
         || echo "  WARNING: rebuildIndex failed (non-fatal, jobs may still be processing)"
     touch cache/.extendedsearch-initialized
     echo "  ExtendedSearch initialized. Background jobs will finish indexing."
