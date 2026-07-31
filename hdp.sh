@@ -13,10 +13,10 @@
 #   ./hdp.sh logs -f haystack
 #
 # The .env file should contain:
-#   INFISICAL_URL=https://...
-#   INFISICAL_PROJECT_ID=...
-#   INFISICAL_CLIENT_ID=...
-#   INFISICAL_CLIENT_SECRET=...
+#   HDP_INFISICAL_URL=https://...
+#   HDP_INFISICAL_PROJECT_ID=...
+#   HDP_INFISICAL_CLIENT_ID=...
+#   HDP_INFISICAL_CLIENT_SECRET=...
 #   # Plus non-secret config (ports, language, etc.)
 # ============================================================
 set -euo pipefail
@@ -31,11 +31,11 @@ if [[ ! -f "$ENV_FILE" ]]; then
 fi
 
 # ─── Load Infisical config from .env ────────────────────────────────
-INF_URL=$(grep '^INFISICAL_URL=' "$ENV_FILE" | head -1 | cut -d'=' -f2-)
-INF_PID=$(grep '^INFISICAL_PROJECT_ID=' "$ENV_FILE" | head -1 | cut -d'=' -f2-)
-INF_CID=$(grep '^INFISICAL_CLIENT_ID=' "$ENV_FILE" | head -1 | cut -d'=' -f2-)
-INF_CSECRET=$(grep '^INFISICAL_CLIENT_SECRET=' "$ENV_FILE" | head -1 | cut -d'=' -f2-)
-INF_ENV=$(grep '^INFISICAL_ENV=' "$ENV_FILE" | head -1 | cut -d'=' -f2-)
+INF_URL=$(grep '^HDP_INFISICAL_URL=' "$ENV_FILE" | head -1 | cut -d'=' -f2-)
+INF_PID=$(grep '^HDP_INFISICAL_PROJECT_ID=' "$ENV_FILE" | head -1 | cut -d'=' -f2-)
+INF_CID=$(grep '^HDP_INFISICAL_CLIENT_ID=' "$ENV_FILE" | head -1 | cut -d'=' -f2-)
+INF_CSECRET=$(grep '^HDP_INFISICAL_CLIENT_SECRET=' "$ENV_FILE" | head -1 | cut -d'=' -f2-)
+INF_ENV=$(grep '^HDP_INFISICAL_ENV=' "$ENV_FILE" | head -1 | cut -d'=' -f2-)
 INF_ENV="${INF_ENV:-prod}"
 
 # Strip quotes
@@ -47,7 +47,7 @@ done
 if [[ -z "$INF_URL" ]] || [[ -z "$INF_PID" ]] || \
    [[ -z "$INF_CID" ]] || [[ -z "$INF_CSECRET" ]]; then
     echo "ERROR: Infisical credentials missing in .env"
-    echo "Required: INFISICAL_URL, INFISICAL_PROJECT_ID, INFISICAL_CLIENT_ID, INFISICAL_CLIENT_SECRET"
+    echo "Required: HDP_INFISICAL_URL, HDP_INFISICAL_PROJECT_ID, HDP_INFISICAL_CLIENT_ID, HDP_INFISICAL_CLIENT_SECRET"
     exit 1
 fi
 
