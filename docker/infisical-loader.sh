@@ -77,6 +77,8 @@ if [[ -z "$_inf_secret_names" ]]; then
 fi
 
 # Fetch each secret value individually (values not included in list API)
+# NOTE: All HDP secrets must be stored in Infisical with the HDP_ prefix.
+# The LLM API key should be named HDP_LLM_API_KEY in Infisical.
 _inf_count=0
 while IFS= read -r _inf_name; do
     _inf_val=""
@@ -93,26 +95,9 @@ while IFS= read -r _inf_name; do
     fi
 done <<< "$_inf_secret_names"
 
-# Also export VOICE_TOOLS_OPENAI_KEY → LLM_API_KEY for the haystack container
-# (pivoted from z.ai/GLM to OpenAI gpt-4o to match the original repo's LLM choice
-#  and avoid the shared z.ai account rate limit)
-_inf_glm=""
-_inf_glm=$(curl -s -X GET \
-    "${_INF_URL}/api/v4/secrets/VOICE_TOOLS_OPENAI_KEY?environment=${_INF_ENV}&projectId=${_INF_PID}&secretPath=/&type=shared" \
-    -H "Authorization: Bearer ${_inf_token}" \
-    -H "Content-Type: application/json" \
-    --connect-timeout 10 \
-    --max-time 10 2>/dev/null | jq -r '.secret.secretValue // empty' 2>/dev/null)
-if [[ -n "$_inf_glm" ]]; then
-    export "LLM_API_KEY=${_inf_glm}"
-    export "HDP_LLM_API_KEY=${_inf_glm}"
-    _inf_count=$((_inf_count + 1))
-fi
-
 echo "${_INF_LOG_PREFIX} Loaded ${_inf_count} secrets from Infisical."
 
 # Clear sensitive intermediates
 _inf_token=""
 _inf_response=""
 _inf_secret_response=""
-_inf_glm=""

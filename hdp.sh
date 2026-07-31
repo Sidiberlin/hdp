@@ -75,6 +75,8 @@ fi
 echo "[hdp] Authenticated."
 
 # ─── Fetch all HDP_ secrets ─────────────────────────────────────────
+# NOTE: All HDP secrets must be stored in Infisical with the HDP_ prefix.
+# The LLM API key should be named HDP_LLM_API_KEY in Infisical.
 SECRET_RESPONSE=$(curl -s -X GET \
     "${INF_URL}/api/v4/secrets?environment=${INF_ENV}&projectId=${INF_PID}&secretPath=/&type=shared" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -97,23 +99,12 @@ while IFS= read -r name; do
     fi
 done <<< "$SECRET_NAMES"
 
-# Also fetch GLM_API_KEY → HDP_LLM_API_KEY for the haystack pipeline
-GLM_KEY=$(curl -s -X GET \
-    "${INF_URL}/api/v4/secrets/GLM_API_KEY?environment=${INF_ENV}&projectId=${INF_PID}&secretPath=/&type=shared" \
-    -H "Authorization: Bearer ${TOKEN}" \
-    --connect-timeout 10 \
-    --max-time 10 2>/dev/null | jq -r '.secret.secretValue // empty' 2>/dev/null)
-if [[ -n "$GLM_KEY" ]]; then
-    export "HDP_LLM_API_KEY=$GLM_KEY"
-    LOADED=$((LOADED + 1))
-fi
+echo "[hdp] Loaded ${LOADED} secrets from Infisical."
 
 # Clear token
 TOKEN=""
 AUTH_RESPONSE=""
 SECRET_RESPONSE=""
-
-echo "[hdp] Loaded ${LOADED} secrets from Infisical."
 
 # ─── Pass through to docker compose ─────────────────────────────────
 cd "$SCRIPT_DIR"
