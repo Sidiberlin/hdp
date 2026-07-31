@@ -1,0 +1,19 @@
+'''Datenschutz'''
+
+Diese Seite ist ein Platzhalter. Bitte passe die Datenschutzhinweise an die Bedürfnisse deiner Organisation an.
+
+== Wichtige Hinweise ==
+
+Dieses Wiki verwendet einen KI-gestützten Chatbot. Fragen an den Chatbot werden an einen konfigurierten LLM-Provider gesendet, um Antworten zu generieren. Die konkrete Konfiguration ist der technischen Dokumentation zu entnehmen.
+
+* Lösche diesen Platzhaltertext
+* Trage hier die Datenschutzhinweise deiner Organisation ein
+* Veröffentliche die Seite
+
+----
+
+'''Privacy Policy'''
+
+This page is a placeholder. Please customize the privacy policy for your organization.
+
+This wiki includes an AI-powered chatbot. Questions sent to the chatbot are forwarded to a configured LLM provider to generate answers.

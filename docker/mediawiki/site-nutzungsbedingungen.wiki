@@ -1,0 +1,15 @@
+'''Nutzungsbedingungen'''
+
+Diese Seite ist ein Platzhalter. Bitte passe die Nutzungsbedingungen an die Bedürfnisse deiner Organisation an.
+
+== Verwendung ==
+
+* Lösche diesen Platzhaltertext
+* Trage hier die Nutzungsbedingungen deiner Organisation ein
+* Veröffentliche die Seite
+
+----
+
+'''Terms of Use'''
+
+This page is a placeholder. Please customize the terms of use for your organization.
