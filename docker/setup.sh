@@ -64,6 +64,10 @@ echo " OK (${waited}s)"
 # PHP notices and renders as plain <pre>.
 if ! command -v python3 &>/dev/null; then
     echo "Installing python3 + pygments for syntax highlighting..."
+    # mirrors.wikimedia.org is unresolvable outside Wikimedia's own network —
+    # the base image's default Debian mirror. Point at deb.debian.org instead
+    # so apt-get update can actually populate a package index.
+    sed -i 's#mirrors\.wikimedia\.org#deb.debian.org#g' /etc/apt/sources.list
     apt-get update -qq || true
     apt-get install -y -qq --no-install-recommends python3 python3-pygments >/dev/null 2>&1
     echo "  Done."
