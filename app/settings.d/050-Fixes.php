@@ -31,3 +31,23 @@ $GLOBALS['wgSQLMode'] = 'STRICT_ALL_TABLES';
 $GLOBALS['wgDebugLogFile'] = '';
 $GLOBALS['wgDebugLogGroups'] = [];
 $GLOBALS['wgDebugToolbar'] = false;
+
+// BlueSpiceExtendedSearch's default backend config (extension.json)
+// points at 127.0.0.1:9200, which is nothing inside the mediawiki
+// container — OpenSearch is a separate service reachable at
+// opensearch:9200. Without this override, every search query throws
+// OpenSearch\Common\Exceptions\NoNodesAvailableException and the
+// Search Center UI never renders results.
+//
+// BlueSpice\Config (registered as the 'bsg' config factory by
+// BlueSpiceFoundation) is a MultiConfig chain that checks a
+// database-backed settings table BEFORE plain $wgBsg* globals, so a
+// normal $wgBsgESBackendHost override here is silently shadowed by
+// the DB-seeded default. The one layer that wins over everything —
+// including the DB config — is GlobalVarConfig('bsgOverride'), read
+// directly as $GLOBALS['bsgOverride<Key>'] (no "wg" prefix).
+$GLOBALS['bsgOverrideESBackendHost'] = 'opensearch';
+$GLOBALS['bsgOverrideESBackendPort'] = '9200';
+$GLOBALS['bsgOverrideESBackendTransport'] = 'https';
+$GLOBALS['bsgOverrideESBackendUsername'] = 'admin';
+$GLOBALS['bsgOverrideESBackendPassword'] = getenv( 'HDP_OPENSEARCH_PASSWORD' ) ?: '';
