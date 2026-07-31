@@ -138,6 +138,11 @@ class Backend {
 			$clientBuilder = new ClientBuilder();
 			$clientBuilder->setHosts( [ "$backendTransport://$backendHost:$backendPort" ] );
 			$clientBuilder->setRetries( 2 );
+			// HDP runs OpenSearch with its default self-signed demo certs
+			// (see docker-compose.yml's opensearch healthcheck, which itself
+			// uses `curl -sk`). Without this, every connection fails with
+			// OpenSearch\Common\Exceptions\NoNodesAvailableException.
+			$clientBuilder->setSSLVerification( false );
 			if ( $backendUsername && $backendPassword ) {
 				$clientBuilder->setBasicAuthentication( $backendUsername, $backendPassword );
 			}
