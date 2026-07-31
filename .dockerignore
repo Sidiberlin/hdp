@@ -1,0 +1,47 @@
+# .dockerignore — reduce Docker build context size
+# Excludes files not needed inside the container images
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Documentation (not needed in images)
+*.md
+docs/
+README-DOCKER.md
+
+# Dev / CI artifacts
+.claude/
+.claude-qa-briefing.md
+CLAUDE.md
+AGENTS.md
+CONTRIBUTING.md
+SECURITY.md
+CODE_OF_CONDUCT.md
+hdp-publication-readiness-report.md
+
+# Docker volumes (bind-mounted at runtime, never baked into images)
+mediawiki_data/
+mariadb_data/
+opensearch_data/
+haystack_models/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Node
+node_modules/
+
+# Editor / OS
+.DS_Store
+*.swp
+*~
+
+# Secrets
+.env
+*.env.local
