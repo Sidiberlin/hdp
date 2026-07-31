@@ -116,6 +116,8 @@ GPL-3.0-only.
 *The following section is the original German-language project description
 from the upstream BMBF-funded project, kept here for historical context.*
 
+**Original repository:** [gitlab.opencode.de/bmbf/teamdigital/hdp](https://gitlab.opencode.de/bmbf/teamdigital/hdp)
+
 ### Chatbot für Handbuch der Projektförderung
 
 Der Ordner `/app` enthält ein erweitertes Open-Source-Enterprise-Wiki BlueSpice (BlueSpice HDP Edition), die zugehörige KI-Pipeline findet sich im Ordner `/pipeline`.
