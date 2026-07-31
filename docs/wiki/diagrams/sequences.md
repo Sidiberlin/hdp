@@ -84,12 +84,14 @@ sequenceDiagram
     participant Op as Operator
     participant Script as ingest_hdp_wiki.py
     participant DB as MariaDB
-    participant MW as MediaWiki API<br>(mediawiki-web)
-    participant Emb as Embedder<br>(local/remote/hf_space)
+    participant MW as MediaWiki API
+    participant Emb as Embedder
     participant OS as OpenSearch
 
+    Note over MW: mediawiki-web container
+    Note over Emb: local / remote / hf_space
     Op->>Script: docker compose exec haystack python3 ingest_hdp_wiki.py
-    Script->>DB: SELECT page list<br>(namespaces 0, 5000, 5002; non-redirect)
+    Script->>DB: SELECT page list (ns 0/5000/5002, non-redirect)
     DB-->>Script: page rows
     Script->>MW: action=clientlogin (Admin)
     MW-->>Script: authenticated session
