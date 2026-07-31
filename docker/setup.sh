@@ -271,10 +271,10 @@ if [ ! -f cache/.site-pages-populated ]; then
     echo ""
     echo "[4/4] Populating Site: legal placeholder pages..."
     for page_file in \
-        "Site:Nutzungsbedingungen:/site-nutzungsbedingungen.wiki" \
-        "Site:Datenschutz:/site-datenschutz.wiki"; do
-        page="${page_file%%:*}"
-        file="${page_file##*:}"
+        "Site:Nutzungsbedingungen|/site-nutzungsbedingungen.wiki" \
+        "Site:Datenschutz|/site-datenschutz.wiki"; do
+        page="${page_file%%|*}"
+        file="${page_file##*|}"
         if [ -f "$file" ]; then
             echo "  -> ${page}"
             php maintenance/run.php edit.php \
