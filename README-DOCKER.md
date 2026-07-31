@@ -3,6 +3,22 @@
 Clone-and-go Docker deployment of BlueSpice HDP Edition (MediaWiki/BlueSpice
 wiki + Haystack RAG chatbot).
 
+## Hardware Requirements
+
+| Resource | Minimum | Recommended |
+|----------|---------|-------------|
+| **RAM** | 8 GB | 16 GB |
+| **Disk** | 15 GB free | 30 GB free |
+| **CPU** | 4 cores | 8 cores |
+| **Docker** | 24.0+ | Latest |
+
+Disk space breakdown: ~4 GB Docker images, ~2 GB MariaDB data, ~1.5 GB
+embedding model (first-download), ~1 GB OpenSearch index, plus wiki uploads.
+CPU-only embedding ingestion takes 1–3 min per wiki page; a GPU or the
+`hf_space` embedding provider (see
+[`docs/embedding-providers.md`](docs/embedding-providers.md)) is significantly
+faster for large wikis.
+
 ## Quick Start
 
 ```bash
