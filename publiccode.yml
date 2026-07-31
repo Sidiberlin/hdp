@@ -34,15 +34,15 @@ maintenance:
     - name: Richard Heigl
       affiliation: BlueSpice
 legal:
-  license: GPLv3.0
+  license: GPL-3.0-only
   mainCopyrightOwner: Hallo Welt! GmbH
   repoOwner: Hallo Welt! GmbH
 intendedAudience:
   countries:
-    - de
-    - us
-    - fr
-    - it
+    - DE
+    - US
+    - FR
+    - IT
 localisation:
   localisationReady: true
   availableLanguages:
