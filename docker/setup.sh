@@ -64,7 +64,8 @@ echo " OK (${waited}s)"
 # PHP notices and renders as plain <pre>.
 if ! command -v python3 &>/dev/null; then
     echo "Installing python3 + pygments for syntax highlighting..."
-    apt-get update -qq && apt-get install -y -qq python3 python3-pygments >/dev/null 2>&1
+    apt-get update -qq || true
+    apt-get install -y -qq --no-install-recommends python3 python3-pygments >/dev/null 2>&1
     echo "  Done."
 fi
 
