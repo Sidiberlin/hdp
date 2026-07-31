@@ -43,6 +43,37 @@ open http://localhost:8080/w/
 
 **Login:** `Admin` / (the `HDP_ADMIN_PASSWORD` you set in `.env` or Infisical)
 
+> **Note — private by default:** BlueSpice requires login before any page
+> (including the main page) is visible to anonymous visitors. Log in with
+> the Admin account above. On first login you'll be asked to accept a
+> privacy consent — this is standard BlueSpice behavior.
+
+### 6. Index wiki content for the chatbot (first ingestion)
+
+The RAG chatbot needs wiki pages indexed into OpenSearch before it can
+answer questions. This is a separate step after `setup.sh`:
+
+```bash
+# Preview what will be indexed (no writes)
+docker compose exec haystack python3 ingest_hdp_wiki.py --dry-run
+
+# Run the full ingestion
+docker compose exec haystack python3 ingest_hdp_wiki.py
+```
+
+**Timing:** With the default `local` embedding provider (CPU), expect
+**1–3 minutes per wiki page**. A fresh install with ~30 pages takes
+roughly 30–60 minutes; a large wiki can take hours. The embedding model
+(~1.4 GB) is downloaded on first run. For faster bulk ingestion, see
+[`docs/embedding-providers.md`](docs/embedding-providers.md) for the
+`remote` (GPU server) or `hf_space` (HuggingFace ZeroGPU) options.
+
+Ingestion is idempotent — re-run it any time content changes:
+
+```bash
+docker compose exec haystack python3 ingest_hdp_wiki.py --missing-only
+```
+
 ### Accessing from other machines
 
 By default the wiki is configured for `localhost` access only. If you want it
