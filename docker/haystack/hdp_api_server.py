@@ -16,8 +16,17 @@ rendered = subprocess.run(
     ["envsubst"], input=Path(PIPELINE_FILE).read_text(),
     capture_output=True, text=True,
 ).stdout
-pipeline = Pipeline.loads(rendered)
-log.info("Pipeline loaded")
+
+pipeline = None
+try:
+    pipeline = Pipeline.loads(rendered)
+    log.info("Pipeline loaded")
+except Exception as e:
+    pipeline_error = str(e)
+    log.warning("Pipeline could not be loaded — likely missing HDP_LLM_API_KEY.")
+    log.warning(f"  Error: {pipeline_error}")
+    log.warning("  The API server will start but return 503 on all queries until configured.")
+    log.warning("  Set HDP_LLM_API_KEY in .env or Infisical and restart the haystack container.")
 
 def to_native(obj):
     """Recursively convert numpy/Haystack types to JSON-safe native types."""
@@ -73,6 +82,16 @@ class QueryRequest(BaseModel):
 
 @app.post("/hdp_pipeline/run")
 async def run_pipeline(req: QueryRequest):
+    if pipeline is None:
+        log.warning("Query rejected — pipeline not loaded (HDP_LLM_API_KEY not configured)")
+        return JSONResponse(
+            content={
+                "error": "HDP_LLM_API_KEY not configured. Set it in .env or Infisical and restart.",
+                "answers": [],
+                "documents": [],
+            },
+            status_code=503,
+        )
     log.info(f"Query: {req.question[:80]} (path={req.path})")
     try:
         # Run pipeline in thread pool to avoid blocking async event loop
@@ -93,6 +112,11 @@ async def run_pipeline(req: QueryRequest):
 
 @app.get("/health")
 def health():
+    if pipeline is None:
+        return JSONResponse(
+            content={"status": "degraded", "error": "HDP_LLM_API_KEY not configured"},
+            status_code=503,
+        )
     return {"status": "ok"}
 
 if __name__ == "__main__":
