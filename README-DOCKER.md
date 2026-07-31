@@ -180,6 +180,9 @@ answer generation.
 ## Reset / Reinstall
 
 ```bash
+# Remove the generated LocalSettings.php so setup.sh re-runs a fresh install
+rm -f app/LocalSettings.php
+
 # Stop everything and delete all data volumes (wiki content, search index, DB)
 docker compose down -v
 
@@ -188,6 +191,10 @@ docker compose up -d --build
 docker compose exec mediawiki bash /setup.sh
 docker compose exec haystack python3 ingest_hdp_wiki.py
 ```
+
+> **Note:** `app/cache/` debug logs are unrotated and can grow large on
+> long-lived instances. Periodically clear or prune this directory if disk
+> space is tight.
 
 ## Troubleshooting
 
@@ -217,6 +224,10 @@ class HookRunner {
 **Port 1417 already in use:** An old `haystack` container process may still be bound to it. `docker compose down haystack && docker compose up -d haystack`.
 
 **A container crashed/was OOM-killed and didn't come back on its own:** All services set `restart: unless-stopped`, which should auto-restart a crashed container. On some restricted Docker hosts (nested/sandboxed Docker daemons, some CI environments, some managed VPS providers) this restart supervision doesn't actually fire even though the policy is set correctly — verify with `docker inspect <container> --format '{{.RestartCount}}'` after a crash. If it's stuck at 0 and the container stays `Exited`, that's this host limitation, not a config bug; run `docker compose up -d` to bring it back manually, and consider an external supervisor (systemd unit wrapping `docker compose up`, a cron healthcheck, or a proper non-nested Docker host) for unattended production use.
+
+**Yellow banner about missing "Site:Nutzungsbedingungen" / "Site:Datenschutz" pages:** After a fresh install, a yellow notice appears on every page warning that these two pages don't exist yet. This is **expected** — they are placeholder legal pages (Terms of Use / Privacy Policy). The wiki admin should create `Site:Nutzungsbedingungen` and `Site:Datenschutz` with appropriate legal content for their organization; once created, the banner disappears.
+
+**SyntaxHighlight code blocks render as plain `<pre>` (no syntax coloring):** The `mediawiki` PHP-FPM container does not include `python3` or Pygments, which the SyntaxHighlight extension needs for highlighting. Code falls back to unhighlighted `<pre>` rendering. This is **cosmetic only** — code is fully readable, just without syntax coloring.
 
 ## Notes
 
