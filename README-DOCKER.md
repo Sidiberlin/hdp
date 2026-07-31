@@ -225,9 +225,11 @@ class HookRunner {
 
 **A container crashed/was OOM-killed and didn't come back on its own:** All services set `restart: unless-stopped`, which should auto-restart a crashed container. On some restricted Docker hosts (nested/sandboxed Docker daemons, some CI environments, some managed VPS providers) this restart supervision doesn't actually fire even though the policy is set correctly — verify with `docker inspect <container> --format '{{.RestartCount}}'` after a crash. If it's stuck at 0 and the container stays `Exited`, that's this host limitation, not a config bug; run `docker compose up -d` to bring it back manually, and consider an external supervisor (systemd unit wrapping `docker compose up`, a cron healthcheck, or a proper non-nested Docker host) for unattended production use.
 
-**Yellow banner about missing "Site:Nutzungsbedingungen" / "Site:Datenschutz" pages:** After a fresh install, a yellow notice appears on every page warning that these two pages don't exist yet. This is **expected** — they are placeholder legal pages (Terms of Use / Privacy Policy). The wiki admin should create `Site:Nutzungsbedingungen` and `Site:Datenschutz` with appropriate legal content for their organization; once created, the banner disappears.
+**Yellow banner about missing "Site:Nutzungsbedingungen" / "Site:Datenschutz" pages:** After a fresh install, minimal placeholder legal pages (Terms of Use / Privacy Policy) are created automatically by `setup.sh`. The wiki admin should customize `Site:Nutzungsbedingungen` and `Site:Datenschutz` with appropriate legal content for their organization.
 
-**SyntaxHighlight code blocks render as plain `<pre>` (no syntax coloring):** The `mediawiki` PHP-FPM container does not include `python3` or Pygments, which the SyntaxHighlight extension needs for highlighting. Code falls back to unhighlighted `<pre>` rendering. This is **cosmetic only** — code is fully readable, just without syntax coloring.
+**SyntaxHighlight code blocks render as plain `<pre>` (no syntax coloring):** If you still see this after a fresh `setup.sh` run, python3/Pygments may not have installed correctly. Check the setup output for the "Installing python3 + pygments" line. You can install manually: `docker compose exec mediawiki apt-get install -y python3 python3-pygments`.
+
+**Wiki feels sluggish right after setup:** The first-boot setup creates ~350+ pages and queues hundreds of indexing/link-update jobs. The single `mediawiki-jobrunner` container processes these serially — give it 5–10 minutes after `setup.sh` completes before expecting search, categories, and link tables to be fully consistent.
 
 ## Notes
 
