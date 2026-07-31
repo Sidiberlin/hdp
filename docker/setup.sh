@@ -57,6 +57,17 @@ done
 echo " OK (${waited}s)"
 
 # ─── Step 1: Fix Composer ─────────────────────────────────────────
+# ─── Pre-step: Install python3 for SyntaxHighlight (Pygments) ──────
+# The Wikimedia dev image doesn't include python3, but BlueSpice's
+# SyntaxHighlight_GeSHi extension shells out to Pygments for code
+# block rendering. Without it, every page with a code block spams
+# PHP notices and renders as plain <pre>.
+if ! command -v python3 &>/dev/null; then
+    echo "Installing python3 + pygments for syntax highlighting..."
+    apt-get update -qq && apt-get install -y -qq python3 python3-pygments >/dev/null 2>&1
+    echo "  Done."
+fi
+
 # Two packages (hallowelt/chatbot, mediawiki/page-header) point to
 # gitlab.hallowelt.com (private, no auth). Their full source is already
 # committed in extensions/ChatBot/ and extensions/PageHeader/.
@@ -249,6 +260,30 @@ if [ -f /chatbot-faq.wiki ] && [ ! -f cache/.chatbot-faq-populated ]; then
         Chatbot-FAQ < /chatbot-faq.wiki \
         && touch cache/.chatbot-faq-populated \
         || echo "  WARNING: Chatbot-FAQ population failed (non-fatal, continuing)"
+fi
+
+# ─── Step 4c2: Populate Site: legal placeholder pages (first install) ─
+# BlueSpice shows a yellow warning banner on every page until
+# Site:Nutzungsbedingungen and Site:Datenschutz exist. These are
+# minimal placeholders — the admin should customize them.
+if [ ! -f cache/.site-pages-populated ]; then
+    echo ""
+    echo "[4/4] Populating Site: legal placeholder pages..."
+    for page_file in \
+        "Site:Nutzungsbedingungen:/site-nutzungsbedingungen.wiki" \
+        "Site:Datenschutz:/site-datenschutz.wiki"; do
+        page="${page_file%%:*}"
+        file="${page_file##*:}"
+        if [ -f "$file" ]; then
+            echo "  -> ${page}"
+            php maintenance/run.php edit.php \
+                --user Admin \
+                --summary "Initial setup: populate legal placeholder page" \
+                "$page" < "$file" \
+                || echo "  WARNING: population of ${page} failed (non-fatal, continuing)"
+        fi
+    done
+    touch cache/.site-pages-populated
 fi
 
 # ─── Step 4d: Populate codewiki Help-namespace docs (first install only) ─
