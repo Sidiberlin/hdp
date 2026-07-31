@@ -1,0 +1,56 @@
+# GitLab CI for HDP — basic validation on every push
+# Runs linting and config validation without building Docker images
+# (images are built locally or in a deploy stage, not on every push)
+
+stages:
+  - lint
+
+variables:
+  # Prevent shallow clones so linting has full context
+  GIT_DEPTH: "20"
+
+# ─── Shell script linting ───────────────────────────────────────────
+shellcheck:
+  stage: lint
+  image: koalaman/shellcheck-alpine:stable
+  script:
+    - |
+      find . -name '*.sh' \
+        -not -path './app/extensions/*' \
+        -not -path './app/skins/*' \
+        -not -path './.git/*' \
+        -not -path './node_modules/*' \
+        -print0 | xargs -0 shellcheck --severity=warning
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ─── YAML validation ────────────────────────────────────────────────
+yaml-lint:
+  stage: lint
+  image: cytopia/yamllint:latest
+  script:
+    - |
+      yamllint -d "{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable}}" \
+        docker-compose.yml \
+        publiccode.yml \
+        docker/haystack/hdp_pipeline.yaml \
+        .gitlab-ci.yml 2>/dev/null || true
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+
+# ─── Docker Compose config validation ───────────────────────────────
+compose-validate:
+  stage: lint
+  image: docker:24-cli
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - apk add --no-cache docker-compose
+  script:
+    - cp .env.example .env
+    - docker-compose config > /dev/null
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
