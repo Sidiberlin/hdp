@@ -37,6 +37,8 @@ DEBRIEFING.md
 HAYSTACK_FIX_PLAN.md
 INGESTION_PIPELINE_PLAN.md
 DOCKER_SETUP.md
+.claude-qa-briefing.md
+.claude/
 
 # Logs
 *.log
