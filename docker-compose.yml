@@ -69,11 +69,11 @@ services:
       MW_SITENAME: '${MW_SITENAME:-BlueSpice HDP}'
       MW_LOG_DIR: /var/www/html/w/cache
       # Infisical machine identity (non-secret — used to fetch real secrets)
-      INFISICAL_URL: '${INFISICAL_URL}'
-      INFISICAL_PROJECT_ID: '${INFISICAL_PROJECT_ID}'
-      INFISICAL_CLIENT_ID: '${INFISICAL_CLIENT_ID}'
-      INFISICAL_CLIENT_SECRET: '${INFISICAL_CLIENT_SECRET}'
-      INFISICAL_ENV: '${INFISICAL_ENV:-prod}'
+      INFISICAL_URL: '${HDP_INFISICAL_URL}'
+      INFISICAL_PROJECT_ID: '${HDP_INFISICAL_PROJECT_ID}'
+      INFISICAL_CLIENT_ID: '${HDP_INFISICAL_CLIENT_ID}'
+      INFISICAL_CLIENT_SECRET: '${HDP_INFISICAL_CLIENT_SECRET}'
+      INFISICAL_ENV: '${HDP_INFISICAL_ENV:-prod}'
       # Secrets resolved from Infisical by setup.sh at runtime
       MW_DB_NAME: bluespice
       MW_DB_USER: bluespice
@@ -213,11 +213,11 @@ services:
       OPENSEARCH_PORT: "9200"
       OPENSEARCH_PASSWORD: "${HDP_OPENSEARCH_PASSWORD}"
       # Infisical machine identity (for fetching LLM API key at startup)
-      INFISICAL_URL: '${INFISICAL_URL}'
-      INFISICAL_PROJECT_ID: '${INFISICAL_PROJECT_ID}'
-      INFISICAL_CLIENT_ID: '${INFISICAL_CLIENT_ID}'
-      INFISICAL_CLIENT_SECRET: '${INFISICAL_CLIENT_SECRET}'
-      INFISICAL_ENV: '${INFISICAL_ENV:-prod}'
+      INFISICAL_URL: '${HDP_INFISICAL_URL}'
+      INFISICAL_PROJECT_ID: '${HDP_INFISICAL_PROJECT_ID}'
+      INFISICAL_CLIENT_ID: '${HDP_INFISICAL_CLIENT_ID}'
+      INFISICAL_CLIENT_SECRET: '${HDP_INFISICAL_CLIENT_SECRET}'
+      INFISICAL_ENV: '${HDP_INFISICAL_ENV:-prod}'
       # LLM config (non-secret — the key itself comes from Infisical)
       HDP_LLM_BASE_URL: '${HDP_LLM_BASE_URL:-https://open.bigmodel.cn/api/paas/v4}'
       HDP_LLM_MODEL: '${HDP_LLM_MODEL:-glm-4.7}'
