@@ -1,0 +1,27 @@
+{
+	"root": true,
+	"extends": [
+		"wikimedia/client-es6",
+		"wikimedia/jquery",
+		"wikimedia/mediawiki"
+	],
+	"globals": {
+		"blueSpiceDiscovery": "writeable",
+		"bs": "readonly",
+		"BSPing": "readonly",
+		"discovery_cookie": "writeable",
+		"ext": "readonly",
+		"jQuery": "readonly",
+		"mediaWiki": "readonly",
+		"OOJSPlus": "readonly"
+	},
+	"rules": {
+		"camelcase": "off",
+		"es-x/no-array-prototype-includes": "off",
+		"max-len": "off",
+		"no-jquery/no-class-state": "off",
+		"no-jquery/no-global-selector": "off",
+		"no-jquery/variable-pattern": "off",
+		"no-prototype-builtins": "off"
+	}
+}
