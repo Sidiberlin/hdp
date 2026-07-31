@@ -277,6 +277,22 @@ if [ -d /wiki-docs ] && [ ! -f cache/.wiki-docs-populated ]; then
     touch cache/.wiki-docs-populated
 fi
 
+# ─── Step 4e: Initialize ExtendedSearch index (first install only) ──
+# BlueSpice's ExtendedSearch needs the OpenSearch backend initialized and
+# the initial index built. Without this, wiki search returns zero results.
+# Guarded by a marker file so re-runs don't rebuild from scratch.
+if [ ! -f cache/.extendedsearch-initialized ]; then
+    echo ""
+    echo "[4/4] Initializing ExtendedSearch index..."
+    echo "  This queues background indexing jobs and may take a few minutes..."
+    php maintenance/run.php initBackends.php --quick 2>/dev/null \
+        || echo "  WARNING: initBackends failed (may already be initialized)"
+    php maintenance/run.php rebuildIndex.php --quick 2>/dev/null \
+        || echo "  WARNING: rebuildIndex failed (non-fatal, jobs may still be processing)"
+    touch cache/.extendedsearch-initialized
+    echo "  ExtendedSearch initialized. Background jobs will finish indexing."
+fi
+
 echo ""
 echo "============================================"
 echo " ✓ Setup complete!"
