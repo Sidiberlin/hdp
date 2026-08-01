@@ -77,7 +77,17 @@ class ChatApi extends Connector {
 
 			echo $dataString . "\n";
 
-			ob_flush();
+			// sendSSEHeaders() above drains every output buffer
+			// (while ob_get_level() > 0 → ob_end_flush()), so by the time we
+			// get here there is usually nothing left to flush and an
+			// unguarded ob_flush() emits
+			//   "ob_flush(): Failed to delete and flush buffer.
+			//    No buffer to delete or flush"
+			// once per streamed chunk. Guard it the same way the drain loop
+			// does; flush() alone still pushes the chunk to the client.
+			if ( ob_get_level() > 0 ) {
+				ob_flush();
+			}
 			flush();
 		}
 	}
