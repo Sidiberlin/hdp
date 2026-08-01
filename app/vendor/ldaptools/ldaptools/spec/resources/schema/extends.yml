@@ -1,5 +1,0 @@
-objects:
-    foo:
-        extends: [ example, generic ]
-        type: foo
-        repository: '\no\type'
