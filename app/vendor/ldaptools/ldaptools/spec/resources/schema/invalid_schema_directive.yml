@@ -1,7 +1,0 @@
-foo: bar
-objects:
-    foo:
-      type: foo
-      class: foo
-      attributes:
-          name: cn

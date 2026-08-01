@@ -1,7 +1,0 @@
-imports:
-  - php
-
-filter:
-  excluded_paths:
-    - spec/*
-    - fixtures/*
