@@ -10,6 +10,9 @@ set -e
 PIPELINE_DIR="/opt/pipeline"
 PIPELINE_FILE="$PIPELINE_DIR/hdp_pipeline.yaml"
 HAYHOOKS_PORT="${HAYHOOKS_PORT:-1416}"
+# The RAG API port. Was hardcoded to 1417 further down, so unlike
+# HAYHOOKS_PORT it could not be moved — docker-compose.yml now passes both.
+HDP_PDF_PORT="${HDP_PDF_PORT:-1417}"
 
 # ─── Load secrets from Infisical ────────────────────────────────────
 echo "=== Loading secrets from Infisical ==="
@@ -133,17 +136,17 @@ echo "=== Haystack Pipeline is ready ==="
 echo "hayhooks API: http://localhost:${HAYHOOKS_PORT}"
 echo "Pipeline deployed. Use POST /hdp_pipeline/run to query."
 
-# Start the API server in the background on port 1417
+# Start the API server in the background
 echo ""
-echo "Starting API server on port 1417..."
-export HDP_API_PORT=1417
+echo "Starting API server on port ${HDP_PDF_PORT}..."
+export HDP_API_PORT="${HDP_PDF_PORT}"
 python3 /opt/pipeline/hdp_api_server.py &
 API_PID=$!
 echo "API server started (PID: $API_PID)"
 echo ""
 echo "=== System ready ==="
 echo "Hayhooks: http://localhost:${HAYHOOKS_PORT}"
-echo "API Server: http://localhost:1417"
+echo "API Server: http://localhost:${HDP_PDF_PORT}"
 
 # Wait for the background process
 wait $HAYHOOKS_PID

@@ -211,16 +211,19 @@ services:
       #   :1417 is the RAG query API — no auth, so exposing it hands out unmetered
       #         LLM spend and every indexed wiki document, bypassing the wiki login.
       # Nothing in the stack needs these from the host: chatbot-proxy reaches
-      # haystack over the compose network (http://haystack:1417). Change the bind
-      # address only behind an authenticating reverse proxy.
-      - "${HDP_BIND_ADDR:-127.0.0.1}:${HAYHOOKS_PORT:-1416}:1416"
-      - "${HDP_BIND_ADDR:-127.0.0.1}:${HDP_PDF_PORT:-1417}:1417"
+      # haystack over the compose network. Change the bind address only behind
+      # an authenticating reverse proxy.
+      # Both sides templated so HAYHOOKS_PORT / HDP_PDF_PORT name one port each,
+      # inside the container and out — the values below are threaded into the
+      # container environment, the healthcheck, and chatbot-proxy's HAYHOOKS_URL.
+      - "${HDP_BIND_ADDR:-127.0.0.1}:${HAYHOOKS_PORT:-1416}:${HAYHOOKS_PORT:-1416}"
+      - "${HDP_BIND_ADDR:-127.0.0.1}:${HDP_PDF_PORT:-1417}:${HDP_PDF_PORT:-1417}"
     deploy:
       resources:
         limits:
           memory: ${HDP_HAYSTACK_MEM_LIMIT:-3g}
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf -o /dev/null http://localhost:1417/health || exit 1"]
+      test: ["CMD-SHELL", "curl -sf -o /dev/null http://localhost:${HDP_PDF_PORT:-1417}/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 20
@@ -228,6 +231,11 @@ services:
       # models and deploys the pipeline before either port responds.
       start_period: 90s
     environment:
+      # Ports the entrypoint binds inside the container. Without these the
+      # entrypoint fell back to its own defaults, so setting HAYHOOKS_PORT in
+      # .env only moved the published port and left the service on 1416.
+      HAYHOOKS_PORT: "${HAYHOOKS_PORT:-1416}"
+      HDP_PDF_PORT: "${HDP_PDF_PORT:-1417}"
       # OpenSearch connection
       OPENSEARCH_HOST: opensearch
       OPENSEARCH_PORT: "9200"
@@ -292,7 +300,7 @@ services:
       retries: 10
       start_period: 15s
     environment:
-      HAYHOOKS_URL: "http://haystack:1417"
+      HAYHOOKS_URL: "http://haystack:${HDP_PDF_PORT:-1417}"
       PIPELINE_NAME: "hdp_pipeline"
       CHATBOT_PROXY_PORT: "8080"
     depends_on:
