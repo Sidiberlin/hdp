@@ -204,14 +204,9 @@ docker compose exec haystack python3 ingest_hdp_wiki.py
 
 **Page loads but missing styling:** Run `docker compose exec mediawiki php maintenance/run.php update.php --quick`.
 
-**ChatBot UI doesn't appear / stays hidden:** Check the browser console for a ResourceLoader error (`Failed to get load.php URL`). This is caused by a missing `HookRunner.php` in the Vector skin — a pre-existing gap in the upstream `Vector` skin package, not something this repo's setup causes. If you hit it on a fresh clone, create a stub at `app/skins/Vector/includes/Hooks/HookRunner.php`:
-```php
-<?php
-namespace MediaWiki\Skins\Vector\Hooks;
-class HookRunner {
-    public function onVectorSearchResourceLoaderConfig( &$config ) { return true; }
-}
-```
+**ChatBot UI doesn't appear / stays hidden:** Check the browser console for a ResourceLoader error (`Failed to get load.php URL`). Historically this was caused by a missing `HookRunner.php` under `app/skins/Vector/includes/Hooks/`, and this section used to tell you to hand-write a stub for it.
+
+That advice was wrong about the cause and is no longer needed. `HookRunner.php` is **not** a gap in the upstream Vector package — upstream `REL1_43` ships it, along with the `VectorSearchResourceLoaderConfigHook` interface it implements. The file was missing because the copy of Vector vendored into this repo was incomplete: 59 files under `includes/` had never been committed. They have since been restored from upstream `REL1_43`, so no stub is required on a fresh clone. If you still see this error, run `git status app/skins/Vector` — the fault is a local modification, not a missing upstream file.
 
 **Chatbot returns "no information found" for everything:** Almost always incomplete ingestion, not a pipeline bug. Compare `hdp_wiki` document count (see "Running / Re-running Ingestion" above) against your wiki's actual page count — if ingestion was interrupted partway, run `--missing-only` to finish it.
 
