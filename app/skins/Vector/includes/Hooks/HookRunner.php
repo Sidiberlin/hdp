@@ -5,12 +5,9 @@ namespace MediaWiki\Skins\Vector\Hooks;
 use MediaWiki\HookContainer\HookContainer;
 
 /**
- * HookRunner for Vector skin hooks.
- * Missing from the Vector skin distribution — created as a minimal stub
- * to prevent ResourceLoader startup crashes.
+ * @internal
  */
-class HookRunner {
-
+class HookRunner implements VectorSearchResourceLoaderConfigHook {
 	private HookContainer $hookContainer;
 
 	public function __construct( HookContainer $hookContainer ) {
@@ -18,12 +15,12 @@ class HookRunner {
 	}
 
 	/**
-	 * @param array &$config
+	 * @inheritDoc
 	 */
-	public function onVectorSearchResourceLoaderConfig( array &$config ): void {
+	public function onVectorSearchResourceLoaderConfig( array &$vectorSearchConfig ): void {
 		$this->hookContainer->run(
 			'VectorSearchResourceLoaderConfig',
-			[ &$config ]
+			[ &$vectorSearchConfig ]
 		);
 	}
 }
