@@ -12,10 +12,19 @@
  * referenced from Help:Architektur.
  */
 
-$GLOBALS['wgAllowExternalImages'] = true;
+// Must stay false. Parser::maybeMakeExternalImage() short-circuits on
+// getAllowExternalImages() BEFORE it ever consults the allow list
+// (includes/parser/Parser.php:2415), so setting this to true silently
+// disables $wgAllowExternalImagesFrom below and hot-links images from any
+// host on the internet. That would let any editor turn a wiki page into a
+// tracking beacon: every reader's IP, user agent and referrer would be sent
+// to a third-party server on page view — a DSGVO problem in a public-sector
+// wiki, not just a hardening nit.
+$GLOBALS['wgAllowExternalImages'] = false;
 // Allow both localhost and LAN IP access patterns.
 // MW_SERVER is set in docker-compose.yml environment.
-$GLOBALS['wgAllowExternalImagesFrom'] = [
+// Prefix match (strpos === 0), so these cover /w/skins/hdp/architecture.png.
+$GLOBALS['wgAllowExternalImagesFrom'] = array_values( array_filter( [
     'http://localhost',
     rtrim($GLOBALS['wgServer'] ?? '', '/'),
-];
+] ) );
