@@ -62,7 +62,10 @@ services:
     env_file: .env
     environment:
       COMPOSER_CACHE_DIR: '/var/www/html/w/cache/composer'
-      MW_SERVER: 'http://localhost:${MW_DOCKER_PORT:-8080}'
+      # Honour MW_SERVER from .env — this environment: block overrides env_file,
+      # so hardcoding localhost here silently ignored the value .env.example
+      # tells people to set (e.g. MW_SERVER=https://wiki.example.com).
+      MW_SERVER: '${MW_SERVER:-http://localhost:${MW_DOCKER_PORT:-8080}}'
       MW_DOCKER_PORT: '${MW_DOCKER_PORT:-8080}'
       MW_SCRIPT_PATH: '/w'
       MW_DOCKER_UID: '${MW_DOCKER_UID:-0}'
