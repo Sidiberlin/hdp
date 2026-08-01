@@ -14,13 +14,15 @@ shellcheck:
   stage: lint
   image: koalaman/shellcheck-alpine:stable
   script:
+    # Explicit include list, not an exclude list. The previous exclude form
+    # ("everything except app/extensions/ and app/skins/") linted upstream
+    # MediaWiki and BlueSpice shell scripts under app/vendor/, app/includes/
+    # and app/_bluespice/ — code this project does not own and cannot fix.
+    # An exclude list also silently re-widens every time upstream adds a
+    # directory. These three paths are the shell we actually author.
     - |
-      find . -name '*.sh' \
-        -not -path './app/extensions/*' \
-        -not -path './app/skins/*' \
-        -not -path './.git/*' \
-        -not -path './node_modules/*' \
-        -print0 | xargs -0 shellcheck --severity=warning
+      find docker scripts hdp.sh -name '*.sh' -print0 \
+        | xargs -0 -r shellcheck --severity=warning --
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
     - if: $CI_COMMIT_BRANCH == "main"
