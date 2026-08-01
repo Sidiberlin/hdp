@@ -140,6 +140,18 @@ else
     echo "[1/4] Vendor directory already present, skipping composer."
 fi
 
+# ─── Post-composer: Re-apply SSL patch to ExtendedSearch Backend.php ──
+# Composer installs bluespice/extendedsearch as a dist package, which
+# overwrites our local patch to Backend.php. Re-apply it here so the
+# SSL verification fix survives every fresh install.
+ES_BACKEND="$MW/extensions/BlueSpiceExtendedSearch/src/Backend.php"
+if [ -f "$ES_BACKEND" ] && ! grep -q 'setSSLVerification' "$ES_BACKEND"; then
+    sed -i '/\$clientBuilder->setRetries( 2 );/a\
+\t\t\t// HDP: disable SSL verification for self-signed OpenSearch certs\
+\t\t\t\$clientBuilder->setSSLVerification( false );' "$ES_BACKEND"
+    echo "  Re-applied SSL patch to ExtendedSearch Backend.php"
+fi
+
 # ─── Step 2: Install MediaWiki (MariaDB) ──────────────────────────
 echo ""
 if [ -f LocalSettings.php ]; then
@@ -326,7 +338,7 @@ if [ ! -f cache/.extendedsearch-initialized ]; then
     echo "[4/4] Initializing ExtendedSearch index..."
     echo "  This queues background indexing jobs and may take a few minutes..."
     ES_MAINT="$MW/extensions/BlueSpiceExtendedSearch/maintenance"
-    php maintenance/run.php "$ES_MAINT/initBackends.php" --quick 2>/dev/null \
+    php maintenance/run.php "$ES_MAINT/initBackends.php" --quick 2>&1 \
         || echo "  WARNING: initBackends failed (may already be initialized)"
     php maintenance/run.php "$ES_MAINT/rebuildIndex.php" --quick 2>/dev/null \
         || echo "  WARNING: rebuildIndex failed (non-fatal, jobs may still be processing)"
