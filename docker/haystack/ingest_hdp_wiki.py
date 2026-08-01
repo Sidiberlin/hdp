@@ -24,10 +24,8 @@ import json
 import logging
 import os
 import re
-import sys
 import time
 from html.parser import HTMLParser
-from urllib.parse import quote
 
 import requests
 import pymysql
@@ -355,7 +353,6 @@ def mw_api_login() -> requests.Session:
     while cl.get("status") == "UI":
         fields = {}
         for req in cl.get("requests", []):
-            req_id = req["id"]
             for fname, fdef in req.get("fields", {}).items():
                 # Checkbox fields: submit "1" to accept
                 if fdef.get("type") == "checkbox":

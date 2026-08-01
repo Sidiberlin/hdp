@@ -1,8 +1,15 @@
 """HDP RAG API — numpy-safe wrapper around Haystack pipeline."""
-import os, logging, subprocess, asyncio
-import numpy as np
+import asyncio
+import logging
+import os
+import subprocess
 from pathlib import Path
+
+import numpy as np
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 from haystack import Pipeline
+from pydantic import BaseModel
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("hdp-api")
@@ -69,9 +76,6 @@ def to_native(obj):
     
     return obj
 
-from fastapi import FastAPI
-from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 
 app = FastAPI(title="HDP RAG API")
 
