@@ -89,7 +89,7 @@ fi
 #     strip the two packages from composer.lock,
 #     rm vendor/, reinstall, restore, dump-autoload.
 
-if [ ! -f vendor/autoload.php ] || [ ! -f vendor/autoload_real.php ]; then
+if [ ! -f vendor/autoload.php ] || [ ! -f vendor/composer/autoload_real.php ]; then
     echo ""
     echo "[1/4] Resolving Composer dependencies..."
 
