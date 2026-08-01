@@ -74,13 +74,21 @@ echo "${_INF_LOG_PREFIX} Authenticated successfully."
 # ─── Fetch secrets ──────────────────────────────────────────────────
 # List all secrets and fetch each one. We only set env vars for
 # HDP_* prefixed secrets to avoid polluting the environment.
+#
+# The bearer token gets the same treatment as the client secret above: passed
+# as `-H "Authorization: Bearer ..."` it sits in /proc/<pid>/cmdline for every
+# request, readable by any process in the container. `-H @-` (curl >= 7.55;
+# both consumer images ship 7.88) reads one header per line from stdin, fed by
+# the printf builtin so the token never enters another process's argv and
+# never touches disk.
 _inf_secret_response=""
-_inf_secret_response=$(curl -s -X GET \
-    "${_INF_URL}/api/v4/secrets?environment=${_INF_ENV}&projectId=${_INF_PID}&secretPath=/&type=shared" \
-    -H "Authorization: Bearer ${_inf_token}" \
-    -H "Content-Type: application/json" \
-    --connect-timeout 10 \
-    --max-time 30 2>/dev/null)
+_inf_secret_response=$(printf 'Authorization: Bearer %s\n' "$_inf_token" \
+    | curl -s -X GET \
+        "${_INF_URL}/api/v4/secrets?environment=${_INF_ENV}&projectId=${_INF_PID}&secretPath=/&type=shared" \
+        -H @- \
+        -H "Content-Type: application/json" \
+        --connect-timeout 10 \
+        --max-time 30 2>/dev/null)
 
 # Extract HDP_ secret names
 _inf_secret_names=$(echo "$_inf_secret_response" | jq -r '.secrets[] | select(.secretKey | startswith("HDP_")) | .secretKey' 2>/dev/null)
@@ -95,13 +103,17 @@ fi
 # The LLM API key should be named HDP_LLM_API_KEY in Infisical.
 _inf_count=0
 while IFS= read -r _inf_name; do
+    # Same `-H @-` treatment as the list call. Piping into curl also pins its
+    # stdin to the pipe rather than this loop's here-string, so the header read
+    # cannot consume the secret names the `while` is still iterating over.
     _inf_val=""
-    _inf_val=$(curl -s -X GET \
-        "${_INF_URL}/api/v4/secrets/$(printf '%s' "$_inf_name" | jq -sRr @uri)?environment=${_INF_ENV}&projectId=${_INF_PID}&secretPath=/&type=shared" \
-        -H "Authorization: Bearer ${_inf_token}" \
-        -H "Content-Type: application/json" \
-        --connect-timeout 10 \
-        --max-time 10 2>/dev/null | jq -r '.secret.secretValue // empty' 2>/dev/null)
+    _inf_val=$(printf 'Authorization: Bearer %s\n' "$_inf_token" \
+        | curl -s -X GET \
+            "${_INF_URL}/api/v4/secrets/$(printf '%s' "$_inf_name" | jq -sRr @uri)?environment=${_INF_ENV}&projectId=${_INF_PID}&secretPath=/&type=shared" \
+            -H @- \
+            -H "Content-Type: application/json" \
+            --connect-timeout 10 \
+            --max-time 10 2>/dev/null | jq -r '.secret.secretValue // empty' 2>/dev/null)
 
     if [[ -n "$_inf_val" ]]; then
         export "${_inf_name}=${_inf_val}"
