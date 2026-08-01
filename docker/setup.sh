@@ -68,6 +68,15 @@ if ! command -v python3 &>/dev/null; then
     # the base image's default Debian mirror. Point at deb.debian.org instead
     # so apt-get update can actually populate a package index.
     sed -i 's#mirrors\.wikimedia\.org#deb.debian.org#g' /etc/apt/sources.list
+    # The base image ships /etc/apt/sources.list.d/php.list pointing at
+    # packages.sury.org, whose signing key has expired:
+    #   E: The repository 'https://packages.sury.org/php bookworm InRelease'
+    #      is not signed.  (EXPKEYSIG B188E2B695BD4743)
+    # apt-get update then exits non-zero, which the `|| true` below swallows,
+    # so the whole run looks like it failed even when the index is fine. We
+    # install nothing from sury — python3 and python3-pygments come from Debian
+    # main — so drop the source rather than chase a fresh key.
+    rm -f /etc/apt/sources.list.d/php.list /etc/apt/sources.list.d/sury*.list
     apt-get update -qq || true
     apt-get install -y -qq --no-install-recommends python3 python3-pygments >/dev/null 2>&1
     echo "  Done."
