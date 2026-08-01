@@ -152,6 +152,23 @@ if [ -f "$ES_BACKEND" ] && ! grep -q 'setSSLVerification' "$ES_BACKEND"; then
     echo "  Re-applied SSL patch to ExtendedSearch Backend.php"
 fi
 
+# ─── Post-composer: Re-apply $searchCnt patch to SearchCenter.js ─────
+# Same clobbering problem as Backend.php above, different file. Upstream
+# extendedsearch 5.1.4 fires the 'bs.extendedsearch.searchcenter.getResults'
+# hook with $searchCnt but never declares it, so a completed search throws
+# "ReferenceError: $searchCnt is not defined" out of the .done() handler,
+# before removeLoading() and result rendering run. Symptom: the Search
+# Center spins its progress bar forever even though the API returned
+# results. Bind it to the results container, which is what a hook observer
+# would expect.
+ES_SEARCHCENTER="$MW/extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js"
+if [ -f "$ES_SEARCHCENTER" ] && ! grep -q 'const \$searchCnt' "$ES_SEARCHCENTER"; then
+    sed -i "/const \$altSearchCnt = \$( '#bs-es-alt-search' );/a\\
+\\t\\t// HDP: upstream fires the getResults hook with an undeclared \$searchCnt\\
+\\t\\tconst \$searchCnt = \$resultCnt;" "$ES_SEARCHCENTER"
+    echo "  Re-applied \$searchCnt patch to ExtendedSearch SearchCenter.js"
+fi
+
 # ─── Step 2: Install MediaWiki (MariaDB) ──────────────────────────
 echo ""
 if [ -f LocalSettings.php ]; then
