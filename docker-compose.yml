@@ -158,7 +158,13 @@ services:
 
   # ─── OpenSearch (Search + RAG vector store) ───────────────────────
   opensearch:
-    image: opensearchproject/opensearch:2.18.0
+    # Built rather than pulled: adds the ingest-attachment plugin that
+    # BlueSpiceExtendedSearch's repofile/externalfile sources require.
+    # See docker/opensearch/Dockerfile.
+    build:
+      context: .
+      dockerfile: docker/opensearch/Dockerfile
+    image: hdp-opensearch:2.18.0
     restart: unless-stopped
     deploy:
       resources:
