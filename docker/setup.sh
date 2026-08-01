@@ -17,6 +17,88 @@ set -euo pipefail
 MW=/var/www/html/w
 cd "$MW"
 
+# ─── Failure tracking ───────────────────────────────────────────────
+# This script runs a chain of steps that can each fail without failing the
+# script. `composer dump-autoload` fires composer.local.json's
+# pre-autoload-dump hook, which runs the eight scripts in
+# _bluespice/pre-autoload-dump.d/ through a loop that ignores every exit
+# status; 99-apply_patches.sh in particular prints "FAILED!" per patch and
+# carries on. The two sed re-application blocks below are `sed -i`, which
+# exits 0 when it matches nothing. None of that reaches this script's exit
+# code.
+#
+# The result, verified on a clean box: three separate failures — one dropped
+# patch, a destroyed-and-not-restored mw-config/overrides, and two tool
+# downloads — while setup printed "✓ Setup complete!" and exited 0.
+#
+# Policy here is deliberately warn-then-fail-at-end, NOT abort-on-first-error.
+# Under `set -e` an abort would leave a half-installed wiki, which is strictly
+# worse for the operator than a finished install plus an accurate report — and
+# an upstream reindent that breaks one patch anchor should not cost everyone
+# their wiki. So: record, keep going, summarise, exit non-zero.
+#
+# Two severities, because a gate that cries wolf gets ignored:
+#   fail — the wiki is wrong (a patch is missing, a required tree is gone)
+#   warn — degraded but nothing downstream depends on it
+HDP_FAILURES=()
+HDP_WARNINGS=()
+
+record_failure() {
+    HDP_FAILURES+=( "$1" )
+    printf '  \033[0;31m✗ FAILED\033[0m  %s\n' "$1" >&2
+}
+
+record_warning() {
+    HDP_WARNINGS+=( "$1" )
+    printf '  \033[0;33m! WARNING\033[0m %s\n' "$1" >&2
+}
+
+# Scan the captured pre-autoload-dump output for the failures its own scripts
+# report but do not propagate. Log-scraping is the only option for the patch
+# loop — it emits no machine-readable signal and no exit code — so the marker
+# strings are matched after stripping the ANSI colour codes it wraps them in.
+scan_pre_autoload_dump() {
+    local log="$1" plain line
+    plain="$(mktemp)"
+    sed -e 's/\x1b\[[0-9;]*m//g' "$log" > "$plain"
+
+    # 99-apply_patches.sh: "Patching: <target> ==> FAILED!"
+    #
+    # A failed patch is graded by whether its target still exists, because the
+    # two cases need opposite responses:
+    #
+    #   target present -> the anchor moved under us. The file is live and now
+    #                     unpatched. Real failure.
+    #   target absent  -> upstream deleted the file the patch was written
+    #                     against, so the patch can never apply again and
+    #                     there is nothing to fix here. Reporting it as a
+    #                     failure would make setup.sh exit non-zero on every
+    #                     run forever, which trains everyone to ignore the
+    #                     exit code — see docs/dev/patches.md.
+    #
+    # This is a state check rather than a hardcoded stale-list so it stays
+    # correct without maintenance. It does conflate "upstream removed the
+    # file" with "the extension is not installed at all"; the latter would
+    # normally show up as many failures at once, not one.
+    while IFS= read -r line; do
+        [ -n "$line" ] || continue
+        if [ -e "$MW/$line" ]; then
+            record_failure "patch did not apply, target still present: $line"
+        else
+            record_warning "stale patch skipped, target no longer exists upstream: $line"
+        fi
+    done < <(grep -oE 'Patching: [^ ]+ ==> FAILED!' "$plain" \
+             | sed -E 's/^Patching: (.*) ==> FAILED!$/\1/' || true)
+
+    # 10-add_tools.sh (this repo's pinned version) reports its own errors.
+    while IFS= read -r line; do
+        [ -n "$line" ] || continue
+        record_warning "optional tool not installed: $line"
+    done < <(grep -oE '10-add_tools\.sh: ERROR: .*' "$plain" || true)
+
+    rm -f "$plain"
+}
+
 # ─── Load secrets from Infisical ────────────────────────────────────
 if [ -f /infisical-loader.sh ]; then
     source /infisical-loader.sh
@@ -143,8 +225,28 @@ with open('composer.lock', 'w') as f:
     fi
 
     # Regenerate autoloader — picks up extension namespaces from
-    # extensions/*/composer.json via the merge-plugin
-    composer dump-autoload --no-dev --ignore-platform-reqs
+    # extensions/*/composer.json via the merge-plugin.
+    #
+    # This is also what fires the pre-autoload-dump hook, i.e. all eight
+    # scripts in _bluespice/pre-autoload-dump.d/, including the one that
+    # applies 17 .diff patches. Capture the output so their failures can be
+    # detected; `tee` keeps it on the console exactly as before.
+    #
+    # 05-add_installer_overrides.sh is checked by state rather than by log
+    # scraping: it `rm -rf`s mw-config/overrides/ and re-clones it, so the
+    # honest question afterwards is simply whether the directory came back.
+    OVERRIDES_BEFORE=0
+    [ -d mw-config/overrides ] && [ -n "$(ls -A mw-config/overrides 2>/dev/null)" ] && OVERRIDES_BEFORE=1
+
+    DUMP_LOG="$(mktemp)"
+    composer dump-autoload --no-dev --ignore-platform-reqs 2>&1 | tee "$DUMP_LOG"
+    scan_pre_autoload_dump "$DUMP_LOG"
+    rm -f "$DUMP_LOG"
+
+    if [ "$OVERRIDES_BEFORE" -eq 1 ] \
+       && { [ ! -d mw-config/overrides ] || [ -z "$(ls -A mw-config/overrides 2>/dev/null)" ]; }; then
+        record_failure "mw-config/overrides was deleted and not restored (05-add_installer_overrides.sh re-clone failed)"
+    fi
 
     echo "[1/4] Composer dependencies resolved."
 else
@@ -156,11 +258,20 @@ fi
 # overwrites our local patch to Backend.php. Re-apply it here so the
 # SSL verification fix survives every fresh install.
 ES_BACKEND="$MW/extensions/BlueSpiceExtendedSearch/src/Backend.php"
-if [ -f "$ES_BACKEND" ] && ! grep -q 'setSSLVerification' "$ES_BACKEND"; then
+if [ ! -f "$ES_BACKEND" ]; then
+    record_failure "es-ssl: target missing: extensions/BlueSpiceExtendedSearch/src/Backend.php"
+elif ! grep -q 'setSSLVerification' "$ES_BACKEND"; then
     sed -i '/\$clientBuilder->setRetries( 2 );/a\
 \t\t\t// HDP: disable SSL verification for self-signed OpenSearch certs\
 \t\t\t\$clientBuilder->setSSLVerification( false );' "$ES_BACKEND"
-    echo "  Re-applied SSL patch to ExtendedSearch Backend.php"
+    # `sed -i` exits 0 when its address matches nothing, so applying the patch
+    # and silently doing nothing are indistinguishable without this re-check.
+    # That silent no-op is the exact failure mode this block exists to prevent.
+    if grep -q 'setSSLVerification' "$ES_BACKEND"; then
+        echo "  Re-applied SSL patch to ExtendedSearch Backend.php"
+    else
+        record_failure "es-ssl: anchor '\$clientBuilder->setRetries( 2 );' not found in Backend.php — patch NOT applied (upstream probably moved the code)"
+    fi
 fi
 
 # ─── Post-composer: Re-apply $searchCnt patch to SearchCenter.js ─────
@@ -173,11 +284,18 @@ fi
 # results. Bind it to the results container, which is what a hook observer
 # would expect.
 ES_SEARCHCENTER="$MW/extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js"
-if [ -f "$ES_SEARCHCENTER" ] && ! grep -q 'const \$searchCnt' "$ES_SEARCHCENTER"; then
+if [ ! -f "$ES_SEARCHCENTER" ]; then
+    record_failure "es-searchcnt: target missing: extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js"
+elif ! grep -q 'const \$searchCnt' "$ES_SEARCHCENTER"; then
     sed -i "/const \$altSearchCnt = \$( '#bs-es-alt-search' );/a\\
 \\t\\t// HDP: upstream fires the getResults hook with an undeclared \$searchCnt\\
 \\t\\tconst \$searchCnt = \$resultCnt;" "$ES_SEARCHCENTER"
-    echo "  Re-applied \$searchCnt patch to ExtendedSearch SearchCenter.js"
+    # Same silent-no-op re-check as Backend.php above.
+    if grep -q 'const \$searchCnt' "$ES_SEARCHCENTER"; then
+        echo "  Re-applied \$searchCnt patch to ExtendedSearch SearchCenter.js"
+    else
+        record_failure "es-searchcnt: anchor 'const \$altSearchCnt = \$( '#bs-es-alt-search' );' not found — patch NOT applied (upstream probably moved the code)"
+    fi
 fi
 
 # ─── Step 2: Install MediaWiki (MariaDB) ──────────────────────────
@@ -374,13 +492,50 @@ if [ ! -f cache/.extendedsearch-initialized ]; then
     echo "  ExtendedSearch initialized. Background jobs will finish indexing."
 fi
 
+
+# ─── Summary ────────────────────────────────────────────────────────
+# One line that always states the outcome, so "did this work?" never has to
+# be answered by reading 700 lines of composer output.
 echo ""
 echo "============================================"
-echo " ✓ Setup complete!"
+if [ ${#HDP_FAILURES[@]} -eq 0 ] && [ ${#HDP_WARNINGS[@]} -eq 0 ]; then
+    echo " ✓ Setup complete — 0 failures, 0 warnings."
+elif [ ${#HDP_FAILURES[@]} -eq 0 ]; then
+    echo " ✓ Setup complete — 0 failures, ${#HDP_WARNINGS[@]} warning(s)."
+else
+    echo " ✗ Setup FINISHED WITH ERRORS — ${#HDP_FAILURES[@]} failure(s), ${#HDP_WARNINGS[@]} warning(s)."
+fi
 echo "============================================"
+
+if [ ${#HDP_FAILURES[@]} -gt 0 ]; then
+    echo ""
+    echo " Failures (the wiki is installed but not correct):"
+    for f in "${HDP_FAILURES[@]}"; do
+        echo "   ✗ $f"
+    done
+fi
+
+if [ ${#HDP_WARNINGS[@]} -gt 0 ]; then
+    echo ""
+    echo " Warnings (degraded, nothing downstream depends on these):"
+    for w in "${HDP_WARNINGS[@]}"; do
+        echo "   ! $w"
+    done
+fi
+
 echo ""
 echo " Wiki:    ${SERVER}/w/"
 echo " Admin:   ${SERVER}/w/index.php/Special:UserLogin"
 echo " User:    Admin"
 echo ""
 echo "============================================"
+
+# Exit non-zero if anything failed. Deliberately at the very end, after the
+# wiki is fully installed and usable — see the failure-tracking note at the
+# top of this file for why aborting mid-run would be worse.
+if [ ${#HDP_FAILURES[@]} -gt 0 ]; then
+    echo ""
+    echo "setup.sh: exiting 1 — ${#HDP_FAILURES[@]} step(s) failed. The wiki is" >&2
+    echo "installed and reachable, but the failures above must be resolved." >&2
+    exit 1
+fi
