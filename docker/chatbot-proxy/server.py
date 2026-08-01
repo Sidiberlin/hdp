@@ -201,7 +201,12 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
         if "error" in hay_response:
             error_msg = hay_response["error"][:500]
-            self._send_sse_error(error_msg)
+            # Upstream failed before a single byte of the stream was written,
+            # so this is still an ordinary HTTP response and must carry a real
+            # failure status. See _send_sse_error for why 200 was wrong.
+            upstream = hay_response.get("status")
+            status = 502 if isinstance(upstream, int) and upstream < 500 else 503
+            self._send_sse_error(error_msg, status=status)
             return
 
         # Build result
@@ -239,8 +244,30 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
         log.info(f"Chat stream complete: query='{query[:60]}' answer_len={len(answer_text)}")
 
-    def _send_sse_error(self, message: str):
-        self.send_response(200)
+    def _send_sse_error(self, message: str, status: int = 503):
+        """Report a stream that never started, with an honest status code.
+
+        This used to send 200. That was wrong twice over.
+
+        The frontend consumes this endpoint with `EventSource` (see
+        DeepsetApi in ChatBot's bmbf.chat.bundle.js). Its `onmessage` handler
+        branches on `type === 'delta'` and `type === 'result'` and has no
+        branch for `type === 'error'` — so a 200 carrying an error event was
+        silently discarded, the surrounding promise neither resolved nor
+        rejected, and the chat UI hung with no message at all. The only path
+        that surfaces a failure to the user is `EventSource.onerror`, and that
+        fires on a non-200 response. So the status code is not cosmetic here;
+        it is the entire user-visible error path.
+
+        It also made the failure invisible to CI, which reasonably asserts a
+        clean 503 when no LLM key is configured.
+
+        The SSE error frame is still written as the body. EventSource will not
+        deliver it (a non-200 fails the connection per spec, which is what we
+        want), but any plain HTTP client — curl, a test, the proxy's own smoke
+        checks — still gets a readable reason instead of an empty body.
+        """
+        self.send_response(status)
         self.send_header("Content-Type", "text/event-stream")
         self.send_header("Cache-Control", "no-cache")
         self.end_headers()

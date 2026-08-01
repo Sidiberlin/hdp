@@ -25,6 +25,7 @@ rendered = subprocess.run(
 ).stdout
 
 pipeline = None
+pipeline_error = None
 try:
     pipeline = Pipeline.loads(rendered)
     log.info("Pipeline loaded")
@@ -116,12 +117,51 @@ async def run_pipeline(req: QueryRequest):
 
 @app.get("/health")
 def health():
+    """Liveness. 200 whenever this process is up and serving.
+
+    This deliberately does NOT fail when the RAG pipeline is unloaded. It is
+    what docker-compose's healthcheck polls, and tying it to pipeline state
+    made the whole haystack container permanently `unhealthy` on any install
+    without an LLM key — the pipeline cannot deserialize OpenAIGenerator
+    without HDP_LLM_API_KEY, so /health 503'd forever, the container never
+    went healthy, and `docker compose up --wait` (and any CI gate asserting
+    all seven healthchecks green) could never pass without a live, paid API
+    key. That made the documented .env-only dev path unusable and contradicted
+    the test strategy's decision not to require a live LLM in CI.
+
+    Degradation is still reported, in the body and via /ready — it just no
+    longer masquerades as "this container is broken".
+    """
+    if pipeline is None:
+        return {
+            "status": "degraded",
+            "pipeline_loaded": False,
+            "reason": "RAG pipeline not loaded — HDP_LLM_API_KEY is probably unset",
+            "detail": pipeline_error,
+        }
+    return {"status": "ok", "pipeline_loaded": True}
+
+
+@app.get("/ready")
+def ready():
+    """Readiness. 503 until the RAG pipeline is actually usable.
+
+    Split out from /health so the two questions stay separate: /health asks
+    "is the process alive" (container orchestration), /ready asks "can this
+    serve a RAG query" (traffic routing, and the assertion to use when a test
+    genuinely requires a working LLM).
+    """
     if pipeline is None:
         return JSONResponse(
-            content={"status": "degraded", "error": "HDP_LLM_API_KEY not configured"},
+            content={
+                "status": "degraded",
+                "pipeline_loaded": False,
+                "reason": "RAG pipeline not loaded — HDP_LLM_API_KEY is probably unset",
+                "detail": pipeline_error,
+            },
             status_code=503,
         )
-    return {"status": "ok"}
+    return {"status": "ok", "pipeline_loaded": True}
 
 if __name__ == "__main__":
     import uvicorn
