@@ -52,7 +52,26 @@ fetch_pinned() {
 	_url="https://github.com/${_repo}/releases/download/${_tag}/${_name}"
 	_tmp="${targetdir}/.${_name}.download.$$"
 
-	if ! wget -q -O "$_tmp" "$_url"; then
+	# curl first, wget second. Upstream used wget unconditionally, but the
+	# mediawiki image (docker-registry.wikimedia.org/dev/bookworm-php83-fpm)
+	# ships curl 7.88.1 and no wget at all — so this fetch has never once
+	# succeeded there. It failed silently because upstream discarded the exit
+	# status and chmod +x'd whatever was (not) written.
+	if command -v curl >/dev/null 2>&1; then
+		_dl_ok=0
+		curl -sSfL --retry 3 --connect-timeout 15 --max-time 300 \
+			-o "$_tmp" "$_url" && _dl_ok=1
+	elif command -v wget >/dev/null 2>&1; then
+		_dl_ok=0
+		wget -q -O "$_tmp" "$_url" && _dl_ok=1
+	else
+		echo "10-add_tools.sh: ERROR: neither curl nor wget available" >&2
+		rm -f "$_tmp"
+		_rc=1
+		return 1
+	fi
+
+	if [ "$_dl_ok" -ne 1 ]; then
 		echo "10-add_tools.sh: ERROR: download failed: $_url" >&2
 		rm -f "$_tmp"
 		_rc=1
