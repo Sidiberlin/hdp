@@ -17,7 +17,6 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-SRC_DIR="$REPO_ROOT/docs/wiki"
 OUT_DIR="$REPO_ROOT/docker/mediawiki/wiki-docs"
 
 # pandoc binary shipped inside the haystack container via pypandoc-binary.
