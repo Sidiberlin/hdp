@@ -66,7 +66,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceAbout.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceAbout.git",
                 "reference": "976afa885866568618ff8e28272ee2a626cb8e0b"
             },
             "dist": {
@@ -127,7 +127,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceArticleInfo",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceArticleInfo",
                 "reference": "9ebf1adc65883c476e8272b737afe894b389786c"
             },
             "dist": {
@@ -185,7 +185,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceAuthors.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceAuthors.git",
                 "reference": "7de2cd29b3de4f4a86e021eebe21275a05ed2e87"
             },
             "dist": {
@@ -248,7 +248,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceAvatars.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceAvatars.git",
                 "reference": "0f77da294316e230eb3fc301742ee03dae2a7eb8"
             },
             "dist": {
@@ -306,7 +306,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceBookshelf.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceBookshelf.git",
                 "reference": "40910216332f6fbbedad7000571c9d32c7e52c99"
             },
             "dist": {
@@ -370,7 +370,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceCategoryCheck.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceCategoryCheck.git",
                 "reference": "09867777b5b1cad1e0c1909d2264135d55693620"
             },
             "dist": {
@@ -428,7 +428,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceCategoryManager.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceCategoryManager.git",
                 "reference": "8fd752ed040c2d94611f92a15355ca6b3e50c2e2"
             },
             "dist": {
@@ -482,7 +482,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceChecklist.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceChecklist.git",
                 "reference": "2ed63ca8d698f9f5059bd58d52541bdf8552ede2"
             },
             "dist": {
@@ -540,7 +540,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceConfigManager",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceConfigManager",
                 "reference": "b59295e5d86cbd36a4aad1a9fd9db8f441d1f87e"
             },
             "dist": {
@@ -598,7 +598,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceContextMenu.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceContextMenu.git",
                 "reference": "22a9be5f061b046b9117bc06a8455cb4209f04d2"
             },
             "dist": {
@@ -661,7 +661,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceCountThings.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceCountThings.git",
                 "reference": "92de39a4d4c92b81624fa2eb73e3d8190e98986c"
             },
             "dist": {
@@ -719,7 +719,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceCustomMenu.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceCustomMenu.git",
                 "reference": "229f77ee96df47ea379dc7ff4ddb4ed93dd54c34"
             },
             "dist": {
@@ -778,7 +778,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-skins-BlueSpiceDiscovery.git",
+                "url": "https://github.com/wikimedia/mediawiki-skins-BlueSpiceDiscovery.git",
                 "reference": "6f5cc56bfcca2731a8f50c20d9fe59bd926c1d6d"
             },
             "dist": {
@@ -855,7 +855,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceDistributionConnector.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceDistributionConnector.git",
                 "reference": "fb67b7033e4117b03abe41043af799201c0ef39c"
             },
             "dist": {
@@ -919,7 +919,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceEmoticons.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceEmoticons.git",
                 "reference": "c55e236a78c80ed79f57d22dc70875d3afee8f3a"
             },
             "dist": {
@@ -977,7 +977,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceExpiry.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceExpiry.git",
                 "reference": "38aff735f6dc1c6e0a6d1fc2268f36776c41799c"
             },
             "dist": {
@@ -1035,7 +1035,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceExportTables.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceExportTables.git",
                 "reference": "4252ff267b0f7caf8e7d0ac6dc1957900d9743d8"
             },
             "dist": {
@@ -1098,7 +1098,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceExtendedSearch.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceExtendedSearch.git",
                 "reference": "c1f2d310186689c02ad4c861fa94d630bc804493"
             },
             "dist": {
@@ -1163,7 +1163,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceExtendedStatistics.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceExtendedStatistics.git",
                 "reference": "ee2039a5c1989deb1609ac4ef67fd1ef44f84d75"
             },
             "dist": {
@@ -1226,7 +1226,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceFilterableTables.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceFilterableTables.git",
                 "reference": "1269059e07310d7036bf1cd18be06200f6090bf3"
             },
             "dist": {
@@ -1284,7 +1284,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceFoundation",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceFoundation",
                 "reference": "b83401e98fbed75206e3553738358b9e4936214f"
             },
             "dist": {
@@ -1361,7 +1361,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceHideTitle.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceHideTitle.git",
                 "reference": "adb342744b967d52c41ca5637833c41361f0a79a"
             },
             "dist": {
@@ -1422,7 +1422,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceInsertCategory.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceInsertCategory.git",
                 "reference": "780482a8644eb67c00bd2d973b1f885b0ac46509"
             },
             "dist": {
@@ -1483,7 +1483,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceInstanceStatus",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceInstanceStatus",
                 "reference": "377ca36ea7bb82a27531fb0dee9f7e14a440402e"
             },
             "dist": {
@@ -1540,7 +1540,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceInterWikiLinks.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceInterWikiLinks.git",
                 "reference": "d7936a86538365c87e8cc08715e32cfd32a5cd08"
             },
             "dist": {
@@ -1601,7 +1601,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceInterwikiSearch.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceInterwikiSearch.git",
                 "reference": "e47da210fc0efe49d42c2ef245c8e7df29ad4e19"
             },
             "dist": {
@@ -1658,7 +1658,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceMatomoConnector.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceMatomoConnector.git",
                 "reference": "a32d6b38133fe7edc11e7959e0f2ab4ada5564ab"
             },
             "dist": {
@@ -1721,7 +1721,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceNamespaceManager.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceNamespaceManager.git",
                 "reference": "40b1101f463e127e14bb1cc8b765f1deaf8359f5"
             },
             "dist": {
@@ -1780,7 +1780,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceNSFileRepoConnector.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceNSFileRepoConnector.git",
                 "reference": "24f5bcdfe7f542eb9028a14056589289f58ab9d1"
             },
             "dist": {
@@ -1843,7 +1843,7 @@
             "version": "5.1.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceWikiFarm.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceWikiFarm.git",
                 "reference": "6d25fffe9c7c28f0b8471b81fe14933abbc8a002"
             },
             "dist": {
@@ -1911,7 +1911,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpicePageAccess.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpicePageAccess.git",
                 "reference": "4062408a54e363927f2aab75efa9f00e663b04c6"
             },
             "dist": {
@@ -1974,7 +1974,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpicePageAssignments.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpicePageAssignments.git",
                 "reference": "10bd12080df126f156c842f171245402aa329af8"
             },
             "dist": {
@@ -2034,7 +2034,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpicePageFormsConnector",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpicePageFormsConnector",
                 "reference": "ae604e0fa89decd5be13459ce0d39c1b9a0286e1"
             },
             "dist": {
@@ -2097,7 +2097,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpicePagesVisited.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpicePagesVisited.git",
                 "reference": "0b342c1f21941e137ff847b65481112d56d2340b"
             },
             "dist": {
@@ -2160,7 +2160,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpicePageTemplates.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpicePageTemplates.git",
                 "reference": "451174b401f8e82570516ab024ed9dfff91d6316"
             },
             "dist": {
@@ -2224,7 +2224,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpicePermissionManager.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpicePermissionManager.git",
                 "reference": "05f579154b1f1935d1d6a31c8e5c5b8fe89dee9d"
             },
             "dist": {
@@ -2288,7 +2288,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpicePlayer.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpicePlayer.git",
                 "reference": "0b260009271847f05882399aaaae5679a9bb737a"
             },
             "dist": {
@@ -2346,7 +2346,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpicePrivacy.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpicePrivacy.git",
                 "reference": "2d5ddffbb1433b8b81909e6cf8f5d3469d9ff526"
             },
             "dist": {
@@ -2410,7 +2410,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceProDistributionConnector.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceProDistributionConnector.git",
                 "reference": "d881b33c7c368071721a1b12c96843ea4d5efe9c"
             },
             "dist": {
@@ -2469,7 +2469,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceQrCode",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceQrCode",
                 "reference": "034ddf9c8e75fe4b485cb3c6fd5b4dd26b8b0f9a"
             },
             "dist": {
@@ -2529,7 +2529,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceRating.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceRating.git",
                 "reference": "dd4f723046580ca6a6c379f0cfc99b25c44ff06b"
             },
             "dist": {
@@ -2592,7 +2592,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceReadConfirmation.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceReadConfirmation.git",
                 "reference": "1df5d8aa95fe03f977c5165683536f13ca23529e"
             },
             "dist": {
@@ -2655,7 +2655,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceReaders.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceReaders.git",
                 "reference": "93ad9a6375f179c1921382da9dc9d256cab1013e"
             },
             "dist": {
@@ -2718,7 +2718,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceReminder.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceReminder.git",
                 "reference": "976106077225a533e42b4a603d6e300af067ae93"
             },
             "dist": {
@@ -2781,7 +2781,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceRSSFeeder",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceRSSFeeder",
                 "reference": "d923c530c9bb78239d685a97d54b408cc5a34a57"
             },
             "dist": {
@@ -2844,7 +2844,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceSaferEdit.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceSaferEdit.git",
                 "reference": "fde1b4770c3c790452df4699da3a5fd3b00ce017"
             },
             "dist": {
@@ -2902,7 +2902,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceSignHere.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceSignHere.git",
                 "reference": "2981e5d57ca53688a8863cb53e418c801030c895"
             },
             "dist": {
@@ -2965,7 +2965,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceSmartList.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceSmartList.git",
                 "reference": "f53b32ebc2338af31bd182f2ddcc54e60687e26f"
             },
             "dist": {
@@ -3026,7 +3026,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceSMWConnector.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceSMWConnector.git",
                 "reference": "82b21db14b2caccce9d49b823381843912c7d6b4"
             },
             "dist": {
@@ -3106,7 +3106,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceTagCloud",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceTagCloud",
                 "reference": "12a6343619c31b6b4341d0258dd1bdf9d764d4ca"
             },
             "dist": {
@@ -3164,7 +3164,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceTranslationTransfer.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceTranslationTransfer.git",
                 "reference": "cb866d8815efc6cc8d95850b3578fa0a82ae440a"
             },
             "dist": {
@@ -3224,7 +3224,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceUEModuleTable2Excel.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceUEModuleTable2Excel.git",
                 "reference": "7d4f53de0ce8a80faecd4e886ecdae564928a8ff"
             },
             "dist": {
@@ -3288,7 +3288,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceUsageTracker",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceUsageTracker",
                 "reference": "41226f59237d51bf2e0f60e9ee842fc7a12a6575"
             },
             "dist": {
@@ -3346,7 +3346,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceUserManager.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceUserManager.git",
                 "reference": "a7937c040fd49c6e7d884006e526c85744a61429"
             },
             "dist": {
@@ -3409,7 +3409,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceUserSidebar.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceUserSidebar.git",
                 "reference": "4d09c24dd1820dacf0b8cd1e9788c80db2db6c31"
             },
             "dist": {
@@ -3468,7 +3468,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceVisualEditorConnector",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceVisualEditorConnector",
                 "reference": "1abc94d3553786e597586e877cb97b415e9ff80d"
             },
             "dist": {
@@ -3526,7 +3526,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceWatchList",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceWatchList",
                 "reference": "d8eb13cb1e8a9c097733fcc4b827f8f8fa7070e5"
             },
             "dist": {
@@ -3589,7 +3589,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceWhoIsOnline",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceWhoIsOnline",
                 "reference": "d17e46514de8697c761fe7f9effa3a4658c2c545"
             },
             "dist": {
@@ -3649,7 +3649,7 @@
             "version": "5.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-BlueSpiceWikiExplorer",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-BlueSpiceWikiExplorer",
                 "reference": "803b6fc1daa5e24c43f1daede6de5c6b9fa19aae"
             },
             "dist": {
@@ -5416,7 +5416,7 @@
             "version": "3.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-FilterSpecialPages.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-FilterSpecialPages.git",
                 "reference": "3daf03fe654f372421a9d0efe8a9067e8c130e8d"
             },
             "dist": {
@@ -5466,7 +5466,7 @@
             "version": "4.7.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:icamys/php-sitemap-generator.git",
+                "url": "https://github.com/icamys/php-sitemap-generator.git",
                 "reference": "236d8e7de28e9bb3ff028180ab9e3d0fe7c047b8"
             },
             "dist": {
@@ -6274,7 +6274,7 @@
             "version": "0.25+PHP8compat",
             "source": {
                 "type": "git",
-                "url": "git@github.com:passbolt/ldaptools.git",
+                "url": "https://github.com/passbolt/ldaptools.git",
                 "reference": "9e5ce1acb2d0dfa7f24c4d5628f778412f3ba617"
             },
             "require": {
@@ -6351,7 +6351,7 @@
             "version": "9.0.0+wikimedia-fork",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/oauth2-server.git",
+                "url": "https://github.com/wikimedia/oauth2-server.git",
                 "reference": "61d770dc284898ea2905d66e12f8f7e5f6664092"
             },
             "require": {
@@ -6662,7 +6662,7 @@
             "version": "1.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-AdhocTranslation.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-AdhocTranslation.git",
                 "reference": "75a1b73ee79459b8c905a3664c59cc75a2845185"
             },
             "dist": {
@@ -6721,7 +6721,7 @@
             "version": "2.0.6",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-AIEditingAssistant.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-AIEditingAssistant.git",
                 "reference": "3b6313cf1b47f188a33cc562a6d1ae5aefb6a679"
             },
             "dist": {
@@ -6779,7 +6779,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-Arrays",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-Arrays",
                 "reference": "REL1_43"
             },
             "require": {
@@ -6792,7 +6792,7 @@
             "version": "2.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-AtMentions.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-AtMentions.git",
                 "reference": "b1abfc318a28a1d6049f5072003adc5ff0738317"
             },
             "dist": {
@@ -6931,7 +6931,7 @@
             "version": "2.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-Checklists.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-Checklists.git",
                 "reference": "7f2d23015085984420cb2de4d1977aa41b21e712"
             },
             "dist": {
@@ -6988,7 +6988,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-CodeMirror.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-CodeMirror.git",
                 "reference": "REL1_43"
             },
             "require": {
@@ -7001,7 +7001,7 @@
             "version": "4.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-CognitiveProcessDesigner.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-CognitiveProcessDesigner.git",
                 "reference": "2f2202394a35daf82973ea710eddb9818cab5947"
             },
             "dist": {
@@ -7059,7 +7059,7 @@
             "version": "2.0.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-CollabPads.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-CollabPads.git",
                 "reference": "f75619a4a24a476b0d8210f9e81fbfa42151c620"
             },
             "dist": {
@@ -7118,7 +7118,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-CommentStreams.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-CommentStreams.git",
                 "reference": "d680de48fc6f3bf2b416efd962b0d6c3b0ee5d6f"
             },
             "dist": {
@@ -7191,7 +7191,7 @@
             "version": "2.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-ContainerFilter.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-ContainerFilter.git",
                 "reference": "f10ef6959163f9c5411763be8662a9d4882aa576"
             },
             "dist": {
@@ -7249,7 +7249,7 @@
             "version": "2.0.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-ContentDroplets.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-ContentDroplets.git",
                 "reference": "bd95c24047d0d315a673f4695aa62ff0f168c8fa"
             },
             "dist": {
@@ -7308,7 +7308,7 @@
             "version": "2.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-ContentProvisioning.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-ContentProvisioning.git",
                 "reference": "812437967df21ee71985293bd778fe0f8c8b1e0d"
             },
             "dist": {
@@ -7369,7 +7369,7 @@
             "version": "3.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-ContentStabilization.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-ContentStabilization.git",
                 "reference": "50db77b010ce78417a0937ac965aeb1abb2baa07"
             },
             "dist": {
@@ -7424,7 +7424,7 @@
             "version": "3.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-ContentTransfer",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-ContentTransfer",
                 "reference": "89998b52ba96c9348e6048113c3d8b8b10e6c497"
             },
             "dist": {
@@ -7483,7 +7483,7 @@
             "version": "3.0.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-CreateUserPage.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-CreateUserPage.git",
                 "reference": "3.0"
             },
             "require": {
@@ -7496,7 +7496,7 @@
             "version": "1.6.3.1+BlueSpice513",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-DataTransfer.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-DataTransfer.git",
                 "reference": "1.6.3"
             },
             "require": {
@@ -7518,7 +7518,7 @@
             "version": "2.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-DateTimeTools.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-DateTimeTools.git",
                 "reference": "ab942ab0bffbdafca9aacecffd39a43ffee78ae4"
             },
             "dist": {
@@ -7575,7 +7575,7 @@
             "version": "3.0.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-DrawioEditor",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-DrawioEditor",
                 "reference": "558f8bea139fc765fe88b34afa527d9fc1fefd5c"
             },
             "dist": {
@@ -7627,7 +7627,7 @@
             "version": "2.0.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-EnhancedStandardUIs.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-EnhancedStandardUIs.git",
                 "reference": "f18ee717232fe9407ed87019330920b24a768383"
             },
             "dist": {
@@ -7684,7 +7684,7 @@
             "version": "4.0.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-EnhancedUpload",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-EnhancedUpload",
                 "reference": "956199e36734f24c2f004586a237cd203390585b"
             },
             "dist": {
@@ -7748,7 +7748,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-EventBus.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-EventBus.git",
                 "reference": "REL1_43"
             },
             "require": {
@@ -7761,7 +7761,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-ExternalData.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-ExternalData.git",
                 "reference": "f57f82907b7e50e0d29badb240347517b0e8df97"
             },
             "dist": {
@@ -7828,7 +7828,7 @@
             "version": "3.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-FlexiSkin.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-FlexiSkin.git",
                 "reference": "6022dab0fe308a774aeca73a0733314627dd9f50"
             },
             "dist": {
@@ -7946,7 +7946,7 @@
             "version": "3.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-Forms",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-Forms",
                 "reference": "6b6b15be0f3f3e2b9711aa5bb46fa64acbe9ab00"
             },
             "dist": {
@@ -8000,7 +8000,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-HeaderFooter.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-HeaderFooter.git",
                 "reference": "20b2a53b9969a06ef086eb1488d255ec748e0fb9"
             },
             "dist": {
@@ -8077,7 +8077,7 @@
             "version": "2.3.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-HeaderTabs",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-HeaderTabs",
                 "reference": "2.3"
             },
             "require": {
@@ -8090,7 +8090,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-HitCounters",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-HitCounters",
                 "reference": "REL1_43"
             },
             "require": {
@@ -8163,7 +8163,7 @@
             "version": "3.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-ImageMapEdit",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-ImageMapEdit",
                 "reference": "fbfb241193194298bc3ca67a368a983edb814115"
             },
             "dist": {
@@ -8218,7 +8218,7 @@
             "version": "3.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-ImportOfficeFiles",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-ImportOfficeFiles",
                 "reference": "64b0e7fd803de3de5c90fff07252ea8cc6f7cb4a"
             },
             "dist": {
@@ -8273,7 +8273,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-InviteSignup.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-InviteSignup.git",
                 "reference": "025de49157c46ed6fc2c0d644eb50c65f9a02f1e"
             },
             "dist": {
@@ -8331,7 +8331,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPAuthentication2",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPAuthentication2",
                 "reference": "98a6da7eda890d4a584b395da78396aa45bdd81e"
             },
             "dist": {
@@ -8407,7 +8407,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPAuthorization",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPAuthorization",
                 "reference": "fd99cdd0e39a4206a515f36d3083653af5ed5d4a"
             },
             "dist": {
@@ -8483,7 +8483,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPGroups",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPGroups",
                 "reference": "b8db272001001e27aecf67e13fa624f70de2245e"
             },
             "dist": {
@@ -8560,7 +8560,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPProvider",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPProvider",
                 "reference": "3daa503f69eef1ba8184e4021788bb9371d3fee9"
             },
             "dist": {
@@ -8651,7 +8651,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPSyncAll.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPSyncAll.git",
                 "reference": "cfb39e60fa3a4a0bbc32b0cd29f22acbb86b70c8"
             },
             "dist": {
@@ -8706,7 +8706,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPUserInfo",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPUserInfo",
                 "reference": "f47c9353cdea6143c6058732c39368cd27d2ee18"
             },
             "dist": {
@@ -8782,7 +8782,7 @@
             "version": "3.2.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-Lingo.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-Lingo.git",
                 "reference": "f87ea047c6665c4c8d7435d23a3b454d127447a0"
             },
             "dist": {
@@ -8858,7 +8858,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-Loops.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-Loops.git",
                 "reference": "REL1_43"
             },
             "require": {
@@ -8964,7 +8964,7 @@
             "version": "3.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-MenuEditor",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-MenuEditor",
                 "reference": "0a1f272d8415c2e783cf66f42bb3fc0dc424a663"
             },
             "dist": {
@@ -9019,7 +9019,7 @@
             "version": "3.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-MergeArticles",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-MergeArticles",
                 "reference": "026d06f012b43573da4cbfd2b6cbb6da9d961c57"
             },
             "dist": {
@@ -9078,7 +9078,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-NSFileRepo.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-NSFileRepo.git",
                 "reference": "78671c0ac3069ff6305252d0332f29908c93ab45"
             },
             "dist": {
@@ -9137,7 +9137,7 @@
             "version": "2.0.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-NotifyMe.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-NotifyMe.git",
                 "reference": "ca397084a907c3bb025d97dc78ece0d33fef7437"
             },
             "dist": {
@@ -9201,7 +9201,7 @@
             "version": "2.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-NumberHeadings.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-NumberHeadings.git",
                 "reference": "b0a6d003fa4edb6130b7929c2c3b60324b9fb001"
             },
             "dist": {
@@ -9259,7 +9259,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-OAuth.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-OAuth.git",
                 "reference": "REL1_43"
             },
             "require": {
@@ -9281,7 +9281,7 @@
             "version": "3.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-OOJSPlus.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-OOJSPlus.git",
                 "reference": "66cbb34ecb8f48efdbd59b35f8275e3228934cd7"
             },
             "dist": {
@@ -9386,7 +9386,7 @@
             "version": "8.3.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-OpenIDConnect.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-OpenIDConnect.git",
                 "reference": "75db8c5d619f76aa4e7611afff82998152a18d05"
             },
             "dist": {
@@ -9440,7 +9440,7 @@
             "version": "3.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-PageCheckout",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-PageCheckout",
                 "reference": "580493178bd685839a19280cac2b781209c51c15"
             },
             "dist": {
@@ -9493,7 +9493,7 @@
             "version": "6.0.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-PageForms.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-PageForms.git",
                 "reference": "49b050e49f51afb1bb252977f14097d932ae6422"
             },
             "dist": {
@@ -9694,7 +9694,7 @@
             "version": "1.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-PDFCreator.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-PDFCreator.git",
                 "reference": "538d022ea267ef9267c8c73122aecdedaac7f957"
             },
             "dist": {
@@ -9755,7 +9755,7 @@
             "version": "4.0.1+BlueSpice453",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-PDFEmbed",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-PDFEmbed",
                 "reference": "730c6f39ec6227306fe9d35664bde25b779d8def"
             },
             "require": {
@@ -9771,7 +9771,7 @@
             "version": "7.5.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-PluggableAuth.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-PluggableAuth.git",
                 "reference": "e66a4b045b91b46bc31bf05c03bafc9aed974a20"
             },
             "dist": {
@@ -9840,7 +9840,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-Popups.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-Popups.git",
                 "reference": "REL1_43"
             },
             "require": {
@@ -9853,7 +9853,7 @@
             "version": "2.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-PreToClip.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-PreToClip.git",
                 "reference": "95b29f23d7582a4e57fe5545953a7f2a38a8b52e"
             },
             "dist": {
@@ -9907,7 +9907,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-Renameuser",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-Renameuser",
                 "reference": "REL1_43"
             },
             "require": {
@@ -9920,7 +9920,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-RevisionSlider.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-RevisionSlider.git",
                 "reference": "REL1_43"
             },
             "require": {
@@ -9933,7 +9933,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-RSS",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-RSS",
                 "reference": "REL1_43"
             },
             "require": {
@@ -9949,7 +9949,7 @@
             "version": "2.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-SectionAnchors.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-SectionAnchors.git",
                 "reference": "aa7d8d708d514c875422e44913204730d4f21c03"
             },
             "dist": {
@@ -10478,7 +10478,7 @@
             "version": "4.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-SimpleBlogPage.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-SimpleBlogPage.git",
                 "reference": "5c312c9c93ed988e1ceccaee4589115a597108fe"
             },
             "dist": {
@@ -10538,7 +10538,7 @@
             "version": "7.0.1",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-SimpleSAMLphp.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-SimpleSAMLphp.git",
                 "reference": "4084f0973129c72484dd7b85ab1eeb137325c06e"
             },
             "dist": {
@@ -10592,7 +10592,7 @@
             "version": "2.0.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-SimpleTasks.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-SimpleTasks.git",
                 "reference": "27837a5a4733a45692269e922f318a0057202757"
             },
             "dist": {
@@ -10652,7 +10652,7 @@
             "version": "3.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-StandardDialogs",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-StandardDialogs",
                 "reference": "5c0e7bf9277a695e39038c2b7e7abeb199981db0"
             },
             "dist": {
@@ -10761,7 +10761,7 @@
             "version": "2.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-TableTools.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-TableTools.git",
                 "reference": "a144811cf104a632ff25ca4565f7cc16f98db166"
             },
             "dist": {
@@ -10812,7 +10812,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-TemplateStyles.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-TemplateStyles.git",
                 "reference": "REL1_43"
             },
             "require": {
@@ -10826,7 +10826,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-TwoColConflict.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-TwoColConflict.git",
                 "reference": "REL1_43"
             },
             "require": {
@@ -10839,7 +10839,7 @@
             "version": "3.0.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-UnifiedTaskOverview",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-UnifiedTaskOverview",
                 "reference": "0ac83897a4f3a61e6836507ce99b2690d3efc18e"
             },
             "dist": {
@@ -10893,7 +10893,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-UrlGetParameters.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-UrlGetParameters.git",
                 "reference": "REL1_43"
             },
             "require": {
@@ -10906,7 +10906,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-UserFunctions",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-UserFunctions",
                 "reference": "4c8d87dbac0fca5dcd29cbc13cb7a047e0c13b35"
             },
             "dist": {
@@ -10955,7 +10955,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-UserMerge",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-UserMerge",
                 "reference": "REL1_43"
             },
             "require": {
@@ -10968,7 +10968,7 @@
             "version": "1.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-UserProfile.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-UserProfile.git",
                 "reference": "4a3b3bb44f3ec68b1d5fb79519c712017dd08f0b"
             },
             "dist": {
@@ -11029,7 +11029,7 @@
             "version": "0.6",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-VEForAll",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-VEForAll",
                 "reference": "33b5fa746af51e9c6c770950a197b1c17f5ee253"
             },
             "dist": {
@@ -11069,7 +11069,7 @@
             "version": "v2.5.3",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-Variables",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-Variables",
                 "reference": "4cb4db05e39b8af0b01e5c7b24df18747deff6d8"
             },
             "dist": {
@@ -11140,7 +11140,7 @@
             "version": "2.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-VisualEditorPlus.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-VisualEditorPlus.git",
                 "reference": "7ca47215f8804b28a379b9cb3ea85e5c0afa96ca"
             },
             "dist": {
@@ -11197,7 +11197,7 @@
             "version": "2.0.5",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-VueJsPlus.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-VueJsPlus.git",
                 "reference": "5d8c6165e5636355a623bb68a187495e023bea3b"
             },
             "dist": {
@@ -11254,7 +11254,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-WebAuthn.git",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-WebAuthn.git",
                 "reference": "REL1_43"
             },
             "require": {
@@ -11272,7 +11272,7 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-Widgets",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-Widgets",
                 "reference": "REL1_43"
             },
             "require": {
@@ -11286,7 +11286,7 @@
             "version": "3.1.4",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-Workflows",
+                "url": "https://github.com/wikimedia/mediawiki-extensions-Workflows",
                 "reference": "c787074478b2e9b0753402f5093685d93b9255c2"
             },
             "dist": {
@@ -11767,7 +11767,7 @@
             "version": "2.0.2",
             "source": {
                 "type": "git",
-                "url": "git@github.com:hallowelt/mwstake-mediawiki-component-dynamicconfig.git",
+                "url": "https://github.com/hallowelt/mwstake-mediawiki-component-dynamicconfig.git",
                 "reference": "428376b2fc60cfc089ba73fdda9f23db629ea51a"
             },
             "dist": {
@@ -14969,7 +14969,7 @@
             "version": "v3.3.0",
             "source": {
                 "type": "git",
-                "url": "git@github.com:StarCitizenTools/mediawiki-extensions-TabberNeue.git",
+                "url": "https://github.com/StarCitizenTools/mediawiki-extensions-TabberNeue.git",
                 "reference": "d421d21377e9773f8c36ff78c07b7346ae649f64"
             },
             "dist": {
@@ -15037,7 +15037,7 @@
             "version": "4.0.0.1+BlueSpice513",
             "source": {
                 "type": "git",
-                "url": "git@github.com:StarCitizenWiki/mediawiki-extensions-EmbedVideo.git",
+                "url": "https://github.com/StarCitizenWiki/mediawiki-extensions-EmbedVideo.git",
                 "reference": "5d8c91aa74024a1ff0b1f47bff7fd0b2e57f9874"
             },
             "require": {
@@ -15908,7 +15908,7 @@
             "version": "3.6.2.1+BlueSpice511",
             "source": {
                 "type": "git",
-                "url": "git@github.com:Universal-Omega/DynamicPageList3.git",
+                "url": "https://github.com/Universal-Omega/DynamicPageList3.git",
                 "reference": "8ae0c0513cb18d3a943d82768e0801e1c99e1c5f"
             },
             "require": {
