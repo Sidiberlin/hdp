@@ -25,10 +25,17 @@ export HISTFILE=""
 _INF_LOG_PREFIX="[infisical-loader]"
 
 # ─── Configuration ──────────────────────────────────────────────────
-_INF_URL="${INFISICAL_URL}"
-_INF_PID="${INFISICAL_PROJECT_ID}"
-_INF_CID="${INFISICAL_CLIENT_ID}"
-_INF_CSECRET="${INFISICAL_CLIENT_SECRET}"
+# The `:-` defaults are load-bearing, not decoration. setup.sh runs under
+# `set -euo pipefail` and sources this file, so a bare "${INFISICAL_URL}" is a
+# hard exit — no message, no fallback — for anyone whose environment does not
+# define all four. Compose always passes them (empty when unconfigured), which
+# is the only reason this has not bitten yet; running setup.sh outside compose
+# aborts. Defaulting to empty lets the credentials-not-set check below do its
+# job and fall back to .env plaintext as designed.
+_INF_URL="${INFISICAL_URL:-}"
+_INF_PID="${INFISICAL_PROJECT_ID:-}"
+_INF_CID="${INFISICAL_CLIENT_ID:-}"
+_INF_CSECRET="${INFISICAL_CLIENT_SECRET:-}"
 _INF_ENV="${INFISICAL_ENV:-prod}"
 
 if [[ -z "$_INF_URL" ]] || [[ -z "$_INF_PID" ]] || \
