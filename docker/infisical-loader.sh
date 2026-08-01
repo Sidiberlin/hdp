@@ -41,11 +41,18 @@ fi
 # ─── Authenticate ───────────────────────────────────────────────────
 _inf_token=""
 _inf_response=""
-_inf_response=$(curl -s -X POST "${_INF_URL}/api/v1/auth/universal-auth/login" \
-    -H "Content-Type: application/x-www-form-urlencoded" \
-    -d "clientId=${_INF_CID}&clientSecret=${_INF_CSECRET}" \
-    --connect-timeout 10 \
-    --max-time 15 2>/dev/null)
+# The login body must not be passed as a curl argument: anything in argv is
+# world-readable via /proc/<pid>/cmdline for the lifetime of the request, which
+# would contradict this file's own no-secrets-on-disk-or-in-logs contract.
+# `printf` is a bash builtin, so the secret never reaches another process's
+# argv either, and the pipe keeps it off the filesystem. `--data @-` reads the
+# body from stdin (and strips the trailing newline, unlike --data-binary).
+_inf_response=$(printf 'clientId=%s&clientSecret=%s' "$_INF_CID" "$_INF_CSECRET" \
+    | curl -s -X POST "${_INF_URL}/api/v1/auth/universal-auth/login" \
+        -H "Content-Type: application/x-www-form-urlencoded" \
+        --data @- \
+        --connect-timeout 10 \
+        --max-time 15 2>/dev/null)
 
 _inf_token=$(echo "$_inf_response" | jq -r '.accessToken // empty' 2>/dev/null)
 
