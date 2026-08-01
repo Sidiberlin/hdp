@@ -201,8 +201,17 @@ services:
         HAYSTACK_DEVICE: ${HAYSTACK_DEVICE:-cpu}
     restart: unless-stopped
     ports:
-      - "${HAYHOOKS_PORT:-1416}:1416"
-      - "${HDP_PDF_PORT:-1417}:1417"
+      # Bound to loopback on purpose. Neither port carries any authentication:
+      #   :1416 is the hayhooks admin API — /deploy-yaml and /deploy_files load
+      #         attacker-supplied pipeline definitions and Python wrapper modules
+      #         into this (root) container, i.e. remote code execution.
+      #   :1417 is the RAG query API — no auth, so exposing it hands out unmetered
+      #         LLM spend and every indexed wiki document, bypassing the wiki login.
+      # Nothing in the stack needs these from the host: chatbot-proxy reaches
+      # haystack over the compose network (http://haystack:1417). Change the bind
+      # address only behind an authenticating reverse proxy.
+      - "${HDP_BIND_ADDR:-127.0.0.1}:${HAYHOOKS_PORT:-1416}:1416"
+      - "${HDP_BIND_ADDR:-127.0.0.1}:${HDP_PDF_PORT:-1417}:1417"
     deploy:
       resources:
         limits:
