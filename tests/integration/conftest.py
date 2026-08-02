@@ -15,6 +15,7 @@ precisely the outcome T3 exists to make impossible.
 """
 import json
 import os
+import re
 import shutil
 import subprocess
 import time
@@ -279,18 +280,40 @@ FULL_STACK_SERVICES = (
     "chatbot-proxy",
 )
 
-# How long to let mediawiki-jobrunner drain the queue. A fresh install leaves
-# ~500 jobs — mostly ExtendedSearch index writes — and the runner is a bash
-# loop calling runJobs.php, so this is minutes rather than seconds. Overridable
-# because a cold CI runner is slower than the validation box.
+# Job types this wiki keeps queued *permanently*, by design.
+#
+# `invokeRunner` is the job of `mwstake/mediawiki-component-runjobstrigger`,
+# wired up in app/extensions/BlueSpiceFoundation/src/Foundation.php (see
+# mwsgRunJobsTriggerOptions). Every execution schedules the next one, so the
+# queue is self-replenishing: on a healthy, fully indexed wiki it sits in the
+# hundreds and climbs, while `showJobs.php --group` reports
+# `invokeRunner: 630 queued; 0 claimed (0 active, 0 abandoned)` and the
+# jobrunner log fills with `... t=11 good`.
+#
+# **"Wait for the job queue to reach zero" is therefore an assertion that can
+# never pass here**, and believing otherwise is an easy mistake to make: Wave
+# 3's /qa recorded "500 jobs queued, bluespice_wikipage empty" under the T3
+# profile and the natural reading is that the 500 *are* the indexing backlog.
+# They are not. The index was empty under T3 because there was no jobrunner at
+# all; those 500 were these same perpetual triggers. Measured on the Wave 4
+# clean box: 600 queued right after setup.sh, 630 ten minutes later, all of
+# them `invokeRunner`, with `bluespice_wikipage` already holding its full 808
+# documents the whole time.
+#
+# So what T4 waits for and asserts on is the queue *minus* these — the work
+# that is supposed to finish.
+PERPETUAL_JOB_TYPES = ("invokeRunner",)
+
+# How long to let mediawiki-jobrunner finish the non-perpetual work. A fresh
+# install enqueues one ExtendedSearch index write per page and the runner is a
+# bash loop calling runJobs.php. Overridable because a cold CI runner is slower
+# than the validation box.
 ENV_JOBQUEUE_TIMEOUT = "HDP_JOBQUEUE_TIMEOUT"
 DEFAULT_JOBQUEUE_TIMEOUT = 900
 
-# The queue depth *before* anything drained it, recorded by
-# scripts/ci/t4-smoke.sh. Without this the fixture below can only measure the
-# queue it finds, and the runner has already emptied it by then — so "the
-# jobrunner drained several hundred jobs" would read as "the queue was empty
-# all along", which is exactly the state that assertion exists to reject.
+# The non-perpetual queue depth *before* anything drained it, recorded by
+# scripts/ci/t4-smoke.sh. Without it the fixture below can only measure the
+# queue it finds, and the runner has already worked it down by then.
 ENV_JOBQUEUE_START = "HDP_JOBQUEUE_START"
 
 # Set by scripts/ci/t4-smoke.sh once it has run ingest_hdp_wiki.py. Ingestion
@@ -468,71 +491,111 @@ print(json.dumps({"status": status, "body": body}))
 
 
 @pytest.fixture(scope="session")
-def job_queue(mw_exec):
-    """Pending MediaWiki jobs, as an integer.
+def job_queue_groups(mw_exec):
+    """Pending jobs broken down by type, as {type: queued}.
 
-    `showJobs.php` with no arguments prints just the total. Read through
-    maintenance/run.php so it uses the wiki's own configuration, the same
-    reason mw_sql goes through sql.php.
+    `showJobs.php --group` prints one line per type:
+
+        invokeRunner: 630 queued; 0 claimed (0 active, 0 abandoned); 0 delayed
+
+    The breakdown, not the bare total, is what T4 needs — see
+    PERPETUAL_JOB_TYPES for why a total is not an answerable question on this
+    wiki. Read through maintenance/run.php so it uses the wiki's own
+    configuration, the same reason mw_sql goes through sql.php.
     """
+    line_re = re.compile(r"^\s*(\S+):\s+(\d+)\s+queued")
 
-    def _pending(timeout=300):
+    def _groups(timeout=300):
         proc = mw_exec(
-            "php", "maintenance/run.php", "showJobs.php", timeout=timeout
+            "php", "maintenance/run.php", "showJobs.php", "--group", timeout=timeout
         )
         assert proc.returncode == 0, (
-            f"showJobs.php exited {proc.returncode}\n{proc.stdout[-2000:]}\n"
-            f"{proc.stderr[-2000:]}"
+            f"showJobs.php --group exited {proc.returncode}\n"
+            f"{proc.stdout[-2000:]}\n{proc.stderr[-2000:]}"
         )
-        for line in reversed(proc.stdout.strip().splitlines()):
-            stripped = line.strip()
-            if stripped.isdigit():
-                return int(stripped)
-        raise AssertionError(
-            f"showJobs.php printed no job count:\n{proc.stdout[-2000:]}"
+        groups = {}
+        for line in proc.stdout.splitlines():
+            match = line_re.match(line)
+            if match:
+                groups[match.group(1)] = int(match.group(2))
+        # An empty queue prints nothing at all, which is a legitimate result
+        # and must not be confused with a parse failure — hence no assertion
+        # that `groups` is non-empty.
+        return groups
+
+    return _groups
+
+
+@pytest.fixture(scope="session")
+def pending_work(job_queue_groups):
+    """Queued jobs excluding the perpetual triggers — the work meant to finish."""
+
+    def _pending(timeout=300):
+        groups = job_queue_groups(timeout=timeout)
+        return sum(
+            count
+            for kind, count in groups.items()
+            if kind not in PERPETUAL_JOB_TYPES
         )
 
     return _pending
 
 
 @pytest.fixture(scope="session")
-def drained_job_queue(full_stack, job_queue):
-    """Wait for mediawiki-jobrunner to empty the queue, and report what it did.
+def drained_job_queue(full_stack, pending_work, job_queue_groups):
+    """Wait for mediawiki-jobrunner to finish the non-perpetual work.
 
-    Returns {"start": n, "end": n, "seconds": n}. This is the fixture the whole
-    search leg hangs off: on a fresh install the ExtendedSearch index is
-    written entirely by background jobs, so *every* full-text assertion is a
-    statement about the job queue having been drained first. Wave 3's T3
-    profile has no jobrunner, which is why its search coverage stops at the
-    configuration.
+    Returns {"start", "end", "seconds", "timeout", "groups"}. This is the
+    fixture the whole search leg hangs off: on a fresh install the
+    ExtendedSearch index is written entirely by background jobs, so *every*
+    full-text assertion is a statement about that work having completed first.
+    Wave 3's T3 profile has no jobrunner, which is why its search coverage
+    stops at the configuration.
 
-    Draining is a wait, not an assertion — the assertion lives in
-    test_search.py, so a queue that never empties fails as "the jobrunner did
-    not drain the queue" instead of as a fixture error with no name.
+    It waits on `pending_work`, not on the total. See PERPETUAL_JOB_TYPES: the
+    total never reaches zero on this wiki and waiting for it burns the whole
+    budget on a perfectly healthy stack.
 
-    `start` comes from HDP_JOBQUEUE_START when the harness recorded it, and is
-    measured here otherwise. That distinction matters: scripts/ci/t4-smoke.sh
-    waits for the drain itself, so by the time pytest runs the queue is already
-    at zero and a locally-measured start would be 0 — turning "the jobrunner
-    worked ~500 jobs down to nothing" into "the queue was empty all along",
-    which is the one state the assertion in test_search.py exists to reject.
+    Waiting is not asserting — the assertions live in test_search.py, so a
+    stack whose indexing never finishes fails as a named test rather than as a
+    fixture error.
     """
     deadline_seconds = int(
         os.environ.get(ENV_JOBQUEUE_TIMEOUT, DEFAULT_JOBQUEUE_TIMEOUT)
     )
     recorded_start = os.environ.get(ENV_JOBQUEUE_START)
-    start_count = int(recorded_start) if recorded_start else job_queue()
+    start_count = int(recorded_start) if recorded_start else pending_work()
     started = time.monotonic()
-    pending = job_queue()
+    pending = pending_work()
     while pending > 0 and (time.monotonic() - started) < deadline_seconds:
         time.sleep(10)
-        pending = job_queue()
+        pending = pending_work()
     return {
         "start": start_count,
         "end": pending,
         "seconds": int(time.monotonic() - started),
         "timeout": deadline_seconds,
+        "groups": job_queue_groups(),
     }
+
+
+@pytest.fixture(scope="session")
+def jobrunner_log(full_stack, compose):
+    """The mediawiki-jobrunner container's log.
+
+    Direct evidence that the container is doing work, which the queue depth
+    cannot give: a perpetually non-empty queue looks identical whether the
+    runner is executing jobs at two a second or is a no-op. Its healthcheck
+    cannot tell them apart either — it only confirms PID 1 is still bash.
+    """
+    proc = compose(
+        "logs", "--no-color", "--tail", "400", "mediawiki-jobrunner", timeout=180
+    )
+    assert proc.returncode == 0, (
+        f"could not read the jobrunner log (exit {proc.returncode})\n"
+        f"{proc.stderr[-2000:]}"
+    )
+    return proc.stdout
 
 
 @pytest.fixture(scope="session")
