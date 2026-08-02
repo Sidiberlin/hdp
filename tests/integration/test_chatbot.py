@@ -91,6 +91,18 @@ def proxy(full_stack, http_in):
 
 
 @pytest.fixture(scope="session")
+def proxy_stream(full_stack, sse_in):
+    """Consume a streaming response from chatbot-proxy, EventSource-style."""
+
+    def _stream(path, payload, budget=240):
+        return sse_in(
+            "chatbot-proxy", f"http://localhost:{PROXY_PORT}{path}", payload, budget=budget
+        )
+
+    return _stream
+
+
+@pytest.fixture(scope="session")
 def llm_key_configured(full_stack, compose):
     """Whether the running haystack container has an LLM API key.
 
@@ -215,7 +227,9 @@ def test_session_creation_does_not_need_the_llm(proxy):
     )
 
 
-def test_chat_stream_without_a_key_fails_with_a_status_code(proxy, llm_key_configured):
+def test_chat_stream_without_a_key_fails_with_a_status_code(
+    proxy_stream, llm_key_configured
+):
     """`POST /chat-stream` answers 503, not 200 with an error frame.
 
     See this module's docstring: `EventSource.onmessage` has no branch for an
@@ -232,8 +246,12 @@ def test_chat_stream_without_a_key_fails_with_a_status_code(proxy, llm_key_confi
             "see test_chat_stream_with_a_key_streams_an_answer, which is the "
             "assertion that applies to this stack"
         )
-    status, body = proxy(
-        "/chat-stream", method="POST", payload=json.dumps({"query": QUESTION})
+    # Read through the same EventSource-shaped probe as the success case, so
+    # the two contracts are exercised by one client rather than two — and so
+    # this cannot hang if the error path ever grows a keep-alive header of its
+    # own.
+    status, events = proxy_stream(
+        "/chat-stream", json.dumps({"query": QUESTION}), budget=120
     )
     assert status in (502, 503), (
         f"/chat-stream returned HTTP {status} with no LLM key configured. A 200 "
@@ -241,7 +259,7 @@ def test_chat_stream_without_a_key_fails_with_a_status_code(proxy, llm_key_confi
         f"whose onmessage handles only 'delta' and 'result', so a 200 carrying "
         f'{{"type":"error"}} is silently discarded and the chat UI hangs with '
         f"no message. onerror — i.e. a non-200 — is the only path that reaches "
-        f"the user.\n{body[:600]}"
+        f"the user.\nFrames: {events}"
     )
 
 
@@ -260,14 +278,22 @@ def test_chat_stream_rejects_an_empty_query(proxy):
 
 
 # ─── the end-to-end leg, only where a key exists ────────────────────
-def test_chat_stream_with_a_key_streams_an_answer(proxy, llm_key_configured):
+def test_chat_stream_with_a_key_streams_an_answer(proxy_stream, llm_key_configured):
     """Ask a question, get a streamed answer with source documents.
 
     This runs on a stack that has HDP_LLM_API_KEY — the validation box, never
-    CI, which has no key and must not have one. The parsing is deliberately
-    the frontend's: `data: ` frames, `type: delta` accumulating the answer and
-    a final `type: result` carrying the documents. A test that read the whole
-    body as JSON would pass on a response no EventSource could consume.
+    CI, which has no key and must not have one.
+
+    The response is consumed frame by frame, stopping at the terminating
+    `result` frame, because that is the only shape of client this endpoint
+    has. An SSE response carries no Content-Length and is not chunked, so a
+    `.read()` returns only when the connection closes; the Wave 4 box measured
+    a server that had finished writing after 19 seconds against a reader still
+    blocked ten minutes later. `EventSource` never notices — it acts on each
+    frame as it arrives — which is why the chat UI worked throughout and only
+    a non-browser client could see it. See `sse_in` in conftest.py, and the
+    comment on the removed `Connection: keep-alive` header in
+    docker/chatbot-proxy/server.py.
     """
     if not llm_key_configured:
         pytest.skip(
@@ -275,19 +301,12 @@ def test_chat_stream_with_a_key_streams_an_answer(proxy, llm_key_configured):
             "assertion is test_chat_stream_without_a_key_fails_with_a_status_code, "
             "which runs instead"
         )
-    status, body = proxy(
-        "/chat-stream", method="POST", payload=json.dumps({"query": QUESTION})
-    )
+    status, events = proxy_stream("/chat-stream", json.dumps({"query": QUESTION}))
     assert status == 200, (
-        f"/chat-stream returned HTTP {status} although the pipeline is loaded:"
-        f"\n{body[:1000]}"
+        f"/chat-stream returned HTTP {status} although the pipeline is loaded. "
+        f"Frames received: {[e.get('type') for e in events]}"
     )
-
-    events = []
-    for line in body.splitlines():
-        if line.startswith("data: "):
-            events.append(json.loads(line[6:]))
-    assert events, f"no SSE `data:` frames in the response:\n{body[:1000]}"
+    assert events, "no SSE `data:` frames arrived before the deadline"
 
     deltas = [e for e in events if e.get("type") == "delta"]
     results = [e for e in events if e.get("type") == "result"]

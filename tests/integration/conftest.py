@@ -481,13 +481,95 @@ print(json.dumps({"status": status, "body": body}))
         )
         for line in reversed(proc.stdout.strip().splitlines()):
             try:
-                payload = json.loads(line)
+                decoded = json.loads(line)
             except ValueError:
                 continue
-            return payload["status"], payload["body"]
+            return decoded["status"], decoded["body"]
         raise AssertionError(f"no JSON from the probe in {service}:\n{proc.stdout[-2000:]}")
 
     return _request
+
+
+@pytest.fixture(scope="session")
+def sse_in(compose):
+    """Consume a Server-Sent Events response the way `EventSource` does.
+
+    Returns (status, [frame, ...]) where each frame is the decoded JSON of one
+    `data: ` line, stopping at the terminating `result` (or `error`) frame.
+
+    This exists because `http_in` cannot be used for `/chat-stream`: an SSE
+    response carries no Content-Length and is not chunked, so `read()` returns
+    only when the connection closes. The Wave 4 box measured a server that had
+    finished writing after 19s against a client still blocked 600s later —
+    while the chat UI worked perfectly, because a browser's EventSource acts on
+    each frame as it arrives and never waits for the body to end.
+
+    Reading frame by frame is therefore not a workaround for a slow endpoint;
+    it is the only shape of client this endpoint has. A test that called
+    `.read()` would be asserting on a response no EventSource ever waits for.
+    """
+    script = r"""
+import json, sys, time, urllib.error, urllib.request
+url, payload, budget = sys.argv[1], sys.argv[2], float(sys.argv[3])
+req = urllib.request.Request(url, data=payload.encode(), method="POST")
+req.add_header("Content-Type", "application/json")
+req.add_header("Accept", "text/event-stream")
+frames, status, err = [], 0, ""
+deadline = time.time() + budget
+try:
+    resp = urllib.request.urlopen(req, timeout=budget)
+    status = resp.status
+    while time.time() < deadline:
+        line = resp.readline()
+        if not line:
+            break
+        line = line.decode("utf-8", "replace").strip()
+        if not line.startswith("data: "):
+            continue
+        try:
+            frame = json.loads(line[6:])
+        except ValueError:
+            continue
+        frames.append(frame)
+        # The frontend settles on either of these; so does this reader,
+        # rather than waiting for a connection close that may never come.
+        if frame.get("type") in ("result", "error"):
+            break
+    resp.close()
+except urllib.error.HTTPError as e:
+    status = e.code
+    for raw in e.read().decode("utf-8", "replace").splitlines():
+        if raw.startswith("data: "):
+            try:
+                frames.append(json.loads(raw[6:]))
+            except ValueError:
+                pass
+except Exception as e:
+    err = f"{type(e).__name__}: {e}"
+print("@@SSE@@" + json.dumps({"status": status, "frames": frames, "error": err}))
+"""
+
+    def _stream(service, url, payload, budget=240, timeout=420):
+        proc = compose(
+            "exec", "-T", service, "python3", "-c", script, url, payload, str(budget),
+            timeout=timeout,
+        )
+        assert proc.returncode == 0, (
+            f"`compose exec {service}` failed (exit {proc.returncode}) for {url}\n"
+            f"stdout:\n{proc.stdout[-2000:]}\nstderr:\n{proc.stderr[-2000:]}"
+        )
+        for line in reversed(proc.stdout.splitlines()):
+            if line.startswith("@@SSE@@"):
+                decoded = json.loads(line[len("@@SSE@@"):])
+                assert not decoded["error"], (
+                    f"the SSE probe against {url} failed: {decoded['error']}"
+                )
+                return decoded["status"], decoded["frames"]
+        raise AssertionError(
+            f"no SSE result from the probe in {service}:\n{proc.stdout[-2000:]}"
+        )
+
+    return _stream
 
 
 @pytest.fixture(scope="session")

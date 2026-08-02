@@ -222,7 +222,24 @@ class ProxyHandler(BaseHTTPRequestHandler):
         self.send_response(200)
         self.send_header("Content-Type", "text/event-stream")
         self.send_header("Cache-Control", "no-cache")
-        self.send_header("Connection", "keep-alive")
+        # No `Connection: keep-alive` here, deliberately.
+        #
+        # This response has no Content-Length and is not chunked — the body
+        # ends when the connection closes. Advertising keep-alive told the
+        # client the opposite: that the connection persists, leaving it with no
+        # way to know the body had ended. It then blocked until its own
+        # timeout on a request the server had already finished.
+        #
+        # Measured on the Wave 4 box: the server logged "Chat stream complete"
+        # 19s in, and a plain urllib client sat in read() for another 600s.
+        # EventSource never noticed, because SSE treats the response as an
+        # open-ended stream and acts on each frame as it arrives — so the chat
+        # UI worked while every non-browser client hung. That is why this went
+        # unseen until something other than the frontend consumed the endpoint.
+        #
+        # http.server speaks HTTP/1.0 here (BaseHTTPRequestHandler's default
+        # protocol_version), so omitting the header lets it close the socket
+        # after the handler returns, which is the body's only delimiter.
         self.send_header("X-Accel-Buffering", "no")
         self.end_headers()
 

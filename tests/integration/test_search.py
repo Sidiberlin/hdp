@@ -40,14 +40,26 @@ import pytest
 pytestmark = pytest.mark.smoke
 
 # The ExtendedSearch index. Created by initBackends.php, filled by the job
-# queue. Wave 2 and Wave 3 both measured 808 documents on a clean box — more
-# than the 107 pages, because `_cat`/`_count` count nested section documents.
+# queue.
 ES_INDEX = "bluespice_wikipage"
 
-# Far below the 808 seen on every clean box, and far above the 0 that a missing
-# jobrunner produces. The point of the floor is to separate those two states,
-# not to pin a number that legitimately moves when the seeded content changes.
-ES_INDEX_MIN_DOCS = 100
+# **This index has two document counts and they differ by an order of
+# magnitude.** Measured on the Wave 4 clean box, at the same moment:
+#
+#   _cat/indices?h=docs.count  ->  828   Lucene docs, nested ones included
+#   _count                     ->   93   top-level docs, i.e. wiki pages
+#
+# 93 is the number of indexed pages, and the namespace aggregation confirms it:
+# ns10=44, ns12=30 (the seeded Help pages), ns102=10, ns112=3, ns0=2, ns4=2,
+# ns2=1, ns1502=1. Wave 2 saw the same split and recorded it as "808 nested,
+# `_search` reports 92".
+#
+# The floor is therefore calibrated for `_count`, which is what `os_count`
+# calls. Taking it from the 808 figure is a mistake this file made once
+# already: a floor of 100 failed against a healthy index holding all 30 Help
+# pages. The floor's job is to separate "populated" from the 0 a missing
+# jobrunner leaves, not to pin a number that moves with the seeded content.
+ES_INDEX_MIN_DOCS = 50
 
 # The Haystack RAG index, written by docker/haystack/ingest_hdp_wiki.py. This
 # one *is* exact: 153 documents from 32 pages, reproduced on three separate
@@ -174,16 +186,30 @@ def test_mediawiki_full_text_search_returns_results(drained_job_queue, wiki):
     OpenSearch, the index was populated by the jobrunner, and the result came
     back through the same path the Search Center uses.
 
-    `srnamespace` is set explicitly. The default is namespace 0, which holds
-    two pages; the content is in namespace 12. Omitting it returns zero hits
-    against a perfectly healthy index.
+    **Do not add `srwhat=text`.** It looks like the obvious way to ask for a
+    full-text rather than a title search, and it is the one variant that
+    bypasses ExtendedSearch completely, falling back to MediaWiki's core
+    database search. Measured on the Wave 4 clean box, same term, same wiki:
+
+        srwhat=text   -> ['Hauptseite']        core DB search, ignores srnamespace
+        srwhat=title  -> ['Hilfe:Architektur'] ExtendedSearch
+        (default)     -> ['Hilfe:Architektur'] ExtendedSearch
+
+    while OpenSearch answers the same term directly with 25 hits, top match
+    `Hilfe:Architektur`. So `srwhat=text` produced a green-looking API call
+    that proved nothing about the index and returned a page from a namespace
+    that was explicitly excluded. The default is also what the Search Center
+    and a real user get, which is the point of the test.
+
+    `srnamespace` is still set explicitly: under the default path it is
+    honoured, and the default namespace is 0, which holds two pages while the
+    content is in namespace 12.
     """
     data = wiki.api(
         action="query",
         list="search",
         srsearch=SEARCH_TERM,
         srnamespace=str(HELP_NS),
-        srwhat="text",
         srlimit="10",
     )
     results = data.get("query", {}).get("search", [])
