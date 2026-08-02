@@ -59,6 +59,21 @@ description:
     shortDescription: >-
       Die BlueSpice HDP Edition liefert einen KI-Chatbot für Online
       Wissensdatenbanken.
+    # Required by the publiccode.yml schema and shown as the feature list in
+    # the openCode catalogue. Taken verbatim from the "Funktionen" section of
+    # longDescription below rather than newly written, so the catalogue entry
+    # and the description cannot drift apart.
+    features:
+      - Chatoberfläche mit Anbindung an LLM und Wikisoftware
+      - >-
+        Generierung von Antworten, Zusammenfassungen, Checklisten oder
+        E-Mailtexten
+      - >-
+        Ausgabe mit Kurzreferenz, Quelle, Verzeichnis und weiterführenden
+        Informationen
+      - Export von Chatverläufen
+      - Kopieren und Bewerten von Antworten
+      - Beschleunigte Auswahl von Nachfragen
     longDescription: >
       # **Künstliche Intelligenz revolutioniert die Arbeit mit Wikis!**
 
