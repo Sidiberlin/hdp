@@ -62,7 +62,12 @@ echo "Waiting for OpenSearch at ${OPENSEARCH_URL}..."
 
 max_tries=90
 try=0
-while ! curl -sk -u "admin:${OPENSEARCH_PASSWORD:-admin}" "${OPENSEARCH_URL}/_cluster/health" >/dev/null 2>&1; do
+# Hoisted out of the curl call so the secret-scanner suppression can sit on its
+# own line with a reason. This is a shell parameter expansion, not a committed
+# credential: OPENSEARCH_PASSWORD comes from .env or Infisical, and "admin" is
+# the documented local-dev fallback that any real deployment overrides.
+OS_AUTH="admin:${OPENSEARCH_PASSWORD:-admin}"  # gitleaks:allow
+while ! curl -sk -u "$OS_AUTH" "${OPENSEARCH_URL}/_cluster/health" >/dev/null 2>&1; do
     try=$((try + 1))
     if [ $try -ge $max_tries ]; then
         echo "ERROR: OpenSearch not reachable after ${max_tries} tries."

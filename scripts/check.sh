@@ -88,6 +88,10 @@ list_checks() {
     printf '%-14s %-34s %s\n' ruff        'python under docker/' "ruff | $IMG_RUFF"
     printf '%-14s %-34s %s\n' php-lint    'syntax of app/settings.d/*.php' "php | $IMG_PHP"
     printf '%-14s %-34s %s\n' compose     'docker-compose.yml interpolates' 'docker compose v2'
+    printf '%-14s %-34s %s\n' gitleaks    'no secrets in owned paths' 'gitleaks | zricethezav/gitleaks'
+    printf '%-14s %-34s %s\n' env-example '.env.example covers compose' 'grep'
+    printf '%-14s %-34s %s\n' publiccode  'publiccode.yml schema' 'italia/publiccode-parser-go'
+    printf '%-14s %-34s %s\n' patch-ignore 'no patch target is gitignored' 'git'
     printf '%-14s %-34s %s\n' fresh-clone 'TF: fresh clone has every input' 'git'
 }
 
@@ -230,6 +234,27 @@ check_php-lint_run() {
 # without one. A contributor who has not created a .env yet is exactly who this
 # script is for, so materialise one from .env.example and remove it again.
 # An existing .env is never touched.
+# ─── T0 provenance ──────────────────────────────────────────────────
+# Thin wrappers: all logic lives in scripts/ci/ so this script and the CI YAML
+# stay thin callers of the same code and cannot drift apart.
+check_gitleaks_run() {
+    if ! command -v gitleaks >/dev/null 2>&1 && ! have_docker; then
+        skip gitleaks "no gitleaks on PATH and no docker"; return
+    fi
+    scripts/ci/gitleaks.sh
+}
+
+check_env-example_run() { scripts/ci/env-example-check.sh; }
+
+check_publiccode_run() {
+    if ! command -v publiccode-parser >/dev/null 2>&1 && ! have_docker; then
+        skip publiccode "no publiccode-parser and no docker"; return
+    fi
+    scripts/ci/publiccode-schema.sh
+}
+
+check_patch-ignore_run() { scripts/ci/patch-ignore-check.sh; }
+
 # ─── TF, the fresh-clone gate ───────────────────────────────────────
 # Included in the default run because it is the highest-value check in the
 # repo — six of the seven bugs in docs/QA-REPORT.md were only visible on a
@@ -269,7 +294,11 @@ run_check yamllint   "yaml we own"
 run_check ruff       "python under docker/"
 run_check php-lint   "app/settings.d syntax"
 run_check compose    "compose interpolation"
-run_check fresh-clone "committed tree is complete"
+run_check gitleaks     "no committed secrets"
+run_check env-example  ".env.example completeness"
+run_check publiccode   "publiccode.yml schema"
+run_check patch-ignore "patch targets are trackable"
+run_check fresh-clone  "committed tree is complete"
 
 TOTAL=$(( SECONDS - START ))
 
