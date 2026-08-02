@@ -62,6 +62,7 @@ fi
 
 FIX=0
 PATCHES=0
+INTEGRATION=0
 VERBOSE=0
 NO_DOCKER=0
 declare -a ONLY=()
@@ -79,6 +80,8 @@ ${C_BLD}check.sh${C_OFF} — run the CI lint gate locally, in under three minute
   ./scripts/check.sh --list          list checks and their requirements
   ./scripts/check.sh --no-docker     host binaries only; skip what is unavailable
   ./scripts/check.sh --verbose       show tool output even when a check passes
+  ./scripts/check.sh --patches       + full patch verification (composer-installed tree)
+  ./scripts/check.sh --integration   + the Wave 3 tier (needs a running, installed wiki)
 
 No .env, no running stack, and no toolchain install required. Checks that can
 run neither from PATH nor from a pinned image are reported SKIPPED, never
@@ -104,6 +107,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' manifest    'patch manifest schema' 'python3 + pyyaml'
     printf '%-16s %-34s %s\n' fresh-clone 'TF: fresh clone has every input' 'git'
     printf '%-16s %-34s %s\n' patches     'all 19 patches present (--patches)' 'patch(1)'
+    printf '%-16s %-34s %s\n' integration 'live wiki (--integration)' 'a running, installed stack'
 }
 
 while [ $# -gt 0 ]; do
@@ -114,7 +118,8 @@ while [ $# -gt 0 ]; do
         --only)       shift; [ $# -gt 0 ] || { echo "--only needs a name" >&2; exit 2; }; ONLY+=("$1") ;;
         --list)       list_checks; exit 0 ;;
         --help|-h)    usage; exit 0 ;;
-        --patches)    PATCHES=1 ;;
+        --patches)     PATCHES=1 ;;
+        --integration) INTEGRATION=1 ;;
         *) echo "check.sh: unknown option '$1' (try --help)" >&2; exit 2 ;;
     esac
     shift
@@ -245,6 +250,19 @@ check_pytest-haystack_run() {
 # MariaDB and composer first. That is Wave 3's job.
 check_bats_run() { scripts/ci/bats.sh; }
 
+# ─── integration (opt-in) ───────────────────────────────────────────
+# Wave 3's tier. Needs a running, installed wiki, so it is opt-in for the same
+# reason `patches` is: check.sh's promise is a CI-equivalent verdict on a bare
+# checkout with no .env and no containers, and a check that skips for everyone
+# who has not booted seven containers is noise in that report.
+#
+# scripts/ci/pytest.sh probes for the stack and returns 77 when it is absent,
+# which run_check renders as SKIP — never as a pass.
+check_integration_run() {
+    [ "$INTEGRATION" -eq 1 ] || { skip integration "opt-in: pass --integration (needs a running, installed wiki)"; return; }
+    scripts/ci/pytest.sh --tier integration
+}
+
 # ─── php -l over the 17 settings.d files ────────────────────────────
 # These gate ~130 extensions; a syntax error here takes the wiki down at boot.
 check_php-lint_run() {
@@ -351,6 +369,7 @@ run_check patch-ignore "patch targets are trackable"
 run_check manifest     "patch manifest schema"
 run_check fresh-clone  "committed tree is complete"
 run_check patches      "all 19 patches in the tree"
+run_check integration  "live wiki serves real traffic"
 
 TOTAL=$(( SECONDS - START ))
 

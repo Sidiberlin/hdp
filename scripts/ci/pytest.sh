@@ -17,6 +17,20 @@
 #                               load_pipeline() shells out to envsubst before
 #                               calling Pipeline.loads.
 #
+#   integration tests/integration/ — Wave 3. Needs a *running, installed* wiki
+#                               and a docker socket. Standard library only, so
+#                               there is nothing to pip install; what it needs
+#                               is the stack itself.
+#
+# `--tier all` covers unit and haystack, and deliberately NOT integration.
+# Those two run anywhere, on any checkout, with no .env and no containers —
+# which is what makes `scripts/check.sh` able to promise a CI-equivalent verdict
+# without asking anyone to boot seven containers. Integration is opt-in, the
+# same shape as check.sh's `--patches`:
+#
+#   scripts/ci/pytest.sh --tier integration      against a stack you already have
+#   scripts/ci/t3-integration.sh                 boots one, installs it, runs this
+#
 # Nothing here is mocked. The reason the second tier is affordable is a
 # measurement, not an assumption:
 #
@@ -37,9 +51,10 @@
 #   3. python:3.11-slim + apt-get gettext-base + pip install   (~47s)
 #
 # Usage:
-#   scripts/ci/pytest.sh                  both tiers
+#   scripts/ci/pytest.sh                  unit + haystack
 #   scripts/ci/pytest.sh --tier unit      stdlib tier only
 #   scripts/ci/pytest.sh --tier haystack  haystack tier only
+#   scripts/ci/pytest.sh --tier integration   needs a running, installed wiki
 #   scripts/ci/pytest.sh -- -k to_native  args after -- go to pytest
 #   scripts/ci/pytest.sh --regen-golden   rewrite the golden JSON fixtures from
 #                                         the current implementation, then show
@@ -74,7 +89,7 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --tier)
             shift
-            [ $# -gt 0 ] || { echo "--tier needs a value (unit|haystack|all)" >&2; exit 2; }
+            [ $# -gt 0 ] || { echo "--tier needs a value (unit|haystack|integration|all)" >&2; exit 2; }
             TIER="$1"
             ;;
         --regen-golden) REGEN=1 ;;
@@ -86,8 +101,8 @@ while [ $# -gt 0 ]; do
 done
 
 case "$TIER" in
-    unit|haystack|all) ;;
-    *) echo "--tier must be one of: unit, haystack, all (got '$TIER')" >&2; exit 2 ;;
+    unit|haystack|integration|all) ;;
+    *) echo "--tier must be one of: unit, haystack, integration, all (got '$TIER')" >&2; exit 2 ;;
 esac
 
 if [ "$REGEN" -eq 1 ]; then
@@ -192,12 +207,77 @@ run_haystack() {
     return $?
 }
 
+# ─── integration tier ───────────────────────────────────────────────
+# The other two tiers can be satisfied from a container image. This one cannot,
+# and the reason is worth stating because it looks like an oversight:
+#
+#   * $wgServer is http://localhost:8080, so MediaWiki answers every
+#     /w/index.php/Foo with a redirect to the canonical /wiki/Foo — a URL that
+#     resolves only through the published port mapping, i.e. from the host.
+#     Running the tests inside the compose network fails on the redirect, which
+#     is how run 1 of the Wave 2 clean-box validation lost an afternoon.
+#   * The tests read container state (table counts, config globals, logs)
+#     through `docker compose exec`, so they need the docker CLI and the
+#     project directory, not a sibling container.
+#
+# So: host python3 with pytest, or nothing. There is no pip install to do —
+# the tier is standard library only, deliberately, so that the T3 job's
+# dependencies are exactly "docker, and the python3 the runner already has".
+WIKI_URL="${HDP_WIKI_URL:-http://localhost:8080/w}"
+
+run_integration() {
+    echo "── tier: integration (needs a running, installed wiki) ──"
+
+    if ! have python3 || ! python3 -c "import pytest" >/dev/null 2>&1; then
+        echo "  no python3-with-pytest on PATH."
+        echo "  This tier must run on the host (see the note above), so the"
+        echo "  container fallbacks the other tiers use do not apply."
+        return 77
+    fi
+    if ! have docker; then
+        echo "  no docker CLI on PATH; the tests read container state through"
+        echo "  'docker compose exec'."
+        return 77
+    fi
+
+    # Probe before collecting. A stack that is not running is a SKIP decided
+    # here, once, with a readable reason — not 40 red tests each reporting a
+    # connection refused, and never a green run against a wiki that is absent.
+    if ! python3 - "$WIKI_URL" <<'PY'
+import sys, urllib.error, urllib.request
+try:
+    with urllib.request.urlopen(sys.argv[1] + "/", timeout=10) as r:
+        sys.exit(0 if r.status < 500 else 1)
+except urllib.error.HTTPError as e:
+    sys.exit(0 if e.code < 500 else 1)
+except Exception:
+    sys.exit(1)
+PY
+    then
+        echo "  no wiki answering at $WIKI_URL/"
+        echo "  Start one with 'docker compose up -d' + 'docker compose exec"
+        echo "  mediawiki bash /setup.sh', or run scripts/ci/t3-integration.sh"
+        echo "  which does the whole sequence. Override the URL with HDP_WIKI_URL."
+        return 77
+    fi
+
+    python3 -m pytest tests/integration "${PYTEST_ARGS[@]+"${PYTEST_ARGS[@]}"}"
+    return $?
+}
+
 # ─── drive ──────────────────────────────────────────────────────────
 overall=0
 skipped=0
 ran=0
 
-for tier in unit haystack; do
+# `all` is unit + haystack. Integration is excluded on purpose: it is the only
+# tier that cannot run on a bare checkout, and folding it into the default
+# would mean every contributor's `scripts/ci/pytest.sh` ends in a skip notice
+# about containers they were never asked to start.
+SELECTED=(unit haystack)
+[ "$TIER" = "integration" ] && SELECTED=(integration)
+
+for tier in "${SELECTED[@]}"; do
     [ "$TIER" = "all" ] || [ "$TIER" = "$tier" ] || continue
     "run_$tier"
     rc=$?
