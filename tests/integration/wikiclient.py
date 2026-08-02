@@ -149,6 +149,31 @@ class WikiClient:
             "logintoken"
         ]
 
+    @staticmethod
+    def _ui_fields(result):
+        """Field names to fill for a clientlogin `status: "UI"` step.
+
+        The shape depends on formatversion, and this client asks for 2:
+
+            fv1:  {"request":  {"fields": {...}}}
+            fv2:  {"requests": [{"fields": {...}}, ...]}
+
+        Both are read, because reading only the fv1 shape is a bug that hides
+        itself: the consent step is skipped entirely for an account that has
+        already consented, so on any wiki that has been logged into before,
+        `login()` returns PASS on the first call and never reaches this code.
+        It surfaces only on a genuinely fresh install — which is exactly the
+        wiki T3 creates, and exactly the wiki a first-time user gets.
+        """
+        fields = {}
+        request = result.get("request")
+        if isinstance(request, dict):
+            fields.update(request.get("fields") or {})
+        for entry in result.get("requests") or []:
+            if isinstance(entry, dict):
+                fields.update(entry.get("fields") or {})
+        return list(fields)
+
     # ─── login ──────────────────────────────────────────────────────
     def login(self, username, password):
         """Log in via clientlogin, continuing through any consent UI step.
@@ -173,7 +198,7 @@ class WikiClient:
         for _ in range(4):
             if result.get("status") != "UI":
                 break
-            fields = list(result.get("request", {}).get("fields", {}).keys())
+            fields = self._ui_fields(result)
             if not fields:
                 raise LoginError(
                     f"clientlogin returned UI with no fields to fill: {result!r}"
