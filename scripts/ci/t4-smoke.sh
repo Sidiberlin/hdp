@@ -250,6 +250,18 @@ dc ps
 # ─── drain the job queue ────────────────────────────────────────────
 # The search leg is entirely downstream of this. See the header.
 hdp_say "waiting for mediawiki-jobrunner to drain the queue (up to ${JOBQUEUE_BUDGET}s)"
+
+# Recorded before the wait and handed to the tests as HDP_JOBQUEUE_START. The
+# tests cannot measure this for themselves: this loop empties the queue, so by
+# the time pytest runs the only depth it can observe is zero — and "the
+# jobrunner worked ~500 jobs down to nothing" would be indistinguishable from
+# "the queue was empty all along", which is the state test_search.py exists to
+# reject.
+JOBS_START="$(dc exec -T mediawiki php maintenance/run.php showJobs.php 2>/dev/null \
+    | tr -d '\r' | grep -E '^[0-9]+$' | tail -1)"
+JOBS_START="${JOBS_START:-0}"
+echo "  queue depth before draining: $JOBS_START"
+
 job_deadline=$(( SECONDS + JOBQUEUE_BUDGET ))
 while :; do
     # The last numeric line, not the whole output: run.php prints a banner on
@@ -293,6 +305,7 @@ HDP_SETUP_EXIT="$SETUP_EXIT" \
 HDP_SETUP_LOG="$SETUP_LOG" \
 HDP_WIKI_URL="$WIKI_URL" \
 HDP_INGEST_RAN="$INGEST_RAN" \
+HDP_JOBQUEUE_START="$JOBS_START" \
 HDP_JOBQUEUE_TIMEOUT="$JOBQUEUE_BUDGET" \
     scripts/ci/pytest.sh --tier smoke
 TEST_EXIT=$?
