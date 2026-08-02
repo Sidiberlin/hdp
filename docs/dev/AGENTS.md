@@ -240,9 +240,15 @@ scripts/ci/pytest.sh -- -k to_native  # args after -- go to pytest
 Inside the running stack, the haystack image ships `pytest`, so:
 
 ```bash
-docker compose run --rm --no-deps -v "$PWD/tests:/tests:ro" haystack \
-    python -m pytest /tests/haystack
+docker compose run --rm --no-deps -v "$PWD:/w:ro" -w /w haystack \
+    python -m pytest tests/haystack -p no:cacheprovider
 ```
+
+Mount the **repo root**, not just `tests/`. `pytest.ini` lives at the root and is
+what sets `pythonpath`, and one test resolves the repo root by walking up for
+`docker-compose.yml`. Mounting only `tests/` gives 39 passed and 1 error.
+`-p no:cacheprovider` is because the mount is read-only and pytest otherwise
+tries to write `.pytest_cache` into it.
 
 ### Golden files
 
