@@ -50,7 +50,7 @@ docker compose exec mediawiki bash /setup.sh
 1. Fork the repository on GitHub
 2. Create a feature branch: `git checkout -b feature/my-feature`
 3. Make your changes — keep commits focused
-4. **Run `./scripts/check.sh`** — one command, about 30 seconds, no toolchain
+4. **Run `./scripts/check.sh`** — one command, about 100 seconds, no toolchain
    install and no `.env` required. It returns the same verdict as the CI lint
    stage, so a green run here means a green pipeline.
 5. Test against a running stack: `docker compose up -d --build && docker compose exec mediawiki bash /setup.sh`
@@ -61,7 +61,7 @@ docker compose exec mediawiki bash /setup.sh
 1. Forken Sie das Repository auf GitHub
 2. Erstellen Sie einen Feature-Branch: `git checkout -b feature/mein-feature`
 3. Nehmen Sie Ihre Änderungen vor — halten Sie Commits fokussiert
-4. **Führen Sie `./scripts/check.sh` aus** — ein Befehl, ca. 30 Sekunden, ohne
+4. **Führen Sie `./scripts/check.sh` aus** — ein Befehl, ca. 100 Sekunden, ohne
    Toolchain-Installation und ohne `.env`. Das Ergebnis entspricht dem der
    CI-Lint-Stufe.
 5. Testen Sie gegen einen laufenden Stack: `docker compose up -d --build && docker compose exec mediawiki bash /setup.sh`
@@ -71,10 +71,15 @@ docker compose exec mediawiki bash /setup.sh
 #### Before pushing / Vor dem Push
 
 ```bash
-./scripts/check.sh              # all checks (~30s)
+./scripts/check.sh              # all checks (~100s)
 ./scripts/check.sh --fix        # apply auto-fixes where available
 ./scripts/check.sh --only ruff  # a single check
 ./scripts/check.sh --list       # what each check needs
+
+# Tests specifically
+scripts/ci/pytest.sh --tier unit      # stdlib only, ~2s — run this on every save
+scripts/ci/pytest.sh                  # both tiers
+scripts/ci/bats.sh                    # shell behaviour
 ```
 
 **EN:** Each check prefers a tool already on your `PATH` and otherwise runs the
