@@ -1,0 +1,17 @@
+# Class C — inherited BlueSpice patch. Generated from the .diff; see
+# docs/dev/patches.md for the inventory and the verification contract.
+id: mmv-bootstrap
+title: MultimediaViewer bootstrap PDF-title fix
+class: C
+mode: diff
+target: extensions/MultimediaViewer/resources/mmv.bootstrap/mmv.bootstrap.js
+patch: app/_bluespice/patches/extensions/MultimediaViewer/resources/mmv.bootstrap/mmv.bootstrap.js.diff
+applied_by: app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh
+hunks: 2
+stale: false
+group: ''
+upstream_version: 'BlueSpice 5.1.4 (inherited patch set)'
+regex: n/a
+why: >-
+  Uses mw.Title.makeTitle for PDF thumbnails; upstream's newFromText
+  mis-parses them.

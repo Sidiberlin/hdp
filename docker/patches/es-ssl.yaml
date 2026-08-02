@@ -1,0 +1,26 @@
+# Class A — clobbered by composer, re-applied by docker/setup.sh.
+#
+# `composer install` reinstalls bluespice/extendedsearch as a dist zipball,
+# which overwrites this file wholesale on every run. setup.sh re-applies the
+# patch afterwards with `sed -i`.
+id: es-ssl
+title: disable SSL verification for self-signed OpenSearch certs
+class: A
+mode: insert
+target: extensions/BlueSpiceExtendedSearch/src/Backend.php
+applied_by: docker/setup.sh
+# ERE. The line the insert is anchored after.
+anchor: '\$clientBuilder->setRetries\( 2 \);'
+# The sentinel the patch itself inserts. Deliberately the "// HDP:" comment
+# rather than `setSSLVerification`, because upstream could add its own call to
+# that method one day — verify would then go green while our patch was gone.
+marker: '// HDP: disable SSL verification'
+anti: ''
+group: ''
+stale: false
+upstream_version: 'bluespice/extendedsearch 5.1.4'
+regex: ERE
+why: >-
+  OpenSearch in this stack ships a self-signed certificate and the client
+  rejects it, so search returns nothing. Not mockable in CI: a mock with a
+  valid certificate cannot reproduce the condition this patch exists for.
