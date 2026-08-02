@@ -59,6 +59,8 @@ REQUIRED_FILES=(
     docker/haystack/render_pipeline.py
     hdp.sh
     scripts/check.sh
+    scripts/ci/bats.sh
+    scripts/ci/pytest.sh
     scripts/convert-docs.sh
 
     # MediaWiki inputs consumed by setup.sh's composer stage.
