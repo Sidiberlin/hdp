@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# curl test double for tests/bats/infisical_loader.bats.
+#
+# Two jobs, and the first one is the point of the whole file:
+#
+#   1. Record what this process could leak. Every argument is written to
+#      $CURL_ARGV_LOG, and so is the process's own /proc/self/cmdline — which
+#      is literally the bytes any other process in the container can read.
+#      That is a stronger check than racing `ps aux` against a real curl,
+#      because it cannot miss the window in which the process is alive.
+#
+#   2. Serve a canned response chosen by the URL, so the loader's parsing and
+#      control flow run for real against real jq.
+#
+# stdin is drained into $CURL_STDIN_LOG. The Wave 0 fix moved both the client
+# secret and the bearer token onto stdin (`--data @-` and `-H @-`), so the
+# tests assert the secrets appear there and nowhere in the argv log.
+set -u
+
+: "${CURL_ARGV_LOG:?curl shim needs CURL_ARGV_LOG}"
+: "${CURL_STDIN_LOG:?curl shim needs CURL_STDIN_LOG}"
+: "${CURL_FIXTURE_DIR:?curl shim needs CURL_FIXTURE_DIR}"
+
+{
+    printf 'ARGV_JOINED\t%s\n' "$*"
+    for _a in "$@"; do printf 'ARGV_ONE\t%s\n' "$_a"; done
+    # /proc/self/cmdline is NUL-separated; tr makes it greppable.
+    if [ -r /proc/self/cmdline ]; then
+        printf 'PROC_CMDLINE\t%s\n' "$(tr '\0' ' ' < /proc/self/cmdline)"
+    fi
+} >> "$CURL_ARGV_LOG"
+
+# Drain stdin whether or not the caller piped anything, so the loader's
+# `printf ... | curl` never blocks on a full pipe buffer.
+if [ ! -t 0 ]; then
+    _stdin="$(cat || true)"
+    printf 'STDIN\t%s\n' "$_stdin" >> "$CURL_STDIN_LOG"
+fi
+
+# Pick a fixture by URL shape. The loader makes three kinds of call.
+_url=""
+for _a in "$@"; do
+    case "$_a" in http://*|https://*) _url="$_a" ;; esac
+done
+
+case "$_url" in
+    *"/api/v1/auth/universal-auth/login"*)
+        cat "$CURL_FIXTURE_DIR/login.json" 2>/dev/null || true ;;
+    *"/api/v4/secrets?"*)
+        cat "$CURL_FIXTURE_DIR/list.json" 2>/dev/null || true ;;
+    *"/api/v4/secrets/"*)
+        # Per-secret fetch. The secret name is the last path segment before ?.
+        _name="${_url##*/api/v4/secrets/}"
+        _name="${_name%%\?*}"
+        printf 'FETCHED\t%s\n' "$_name" >> "$CURL_ARGV_LOG"
+        if [ -f "$CURL_FIXTURE_DIR/secret-$_name.json" ]; then
+            cat "$CURL_FIXTURE_DIR/secret-$_name.json"
+        else
+            cat "$CURL_FIXTURE_DIR/secret-default.json" 2>/dev/null || true
+        fi
+        ;;
+    *) ;;
+esac

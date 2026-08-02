@@ -34,6 +34,8 @@ IMG_PHP="php:8.3-cli"
 # The pytest tiers fall back to this when the host cannot satisfy them. Kept in
 # step with scripts/ci/pytest.sh and docker/haystack/Dockerfile's base image.
 IMG_PYTHON="python:3.11-slim"
+# Pinned by digest, not by :latest — see the note above about moving tags.
+IMG_BATS="bats/bats@sha256:5322b877351fda0cc435de8c6116de7d0a2ec79d7c680132a0ef329a633bc66f"
 
 # Host binaries are a convenience, not the source of truth. When a host tool's
 # version differs from the pinned image the verdicts can differ too, so say so
@@ -92,6 +94,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' ruff        'python under docker/ and tests/' "ruff | $IMG_RUFF"
     printf '%-16s %-34s %s\n' pytest-unit 'stdlib unit tests (~2s)' "pytest | $IMG_PYTHON"
     printf '%-16s %-34s %s\n' pytest-haystack 'to_native + load_pipeline' "haystack-ai | $IMG_PYTHON"
+    printf '%-16s %-34s %s\n' bats        'infisical-loader.sh behaviour' "bats | ${IMG_BATS%%@*}"
     printf '%-16s %-34s %s\n' php-lint    'syntax of app/settings.d/*.php' "php | $IMG_PHP"
     printf '%-16s %-34s %s\n' compose     'docker-compose.yml interpolates' 'docker compose v2'
     printf '%-16s %-34s %s\n' gitleaks    'no secrets in owned paths' 'gitleaks | zricethezav/gitleaks'
@@ -235,6 +238,13 @@ check_pytest-haystack_run() {
     scripts/ci/pytest.sh --tier haystack
 }
 
+# ─── bats ───────────────────────────────────────────────────────────
+# docker/infisical-loader.sh only. docker/setup.sh is not testable at this
+# level — 557 lines, `set -euo pipefail`, `cd "$MW"` on line 18, and a
+# top-to-bottom installer body — so asserting its exit code means standing up
+# MariaDB and composer first. That is Wave 3's job.
+check_bats_run() { scripts/ci/bats.sh; }
+
 # ─── php -l over the 17 settings.d files ────────────────────────────
 # These gate ~130 extensions; a syntax error here takes the wiki down at boot.
 check_php-lint_run() {
@@ -331,6 +341,7 @@ run_check yamllint   "yaml we own"
 run_check ruff       "python under docker/ + tests/"
 run_check pytest-unit     "stdlib unit tests"
 run_check pytest-haystack "to_native + load_pipeline"
+run_check bats       "infisical-loader behaviour"
 run_check php-lint   "app/settings.d syntax"
 run_check compose    "compose interpolation"
 run_check gitleaks     "no committed secrets"
