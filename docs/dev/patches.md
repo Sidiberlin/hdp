@@ -4,9 +4,16 @@ HDP ships modifications to vendored upstream code. This file is the inventory:
 what they are, how each one is applied, how each one fails, and which ones are
 dead.
 
-It is deliberately hand-maintained and small. The machine-readable manifest
-(one YAML sidecar per patch) and `scripts/verify-patches.sh` are Wave 1 work;
-until they land this page is the only place the count is written down.
+The machine-readable manifest lives in `docker/patches/` — one YAML sidecar per
+patch — and three tools read it:
+
+| Tool | Does | Mutates? |
+|---|---|---|
+| `scripts/verify-patches.sh` | is every patch still in the tree? | never |
+| `scripts/apply-patches.sh` | put back the ones composer clobbered | yes |
+| `scripts/check.sh --patches` | runs the verifier as part of the local gate | never |
+
+This page is the prose; the manifest is the source of truth.
 
 ---
 
@@ -14,7 +21,7 @@ until they land this page is the only place the count is written down.
 
 | Class | Count | Applied by | Fails by |
 |---|---|---|---|
-| **A** — composer-clobbered | 2 | `docker/setup.sh`, inline `sed -i` | `composer install` reinstalls the package as a dist zipball over the patch |
+| **A** — composer-clobbered | 2 | `scripts/apply-patches.sh`, called by `docker/setup.sh` | `composer install` reinstalls the package as a dist zipball over the patch |
 | **B** — gitignore-swallowed | 0 | — | *(retired, see below)* |
 | **C** — inherited BlueSpice diffs | 17 | `app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh` | the script prints `FAILED!` and continues, with no exit code |
 
@@ -32,22 +39,26 @@ That arithmetic was wrong in two places, and they cancelled out:
 - Class B is now **0**, not 1.
 
 So the total was briefly **20** (2 + 1 + 17), and is now **19** again (2 + 0 +
-17) — the same number as the original estimate, reached a different way. If
-you are building the Wave 1.4 manifest, build **19 sidecars**, and expect
-`verify-patches.sh` to report 18 applicable plus 1 stale.
+17) — the same number as the original estimate, reached a different way. The
+manifest holds **19 sidecars**, and `verify-patches.sh` reports 18 applicable
+plus 1 stale.
 
 ---
 
 ## Class A — composer-clobbered (2)
 
 Both live in `app/extensions/BlueSpiceExtendedSearch/`, both are reinstalled
-from a dist zipball by `composer install`, and both are re-applied by
-`docker/setup.sh` after composer runs.
+from a dist zipball by `composer install`, and both are re-applied afterwards by
+`scripts/apply-patches.sh --class A`, which `docker/setup.sh` calls.
 
 | id | Target | Marker |
 |---|---|---|
-| `es-ssl` | `extensions/BlueSpiceExtendedSearch/src/Backend.php` | `setSSLVerification( false )` |
-| `es-searchcnt` | `extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js` | `const $searchCnt` |
+| `es-ssl` | `extensions/BlueSpiceExtendedSearch/src/Backend.php` | `// HDP runs OpenSearch with its default self-signed demo certs` |
+| `es-searchcnt` | `extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js` | `// Upstream 5.1.4 fires the 'getResults' hook below with` |
+
+The markers are the comments the patch inserts, not `setSSLVerification` or
+`const $searchCnt`. Matching the code itself would let verify pass if upstream
+one day added its own call while our patch was gone.
 
 Note the real path of the second one. The strategy document refers to it as
 `SearchCenter.js`, which matches nothing — the file is
@@ -56,9 +67,12 @@ Note the real path of the second one. The strategy document refers to it as
 returns nothing and will make you think the patch is missing. Use the path
 above when writing the manifest.
 
-Both blocks re-verify their own marker after running (`docker/setup.sh`).
-`sed -i` exits 0 when its address matches nothing, so without that re-check
-applying the patch and silently doing nothing are indistinguishable.
+These were two inline `sed -i` blocks in `setup.sh` until the applier landed.
+`sed -i` exits 0 when its address matches nothing, so an upstream reindent
+turned the patch into a silent no-op. `apply-patches.sh` uses
+`patch --ignore-whitespace --fuzz 3`, which tolerates that drift, and re-checks
+the marker after applying so a patch that reports success without landing is
+still caught.
 
 ## Class B — retired
 
@@ -147,9 +161,10 @@ run forever, and an exit code that is always non-zero is one nobody reads.
 **What to do about it.** Nothing, for now. The options are to delete the
 `.diff` (diverging from the inherited `_bluespice` tree), or to keep it and
 carry the warning (current choice, since the tree is upstream's and we do not
-maintain it). Revisit if BlueSpice reissues the patch set. When the Wave 1.4
-manifest lands, this patch gets an explicit `stale: true` field so the
-condition is declared rather than inferred.
+maintain it). Revisit if BlueSpice reissues the patch set. The sidecar carries
+`stale: true`, so the condition is declared rather than inferred from a missing
+file — `verify-patches.sh --stale` lists it, and neither the verifier nor the
+applier treats it as a failure.
 
 ---
 
@@ -164,14 +179,62 @@ and each was observed on a clean box:
 | `99-apply_patches.sh` | prints `FAILED!`, has no `set -e`, returns no exit code |
 | `composer dump-autoload` | ignores the hook scripts' exit statuses entirely |
 
-`docker/setup.sh` now detects all three and reports them in a summary before
+`docker/setup.sh` detects all three and reports them in a summary before
 exiting non-zero. That is a backstop, not the gate — the gate is
-`scripts/verify-patches.sh` (Wave 1.5), which checks the resulting tree rather
-than scraping logs.
+`scripts/verify-patches.sh`, which inspects the resulting tree rather than
+scraping logs.
 
-## Verifying by hand
+The first row is also no longer true of this repository: the two Class-A
+patches are applied by `scripts/apply-patches.sh` with
+`patch --ignore-whitespace --fuzz 3`, not by `sed -i`. The applier re-checks
+each patch's marker afterwards, so a patch that reports success without landing
+is caught rather than assumed.
 
-Until `verify-patches.sh` exists:
+## Working with patches
+
+```bash
+scripts/verify-patches.sh                 # is everything still applied?
+scripts/verify-patches.sh --list          # the inventory
+scripts/verify-patches.sh --explain <id>  # what this patch is for
+scripts/verify-patches.sh --stale         # patches that can never apply
+scripts/verify-patches.sh --static        # schema + paths only, no patch(1)
+
+scripts/apply-patches.sh                  # put back whatever is missing
+scripts/apply-patches.sh --id es-ssl      # just one
+scripts/apply-patches.sh --class A        # only the composer-clobbered ones
+scripts/apply-patches.sh --dry-run        # say what would change
+```
+
+Exit codes: `0` all present, `1` a patch is missing, `2` the manifest itself is
+malformed. The last two are deliberately distinct — a typo in a sidecar must not
+read as a patch regression.
+
+Run the verifier **after** composer, which is when patches disappear. On a fresh
+clone before `setup.sh` has run, `app/vendor/` does not exist yet, so the
+`oidc-client` target is legitimately absent; `--static` reports it as
+not-applicable rather than missing.
+
+### Adding a patch
+
+1. Make the change in the tree and confirm it works.
+2. Produce a `.patch`: reconstruct the unpatched file, then
+   `diff -u <before> <after>`. Verify it round-trips — applying to the before
+   state must reproduce the after state byte-for-byte.
+3. Write `docker/patches/<id>.yaml`. Required keys: `id`, `title`, `class`,
+   `mode`, `target`, `stale`, `why`. `mode: insert` also requires `marker`;
+   `mode: diff` requires `patch`.
+4. `scripts/verify-patches.sh --static` to check the schema, then
+   `scripts/verify-patches.sh --id <id>`.
+5. `./scripts/check.sh` before pushing.
+
+Pick the marker carefully. It should be a string unique to *our* change — the
+comment the patch inserts, not the function it calls. Matching a function name
+means verify goes green if upstream later adds its own call while our patch is
+gone.
+
+### If the tooling is unavailable
+
+The same checks by hand:
 
 ```bash
 # Class A — marker present?

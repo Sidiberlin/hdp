@@ -82,7 +82,9 @@ and your data never leaves your infrastructure.
 | Automated first-boot setup | ✗ | ✗ | ✅ (`setup.sh`) |
 | Healthchecks on all services | ✗ | ✗ | ✅ |
 | Idempotent ingestion (safe to re-run) | ✗ | ✗ | ✅ |
-| CI (linting + config validation) | ✗ | ✗ | ✅ (GitLab CI) |
+| CI (lint, secret scan, schema, fresh-clone gate) | ✗ | ✗ | ✅ (GitLab CI, 11 jobs) |
+| One-command local gate matching CI | ✗ | ✗ | ✅ (`./scripts/check.sh`, ~30s) |
+| Patch manifest + integrity verification | ✗ | ✗ | ✅ (19 patches, `scripts/verify-patches.sh`) |
 
 *Note: the table groups related capabilities rather than listing all 167
 bundled extensions individually — see [`docs/dev/AGENTS.md`](docs/dev/AGENTS.md)
