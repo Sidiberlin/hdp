@@ -21,7 +21,9 @@ For full architecture documentation, see [`docs/wiki/`](docs/wiki/) (system diag
 | `app/` | BlueSpice MediaWiki source (core + ~130 extensions) | Vendored per upstream distribution model |
 | `app/settings.d/` | **BlueSpice extension loader and config** — loaded in alphanumeric order, NOT via `wfLoadExtension` in `LocalSettings.php` | `050-Fixes.php` (MariaDB mode fixes), `100-ChatBot.php` (chatbot proxy config) |
 | `app/extensions/ChatBot/` | ChatBot MediaWiki extension — chat widget, REST endpoints, Deepset API client | `extension.json`, `includes/Api/ChatApi.php` |
-| `app/skins/` | MediaWiki skins | **WARNING:** `.gitignore` contains `/*` — use `git add -f` to commit skin files |
+| `app/skins/` | MediaWiki skins | `.gitignore` has `/*` **but re-includes the six shipped skins by name** — they are trackable, do not use `git add -f`. See [The `app/skins/.gitignore` Trap](#the-appskinsgitignore-trap) |
+| `docker/patches/` | Patch manifest — one YAML sidecar per patch, plus the Class-A `.patch` files | 19 entries; see [`patches.md`](patches.md) |
+| `scripts/` | Contributor and CI entry points | `check.sh` (run before pushing), `verify-patches.sh`, `apply-patches.sh`, `ci/` |
 | `docker/` | Docker build contexts and setup scripts | `setup.sh` (first-boot install), `haystack/` (RAG pipeline), `chatbot-proxy/` (Deepset→Haystack adapter) |
 | `docker/haystack/` | Haystack RAG pipeline implementation | `hdp_pipeline.yaml`, `ingest_hdp_wiki.py`, `hdp_api_server.py`, `entrypoint.sh` |
 | `docs/` | User and architecture documentation | `QA-REPORT.md`, `embedding-providers.md`, `wiki/` (technical wiki) |
@@ -150,6 +152,54 @@ docker compose exec haystack curl -s -X POST http://localhost:1417/hdp_pipeline/
 
 ---
 
+## Before You Push
+
+One command, no toolchain install, no `.env`, no running stack:
+
+```bash
+./scripts/check.sh            # everything; ~30s
+./scripts/check.sh --fix      # apply auto-fixes where the tool supports one
+./scripts/check.sh --only ruff
+./scripts/check.sh --patches  # + full patch verification (needs a composer-installed tree)
+```
+
+It returns the same verdict as the CI lint stage. Each check prefers a binary
+already on your PATH and otherwise runs the same pinned image CI uses, so there
+is nothing to install.
+
+**A skipped check is not a passing check.** Anything that can run neither way is
+reported `SKIP`, listed again in the summary, and the closing line says
+explicitly that this is not the full CI verdict. CI will still run it.
+
+What it covers today:
+
+| Check | What it catches |
+|---|---|
+| `shellcheck` | shell in `docker/ scripts/ hdp.sh` (not vendored upstream) |
+| `yamllint` | compose, publiccode, pipeline, CI, the patch manifest |
+| `ruff` | Python under `docker/`, against the pinned ruleset in `ruff.toml` |
+| `php-lint` | the 17 `app/settings.d/*.php` files gating ~130 extensions |
+| `compose` | `docker compose config` on v2 |
+| `gitleaks` | committed secrets, scoped to paths this project authors |
+| `env-example` | every no-default `${VAR}` compose uses is in `.env.example` |
+| `publiccode` | `publiccode.yml` schema — openCode validates this file |
+| `patch-ignore` | no patch target is swallowed by a `.gitignore` rule |
+| `manifest` | the patch manifest's schema and target paths |
+| `fresh-clone` | ⭐ every input `setup.sh` needs is actually committed |
+| `patches` | all 19 patches are in the tree (`--patches`) |
+
+`fresh-clone` is the one worth understanding. `docs/QA-REPORT.md` records seven
+bugs, six of them critical, and notes that each *"was invisible in the
+development checkout … and only surfaced on a genuinely fresh clone."* It clones
+the repo at HEAD into a throwaway directory and asserts the committed tree is
+complete — which is the only way to catch a file that exists on your disk but
+was never committed, or that a `.gitignore` rule silently refuses.
+
+Note that it tests **committed** state. Uncommitted work in your tree is
+deliberately not under test, and it says so when your tree is dirty.
+
+---
+
 ## Conventions & Guardrails
 
 ### BlueSpice Extension Loading
@@ -158,10 +208,45 @@ BlueSpice loads extensions via `app/settings.d/*.php` processed in alphanumeric 
 
 ### The `app/skins/.gitignore` Trap
 
-`app/skins/.gitignore` contains a blanket `/*` exclusion. To commit skin files (e.g., the `HookRunner.php` fix for Vector), use `git add -f`:
+`app/skins/.gitignore` starts with a blanket `/*` and then re-includes the six
+skins this project ships:
+
+```
+/*
+!/.gitignore
+!/BlueSpiceDiscovery/   !/hdp/   !/MinervaNeue/
+!/MonoBook/             !/Timeless/   !/Vector/
+```
+
+**Do not use `git add -f` for files under those six directories.** They are
+already trackable, and `-f` only works for whoever remembers to type it — which
+is exactly how the Vector `HookRunner.php` fix was lost in the first place
+(`docs/QA-REPORT.md` Bug 2). If a file under a whitelisted skin appears
+un-addable, that is a bug in the ignore rules; fix the rule.
+
+Adding a **new** skin directory does need a matching `!/NewSkin/` line. Add the
+line, do not reach for `-f`.
+
+The same trap exists outside `app/skins/`, and it has bitten twice more:
+
+- `app/composer.lock` and `app/composer.local.json` were tracked while still
+  matched by upstream MediaWiki's ignore rules, so `git add -A` silently
+  refused to re-add them. Both are load-bearing. Now negated explicitly.
+- `app/skins/Vector/includes/FeatureManagement/FeatureManagerFactory.php` was
+  simply never committed, which made `Special:Preferences` return HTTP 500 for
+  every logged-in user until the vendored Vector skin was restored to upstream
+  `REL1_43`.
+
+`scripts/ci/patch-ignore-check.sh` now gates this for every patch target, and
+`scripts/ci/fresh-clone.sh` gates it for every input `setup.sh` needs. Run
+`./scripts/check.sh` and neither can regress silently.
+
+To check a single path by hand, note that plain `git check-ignore` reports
+nothing for a **tracked** file — the dangerous both-tracked-and-ignored state
+looks clean. Use `--no-index`:
 
 ```bash
-git add -f app/skins/Vector/includes/Hooks/HookRunner.php
+git check-ignore -v --no-index app/some/path.php
 ```
 
 ### Bind-Mount Behavior
@@ -190,7 +275,8 @@ Each pitfall below has the **symptom** and the **fix** (root cause explained).
 | `composer install` fails with "TypeError in Git::runCommand" or "cannot run ssh" | Already fixed in `docker/setup.sh` (SSH→HTTPS rewrite) | `composer.lock` pins packages to SSH URLs (`git@github.com:...`) — fresh containers have no SSH |
 | Setup fails with "MariaDB not reachable after 60s" | Already increased to 120s wait in `docker/setup.sh` | Slow environments need longer wait for MariaDB to accept connections |
 | "I changed .env but container still uses old LLM/embedding provider" | Check Infisical for stale `HDP_*` secrets | Infisical shadows `.env` — secrets with same names override at every container start |
-| `app/skins/Vector/includes/Hooks/HookRunner.php` changes vanish | Use `git add -f` | `app/skins/.gitignore` has `/*` blanket exclusion |
+| A file under a whitelisted skin appears un-addable | Fix the `.gitignore` rule; do **not** use `git add -f` | `app/skins/.gitignore` re-includes six skins by name — if one is un-addable the rule is wrong. Check with `git check-ignore -v --no-index <path>` |
+| A patch you applied is gone after `setup.sh` | `bash scripts/apply-patches.sh --id <id>` | `composer install` reinstalls the package as a dist zipball over it. `scripts/verify-patches.sh` names the patch and the fix |
 | Port 1417 already in use error | `docker compose down haystack && docker compose up -d haystack` | Old container process bound to port |
 | Chatbot returns "no information found" for everything | Re-run ingestion with `--missing-only` | Ingestion was interrupted — OpenSearch index incomplete |
 
@@ -216,6 +302,12 @@ NOT just "it compiles" or "no PHP fatal errors."
 - **Do NOT break existing functionality** — This is a hard rule. The chatbot worked after QA fixes; changes must preserve that.
 - **Do NOT use SQLite** — MariaDB is required for BlueSpice.
 - **Do NOT modify `app/extensions/` directly** for site-specific config — use `app/settings.d/*.php` instead.
+  - Carve-out: when upstream code genuinely has to change, the sanctioned path
+    is a patch in the manifest (`docker/patches/`), applied by
+    `scripts/apply-patches.sh` and gated by `scripts/verify-patches.sh`. See
+    [`patches.md`](patches.md). **Do not add an inline `sed` to `setup.sh`** —
+    that is what this replaced, and `sed -i` exits 0 when it matches nothing,
+    so the patch silently vanishes on the next upstream reindent.
 - **Do NOT duplicate the technical wiki** — Link to `docs/wiki/` instead of re-documenting architecture.
 
 ---
