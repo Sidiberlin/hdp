@@ -83,6 +83,7 @@ and your data never leaves your infrastructure.
 | Healthchecks on all services | ✗ | ✗ | ✅ |
 | Idempotent ingestion (safe to re-run) | ✗ | ✗ | ✅ |
 | CI (lint, secret scan, schema, fresh-clone gate) | ✗ | ✗ | ✅ (GitLab CI, 11 jobs) |
+| Integration tests against a live wiki | ✗ | ✗ | ✅ (T3: `scripts/ci/t3-integration.sh`) |
 | One-command local gate matching CI | ✗ | ✗ | ✅ (`./scripts/check.sh`, ~30s) |
 | Patch manifest + integrity verification | ✗ | ✗ | ✅ (19 patches, `scripts/verify-patches.sh`) |
 
