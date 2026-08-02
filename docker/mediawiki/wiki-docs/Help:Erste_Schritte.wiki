@@ -65,7 +65,7 @@ README-DOCKER.md.</p></li></ol>
 === Create page → ingest → ask chatbot ===
 
 The core loop. Indexing is '''not''' automatic on save (see
-[[architecture.md#key-design-decisions|Key Design Decisions]]) — re-run
+[[Help:Architektur#key-design-decisions|Key Design Decisions]]) — re-run
 ingestion after content changes:
 
 <syntaxhighlight lang="bash"># Reindex everything

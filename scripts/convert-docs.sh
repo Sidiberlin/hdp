@@ -5,24 +5,75 @@
 # docs/wiki/*.md into MediaWiki-native wikitext (.wiki files) that
 # docker/setup.sh ingests as Help-namespace pages on first boot.
 #
-# Runs pandoc via the haystack container's pypandoc-binary (no host
-# install required); rewrites relative markdown links to the
+# Runs pandoc from a pinned image (no host install required);
+# rewrites relative markdown links to the
 # corresponding wiki page names; and rewrites pandoc's
 # `<pre class="mermaid">…</pre>` fenced-code emission to the
 # `{{#mermaid:…}}` parser-function syntax that the vendored
 # Mermaid extension (see app/settings.d/060-Mermaid.php) understands.
 #
 # Idempotent — safe to re-run any time after docs/wiki/*.md changes.
+#
+#   scripts/convert-docs.sh            regenerate docker/mediawiki/wiki-docs/
+#   scripts/convert-docs.sh --check    regenerate into a temp dir and diff
+#                                      against the committed output; exit 1 on
+#                                      any drift, and change nothing.
+#
+# --check exists because the converted wikitext is a *committed build product*.
+# setup.sh seeds docker/mediawiki/wiki-docs/*.wiki, not docs/wiki/*.md, so
+# editing a markdown source without re-running this script ships documentation
+# that silently does not match the repo. Nothing noticed that before Wave 3.
+#
+# The post-processor's own behaviour is covered by golden files that need
+# neither docker nor pandoc — see tests/unit/test_convert_docs_postprocess.py.
+# What --check adds on top is the half those cannot reach: the real pandoc, and
+# whether the committed output is current.
 # ============================================================
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-OUT_DIR="$REPO_ROOT/docker/mediawiki/wiki-docs"
+COMMITTED_DIR="$REPO_ROOT/docker/mediawiki/wiki-docs"
+OUT_DIR="$COMMITTED_DIR"
+CHECK=0
 
-# pandoc binary shipped inside the haystack container via pypandoc-binary.
-# We invoke it through `docker compose exec` so the host needs nothing beyond
-# docker + the running stack.
-HAYSTACK_PANDOC="/usr/local/lib/python3.11/site-packages/pypandoc/files/pandoc"
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --check) CHECK=1 ;;
+        -h|--help) sed -n '2,20p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        *) echo "convert-docs.sh: unknown option '$1' (try --help)" >&2; exit 2 ;;
+    esac
+    shift
+done
+
+if [ "$CHECK" -eq 1 ]; then
+    OUT_DIR="$(mktemp -d)"
+    # shellcheck disable=SC2064  # expand OUT_DIR now, not at trap time
+    trap "rm -rf '$OUT_DIR'" EXIT
+fi
+
+# pandoc, from a pinned image — the same shape scripts/check.sh uses for every
+# other tool, so this needs docker and nothing else.
+#
+# It used to run pandoc out of the haystack container, at
+# /usr/local/lib/python3.11/site-packages/pypandoc/files/pandoc, on the
+# assumption that pypandoc-binary was installed there. **It is not, and never
+# was**: nothing under docker/haystack/ mentions pandoc or pypandoc, so that
+# path does not exist in the image and this script has been unable to run at
+# all. Its own error message told you to `pip install pypandoc-binary` into a
+# running container — a manual step, lost on the next `docker compose up`.
+#
+# Two things improve by moving off it. The converter no longer needs the 2.5 GB
+# RAG image to reformat markdown, so it runs anywhere docker does — including
+# the T3 minimal profile. And the version is pinned, which matters more here
+# than anywhere else in the repo: the output of this script is *committed*, so
+# an unpinned converter means the committed wikitext silently depends on
+# whichever pandoc the last person happened to have.
+#
+# Verified across pandoc/core 3.5, 3.6.4, 3.7.0.2 and 3.10: byte-identical
+# output for all eleven source documents. The pin is for reproducibility, not
+# because the versions disagree.
+IMG_PANDOC="pandoc/core:3.5"
+PANDOC_PINNED_VERSION="3.5"
 
 # Repo browse URL used for external (out-of-wiki) file references.
 # When ingested pages mention e.g. docker-compose.yml or docker/setup.sh, the
@@ -32,201 +83,77 @@ export REPO_BROWSE_URL
 
 mkdir -p "$OUT_DIR"
 
-# Verify container + pandoc are reachable before doing anything else.
-if ! docker compose exec -T haystack test -x "$HAYSTACK_PANDOC" 2>/dev/null; then
-    echo "ERROR: pandoc not found in haystack container at $HAYSTACK_PANDOC" >&2
-    echo "Run:   docker compose exec haystack pip install pypandoc-binary" >&2
+# ─── Resolve a pandoc to run ──────────────────────────────────────
+# Host binary first, but only when its version matches the pin — the output is
+# committed, so a version difference is a real difference. Otherwise the pinned
+# image. This mirrors scripts/check.sh's handling of ruff, where a host 0.15
+# reporting nothing while CI's pinned 0.16 reported sixteen findings is the
+# recorded precedent for not trusting whatever happens to be installed.
+run_pandoc() {  # reads markdown on stdin, writes wikitext to stdout
+    "${PANDOC_CMD[@]}" -f markdown -t mediawiki --wrap=preserve
+}
+
+host_pandoc_version="$(pandoc --version 2>/dev/null | head -1 | awk '{print $2}' || true)"
+
+if [ -n "$host_pandoc_version" ] && [ "$host_pandoc_version" = "$PANDOC_PINNED_VERSION" ]; then
+    PANDOC_CMD=(pandoc)
+elif command -v docker >/dev/null 2>&1 && docker info >/dev/null 2>&1; then
+    if [ -n "$host_pandoc_version" ]; then
+        echo "note: host pandoc $host_pandoc_version differs from the pinned" >&2
+        echo "      $PANDOC_PINNED_VERSION; using $IMG_PANDOC so the committed" >&2
+        echo "      wikitext stays reproducible." >&2
+    fi
+    PANDOC_CMD=(docker run --rm -i --entrypoint pandoc "$IMG_PANDOC")
+elif [ -n "$host_pandoc_version" ]; then
+    echo "WARNING: no usable docker; falling back to host pandoc" >&2
+    echo "         $host_pandoc_version instead of the pinned $PANDOC_PINNED_VERSION." >&2
+    echo "         Review the diff carefully before committing the output." >&2
+    PANDOC_CMD=(pandoc)
+else
+    echo "ERROR: no pandoc on PATH and no usable docker." >&2
+    echo "Install pandoc $PANDOC_PINNED_VERSION, or start docker so $IMG_PANDOC can run." >&2
     exit 1
 fi
 
-# ─── Page-name mapping (source md → target wiki page) ─────────────
-# Uses a plain function instead of an associative array so this script
-# works with the /bin/sh-style bash present in minimal images too.
+# ─── Page-name mapping and post-processing ────────────────────────
+# Both live in scripts/lib/convert_docs_postprocess.py, and this script asks
+# that module for everything: the list of files to convert, the target page
+# name for each, and the wikitext cleanup itself.
+#
+# They used to be here, and the mapping was written out three separate times —
+# a bash `case`, an identical Python dict inside the post-processor heredoc,
+# and the literal file list in the conversion loop at the bottom. Three copies
+# of one table is two chances to update the wrong one.
+#
+# The post-processor also could not be tested while it was a heredoc: reaching
+# it meant running this whole script, which needs docker, a running stack, and
+# pandoc inside the haystack container. As a module it has golden files
+# (tests/unit/test_convert_docs_postprocess.py) that run on bare Python.
+POSTPROCESS_PY="$REPO_ROOT/scripts/lib/convert_docs_postprocess.py"
+
+if [ ! -f "$POSTPROCESS_PY" ]; then
+    echo "ERROR: $POSTPROCESS_PY is missing" >&2
+    exit 1
+fi
+
 target_page_for() {
-    case "$1" in
-        docs/wiki/README.md)                       echo "Help:Technische_Dokumentation" ;;
-        docs/wiki/architecture.md)                 echo "Help:Architektur" ;;
-        docs/wiki/getting-started.md)              echo "Help:Erste_Schritte" ;;
-        docs/wiki/modules/chatbot-extension.md)    echo "Help:Modul/ChatBot-Extension" ;;
-        docs/wiki/modules/settings-d.md)           echo "Help:Modul/Settings.d" ;;
-        docs/wiki/modules/docker-services.md)      echo "Help:Modul/Docker-Services" ;;
-        docs/wiki/modules/embedding-providers.md)  echo "Help:Modul/Embedding-Provider" ;;
-        docs/wiki/modules/haystack-pipeline.md)    echo "Help:Modul/Haystack-Pipeline" ;;
-        docs/wiki/modules/ingestion.md)            echo "Help:Modul/Ingestion" ;;
-        docs/wiki/diagrams/sequences.md)           echo "Help:Diagramme/Sequenzen" ;;
-        docs/wiki/diagrams/class-diagram.md)       echo "Help:Diagramme/Klassendiagramm" ;;
-        *) return 1 ;;
-    esac
+    python3 "$POSTPROCESS_PY" --page-for "$1"
 }
 
-# ─── Post-processor: rewrite the pandoc wikitext output ───────────
-# Reads wikitext on stdin, writes cleaned wikitext to stdout.
-#   1. `<pre class="mermaid">…</pre>` blocks (pandoc's default rendering
-#      of a ```mermaid fenced code block) → `{{#mermaid:…}}` parser
-#      function calls, with pandoc's HTML-entity escapes decoded back to
-#      raw characters (mermaid.js will re-decode as needed).
-#   2. `<span id="…"></span>` header anchors emitted by pandoc for every
-#      heading → stripped (BlueSpice generates its own toc anchors, and
-#      these bare spans render as visual noise).
-#   3. `[[relative/path.md|label]]` links → `[[Help:Target_Page|label]]`
-#      following the same page-name mapping used by target_page_for.
-#   4. `[[../../repo/relative/path|label]]` links to files OUTSIDE the
-#      wiki → external `[URL label]` links pointing at the repo browser.
+# ─── Post-processor ───────────────────────────────────────────────
+# Reads wikitext on stdin, writes cleaned wikitext to stdout. See
+# scripts/lib/convert_docs_postprocess.py for what each transform is for; the
+# short version is that pandoc emits mermaid blocks, heading anchors and
+# relative links in forms this wiki cannot render.
 postprocess() {
-    REPO_URL="$REPO_BROWSE_URL" python3 - "$1" <<'PY'
-import os, re, sys, html
-
-src_relpath = sys.argv[1]  # e.g. "docs/wiki/modules/ingestion.md"
-text = sys.stdin.read()
-
-# Map from source md path → target wiki page name (mirrors target_page_for()).
-MAP = {
-    "docs/wiki/README.md":                      "Help:Technische_Dokumentation",
-    "docs/wiki/architecture.md":                "Help:Architektur",
-    "docs/wiki/getting-started.md":             "Help:Erste_Schritte",
-    "docs/wiki/modules/chatbot-extension.md":   "Help:Modul/ChatBot-Extension",
-    "docs/wiki/modules/settings-d.md":          "Help:Modul/Settings.d",
-    "docs/wiki/modules/docker-services.md":     "Help:Modul/Docker-Services",
-    "docs/wiki/modules/embedding-providers.md": "Help:Modul/Embedding-Provider",
-    "docs/wiki/modules/haystack-pipeline.md":   "Help:Modul/Haystack-Pipeline",
-    "docs/wiki/modules/ingestion.md":           "Help:Modul/Ingestion",
-    "docs/wiki/diagrams/sequences.md":          "Help:Diagramme/Sequenzen",
-    "docs/wiki/diagrams/class-diagram.md":      "Help:Diagramme/Klassendiagramm",
-}
-
-REPO_URL = os.environ.get("REPO_URL", "https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main")
-
-# ---------------------------------------------------------------
-# 1. mermaid fenced-code blocks → {{#mermaid:...}} parser function
-# ---------------------------------------------------------------
-def mermaid_replace(m):
-    body = m.group(1)
-    # pandoc encodes < > & " when emitting a <pre class="mermaid"> block.
-    # Decode back to raw mermaid syntax; the extension's parser function
-    # will re-escape as needed for the data-mermaid attribute.
-    body = html.unescape(body)
-    # Mermaid's hexagon-node shape uses {{"..."}} — which collides with
-    # MediaWiki template syntax and gets expanded by the wiki parser
-    # BEFORE the mermaid extension sees the content, corrupting the
-    # graph. Substitute the visually similar "subroutine" shape [[...]]
-    # which has no wiki-syntax collision.
-    body = re.sub(r'(\w+)\{\{("[^"]+")\}\}', r'\1[[\2]]', body)
-    # Strip a single trailing newline so the closing }} sits flush.
-    body = body.rstrip("\n")
-    return "{{#mermaid:" + body + "\n}}"
-
-text = re.sub(
-    r'<pre class="mermaid">(.*?)</pre>',
-    mermaid_replace,
-    text,
-    flags=re.DOTALL,
-)
-# Some pandoc versions emit <syntaxhighlight lang="mermaid"> instead.
-text = re.sub(
-    r'<syntaxhighlight lang="mermaid">(.*?)</syntaxhighlight>',
-    mermaid_replace,
-    text,
-    flags=re.DOTALL,
-)
-
-# ---------------------------------------------------------------
-# 2. Strip pandoc's <span id="..."></span> header anchors
-# ---------------------------------------------------------------
-text = re.sub(r'<span id="[^"]*"></span>\n?', '', text)
-
-# ---------------------------------------------------------------
-# 3+4. Rewrite [[…]] links pandoc produced from relative markdown links
-# ---------------------------------------------------------------
-def resolve_relative(src_relpath, target):
-    """
-    Given the current source file's repo-relative path and a relative
-    target string (may include ../, may end in .md, may include #anchor),
-    return either a page-name mapping key (as posix path) or None if the
-    target isn't a wiki page.
-    """
-    from pathlib import PurePosixPath
-    # Drop any URL fragment before resolving on the filesystem.
-    frag = ""
-    if "#" in target:
-        target, frag = target.split("#", 1)
-        frag = "#" + frag
-    base = PurePosixPath(src_relpath).parent
-    resolved = (base / target).as_posix()
-    # Collapse ../ segments the same way a POSIX filesystem would.
-    parts = []
-    for p in resolved.split("/"):
-        if p == "..":
-            if parts and parts[-1] != "..":
-                parts.pop()
-            else:
-                parts.append(p)
-        elif p and p != ".":
-            parts.append(p)
-    return "/".join(parts), frag
-
-def rewrite_link(m):
-    target = m.group(1).strip()
-    label  = m.group(2)
-    # External URLs already look like [url label] in wikitext, not [[…]],
-    # so anything here is meant to be a wiki link.
-    resolved, frag = resolve_relative(src_relpath, target)
-    if resolved in MAP:
-        page = MAP[resolved]
-        return "[[" + page + frag + "|" + label + "]]"
-    # Not one of our wiki pages — treat as a link to a source file in
-    # the repo. Convert to an external link so it opens in a new tab.
-    if resolved.endswith(".md"):
-        # An .md target we don't recognise; leave it as a plain label so
-        # we notice it in review rather than emit a broken redlink.
-        return label
-    return "[" + REPO_URL + "/" + resolved + frag + " " + label + "]"
-
-# Pandoc emits [[target|label]] for markdown [label](target) when the
-# target looks like a filesystem path (no scheme). Match those.
-text = re.sub(
-    r'\[\[([^\[\]|]+)\|([^\[\]]+)\]\]',
-    rewrite_link,
-    text,
-)
-
-# Also handle bare [[target]] with no label (pandoc uses target as label).
-def rewrite_bare(m):
-    target = m.group(1).strip()
-    if "|" in target or ":" in target and target.split(":")[0] in ("http", "https", "mailto"):
-        return m.group(0)
-    resolved, frag = resolve_relative(src_relpath, target)
-    if resolved in MAP:
-        return "[[" + MAP[resolved] + frag + "]]"
-    if resolved.endswith(".md"):
-        return target
-    return "[" + REPO_URL + "/" + resolved + frag + "]"
-
-# Deliberately conservative — only match tokens that look like a
-# relative path, to avoid clobbering legitimate wiki-internal links.
-text = re.sub(
-    r'\[\[((?:\.\./|[A-Za-z0-9_./-]+\.md|[A-Za-z0-9_./-]+/[A-Za-z0-9_./-]+)[^\[\]|]*)\]\]',
-    rewrite_bare,
-    text,
-)
-
-sys.stdout.write(text)
-PY
+    REPO_BROWSE_URL="$REPO_BROWSE_URL" python3 "$POSTPROCESS_PY" "$1"
 }
 
 # ─── Convert every mapped file ────────────────────────────────────
 count=0
-for src in \
-    docs/wiki/README.md \
-    docs/wiki/architecture.md \
-    docs/wiki/getting-started.md \
-    docs/wiki/modules/chatbot-extension.md \
-    docs/wiki/modules/settings-d.md \
-    docs/wiki/modules/docker-services.md \
-    docs/wiki/modules/embedding-providers.md \
-    docs/wiki/modules/haystack-pipeline.md \
-    docs/wiki/modules/ingestion.md \
-    docs/wiki/diagrams/sequences.md \
-    docs/wiki/diagrams/class-diagram.md
+# The file list comes from the same module that owns the page mapping, so a doc
+# page added there is converted here without a second edit.
+while IFS= read -r src
 do
     page="$(target_page_for "$src")"
     # Filenames may not contain '/' — the MediaWiki subpage separator is
@@ -244,19 +171,18 @@ do
 
     echo "  $src  ->  ${page}"
 
-    # Convert md → mediawiki via containerised pandoc, then post-process.
-    # We route the md file into the container via stdin and get wikitext
-    # on stdout, avoiding any need for shared temp files.
+    # Convert md → mediawiki, then post-process. The file goes in on stdin and
+    # wikitext comes out on stdout, so no shared temp files and no bind mount.
     #
-    # Post-processor needs the source path so it can resolve relative
+    # The post-processor needs the source path so it can resolve relative
     # markdown links against the correct base directory.
-    docker compose exec -T haystack "$HAYSTACK_PANDOC" \
-        -f markdown -t mediawiki --wrap=preserve \
-        < "$src_full" \
-        | postprocess "$src" > "$out"
+    run_pandoc < "$src_full" | postprocess "$src" > "$out"
 
     count=$((count + 1))
-done
+# Process substitution rather than a pipe, so the loop runs in this shell and
+# `count` survives it. A `... | while read` would increment a copy in a
+# subshell and report 1 file written.
+done < <(python3 "$POSTPROCESS_PY" --list-sources)
 
 # ─── Generate the top-level Help:Inhaltsverzeichnis ────────────────
 # hauptseite.wiki line 62 links here as "Hilfebereich" — it's the
@@ -289,12 +215,36 @@ beim ersten Container-Boot in den Wiki-Hilfebereich importiert.
 * [[Help:Diagramme/Sequenzen]] — Chat-Query, Ingestion, First-Boot als sequenceDiagram
 * [[Help:Diagramme/Klassendiagramm]] — Warum kein klassisches Klassendiagramm passt
 
-=== Externe Ressourcen ===
+=== Weiterführend ===
 
-* [[Chatbot-FAQ|Chatbot-FAQ]] — Endbenutzer-FAQ zum Chatbot
+* [[Chatbot-FAQ]] — Endbenutzer-FAQ zum Chatbot
 * [[Hauptseite]] — Wiki-Hauptseite
 WIKI
 
 count=$((count + 1))
+
+if [ "$CHECK" -eq 0 ]; then
+    echo ""
+    echo "Wrote $count files to $OUT_DIR/"
+    exit 0
+fi
+
+# ─── --check: compare against the committed output ─────────────────
 echo ""
-echo "Wrote $count files to $OUT_DIR/"
+echo "Comparing $count generated file(s) against $COMMITTED_DIR/"
+if diff -ru "$COMMITTED_DIR" "$OUT_DIR"; then
+    echo "OK — the committed wikitext matches what this script produces today."
+    exit 0
+fi
+
+cat >&2 <<EOF
+
+docker/mediawiki/wiki-docs/ is out of date with docs/wiki/.
+
+setup.sh seeds the .wiki files, not the markdown, so the wiki is currently
+serving documentation that does not match this repo. Regenerate and commit:
+
+    scripts/convert-docs.sh
+    git add docker/mediawiki/wiki-docs/
+EOF
+exit 1

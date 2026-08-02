@@ -1,0 +1,2 @@
+Definiert in [https://example.invalid/hdp/-/blob/main/docker-compose.yml docker-compose.yml] und
+[https://example.invalid/hdp/-/blob/main/docker/setup.sh setup.sh].

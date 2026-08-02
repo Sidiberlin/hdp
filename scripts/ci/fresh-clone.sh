@@ -62,6 +62,16 @@ REQUIRED_FILES=(
     scripts/ci/bats.sh
     scripts/ci/pytest.sh
     scripts/convert-docs.sh
+    # convert-docs.sh exits 1 without this — it owns the page mapping, the
+    # source list and the post-processor, so a clone missing it cannot
+    # regenerate docker/mediawiki/wiki-docs/ at all.
+    scripts/lib/convert_docs_postprocess.py
+
+    # Bind-mounted into the mediawiki container by docker-compose.yml. Absent,
+    # docker creates a *directory* at the mount point and FPM falls back to the
+    # image default pool: nobody:nogroup instead of www-data, which does not
+    # match the file ownership setup.sh establishes.
+    docker/wiki/www.conf
 
     # MediaWiki inputs consumed by setup.sh's composer stage.
     app/composer.json

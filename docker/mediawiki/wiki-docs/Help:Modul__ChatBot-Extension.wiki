@@ -5,7 +5,7 @@ MediaWiki extension that provides the chat widget, its REST API surface,
 and (unused in this deployment — see below) a built-in wiki-content
 indexing pipeline. It was originally built against '''Deepset Cloud'''’s
 hosted RAG API; in this deployment it talks to the self-hosted Haystack
-pipeline through [[docker-services.md#chatbot-proxy|<code>chatbot-proxy</code>]]
+pipeline through [[Help:Modul/Docker-Services#chatbot-proxy|<code>chatbot-proxy</code>]]
 instead, with no PHP code changes — only configuration
 ([https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/100-ChatBot.php <code>100-ChatBot.php</code>]).
 
@@ -83,7 +83,7 @@ instead, with no PHP code changes — only configuration
 
 MediaWiki’s default <code>GlobalVarConfig</code> reads <code>$wg</code>-prefixed globals because
 <code>extension.json</code> declares no <code>config_prefix</code> override — see the gotcha in
-[[settings-d.md#notable-patterns--gotchas|settings-d]]. Set in
+[[Help:Modul/Settings.d#notable-patterns--gotchas|settings-d]]. Set in
 [https://gitlab.cloudsoziologe.de/edwin/hdp/-/blob/main/app/settings.d/100-ChatBot.php <code>100-ChatBot.php</code>]:
 
 {| class="wikitable"
