@@ -83,6 +83,9 @@ scripts/ci/bats.sh                    # shell behaviour
 
 # Against a real wiki (needs docker; boots the stack, installs it, tears it down)
 scripts/ci/t3-integration.sh
+
+# ... and the full seven-container smoke suite (search + chatbot, ~25 min):
+scripts/ci/t4-smoke.sh
 ```
 
 **EN:** Each check prefers a tool already on your `PATH` and otherwise runs the

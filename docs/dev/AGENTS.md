@@ -23,8 +23,8 @@ For full architecture documentation, see [`docs/wiki/`](docs/wiki/) (system diag
 | `app/extensions/ChatBot/` | ChatBot MediaWiki extension — chat widget, REST endpoints, Deepset API client | `extension.json`, `includes/Api/ChatApi.php` |
 | `app/skins/` | MediaWiki skins | `.gitignore` has `/*` **but re-includes the six shipped skins by name** — they are trackable, do not use `git add -f`. See [The `app/skins/.gitignore` Trap](#the-appskinsgitignore-trap) |
 | `docker/patches/` | Patch manifest — one YAML sidecar per patch, plus the Class-A `.patch` files | 19 entries; see [`patches.md`](patches.md) |
-| `scripts/` | Contributor and CI entry points | `check.sh` (run before pushing), `verify-patches.sh`, `apply-patches.sh`, `convert-docs.sh`, `ci/` (incl. `t3-integration.sh`), `lib/` |
-| `tests/` | The test suite — see [The three pytest tiers](#the-three-pytest-tiers) | `unit/` (stdlib), `haystack/` (real haystack-ai), `integration/` (a live wiki), `bats/` (shell) |
+| `scripts/` | Contributor and CI entry points | `check.sh` (run before pushing), `verify-patches.sh`, `apply-patches.sh`, `convert-docs.sh`, `ci/` (incl. `t3-integration.sh`, `t4-smoke.sh`, `lib/stack.sh`), `lib/` |
+| `tests/` | The test suite — see [The four pytest tiers](#the-four-pytest-tiers) | `unit/` (stdlib), `haystack/` (real haystack-ai), `integration/` (a live wiki; `smoke`-marked tests need all seven containers), `bats/` (shell) |
 | `docker/` | Docker build contexts and setup scripts | `setup.sh` (first-boot install), `haystack/` (RAG pipeline), `chatbot-proxy/` (Deepset→Haystack adapter) |
 | `docker/haystack/` | Haystack RAG pipeline implementation | `hdp_pipeline.yaml`, `ingest_hdp_wiki.py`, `hdp_api_server.py`, `entrypoint.sh`, plus the two Wave 2 extractions `wikitext.py` (pure transforms) and `serialization.py` (`to_native`, `load_pipeline`) |
 | `docs/` | User and architecture documentation | `QA-REPORT.md`, `embedding-providers.md`, `wiki/` (technical wiki) |
@@ -182,6 +182,7 @@ What it covers today:
 | `pytest-unit` | `tests/unit/` — stdlib-only unit tests, ~2s, no install needed |
 | `pytest-haystack` | `tests/haystack/` — real `haystack-ai`, no mocks (see below) |
 | `integration` | `tests/integration/` — a live wiki serving real traffic (`--integration`) |
+| `smoke` | the same directory unfiltered — search and the chatbot, on all seven containers (`--smoke`) |
 | `bats` | `docker/infisical-loader.sh` behaviour, incl. the two Wave 0 security fixes |
 | `php-lint` | the 17 `app/settings.d/*.php` files gating ~130 extensions |
 | `compose` | `docker compose config` on v2 |
@@ -203,7 +204,7 @@ was never committed, or that a `.gitignore` rule silently refuses.
 Note that it tests **committed** state. Uncommitted work in your tree is
 deliberately not under test, and it says so when your tree is dirty.
 
-### The three pytest tiers
+### The four pytest tiers
 
 Tests live in `tests/` at the repo root, not inside `docker/haystack/`. Those
 directories are Docker build contexts; a test placed there either ships inside
@@ -213,16 +214,20 @@ the production image or needs `.dockerignore` surgery.
 |---|---|---|---|
 | `pytest-unit` | `tests/unit/` | nothing but pytest | ~2s |
 | `pytest-haystack` | `tests/haystack/` | `haystack-ai` + `envsubst` | 0s warm, ~47s cold |
-| `integration` | `tests/integration/` | a running, installed wiki + docker | ~30s against a live stack |
+| `integration` | `tests/integration/` | a running, installed wiki + docker | ~50s against a live stack |
+| `smoke` | `tests/integration/`, unfiltered | **all seven** containers, a drained job queue, an ingested index | ~25 min from nothing |
 
 The first split follows what the code actually imports. `render_pipeline.render`,
 `build_result_from_haystack` and the `wikitext` pure functions import nothing
 outside the standard library, so they run on bare Python. Only `to_native()`
 and `load_pipeline()` need Haystack.
 
-The third tier is a different kind of thing: it asserts on a wiki that is
-actually serving traffic. See [The integration tier](#the-integration-tier)
-below.
+The last two are a different kind of thing: they assert on a wiki that is
+actually serving traffic. They are also the same directory — `smoke` is
+`integration` with the marker filter removed — so T4 is a strict superset of
+T3 rather than a second suite to keep in step. See
+[The integration tier](#the-integration-tier) and
+[The smoke tier](#the-smoke-tier-t4) below.
 
 **Nothing is mocked, anywhere.** That is affordable because of a measurement:
 
@@ -240,13 +245,14 @@ Run them with `scripts/ci/pytest.sh`, which knows how to satisfy each tier:
 ```bash
 scripts/ci/pytest.sh                  # unit + haystack
 scripts/ci/pytest.sh --tier unit      # the fast one
+scripts/ci/pytest.sh --tier smoke     # the full stack, T4's assertions
 scripts/ci/pytest.sh -- -k to_native  # args after -- go to pytest
 ```
 
-`--tier all` is unit + haystack, and deliberately not integration: those two
-run on any checkout with no `.env` and no containers, which is what lets
-`check.sh` promise a CI-equivalent verdict without asking anyone to boot the
-stack.
+`--tier all` is unit + haystack, and deliberately not integration or smoke:
+those two run on any checkout with no `.env` and no containers, which is what
+lets `check.sh` promise a CI-equivalent verdict without asking anyone to boot
+the stack.
 
 Inside the running stack, the haystack image ships `pytest`, so:
 
@@ -334,15 +340,90 @@ Four things about this tier are load-bearing and non-obvious:
   skips itself is a green run against a wiki that never booted.
 
 The T3 profile is `mariadb opensearch mediawiki mediawiki-web` — the full
-stack minus `haystack` and `chatbot-proxy`, which is where nearly all the
-build time is (haystack alone is a 2.5 GB image and ~285 of the ~290 seconds a
-full build takes). `mediawiki-web` is not optional: QA Bug 4 is an HTTP-level
-fact about a rendered page, and PHP-FPM has no HTTP endpoint.
+stack minus `mediawiki-jobrunner`, `haystack` and `chatbot-proxy`, which is
+where nearly all the build time is (haystack alone is a 2.5 GB image and ~285
+of the ~290 seconds a full build takes). `mediawiki-web` is not optional: QA
+Bug 4 is an HTTP-level fact about a rendered page, and PHP-FPM has no HTTP
+endpoint.
+
+Those three omissions are not free, and the tier is explicit about what they
+cost: with no jobrunner the ExtendedSearch index is never built (~500 jobs
+stay queued and `bluespice_wikipage` stays empty), and with no haystack or
+chatbot-proxy the chat path is not exercised at all. That is the gap
+[the smoke tier](#the-smoke-tier-t4) closes.
 
 Note that `t3-integration.sh` waits for a *connection*, not for health. Before
 `setup.sh` runs there is no `LocalSettings.php`, so `/w/` returns 500 and
 `mediawiki-web` is legitimately unhealthy — expected on any genuinely fresh
 box, and not a regression.
+
+### The smoke tier (T4)
+
+The same directory, run without `-m "not smoke"`, against **all seven**
+containers. It is what the nightly `T4 smoke` workflow runs, and it covers the
+two legs T3 structurally cannot reach.
+
+```bash
+scripts/ci/t4-smoke.sh                # the whole sequence, from nothing
+scripts/ci/t4-smoke.sh --keep         # ... and leave the stack up
+scripts/ci/t4-smoke.sh --no-ingest    # skip the ~8 minute reindex
+scripts/ci/pytest.sh --tier smoke     # against a stack you already have
+./scripts/check.sh --smoke            # ... as part of the usual check run
+```
+
+`t4-smoke.sh` is T3's sequence plus three steps: wait for all seven to report
+healthy, wait for `mediawiki-jobrunner` to drain the job queue, then run
+`ingest_hdp_wiki.py`. Those are minutes of waiting and they are **setup, not
+assertions** — they live in the script so a failure reads as "the stack could
+not be brought to the state under test", while the assertions about the
+resulting state live in `tests/integration/test_search.py`.
+
+What the tier adds, and why each one needs the full stack:
+
+- **All seven healthy** (`test_full_stack.py`). Only meaningful after
+  `setup.sh`: before it there is no `LocalSettings.php`, so `/w/` 500s and
+  `mediawiki-web` is legitimately unhealthy.
+- **Anonymous access** — `/w/` and `Special:UserLogin` render, and no
+  authenticated content leaks. Asserted on the form's own input names, not on
+  the status code, because a 200 login prompt is what this wiki answers with
+  when logged out.
+- **Search** (`test_search.py`) — the jobrunner drains the queue, then
+  `bluespice_wikipage` fills, then OpenSearch answers a full-text query, then
+  MediaWiki's `list=search` does too, then `Special:Search` renders. In that
+  order, by fixture dependency, so a failure localises.
+- **The chatbot** (`test_chatbot.py`) — `/health` 200, `/ready` 503,
+  `/chat-stream` 503, `/session` 200 without an LLM key; with one, `/ready`
+  200 and a `/chat-stream` that really streams.
+
+Four things here are load-bearing:
+
+- **`pdf-generator` is not a service.** The Wave 4 brief lists it as one of the
+  seven; docker-compose.yml has no such service. The name refers to the
+  haystack container's *second port* (`HDP_PDF_PORT`, 1417), where
+  `hdp_api_server.py` serves `/health`, `/ready` and the RAG query API
+  alongside hayhooks on 1416. The seventh container is `mediawiki-web`.
+- **chatbot-proxy is reached only through `docker compose exec`.** It publishes
+  no port — the wiki reaches it over the compose network — and its image is
+  `python:3.12-slim`, with no curl, wget or nc. The probes use the container's
+  own python3. That it is unreachable from the host is a property worth
+  keeping: a reachable proxy would be an unauthenticated RAG endpoint
+  bypassing the wiki login.
+- **`list=search` defaults to namespace 0**, which holds two pages. The content
+  is in **namespace 12** (30 Help pages). A probe without `srnamespace`
+  returns zero hits against a perfectly healthy index and looks exactly like a
+  broken one.
+- **Two indices, and confusing them has already cost a wave.**
+  `bluespice_wikipage` is BlueSpice's own search index, ~808 documents because
+  it counts nested section documents; `hdp_wiki` is written only by
+  `ingest_hdp_wiki.py` and holds **153 documents from 32 pages**. The "~828"
+  once quoted for `hdp_wiki` was the other index's number.
+
+The nightly workflow adds two things `t4-smoke.sh` takes as a flag rather than
+assuming: a buildx GHA layer cache and a saved HuggingFace model cache, both
+configured in `docker/ci/compose.cache.yml`. That file is a CI-only overlay —
+a developer's `docker compose up` must not depend on a GitHub cache backend
+existing. `--cache` sets `COMPOSE_BAKE=1`, without which compose ignores the
+`x-bake` block entirely and the build succeeds while caching nothing.
 
 ### Generated documentation (`convert-docs.sh`)
 
