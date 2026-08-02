@@ -200,6 +200,21 @@ while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale titl
     if [ "$STATIC" = 1 ]; then
         # Schema is already validated above; --static additionally asserts
         # every non-stale target path exists. No patch(1), no composer, ~0s.
+        #
+        # Targets under app/vendor/ are exempt: that tree is gitignored on
+        # purpose and composer recreates it, so before the first install the
+        # file genuinely does not exist and its absence says nothing about the
+        # patch. --static is the mode that runs on a fresh clone (it is what
+        # manifest-lint and check.sh call), so without this it reported a false
+        # failure to every contributor. The full verification still covers
+        # these once composer has run.
+        case "$target" in
+            vendor/*)
+                echo "  ${C_DIM}n/a${C_OFF}    $id ${C_DIM}(under app/vendor/, created by composer)${C_OFF}"
+                SKIPPED=$((SKIPPED+1))
+                continue
+                ;;
+        esac
         if [ -e "$tpath" ]; then
             echo "  ${C_GRN}ok${C_OFF}     $id ${C_DIM}(target present)${C_OFF}"
             PRESENT=$((PRESENT+1))

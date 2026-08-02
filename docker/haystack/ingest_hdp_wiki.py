@@ -25,11 +25,11 @@ import logging
 import os
 import re
 import time
+import warnings
 from html.parser import HTMLParser
 
-import requests
 import pymysql
-import warnings
+import requests
 
 # Silence noise that clutters ingestion output without hiding real errors:
 #   - InsecureRequestWarning: expected — OpenSearch uses a self-signed cert
@@ -43,8 +43,8 @@ except Exception:
     pass
 from haystack.dataclasses import Document
 from haystack_integrations.document_stores.opensearch.document_store import (
-    OpenSearchDocumentStore,
     DuplicatePolicy,
+    OpenSearchDocumentStore,
 )
 
 # ─── Configuration ──────────────────────────────────────────────────

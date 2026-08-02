@@ -38,7 +38,7 @@ except Exception as e:
 
 def to_native(obj):
     """Recursively convert numpy/Haystack types to JSON-safe native types."""
-    from haystack import Answer, GeneratedAnswer, ExtractedAnswer, Document
+    from haystack import Answer, Document, ExtractedAnswer, GeneratedAnswer
     
     # Handle Haystack Document objects
     if isinstance(obj, Document):

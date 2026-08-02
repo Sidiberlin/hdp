@@ -15,12 +15,12 @@ The ChatBot extension's Connector.php does:
 """
 
 import json
-import uuid
 import logging
 import os
-import urllib.request
 import urllib.error
-from http.server import HTTPServer, BaseHTTPRequestHandler
+import urllib.request
+import uuid
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse
 
 # ─── Config ──────────────────────────────────────────────────────────────
@@ -112,7 +112,11 @@ def build_result_from_haystack(hay_response: dict, query: str) -> dict:
             "id": doc.get("id", str(i)) if isinstance(doc, dict) else str(i),
             "content": content[:200] if content else "",
             "meta": {
-                "prefixed_title": meta.get("prefixed_title") or meta.get("display_title") or meta.get("title", "Unbekannt"),
+                "prefixed_title": (
+                    meta.get("prefixed_title")
+                    or meta.get("display_title")
+                    or meta.get("title", "Unbekannt")
+                ),
                 "uri": meta.get("uri", ""),
                 "namespace": meta.get("namespace", 0),
                 "page_id": meta.get("page_id", 0),
