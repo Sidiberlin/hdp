@@ -1,0 +1,3 @@
+Siehe [[Help:Architektur|Architektur]] und
+[[Help:Modul/Ingestion|Ingestion]] sowie
+[[Help:Erste_Schritte#installation|Installation]].

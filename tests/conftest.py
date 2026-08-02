@@ -92,6 +92,44 @@ def normalise_uuids(value):
 
 
 @pytest.fixture
+def assert_golden_text(request):
+    """Compare produced *text* against a checked-in golden file.
+
+    The sibling `assert_golden` below serialises to JSON, which is right for a
+    dict but wrong for wikitext: a golden file full of `\\n` escapes on one long
+    line cannot be reviewed, and reviewing the diff is the entire value of a
+    golden file. These are stored as the text itself.
+
+    Same regeneration contract as `assert_golden`: HDP_REGEN_GOLDEN=1, or
+    `scripts/ci/pytest.sh --regen-golden`, and never in CI.
+    """
+    fixtures = request.path.parent / "fixtures" / request.path.stem.replace("test_", "")
+
+    def _assert(name, produced):
+        path = fixtures / f"{name}.wiki"
+
+        if os.environ.get(REGEN_ENV):
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text(produced, encoding="utf-8")
+            pytest.skip(f"regenerated {path.relative_to(request.config.rootpath)}")
+
+        assert path.is_file(), (
+            f"missing golden file {path.relative_to(request.config.rootpath)} — "
+            f"create it with: scripts/ci/pytest.sh --regen-golden"
+        )
+        expected = path.read_text(encoding="utf-8")
+        assert produced == expected, (
+            f"output no longer matches "
+            f"{path.relative_to(request.config.rootpath)}. If the change is "
+            f"intended, regenerate with `scripts/ci/pytest.sh --regen-golden` "
+            f"and read the diff."
+        )
+        return produced
+
+    return _assert
+
+
+@pytest.fixture
 def assert_golden(request):
     """Compare a produced structure against a checked-in golden JSON file.
 

@@ -1,0 +1,5 @@
+{{#mermaid:graph TD
+  A[Wiki] -->|HTTP| B[Haystack]
+  B --> C[["OpenSearch"]]
+  C --> D["Antwort"]
+}}

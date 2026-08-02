@@ -1,0 +1,4 @@
+{{#mermaid:sequenceDiagram
+  User -->> Wiki: Frage
+  Wiki -->> Haystack: /chat-stream
+}}
