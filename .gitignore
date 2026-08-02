@@ -64,3 +64,8 @@ app/cache/
 docs/.codewiki-state.json
 .gstack/
 .pytest_cache/
+
+# T4's CI-only HuggingFace model cache (docker/ci/compose.cache.yml bind-mounts
+# this into the haystack container so actions/cache can save ~1.7 GB of model
+# weights between nightly runs). Never authored content.
+.hf-cache/
