@@ -91,6 +91,12 @@ scripts/ci/pytest.sh --tier unit   # stdlib only, ~2s — run on every save
 scripts/ci/pytest.sh               # both tiers (adds real haystack-ai)
 scripts/ci/bats.sh                 # shell behaviour
 ./scripts/check.sh                 # everything CI runs, ~100s
+
+# Inside the running stack (the haystack image ships pytest).
+# Mount the repo ROOT — pytest.ini lives there and one test walks up for
+# docker-compose.yml; mounting only tests/ gives 39 passed and 1 error.
+docker compose run --rm --no-deps -v "$PWD:/w:ro" -w /w haystack \
+    python -m pytest tests/haystack -p no:cacheprovider
 ```
 
 Nothing in the suite is mocked. See AGENTS.md for why that is affordable and
