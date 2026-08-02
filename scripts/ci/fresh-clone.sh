@@ -51,6 +51,7 @@ REQUIRED_FILES=(
     docker/infisical-loader.sh
     docker/chatbot-proxy/server.py
     docker/haystack/hdp_api_server.py
+    docker/haystack/serialization.py
     docker/haystack/hdp_pipeline.yaml
     docker/haystack/entrypoint.sh
     docker/haystack/ingest_hdp_wiki.py

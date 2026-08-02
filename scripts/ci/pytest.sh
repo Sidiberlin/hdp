@@ -111,7 +111,7 @@ run_unit() {
     fi
     if have_docker; then
         docker run --rm -v "$REPO_ROOT":/w -w /w "$IMG_PYTHON" \
-            sh -c "pip install --quiet --no-cache-dir pytest==9.0.2 \
+            sh -c "pip install --quiet --no-cache-dir --root-user-action=ignore pytest==9.0.2 \
                    && python -m pytest tests/unit $(printf '%q ' "${PYTEST_ARGS[@]+"${PYTEST_ARGS[@]}"}")"
         return $?
     fi
@@ -153,11 +153,12 @@ run_haystack() {
 
     # 3. a clean slim image. ~47s: 23s apt for envsubst, 24s pip for haystack-ai.
     echo "  building the tier from $IMG_PYTHON (about 47s: apt for envsubst, pip for haystack-ai)"
-    docker run --rm -v "$REPO_ROOT":/w -w /w "$IMG_PYTHON" \
+    docker run --rm -e DEBIAN_FRONTEND=noninteractive \
+        -v "$REPO_ROOT":/w -w /w "$IMG_PYTHON" \
         sh -c "set -e
-               apt-get update -qq >/dev/null
-               apt-get install -y -qq --no-install-recommends gettext-base >/dev/null
-               pip install --quiet --no-cache-dir -r tests/requirements.txt
+               apt-get update -qq >/dev/null 2>&1
+               apt-get install -y -qq --no-install-recommends gettext-base >/dev/null 2>&1
+               pip install --quiet --no-cache-dir --root-user-action=ignore -r tests/requirements.txt
                python -m pytest tests/haystack $(printf '%q ' "${PYTEST_ARGS[@]+"${PYTEST_ARGS[@]}"}")"
     return $?
 }
