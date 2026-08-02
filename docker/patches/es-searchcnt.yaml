@@ -9,9 +9,10 @@ title: declare the $searchCnt the getResults hook is fired with
 class: A
 mode: insert
 target: extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js
-applied_by: docker/setup.sh
+applied_by: scripts/apply-patches.sh (called by docker/setup.sh)
+patch: docker/patches/es-searchcnt.patch
 anchor: "const \\$altSearchCnt = \\$\\( '#bs-es-alt-search' \\);"
-marker: '// HDP: upstream fires the getResults hook with an undeclared'
+marker: "// Upstream 5.1.4 fires the 'getResults' hook below with"
 anti: ''
 group: ''
 stale: false
