@@ -20,7 +20,15 @@
 #   integration tests/integration/ — Wave 3. Needs a *running, installed* wiki
 #                               and a docker socket. Standard library only, so
 #                               there is nothing to pip install; what it needs
-#                               is the stack itself.
+#                               is the stack itself. Runs with -m "not smoke".
+#
+#   smoke     tests/integration/ — Wave 4 / T4, and the same directory. Needs
+#                               the FULL seven-container stack: the search leg
+#                               needs mediawiki-jobrunner to drain the queue,
+#                               and the chatbot leg needs haystack and
+#                               chatbot-proxy. It is the integration tier
+#                               *unfiltered*, so T4 is a superset of T3 rather
+#                               than a second suite to keep in step.
 #
 # `--tier all` covers unit and haystack, and deliberately NOT integration.
 # Those two run anywhere, on any checkout, with no .env and no containers —
@@ -30,6 +38,8 @@
 #
 #   scripts/ci/pytest.sh --tier integration      against a stack you already have
 #   scripts/ci/t3-integration.sh                 boots one, installs it, runs this
+#   scripts/ci/pytest.sh --tier smoke            the full stack, T4's assertions
+#   scripts/ci/t4-smoke.sh                       boots all seven, installs, ingests
 #
 # Nothing here is mocked. The reason the second tier is affordable is a
 # measurement, not an assumption:
@@ -55,6 +65,7 @@
 #   scripts/ci/pytest.sh --tier unit      stdlib tier only
 #   scripts/ci/pytest.sh --tier haystack  haystack tier only
 #   scripts/ci/pytest.sh --tier integration   needs a running, installed wiki
+#   scripts/ci/pytest.sh --tier smoke         needs the full 7-container stack
 #   scripts/ci/pytest.sh -- -k to_native  args after -- go to pytest
 #   scripts/ci/pytest.sh --regen-golden   rewrite the golden JSON fixtures from
 #                                         the current implementation, then show
@@ -89,7 +100,7 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --tier)
             shift
-            [ $# -gt 0 ] || { echo "--tier needs a value (unit|haystack|integration|all)" >&2; exit 2; }
+            [ $# -gt 0 ] || { echo "--tier needs a value (unit|haystack|integration|smoke|all)" >&2; exit 2; }
             TIER="$1"
             ;;
         --regen-golden) REGEN=1 ;;
@@ -101,8 +112,8 @@ while [ $# -gt 0 ]; do
 done
 
 case "$TIER" in
-    unit|haystack|integration|all) ;;
-    *) echo "--tier must be one of: unit, haystack, integration, all (got '$TIER')" >&2; exit 2 ;;
+    unit|haystack|integration|smoke|all) ;;
+    *) echo "--tier must be one of: unit, haystack, integration, smoke, all (got '$TIER')" >&2; exit 2 ;;
 esac
 
 if [ "$REGEN" -eq 1 ]; then
@@ -225,8 +236,24 @@ run_haystack() {
 # dependencies are exactly "docker, and the python3 the runner already has".
 WIKI_URL="${HDP_WIKI_URL:-http://localhost:8080/w}"
 
+# ─── smoke tier (Wave 4 / T4) ───────────────────────────────────────
+# The same directory and the same prerequisites, minus the marker filter. The
+# two share one implementation because the only difference between them *is*
+# the filter: T4 is T3's assertions plus the ones that need the three services
+# T3 omits. Splitting them into two runners would mean two copies of the
+# host-only reasoning above, and they would drift.
+run_smoke() {
+    run_integration_tier "smoke (needs the full seven-container stack)" ""
+}
+
 run_integration() {
-    echo "── tier: integration (needs a running, installed wiki) ──"
+    run_integration_tier "integration (needs a running, installed wiki)" "not smoke"
+}
+
+# run_integration_tier <label> <marker-expression>
+run_integration_tier() {
+    local label="$1" marker="$2"
+    echo "── tier: ${label} ──"
 
     if ! have python3 || ! python3 -c "import pytest" >/dev/null 2>&1; then
         echo "  no python3-with-pytest on PATH."
@@ -261,7 +288,14 @@ PY
         return 77
     fi
 
-    python3 -m pytest tests/integration "${PYTEST_ARGS[@]+"${PYTEST_ARGS[@]}"}"
+    # The marker filter is what separates the two tiers. Passed as two argv
+    # entries rather than one quoted string so an empty selection adds nothing
+    # at all — `-m ""` matches nothing and would silently run zero tests.
+    local select=()
+    [ -n "$marker" ] && select=(-m "$marker")
+
+    python3 -m pytest tests/integration "${select[@]+"${select[@]}"}" \
+        "${PYTEST_ARGS[@]+"${PYTEST_ARGS[@]}"}"
     return $?
 }
 
@@ -276,6 +310,7 @@ ran=0
 # about containers they were never asked to start.
 SELECTED=(unit haystack)
 [ "$TIER" = "integration" ] && SELECTED=(integration)
+[ "$TIER" = "smoke" ] && SELECTED=(smoke)
 
 for tier in "${SELECTED[@]}"; do
     [ "$TIER" = "all" ] || [ "$TIER" = "$tier" ] || continue

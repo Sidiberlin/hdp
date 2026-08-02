@@ -17,6 +17,7 @@ import json
 import os
 import shutil
 import subprocess
+import time
 
 import pytest
 from wikiclient import LoginError, WikiClient
@@ -244,3 +245,288 @@ def setup_record():
     if os.path.isfile(log_path):
         text = open(log_path, encoding="utf-8", errors="replace").read()
     return {"exit": int(exit_code), "log": text, "path": log_path}
+
+
+# ════════════════════════════════════════════════════════════════════
+# Wave 4 / T4 — the full seven-container stack
+#
+# Everything below is used only by tests carrying the `smoke` marker, which
+# `scripts/ci/pytest.sh --tier integration` deselects. The T3 profile omits
+# mediawiki-jobrunner, haystack and chatbot-proxy, so these fixtures would fail
+# there for the honest reason that the containers are not running — and a test
+# that skips in that situation is the "green run against a stack that never
+# booted" this tier's docstring exists to forbid. The marker draws the line at
+# collection time instead, where it is visible in the tier's name.
+# ════════════════════════════════════════════════════════════════════
+
+# The seven containers T4 asserts healthy.
+#
+# The Wave 4 brief names `pdf-generator` as one of them. There is no such
+# service: docker-compose.yml has seven, and what the brief means by
+# "pdf-generator" is the haystack container's *second port* (HDP_PDF_PORT,
+# 1417) — the FastAPI server in docker/haystack/hdp_api_server.py that serves
+# /health, /ready and the RAG query API alongside hayhooks on 1416. The seventh
+# container is mediawiki-web, which the brief's list omits. Counting
+# pdf-generator separately gives eight names for seven containers and a smoke
+# test that can never pass.
+FULL_STACK_SERVICES = (
+    "mariadb",
+    "mediawiki",
+    "mediawiki-web",
+    "mediawiki-jobrunner",
+    "opensearch",
+    "haystack",
+    "chatbot-proxy",
+)
+
+# How long to let mediawiki-jobrunner drain the queue. A fresh install leaves
+# ~500 jobs — mostly ExtendedSearch index writes — and the runner is a bash
+# loop calling runJobs.php, so this is minutes rather than seconds. Overridable
+# because a cold CI runner is slower than the validation box.
+ENV_JOBQUEUE_TIMEOUT = "HDP_JOBQUEUE_TIMEOUT"
+DEFAULT_JOBQUEUE_TIMEOUT = 900
+
+# Set by scripts/ci/t4-smoke.sh once it has run ingest_hdp_wiki.py. Ingestion
+# takes ~8 minutes and belongs to the job that builds the stack, not to an
+# assertion; the tests read this to tell "ingestion ran and produced the wrong
+# number" apart from "nobody ran ingestion".
+ENV_INGEST_RAN = "HDP_INGEST_RAN"
+
+
+@pytest.fixture(scope="session")
+def full_stack_services():
+    """FULL_STACK_SERVICES as a fixture.
+
+    Exposed this way rather than imported from the test module, because
+    `from conftest import ...` inside a test file depends on how pytest
+    happens to have named this module — which differs between import modes and
+    is not something a test should have an opinion about.
+    """
+    return FULL_STACK_SERVICES
+
+
+@pytest.fixture(scope="session")
+def compose_ps(compose):
+    """`docker compose ps` for every service, as {service: {state, health}}.
+
+    `--format json` is asked for explicitly and parsed line by line: compose
+    v2 emits one JSON object per line rather than a JSON array, and older
+    patch releases of v2 emitted an array. Both are handled, because the
+    alternative is a smoke test whose headline assertion depends on a compose
+    point release.
+    """
+
+    def _ps():
+        proc = compose("ps", "--all", "--format", "json", timeout=120)
+        assert proc.returncode == 0, (
+            f"`docker compose ps` exited {proc.returncode}\n{proc.stderr[-2000:]}"
+        )
+        entries = []
+        text = proc.stdout.strip()
+        if text.startswith("["):
+            entries = json.loads(text)
+        else:
+            for line in text.splitlines():
+                line = line.strip()
+                if line:
+                    entries.append(json.loads(line))
+        out = {}
+        for entry in entries:
+            service = entry.get("Service") or entry.get("Name")
+            out[service] = {
+                "state": entry.get("State", ""),
+                "health": entry.get("Health", ""),
+                "name": entry.get("Name", ""),
+            }
+        return out
+
+    return _ps
+
+
+@pytest.fixture(scope="session")
+def full_stack(compose_ps):
+    """Assert once, for the whole tier, that all seven containers are running.
+
+    Session-scoped and used by every smoke test, so a stack missing haystack
+    reports one readable failure naming the absent service rather than a dozen
+    connection errors from tests that were never going to work.
+    """
+    state = compose_ps()
+    missing = [s for s in FULL_STACK_SERVICES if s not in state]
+    assert not missing, (
+        f"these services are not part of the running stack: {missing}. "
+        f"The smoke tier needs all seven; the T3 profile deliberately omits "
+        f"mediawiki-jobrunner, haystack and chatbot-proxy. Start the full "
+        f"stack with scripts/ci/t4-smoke.sh, or `docker compose up -d`.\n"
+        f"running: {sorted(state)}"
+    )
+    return state
+
+
+@pytest.fixture(scope="session")
+def os_json(compose):
+    """GET a path on OpenSearch from inside the opensearch container.
+
+    The password never appears in argv or in a failure message: the container
+    already holds it as OPENSEARCH_INITIAL_ADMIN_PASSWORD (compose sets it
+    there), so the shell inside expands it and this process never sees it.
+    Same shape as the existing backend probe in test_site_config.py.
+    """
+
+    def _get(path, timeout=180, method="GET", body=None):
+        cmd = (
+            'curl -sk -u "admin:$OPENSEARCH_INITIAL_ADMIN_PASSWORD" '
+            f'-X {method} '
+        )
+        if body is not None:
+            cmd += "-H 'Content-Type: application/json' -d '" + body.replace("'", "'\"'\"'") + "' "
+        cmd += f'"https://localhost:9200{path}"'
+        proc = compose("exec", "-T", "opensearch", "sh", "-c", cmd, timeout=timeout)
+        assert proc.returncode == 0, (
+            f"could not reach OpenSearch for {path!r} (exit {proc.returncode})\n"
+            f"{proc.stderr[-2000:]}"
+        )
+        try:
+            return json.loads(proc.stdout)
+        except ValueError as exc:
+            raise AssertionError(
+                f"OpenSearch returned non-JSON for {path!r}: {proc.stdout[:600]!r}"
+            ) from exc
+
+    return _get
+
+
+@pytest.fixture(scope="session")
+def os_count(os_json):
+    """Document count of an OpenSearch index, or None if it does not exist."""
+
+    def _count(index):
+        payload = os_json(f"/{index}/_count")
+        if "count" not in payload:
+            return None
+        return payload["count"]
+
+    return _count
+
+
+@pytest.fixture(scope="session")
+def http_in(compose):
+    """Make an HTTP request from inside a container, using its own python3.
+
+    chatbot-proxy is `python:3.12-slim` and has no curl, wget or nc — and it
+    publishes no port, so the host cannot reach it at all. `docker compose
+    exec` plus the python that is already the container's reason for existing
+    is the only way in, and it is what the Wave 4 brief means by "compose exec
+    for the proxy".
+
+    Returns (status, body). A non-2xx is data, not an exception, for the same
+    reason wikiclient.Response normalises HTTPError: `/ready` answering 503 is
+    the assertion, not an error.
+    """
+    script = r"""
+import json, sys, urllib.error, urllib.request
+url, method, payload = sys.argv[1], sys.argv[2], sys.argv[3]
+data = payload.encode() if payload else None
+req = urllib.request.Request(url, data=data, method=method)
+if data:
+    req.add_header("Content-Type", "application/json")
+try:
+    with urllib.request.urlopen(req, timeout=120) as r:
+        status, body = r.status, r.read().decode("utf-8", "replace")
+except urllib.error.HTTPError as e:
+    status, body = e.code, e.read().decode("utf-8", "replace")
+except Exception as e:
+    status, body = 0, f"{type(e).__name__}: {e}"
+print(json.dumps({"status": status, "body": body}))
+"""
+
+    def _request(service, url, method="GET", payload="", timeout=300):
+        proc = compose(
+            "exec", "-T", service, "python3", "-c", script, url, method, payload,
+            timeout=timeout,
+        )
+        assert proc.returncode == 0, (
+            f"`compose exec {service}` failed (exit {proc.returncode}) for {url}\n"
+            f"stdout:\n{proc.stdout[-2000:]}\nstderr:\n{proc.stderr[-2000:]}"
+        )
+        for line in reversed(proc.stdout.strip().splitlines()):
+            try:
+                payload = json.loads(line)
+            except ValueError:
+                continue
+            return payload["status"], payload["body"]
+        raise AssertionError(f"no JSON from the probe in {service}:\n{proc.stdout[-2000:]}")
+
+    return _request
+
+
+@pytest.fixture(scope="session")
+def job_queue(mw_exec):
+    """Pending MediaWiki jobs, as an integer.
+
+    `showJobs.php` with no arguments prints just the total. Read through
+    maintenance/run.php so it uses the wiki's own configuration, the same
+    reason mw_sql goes through sql.php.
+    """
+
+    def _pending(timeout=300):
+        proc = mw_exec(
+            "php", "maintenance/run.php", "showJobs.php", timeout=timeout
+        )
+        assert proc.returncode == 0, (
+            f"showJobs.php exited {proc.returncode}\n{proc.stdout[-2000:]}\n"
+            f"{proc.stderr[-2000:]}"
+        )
+        for line in reversed(proc.stdout.strip().splitlines()):
+            stripped = line.strip()
+            if stripped.isdigit():
+                return int(stripped)
+        raise AssertionError(
+            f"showJobs.php printed no job count:\n{proc.stdout[-2000:]}"
+        )
+
+    return _pending
+
+
+@pytest.fixture(scope="session")
+def drained_job_queue(full_stack, job_queue):
+    """Wait for mediawiki-jobrunner to empty the queue, and report what it did.
+
+    Returns {"start": n, "end": n, "seconds": n}. This is the fixture the whole
+    search leg hangs off: on a fresh install the ExtendedSearch index is
+    written entirely by background jobs, so *every* full-text assertion is a
+    statement about the job queue having been drained first. Wave 3's T3
+    profile has no jobrunner, which is why its search coverage stops at the
+    configuration.
+
+    Draining is a wait, not an assertion — the assertion lives in
+    test_search.py, so a queue that never empties fails as "the jobrunner did
+    not drain the queue" instead of as a fixture error with no name.
+    """
+    deadline_seconds = int(
+        os.environ.get(ENV_JOBQUEUE_TIMEOUT, DEFAULT_JOBQUEUE_TIMEOUT)
+    )
+    start_count = job_queue()
+    started = time.monotonic()
+    pending = start_count
+    while pending > 0 and (time.monotonic() - started) < deadline_seconds:
+        time.sleep(10)
+        pending = job_queue()
+    return {
+        "start": start_count,
+        "end": pending,
+        "seconds": int(time.monotonic() - started),
+        "timeout": deadline_seconds,
+    }
+
+
+@pytest.fixture(scope="session")
+def ingest_ran():
+    """Whether the harness ran ingest_hdp_wiki.py before the tests.
+
+    See ENV_INGEST_RAN. `scripts/ci/t4-smoke.sh` sets it; a developer pointing
+    the tier at a stack of their own has probably not, and the hdp_wiki
+    assertion says so with the command to fix it rather than failing as though
+    ingestion were broken.
+    """
+    return os.environ.get(ENV_INGEST_RAN) == "1"
