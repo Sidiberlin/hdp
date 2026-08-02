@@ -63,6 +63,7 @@ fi
 FIX=0
 PATCHES=0
 INTEGRATION=0
+SMOKE=0
 VERBOSE=0
 NO_DOCKER=0
 declare -a ONLY=()
@@ -83,7 +84,7 @@ declare -a ONLY=()
 KNOWN_CHECKS=(
     shellcheck yamllint ruff pytest-unit pytest-haystack bats php-lint compose
     gitleaks env-example publiccode patch-ignore manifest fresh-clone patches
-    integration
+    integration smoke
 )
 
 PASSED=(); FAILED=(); SKIPPED=()
@@ -101,6 +102,7 @@ ${C_BLD}check.sh${C_OFF} — run the CI lint gate locally, in under three minute
   ./scripts/check.sh --verbose       show tool output even when a check passes
   ./scripts/check.sh --patches       + full patch verification (composer-installed tree)
   ./scripts/check.sh --integration   + the Wave 3 tier (needs a running, installed wiki)
+  ./scripts/check.sh --smoke         + the Wave 4 tier (needs the full 7-container stack)
 
 No .env, no running stack, and no toolchain install required. Checks that can
 run neither from PATH nor from a pinned image are reported SKIPPED, never
@@ -127,6 +129,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' fresh-clone 'TF: fresh clone has every input' 'git'
     printf '%-16s %-34s %s\n' patches     'all 19 patches present (--patches)' 'patch(1)'
     printf '%-16s %-34s %s\n' integration 'live wiki (--integration)' 'a running, installed stack'
+    printf '%-16s %-34s %s\n' smoke       'search + chatbot (--smoke)' 'the full 7-container stack'
 }
 
 while [ $# -gt 0 ]; do
@@ -145,6 +148,7 @@ while [ $# -gt 0 ]; do
         --help|-h)    usage; exit 0 ;;
         --patches)     PATCHES=1 ;;
         --integration) INTEGRATION=1 ;;
+        --smoke)       SMOKE=1 ;;
         *) echo "check.sh: unknown option '$1' (try --help)" >&2; exit 2 ;;
     esac
     shift
@@ -305,6 +309,20 @@ check_integration_run() {
     scripts/ci/pytest.sh --tier integration
 }
 
+# ─── smoke (opt-in) ─────────────────────────────────────────────────
+# Wave 4's tier: the same directory as `integration`, run without the marker
+# filter, so it is that check plus the legs needing mediawiki-jobrunner,
+# haystack and chatbot-proxy. Opt-in for the same reason, one step further out —
+# it needs all seven containers *and* a drained job queue, which is minutes of
+# waiting rather than seconds.
+#
+# `scripts/ci/t4-smoke.sh` is the way to get a stack into that state from
+# nothing; this check is for a stack you already have.
+check_smoke_run() {
+    [ "$SMOKE" -eq 1 ] || { skip smoke "opt-in: pass --smoke (needs the full 7-container stack)"; return; }
+    scripts/ci/pytest.sh --tier smoke
+}
+
 # ─── php -l over the 17 settings.d files ────────────────────────────
 # These gate ~130 extensions; a syntax error here takes the wiki down at boot.
 check_php-lint_run() {
@@ -412,6 +430,7 @@ run_check manifest     "patch manifest schema"
 run_check fresh-clone  "committed tree is complete"
 run_check patches      "all 19 patches in the tree"
 run_check integration  "live wiki serves real traffic"
+run_check smoke        "full stack searches and answers"
 
 TOTAL=$(( SECONDS - START ))
 
