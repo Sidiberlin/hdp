@@ -93,10 +93,13 @@ scripts/ci/bats.sh                 # shell behaviour
 ./scripts/check.sh                 # everything CI runs, ~100s
 
 # Inside the running stack (the haystack image ships pytest).
+# --entrypoint python is required: entrypoint.sh never exec "$@", so without it
+# hayhooks boots instead of pytest and dies on the read-only /w mount.
 # Mount the repo ROOT — pytest.ini lives there and one test walks up for
 # docker-compose.yml; mounting only tests/ gives 39 passed and 1 error.
-docker compose run --rm --no-deps -v "$PWD:/w:ro" -w /w haystack \
-    python -m pytest tests/haystack -p no:cacheprovider
+docker compose run --rm --no-deps --entrypoint python \
+    -v "$PWD:/w:ro" -w /w haystack \
+    -m pytest tests/unit tests/haystack -p no:cacheprovider
 ```
 
 Nothing in the suite is mocked. See AGENTS.md for why that is affordable and
