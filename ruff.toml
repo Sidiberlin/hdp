@@ -1,0 +1,45 @@
+# Ruff configuration for HDP.
+#
+# The rule selection is explicit and pinned, rather than inherited from
+# whatever ruff's defaults happen to be. That is the whole point: ruff's
+# default set grows between releases, so an unpinned config means a routine
+# image bump can turn CI red with no commit to blame. This repo hit exactly
+# that — a local ruff 0.15.10 reported nothing while the pinned 0.16.1 image
+# CI uses reported 16 findings, none of them regressions.
+#
+# Keep this in step with the ruff image tag in .gitlab-ci.yml and the
+# IMG_RUFF/RUFF_PINNED_VERSION pair in scripts/check.sh.
+
+target-version = "py311"          # the container ships Python 3.11
+line-length = 120
+
+[lint]
+# E — pycodestyle errors      (E401/E402 were 4 of the original 7 failures)
+# F — pyflakes                (F401/F841 were the other 3: dead imports and
+#                              an unused local)
+# I — import sorting          (auto-fixable, and the Wave 2 refactor of
+#                              hdp_api_server.py depends on the import block
+#                              being tidy)
+select = ["E", "F", "I"]
+
+# Deliberately NOT selected, with reasons. Each is a real observation, not
+# noise — they are excluded because acting on them means changing behaviour,
+# and that belongs in the unit-test wave where there are tests to catch a
+# mistake, not in a lint gate landing alongside CI plumbing:
+#
+#   BLE001  blind `except Exception` — 5 sites. Every one is a deliberate
+#           degrade-gracefully path (pipeline load, ingestion of one page,
+#           a hayhooks call). Narrowing them without tests risks converting a
+#           handled failure into a crash.
+#   S110    try/except/pass — 1 site, an optional-import probe.
+#   G201    logging.error(..., exc_info=True) vs logging.exception() — 2 sites,
+#           cosmetic, and touching the logging calls now would conflict with
+#           the planned serialization.py extraction.
+#   PLW1510 subprocess.run without check= — 1 site, the envsubst render whose
+#           failure is handled by the caller inspecting the output.
+#   EXE001  shebang present but file not executable — 3 sites. These scripts
+#           are invoked as `python3 <file>` inside the container and are not
+#           meant to be executable; the alternative fix (chmod +x) would be
+#           the wrong one.
+#
+# Revisit the whole list in the unit-test wave.
