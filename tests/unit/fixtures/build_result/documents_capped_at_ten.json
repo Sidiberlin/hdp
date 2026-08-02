@@ -1,0 +1,251 @@
+{
+  "answers": [
+    {
+      "answer": "Was sind Cloud-Computing-Modelle?"
+    },
+    {
+      "answer": "Viele Quellen",
+      "meta": {
+        "doc_ids": [
+          "doc-1",
+          "doc-2",
+          "doc-3",
+          "doc-4",
+          "doc-5",
+          "doc-6",
+          "doc-7",
+          "doc-8",
+          "doc-9",
+          "doc-10"
+        ],
+        "documents": [
+          {
+            "content": "Inhalt von Dokument 1.",
+            "id": "doc-1",
+            "meta": {
+              "namespace": 12,
+              "page_id": 101,
+              "prefixed_title": "Help:Seite 1",
+              "title_level_1": "Help:Seite 1",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_1"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 2.",
+            "id": "doc-2",
+            "meta": {
+              "namespace": 12,
+              "page_id": 102,
+              "prefixed_title": "Help:Seite 2",
+              "title_level_1": "Help:Seite 2",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_2"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 3.",
+            "id": "doc-3",
+            "meta": {
+              "namespace": 12,
+              "page_id": 103,
+              "prefixed_title": "Help:Seite 3",
+              "title_level_1": "Help:Seite 3",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_3"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 4.",
+            "id": "doc-4",
+            "meta": {
+              "namespace": 12,
+              "page_id": 104,
+              "prefixed_title": "Help:Seite 4",
+              "title_level_1": "Help:Seite 4",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_4"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 5.",
+            "id": "doc-5",
+            "meta": {
+              "namespace": 12,
+              "page_id": 105,
+              "prefixed_title": "Help:Seite 5",
+              "title_level_1": "Help:Seite 5",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_5"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 6.",
+            "id": "doc-6",
+            "meta": {
+              "namespace": 12,
+              "page_id": 106,
+              "prefixed_title": "Help:Seite 6",
+              "title_level_1": "Help:Seite 6",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_6"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 7.",
+            "id": "doc-7",
+            "meta": {
+              "namespace": 12,
+              "page_id": 107,
+              "prefixed_title": "Help:Seite 7",
+              "title_level_1": "Help:Seite 7",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_7"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 8.",
+            "id": "doc-8",
+            "meta": {
+              "namespace": 12,
+              "page_id": 108,
+              "prefixed_title": "Help:Seite 8",
+              "title_level_1": "Help:Seite 8",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_8"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 9.",
+            "id": "doc-9",
+            "meta": {
+              "namespace": 12,
+              "page_id": 109,
+              "prefixed_title": "Help:Seite 9",
+              "title_level_1": "Help:Seite 9",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_9"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 10.",
+            "id": "doc-10",
+            "meta": {
+              "namespace": 12,
+              "page_id": 110,
+              "prefixed_title": "Help:Seite 10",
+              "title_level_1": "Help:Seite 10",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_10"
+            }
+          }
+        ]
+      },
+      "query_id": "<uuid4>",
+      "result_id": "<uuid4>"
+    }
+  ],
+  "documents": [
+    {
+      "content": "Inhalt von Dokument 1.",
+      "id": "doc-1",
+      "meta": {
+        "namespace": 12,
+        "page_id": 101,
+        "prefixed_title": "Help:Seite 1",
+        "title_level_1": "Help:Seite 1",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_1"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 2.",
+      "id": "doc-2",
+      "meta": {
+        "namespace": 12,
+        "page_id": 102,
+        "prefixed_title": "Help:Seite 2",
+        "title_level_1": "Help:Seite 2",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_2"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 3.",
+      "id": "doc-3",
+      "meta": {
+        "namespace": 12,
+        "page_id": 103,
+        "prefixed_title": "Help:Seite 3",
+        "title_level_1": "Help:Seite 3",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_3"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 4.",
+      "id": "doc-4",
+      "meta": {
+        "namespace": 12,
+        "page_id": 104,
+        "prefixed_title": "Help:Seite 4",
+        "title_level_1": "Help:Seite 4",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_4"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 5.",
+      "id": "doc-5",
+      "meta": {
+        "namespace": 12,
+        "page_id": 105,
+        "prefixed_title": "Help:Seite 5",
+        "title_level_1": "Help:Seite 5",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_5"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 6.",
+      "id": "doc-6",
+      "meta": {
+        "namespace": 12,
+        "page_id": 106,
+        "prefixed_title": "Help:Seite 6",
+        "title_level_1": "Help:Seite 6",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_6"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 7.",
+      "id": "doc-7",
+      "meta": {
+        "namespace": 12,
+        "page_id": 107,
+        "prefixed_title": "Help:Seite 7",
+        "title_level_1": "Help:Seite 7",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_7"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 8.",
+      "id": "doc-8",
+      "meta": {
+        "namespace": 12,
+        "page_id": 108,
+        "prefixed_title": "Help:Seite 8",
+        "title_level_1": "Help:Seite 8",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_8"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 9.",
+      "id": "doc-9",
+      "meta": {
+        "namespace": 12,
+        "page_id": 109,
+        "prefixed_title": "Help:Seite 9",
+        "title_level_1": "Help:Seite 9",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_9"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 10.",
+      "id": "doc-10",
+      "meta": {
+        "namespace": 12,
+        "page_id": 110,
+        "prefixed_title": "Help:Seite 10",
+        "title_level_1": "Help:Seite 10",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_10"
+      }
+    }
+  ],
+  "query": "Was sind Cloud-Computing-Modelle?"
+}

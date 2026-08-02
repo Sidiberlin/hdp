@@ -1,0 +1,44 @@
+{
+  "answers": [
+    {
+      "answer": "Was sind Cloud-Computing-Modelle?"
+    },
+    {
+      "answer": "Antwort",
+      "meta": {
+        "doc_ids": [
+          "flat-1"
+        ],
+        "documents": [
+          {
+            "content": "flach",
+            "id": "flat-1",
+            "meta": {
+              "namespace": 0,
+              "page_id": 0,
+              "prefixed_title": "Help:Flach",
+              "title_level_1": "",
+              "uri": "http://mediawiki-web:8080/w/Help:Flach"
+            }
+          }
+        ]
+      },
+      "query_id": "<uuid4>",
+      "result_id": "<uuid4>"
+    }
+  ],
+  "documents": [
+    {
+      "content": "flach",
+      "id": "flat-1",
+      "meta": {
+        "namespace": 0,
+        "page_id": 0,
+        "prefixed_title": "Help:Flach",
+        "title_level_1": "",
+        "uri": "http://mediawiki-web:8080/w/Help:Flach"
+      }
+    }
+  ],
+  "query": "Was sind Cloud-Computing-Modelle?"
+}
