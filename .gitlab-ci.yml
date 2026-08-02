@@ -1,58 +1,180 @@
-# GitLab CI for HDP — basic validation on every push
-# Runs linting and config validation without building Docker images
-# (images are built locally or in a deploy stage, not on every push)
+# GitLab CI for HDP.
+#
+# Deliberately forge-agnostic: no host-specific job names, runner tags or
+# variables, so enabling this on another GitLab (openCode) is configuration
+# rather than rework.
+#
+# All logic lives in scripts/ci/ and scripts/. The jobs below are thin callers,
+# which is what lets scripts/check.sh give a contributor the same verdict
+# locally without reimplementing anything.
 
 stages:
   - lint
+  - fresh
+  - patch
 
 variables:
-  # Prevent shallow clones so linting has full context
+  # Full-enough history for the fresh-clone gate to clone HEAD locally.
   GIT_DEPTH: "20"
+
+# Every job carries the same rules guard. Hoisted into an anchor so the next
+# job added cannot quietly omit it — which is how a pipeline starts running on
+# every branch push and then gets switched off for being noisy.
+.default_rules: &default_rules
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
 
 # ─── Shell script linting ───────────────────────────────────────────
 shellcheck:
   stage: lint
   image: koalaman/shellcheck-alpine:stable
+  <<: *default_rules
   script:
     # Explicit include list, not an exclude list. The previous exclude form
-    # ("everything except app/extensions/ and app/skins/") linted upstream
-    # MediaWiki and BlueSpice shell scripts under app/vendor/, app/includes/
-    # and app/_bluespice/ — code this project does not own and cannot fix.
-    # An exclude list also silently re-widens every time upstream adds a
-    # directory. These three paths are the shell we actually author.
+    # linted upstream MediaWiki and BlueSpice shell under app/vendor/,
+    # app/includes/ and app/_bluespice/ — code this project does not own.
+    # Passing hdp.sh to find as a start path keeps this to one invocation, so
+    # the exit status cannot be masked by a later command.
     - |
       find docker scripts hdp.sh -name '*.sh' -print0 \
         | xargs -0 -r shellcheck --severity=warning --
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == "main"
 
 # ─── YAML validation ────────────────────────────────────────────────
 yaml-lint:
   stage: lint
   image: cytopia/yamllint:latest
+  <<: *default_rules
   script:
+    # This job used to end in `2>/dev/null || true`, so it could never fail and
+    # never showed why. Both are gone. Dropping only the `|| true` would have
+    # produced a red job with no diagnostics, which is worse than either.
     - |
       yamllint -d "{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable}}" \
         docker-compose.yml \
         publiccode.yml \
         docker/haystack/hdp_pipeline.yaml \
-        .gitlab-ci.yml 2>/dev/null || true
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == "main"
+        docker/patches/ \
+        .gitlab-ci.yml
+
+# ─── Python linting ─────────────────────────────────────────────────
+ruff:
+  stage: lint
+  image: ghcr.io/astral-sh/ruff:0.16.1
+  <<: *default_rules
+  script:
+    - ruff check docker/
+
+# ─── settings.d syntax ──────────────────────────────────────────────
+php-lint:
+  stage: lint
+  image: php:8.3-cli
+  <<: *default_rules
+  script:
+    # 17 files gating ~130 extensions; a syntax error here takes the wiki down
+    # at boot, and nothing else in the pipeline parses them.
+    - |
+      rc=0
+      for f in app/settings.d/*.php; do
+        php -l "$f" > /dev/null || { php -l "$f"; rc=1; }
+      done
+      exit $rc
 
 # ─── Docker Compose config validation ───────────────────────────────
 compose-validate:
   stage: lint
   image: docker:24-cli
+  <<: *default_rules
   variables:
     DOCKER_TLS_CERTDIR: ""
-  before_script:
-    - apk add --no-cache docker-compose
   script:
+    # v2, via `docker compose`. This job used to `apk add docker-compose`,
+    # which installs v1 — a different schema from the `docker compose` users
+    # actually run per CONTRIBUTING.md, and a reliable way to be green in CI
+    # and broken locally.
     - cp .env.example .env
-    - docker-compose config > /dev/null
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    - if: $CI_COMMIT_BRANCH == "main"
+    - docker compose config --quiet
+
+# ─── T0 provenance ──────────────────────────────────────────────────
+gitleaks:
+  stage: lint
+  image: zricethezav/gitleaks:latest
+  <<: *default_rules
+  before_script:
+    # git refuses to operate on a tree it considers foreign-owned. Harmless
+    # when the runner's UID already matches; prevents an opaque
+    # "dubious ownership" failure when it does not.
+    - git config --global --add safe.directory "${CI_PROJECT_DIR:-$PWD}"
+  script:
+    # The script prefers a gitleaks binary on PATH, which this image provides.
+    - apk add --no-cache bash git >/dev/null
+    - bash scripts/ci/gitleaks.sh
+
+env-example-check:
+  stage: lint
+  image: alpine:3.20
+  <<: *default_rules
+  script:
+    - apk add --no-cache bash git grep >/dev/null
+    - bash scripts/ci/env-example-check.sh
+
+publiccode-schema:
+  stage: lint
+  image: italia/publiccode-parser-go:latest
+  <<: *default_rules
+  # The image's entrypoint is the parser itself, so call it directly rather
+  # than through the wrapper script.
+  script:
+    - publiccode-parser -no-network publiccode.yml
+
+patch-ignore-check:
+  stage: lint
+  image: alpine:3.20
+  <<: *default_rules
+  before_script:
+    # git refuses to operate on a tree it considers foreign-owned. Harmless
+    # when the runner's UID already matches; prevents an opaque
+    # "dubious ownership" failure when it does not.
+    - git config --global --add safe.directory "${CI_PROJECT_DIR:-$PWD}"
+  script:
+    - apk add --no-cache bash git >/dev/null
+    - bash scripts/ci/patch-ignore-check.sh
+
+manifest-lint:
+  stage: lint
+  image: python:3.11-alpine
+  <<: *default_rules
+  before_script:
+    # git refuses to operate on a tree it considers foreign-owned. Harmless
+    # when the runner's UID already matches; prevents an opaque
+    # "dubious ownership" failure when it does not.
+    - git config --global --add safe.directory "${CI_PROJECT_DIR:-$PWD}"
+  script:
+    # Schema and target paths only — catches a malformed sidecar in seconds
+    # rather than at the end of the patch stage.
+    - apk add --no-cache bash git >/dev/null
+    - pip install --quiet pyyaml
+    - bash scripts/verify-patches.sh --static
+
+# ─── TF — fresh-clone gate ──────────────────────────────────────────
+fresh-clone:
+  stage: fresh
+  image: alpine:3.20
+  <<: *default_rules
+  before_script:
+    # git refuses to operate on a tree it considers foreign-owned. Harmless
+    # when the runner's UID already matches; prevents an opaque
+    # "dubious ownership" failure when it does not.
+    - git config --global --add safe.directory "${CI_PROJECT_DIR:-$PWD}"
+  script:
+    # Clones the repo under test at HEAD into a temp dir and asserts every
+    # input setup.sh needs is committed. Six of the seven bugs in
+    # docs/QA-REPORT.md were only visible on a genuine fresh clone.
+    - apk add --no-cache bash git python3 findutils grep >/dev/null
+    - bash scripts/ci/fresh-clone.sh
+
+# ─── T2 — patch integrity ───────────────────────────────────────────
+# Not enabled yet: it needs composer install + dump-autoload against the
+# production wikimedia image and a masked GITHUB_TOKEN, which is the T2 task.
+# manifest-lint above covers the manifest itself in the meantime, and
+# verify-patches.sh is ready for this job to call.
