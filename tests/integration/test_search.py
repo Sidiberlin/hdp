@@ -71,18 +71,24 @@ def test_the_jobrunner_drains_the_job_queue(drained_job_queue):
     the queue starts in the hundreds; the jobrunner container is a bash loop
     around `runJobs.php` and works it down to zero.
 
-    A non-zero start count is asserted too. If the queue were already empty
-    when the fixture began waiting, "drained" would be true of a stack whose
-    jobrunner is dead, and the rest of this file would be testing an index that
-    somebody else's run happened to fill.
+    A non-zero start count is asserted too. If the queue were empty from the
+    beginning, "drained" would be true of a stack whose jobrunner is dead, and
+    the rest of this file would be testing an index that somebody else's run
+    happened to fill.
+
+    That start count is the depth *before* anything drained it, which is why it
+    is recorded by the harness (HDP_JOBQUEUE_START) rather than measured here:
+    scripts/ci/t4-smoke.sh does the waiting itself, so by the time pytest runs
+    the queue is already at zero.
     """
     q = drained_job_queue
     assert q["start"] > 0, (
-        f"the job queue was already empty ({q['start']}) before the wait "
-        f"started, so nothing here proves mediawiki-jobrunner is alive. On a "
-        f"freshly installed wiki setup.sh leaves several hundred jobs — a zero "
-        f"means either the tests are running against an old stack or "
-        f"initBackends.php never enqueued anything."
+        f"the job queue was already empty ({q['start']}) before anything "
+        f"drained it, so nothing here proves mediawiki-jobrunner is alive. On "
+        f"a freshly installed wiki setup.sh leaves several hundred jobs — a "
+        f"zero means the tests are running against an already-drained stack "
+        f"(run scripts/ci/t4-smoke.sh, which records the pre-drain depth) or "
+        f"that initBackends.php never enqueued anything."
     )
     assert q["end"] == 0, (
         f"the job queue still holds {q['end']} jobs after {q['seconds']}s "

@@ -286,6 +286,13 @@ FULL_STACK_SERVICES = (
 ENV_JOBQUEUE_TIMEOUT = "HDP_JOBQUEUE_TIMEOUT"
 DEFAULT_JOBQUEUE_TIMEOUT = 900
 
+# The queue depth *before* anything drained it, recorded by
+# scripts/ci/t4-smoke.sh. Without this the fixture below can only measure the
+# queue it finds, and the runner has already emptied it by then — so "the
+# jobrunner drained several hundred jobs" would read as "the queue was empty
+# all along", which is exactly the state that assertion exists to reject.
+ENV_JOBQUEUE_START = "HDP_JOBQUEUE_START"
+
 # Set by scripts/ci/t4-smoke.sh once it has run ingest_hdp_wiki.py. Ingestion
 # takes ~8 minutes and belongs to the job that builds the stack, not to an
 # assertion; the tests read this to tell "ingestion ran and produced the wrong
@@ -502,13 +509,21 @@ def drained_job_queue(full_stack, job_queue):
     Draining is a wait, not an assertion — the assertion lives in
     test_search.py, so a queue that never empties fails as "the jobrunner did
     not drain the queue" instead of as a fixture error with no name.
+
+    `start` comes from HDP_JOBQUEUE_START when the harness recorded it, and is
+    measured here otherwise. That distinction matters: scripts/ci/t4-smoke.sh
+    waits for the drain itself, so by the time pytest runs the queue is already
+    at zero and a locally-measured start would be 0 — turning "the jobrunner
+    worked ~500 jobs down to nothing" into "the queue was empty all along",
+    which is the one state the assertion in test_search.py exists to reject.
     """
     deadline_seconds = int(
         os.environ.get(ENV_JOBQUEUE_TIMEOUT, DEFAULT_JOBQUEUE_TIMEOUT)
     )
-    start_count = job_queue()
+    recorded_start = os.environ.get(ENV_JOBQUEUE_START)
+    start_count = int(recorded_start) if recorded_start else job_queue()
     started = time.monotonic()
-    pending = start_count
+    pending = job_queue()
     while pending > 0 and (time.monotonic() - started) < deadline_seconds:
         time.sleep(10)
         pending = job_queue()
