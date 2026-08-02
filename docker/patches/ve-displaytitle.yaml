@@ -1,0 +1,16 @@
+# Class C — inherited BlueSpice patch. Generated from the .diff; see
+# docs/dev/patches.md for the inventory and the verification contract.
+id: ve-displaytitle
+title: VisualEditor display-title meta-item fix
+class: C
+mode: diff
+target: extensions/VisualEditor/modules/ve-mw/dm/metaitems/ve.dm.MWDisplayTitleMetaItem.js
+patch: app/_bluespice/patches/extensions/VisualEditor/modules/ve-mw/dm/metaitems/ve.dm.MWDisplayTitleMetaItem.js.diff
+applied_by: app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh
+hunks: 2
+stale: false
+group: ''
+upstream_version: 'BlueSpice 5.1.4 (inherited patch set)'
+regex: n/a
+why: >-
+  Inherited from upstream BlueSpice; not authored here.

@@ -1,0 +1,19 @@
+# Class C — inherited BlueSpice patch. Generated from the .diff; see
+# docs/dev/patches.md for the inventory and the verification contract.
+id: mw-usergroupmanager
+title: guard null group-cache reads
+class: C
+mode: diff
+target: includes/user/UserGroupManager.php
+patch: app/_bluespice/patches/includes/user/UserGroupManager.php.diff
+applied_by: app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh
+hunks: 3
+stale: false
+group: ''
+upstream_version: 'BlueSpice 5.1.4 (inherited patch set)'
+regex: n/a
+why: >-
+  Upstream reads $this->userGroupCache[$userKey][CACHE_IMPLICIT]
+  unguarded, so a cache miss is a fatal on PHP 8. Adds ?? [] to three
+  reads. Targets MediaWiki core, so an upstream security release is the
+  most likely thing to break it.

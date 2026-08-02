@@ -1,0 +1,19 @@
+# Class C — inherited BlueSpice patch. Generated from the .diff; see
+# docs/dev/patches.md for the inventory and the verification contract.
+id: pageforms-uploadform
+title: PageForms upload form fix
+class: C
+mode: diff
+target: extensions/PageForms/specials/PF_UploadForm.php
+patch: app/_bluespice/patches/extensions/PageForms/specials/PF_UploadForm.php.diff
+applied_by: app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh
+hunks: 11
+stale: true
+group: ''
+upstream_version: 'BlueSpice 5.1.4 (inherited patch set)'
+regex: n/a
+why: >-
+  PERMANENTLY STALE. The target no longer exists: PageForms 6.0.4 ships
+  eleven PF_*.php files under specials/ and this is not one of them. Every
+  dump-autoload prints FAILED! for it; that is expected, not a regression.
+  See docs/dev/patches.md.

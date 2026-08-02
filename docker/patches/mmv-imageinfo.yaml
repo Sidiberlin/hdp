@@ -1,0 +1,16 @@
+# Class C — inherited BlueSpice patch. Generated from the .diff; see
+# docs/dev/patches.md for the inventory and the verification contract.
+id: mmv-imageinfo
+title: MultimediaViewer ImageInfo provider fix
+class: C
+mode: diff
+target: extensions/MultimediaViewer/resources/mmv/provider/mmv.provider.ImageInfo.js
+patch: app/_bluespice/patches/extensions/MultimediaViewer/resources/mmv/provider/mmv.provider.ImageInfo.js.diff
+applied_by: app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh
+hunks: 2
+stale: false
+group: ''
+upstream_version: 'BlueSpice 5.1.4 (inherited patch set)'
+regex: n/a
+why: >-
+  Inherited from upstream BlueSpice; not authored here.

@@ -1,0 +1,25 @@
+# Class A — clobbered by composer, re-applied by docker/setup.sh.
+#
+# NOTE the target filename. It is a flat name under resources/, not a module
+# directory: `find -name 'SearchCenter.js'` matches nothing and will make you
+# think the patch is missing. This cost a false "patch absent" reading during
+# Wave 0 validation.
+id: es-searchcnt
+title: declare the $searchCnt the getResults hook is fired with
+class: A
+mode: insert
+target: extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js
+applied_by: docker/setup.sh
+anchor: "const \\$altSearchCnt = \\$\\( '#bs-es-alt-search' \\);"
+marker: '// HDP: upstream fires the getResults hook with an undeclared'
+anti: ''
+group: ''
+stale: false
+upstream_version: 'bluespice/extendedsearch 5.1.4'
+regex: ERE
+why: >-
+  Upstream fires bs.extendedsearch.searchcenter.getResults with $searchCnt but
+  never declares it, so a completed search throws "ReferenceError: $searchCnt
+  is not defined" out of the .done() handler before removeLoading() runs. The
+  visible symptom is the Search Center spinning forever on results the API
+  already returned.
