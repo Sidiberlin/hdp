@@ -23,8 +23,8 @@ For full architecture documentation, see [`docs/wiki/`](docs/wiki/) (system diag
 | `app/extensions/ChatBot/` | ChatBot MediaWiki extension — chat widget, REST endpoints, Deepset API client | `extension.json`, `includes/Api/ChatApi.php` |
 | `app/skins/` | MediaWiki skins | `.gitignore` has `/*` **but re-includes the six shipped skins by name** — they are trackable, do not use `git add -f`. See [The `app/skins/.gitignore` Trap](#the-appskinsgitignore-trap) |
 | `docker/patches/` | Patch manifest — one YAML sidecar per patch, plus the Class-A `.patch` files | 19 entries; see [`patches.md`](patches.md) |
-| `scripts/` | Contributor and CI entry points | `check.sh` (run before pushing), `verify-patches.sh`, `apply-patches.sh`, `ci/` |
-| `tests/` | The test suite — see [The two pytest tiers](#the-two-pytest-tiers) | `unit/` (stdlib), `haystack/` (real haystack-ai), `bats/` (shell) |
+| `scripts/` | Contributor and CI entry points | `check.sh` (run before pushing), `verify-patches.sh`, `apply-patches.sh`, `convert-docs.sh`, `ci/` (incl. `t3-integration.sh`), `lib/` |
+| `tests/` | The test suite — see [The three pytest tiers](#the-three-pytest-tiers) | `unit/` (stdlib), `haystack/` (real haystack-ai), `integration/` (a live wiki), `bats/` (shell) |
 | `docker/` | Docker build contexts and setup scripts | `setup.sh` (first-boot install), `haystack/` (RAG pipeline), `chatbot-proxy/` (Deepset→Haystack adapter) |
 | `docker/haystack/` | Haystack RAG pipeline implementation | `hdp_pipeline.yaml`, `ingest_hdp_wiki.py`, `hdp_api_server.py`, `entrypoint.sh`, plus the two Wave 2 extractions `wikitext.py` (pure transforms) and `serialization.py` (`to_native`, `load_pipeline`) |
 | `docs/` | User and architecture documentation | `QA-REPORT.md`, `embedding-providers.md`, `wiki/` (technical wiki) |
@@ -181,6 +181,7 @@ What it covers today:
 | `ruff` | Python under `docker/` and `tests/`, against the pinned ruleset in `ruff.toml` |
 | `pytest-unit` | `tests/unit/` — stdlib-only unit tests, ~2s, no install needed |
 | `pytest-haystack` | `tests/haystack/` — real `haystack-ai`, no mocks (see below) |
+| `integration` | `tests/integration/` — a live wiki serving real traffic (`--integration`) |
 | `bats` | `docker/infisical-loader.sh` behaviour, incl. the two Wave 0 security fixes |
 | `php-lint` | the 17 `app/settings.d/*.php` files gating ~130 extensions |
 | `compose` | `docker compose config` on v2 |
@@ -202,7 +203,7 @@ was never committed, or that a `.gitignore` rule silently refuses.
 Note that it tests **committed** state. Uncommitted work in your tree is
 deliberately not under test, and it says so when your tree is dirty.
 
-### The two pytest tiers
+### The three pytest tiers
 
 Tests live in `tests/` at the repo root, not inside `docker/haystack/`. Those
 directories are Docker build contexts; a test placed there either ships inside
@@ -212,11 +213,16 @@ the production image or needs `.dockerignore` surgery.
 |---|---|---|---|
 | `pytest-unit` | `tests/unit/` | nothing but pytest | ~2s |
 | `pytest-haystack` | `tests/haystack/` | `haystack-ai` + `envsubst` | 0s warm, ~47s cold |
+| `integration` | `tests/integration/` | a running, installed wiki + docker | ~30s against a live stack |
 
-The split follows what the code actually imports. `render_pipeline.render`,
+The first split follows what the code actually imports. `render_pipeline.render`,
 `build_result_from_haystack` and the `wikitext` pure functions import nothing
 outside the standard library, so they run on bare Python. Only `to_native()`
 and `load_pipeline()` need Haystack.
+
+The third tier is a different kind of thing: it asserts on a wiki that is
+actually serving traffic. See [The integration tier](#the-integration-tier)
+below.
 
 **Nothing is mocked, anywhere.** That is affordable because of a measurement:
 
@@ -232,10 +238,15 @@ of the embedder that nothing under test touches. Real `Document`,
 Run them with `scripts/ci/pytest.sh`, which knows how to satisfy each tier:
 
 ```bash
-scripts/ci/pytest.sh                  # both tiers
+scripts/ci/pytest.sh                  # unit + haystack
 scripts/ci/pytest.sh --tier unit      # the fast one
 scripts/ci/pytest.sh -- -k to_native  # args after -- go to pytest
 ```
+
+`--tier all` is unit + haystack, and deliberately not integration: those two
+run on any checkout with no `.env` and no containers, which is what lets
+`check.sh` promise a CI-equivalent verdict without asking anyone to boot the
+stack.
 
 Inside the running stack, the haystack image ships `pytest`, so:
 
@@ -276,6 +287,91 @@ substitutes a sentinel. Monkeypatching `uuid.uuid4` would make the comparison
 simpler and would stop testing the real call — swapping it for `uuid1()`, which
 encodes the host MAC address and the time into an id sent to every chat client,
 would keep a monkeypatched suite green.
+
+### The integration tier
+
+`tests/integration/` asserts on a wiki that is running and installed. It is
+what Wave 3's T3 job runs, and it is the committed form of the smoke checks
+Waves 0–2 did by hand from a script in `/root`.
+
+```bash
+scripts/ci/t3-integration.sh          # the whole sequence, from nothing
+scripts/ci/t3-integration.sh --keep   # ... and leave the stack up
+scripts/ci/pytest.sh --tier integration   # against a stack you already have
+./scripts/check.sh --integration      # ... as part of the usual check run
+```
+
+`t3-integration.sh` is the entry point worth knowing: fresh volumes → `compose
+up` → `setup.sh` → `tests/integration` → teardown with `-v`. Both CI
+definitions (`.github/workflows/t3-integration.yml`,
+`.gitlab-ci.yml:t3-integration`) are thin callers of it, so the pipeline runs
+the same code you can run in a terminal.
+
+**Standard library only.** No `requests`, no pip install beyond pytest itself.
+That is what makes T3's dependency list "docker, and the python3 the runner
+already has".
+
+Four things about this tier are load-bearing and non-obvious:
+
+- **It must run from the host.** `$wgServer` is `http://localhost:8080`, so
+  MediaWiki answers `/w/index.php/Foo` with a redirect to the canonical
+  `/wiki/Foo` — a URL that resolves only through the published port mapping.
+  Running the tests inside the compose network fails on the redirect. Run 1 of
+  the Wave 2 clean-box validation lost an afternoon to this.
+- **The API needs a login even to read.** Anonymous `meta=siteinfo` returns
+  `readapidenied`. Use the `wiki` fixture, not a bare `WikiClient`.
+- **A 200 is not enough.** Logged out, this wiki answers
+  `Special:Preferences` with a healthy 200 login prompt. Every page assertion
+  also requires MediaWiki to have rendered the page *for Admin*, and
+  `test_anonymous_preferences_is_not_the_authenticated_page` is the control
+  that fails if that marker ever stops distinguishing the two. Without it, a
+  session that silently failed to authenticate would leave the whole file
+  green while proving nothing.
+- **Unreachable is a failure, not a skip.** Deciding whether a stack exists is
+  `scripts/ci/pytest.sh`'s job — it probes once and returns 77, which
+  `check.sh` renders as SKIP and never as a pass. Once pytest is running the
+  stack is supposed to be there, so a connection refused is red. A tier that
+  skips itself is a green run against a wiki that never booted.
+
+The T3 profile is `mariadb opensearch mediawiki mediawiki-web` — the full
+stack minus `haystack` and `chatbot-proxy`, which is where nearly all the
+build time is (haystack alone is a 2.5 GB image and ~285 of the ~290 seconds a
+full build takes). `mediawiki-web` is not optional: QA Bug 4 is an HTTP-level
+fact about a rendered page, and PHP-FPM has no HTTP endpoint.
+
+Note that `t3-integration.sh` waits for a *connection*, not for health. Before
+`setup.sh` runs there is no `LocalSettings.php`, so `/w/` returns 500 and
+`mediawiki-web` is legitimately unhealthy — expected on any genuinely fresh
+box, and not a regression.
+
+### Generated documentation (`convert-docs.sh`)
+
+`docker/mediawiki/wiki-docs/*.wiki` is a **committed build product**.
+`setup.sh` seeds those files, never `docs/wiki/*.md`, so editing a markdown
+source without regenerating ships a wiki whose documentation disagrees with
+the repo.
+
+```bash
+scripts/convert-docs.sh           # regenerate, then commit the result
+scripts/convert-docs.sh --check   # diff against the committed output, change nothing
+```
+
+`--check` is what `tests/integration/test_convert_docs.py` calls. It needs
+docker but not the wiki, so it is the one test in that tier that still means
+something under the T3 minimal profile.
+
+pandoc comes from a pinned image (`pandoc/core:3.5`), not from the haystack
+container — that path never existed, since nothing under `docker/haystack/`
+installs pypandoc. Pinning matters more here than elsewhere in the repo
+because the output is committed; an unpinned converter means the committed
+wikitext depends on whichever pandoc the last person had. Verified identical
+across pandoc 3.5, 3.6.4, 3.7.0.2 and 3.10.
+
+The post-processor lives in `scripts/lib/convert_docs_postprocess.py` and owns
+the source→page mapping, the source list, and the wikitext cleanup — one
+table, asked for by the shell script. It has golden files
+(`tests/unit/test_convert_docs_postprocess.py`) that need neither docker nor
+pandoc.
 
 ### Shell behaviour (`bats`)
 
@@ -394,8 +490,13 @@ For this project, "verified" means:
 
 1. **Fresh clone setup works** — `git clone` → `docker compose up -d` → `setup.sh` completes
 2. **Wiki renders correctly** — Main page loads without errors
-3. **Ingestion succeeds** — OpenSearch `hdp_wiki` index has documents
-4. **End-to-end chatbot answer with citation** — Query returns a correct answer with `[N]` source links
+3. **Authenticated pages load** — `scripts/ci/t3-integration.sh` is green. In
+   particular `Special:Preferences`, the page QA Bug 4 broke
+4. **Ingestion succeeds** — OpenSearch `hdp_wiki` index has documents
+   (baseline: **153 documents from 32 pages**, not ~828 — that figure was
+   `bluespice_wikipage`, the ExtendedSearch index, which counts nested section
+   documents)
+5. **End-to-end chatbot answer with citation** — Query returns a correct answer with `[N]` source links
 
 NOT just "it compiles" or "no PHP fatal errors."
 
@@ -415,6 +516,11 @@ NOT just "it compiles" or "no PHP fatal errors."
     that is what this replaced, and `sed -i` exits 0 when it matches nothing,
     so the patch silently vanishes on the next upstream reindent.
 - **Do NOT duplicate the technical wiki** — Link to `docs/wiki/` instead of re-documenting architecture.
+- **Do NOT hand-edit `docker/mediawiki/wiki-docs/*.wiki`** — they are generated
+  from `docs/wiki/*.md` by `scripts/convert-docs.sh`, and the next regeneration
+  discards the edit. Change the markdown (or the script, for
+  `Help:Inhaltsverzeichnis`), regenerate, and commit both.
+  `scripts/convert-docs.sh --check` catches drift either way.
 
 ---
 

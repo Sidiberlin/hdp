@@ -78,8 +78,11 @@ docker compose exec mediawiki bash /setup.sh
 
 # Tests specifically
 scripts/ci/pytest.sh --tier unit      # stdlib only, ~2s — run this on every save
-scripts/ci/pytest.sh                  # both tiers
+scripts/ci/pytest.sh                  # unit + haystack
 scripts/ci/bats.sh                    # shell behaviour
+
+# Against a real wiki (needs docker; boots the stack, installs it, tears it down)
+scripts/ci/t3-integration.sh
 ```
 
 **EN:** Each check prefers a tool already on your `PATH` and otherwise runs the
