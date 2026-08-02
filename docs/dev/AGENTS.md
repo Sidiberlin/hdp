@@ -240,9 +240,17 @@ scripts/ci/pytest.sh -- -k to_native  # args after -- go to pytest
 Inside the running stack, the haystack image ships `pytest`, so:
 
 ```bash
-docker compose run --rm --no-deps -v "$PWD:/w:ro" -w /w haystack \
-    python -m pytest tests/haystack -p no:cacheprovider
+docker compose run --rm --no-deps --entrypoint python \
+    -v "$PWD:/w:ro" -w /w haystack \
+    -m pytest tests/unit tests/haystack -p no:cacheprovider
 ```
+
+`--entrypoint python` is not optional. The image sets
+`ENTRYPOINT ["/opt/pipeline/entrypoint.sh"]`, and that script never `exec "$@"` —
+it ignores the command entirely and boots hayhooks. Without the override the
+command does not run pytest at all; hayhooks starts instead and dies on
+`OSError: [Errno 30] Read-only file system: '/w/pipelines'`, because `-w /w`
+makes it try to create its pipelines dir inside the read-only mount.
 
 Mount the **repo root**, not just `tests/`. `pytest.ini` lives at the root and is
 what sets `pythonpath`, and one test resolves the repo root by walking up for
