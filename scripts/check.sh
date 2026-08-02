@@ -88,6 +88,7 @@ list_checks() {
     printf '%-14s %-34s %s\n' ruff        'python under docker/' "ruff | $IMG_RUFF"
     printf '%-14s %-34s %s\n' php-lint    'syntax of app/settings.d/*.php' "php | $IMG_PHP"
     printf '%-14s %-34s %s\n' compose     'docker-compose.yml interpolates' 'docker compose v2'
+    printf '%-14s %-34s %s\n' fresh-clone 'TF: fresh clone has every input' 'git'
 }
 
 while [ $# -gt 0 ]; do
@@ -229,6 +230,16 @@ check_php-lint_run() {
 # without one. A contributor who has not created a .env yet is exactly who this
 # script is for, so materialise one from .env.example and remove it again.
 # An existing .env is never touched.
+# ─── TF, the fresh-clone gate ───────────────────────────────────────
+# Included in the default run because it is the highest-value check in the
+# repo — six of the seven bugs in docs/QA-REPORT.md were only visible on a
+# genuine fresh clone — and it costs ~15s with no Docker and no .env.
+# It tests committed state, so it deliberately ignores your working tree.
+check_fresh-clone_run() {
+    [ -d .git ] || { skip fresh-clone "not a git checkout"; return; }
+    scripts/ci/fresh-clone.sh
+}
+
 check_compose_run() {
     have_docker || { skip compose "docker not available"; return; }
     docker compose version >/dev/null 2>&1 || { skip compose "docker compose v2 not available"; return; }
@@ -258,6 +269,7 @@ run_check yamllint   "yaml we own"
 run_check ruff       "python under docker/"
 run_check php-lint   "app/settings.d syntax"
 run_check compose    "compose interpolation"
+run_check fresh-clone "committed tree is complete"
 
 TOTAL=$(( SECONDS - START ))
 
