@@ -46,6 +46,19 @@ if [[ -z "$_INF_URL" ]] || [[ -z "$_INF_PID" ]] || \
 fi
 
 # ─── Authenticate ───────────────────────────────────────────────────
+# Every network and parse step below ends in `|| true`, and that is
+# load-bearing rather than sloppy. This file is *sourced* by setup.sh, which
+# runs under `set -euo pipefail`, so a command substitution whose pipeline
+# exits non-zero aborts setup.sh itself — no message, no fallback, no wiki.
+#
+# curl exits 7 when it cannot reach the host; jq exits 5 on input that is not
+# JSON. So an unreachable Infisical, a mistyped INFISICAL_URL, a proxy's HTML
+# error page, a captive portal or a WAF block page each killed the installer
+# outright, with the reason swallowed by the `2>/dev/null` that was there to
+# keep secrets out of the logs.
+#
+# Every branch in this file is meant to degrade to the .env plaintext values.
+# `|| true` is what lets the checks below actually be reached and say so.
 _inf_token=""
 _inf_response=""
 # The login body must not be passed as a curl argument: anything in argv is
@@ -59,9 +72,9 @@ _inf_response=$(printf 'clientId=%s&clientSecret=%s' "$_INF_CID" "$_INF_CSECRET"
         -H "Content-Type: application/x-www-form-urlencoded" \
         --data @- \
         --connect-timeout 10 \
-        --max-time 15 2>/dev/null)
+        --max-time 15 2>/dev/null || true)
 
-_inf_token=$(echo "$_inf_response" | jq -r '.accessToken // empty' 2>/dev/null)
+_inf_token=$(echo "$_inf_response" | jq -r '.accessToken // empty' 2>/dev/null || true)
 
 if [[ -z "$_inf_token" ]]; then
     echo "${_INF_LOG_PREFIX} WARNING: Authentication failed."
@@ -88,10 +101,10 @@ _inf_secret_response=$(printf 'Authorization: Bearer %s\n' "$_inf_token" \
         -H @- \
         -H "Content-Type: application/json" \
         --connect-timeout 10 \
-        --max-time 30 2>/dev/null)
+        --max-time 30 2>/dev/null || true)
 
 # Extract HDP_ secret names
-_inf_secret_names=$(echo "$_inf_secret_response" | jq -r '.secrets[] | select(.secretKey | startswith("HDP_")) | .secretKey' 2>/dev/null)
+_inf_secret_names=$(echo "$_inf_secret_response" | jq -r '.secrets[] | select(.secretKey | startswith("HDP_")) | .secretKey' 2>/dev/null || true)
 
 if [[ -z "$_inf_secret_names" ]]; then
     echo "${_INF_LOG_PREFIX} WARNING: No HDP_ secrets found in Infisical."
@@ -113,11 +126,20 @@ while IFS= read -r _inf_name; do
             -H @- \
             -H "Content-Type: application/json" \
             --connect-timeout 10 \
-            --max-time 10 2>/dev/null | jq -r '.secret.secretValue // empty' 2>/dev/null)
+            --max-time 10 2>/dev/null | jq -r '.secret.secretValue // empty' 2>/dev/null || true)
 
+    # The name has to be a valid shell identifier or `export` fails, which
+    # under the caller's `set -e` aborts setup.sh. Infisical keys are normally
+    # [A-Z0-9_], but nothing enforces that server-side — and the URL for the
+    # fetch above is already @uri-encoded precisely because exotic names are
+    # possible. Skip and say so rather than take the installer down.
     if [[ -n "$_inf_val" ]]; then
-        export "${_inf_name}=${_inf_val}"
-        _inf_count=$((_inf_count + 1))
+        if [[ "$_inf_name" =~ ^[A-Za-z_][A-Za-z0-9_]*$ ]]; then
+            export "${_inf_name}=${_inf_val}"
+            _inf_count=$((_inf_count + 1))
+        else
+            echo "${_INF_LOG_PREFIX} WARNING: skipping '${_inf_name}' — not a valid shell identifier."
+        fi
     fi
 done <<< "$_inf_secret_names"
 
