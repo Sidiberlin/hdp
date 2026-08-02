@@ -3,8 +3,8 @@
 # T4 — the full-stack smoke job, end to end.
 #
 #   fresh volumes -> build -> compose up (all 7) -> setup.sh -> wait healthy
-#     -> drain the job queue -> ingest the wiki -> tests/integration (unfiltered)
-#     -> teardown
+#     -> wait out the indexing jobs -> ingest the wiki
+#     -> tests/integration (unfiltered) -> teardown
 #
 # One script for both CI and a developer, the same contract
 # scripts/ci/t3-integration.sh and scripts/check.sh hold: the thing that runs
@@ -27,8 +27,8 @@
 #   * Search. BlueSpice's ExtendedSearch does not index synchronously.
 #     setup.sh runs initBackends.php, which creates the index and *enqueues*
 #     one job per page; mediawiki-jobrunner is what actually fills it. T3 has
-#     no jobrunner, so its wiki sits on ~500 pending jobs with an empty index,
-#     and every full-text query returns nothing while the configuration is
+#     no jobrunner, so nothing works those jobs off, the index stays empty, and
+#     every full-text query returns nothing while the configuration is
 #     perfectly correct.
 #   * The chatbot. haystack and chatbot-proxy are not in T3's profile at all,
 #     so /health, /ready, /session and /chat-stream were asserted nowhere —
@@ -41,12 +41,12 @@
 #
 # ─── The two waits, and why they are here rather than in the tests ──
 #
-# Draining the job queue and ingesting the wiki take minutes and are *setup*,
+# Draining the queue and ingesting the wiki take minutes and are *setup*,
 # not assertions. They live here so a failure reads as "the stack could not be
 # brought to the state under test" rather than as a test that timed out. The
-# assertions about the resulting state — queue empty, index populated, 153
-# documents — are in tests/integration/test_search.py, which is where a human
-# looks to find out what broke.
+# assertions about the resulting state — no indexing work left queued, index
+# populated, 153 documents — are in tests/integration/test_search.py, which is
+# where a human looks to find out what broke.
 #
 # Ingestion is skippable (--no-ingest) because it is the single most expensive
 # step (~8 minutes; it embeds 155 sections on CPU) and a developer iterating on
@@ -251,31 +251,38 @@ dc ps
 # The search leg is entirely downstream of this. See the header.
 hdp_say "waiting for mediawiki-jobrunner to drain the queue (up to ${JOBQUEUE_BUDGET}s)"
 
-# Recorded before the wait and handed to the tests as HDP_JOBQUEUE_START. The
-# tests cannot measure this for themselves: this loop empties the queue, so by
-# the time pytest runs the only depth it can observe is zero — and "the
-# jobrunner worked ~500 jobs down to nothing" would be indistinguishable from
-# "the queue was empty all along", which is the state test_search.py exists to
-# reject.
-JOBS_START="$(dc exec -T mediawiki php maintenance/run.php showJobs.php 2>/dev/null \
-    | tr -d '\r' | grep -E '^[0-9]+$' | tail -1)"
+# What is waited on is the queue MINUS the perpetual triggers.
+#
+# `invokeRunner` is the job of mwstake/mediawiki-component-runjobstrigger,
+# wired up in app/extensions/BlueSpiceFoundation/src/Foundation.php, and every
+# execution schedules the next one. So the total NEVER reaches zero on a
+# healthy wiki: measured here on the Wave 4 clean box, 600 right after setup.sh
+# and 630 ten minutes later, all of them invokeRunner — while
+# bluespice_wikipage already held its full 808 documents the entire time.
+# Waiting for a zero total burns the whole budget and then reports a working
+# stack as broken. tests/integration/conftest.py:PERPETUAL_JOB_TYPES is the
+# same list, and the two must agree.
+pending_work() {
+    dc exec -T mediawiki php maintenance/run.php showJobs.php --group 2>/dev/null \
+        | tr -d '\r' \
+        | awk '/queued/ { gsub(/:/, "", $1); if ($1 != "invokeRunner") total += $2 }
+               END { print total + 0 }'
+}
+
+JOBS_START="$(pending_work)"
 JOBS_START="${JOBS_START:-0}"
-echo "  queue depth before draining: $JOBS_START"
+echo "  work queued before draining (excluding perpetual triggers): $JOBS_START"
 
 job_deadline=$(( SECONDS + JOBQUEUE_BUDGET ))
 while :; do
-    # The last numeric line, not the whole output: run.php prints a banner on
-    # some builds, and collapsing every line into one string would glue the
-    # banner onto the count.
-    pending="$(dc exec -T mediawiki php maintenance/run.php showJobs.php 2>/dev/null \
-        | tr -d '\r' | grep -E '^[0-9]+$' | tail -1)"
+    pending="$(pending_work)"
     case "$pending" in
-        ''|*[!0-9]*) echo "  showJobs.php gave ${pending:-no output}; retrying"; pending=-1 ;;
-        *) echo "  pending jobs: $pending" ;;
+        ''|*[!0-9]*) echo "  showJobs.php gave no usable output; retrying"; pending=-1 ;;
+        *) echo "  work still queued: $pending" ;;
     esac
     [ "$pending" = "0" ] && break
     if [ "$SECONDS" -ge "$job_deadline" ]; then
-        hdp_say "queue still at ${pending} after ${JOBQUEUE_BUDGET}s — letting the tests report it"
+        hdp_say "still ${pending} queued after ${JOBQUEUE_BUDGET}s — letting the tests report it"
         break
     fi
     sleep 15

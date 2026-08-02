@@ -5,15 +5,15 @@ difference between "search is configured" and "search works". BlueSpice's
 ExtendedSearch does not index synchronously: `setup.sh` step 4e runs
 `initBackends.php`, which creates the `bluespice_wikipage` index and enqueues
 one indexing job per page, and *the job queue is what fills it*. With no
-jobrunner the queue sits at ~500, the index stays empty, and every full-text
-query returns nothing while `bsgOverrideESBackendHost` is perfectly correct.
-`/qa` in Wave 3 recorded exactly that, and
+jobrunner nothing works those jobs off, the index stays empty, and every
+full-text query returns nothing while `bsgOverrideESBackendHost` is perfectly
+correct. `/qa` in Wave 3 recorded exactly that, and
 `test_search_backend_points_at_the_opensearch_service` in test_site_config.py
 stops at the configuration on purpose, with a comment pointing here.
 
 So this file's structure follows the causal chain rather than the feature list:
 
-    the jobrunner drains the queue
+    the jobrunner is executing jobs, and the indexing work is off the queue
       -> bluespice_wikipage fills up
         -> OpenSearch answers a full-text query for Help content
           -> MediaWiki's list=search, which is served by ExtendedSearch, does too
@@ -33,6 +33,8 @@ broken index — that cost an afternoon in Wave 2's clean-box run 1 and is
 recorded in wave-progress.md as a note for future smoke tests. This is that
 smoke test.
 """
+import re
+
 import pytest
 
 pytestmark = pytest.mark.smoke
@@ -63,39 +65,55 @@ HELP_NS = 12
 SEARCH_TERM = "Architektur"
 
 
-def test_the_jobrunner_drains_the_job_queue(drained_job_queue):
-    """mediawiki-jobrunner empties the queue a fresh install leaves behind.
+def test_the_jobrunner_is_executing_jobs(jobrunner_log):
+    """mediawiki-jobrunner is actually running jobs, not merely alive.
 
-    This is the assertion Wave 3 could not make. `initBackends.php` enqueues
-    the ExtendedSearch indexing work rather than doing it, so on a fresh stack
-    the queue starts in the hundreds; the jobrunner container is a bash loop
-    around `runJobs.php` and works it down to zero.
+    Its healthcheck cannot tell the difference — it confirms that PID 1 is
+    still bash and nothing more — and neither can the queue depth, because the
+    perpetual `invokeRunner` triggers keep it in the hundreds whether the
+    runner is working or dead. So the evidence is the runner's own log, where
+    each completed job prints `... t=<ms> good`.
 
-    A non-zero start count is asserted too. If the queue were empty from the
-    beginning, "drained" would be true of a stack whose jobrunner is dead, and
-    the rest of this file would be testing an index that somebody else's run
-    happened to fill.
+    This is the liveness half of the search leg. The next test is the
+    completion half, and both are needed: a runner that executes jobs but
+    fails all of them prints no `good` lines, and a runner that is not running
+    at all leaves the indexing work queued.
+    """
+    completed = len(re.findall(r"\bt=\d+\s+good\b", jobrunner_log))
+    assert completed > 0, (
+        "mediawiki-jobrunner has not completed a single job. It reports "
+        "healthy, but that healthcheck only asserts PID 1 is bash — it cannot "
+        "see whether runJobs.php is doing anything. Nothing downstream of this "
+        "(the search index, and therefore every full-text assertion below) can "
+        "work.\nLast of the log:\n" + jobrunner_log[-1500:]
+    )
 
-    That start count is the depth *before* anything drained it, which is why it
-    is recorded by the harness (HDP_JOBQUEUE_START) rather than measured here:
-    scripts/ci/t4-smoke.sh does the waiting itself, so by the time pytest runs
-    the queue is already at zero.
+
+def test_no_indexing_work_is_left_queued(drained_job_queue):
+    """Everything the install enqueued has been worked off.
+
+    Deliberately *not* "the queue is empty". `invokeRunner` is the job of
+    `mwstake/mediawiki-component-runjobstrigger` (wired up in
+    BlueSpiceFoundation/src/Foundation.php) and every execution schedules the
+    next, so the total never reaches zero on a healthy wiki — 600 right after
+    setup.sh and 630 ten minutes later on the Wave 4 clean box, while
+    `bluespice_wikipage` already held its full 808 documents throughout.
+
+    Waiting for zero would therefore hang for the whole budget and then fail on
+    a perfectly good stack, and reading the total as an indexing backlog is
+    what makes Wave 3's "500 jobs queued, index empty" note misleading: under
+    T3 the index was empty because there was no jobrunner, not because those
+    500 were index writes.
+
+    What is asserted is the queue *minus* the perpetual types.
     """
     q = drained_job_queue
-    assert q["start"] > 0, (
-        f"the job queue was already empty ({q['start']}) before anything "
-        f"drained it, so nothing here proves mediawiki-jobrunner is alive. On "
-        f"a freshly installed wiki setup.sh leaves several hundred jobs — a "
-        f"zero means the tests are running against an already-drained stack "
-        f"(run scripts/ci/t4-smoke.sh, which records the pre-drain depth) or "
-        f"that initBackends.php never enqueued anything."
-    )
     assert q["end"] == 0, (
-        f"the job queue still holds {q['end']} jobs after {q['seconds']}s "
-        f"(started at {q['start']}, timeout {q['timeout']}s). Either "
-        f"mediawiki-jobrunner is not running the queue down, or the box is "
-        f"slower than the timeout allows — raise HDP_JOBQUEUE_TIMEOUT if it is "
-        f"the latter. Check with: docker compose logs mediawiki-jobrunner"
+        f"{q['end']} non-perpetual job(s) are still queued after "
+        f"{q['seconds']}s (timeout {q['timeout']}s). Either the jobrunner is "
+        f"not keeping up, or a job type is failing and being retried forever.\n"
+        f"queue by type: {q['groups']}\n"
+        f"Check with: docker compose logs mediawiki-jobrunner"
     )
 
 
