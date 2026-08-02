@@ -69,6 +69,27 @@ phpunit.xml
 /composer.local.json
 /composer.phar
 
+# HDP: re-allow the two composer files this fork deliberately commits.
+#
+# Upstream MediaWiki ignores composer.lock and composer.local.json because MW
+# core does not ship them. HDP does — and both are load-bearing:
+#
+#   composer.lock        setup.sh strips hallowelt/chatbot and
+#                        mediawiki/page-header from it at install time, and
+#                        composer install resolves 353 packages from it.
+#   composer.local.json  declares the "pre-autoload-dump" hook that runs all
+#                        eight scripts in _bluespice/pre-autoload-dump.d/,
+#                        including the one applying the 17 .diff patches.
+#
+# Both were tracked while still matching the ignore rules above, which is the
+# failure mode docs/QA-REPORT.md Bug 2 describes: the file is present on the
+# maintainer's disk, so nothing looks wrong, but `git add -A` silently refuses
+# to re-add it if it is ever removed. That is how the Vector HookRunner.php
+# fix was lost. Negating the rules makes the intent explicit and keeps the
+# files re-addable.
+!/composer.lock
+!/composer.local.json
+
 # Operating systems
 ## Mac OS X
 .DS_Store
