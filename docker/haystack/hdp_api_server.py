@@ -2,14 +2,14 @@
 import asyncio
 import logging
 import os
-import subprocess
-from pathlib import Path
 
-import numpy as np
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-from haystack import Pipeline
 from pydantic import BaseModel
+
+# Extracted in Wave 2 so both are reachable from a test. Same directory, which
+# is how the container runs this file (uvicorn on /opt/pipeline).
+from serialization import load_pipeline, to_native
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 log = logging.getLogger("hdp-api")
@@ -19,64 +19,7 @@ PIPELINE_FILE = os.path.join(
     "hdp_pipeline.yaml",
 )
 
-rendered = subprocess.run(
-    ["envsubst"], input=Path(PIPELINE_FILE).read_text(),
-    capture_output=True, text=True,
-).stdout
-
-pipeline = None
-pipeline_error = None
-try:
-    pipeline = Pipeline.loads(rendered)
-    log.info("Pipeline loaded")
-except Exception as e:
-    pipeline_error = str(e)
-    log.warning("Pipeline could not be loaded — likely missing HDP_LLM_API_KEY.")
-    log.warning(f"  Error: {pipeline_error}")
-    log.warning("  The API server will start but return 503 on all queries until configured.")
-    log.warning("  Set HDP_LLM_API_KEY in .env or Infisical and restart the haystack container.")
-
-def to_native(obj):
-    """Recursively convert numpy/Haystack types to JSON-safe native types."""
-    from haystack import Answer, Document, ExtractedAnswer, GeneratedAnswer
-    
-    # Handle Haystack Document objects
-    if isinstance(obj, Document):
-        return {
-            "content": obj.content,
-            "meta": to_native(obj.meta) if obj.meta else {},
-            "id": obj.id,
-            "score": float(obj.score) if obj.score is not None else None,
-        }
-    
-    # Handle Haystack Answer objects
-    if isinstance(obj, (GeneratedAnswer, ExtractedAnswer, Answer)):
-        return {
-            "answer": obj.data if hasattr(obj, "data") else str(obj),
-            "query": obj.query if hasattr(obj, "query") else None,
-            "meta": to_native(obj.meta) if hasattr(obj, "meta") else {},
-            "documents": to_native(obj.documents) if hasattr(obj, "documents") else [],
-            "score": float(obj.score) if hasattr(obj, "score") and obj.score is not None else None,
-        }
-    
-    # Handle dicts
-    if isinstance(obj, dict):
-        return {k: to_native(v) for k, v in obj.items()}
-    
-    # Handle lists/tuples
-    if isinstance(obj, (list, tuple)):
-        return [to_native(v) for v in obj]
-    
-    # Handle numpy types
-    if isinstance(obj, (np.integer,)):
-        return int(obj)
-    if isinstance(obj, (np.floating,)):
-        return float(obj)
-    if isinstance(obj, np.ndarray):
-        return obj.tolist()
-    
-    return obj
-
+pipeline, pipeline_error = load_pipeline(PIPELINE_FILE)
 
 app = FastAPI(title="HDP RAG API")
 

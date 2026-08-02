@@ -67,6 +67,7 @@ COPY docker/haystack/render_pipeline.py /opt/pipeline/render_pipeline.py
 COPY docker/haystack/entrypoint.sh /opt/pipeline/entrypoint.sh
 COPY docker/haystack/ingest_hdp_wiki.py /opt/pipeline/ingest_hdp_wiki.py
 COPY docker/haystack/wikitext.py /opt/pipeline/wikitext.py
+COPY docker/haystack/serialization.py /opt/pipeline/serialization.py
 COPY docker/haystack/hdp_api_server.py /opt/pipeline/hdp_api_server.py
 COPY docker/infisical-loader.sh /infisical-loader.sh
 RUN chmod +x /opt/pipeline/entrypoint.sh /infisical-loader.sh
