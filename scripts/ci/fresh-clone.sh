@@ -54,6 +54,7 @@ REQUIRED_FILES=(
     docker/haystack/hdp_pipeline.yaml
     docker/haystack/entrypoint.sh
     docker/haystack/ingest_hdp_wiki.py
+    docker/haystack/wikitext.py
     docker/haystack/render_pipeline.py
     hdp.sh
     scripts/check.sh

@@ -23,10 +23,8 @@ import hashlib
 import json
 import logging
 import os
-import re
 import time
 import warnings
-from html.parser import HTMLParser
 
 import pymysql
 import requests
@@ -45,6 +43,16 @@ from haystack.dataclasses import Document
 from haystack_integrations.document_stores.opensearch.document_store import (
     DuplicatePolicy,
     OpenSearchDocumentStore,
+)
+
+# Pure transforms, extracted in Wave 2 so they are testable without
+# pymysql/requests/haystack being installed. Same directory, which is how
+# the container runs this file (`python3 ingest_hdp_wiki.py` in /opt/pipeline).
+from wikitext import (
+    build_metadata,
+    decode_varbinary,
+    make_prefixed_title,
+    split_by_sections,
 )
 
 # ─── Configuration ──────────────────────────────────────────────────
@@ -69,18 +77,6 @@ MW_ADMIN_PASS = os.environ.get("HDP_ADMIN_PASSWORD", "")
 
 # Content namespaces to index (from ChatBot extension.json, plus Help namespace)
 INDEXABLE_NAMESPACES = [0, 12, 5000, 5002]
-
-# Namespace ID → text mapping (from LocalSettings + extension.json)
-NAMESPACE_TEXT = {
-    0: "",
-    8: "MediaWiki",
-    10: "Template",
-    12: "Help",
-    102: "Property",
-    112: "Group",
-    5000: "Ministerium",
-    5002: "Projektträger",
-}
 
 # Embedding provider config (see .env.example for the full variable set)
 EMBEDDING_PROVIDER = os.environ.get("HDP_EMBEDDING_PROVIDER", "local").strip().lower()
@@ -206,72 +202,6 @@ def make_embedder(provider: str):
     )
 
 
-class HTMLStripper(HTMLParser):
-    """Strips all HTML tags, keeps text content. Equivalent to PHP strip_tags()."""
-    def __init__(self):
-        super().__init__()
-        self.text = []
-    def handle_data(self, data):
-        self.text.append(data)
-    def get_text(self):
-        return "".join(self.text)
-
-
-def strip_tags(html: str) -> str:
-    stripper = HTMLStripper()
-    stripper.feed(html)
-    return stripper.get_text()
-
-
-def split_by_sections(html_text: str) -> list[dict]:
-    """
-    Split rendered HTML by <h1>-<h6> headings.
-    Mirrors IndexDeepset::getRawPageContentBySections.
-    """
-    sections = []
-
-    # Intro text (before first heading)
-    intro_match = re.match(r'^(.*?)\s*(?=<h[1-6]>)', html_text, re.DOTALL | re.IGNORECASE)
-    if intro_match:
-        intro_text = strip_tags(intro_match.group(1)).strip()
-        if intro_text:
-            sections.append({"section_name": "Intro", "content": intro_text})
-
-    # Split by headings
-    pattern = r'(<h[1-6]>.*?</h[1-6]>\s*.*?)(?=(<h[1-6]>.*?</h[1-6]>)|$)'
-    matches = re.findall(pattern, html_text, re.DOTALL | re.IGNORECASE)
-
-    for match in matches:
-        chunk_html = match[0]
-        heading_match = re.match(r'<h[1-6]>(.*?)</h[1-6]>', chunk_html, re.DOTALL | re.IGNORECASE)
-        section_name = strip_tags(heading_match.group(1)).strip() if heading_match else "Unknown"
-        content = strip_tags(chunk_html).strip()
-        if content:
-            sections.append({"section_name": section_name, "content": content})
-
-    if not sections:
-        full_text = strip_tags(html_text).strip()
-        if full_text:
-            sections.append({"section_name": "Full Page", "content": full_text})
-
-    return sections
-
-
-def build_title_levels(prefixed_title: str) -> dict:
-    parts = prefixed_title.replace("_", " ").split("/")
-    levels = {}
-    for i in range(1, 6):
-        levels[f"title_level_{i}"] = parts[i-1] if i <= len(parts) else ""
-    return levels
-
-
-def _decode(v):
-    """Decode varbinary columns (page_title, page_content_model) to str."""
-    if isinstance(v, bytes):
-        return v.decode("utf-8", errors="replace")
-    return v
-
-
 def get_namespace_pages(conn) -> list[dict]:
     """Fetch all indexable pages from MariaDB."""
     with conn.cursor(pymysql.cursors.DictCursor) as cursor:
@@ -287,8 +217,8 @@ def get_namespace_pages(conn) -> list[dict]:
         rows = cursor.fetchall()
     # Decode varbinary columns to str
     for row in rows:
-        row["page_title"] = _decode(row["page_title"])
-        row["page_content_model"] = _decode(row["page_content_model"])
+        row["page_title"] = decode_varbinary(row["page_title"])
+        row["page_content_model"] = decode_varbinary(row["page_content_model"])
     return rows
 
 
@@ -316,14 +246,6 @@ def get_indexed_page_ids() -> set:
     except Exception as e:
         logger.warning(f"Could not fetch indexed page_ids (index may not exist yet): {e}")
         return set()
-
-
-def make_prefixed_title(namespace: int, title: str) -> str:
-    ns_text = NAMESPACE_TEXT.get(namespace, "")
-    title = title.replace("_", " ")
-    if ns_text:
-        return f"{ns_text}:{title}"
-    return title
 
 
 def mw_api_login() -> requests.Session:
@@ -389,49 +311,6 @@ def render_page(session: requests.Session, prefixed_title: str) -> dict:
     if "error" in data:
         raise RuntimeError(f"Parse error for {prefixed_title}: {data['error']}")
     return data["parse"]
-
-
-def build_metadata(parsed: dict, page: dict, section_name: str) -> dict:
-    """Build the metadata dict matching the query pipeline expectations."""
-    ns = page["page_namespace"]
-    prefixed_title = make_prefixed_title(ns, page["page_title"])
-    title_levels = build_title_levels(prefixed_title)
-
-    # Extract categories
-    categories = [c.get("*", c.get("category", "")) for c in parsed.get("categories", [])]
-
-    # Extract chatbotmeta from properties (SMW)
-    chatbotmeta = ""
-    for prop in parsed.get("properties", []):
-        if prop.get("name", "").lower() == "chatbotmeta":
-            chatbotmeta = "; ".join(prop.get("values", []))
-            break
-
-    # Display title
-    display_title = strip_tags(parsed.get("displaytitle", "")).strip() or prefixed_title
-
-    meta = {
-        # Prompt-required fields
-        "title_level_1": title_levels["title_level_1"],
-        "title_level_2": title_levels["title_level_2"],
-        "title_level_3": title_levels["title_level_3"],
-        "title_level_4": title_levels["title_level_4"],
-        "title_level_5": title_levels["title_level_5"],
-        # Ranker fields
-        "chatbotmeta": chatbotmeta,
-        "display_title": display_title,
-        "sections": [section_name] if section_name != "Full Page" else [],
-        # Additional fields (from UpdateIndexTable mapping)
-        "prefixed_title": prefixed_title,
-        "namespace": ns,
-        "namespace_text": NAMESPACE_TEXT.get(ns, ""),
-        "categories": categories,
-        "tags": [],
-        "sourcekey": "wikipage",
-        "page_id": page["page_id"],
-        "uri": f"http://mediawiki-web:8080/w/{prefixed_title.replace(' ', '_')}",
-    }
-    return meta
 
 
 def process_page(session, embedder, store, page, dry_run=False):
