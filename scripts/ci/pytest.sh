@@ -101,6 +101,18 @@ fi
 have()        { command -v "$1" >/dev/null 2>&1; }
 have_docker() { have docker && docker info >/dev/null 2>&1; }
 
+# Shell-quoted extra pytest args, or nothing at all.
+#
+# `printf '%q ' "${ARR[@]+...}"` on an EMPTY array still runs the format once
+# and emits a single '' — a stray empty argument, which pytest reads as a path
+# and answers by collecting from rootdir instead of the directory asked for.
+# That silently ran the whole suite in place of the requested tier. Guard on
+# the array length instead.
+pytest_extra_args() {
+    [ "${#PYTEST_ARGS[@]}" -eq 0 ] && return 0
+    printf '%q ' "${PYTEST_ARGS[@]}"
+}
+
 # The one image name that exists locally, if any. `docker compose build
 # haystack` names it after the project directory, so the name is not fixed;
 # probe the candidates rather than hardcoding one and silently never matching.
@@ -129,7 +141,7 @@ run_unit() {
         docker run --rm -e HDP_REGEN_GOLDEN="${HDP_REGEN_GOLDEN:-}" \
             -v "$REPO_ROOT":/w -w /w "$IMG_PYTHON" \
             sh -c "pip install --quiet --no-cache-dir --root-user-action=ignore pytest==9.0.2 \
-                   && python -m pytest tests/unit $(printf '%q ' "${PYTEST_ARGS[@]+"${PYTEST_ARGS[@]}"}")"
+                   && python -m pytest tests/unit $(pytest_extra_args)"
         return $?
     fi
     echo "  no python3-with-pytest on PATH and no usable docker"
@@ -164,7 +176,7 @@ run_haystack() {
         echo "  using the built haystack image: $image"
         docker run --rm --entrypoint sh \
             -v "$REPO_ROOT":/w -w /w "$image" \
-            -c "python -m pytest tests/haystack $(printf '%q ' "${PYTEST_ARGS[@]+"${PYTEST_ARGS[@]}"}")"
+            -c "python -m pytest tests/haystack $(pytest_extra_args)"
         return $?
     fi
 
@@ -176,7 +188,7 @@ run_haystack() {
                apt-get update -qq >/dev/null 2>&1
                apt-get install -y -qq --no-install-recommends gettext-base >/dev/null 2>&1
                pip install --quiet --no-cache-dir --root-user-action=ignore -r tests/requirements.txt
-               python -m pytest tests/haystack $(printf '%q ' "${PYTEST_ARGS[@]+"${PYTEST_ARGS[@]}"}")"
+               python -m pytest tests/haystack $(pytest_extra_args)"
     return $?
 }
 
