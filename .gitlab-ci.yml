@@ -10,6 +10,7 @@
 
 stages:
   - lint
+  - test
   - fresh
   - patch
 
@@ -63,7 +64,69 @@ ruff:
   image: ghcr.io/astral-sh/ruff:0.16.1
   <<: *default_rules
   script:
-    - ruff check docker/
+    # tests/ is in scope as of Wave 2. Without it the whole suite would be
+    # invisible to the linter, which is how test code rots.
+    - ruff check docker/ tests/
+
+# ─── Unit tests ─────────────────────────────────────────────────────
+# Two tiers, split by what the code under test actually imports.
+#
+# render_pipeline.render, build_result_from_haystack and the wikitext pure
+# functions import nothing outside the standard library, so pytest-unit needs
+# no install at all and finishes in about two seconds. Only to_native() and
+# load_pipeline() need Haystack, and that tier is affordable because of a
+# measurement rather than an assumption:
+#
+#     pip install haystack-ai==2.15.0  ->  24s, 172MB, no torch, no transformers
+#
+# torch and transformers arrive via sentence-transformers, a runtime dependency
+# of the embedder that nothing under test touches. So nothing is mocked
+# anywhere in this suite — the tests use real Document, GeneratedAnswer,
+# ExtractedAnswer and Answer objects.
+pytest-unit:
+  stage: test
+  image: python:3.11-slim
+  <<: *default_rules
+  script:
+    - pip install --quiet --no-cache-dir --root-user-action=ignore pytest==9.0.2
+    - python -m pytest tests/unit
+
+pytest-haystack:
+  stage: test
+  image: python:3.11-slim
+  <<: *default_rules
+  variables:
+    DEBIAN_FRONTEND: "noninteractive"
+  before_script:
+    # load_pipeline() shells out to envsubst, exactly as it does in the
+    # haystack image. Providing it beats mocking the call.
+    - apt-get update -qq > /dev/null
+    - apt-get install -y -qq --no-install-recommends gettext-base > /dev/null
+  script:
+    - pip install --quiet --no-cache-dir --root-user-action=ignore -r tests/requirements.txt
+    - python -m pytest tests/haystack
+
+# ─── Shell behaviour ────────────────────────────────────────────────
+# docker/infisical-loader.sh only. docker/setup.sh is a 557-line top-to-bottom
+# installer under `set -euo pipefail`; asserting its exit code needs MariaDB
+# and composer, which is Wave 3's integration job, not this one.
+#
+# Pinned by digest rather than :latest. A moving tag means this job's verdict
+# can change with no commit to blame — see the note on the anchors above and
+# the reasoning recorded in ruff.toml.
+bats:
+  stage: test
+  # The image's entrypoint is bats itself; overriding it to "" is what lets a
+  # before_script run at all. curl is then shadowed by the test double in
+  # tests/bats/helpers/bin; jq and the loader under test are real.
+  image:
+    name: bats/bats@sha256:5322b877351fda0cc435de8c6116de7d0a2ec79d7c680132a0ef329a633bc66f
+    entrypoint: [""]
+  <<: *default_rules
+  before_script:
+    - apk add --no-cache jq curl > /dev/null
+  script:
+    - bats tests/bats
 
 # ─── settings.d syntax ──────────────────────────────────────────────
 php-lint:

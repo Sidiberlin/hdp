@@ -24,8 +24,9 @@ For full architecture documentation, see [`docs/wiki/`](docs/wiki/) (system diag
 | `app/skins/` | MediaWiki skins | `.gitignore` has `/*` **but re-includes the six shipped skins by name** — they are trackable, do not use `git add -f`. See [The `app/skins/.gitignore` Trap](#the-appskinsgitignore-trap) |
 | `docker/patches/` | Patch manifest — one YAML sidecar per patch, plus the Class-A `.patch` files | 19 entries; see [`patches.md`](patches.md) |
 | `scripts/` | Contributor and CI entry points | `check.sh` (run before pushing), `verify-patches.sh`, `apply-patches.sh`, `ci/` |
+| `tests/` | The test suite — see [The two pytest tiers](#the-two-pytest-tiers) | `unit/` (stdlib), `haystack/` (real haystack-ai), `bats/` (shell) |
 | `docker/` | Docker build contexts and setup scripts | `setup.sh` (first-boot install), `haystack/` (RAG pipeline), `chatbot-proxy/` (Deepset→Haystack adapter) |
-| `docker/haystack/` | Haystack RAG pipeline implementation | `hdp_pipeline.yaml`, `ingest_hdp_wiki.py`, `hdp_api_server.py`, `entrypoint.sh` |
+| `docker/haystack/` | Haystack RAG pipeline implementation | `hdp_pipeline.yaml`, `ingest_hdp_wiki.py`, `hdp_api_server.py`, `entrypoint.sh`, plus the two Wave 2 extractions `wikitext.py` (pure transforms) and `serialization.py` (`to_native`, `load_pipeline`) |
 | `docs/` | User and architecture documentation | `QA-REPORT.md`, `embedding-providers.md`, `wiki/` (technical wiki) |
 | `docker-compose.yml` | All 7 services: MariaDB, MediaWiki (PHP-FPM + Apache + jobrunner), OpenSearch, Haystack, chatbot-proxy | |
 | `.env.example` | Environment variable template (Infisical + plaintext fallback) | |
@@ -157,7 +158,7 @@ docker compose exec haystack curl -s -X POST http://localhost:1417/hdp_pipeline/
 One command, no toolchain install, no `.env`, no running stack:
 
 ```bash
-./scripts/check.sh            # everything; ~30s
+./scripts/check.sh            # everything; ~100s
 ./scripts/check.sh --fix      # apply auto-fixes where the tool supports one
 ./scripts/check.sh --only ruff
 ./scripts/check.sh --patches  # + full patch verification (needs a composer-installed tree)
@@ -180,6 +181,7 @@ What it covers today:
 | `ruff` | Python under `docker/` and `tests/`, against the pinned ruleset in `ruff.toml` |
 | `pytest-unit` | `tests/unit/` — stdlib-only unit tests, ~2s, no install needed |
 | `pytest-haystack` | `tests/haystack/` — real `haystack-ai`, no mocks (see below) |
+| `bats` | `docker/infisical-loader.sh` behaviour, incl. the two Wave 0 security fixes |
 | `php-lint` | the 17 `app/settings.d/*.php` files gating ~130 extensions |
 | `compose` | `docker compose config` on v2 |
 | `gitleaks` | committed secrets, scoped to paths this project authors |
@@ -241,6 +243,52 @@ Inside the running stack, the haystack image ships `pytest`, so:
 docker compose run --rm --no-deps -v "$PWD/tests:/tests:ro" haystack \
     python -m pytest /tests/haystack
 ```
+
+### Golden files
+
+`build_result_from_haystack` is covered by 16 checked-in JSON fixtures under
+`tests/unit/fixtures/build_result/`. Regenerate them, never by hand:
+
+```bash
+scripts/ci/pytest.sh --regen-golden   # then read the diff before committing
+```
+
+Regeneration never runs in CI. A golden file that updates itself records
+whatever the code does today, which is the opposite of what it is for.
+
+The two `uuid4()` values are validated rather than mocked: the comparison walks
+the whole structure, asserts anything UUID-shaped really is version 4, and then
+substitutes a sentinel. Monkeypatching `uuid.uuid4` would make the comparison
+simpler and would stop testing the real call — swapping it for `uuid1()`, which
+encodes the host MAC address and the time into an id sent to every chat client,
+would keep a monkeypatched suite green.
+
+### Shell behaviour (`bats`)
+
+`tests/bats/` covers `docker/infisical-loader.sh` and nothing else.
+
+`docker/setup.sh` is the other obvious candidate and is not testable at this
+level — 557 lines, `set -euo pipefail`, `cd "$MW"` on line 18, and a
+top-to-bottom installer body, so sourcing it in a test runs the installer.
+Asserting its exit code means standing up MariaDB and composer first, which is
+an integration test and belongs with Wave 3.
+
+`infisical-loader.sh` is the opposite: designed to be sourced, with a clean
+early-return path, and it carries two Wave 0 security fixes that regress
+silently — the `:-` defaults that stop `set -u` aborting `setup.sh`, and the
+client secret and bearer token travelling on stdin rather than argv.
+
+`curl` is a test double that records its own `/proc/self/cmdline` — literally
+what another process in the container can read, and unlike `ps aux` it cannot
+miss the window in which the process is alive. `jq`, `bash` and the loader
+itself are real.
+
+**If you touch `infisical-loader.sh`, remember it is *sourced* under `set -euo
+pipefail`.** A command substitution whose pipeline exits non-zero aborts
+`setup.sh` itself, with the reason swallowed by the `2>/dev/null` that keeps
+secrets out of the logs. That is why every `curl`/`jq` substitution in that file
+ends in `|| true`; three separate crash paths (`e33edc6c4`) came from exactly
+this.
 
 ---
 

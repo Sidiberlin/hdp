@@ -80,6 +80,21 @@ docker compose exec haystack curl -s -X POST http://localhost:1417/hdp_pipeline/
 | `app/settings.d/050-Fixes.php` | MariaDB mode fixes |
 | `docker/setup.sh` | First-boot installation |
 | `docker/haystack/ingest_hdp_wiki.py` | Wiki → OpenSearch ingestion |
+| `docker/haystack/wikitext.py` | Pure wiki-text transforms — has unit tests, keep them passing |
+| `docker/haystack/serialization.py` | `to_native` + `load_pipeline` — has unit tests |
+| `tests/` | The suite; see AGENTS.md "The two pytest tiers" |
+
+### Testing
+
+```bash
+scripts/ci/pytest.sh --tier unit   # stdlib only, ~2s — run on every save
+scripts/ci/pytest.sh               # both tiers (adds real haystack-ai)
+scripts/ci/bats.sh                 # shell behaviour
+./scripts/check.sh                 # everything CI runs, ~100s
+```
+
+Nothing in the suite is mocked. See AGENTS.md for why that is affordable and
+for the golden-file regeneration workflow.
 
 ### Known Gotchas for Claude Code
 
@@ -87,6 +102,8 @@ docker compose exec haystack curl -s -X POST http://localhost:1417/hdp_pipeline/
 2. **Bind mounts are live** — Editing files under `app/` affects running containers immediately (no rebuild)
 3. **Infisical shadows `.env`** — If using Infisical, `HDP_*` secrets override `.env` at every container start
 4. **MariaDB volume persistence** — If `HDP_DB_PASSWORD` changes, run `docker compose down -v` to reset
+5. **`docker/infisical-loader.sh` is *sourced* under `set -euo pipefail`** — a command substitution that exits non-zero aborts `setup.sh` itself, with the reason swallowed by the `2>/dev/null` that keeps secrets out of the logs. That is why every `curl`/`jq` substitution there ends in `|| true`. Three crash paths came from exactly this (`e33edc6c4`); `tests/bats/` guards them now.
+6. **Tests live at the repo root, not in the build contexts** — `docker/haystack/` and `docker/chatbot-proxy/` are Docker build contexts, so a test placed there ships in the production image
 
 ---
 
