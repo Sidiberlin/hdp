@@ -1,0 +1,18 @@
+{
+  "answers": [
+    {
+      "answer": "Was sind Cloud-Computing-Modelle?"
+    },
+    {
+      "answer": "Antwort ohne Quellen",
+      "meta": {
+        "doc_ids": [],
+        "documents": []
+      },
+      "query_id": "<uuid4>",
+      "result_id": "<uuid4>"
+    }
+  ],
+  "documents": [],
+  "query": "Was sind Cloud-Computing-Modelle?"
+}

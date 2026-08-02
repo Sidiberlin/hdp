@@ -41,6 +41,12 @@
 #   scripts/ci/pytest.sh --tier unit      stdlib tier only
 #   scripts/ci/pytest.sh --tier haystack  haystack tier only
 #   scripts/ci/pytest.sh -- -k to_native  args after -- go to pytest
+#   scripts/ci/pytest.sh --regen-golden   rewrite the golden JSON fixtures from
+#                                         the current implementation, then show
+#                                         the diff. Never runs in CI: a golden
+#                                         file that updates itself records
+#                                         whatever the code does today, which is
+#                                         the opposite of its purpose.
 #
 # Exit: 0 all selected tiers passed · 1 a tier failed · 2 bad usage
 #       77 a tier could not be run at all (check.sh renders this as SKIP,
@@ -57,6 +63,7 @@ IMG_PYTHON="python:3.11-slim"
 HAYSTACK_IMAGE_CANDIDATES=(hdp-haystack haystack)
 
 TIER="all"
+REGEN=0
 PYTEST_ARGS=()
 
 usage() {
@@ -70,6 +77,7 @@ while [ $# -gt 0 ]; do
             [ $# -gt 0 ] || { echo "--tier needs a value (unit|haystack|all)" >&2; exit 2; }
             TIER="$1"
             ;;
+        --regen-golden) REGEN=1 ;;
         -h|--help) usage; exit 0 ;;
         --) shift; PYTEST_ARGS+=("$@"); break ;;
         *) echo "unknown argument: $1" >&2; exit 2 ;;
@@ -81,6 +89,14 @@ case "$TIER" in
     unit|haystack|all) ;;
     *) echo "--tier must be one of: unit, haystack, all (got '$TIER')" >&2; exit 2 ;;
 esac
+
+if [ "$REGEN" -eq 1 ]; then
+    # The fixtures live under tests/unit/, so regeneration is a unit-tier
+    # operation regardless of what --tier said.
+    TIER="unit"
+    export HDP_REGEN_GOLDEN=1
+    echo "regenerating golden fixtures — review the diff before committing"
+fi
 
 have()        { command -v "$1" >/dev/null 2>&1; }
 have_docker() { have docker && docker info >/dev/null 2>&1; }
@@ -110,7 +126,8 @@ run_unit() {
         return $?
     fi
     if have_docker; then
-        docker run --rm -v "$REPO_ROOT":/w -w /w "$IMG_PYTHON" \
+        docker run --rm -e HDP_REGEN_GOLDEN="${HDP_REGEN_GOLDEN:-}" \
+            -v "$REPO_ROOT":/w -w /w "$IMG_PYTHON" \
             sh -c "pip install --quiet --no-cache-dir --root-user-action=ignore pytest==9.0.2 \
                    && python -m pytest tests/unit $(printf '%q ' "${PYTEST_ARGS[@]+"${PYTEST_ARGS[@]}"}")"
         return $?
@@ -185,8 +202,20 @@ if [ "$ran" -eq 0 ] && [ "$skipped" -gt 0 ]; then
     echo "  no tier could be run"
     exit 77
 fi
-if [ "$skipped" -gt 0 ] && [ "$overall" -eq 0 ]; then
+if [ "$skipped" -gt 0 ] && [ "$overall" -eq 0 ] && [ "$REGEN" -eq 0 ]; then
     echo "  note: $skipped tier(s) could not run — this is not a full pass"
+fi
+
+if [ "$REGEN" -eq 1 ]; then
+    echo ""
+    echo "── golden fixture changes ──"
+    # --porcelain covers files git does not track yet; plain `git diff` shows
+    # nothing for a brand-new fixture, which would read as "no changes".
+    if git rev-parse --git-dir >/dev/null 2>&1; then
+        git status --porcelain -- tests/unit/fixtures/ || true
+        git diff -- tests/unit/fixtures/ || true
+    fi
+    echo "Review the above, then commit. Nothing was verified by this run."
 fi
 
 exit "$overall"

@@ -1,0 +1,44 @@
+{
+  "answers": [
+    {
+      "answer": "Was sind Cloud-Computing-Modelle?"
+    },
+    {
+      "answer": "Eingepackte Antwort",
+      "meta": {
+        "doc_ids": [
+          "doc-1"
+        ],
+        "documents": [
+          {
+            "content": "Inhalt von Dokument 1.",
+            "id": "doc-1",
+            "meta": {
+              "namespace": 12,
+              "page_id": 101,
+              "prefixed_title": "Help:Seite 1",
+              "title_level_1": "Help:Seite 1",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_1"
+            }
+          }
+        ]
+      },
+      "query_id": "<uuid4>",
+      "result_id": "<uuid4>"
+    }
+  ],
+  "documents": [
+    {
+      "content": "Inhalt von Dokument 1.",
+      "id": "doc-1",
+      "meta": {
+        "namespace": 12,
+        "page_id": 101,
+        "prefixed_title": "Help:Seite 1",
+        "title_level_1": "Help:Seite 1",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_1"
+      }
+    }
+  ],
+  "query": "Was sind Cloud-Computing-Modelle?"
+}

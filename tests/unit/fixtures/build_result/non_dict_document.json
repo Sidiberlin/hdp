@@ -1,0 +1,44 @@
+{
+  "answers": [
+    {
+      "answer": "Was sind Cloud-Computing-Modelle?"
+    },
+    {
+      "answer": "Antwort",
+      "meta": {
+        "doc_ids": [
+          "0"
+        ],
+        "documents": [
+          {
+            "content": "kein dict",
+            "id": "0",
+            "meta": {
+              "namespace": 0,
+              "page_id": 0,
+              "prefixed_title": "Unbekannt",
+              "title_level_1": "",
+              "uri": ""
+            }
+          }
+        ]
+      },
+      "query_id": "<uuid4>",
+      "result_id": "<uuid4>"
+    }
+  ],
+  "documents": [
+    {
+      "content": "kein dict",
+      "id": "0",
+      "meta": {
+        "namespace": 0,
+        "page_id": 0,
+        "prefixed_title": "Unbekannt",
+        "title_level_1": "",
+        "uri": ""
+      }
+    }
+  ],
+  "query": "Was sind Cloud-Computing-Modelle?"
+}

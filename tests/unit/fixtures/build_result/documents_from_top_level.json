@@ -1,0 +1,67 @@
+{
+  "answers": [
+    {
+      "answer": "Was sind Cloud-Computing-Modelle?"
+    },
+    {
+      "answer": "Antwort",
+      "meta": {
+        "doc_ids": [
+          "doc-4",
+          "doc-5"
+        ],
+        "documents": [
+          {
+            "content": "Inhalt von Dokument 4.",
+            "id": "doc-4",
+            "meta": {
+              "namespace": 12,
+              "page_id": 104,
+              "prefixed_title": "Help:Seite 4",
+              "title_level_1": "Help:Seite 4",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_4"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 5.",
+            "id": "doc-5",
+            "meta": {
+              "namespace": 12,
+              "page_id": 105,
+              "prefixed_title": "Help:Seite 5",
+              "title_level_1": "Help:Seite 5",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_5"
+            }
+          }
+        ]
+      },
+      "query_id": "<uuid4>",
+      "result_id": "<uuid4>"
+    }
+  ],
+  "documents": [
+    {
+      "content": "Inhalt von Dokument 4.",
+      "id": "doc-4",
+      "meta": {
+        "namespace": 12,
+        "page_id": 104,
+        "prefixed_title": "Help:Seite 4",
+        "title_level_1": "Help:Seite 4",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_4"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 5.",
+      "id": "doc-5",
+      "meta": {
+        "namespace": 12,
+        "page_id": 105,
+        "prefixed_title": "Help:Seite 5",
+        "title_level_1": "Help:Seite 5",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_5"
+      }
+    }
+  ],
+  "query": "Was sind Cloud-Computing-Modelle?"
+}
