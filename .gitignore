@@ -63,3 +63,4 @@ app/cache/
 # Tool-generated state (not authored content)
 docs/.codewiki-state.json
 .gstack/
+.pytest_cache/

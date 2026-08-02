@@ -52,7 +52,15 @@ RUN pip install --no-cache-dir \
     "jsonref==1.1.0" \
     "pymysql==1.2.0" \
     "requests==2.34.2" \
-    "gradio_client>=2.5.0"
+    "gradio_client>=2.5.0" \
+    "pytest==9.0.2"
+# pytest is here on purpose. It costs about 2MB on a ~2GB image and it is what
+# makes the container self-sufficient for the tests/haystack tier: this image
+# already ships gettext-base (for envsubst) and haystack-ai, so with pytest
+# added, `docker compose exec haystack python -m pytest /tests` needs no network
+# and no install step. The tests themselves are NOT copied in — they are
+# bind-mounted read-only at run time, so no test code ships in the image.
+# Keep the version in step with tests/requirements.txt.
 
 COPY docker/haystack/hdp_pipeline.yaml /opt/pipeline/hdp_pipeline.yaml
 COPY docker/haystack/render_pipeline.py /opt/pipeline/render_pipeline.py

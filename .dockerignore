@@ -45,3 +45,9 @@ node_modules/
 # Secrets
 .env
 *.env.local
+
+# Tests. Bind-mounted read-only at run time by scripts/ci/pytest.sh, never
+# COPY'd, so they have no business inflating the build context.
+tests/
+pytest.ini
+.pytest_cache/

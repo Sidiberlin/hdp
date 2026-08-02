@@ -177,7 +177,9 @@ What it covers today:
 |---|---|
 | `shellcheck` | shell in `docker/ scripts/ hdp.sh` (not vendored upstream) |
 | `yamllint` | compose, publiccode, pipeline, CI, the patch manifest |
-| `ruff` | Python under `docker/`, against the pinned ruleset in `ruff.toml` |
+| `ruff` | Python under `docker/` and `tests/`, against the pinned ruleset in `ruff.toml` |
+| `pytest-unit` | `tests/unit/` — stdlib-only unit tests, ~2s, no install needed |
+| `pytest-haystack` | `tests/haystack/` — real `haystack-ai`, no mocks (see below) |
 | `php-lint` | the 17 `app/settings.d/*.php` files gating ~130 extensions |
 | `compose` | `docker compose config` on v2 |
 | `gitleaks` | committed secrets, scoped to paths this project authors |
@@ -197,6 +199,48 @@ was never committed, or that a `.gitignore` rule silently refuses.
 
 Note that it tests **committed** state. Uncommitted work in your tree is
 deliberately not under test, and it says so when your tree is dirty.
+
+### The two pytest tiers
+
+Tests live in `tests/` at the repo root, not inside `docker/haystack/`. Those
+directories are Docker build contexts; a test placed there either ships inside
+the production image or needs `.dockerignore` surgery.
+
+| Tier | Path | Needs | Cost |
+|---|---|---|---|
+| `pytest-unit` | `tests/unit/` | nothing but pytest | ~2s |
+| `pytest-haystack` | `tests/haystack/` | `haystack-ai` + `envsubst` | 0s warm, ~47s cold |
+
+The split follows what the code actually imports. `render_pipeline.render`,
+`build_result_from_haystack` and the `wikitext` pure functions import nothing
+outside the standard library, so they run on bare Python. Only `to_native()`
+and `load_pipeline()` need Haystack.
+
+**Nothing is mocked, anywhere.** That is affordable because of a measurement:
+
+```
+docker run --rm python:3.11-slim  pip install haystack-ai==2.15.0
+-> 24s, 172MB site-packages, no torch, no transformers
+```
+
+torch and transformers arrive via `sentence-transformers`, a runtime dependency
+of the embedder that nothing under test touches. Real `Document`,
+`GeneratedAnswer`, `ExtractedAnswer` and `Answer` objects cost 24 seconds.
+
+Run them with `scripts/ci/pytest.sh`, which knows how to satisfy each tier:
+
+```bash
+scripts/ci/pytest.sh                  # both tiers
+scripts/ci/pytest.sh --tier unit      # the fast one
+scripts/ci/pytest.sh -- -k to_native  # args after -- go to pytest
+```
+
+Inside the running stack, the haystack image ships `pytest`, so:
+
+```bash
+docker compose run --rm --no-deps -v "$PWD/tests:/tests:ro" haystack \
+    python -m pytest /tests/haystack
+```
 
 ---
 
