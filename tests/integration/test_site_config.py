@@ -166,6 +166,58 @@ def test_sql_mode_has_no_only_full_group_by(mw_globals, mw_sql):
     )
 
 
+def test_search_backend_points_at_the_opensearch_service(mw_globals, compose):
+    """ExtendedSearch is wired to the opensearch container, and reached it.
+
+    `app/settings.d/050-Fixes.php` sets `bsgOverrideESBackendHost` and friends
+    because BlueSpiceExtendedSearch's `extension.json` default is
+    127.0.0.1:9200 — nothing at all inside the mediawiki container. Without the
+    override every search throws `NoNodesAvailableException` and the Search
+    Center renders no results, ever.
+
+    Note the missing `wg` prefix, which is the trap: `BlueSpice\\Config` is a
+    MultiConfig chain that consults a database-backed settings table *before*
+    plain `$wgBsg*` globals, so an ordinary `$wgBsgESBackendHost` override is
+    silently shadowed by the DB-seeded default. `bsgOverride*` is the only
+    layer that wins. A test that read the `wg`-prefixed name would pass while
+    search was broken.
+
+    **What this does not assert: that search returns results.** The index is
+    populated by background jobs, and `mediawiki-jobrunner` is not part of the
+    T3 minimal profile — so on a freshly installed T3 wiki the queue holds
+    ~500 pending jobs and `bluespice_wikipage` is empty. Full-text search
+    coverage belongs to Wave 4's T4, against the full stack. What is asserted
+    here is the half that fails deterministically and costs nothing: the
+    config is right, and MediaWiki reached OpenSearch well enough for
+    `initBackends.php` to create the index.
+    """
+    g = mw_globals(
+        ["bsgOverrideESBackendHost", "bsgOverrideESBackendPort",
+         "bsgOverrideESBackendTransport"]
+    )
+    assert g["bsgOverrideESBackendHost"] == "opensearch", (
+        f"ExtendedSearch's backend host is {g['bsgOverrideESBackendHost']!r}. "
+        f"The extension.json default is 127.0.0.1, which is nothing inside the "
+        f"mediawiki container; see app/settings.d/050-Fixes.php."
+    )
+    assert str(g["bsgOverrideESBackendPort"]) == "9200"
+    assert g["bsgOverrideESBackendTransport"] == "https"
+
+    probe = compose(
+        "exec", "-T", "opensearch", "sh", "-c",
+        'curl -sk -u "admin:$OPENSEARCH_INITIAL_ADMIN_PASSWORD" '
+        '"https://localhost:9200/_cat/indices?h=index"',
+        timeout=180,
+    )
+    if probe.returncode != 0:
+        pytest.skip("opensearch is not part of this stack, so there is no backend to check")
+    assert "bluespice_wikipage" in probe.stdout, (
+        "the bluespice_wikipage index does not exist. setup.sh step 4e runs "
+        "initBackends.php to create it, so MediaWiki never successfully "
+        "reached OpenSearch.\nIndices present:\n" + probe.stdout[:1000]
+    )
+
+
 def test_debug_logging_is_off(mw_globals, repo_root):
     """$wgDebugLogFile is empty and no debug log is accumulating.
 

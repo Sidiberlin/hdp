@@ -15,12 +15,29 @@ import os
 
 import pytest
 
-# Both Wave 2 clean-box runs produced exactly this, from an empty volume.
-EXPECTED_TOTAL_PAGES = 108
+# Pages that come from the *repo* — the seeded content plus everything
+# BlueSpice's own installer creates. Excludes the user-owned namespaces below.
+#
+# 107, not 108, and the difference is the whole reason this constant is
+# filtered. Earlier wave notes recorded both figures for the same wiki and
+# treated it as a discrepancy; it is not. A total page count includes
+# `Benutzer:Admin`, which the CreateUserPage extension creates the first time
+# a user logs in *through the web UI* — so the total is 107 immediately after
+# install, 108 once somebody looks at the wiki, and higher again per user.
+#
+# Asserting on the total therefore fails because a human opened a browser,
+# which is not a defect in anything. Filtering the user-owned namespaces makes
+# the number describe what this file is actually about: the content the repo
+# ships.
+EXPECTED_SEEDED_PAGES = 107
 
 # ns 4 is the meta namespace, which app/settings.d/020-DefaultSettings.php
 # names "Site" via $wgMetaNamespace.
 NS_MAIN, NS_META, NS_HELP = 0, 4, 12
+
+# Created on demand as users appear, by CreateUserPage (ns 2/3) and
+# SimpleBlogPage (ns 502/503). Never seeded, never part of the baseline.
+USER_OWNED_NAMESPACES = {2, 3, 502, 503}
 
 # Pages seeded from a specific committed .wiki file, as (namespace, title).
 SEEDED_SINGLETONS = [
@@ -83,8 +100,17 @@ def _missing_titles(wiki, titles):
 
 
 @pytest.fixture(scope="session")
-def expected_total_pages():
-    return int(os.environ.get("HDP_EXPECTED_PAGE_COUNT", EXPECTED_TOTAL_PAGES))
+def expected_seeded_pages():
+    return int(os.environ.get("HDP_EXPECTED_PAGE_COUNT", EXPECTED_SEEDED_PAGES))
+
+
+def _pages_by_namespace(wiki):
+    """Every page title on the wiki, grouped by namespace id."""
+    # Negative ids are MediaWiki's virtual namespaces (-1 Special, -2 Media).
+    # They hold no rows in the page table and `list=allpages` rejects them
+    # outright with badvalue rather than returning an empty list.
+    namespaces = [int(n) for n in wiki.siteinfo("namespaces")["namespaces"] if int(n) >= 0]
+    return {ns: wiki.all_pages(ns) for ns in namespaces}
 
 
 def test_main_page_exists_and_is_the_configured_main_page(wiki):
@@ -146,14 +172,21 @@ def test_main_namespace_holds_the_two_content_pages(wiki):
     )
 
 
-def test_total_page_count_matches_the_baseline(wiki, expected_total_pages):
-    stats = wiki.siteinfo("statistics")["statistics"]
-    assert stats["pages"] == expected_total_pages, (
-        f"the wiki has {stats['pages']} pages, not the {expected_total_pages} "
-        f"both Wave 2 clean-box runs produced from an empty volume. More is "
-        f"usually a seed running twice; fewer is a seed that failed. Override "
-        f"with HDP_EXPECTED_PAGE_COUNT for a one-off, or update the constant "
-        f"in the commit that changes the seed content."
+def test_seeded_page_count_matches_the_baseline(wiki, expected_seeded_pages):
+    """The repo's own content, counted without the user-owned namespaces.
+
+    See EXPECTED_SEEDED_PAGES for why the total is the wrong number to assert.
+    """
+    by_ns = _pages_by_namespace(wiki)
+    seeded = {ns: t for ns, t in by_ns.items() if ns not in USER_OWNED_NAMESPACES}
+    count = sum(len(t) for t in seeded.values())
+    assert count == expected_seeded_pages, (
+        f"the wiki has {count} seeded pages, not the {expected_seeded_pages} a "
+        f"fresh install produces. More is usually a seed running twice; fewer "
+        f"is a seed that failed. Per namespace: "
+        f"{ {ns: len(t) for ns, t in sorted(seeded.items()) if t} }.\n"
+        f"Override with HDP_EXPECTED_PAGE_COUNT for a one-off, or update the "
+        f"constant in the commit that changes the seed content."
     )
 
 
@@ -164,9 +197,6 @@ def test_no_page_has_an_unknown_content_model(wiki):
     is invisible to search and to ingestion — the concrete meaning of
     "no corrupt pages".
     """
-    # Negative ids are MediaWiki's virtual namespaces (-1 Special, -2 Media).
-    # They hold no rows in the page table and `list=allpages` rejects them
-    # outright with badvalue rather than returning an empty list.
     namespaces = [int(n) for n in wiki.siteinfo("namespaces")["namespaces"] if int(n) >= 0]
     found = {}
     for ns in namespaces:
