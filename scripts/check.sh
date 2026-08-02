@@ -56,6 +56,7 @@ else
 fi
 
 FIX=0
+PATCHES=0
 VERBOSE=0
 NO_DOCKER=0
 declare -a ONLY=()
@@ -92,7 +93,9 @@ list_checks() {
     printf '%-14s %-34s %s\n' env-example '.env.example covers compose' 'grep'
     printf '%-14s %-34s %s\n' publiccode  'publiccode.yml schema' 'italia/publiccode-parser-go'
     printf '%-14s %-34s %s\n' patch-ignore 'no patch target is gitignored' 'git'
+    printf '%-14s %-34s %s\n' manifest    'patch manifest schema' 'python3 + pyyaml'
     printf '%-14s %-34s %s\n' fresh-clone 'TF: fresh clone has every input' 'git'
+    printf '%-14s %-34s %s\n' patches     'all 19 patches present (--patches)' 'patch(1)'
 }
 
 while [ $# -gt 0 ]; do
@@ -103,10 +106,7 @@ while [ $# -gt 0 ]; do
         --only)       shift; [ $# -gt 0 ] || { echo "--only needs a name" >&2; exit 2; }; ONLY+=("$1") ;;
         --list)       list_checks; exit 0 ;;
         --help|-h)    usage; exit 0 ;;
-        --patches)
-            echo "check.sh: --patches needs scripts/verify-patches.sh, which is not built yet." >&2
-            echo "          Until then see the manual recipe in docs/dev/patches.md." >&2
-            exit 2 ;;
+        --patches)    PATCHES=1 ;;
         *) echo "check.sh: unknown option '$1' (try --help)" >&2; exit 2 ;;
     esac
     shift
@@ -255,6 +255,19 @@ check_publiccode_run() {
 
 check_patch-ignore_run() { scripts/ci/patch-ignore-check.sh; }
 
+# Manifest schema + target paths. Cheap (no patch(1), no composer), so it runs
+# by default; the full verification needs a composer-installed tree and is
+# opt-in via --patches.
+check_manifest_run() { scripts/verify-patches.sh --static; }
+
+# Full patch verification. Only meaningful after composer has run, because the
+# Class-A markers are inserted by setup.sh post-install — in a fresh clone they
+# are legitimately absent and this would report them missing.
+check_patches_run() {
+    [ "$PATCHES" -eq 1 ] || { skip patches "opt-in: pass --patches (needs a composer-installed tree)"; return; }
+    scripts/verify-patches.sh
+}
+
 # ─── TF, the fresh-clone gate ───────────────────────────────────────
 # Included in the default run because it is the highest-value check in the
 # repo — six of the seven bugs in docs/QA-REPORT.md were only visible on a
@@ -298,7 +311,9 @@ run_check gitleaks     "no committed secrets"
 run_check env-example  ".env.example completeness"
 run_check publiccode   "publiccode.yml schema"
 run_check patch-ignore "patch targets are trackable"
+run_check manifest     "patch manifest schema"
 run_check fresh-clone  "committed tree is complete"
+run_check patches      "all 19 patches in the tree"
 
 TOTAL=$(( SECONDS - START ))
 
