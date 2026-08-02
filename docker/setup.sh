@@ -23,9 +23,13 @@ cd "$MW"
 # pre-autoload-dump hook, which runs the eight scripts in
 # _bluespice/pre-autoload-dump.d/ through a loop that ignores every exit
 # status; 99-apply_patches.sh in particular prints "FAILED!" per patch and
-# carries on. The two sed re-application blocks below are `sed -i`, which
-# exits 0 when it matches nothing. None of that reaches this script's exit
-# code.
+# carries on. None of that reaches this script's exit code.
+#
+# The Class-A re-application below used to be two `sed -i` blocks with the same
+# problem — sed exits 0 when it matches nothing. Those are now
+# scripts/apply-patches.sh, which reports per-patch failures this tracker
+# collects; the tracking stays because the pre-autoload-dump chain is still
+# silent and is not ours to fix.
 #
 # The result, verified on a clean box: three separate failures — one dropped
 # patch, a destroyed-and-not-restored mw-config/overrides, and two tool
@@ -253,49 +257,61 @@ else
     echo "[1/4] Vendor directory already present, skipping composer."
 fi
 
-# ─── Post-composer: Re-apply SSL patch to ExtendedSearch Backend.php ──
-# Composer installs bluespice/extendedsearch as a dist package, which
-# overwrites our local patch to Backend.php. Re-apply it here so the
-# SSL verification fix survives every fresh install.
-ES_BACKEND="$MW/extensions/BlueSpiceExtendedSearch/src/Backend.php"
-if [ ! -f "$ES_BACKEND" ]; then
-    record_failure "es-ssl: target missing: extensions/BlueSpiceExtendedSearch/src/Backend.php"
-elif ! grep -q 'setSSLVerification' "$ES_BACKEND"; then
-    sed -i '/\$clientBuilder->setRetries( 2 );/a\
-\t\t\t// HDP: disable SSL verification for self-signed OpenSearch certs\
-\t\t\t\$clientBuilder->setSSLVerification( false );' "$ES_BACKEND"
-    # `sed -i` exits 0 when its address matches nothing, so applying the patch
-    # and silently doing nothing are indistinguishable without this re-check.
-    # That silent no-op is the exact failure mode this block exists to prevent.
-    if grep -q 'setSSLVerification' "$ES_BACKEND"; then
-        echo "  Re-applied SSL patch to ExtendedSearch Backend.php"
+# ─── Post-composer: re-apply the patches composer clobbered ─────────
+# `composer install` reinstalls bluespice/extendedsearch as a dist zipball,
+# overwriting the two files this project patches. They have to go back on
+# after every install.
+#
+# This used to be two inline `sed -i` blocks. They are gone, for three reasons:
+#
+#   1. `sed -i` exits 0 when its address matches nothing, so an upstream
+#      reindent turned the patch into a silent no-op — the failure mode the
+#      whole patch strategy exists to kill.
+#   2. The patch text lived only here, so nothing else could verify it. The
+#      manifest in docker/patches/ is now the single description, shared by
+#      the applier and the verifier.
+#   3. `patch --fuzz 3` survives the whitespace and small context drift that
+#      broke the exact-string sed match, and it is the same tool (and the same
+#      fuzz factor) that 99-apply_patches.sh already uses for the inherited
+#      BlueSpice patches.
+#
+# Class A only: the 17 inherited Class-C patches are applied by
+# 99-apply_patches.sh during `composer dump-autoload`, above.
+#
+# Paths are passed explicitly because the container has no repo root — only
+# these three mounts exist (see docker-compose.yml).
+if [ -x /hdp-scripts/apply-patches.sh ] && [ -d /hdp-patches ]; then
+    echo ""
+    echo "[1/4] Re-applying composer-clobbered patches..."
+    APPLY_LOG="$(mktemp)"
+    if HDP_PATCH_MANIFEST_DIR=/hdp-patches \
+       HDP_APP_DIR="$MW" \
+       HDP_PATCH_LIB_DIR=/hdp-scripts/lib \
+       NO_COLOR=1 \
+       bash /hdp-scripts/apply-patches.sh --class A 2>&1 | tee "$APPLY_LOG"; then
+        :
     else
-        record_failure "es-ssl: anchor '\$clientBuilder->setRetries( 2 );' not found in Backend.php — patch NOT applied (upstream probably moved the code)"
+        # Warn and continue; the summary at the end carries the exit code. An
+        # abort here under `set -e` would leave a half-installed wiki.
+        #
+        # Record one failure per named patch when the applier reported them,
+        # and a single generic failure otherwise — exit 2 (missing python3 or a
+        # malformed manifest) produces no per-patch lines, and swallowing that
+        # would be the silent no-op this whole change is meant to remove.
+        _apply_named=0
+        while IFS= read -r line; do
+            [ -n "$line" ] || continue
+            record_failure "patch not re-applied: $line"
+            _apply_named=1
+        done < <(grep -oE '^  . [a-z0-9-]+ —' "$APPLY_LOG" 2>/dev/null \
+                 | sed -E 's/^  . ([a-z0-9-]+) —$/\1/' || true)
+        if [ "$_apply_named" -eq 0 ]; then
+            record_failure "apply-patches.sh failed before it could report per-patch results (see output above)"
+        fi
     fi
-fi
-
-# ─── Post-composer: Re-apply $searchCnt patch to SearchCenter.js ─────
-# Same clobbering problem as Backend.php above, different file. Upstream
-# extendedsearch 5.1.4 fires the 'bs.extendedsearch.searchcenter.getResults'
-# hook with $searchCnt but never declares it, so a completed search throws
-# "ReferenceError: $searchCnt is not defined" out of the .done() handler,
-# before removeLoading() and result rendering run. Symptom: the Search
-# Center spins its progress bar forever even though the API returned
-# results. Bind it to the results container, which is what a hook observer
-# would expect.
-ES_SEARCHCENTER="$MW/extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js"
-if [ ! -f "$ES_SEARCHCENTER" ]; then
-    record_failure "es-searchcnt: target missing: extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js"
-elif ! grep -q 'const \$searchCnt' "$ES_SEARCHCENTER"; then
-    sed -i "/const \$altSearchCnt = \$( '#bs-es-alt-search' );/a\\
-\\t\\t// HDP: upstream fires the getResults hook with an undeclared \$searchCnt\\
-\\t\\tconst \$searchCnt = \$resultCnt;" "$ES_SEARCHCENTER"
-    # Same silent-no-op re-check as Backend.php above.
-    if grep -q 'const \$searchCnt' "$ES_SEARCHCENTER"; then
-        echo "  Re-applied \$searchCnt patch to ExtendedSearch SearchCenter.js"
-    else
-        record_failure "es-searchcnt: anchor 'const \$altSearchCnt = \$( '#bs-es-alt-search' );' not found — patch NOT applied (upstream probably moved the code)"
-    fi
+    rm -f "$APPLY_LOG"
+else
+    record_warning "apply-patches.sh or the patch manifest is not mounted; Class-A patches were NOT re-applied"
 fi
 
 # ─── Step 2: Install MediaWiki (MariaDB) ──────────────────────────

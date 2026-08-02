@@ -8,13 +8,14 @@ title: disable SSL verification for self-signed OpenSearch certs
 class: A
 mode: insert
 target: extensions/BlueSpiceExtendedSearch/src/Backend.php
-applied_by: docker/setup.sh
+applied_by: scripts/apply-patches.sh (called by docker/setup.sh)
+patch: docker/patches/es-ssl.patch
 # ERE. The line the insert is anchored after.
 anchor: '\$clientBuilder->setRetries\( 2 \);'
-# The sentinel the patch itself inserts. Deliberately the "// HDP:" comment
-# rather than `setSSLVerification`, because upstream could add its own call to
-# that method one day — verify would then go green while our patch was gone.
-marker: '// HDP: disable SSL verification'
+# The first line the patch inserts. Deliberately a comment unique to this
+# patch rather than `setSSLVerification`, because upstream could add its own
+# call to that method one day — verify would go green while our patch was gone.
+marker: '// HDP runs OpenSearch with its default self-signed demo certs'
 anti: ''
 group: ''
 stale: false

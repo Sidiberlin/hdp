@@ -21,8 +21,9 @@ REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel 2
 [ -n "$REPO_ROOT" ] || REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$REPO_ROOT" || exit 2
 
-MANIFEST_DIR="docker/patches"
-APP_DIR="app"
+MANIFEST_DIR="${HDP_PATCH_MANIFEST_DIR:-docker/patches}"
+APP_DIR="${HDP_APP_DIR:-app}"
+LIB_DIR="${HDP_PATCH_LIB_DIR:-$(dirname "${BASH_SOURCE[0]}")/lib}"
 
 if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
     C_RED=$'\033[0;31m'; C_GRN=$'\033[0;32m'; C_YEL=$'\033[0;33m'
@@ -60,48 +61,7 @@ command -v python3 >/dev/null 2>&1 || { echo "verify-patches.sh: python3 is requ
 # Emits one TSV record per patch. Any schema problem is exit 2 — a malformed
 # manifest is a different failure from a missing patch and must not be
 # mistaken for one.
-MANIFEST_TSV="$(python3 - "$MANIFEST_DIR" <<'PY'
-import sys, glob, os
-try:
-    import yaml
-except ImportError:
-    print("MANIFEST_ERROR: pyyaml is not installed", file=sys.stderr); sys.exit(2)
-
-REQUIRED = ("id", "title", "class", "mode", "target", "stale", "why")
-VALID_MODES = {"insert", "diff", "create", "delete"}
-rows, errors, seen = [], [], set()
-
-for f in sorted(glob.glob(os.path.join(sys.argv[1], "*.yaml"))):
-    try:
-        d = yaml.safe_load(open(f))
-    except Exception as e:
-        errors.append(f"{f}: not valid YAML: {e}"); continue
-    if not isinstance(d, dict):
-        errors.append(f"{f}: top level is not a mapping"); continue
-    for k in REQUIRED:
-        if k not in d:
-            errors.append(f"{f}: missing required key '{k}'")
-    if d.get("mode") not in VALID_MODES:
-        errors.append(f"{f}: mode '{d.get('mode')}' is not one of {sorted(VALID_MODES)}")
-    if d.get("mode") == "insert" and not d.get("marker"):
-        errors.append(f"{f}: mode 'insert' requires a marker")
-    if d.get("mode") == "diff" and not d.get("patch"):
-        errors.append(f"{f}: mode 'diff' requires a patch path")
-    pid = d.get("id")
-    if pid in seen:
-        errors.append(f"{f}: duplicate id '{pid}'")
-    seen.add(pid)
-    rows.append("\x1f".join(str(d.get(k, "")).replace("\x1f", " ").replace("\n", " ")
-                for k in ("id", "class", "mode", "target", "patch", "anchor",
-                          "marker", "anti", "stale", "title", "why", "applied_by")))
-
-if errors:
-    for e in errors:
-        print("MANIFEST_ERROR: " + e, file=sys.stderr)
-    sys.exit(2)
-print("\n".join(rows))
-PY
-)" || { echo "${C_RED}verify-patches.sh: manifest is malformed${C_OFF}" >&2; exit 2; }
+MANIFEST_TSV="$(python3 "$LIB_DIR/read-manifest.py" "$MANIFEST_DIR")" || { echo "${C_RED}verify-patches.sh: manifest is malformed${C_OFF}" >&2; exit 2; }
 
 TOTAL=$(printf '%s\n' "$MANIFEST_TSV" | grep -c . || true)
 
@@ -109,7 +69,11 @@ TOTAL=$(printf '%s\n' "$MANIFEST_TSV" | grep -c . || true)
 if [ "$MODE" = list ]; then
     printf '%-24s %-5s %-6s %-6s %s\n' ID CLASS MODE STALE TARGET
     printf '%-24s %-5s %-6s %-6s %s\n' -- ----- ---- ----- ------
-    while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale title why applied_by; do
+    # The read list must name every field read-manifest.py emits, in order, or
+# bash assigns the remainder to the last variable and every record silently
+# shifts. Several are unused here by design.
+# shellcheck disable=SC2034
+while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale title why applied_by group upstream_version hunks regex; do
         [ -n "$id" ] || continue
         printf '%-24s %-5s %-6s %-6s %s\n' "$id" "$cls" "$mode" "$(echo "$stale" | tr 'A-Z' 'a-z')" "$target"
     done <<< "$MANIFEST_TSV"
@@ -120,7 +84,11 @@ fi
 
 if [ "$MODE" = explain ]; then
     found=0
-    while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale title why applied_by; do
+    # The read list must name every field read-manifest.py emits, in order, or
+# bash assigns the remainder to the last variable and every record silently
+# shifts. Several are unused here by design.
+# shellcheck disable=SC2034
+while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale title why applied_by group upstream_version hunks regex; do
         [ "$id" = "$ONLY_ID" ] || continue
         found=1
         echo ""
@@ -140,7 +108,11 @@ fi
 
 if [ "$MODE" = stale ]; then
     n=0
-    while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale title why applied_by; do
+    # The read list must name every field read-manifest.py emits, in order, or
+# bash assigns the remainder to the last variable and every record silently
+# shifts. Several are unused here by design.
+# shellcheck disable=SC2034
+while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale title why applied_by group upstream_version hunks regex; do
         [ "$stale" = "True" ] || [ "$stale" = "true" ] || continue
         n=$((n+1))
         echo "${C_YEL}$id${C_OFF} — $title"
@@ -176,7 +148,11 @@ echo ""
 echo "${C_BLD}verify-patches${C_OFF} ${C_DIM}— $TOTAL patches from $MANIFEST_DIR${C_OFF}"
 echo ""
 
-while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale title why applied_by; do
+# The read list must name every field read-manifest.py emits, in order, or
+# bash assigns the remainder to the last variable and every record silently
+# shifts. Several are unused here by design.
+# shellcheck disable=SC2034
+while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale title why applied_by group upstream_version hunks regex; do
     [ -n "$id" ] || continue
     if [ -n "$ONLY_ID" ] && [ "$id" != "$ONLY_ID" ]; then continue; fi
 
@@ -257,6 +233,19 @@ while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale titl
                 "if upstream removed it, set 'stale: true' in $MANIFEST_DIR/$id.yaml"
             continue
         fi
+    # Resolve the manifest's repo-relative patch path for whichever layout we
+        # are in. On the host that is the path as written; inside the mediawiki
+        # container there is no repo root, the manifest is at $HDP_PATCH_MANIFEST_DIR
+        # and the MediaWiki tree at $HDP_APP_DIR, so "app/..." and
+        # "docker/patches/..." both have to be remapped.
+        if [ ! -f "$patch" ]; then
+            case "$patch" in
+                app/*)  [ -f "$APP_DIR/${patch#app/}" ] && patch="$APP_DIR/${patch#app/}" ;;
+            esac
+        fi
+        if [ ! -f "$patch" ] && [ -f "$MANIFEST_DIR/$(basename "$patch")" ]; then
+            patch="$MANIFEST_DIR/$(basename "$patch")"
+        fi
         if [ ! -f "$patch" ]; then
             report_missing "$id" "$title" "$target" "patch file $patch is missing" "" \
                 "the .diff itself is not in the tree" \
@@ -270,8 +259,13 @@ while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale titl
         # --forward makes an already-applied patch report "previously applied"
         # instead of prompting. Same flags 99-apply_patches.sh uses, so a
         # disagreement here is a real disagreement.
+        # Resolve the patch to an absolute path BEFORE cd'ing into $APP_DIR.
+        # Doing it inside the subshell resolves it relative to app/, which
+        # silently turned every Class-C check into "patch still applies" — i.e.
+        # 16 false MISSINGs.
+        patch_abs="$(cd "$(dirname "$patch")" && pwd)/$(basename "$patch")"
         out="$(cd "$APP_DIR" && patch --dry-run --forward --ignore-whitespace --fuzz 3 \
-               "$target" "../$patch" 2>&1)"
+               "$target" "$patch_abs" 2>&1)"
         if printf '%s' "$out" | grep -qi 'previously applied\|Reversed'; then
             echo "  ${C_GRN}ok${C_OFF}     $id"
             PRESENT=$((PRESENT+1))

@@ -59,6 +59,16 @@ services:
       # edit.php on first boot only (guarded by cache/.wiki-docs-populated).
       - ./docker/mediawiki/wiki-docs:/wiki-docs:ro
       - ./docker/infisical-loader.sh:/infisical-loader.sh:ro
+      # The manifest-driven patch applier setup.sh calls after composer.
+      # Read-only; the container has no repo root, so paths are passed
+      # explicitly via HDP_PATCH_MANIFEST_DIR / HDP_APP_DIR / HDP_PATCH_LIB_DIR.
+      #
+      # Directory mounts, not single-file mounts. A single-file bind mount pins
+      # the inode: editing scripts/apply-patches.sh on the host (or checking
+      # out a branch) replaces the file and the container silently keeps
+      # running the old one. That cost a debugging cycle here.
+      - ./scripts:/hdp-scripts:ro
+      - ./docker/patches:/hdp-patches:ro
     env_file: .env
     environment:
       COMPOSER_CACHE_DIR: '/var/www/html/w/cache/composer'
