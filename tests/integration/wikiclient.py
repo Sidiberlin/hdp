@@ -151,7 +151,7 @@ class WikiClient:
 
     @staticmethod
     def _ui_fields(result):
-        """Field names to fill for a clientlogin `status: "UI"` step.
+        """Checkbox field names to accept for a clientlogin `status: "UI"` step.
 
         The shape depends on formatversion, and this client asks for 2:
 
@@ -163,15 +163,28 @@ class WikiClient:
         already consented, so on any wiki that has been logged into before,
         `login()` returns PASS on the first call and never reaches this code.
         It surfaces only on a genuinely fresh install — which is exactly the
-        wiki T3 creates, and exactly the wiki a first-time user gets.
+        wiki T3 creates, and exactly the wiki a first-time user gets. It cost
+        the first T3 run on GitHub Actions: 14 passed, 27 errors, every one of
+        them "clientlogin returned UI with no fields to fill".
+
+        Only `type: "checkbox"` fields are returned, matching
+        `mw_api_login()` in docker/haystack/ingest_hdp_wiki.py — the same flow
+        against the same wiki, and the older of the two, so it is the one to
+        agree with. The caller answers each of these with "1", which is
+        meaningful for a checkbox and nonsense for anything else; BlueSpice's
+        consent step happens to be all checkboxes today, so filtering changes
+        nothing now and stops a future text field being answered with "1".
         """
         fields = {}
+        containers = [r for r in (result.get("requests") or []) if isinstance(r, dict)]
         request = result.get("request")
         if isinstance(request, dict):
-            fields.update(request.get("fields") or {})
-        for entry in result.get("requests") or []:
-            if isinstance(entry, dict):
-                fields.update(entry.get("fields") or {})
+            containers.append(request)
+        for entry in containers:
+            for name, spec in (entry.get("fields") or {}).items():
+                if isinstance(spec, dict) and spec.get("type") != "checkbox":
+                    continue
+                fields[name] = True
         return list(fields)
 
     # ─── login ──────────────────────────────────────────────────────
@@ -207,7 +220,9 @@ class WikiClient:
             data = {
                 "action": "clientlogin",
                 "logincontinue": "1",
-                # A *fresh* token. Replaying the first one gives badtoken.
+                # A fresh token per continuation. ingest_hdp_wiki.py reuses the
+                # first one and works, so reuse is evidently fine too; this is
+                # the conservative form, not a fix for an observed badtoken.
                 "logintoken": self._login_token(),
             }
             data.update({f: "1" for f in fields})
