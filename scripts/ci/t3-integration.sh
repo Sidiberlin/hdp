@@ -1,0 +1,187 @@
+#!/usr/bin/env bash
+# ============================================================
+# T3 — the integration job, end to end.
+#
+#   fresh volumes -> compose up -> setup.sh -> tests/integration -> teardown
+#
+# One script for both CI and a developer, so the thing that runs in the
+# pipeline is the thing anyone can run locally, and there is no CI-only YAML
+# holding logic nobody can reproduce. Same principle as scripts/check.sh.
+#
+#   scripts/ci/t3-integration.sh              the whole sequence
+#   scripts/ci/t3-integration.sh --keep       leave the stack up afterwards
+#   scripts/ci/t3-integration.sh --no-build   reuse images already built
+#   scripts/ci/t3-integration.sh --services "mariadb mediawiki mediawiki-web"
+#
+# ─── Why a minimal profile ──────────────────────────────────────────
+#
+# The full stack is seven containers, and the two this job omits — haystack and
+# chatbot-proxy — are the expensive ones: haystack alone is a 2.5 GB image and
+# about 285 of the ~290 seconds a full build takes. Nothing T3 asserts touches
+# either of them. What T3 needs is a wiki that boots and serves authenticated
+# traffic.
+#
+# mediawiki-web is *not* optional despite the spec saying "mariadb + php-fpm
+# only". QA Bug 4, the assertion this job exists for, is an HTTP-level fact
+# about a rendered page; PHP-FPM speaks FastCGI and has no HTTP endpoint, so
+# without Apache there is nothing to make the assertion against.
+#
+# opensearch is included, and it is worth saying why rather than treating it as
+# obvious: docker-compose.yml declares `mediawiki: depends_on: opensearch:
+# condition: service_healthy`, so leaving it out means passing --no-deps and
+# overriding a dependency the compose file states. It costs ~1.1 GB of RAM and
+# a small local build, against a 16 GB runner, and it keeps this job running
+# the same dependency graph as production. Set --services to drop it if a
+# smaller runner ever needs that.
+#
+# Measured on the Wave 2 validation box: peak simultaneous memory for all seven
+# containers was 2.65 GiB, so this profile is far inside any CI runner.
+# ============================================================
+set -uo pipefail
+
+REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel 2>/dev/null || true)"
+[ -n "$REPO_ROOT" ] || REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+cd "$REPO_ROOT" || exit 1
+
+SERVICES="${HDP_T3_SERVICES:-mariadb opensearch mediawiki mediawiki-web}"
+KEEP=0
+BUILD=1
+WIKI_URL="${HDP_WIKI_URL:-http://localhost:8080/w}"
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --keep)     KEEP=1 ;;
+        --no-build) BUILD=0 ;;
+        --services) shift; [ $# -gt 0 ] || { echo "--services needs a value" >&2; exit 2; }; SERVICES="$1" ;;
+        -h|--help)  sed -n '2,40p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'; exit 0 ;;
+        *) echo "t3-integration.sh: unknown option '$1' (try --help)" >&2; exit 2 ;;
+    esac
+    shift
+done
+
+# shellcheck disable=SC2086  # SERVICES is a deliberate word-split list
+read -r -a SERVICE_LIST <<< "$SERVICES"
+
+say()  { printf '\n\033[1m── %s\033[0m\n' "$*"; }
+fail() { printf '\033[0;31mT3 FAILED: %s\033[0m\n' "$*" >&2; }
+
+command -v docker >/dev/null 2>&1 || { fail "no docker on PATH"; exit 2; }
+docker compose version >/dev/null 2>&1 || { fail "docker compose v2 is required"; exit 2; }
+
+SETUP_LOG="$(mktemp -t hdp-setup-XXXXXX.log)"
+CREATED_ENV=0
+
+cleanup() {
+    local rc=$?
+    if [ "$KEEP" -eq 1 ]; then
+        say "leaving the stack up (--keep). Tear it down with: docker compose down -v"
+    else
+        say "tearing down"
+        # -v so the next run starts from empty volumes. A stack left with a
+        # populated mariadb_data makes setup.sh skip install.php, and then this
+        # job silently stops testing the install it exists to test.
+        docker compose down -v --remove-orphans >/dev/null 2>&1
+    fi
+    [ "$CREATED_ENV" -eq 1 ] && rm -f "$REPO_ROOT/.env"
+    rm -f "$SETUP_LOG"
+    exit "$rc"
+}
+trap cleanup EXIT INT TERM
+
+# ─── .env ───────────────────────────────────────────────────────────
+# compose declares `env_file: .env` and will not parse without one. A CI runner
+# has no .env, so materialise one from .env.example with generated passwords —
+# and remove it again on the way out, so a developer's real .env is never
+# touched and a generated one never lingers where it could be committed.
+if [ -f .env ]; then
+    say "using the existing .env"
+else
+    say "generating a throwaway .env from .env.example"
+    [ -f .env.example ] || { fail ".env.example is missing"; exit 2; }
+    cp .env.example .env
+    CREATED_ENV=1
+    # OpenSearch enforces a password policy (8+ chars, mixed classes) and
+    # refuses to start otherwise, which surfaces as an unhealthy container
+    # rather than an error anyone would connect to the password.
+    for var in HDP_DB_ROOT_PASSWORD HDP_DB_PASSWORD HDP_ADMIN_PASSWORD HDP_OPENSEARCH_PASSWORD; do
+        secret="T3$(head -c 18 /dev/urandom | base64 | tr -dc 'A-Za-z0-9')aA1!"
+        # The value never reaches argv or the log: written straight into .env.
+        python3 - "$var" "$secret" <<'PY'
+import sys, pathlib
+var, value = sys.argv[1], sys.argv[2]
+p = pathlib.Path(".env")
+lines = p.read_text().splitlines()
+out = [f"{var}={value}" if ln.startswith(var + "=") else ln for ln in lines]
+if not any(ln.startswith(var + "=") for ln in lines):
+    out.append(f"{var}={value}")
+p.write_text("\n".join(out) + "\n")
+PY
+    done
+fi
+
+# ─── boot ───────────────────────────────────────────────────────────
+say "starting: ${SERVICE_LIST[*]}"
+UP_ARGS=(up -d)
+[ "$BUILD" -eq 1 ] && UP_ARGS+=(--build)
+if ! docker compose "${UP_ARGS[@]}" "${SERVICE_LIST[@]}"; then
+    fail "docker compose up"
+    docker compose ps
+    exit 1
+fi
+
+# Wait for mediawiki-web to answer. Deliberately not a health-status wait:
+# before setup.sh runs there is no LocalSettings.php, so /w/ returns 500 and
+# mediawiki-web is *legitimately* unhealthy — reproduced on every genuinely
+# fresh box in both Wave 2 clean-box runs. Waiting for "healthy" here would
+# hang until the timeout on a perfectly good stack. What matters is that
+# something is listening.
+say "waiting for the web container to accept connections"
+deadline=$(( SECONDS + 300 ))
+until curl -s -o /dev/null --max-time 5 "$WIKI_URL/" || [ "$SECONDS" -ge "$deadline" ]; do
+    sleep 3
+done
+if ! curl -s -o /dev/null --max-time 5 "$WIKI_URL/"; then
+    fail "nothing answering at $WIKI_URL/ after 300s"
+    docker compose ps
+    docker compose logs --no-color --tail 60 mediawiki-web mediawiki
+    exit 1
+fi
+
+# ─── install ────────────────────────────────────────────────────────
+say "running setup.sh"
+docker compose exec -T mediawiki bash /setup.sh 2>&1 | tee "$SETUP_LOG"
+SETUP_EXIT="${PIPESTATUS[0]}"
+echo "setup.sh exit: $SETUP_EXIT"
+
+# Not an early exit. setup.sh is warn-then-fail-at-end by design: it finishes
+# the install and reports at the end, so a non-zero exit still leaves a wiki
+# worth running the assertions against — and those assertions are what say
+# *which* part is broken. tests/integration/test_install_update.py asserts the
+# exit code itself, so a failure here is still a failed job.
+if [ "$SETUP_EXIT" -ne 0 ]; then
+    say "setup.sh exited $SETUP_EXIT — continuing, so the tests can say what broke"
+fi
+
+# ─── assert ─────────────────────────────────────────────────────────
+say "running the integration tier"
+HDP_SETUP_EXIT="$SETUP_EXIT" \
+HDP_SETUP_LOG="$SETUP_LOG" \
+HDP_WIKI_URL="$WIKI_URL" \
+    scripts/ci/pytest.sh --tier integration
+TEST_EXIT=$?
+
+# 77 means the tier could not run at all. This job's entire purpose is to make
+# it runnable, so here — unlike in check.sh — that is a failure, not a skip.
+if [ "$TEST_EXIT" -eq 77 ]; then
+    fail "the integration tier could not run, after this job started a stack for it"
+    docker compose ps
+    exit 1
+fi
+
+if [ "$TEST_EXIT" -ne 0 ]; then
+    fail "integration tests"
+    exit 1
+fi
+
+say "T3 PASSED"
+exit 0

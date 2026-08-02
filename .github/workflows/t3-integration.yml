@@ -1,0 +1,64 @@
+---
+# T3 — integration. Boots the wiki, installs it, and asserts it serves real
+# authenticated traffic.
+#
+# On GitHub rather than GitLab because this is the one job that needs a
+# generous runner: `ubuntu-latest` gives 16 GB of RAM and a working docker
+# daemon out of the box. Everything else in this project's pipeline lives in
+# .gitlab-ci.yml and is forge-agnostic on purpose; this file is the deliberate
+# exception, and it is a thin caller of scripts/ci/t3-integration.sh so the
+# logic stays reproducible on any machine with docker.
+#
+# Wave 1.7 (the GitLab↔GitHub mirror) is still open, so this may not fire
+# automatically yet. It is written to be ready: `workflow_dispatch` means it
+# can be run by hand today, and no step depends on the mirror existing.
+#
+# Cost note: T3 skips the haystack and chatbot-proxy services, which is where
+# nearly all of the build time lives — haystack alone is a 2.5 GB image and
+# ~285 of the ~290 seconds a full build takes. Peak memory for all seven
+# containers was measured at 2.65 GiB in Wave 0, so this profile is far inside
+# a 16 GB runner; the saving is wall clock, not RAM.
+
+name: T3 integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# A second push should not race a running install against the same docker
+# daemon; cancel the older one instead.
+concurrency:
+  group: t3-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  t3:
+    name: wiki boots and serves authenticated traffic
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The integration tier is standard library only — no requests, no
+      # haystack, nothing to install beyond pytest itself. That is the whole
+      # reason this job's dependencies are just docker and python3.
+      - name: Install pytest
+        run: python3 -m pip install --quiet --no-cache-dir pytest==9.0.2
+
+      # Everything else lives in the script, so this job and a developer's
+      # terminal run identical code. The script creates a throwaway .env with
+      # generated passwords and removes it again, brings up the minimal
+      # profile, runs setup.sh, runs tests/integration, and tears down with -v.
+      - name: Run T3
+        run: bash scripts/ci/t3-integration.sh
+
+      # Only on failure, and only the wiki containers: enough to see a PHP
+      # fatal or a failed install without dumping a passing job's logs.
+      - name: Container logs
+        if: failure()
+        run: |
+          docker compose ps || true
+          docker compose logs --no-color --tail 300 mediawiki mediawiki-web || true

@@ -13,6 +13,7 @@ stages:
   - test
   - fresh
   - patch
+  - integration
 
 variables:
   # Full-enough history for the fresh-clone gate to clone HEAD locally.
@@ -56,7 +57,8 @@ yaml-lint:
         publiccode.yml \
         docker/haystack/hdp_pipeline.yaml \
         docker/patches/ \
-        .gitlab-ci.yml
+        .gitlab-ci.yml \
+        .github/workflows/
 
 # ─── Python linting ─────────────────────────────────────────────────
 ruff:
@@ -241,3 +243,42 @@ fresh-clone:
 # production wikimedia image and a masked GITHUB_TOKEN, which is the T2 task.
 # manifest-lint above covers the manifest itself in the meantime, and
 # verify-patches.sh is ready for this job to call.
+
+# ─── T3 — integration ───────────────────────────────────────────────
+# Boots the wiki, installs it, and asserts it serves real authenticated
+# traffic. All the logic is in scripts/ci/t3-integration.sh, so this job and a
+# developer's terminal run the same code.
+#
+# `manual` on purpose, for one honest reason: this is the only job in the file
+# that needs docker-in-docker and a runner with real memory, and this project
+# does not yet know what its GitLab runners look like (Wave 1.7 — the
+# repo/mirror/PAT decisions — is still open). A job that assumes a privileged
+# dind runner and finds a shared one fails on every pipeline with an error
+# about the docker socket, and a permanently red pipeline teaches everyone to
+# ignore it. So: available to run by hand from day one, and one word away from
+# automatic once the runner is known.
+#
+# The canonical automatic run is .github/workflows/t3-integration.yml, where
+# `ubuntu-latest` provides 16 GB and a working daemon with no configuration.
+t3-integration:
+  stage: integration
+  image: docker:24-cli
+  services:
+    - docker:24-dind
+  <<: *default_rules
+  when: manual
+  allow_failure: false
+  timeout: 45m
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
+  before_script:
+    # The integration tier is standard library only, so this is the entire
+    # dependency list: bash, git, python3 and pytest. No haystack, no requests.
+    - apk add --no-cache bash git curl python3 py3-pip >/dev/null
+    - pip install --quiet --break-system-packages pytest==9.0.2
+    - git config --global --add safe.directory "${CI_PROJECT_DIR:-$PWD}"
+  script:
+    - bash scripts/ci/t3-integration.sh
+  after_script:
+    - docker compose ps || true
