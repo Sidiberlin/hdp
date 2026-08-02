@@ -20,26 +20,52 @@ line-length = 120
 # I — import sorting          (auto-fixable, and the Wave 2 refactor of
 #                              hdp_api_server.py depends on the import block
 #                              being tidy)
-select = ["E", "F", "I"]
+# PLW1510 subprocess.run without an explicit check=  (added in Wave 2 — see below)
+select = ["E", "F", "I", "PLW1510"]
 
-# Deliberately NOT selected, with reasons. Each is a real observation, not
-# noise — they are excluded because acting on them means changing behaviour,
-# and that belongs in the unit-test wave where there are tests to catch a
-# mistake, not in a lint gate landing alongside CI plumbing:
+# Revisited in Wave 2, under the precondition this file set itself: enable a
+# rule only where tests now cover the sites it flags. Coverage was checked site
+# by site rather than family by family, because the families do not line up
+# with what the suite reaches.
 #
-#   BLE001  blind `except Exception` — 5 sites. Every one is a deliberate
-#           degrade-gracefully path (pipeline load, ingestion of one page,
-#           a hayhooks call). Narrowing them without tests risks converting a
-#           handled failure into a crash.
-#   S110    try/except/pass — 1 site, an optional-import probe.
-#   G201    logging.error(..., exc_info=True) vs logging.exception() — 2 sites,
-#           cosmetic, and touching the logging calls now would conflict with
-#           the planned serialization.py extraction.
-#   PLW1510 subprocess.run without check= — 1 site, the envsubst render whose
-#           failure is handled by the caller inspecting the output.
-#   EXE001  shebang present but file not executable — 3 sites. These scripts
-#           are invoked as `python3 <file>` inside the container and are not
-#           meant to be executable; the alternative fix (chmod +x) would be
-#           the wrong one.
+# ENABLED
 #
-# Revisit the whole list in the unit-test wave.
+#   PLW1510 1 site, load_pipeline's envsubst render in serialization.py. Now
+#           covered by six tests (success, bad YAML, substitution, unset-var
+#           blanking, missing file, and the real hdp_pipeline.yaml). The fix is
+#           `check=False`, which is subprocess.run's own default — a provable
+#           no-op that moves the deliberate choice from this file's prose to
+#           the call site, where the next reader will actually be standing.
+#
+# STILL NOT SELECTED, and why the Wave 2 precondition does not clear them:
+#
+#   BLE001  blind `except Exception` — 5 sites, of which tests reach exactly
+#           one (load_pipeline in serialization.py). The other four are
+#           call_hayhooks, the urllib3 import probe, get_indexed_page_ids and
+#           process_page — all network I/O, none covered until the Wave 3
+#           integration tests exist. Enabling the rule would force a change at
+#           four sites the suite cannot catch a mistake in, which is exactly
+#           what the precondition was written to prevent. Note that the one
+#           covered site is deliberate and would want a `# noqa` rather than a
+#           narrower except: load_pipeline degrades on anything by design.
+#   S110    try/except/pass — 1 site, the optional urllib3 import probe in
+#           ingest_hdp_wiki.py. Importing that module needs pymysql, requests
+#           and the OpenSearch integration, so no unit tier reaches it.
+#   G201    logging.error(..., exc_info=True) vs logging.exception() — 2 sites.
+#           The original objection is gone: it said touching these would
+#           conflict with the planned serialization.py extraction, and that
+#           extraction has landed. But the sites are run_pipeline's exception
+#           handler and main()'s per-page loop, and neither is covered. The
+#           rewrite is provably equivalent (logging.exception is defined as
+#           error(..., exc_info=True)), so this is the closest call on the
+#           list — it waits only because the precondition is about coverage,
+#           not about risk, and pretending otherwise would hollow it out.
+#           Enable it in Wave 3 once the endpoints have tests.
+#   EXE001  shebang present but file not executable — 3 sites. Unchanged by
+#           Wave 2 and not a coverage question at all. These scripts are
+#           invoked as `python3 <file>` inside the container and are not meant
+#           to be executable; the alternative fix (chmod +x) would be the wrong
+#           one.
+#
+# Revisit BLE001 and G201 in Wave 3, when integration tests cover the endpoints
+# and the ingestion path.
