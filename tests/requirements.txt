@@ -1,0 +1,21 @@
+# Test-only dependencies. Pinned, deliberately.
+#
+# ruff.toml explains at length why this repo pins its tool versions: a local
+# ruff 0.15.10 reported nothing while the pinned 0.16.1 CI used reported 16
+# findings. An unpinned dependency means a routine upstream release turns CI
+# red with no commit to blame. The same reasoning applies here.
+#
+# haystack-ai is pinned to the exact version the haystack image installs
+# (docker/haystack/Dockerfile). If those two drift, the tests stop describing
+# the code that actually runs. Keep them in step.
+#
+# Note what is NOT here: torch, transformers, sentence-transformers. Those are
+# runtime dependencies of the embedder, pulled in by sentence-transformers, and
+# nothing under test touches them. Measured on python:3.11-slim:
+#
+#     pip install haystack-ai==2.15.0   ->  24s, 172MB, no torch, no transformers
+#
+# That is the whole reason the tests use real Haystack objects instead of mocks.
+
+haystack-ai==2.15.0
+pytest==9.0.2

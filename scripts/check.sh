@@ -31,6 +31,9 @@ IMG_SHELLCHECK="koalaman/shellcheck-alpine:stable"
 IMG_YAMLLINT="cytopia/yamllint:latest"
 IMG_RUFF="ghcr.io/astral-sh/ruff:0.16.1"
 IMG_PHP="php:8.3-cli"
+# The pytest tiers fall back to this when the host cannot satisfy them. Kept in
+# step with scripts/ci/pytest.sh and docker/haystack/Dockerfile's base image.
+IMG_PYTHON="python:3.11-slim"
 
 # Host binaries are a convenience, not the source of truth. When a host tool's
 # version differs from the pinned image the verdicts can differ too, so say so
@@ -82,20 +85,22 @@ EOF
 }
 
 list_checks() {
-    printf '%-14s %-34s %s\n' CHECK WHAT REQUIRES
-    printf '%-14s %-34s %s\n' ----- ---- --------
-    printf '%-14s %-34s %s\n' shellcheck  'shell in docker/ scripts/ hdp.sh' "shellcheck | $IMG_SHELLCHECK"
-    printf '%-14s %-34s %s\n' yamllint    'compose, publiccode, pipeline, CI' "yamllint | $IMG_YAMLLINT"
-    printf '%-14s %-34s %s\n' ruff        'python under docker/' "ruff | $IMG_RUFF"
-    printf '%-14s %-34s %s\n' php-lint    'syntax of app/settings.d/*.php' "php | $IMG_PHP"
-    printf '%-14s %-34s %s\n' compose     'docker-compose.yml interpolates' 'docker compose v2'
-    printf '%-14s %-34s %s\n' gitleaks    'no secrets in owned paths' 'gitleaks | zricethezav/gitleaks'
-    printf '%-14s %-34s %s\n' env-example '.env.example covers compose' 'grep'
-    printf '%-14s %-34s %s\n' publiccode  'publiccode.yml schema' 'italia/publiccode-parser-go'
-    printf '%-14s %-34s %s\n' patch-ignore 'no patch target is gitignored' 'git'
-    printf '%-14s %-34s %s\n' manifest    'patch manifest schema' 'python3 + pyyaml'
-    printf '%-14s %-34s %s\n' fresh-clone 'TF: fresh clone has every input' 'git'
-    printf '%-14s %-34s %s\n' patches     'all 19 patches present (--patches)' 'patch(1)'
+    printf '%-16s %-34s %s\n' CHECK WHAT REQUIRES
+    printf '%-16s %-34s %s\n' ----- ---- --------
+    printf '%-16s %-34s %s\n' shellcheck  'shell in docker/ scripts/ hdp.sh' "shellcheck | $IMG_SHELLCHECK"
+    printf '%-16s %-34s %s\n' yamllint    'compose, publiccode, pipeline, CI' "yamllint | $IMG_YAMLLINT"
+    printf '%-16s %-34s %s\n' ruff        'python under docker/ and tests/' "ruff | $IMG_RUFF"
+    printf '%-16s %-34s %s\n' pytest-unit 'stdlib unit tests (~2s)' "pytest | $IMG_PYTHON"
+    printf '%-16s %-34s %s\n' pytest-haystack 'to_native + load_pipeline' "haystack-ai | $IMG_PYTHON"
+    printf '%-16s %-34s %s\n' php-lint    'syntax of app/settings.d/*.php' "php | $IMG_PHP"
+    printf '%-16s %-34s %s\n' compose     'docker-compose.yml interpolates' 'docker compose v2'
+    printf '%-16s %-34s %s\n' gitleaks    'no secrets in owned paths' 'gitleaks | zricethezav/gitleaks'
+    printf '%-16s %-34s %s\n' env-example '.env.example covers compose' 'grep'
+    printf '%-16s %-34s %s\n' publiccode  'publiccode.yml schema' 'italia/publiccode-parser-go'
+    printf '%-16s %-34s %s\n' patch-ignore 'no patch target is gitignored' 'git'
+    printf '%-16s %-34s %s\n' manifest    'patch manifest schema' 'python3 + pyyaml'
+    printf '%-16s %-34s %s\n' fresh-clone 'TF: fresh clone has every input' 'git'
+    printf '%-16s %-34s %s\n' patches     'all 19 patches present (--patches)' 'patch(1)'
 }
 
 while [ $# -gt 0 ]; do
@@ -134,7 +139,7 @@ run_check() {
     start=$SECONDS
     # Only draw the in-progress line on a terminal. Redirected into a file or a
     # pipe there is no \r to erase it, so it would appear twice in every log.
-    [ -t 1 ] && printf '  %-12s %s' "$name" "${C_DIM}${desc}${C_OFF}"
+    [ -t 1 ] && printf '  %-16s %s' "$name" "${C_DIM}${desc}${C_OFF}"
 
     "check_${name}_run" >"$out" 2>&1
     rc=$?
@@ -145,14 +150,14 @@ run_check() {
     local eol=''
     [ -t 1 ] && eol=$'\033[K'
     case $rc in
-        0)  printf "\r  %-12s ${C_GRN}PASS${C_OFF}  %-30s ${C_DIM}%ss${C_OFF}${eol}\n" "$name" "$desc" "$elapsed"
+        0)  printf "\r  %-16s ${C_GRN}PASS${C_OFF}  %-30s ${C_DIM}%ss${C_OFF}${eol}\n" "$name" "$desc" "$elapsed"
             PASSED+=("$name")
             [ "$VERBOSE" -eq 1 ] && sed 's/^/      /' "$out"
             ;;
-        77) printf "\r  %-12s ${C_YEL}SKIP${C_OFF}  %-30s ${C_DIM}%s${C_OFF}${eol}\n" "$name" "$desc" "${SKIP_REASON[$name]:-unavailable}"
+        77) printf "\r  %-16s ${C_YEL}SKIP${C_OFF}  %-30s ${C_DIM}%s${C_OFF}${eol}\n" "$name" "$desc" "${SKIP_REASON[$name]:-unavailable}"
             SKIPPED+=("$name")
             ;;
-        *)  printf "\r  %-12s ${C_RED}FAIL${C_OFF}  %-30s ${C_DIM}%ss${C_OFF}${eol}\n" "$name" "$desc" "$elapsed"
+        *)  printf "\r  %-16s ${C_RED}FAIL${C_OFF}  %-30s ${C_DIM}%ss${C_OFF}${eol}\n" "$name" "$desc" "$elapsed"
             FAILED+=("$name")
             sed 's/^/      /' "$out"
             ;;
@@ -192,8 +197,11 @@ check_yamllint_run() {
 
 # ─── ruff ───────────────────────────────────────────────────────────
 check_ruff_run() {
-    local args=(check docker/)
-    [ "$FIX" -eq 1 ] && args=(check --fix docker/)
+    # tests/ is in scope as of Wave 2. It was not before, and `ruff check
+    # docker/` would have skipped the entire suite silently — a linter that
+    # does not see the tests is a linter that lets the tests rot.
+    local args=(check docker/ tests/)
+    [ "$FIX" -eq 1 ] && args=(check --fix docker/ tests/)
 
     if have ruff; then
         local v
@@ -209,6 +217,22 @@ check_ruff_run() {
     else
         skip ruff "no ruff on PATH and no docker"
     fi
+}
+
+# ─── pytest, two tiers ──────────────────────────────────────────────
+# Split because the cheap tier is cheap enough to run on every save and the
+# other one is not. tests/unit imports nothing outside the standard library and
+# finishes in about two seconds; tests/haystack needs haystack-ai and envsubst,
+# which is ~47s to provision from a bare image and 0s if the project's haystack
+# image is already built. scripts/ci/pytest.sh owns that decision.
+#
+# Both return 77 when they cannot run at all, which run_check renders as SKIP —
+# and a skip is explicitly not a pass, per this script's contract.
+check_pytest-unit_run() { scripts/ci/pytest.sh --tier unit; }
+
+check_pytest-haystack_run() {
+    [ -d tests/haystack ] || { skip pytest-haystack "tests/haystack does not exist yet"; return; }
+    scripts/ci/pytest.sh --tier haystack
 }
 
 # ─── php -l over the 17 settings.d files ────────────────────────────
@@ -304,7 +328,9 @@ echo ""
 
 run_check shellcheck "shell scripts we own"
 run_check yamllint   "yaml we own"
-run_check ruff       "python under docker/"
+run_check ruff       "python under docker/ + tests/"
+run_check pytest-unit     "stdlib unit tests"
+run_check pytest-haystack "to_native + load_pipeline"
 run_check php-lint   "app/settings.d syntax"
 run_check compose    "compose interpolation"
 run_check gitleaks     "no committed secrets"
@@ -328,7 +354,7 @@ if [ ${#SKIPPED[@]} -gt 0 ]; then
     echo ""
     echo "  ${C_YEL}Skipped checks did not run and were not verified:${C_OFF}"
     for s in "${SKIPPED[@]}"; do
-        printf '    %-12s %s\n' "$s" "${SKIP_REASON[$s]:-unavailable}"
+        printf '    %-16s %s\n' "$s" "${SKIP_REASON[$s]:-unavailable}"
     done
     echo "  Install the tool or start Docker to close these gaps; CI will run them regardless."
 fi
