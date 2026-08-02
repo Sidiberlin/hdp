@@ -85,9 +85,14 @@ def load_pipeline(pipeline_file):
         raising here surfaces it at container start rather than as a confusing
         503 on every query.
     """
+    # check=False is subprocess.run's default; it is written out because
+    # ruff's PLW1510 is selected and because the choice is deliberate. If
+    # envsubst itself fails, stdout is empty and Pipeline.loads below produces
+    # the error this function returns — the caller inspects the result rather
+    # than catching an exception from here.
     rendered = subprocess.run(
         ["envsubst"], input=Path(pipeline_file).read_text(),
-        capture_output=True, text=True,
+        capture_output=True, text=True, check=False,
     ).stdout
 
     try:
