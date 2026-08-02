@@ -84,6 +84,7 @@ and your data never leaves your infrastructure.
 | Idempotent ingestion (safe to re-run) | ✗ | ✗ | ✅ |
 | CI (lint, secret scan, schema, fresh-clone gate) | ✗ | ✗ | ✅ (GitLab CI, 11 jobs) |
 | Integration tests against a live wiki | ✗ | ✗ | ✅ (T3: `scripts/ci/t3-integration.sh`) |
+| Full-stack smoke: search results + chatbot, nightly | ✗ | ✗ | ✅ (T4: `scripts/ci/t4-smoke.sh`) |
 | One-command local gate matching CI | ✗ | ✗ | ✅ (`./scripts/check.sh`, ~30s) |
 | Patch manifest + integrity verification | ✗ | ✗ | ✅ (19 patches, `scripts/verify-patches.sh`) |
 
