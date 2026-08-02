@@ -1,0 +1,92 @@
+---
+# Lint and test — everything that runs on a bare checkout, with no stack.
+#
+# Companion to t3-integration.yml, which is the one job that needs containers
+# and a generous runner. Together they are, today, the whole of this project's
+# live CI: `gh workflow list` returns these two, and there is no GitLab remote.
+#
+# ─── Why this exists alongside .gitlab-ci.yml ───────────────────────
+#
+# .gitlab-ci.yml holds the same fourteen gates and is deliberately
+# forge-agnostic, so enabling it on another GitLab (openCode) stays
+# configuration rather than rework. It is correct and each job was executed in
+# its declared image in Wave 1.8 — but with no GitLab remote it runs nowhere,
+# so nothing gated a push except T3. That included the unit tier: 200-odd tests
+# that exist to catch things in two seconds were reachable only by a
+# four-minute job that boots four containers first.
+#
+# This file does not replace it. When the mirror lands (Wave 1.7), delete this
+# and lose nothing.
+#
+# ─── Why every job is `./scripts/check.sh --only <name>` ────────────
+#
+# Because that script already decides how to satisfy each check: prefer a
+# binary on PATH, else the same pinned image .gitlab-ci.yml names. Re-encoding
+# those image choices here would create a second source of truth for the
+# question "what does CI actually run", which is precisely the drift check.sh
+# exists to prevent — and it is what lets a contributor get the same verdict
+# locally, from the same command.
+#
+# It also sidesteps a real trap. Most of the pinned images are Alpine-based
+# (shellcheck, yamllint, bats, gitleaks, the alpine:3.20 gates), and
+# `actions/checkout` needs a glibc Node to run, so using them as job
+# `container:` images fails before any check does. Running check.sh on the
+# host, letting it reach for docker, avoids that entirely.
+#
+# The matrix gives one job per check — parallel, and the failing one is
+# obvious from the job list — with no duplicated YAML. A mistyped entry is a
+# hard error rather than a green job that runs nothing: `--only` rejects an
+# unmatched name with exit 2.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: ${{ matrix.check }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      # One red check should not hide the state of the other thirteen.
+      fail-fast: false
+      matrix:
+        check:
+          # lint
+          - shellcheck
+          - yamllint
+          - ruff
+          - php-lint
+          - compose
+          # test
+          - pytest-unit
+          - pytest-haystack
+          - bats
+          # T0 provenance
+          - gitleaks
+          - env-example
+          - publiccode
+          - patch-ignore
+          - manifest
+          # TF
+          - fresh-clone
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # fresh-clone clones HEAD into a temp dir and asserts the committed
+          # tree is complete, so it needs real history. Matches GIT_DEPTH in
+          # .gitlab-ci.yml; a depth-1 checkout makes it fail on the clone
+          # rather than on anything it is meant to catch.
+          fetch-depth: 20
+
+      - name: ${{ matrix.check }}
+        run: ./scripts/check.sh --only ${{ matrix.check }} --verbose

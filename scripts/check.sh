@@ -67,6 +67,25 @@ VERBOSE=0
 NO_DOCKER=0
 declare -a ONLY=()
 
+# Every check name --only will accept. Kept next to the `run_check` calls at the
+# bottom of this file, and validated against, because an --only value matching
+# nothing used to run zero checks and then print "0 passed" followed by "OK —
+# this is the same verdict the CI lint stage will give", exit 0.
+#
+# That is a false green, and it contradicts this script's headline property:
+# skips are never passes and the closing line says so. Two ways in — a typo, or
+# the natural-but-unsupported comma form `--only shellcheck,yamllint`. The comma
+# form is now split and accepted; anything unmatched is a usage error.
+#
+# It matters more since .github/workflows/ci.yml drives this script with one
+# `--only` per job: a mistyped matrix entry would otherwise be a permanently
+# green job that runs nothing at all.
+KNOWN_CHECKS=(
+    shellcheck yamllint ruff pytest-unit pytest-haystack bats php-lint compose
+    gitleaks env-example publiccode patch-ignore manifest fresh-clone patches
+    integration
+)
+
 PASSED=(); FAILED=(); SKIPPED=()
 declare -A SKIP_REASON=()
 
@@ -115,7 +134,13 @@ while [ $# -gt 0 ]; do
         --fix)        FIX=1 ;;
         --verbose|-v) VERBOSE=1 ;;
         --no-docker)  NO_DOCKER=1 ;;
-        --only)       shift; [ $# -gt 0 ] || { echo "--only needs a name" >&2; exit 2; }; ONLY+=("$1") ;;
+        --only)       shift; [ $# -gt 0 ] || { echo "--only needs a name" >&2; exit 2; }
+                      # Split on commas so `--only shellcheck,yamllint` works.
+                      # The flag is documented as repeatable, but the comma form
+                      # is what people reach for, and it used to silently run
+                      # nothing.
+                      IFS=',' read -r -a _only_parts <<< "$1"
+                      ONLY+=("${_only_parts[@]}") ;;
         --list)       list_checks; exit 0 ;;
         --help|-h)    usage; exit 0 ;;
         --patches)     PATCHES=1 ;;
@@ -131,6 +156,23 @@ wanted() {
     for n in "${ONLY[@]}"; do [ "$n" = "$1" ] && return 0; done
     return 1
 }
+
+# Reject an --only value that matches no check, rather than running nothing and
+# calling it a pass. See the note on KNOWN_CHECKS above.
+if [ ${#ONLY[@]} -gt 0 ]; then
+    declare -a UNKNOWN=()
+    for _n in "${ONLY[@]}"; do
+        _found=0
+        for _k in "${KNOWN_CHECKS[@]}"; do [ "$_n" = "$_k" ] && { _found=1; break; }; done
+        [ "$_found" -eq 1 ] || UNKNOWN+=("$_n")
+    done
+    if [ ${#UNKNOWN[@]} -gt 0 ]; then
+        for _n in "${UNKNOWN[@]}"; do
+            echo "check.sh: no check matches '$_n' — see --list" >&2
+        done
+        exit 2
+    fi
+fi
 
 have()       { command -v "$1" >/dev/null 2>&1; }
 have_docker() { [ "$NO_DOCKER" -eq 0 ] && have docker && docker info >/dev/null 2>&1; }
