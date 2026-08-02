@@ -282,3 +282,38 @@ t3-integration:
     - bash scripts/ci/t3-integration.sh
   after_script:
     - docker compose ps || true
+
+# ─── T4: the full-stack smoke suite ─────────────────────────────────
+# All seven containers, the search leg and the chatbot leg. Same shape as the
+# job above and for the same reasons — all the logic is in
+# scripts/ci/t4-smoke.sh, and `manual` because this file still cannot assume
+# what a GitLab runner here looks like.
+#
+# No `--cache`: that flag configures a *GitHub Actions* cache backend, which
+# does not exist here. GitLab's equivalent would be a registry-backed buildx
+# cache, and picking one is a decision for whoever provisions these runners.
+#
+# The canonical automatic run is .github/workflows/t4-smoke.yml — nightly plus
+# tags, where the layer cache and the model cache both have a backend.
+t4-smoke:
+  stage: integration
+  image: docker:24-cli
+  services:
+    - docker:24-dind
+  <<: *default_rules
+  when: manual
+  allow_failure: false
+  timeout: 90m
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_HOST: "tcp://docker:2375"
+  before_script:
+    # Same dependency list as T3: the tier is standard library only. What T4
+    # adds is containers and waiting, not python packages.
+    - apk add --no-cache bash git curl python3 py3-pip >/dev/null
+    - pip install --quiet --break-system-packages pytest==9.0.2
+    - git config --global --add safe.directory "${CI_PROJECT_DIR:-$PWD}"
+  script:
+    - bash scripts/ci/t4-smoke.sh
+  after_script:
+    - docker compose ps --all || true

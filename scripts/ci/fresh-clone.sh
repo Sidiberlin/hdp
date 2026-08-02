@@ -61,6 +61,15 @@ REQUIRED_FILES=(
     scripts/check.sh
     scripts/ci/bats.sh
     scripts/ci/pytest.sh
+    # The two container jobs and the plumbing they share. Both CI workflows are
+    # thin callers of these, so a clone without them has a pipeline that cannot
+    # run and a contributor who cannot reproduce it.
+    scripts/ci/t3-integration.sh
+    scripts/ci/t4-smoke.sh
+    scripts/ci/lib/stack.sh
+    # T4's CI-only compose overlay: the buildx layer cache and the HuggingFace
+    # model cache. `t4-smoke.sh --cache` exits 2 without it.
+    docker/ci/compose.cache.yml
     scripts/convert-docs.sh
     # convert-docs.sh exits 1 without this — it owns the page mapping, the
     # source list and the post-processor, so a clone missing it cannot

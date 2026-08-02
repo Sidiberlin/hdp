@@ -1,0 +1,77 @@
+---
+# CI-only compose overlay: Docker layer caching and the HuggingFace model cache.
+#
+#   docker compose -f docker-compose.yml -f docker/ci/compose.cache.yml build
+#   scripts/ci/t4-smoke.sh --cache          (does the above)
+#
+# Kept out of docker-compose.yml deliberately. Everything in here is about the
+# machine running the build, not about the product: a developer's `docker
+# compose up` must not depend on a GitHub Actions cache backend existing, and
+# an operator deploying this stack must not inherit a bind mount pointed at a
+# directory in the repo.
+#
+# ─── 4.5 buildx GHA layer cache ─────────────────────────────────────
+#
+# Three of the seven services are built rather than pulled, and haystack is
+# ~285 of the ~290 seconds a cold build takes (a 2.5 GB image: torch,
+# transformers, sentence-transformers). Caching its layers turns the nightly
+# T4's build step from ~5 minutes into well under one on a warm cache.
+#
+# `x-bake` rather than plain `cache_from`: compose's own `build.cache_from` is
+# passed to the classic builder and does not understand `type=gha` at all.
+# Buildx does, and compose hands the build to buildx bake when COMPOSE_BAKE=1
+# — which scripts/ci/t4-smoke.sh sets whenever --cache is passed. Without that
+# variable the block below is silently ignored and the build succeeds while
+# caching nothing, which is the failure mode worth knowing about.
+#
+# `mode=max` exports intermediate layers too, not just the final image. For a
+# multi-stage-ish pip install that is the difference between caching the whole
+# dependency install and caching nothing useful.
+#
+# Per-service `scope`: the GHA backend keys its cache by scope, and without
+# distinct ones the three builds overwrite each other's entry on every run and
+# the cache never hits. This is the single easiest way to configure a cache
+# that appears to work and never does.
+#
+# ─── 4.6 HuggingFace model cache ────────────────────────────────────
+#
+# The haystack entrypoint pre-downloads two sentence-transformers models
+# (~1.7 GB) on first run. In production that lands in the `haystack_models`
+# named volume and survives restarts; in CI every job starts with no volumes at
+# all, so it is re-downloaded every night.
+#
+# The override points the same container path at a directory inside the
+# workspace, which `actions/cache` can then save and restore. Compose merges a
+# service's `volumes` by container path, so this *replaces* the named-volume
+# mount rather than adding a second one — verified with `docker compose config`
+# in the T4 validation, because a silent append would mount both and the one
+# that wins would be undefined.
+#
+# The directory is written by a root container, so the workflow chowns it back
+# before the cache action tars it up.
+services:
+  opensearch:
+    build:
+      x-bake:
+        cache-from:
+          - type=gha,scope=hdp-opensearch
+        cache-to:
+          - type=gha,scope=hdp-opensearch,mode=max
+
+  haystack:
+    build:
+      x-bake:
+        cache-from:
+          - type=gha,scope=hdp-haystack
+        cache-to:
+          - type=gha,scope=hdp-haystack,mode=max
+    volumes:
+      - ./.hf-cache:/root/.cache/huggingface
+
+  chatbot-proxy:
+    build:
+      x-bake:
+        cache-from:
+          - type=gha,scope=hdp-chatbot-proxy
+        cache-to:
+          - type=gha,scope=hdp-chatbot-proxy,mode=max

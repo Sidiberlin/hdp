@@ -1,0 +1,187 @@
+---
+# T4 — full-stack smoke. All seven containers, the search leg and the chatbot
+# leg, end to end.
+#
+# ─── Why nightly and tags, not every push ───────────────────────────
+#
+# T4 boots the whole stack, waits for the job queue to drain and then embeds
+# 155 wiki sections on CPU. That is ~25 minutes on a warm cache and more on a
+# cold one — far too slow to sit in front of a push, and unnecessary there:
+# `CI` (14 checks, ~2 min) and `T3 integration` (~4.5 min) already gate every
+# push, and T4's assertions are a strict superset of T3's, so nothing T3 covers
+# is left to chance between nightly runs.
+#
+# Tags get it because a tag is a release candidate, and the two legs T4 owns —
+# search returning results, and the chatbot answering — are exactly the ones a
+# user notices first and no faster gate can see.
+#
+# `workflow_dispatch` because the first thing anyone wants after changing the
+# ingestion or the pipeline is to run this once, on demand.
+#
+# ─── Why the runner is 16 GB, and why that is about wall clock ──────
+#
+# Peak simultaneous memory for all seven containers was measured at 2.65 GiB in
+# Wave 0 — the 7.75 GB that once justified a two-host split was a sum of
+# *caps*, not of usage. So this fits an 8 GB runner on memory. What it does not
+# fit is an 8 GB runner's disk and build time: the haystack image alone is
+# 2.5 GB. ubuntu-latest is the default and is fine; nothing here depends on it
+# being larger.
+#
+# ─── Everything real lives in scripts/ci/t4-smoke.sh ────────────────
+#
+# Same contract as ci.yml and t3-integration.yml: this file is a thin caller,
+# so a red job reproduces in a terminal with one command and there is no
+# CI-only logic to keep in step. The only thing that *is* CI-specific is the
+# caching, and even that is a compose overlay (docker/ci/compose.cache.yml)
+# the script takes as a flag.
+name: T4 smoke
+
+on:
+  schedule:
+    # 03:17 UTC. Off the hour on purpose — GitHub queues the enormous pile of
+    # cron jobs scheduled at :00, and a nightly that starts 40 minutes late is
+    # a nightly that competes with the working day in CET.
+    - cron: '17 3 * * *'
+  push:
+    tags:
+      - '*'
+  workflow_dispatch:
+    inputs:
+      skip_ingest:
+        description: 'Skip the ~8 minute reindex (degrades the hdp_wiki assertion)'
+        type: boolean
+        default: false
+
+concurrency:
+  group: t4-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  # The buildx GHA cache backend writes through the Actions cache service.
+  actions: write
+
+jobs:
+  t4:
+    name: full stack boots, searches and answers
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # The integration/smoke tier is standard library only — no requests, no
+      # haystack, nothing to install beyond pytest itself.
+      - name: Install pytest
+        run: python3 -m pip install --quiet --no-cache-dir pytest==9.0.2
+
+      # buildx is what understands `type=gha`; the classic builder does not.
+      - name: Set up buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Exports ACTIONS_CACHE_URL / ACTIONS_RUNTIME_TOKEN into the job
+      # environment. Actions get them injected automatically; a plain `run:`
+      # step invoking buildx does not, and without them `type=gha` fails to
+      # resolve a backend and the cache silently does nothing.
+      - name: Expose the Actions cache credentials to buildx
+        uses: crazy-max/ghaction-github-runtime@v3
+
+      # ~1.7 GB of sentence-transformers weights the haystack entrypoint
+      # pre-downloads on first run. Keyed on the entrypoint and the pipeline
+      # definition, because those are the two files that decide which models
+      # get pulled; a restore-key lets a changed pipeline still start from the
+      # previous night's weights rather than from nothing.
+      - name: Restore the HuggingFace model cache
+        uses: actions/cache@v4
+        with:
+          path: .hf-cache
+          key: hf-models-${{ hashFiles('docker/haystack/entrypoint.sh', 'docker/haystack/hdp_pipeline.yaml') }}
+          restore-keys: |
+            hf-models-
+
+      # The whole sequence: throwaway .env -> build (cached) -> up all seven ->
+      # setup.sh -> wait healthy -> drain the job queue -> ingest -> the smoke
+      # tier -> teardown with -v.
+      - name: Run T4
+        run: |
+          bash scripts/ci/t4-smoke.sh --cache \
+            ${{ inputs.skip_ingest && '--no-ingest' || '' }}
+
+      # The model cache is written by a root container, so the runner user
+      # cannot tar it. Ownership is fixed before actions/cache's post step runs
+      # — which it does even on failure, hence `if: always()`.
+      - name: Make the model cache readable by the runner
+        if: always()
+        run: sudo chown -R "$(id -u):$(id -g)" .hf-cache || true
+
+      # Only on failure, and bounded: enough to see a failed install, a PHP
+      # fatal, a jobrunner that is not running jobs, or a pipeline that would
+      # not deploy — without dumping a passing job's logs.
+      - name: Container logs
+        if: failure()
+        run: |
+          docker compose ps --all || true
+          docker compose logs --no-color --tail 200 \
+            mediawiki mediawiki-web mediawiki-jobrunner || true
+          docker compose logs --no-color --tail 200 \
+            haystack chatbot-proxy opensearch || true
+
+  # ─── 4.5: prove the layer cache actually round-trips ──────────────
+  #
+  # "The second run is faster than the first" is the property, and asserting it
+  # across two scheduled runs would mean carrying a timing from one job to the
+  # next and hoping nothing else changed. This does it inside one run instead,
+  # and proves something stronger: a build on a *fresh builder* that is allowed
+  # to read the GHA cache and not to write it must not have to execute the
+  # expensive layers. If the export in the t4 job did not work, this job's
+  # build pays full price and the assertion fails.
+  #
+  # It needs the t4 job to have exported the cache first, so it runs after it —
+  # and only after a success, since a t4 that never reached the build step has
+  # nothing to prove.
+  cache-proof:
+    name: the GHA layer cache round-trips
+    needs: t4
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      actions: write
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: crazy-max/ghaction-github-runtime@v3
+
+      # chatbot-proxy, not haystack: the assertion is about the cache backend
+      # working, and this one builds in seconds even cold, so the job costs
+      # almost nothing and cannot fail for being slow. haystack's cache is
+      # exercised by the t4 job itself every night.
+      - name: Warm build from the exported cache
+        id: warm
+        run: |
+          set -euo pipefail
+          cp .env.example .env
+          start=$SECONDS
+          COMPOSE_BAKE=1 docker compose \
+            -f docker-compose.yml -f docker/ci/compose.cache.yml \
+            build chatbot-proxy 2>&1 | tee build.log
+          echo "seconds=$(( SECONDS - start ))" >> "$GITHUB_OUTPUT"
+          rm -f .env
+
+      - name: Assert the layers came from the cache
+        run: |
+          set -euo pipefail
+          echo "warm build took ${{ steps.warm.outputs.seconds }}s"
+          # buildx prints CACHED against every step it did not execute. A build
+          # that imported nothing prints none at all, which is the exact
+          # failure this job exists to catch — a `scope` collision, a missing
+          # ACTIONS_* variable, or COMPOSE_BAKE not set, all of which leave a
+          # green build that caches nothing.
+          if grep -q 'CACHED' build.log; then
+            echo "cache hit: buildx reported CACHED layers"
+          else
+            echo "::error::no CACHED layers — the GHA cache exported by the t4 job was not imported here."
+            echo "Check: COMPOSE_BAKE=1, the ACTIONS_* variables, and the per-service scope in docker/ci/compose.cache.yml"
+            exit 1
+          fi
