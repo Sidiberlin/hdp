@@ -75,14 +75,19 @@ cleanup() {
     local rc=$?
     if [ "$KEEP" -eq 1 ]; then
         say "leaving the stack up (--keep). Tear it down with: docker compose down -v"
+        # The generated .env stays with it. Removing it would leave a stack
+        # whose passwords are unrecoverable — nothing could log in, and even
+        # `docker compose down` would refuse to parse, since compose declares
+        # `env_file: .env`. Only the throwaway case below deletes it.
+        [ "$CREATED_ENV" -eq 1 ] && say "kept the generated .env — it holds this stack's passwords"
     else
         say "tearing down"
         # -v so the next run starts from empty volumes. A stack left with a
         # populated mariadb_data makes setup.sh skip install.php, and then this
         # job silently stops testing the install it exists to test.
         docker compose down -v --remove-orphans >/dev/null 2>&1
+        [ "$CREATED_ENV" -eq 1 ] && rm -f "$REPO_ROOT/.env"
     fi
-    [ "$CREATED_ENV" -eq 1 ] && rm -f "$REPO_ROOT/.env"
     rm -f "$SETUP_LOG"
     exit "$rc"
 }
