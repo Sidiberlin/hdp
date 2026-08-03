@@ -8,6 +8,10 @@ target: vendor/jumbojett/openid-connect-php/src/OpenIDConnectClient.php
 patch: app/_bluespice/patches/vendor/jumbojett/openid-connect-php/src/OpenIDConnectClient.php.diff
 applied_by: app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh
 hunks: 1
+# The upstream line this patch replaces. Present *and* applied means an
+# earlier fuzzy application left both forms in the file, which for an
+# authentication library is a fix nobody is using. ERE, so $ is escaped.
+anti: '\$claims->aud === \$this->clientID'
 stale: false
 group: ''
 upstream_version: 'BlueSpice 5.1.4 (inherited patch set)'
