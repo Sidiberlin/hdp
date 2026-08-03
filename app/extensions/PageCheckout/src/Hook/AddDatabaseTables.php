@@ -22,6 +22,12 @@ class AddDatabaseTables implements LoadExtensionSchemaUpdatesHook {
 			"$base/db/$dbType/page_checkout_locks.sql"
 		);
 
+		$updater->addExtensionIndex(
+			'page_checkout_locks',
+			'pcl_page_id_user_id_index',
+			"$base/db/$dbType/page_checkout_locks_index.sql"
+		);
+
 		return true;
 	}
 }

@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Samoasambia",
+			"Wikipeedikko",
 			"Yupik"
 		]
 	},
@@ -14,5 +15,9 @@
 	"notifyme-event-page-move-key-desc": "Sivu siirretty",
 	"notifyme-event-page-delete-key-desc": "Sivu poistettu",
 	"notifications-subscriptions": "Hallitse ilmoitustilauksia",
-	"notifyme-ui-dialog-set-editor-cancel": "Peruuta"
+	"notifyme-ui-dialog-set-editor-cancel": "Peruuta",
+	"notifyme-ui-subscriptionset-editor-category-label": "Luokka",
+	"notifyme-ui-subscriptionset-category-label": "Luokka",
+	"notifyme-arbitrary-event-action-subject-help": "Käytetään sähköposti-ilmoituksen aiheena. Arvo voi olla pelkkää tekstiä tai viestiavain.",
+	"notifyme-arbitrary-event-action-message-help": "Arvo voi olla pelkkää tekstiä tai viestiavain"
 }

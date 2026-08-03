@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"McDutchie"
+			"McDutchie",
+			"Siebrand"
 		]
 	},
 	"collabpads-desc": "Maakt het mogelijk om samen wikipagina’s te bewerken",

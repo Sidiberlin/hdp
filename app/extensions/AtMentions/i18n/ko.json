@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Tensama0415",
 			"Ykhwong"
 		]
 	},
@@ -10,5 +11,14 @@
 	"at-mentions-inspector-title-edit": "사용자 언급 편집",
 	"at-mentions-ci-title": "사용자 언급",
 	"at-mentions-mentionslist-header-mine-all": "이 문서에서 당신이 언급되었습니다",
-	"at-mentions-toolbar-tool-title": "언급 추가"
+	"at-mentions-toolbar-tool-title": "언급 추가",
+	"at-mentions-mention-notification-key": "언급되었습니다",
+	"at-mentions-mention-in-entity-notification-key": "댓글이나 게시물에서 언급되었습니다",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|[[User:$1|$1]]에 의해}}",
+	"at-mentions-tag-item-time": "$1에",
+	"at-mentions-mentionslist-header-mine": "지난 {{PLURAL:$1|하루|$1일}} 동안, 당신은 다음 문서에서 언급되었습니다:",
+	"at-mentions-mentionslist-header-all": "사용자 {{GENDER:$2|[[User:$2|$2]]님이 다음 문서에서 언급되었습니다}}:",
+	"at-mentions-mentionslist-header": "지난 {{PLURAL:$1|하루|$1일}} 동안, 사용자 {{GENDER:$2|[[User:$2|$2]]님이 다음 문서에서 언급되었습니다}}:",
+	"at-mentions-mention-notification-message": "$2 문서에서 당신을 {{GENDER:$1|언급했습니다}}",
+	"at-mentions-mention-in-entity-notification-message": "$2 문서의 댓글이나 \"$3\" 게시물에서 당신을 {{GENDER:$1|언급했습니다}}"
 }

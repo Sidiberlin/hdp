@@ -4,8 +4,11 @@
 		cfg.classes = [ 'oojsplus-data-navigation-tree' ];
 		cfg.allowDeletions = false;
 		cfg.allowAdditions = false;
-		cfg.data = this.prepareData ( cfg.data );
+		cfg.data = this.prepareData( cfg.data );
 		cfg.fixed = true;
+		this.localStorageKey = cfg.localStorageKey || 'navigation-tree';
+		this.stateful = cfg.stateful || false;
+		this.maxLevel = cfg.maxLevel || 9;
 
 		OOJSPlus.ui.data.NavigationTree.super.call( this, cfg );
 
@@ -22,10 +25,10 @@
 			let isLeaf = true;
 			let expanded = false;
 
-			// eslint-disable-next-line no-prototype-builtins
-			if ( ( item.hasOwnProperty( 'leaf' ) && item.leaf === false ) &&
-				// eslint-disable-next-line no-prototype-builtins
-				( item.hasOwnProperty( 'children' ) && item.children.length > 0 )
+			if ( ( ( item.hasOwnProperty( 'leaf' ) && item.leaf === false ) &&
+
+				( item.hasOwnProperty( 'children' ) && item.children.length > 0 ) ) &&
+				lvl < this.maxLevel
 			) {
 				isLeaf = false;
 				expanded = true;
@@ -69,12 +72,20 @@
 
 		const $element = node.$element.find( '> ul.tree-node-list' );
 		if ( $( $element[ 0 ] ).children().length === 0 ) {
+			const skeleton = new OOJSPlus.ui.widget.SkeletonWidget( {
+				variant: 'list',
+				rows: 3,
+				visible: true
+			} );
+			node.$element.append( skeleton.$element );
+			node.$element.attr( 'aria-busy', true );
+
 			this.store.getSubElements( node.elementId ).done( ( result ) => {
 				const data = this.prepareData( result );
 				const nodes = this.build( data, node.level + 1 );
 
 				for ( const nodeElement in nodes ) {
-					// eslint-disable-next-line no-prototype-builtins
+
 					if ( !nodes.hasOwnProperty( nodeElement ) ) {
 						continue;
 					}
@@ -87,6 +98,8 @@
 					this.reEvaluateParent( nodeElement );
 					$( $element ).show();
 				}
+				skeleton.hide();
+				node.$element.removeAttr( 'aria-busy' );
 			} );
 		} else {
 			$( $element ).show();
@@ -95,12 +108,15 @@
 
 	OOJSPlus.ui.data.NavigationTree.prototype.prepareData = function ( pages ) {
 		const data = [];
+		let visitedPage = mw.config.get( 'wgPageName' );
+		if ( mw.config.get( 'wgCanonicalNamespace' ) === '' ) {
+			visitedPage = ':' + visitedPage;
+		}
 		for ( const i in pages ) {
 			const title = pages[ i ].title.split( '/' );
 			let label = title[ title.length - 1 ];
 			const classes = [];
-
-			if ( pages[ i ].title === mw.config.get( 'wgPageName' ) ) {
+			if ( pages[ i ].id === visitedPage ) {
 				classes.push( 'active' );
 			}
 
@@ -108,12 +124,15 @@
 				classes.push( 'leaf' );
 			}
 
-			if ( pages[ i ].label ) {
-				label = pages[ i ].label
+			if ( pages[ i ].display_title ) {
+				label = pages[ i ].display_title;
 			}
 
-			// eslint-disable-next-line mediawiki/class-doc
-			const entry = {
+			if ( pages[ i ].label ) {
+				label = pages[ i ].label;
+			}
+
+			const entry = { // eslint-disable-line mediawiki/class-doc
 				id: pages[ i ].id,
 				title: pages[ i ].prefixed,
 				name: pages[ i ].id,

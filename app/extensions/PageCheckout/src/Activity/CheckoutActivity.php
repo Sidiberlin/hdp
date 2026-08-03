@@ -25,7 +25,6 @@ abstract class CheckoutActivity extends GenericActivity {
 	protected $workflowContext;
 
 	/**
-	 * CheckoutActivity constructor.
 	 * @param CheckoutManager $checkoutManager
 	 * @param UserFactory $userFactory
 	 * @param TitleFactory $titleFactory
@@ -104,6 +103,7 @@ abstract class CheckoutActivity extends GenericActivity {
 	/**
 	 * @param User $user
 	 * @param Title $title
+	 * @return void
 	 */
 	abstract protected function doAction( User $user, Title $title );
 }

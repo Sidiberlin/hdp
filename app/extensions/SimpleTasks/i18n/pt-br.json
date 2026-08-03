@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eduardoaddad"
+		]
+	},
+	"simple-tasks-taskreport-header-task": "Tarefa",
+	"simple-tasks-taskreport-header-due-to": "Data de vencimento",
+	"simple-tasks-taskreport-header-state": "Estado",
+	"simple-tasks-taskreport-inspector-state-done": "feito",
+	"simple-tasks-taskreport-inspector-state-open": "aberto",
+	"simple-tasks-taskreport-inspector-label-namespaces": "Espaços nominais",
+	"simple-tasks-taskreport-inspector-label-due-date": "Prazo até",
+	"simple-tasks-taskreport-inspector-label-state": "Estado",
+	"simple-tasks-taskreport-state-title-open": "A tarefa está em aberto",
+	"simple-tasks-taskreport-state-title-done": "A tarefa está concluída",
+	"simple-tasks-taskreport-state-filter-done": "Feito",
+	"simple-tasks-taskreport-state-filter-open": "Aberto"
+}

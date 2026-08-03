@@ -93,7 +93,11 @@ class CollabEditActionHookHandler implements
 
 			$output->addJsConfigVars( 'wgCollabPadsUserAccessToken', $token );
 
-			$output->addModules( "ext.collabPads" );
+			$output->addModules( [
+				'ext.collabPads',
+				'ext.collabpads.title'
+			] );
+
 			return true;
 		}
 	}

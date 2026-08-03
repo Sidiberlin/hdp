@@ -9,7 +9,7 @@ use CognitiveProcessDesigner\Exceptions\CpdXmlProcessingException;
 use Exception;
 use MediaWiki\Config\Config;
 use MediaWiki\Message\Message;
-use MediaWiki\Title\Title;
+use MediaWiki\Title\NamespaceInfo;
 use SimpleXMLElement;
 
 class CpdXmlProcessor {
@@ -17,12 +17,22 @@ class CpdXmlProcessor {
 	/** @var array */
 	private array $dedicatedSubpageTypes = [];
 
+	/** @var string */
+	private string $processNamespace;
+
 	public function __construct(
 		Config $config,
-		private readonly CpdElementFactory $cpdElementFactory
+		NamespaceInfo $namespaceInfo,
+		private readonly CpdElementFactory $cpdElementFactory,
 	) {
 		if ( $config->has( 'CPDDedicatedSubpageTypes' ) ) {
 			$this->dedicatedSubpageTypes = $config->get( 'CPDDedicatedSubpageTypes' );
+		}
+
+		$this->processNamespace = $namespaceInfo->getCanonicalName( NS_PROCESS );
+
+		if ( $this->processNamespace === false ) {
+			$this->processNamespace = 'Process';
 		}
 	}
 
@@ -95,6 +105,9 @@ class CpdXmlProcessor {
 				'targetRef'
 			);
 		}
+
+		// Sort elements in the order they appear in sequence flows
+		$descriptionPageElements = $this->sortBySequenceFlows( $descriptionPageElements, $sequenceFlows );
 
 		return $descriptionPageElements;
 	}
@@ -220,15 +233,74 @@ class CpdXmlProcessor {
 	}
 
 	/**
-	 * @param array $elementsData
-	 * @param array $type
+	 * Sort elements in the order they appear in sequence flows (topological sort).
+	 *
+	 * @param array $descriptionPageElements
+	 * @param array $sequenceFlows
 	 *
 	 * @return array
 	 */
-	private function filterByType( array $elementsData, array $type ): array {
-		return array_values(
-			array_filter( $elementsData, static fn ( $elementData ) => in_array( $elementData['type'], $type ) )
-		);
+	private function sortBySequenceFlows( array $descriptionPageElements, array $sequenceFlows ): array {
+		if ( empty( $sequenceFlows ) || empty( $descriptionPageElements ) ) {
+			return $descriptionPageElements;
+		}
+
+		// Build a map of element id to element
+		$elementsById = [];
+		foreach ( $descriptionPageElements as $element ) {
+			$elementsById[ $element['id'] ] = $element;
+		}
+
+		// Build adjacency list for topological sort
+		$outgoing = [];
+		$incomingCount = [];
+		foreach ( $descriptionPageElements as $element ) {
+			$outgoing[ $element['id'] ] = [];
+			$incomingCount[ $element['id'] ] = 0;
+		}
+
+		foreach ( $sequenceFlows as $flow ) {
+			$sourceId = $flow['sourceRef'];
+			$targetId = $flow['targetRef'];
+
+			if ( isset( $elementsById[ $sourceId ] ) && isset( $elementsById[ $targetId ] ) ) {
+				$outgoing[ $sourceId ][] = $targetId;
+				$incomingCount[ $targetId ]++;
+			}
+		}
+
+		// Kahn's algorithm for topological sort
+		$queue = [];
+		foreach ( $incomingCount as $id => $count ) {
+			if ( $count === 0 ) {
+				$queue[] = $id;
+			}
+		}
+
+		$sorted = [];
+		while ( !empty( $queue ) ) {
+			$current = array_shift( $queue );
+			if ( isset( $elementsById[ $current ] ) ) {
+				$sorted[] = $elementsById[ $current ];
+			}
+
+			foreach ( $outgoing[ $current ] as $neighbor ) {
+				$incomingCount[ $neighbor ]--;
+				if ( $incomingCount[ $neighbor ] === 0 ) {
+					$queue[] = $neighbor;
+				}
+			}
+		}
+
+		// Append any remaining elements that were not in any sequence flow
+		$sortedIds = array_column( $sorted, 'id' );
+		foreach ( $descriptionPageElements as $element ) {
+			if ( !in_array( $element['id'], $sortedIds ) ) {
+				$sorted[] = $element;
+			}
+		}
+
+		return $sorted;
 	}
 
 	/**
@@ -284,7 +356,7 @@ class CpdXmlProcessor {
 		array &$descriptionPageElement,
 		string $process,
 	): void {
-		$descriptionPageElement['descriptionPage'] = $this->makeDescriptionPageTitle(
+		$descriptionPageElement['descriptionPage'] = $this->makeDescriptionPageDbKey(
 			$process,
 			$descriptionPageElement
 		);
@@ -332,7 +404,7 @@ class CpdXmlProcessor {
 	 * @return string
 	 * @throws CpdXmlProcessingException
 	 */
-	private function makeDescriptionPageTitle( string $process, array $element ): string {
+	private function makeDescriptionPageDbKey( string $process, array $element ): string {
 		if ( empty( $element['label'] ) ) {
 			throw new CpdXmlProcessingException(
 				Message::newFromKey( "cpd-error-message-missing-label", $element["id"] )->text()
@@ -345,17 +417,7 @@ class CpdXmlProcessor {
 			$titleText = "{$process}/" . implode( "/", $element['parents'] ) . "/{$element['label']}";
 		}
 
-		$titleText = $this->sanitizeTitle( $titleText );
-
-		$title = Title::makeTitle( NS_PROCESS, $titleText );
-
-		if ( !$title ) {
-			throw new CpdXmlProcessingException(
-				Message::newFromKey( "cpd-error-could-not-create-title", $element["id"] )->text()
-			);
-		}
-
-		return $title->getPrefixedDBkey();
+		return $this->processNamespace . ':' . $this->sanitizeTitle( $titleText );
 	}
 
 	/**

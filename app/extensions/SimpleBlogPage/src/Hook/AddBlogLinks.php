@@ -3,10 +3,12 @@
 namespace MediaWiki\Extension\SimpleBlogPage\Hook;
 
 use Config;
+use MediaWiki\Context\RequestContext;
+use MediaWiki\Extension\SimpleBlogPage\BlogPermissionChecker;
 use MediaWiki\Extension\SimpleBlogPage\Integration\BlueSpiceDiscovery\ArticlesHomeLink;
 use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
-use MediaWiki\Permissions\PermissionManager;
 use MediaWiki\SpecialPage\SpecialPageFactory;
+use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\CommonUserInterface\Hook\MWStakeCommonUIRegisterSkinSlotComponents;
 
 class AddBlogLinks implements
@@ -17,28 +19,42 @@ class AddBlogLinks implements
 	/** @var SpecialPageFactory */
 	private $spf;
 
-	/** @var PermissionManager */
-	private $permissionManager;
-
 	/** @var Config */
 	private $config;
 
+	/** @var TitleFactory */
+	private $titleFactory;
+
+	/** @var BlogPermissionChecker */
+	private $permissionChecker;
+
+	/** @var bool|null */
+	private ?bool $hasReadPermission = null;
+
 	/**
 	 * @param SpecialPageFactory $spf
-	 * @param PermissionManager $permissionManager
 	 * @param Config $config
+	 * @param TitleFactory $titleFactory
+	 * @param BlogPermissionChecker $permissionChecker
 	 */
-	public function __construct( SpecialPageFactory $spf, PermissionManager $permissionManager, Config $config ) {
+	public function __construct(
+		SpecialPageFactory $spf, Config $config, TitleFactory $titleFactory, BlogPermissionChecker $permissionChecker
+	) {
 		$this->spf = $spf;
-		$this->permissionManager = $permissionManager;
 		$this->config = $config;
+		$this->titleFactory = $titleFactory;
+		$this->permissionChecker = $permissionChecker;
 	}
 
 	/**
 	 * @inheritDoc
 	 */
 	public function onMWStakeCommonUIRegisterSkinSlotComponents( $registry ): void {
+		if ( !$this->canReadAnything() ) {
+			return;
+		}
 		if ( $this->config->get( 'SimpleBlogPageShowInMainLinks' ) ) {
+			$skin = RequestContext::getMain()->getSkin();
 			$registry->register(
 				'MainLinksPanel',
 				[
@@ -57,6 +73,9 @@ class AddBlogLinks implements
 	 * @inheritDoc
 	 */
 	public function onSkinTemplateNavigation__Universal( $skinTemplate, &$links ): void {
+		if ( !$this->canReadAnything() ) {
+			return;
+		}
 		$user = $skinTemplate->getUser();
 		$overviewSpecial = $this->spf->getPage( 'Blogs' );
 		$links['user-menu']['simpleblog_myblog'] = [
@@ -65,8 +84,7 @@ class AddBlogLinks implements
 			'text' => $skinTemplate->msg( 'simpleblogpage-user-blogoverview-label' )->plain(),
 			'position' => 50,
 		];
-
-		if ( !$this->permissionManager->userHasRight( $user, 'createblogpost' ) ) {
+		if ( !$this->permissionChecker->canCreateBlogs( $user ) ) {
 			return;
 		}
 		$skinTemplate->getOutput()->addModules( [ 'ext.simpleBlogPage.bootstrap' ] );
@@ -76,5 +94,22 @@ class AddBlogLinks implements
 			'text' => $skinTemplate->getContext()->msg( 'simpleblogpage-create-label' )->text(),
 			'title' => $skinTemplate->getContext()->msg( 'simpleblogpage-create-label' )->text(),
 		];
+	}
+
+	/**
+	 * @return bool
+	 */
+	private function canReadAnything() {
+		if ( $this->hasReadPermission === null ) {
+			$this->hasReadPermission = false;
+			$user = RequestContext::getMain()->getUser();
+			foreach ( $this->permissionChecker->getGeneralReadPermissions( $user ) as $canRead ) {
+				if ( $canRead ) {
+					$this->hasReadPermission = true;
+					break;
+				}
+			}
+		}
+		return $this->hasReadPermission;
 	}
 }

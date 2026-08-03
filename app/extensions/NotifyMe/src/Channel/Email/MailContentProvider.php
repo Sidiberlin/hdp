@@ -2,6 +2,7 @@
 
 namespace MediaWiki\Extension\NotifyMe\Channel\Email;
 
+use DOMDocument;
 use Exception;
 use MediaWiki\Config\Config;
 use MediaWiki\Html\TemplateParser;
@@ -16,6 +17,7 @@ use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\Options\UserOptionsLookup;
 use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\CommonUserInterface\LessVars;
+use RepoGroup;
 use Wikimedia\Rdbms\ILoadBalancer;
 
 class MailContentProvider {
@@ -45,6 +47,12 @@ class MailContentProvider {
 	/** @var Language */
 	private $language;
 
+	/** @var RepoGroup */
+	private $repoGroup;
+
+	/** @var array */
+	private $images = [];
+
 	/**
 	 * @param ILoadBalancer $lb
 	 * @param TitleFactory $titleFactory
@@ -53,10 +61,14 @@ class MailContentProvider {
 	 * @param ParserFactory $parserFactory
 	 * @param UserOptionsLookup $userOptionsLookup
 	 * @param Language $language
+	 * @param RepoGroup $repoGroup
 	 */
 	public function __construct(
 		ILoadBalancer $lb, TitleFactory $titleFactory, Config $config, RevisionLookup $revisionLookup,
-		ParserFactory $parserFactory, UserOptionsLookup $userOptionsLookup, Language $language
+		ParserFactory $parserFactory,
+		UserOptionsLookup $userOptionsLookup,
+		Language $language,
+		RepoGroup $repoGroup
 	) {
 		$this->lb = $lb;
 		$this->titleFactory = $titleFactory;
@@ -65,6 +77,7 @@ class MailContentProvider {
 		$this->parserFactory = $parserFactory;
 		$this->userOptionsLookup = $userOptionsLookup;
 		$this->language = $language;
+		$this->repoGroup = $repoGroup;
 	}
 
 	/**
@@ -78,12 +91,24 @@ class MailContentProvider {
 	 * @throws Exception
 	 */
 	public function getFinalEmailHtml( string $type, array $serialized, User $user ): string {
+		$this->clearImages();
 		$content = $this->getContentForType( $type );
 		if ( !$content ) {
 			throw new Exception( 'No content found for notification type: ' . $type );
 		}
 		$content = $this->getHtmlFromData( $content, $user, $serialized );
 		return $this->wrap( $content, $user );
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	public function getImages(): array {
+		return $this->images;
+	}
+
+	public function clearImages() {
+		$this->images = [];
 	}
 
 	/**
@@ -137,11 +162,14 @@ class MailContentProvider {
 	 * @throws Exception
 	 */
 	public function wrap( string $contentHtml, User $user ): string {
+		$this->images = [];
 		$content = $this->getContentForType( 'wrapper' );
 		if ( !$content ) {
 			throw new Exception( 'Mail wrapper not found' );
 		}
-		return $this->getHtmlFromData( $content, $user, [ 'content' => $contentHtml ] );
+
+		$html = $this->getHtmlFromData( $content, $user, [ 'content' => $contentHtml ] );
+		return $this->replaceImagesWithCids( $html );
 	}
 
 	/**
@@ -236,8 +264,7 @@ class MailContentProvider {
 	 */
 	private function processWikitext( string &$html, User $user, RevisionRecord $revision ) {
 		$parser = $this->parserFactory->create();
-		$pageRef = $parser->getPage();
-		$parser->setPage( $pageRef );
+		$parser->setPage( $revision->getPage() );
 		$parser->setUser( $user );
 		$options = ParserOptions::newFromUser( $user );
 
@@ -248,7 +275,7 @@ class MailContentProvider {
 		$options->setUserLang( $userLanguage );
 
 		$parser->setOptions( $options );
-		$html = $parser->preprocess( $html, $pageRef, $options, $revision->getId() );
+		$html = $parser->preprocess( $html, $revision->getPage(), $options, $revision->getId() );
 	}
 
 	/**
@@ -341,5 +368,99 @@ class MailContentProvider {
 		} else {
 			$lessVars->setVar( $var, $default );
 		}
+	}
+
+	/**
+	 * Replace images with CID references and register matching files
+	 *
+	 * @param string $html
+	 *
+	 * @return string
+	 */
+	private function replaceImagesWithCids( string $html ): string {
+		$dom = new DOMDocument();
+		$dom->loadHTML( $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD );
+		$images = $dom->getElementsByTagName( 'img' );
+		$hasBeenUpdated = false;
+
+		foreach ( $images as $img ) {
+			$url = $img->getAttribute( 'src' );
+
+			// Skip if already CID
+			if ( preg_match( '/^cid:/', $url ) ) {
+				continue;
+			}
+
+			$filename = $this->extractFileNameFromUrl( $url );
+			if ( !$filename ) {
+				continue;
+			}
+
+			$file = $this->repoGroup->findFile( $filename );
+
+			if ( !$file || !$file->exists() ) {
+				continue;
+			}
+
+			if ( $file->getMediaType() !== MEDIATYPE_BITMAP && $file->getMediaType() !== MEDIATYPE_DRAWING ) {
+				continue;
+			}
+
+			$storagePath = $file->getLocalRefPath();
+
+			if ( !is_string( $storagePath ) || !file_exists( $storagePath ) ) {
+				continue;
+			}
+
+			$cid = $this->makeCidForFileName( $filename );
+			$img->setAttribute( 'src', "cid:$cid" );
+			if ( !isset( $this->images[$cid] ) ) {
+				$this->images[$cid] = $file;
+			}
+			$hasBeenUpdated = true;
+		}
+
+		if ( !$hasBeenUpdated ) {
+			return $html;
+		}
+
+		return $dom->saveHTML();
+	}
+
+	/**
+	 * @param string $url
+	 * @return string|null
+	 */
+	private function extractFileNameFromUrl( string $url ): ?string {
+		$path = parse_url( $url, PHP_URL_PATH );
+		if ( !is_string( $path ) || $path === '' ) {
+			return null;
+		}
+		// for `thumb.php` URLs, check if `f` param is set, if yes, that is the filename
+		$query = parse_url( $url, PHP_URL_QUERY );
+		if ( is_string( $query ) ) {
+			parse_str( $query, $queryParams );
+			if ( isset( $queryParams['f'] ) && is_string( $queryParams['f'] ) ) {
+				return urldecode( $queryParams['f'] );
+			}
+		}
+
+		$pathParts = explode( '/', trim( $path, '/' ) );
+		$isThumb = in_array( 'thumb', $pathParts, true );
+		if ( $isThumb && count( $pathParts ) > 1 ) {
+			// MediaWiki thumbnail URL: .../thumb/.../<origName>/<thumbName>
+			return urldecode( $pathParts[count( $pathParts ) - 2] );
+		}
+
+		return urldecode( basename( $path ) );
+	}
+
+	/**
+	 * @param string $fileName
+	 *
+	 * @return string
+	 */
+	private function makeCidForFileName( string $fileName ): string {
+		return 'notifyme-' . sha1( $fileName );
 	}
 }

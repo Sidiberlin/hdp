@@ -3,6 +3,8 @@
 namespace MediaWiki\Extension\PageCheckout;
 
 use DateTime;
+use InvalidArgumentException;
+use LogicException;
 use MediaWiki\Extension\PageCheckout\Entity\CheckoutEntity;
 use MediaWiki\Extension\PageCheckout\Entity\CheckoutEvent;
 use MediaWiki\Extension\PageCheckout\Repo\CheckoutEventRepo;
@@ -10,7 +12,6 @@ use MediaWiki\Extension\PageCheckout\Repo\CheckoutRepo;
 use MediaWiki\Message\Message;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
-use MWException;
 
 class CheckoutManager {
 	/** @var User */
@@ -44,17 +45,18 @@ class CheckoutManager {
 	 * @param User $forUser
 	 * @param array|null $payload Custom data to add to entity
 	 * @return CheckoutEntity
-	 * @throws MWException
+	 * @throws InvalidArgumentException
+	 * @throws LogicException
 	 */
 	public function checkout( Title $title, User $forUser, $payload = [] ): CheckoutEntity {
 		if ( !$title->exists() ) {
-			throw new MWException( Message::newFromKey( 'pagecheckout-error-no-title' )->text() );
+			throw new InvalidArgumentException( Message::newFromKey( 'pagecheckout-error-no-title' )->text() );
 		}
 		if ( !$forUser->isRegistered() ) {
-			throw new MWException( Message::newFromKey( 'pagecheckout-error-no-user' )->text() );
+			throw new InvalidArgumentException( Message::newFromKey( 'pagecheckout-error-no-user' )->text() );
 		}
 		if ( $this->isCheckedOut( $title ) ) {
-			throw new MWException( Message::newFromKey( 'pagecheckout-error-has-checkout' )->text() );
+			throw new LogicException( Message::newFromKey( 'pagecheckout-error-has-checkout' )->text() );
 		}
 		$entity = new CheckoutEntity( null, $title, $forUser, $payload );
 		$entity = $this->checkoutRepo->save( $entity );
@@ -64,19 +66,19 @@ class CheckoutManager {
 			return $entity;
 		}
 
-		throw new MWException( Message::newFromKey( 'pagecheckout-error-save-failed' )->text() );
+		throw new LogicException( Message::newFromKey( 'pagecheckout-error-save-failed' )->text() );
 	}
 
 	/**
 	 * @param Title $title
 	 * @param string $comment
 	 * @return bool
-	 * @throws MWException
+	 * @throws LogicException
 	 */
 	public function checkIn( Title $title, $comment = '' ) {
 		$entity = $this->checkoutRepo->getForPage( $title );
 		if ( !$entity instanceof CheckoutEntity ) {
-			throw new MWException( Message::newFromKey( 'pagecheckout-error-no-checkout' )->text() );
+			throw new LogicException( Message::newFromKey( 'pagecheckout-error-no-checkout' )->text() );
 		}
 		$res = $this->checkoutRepo->delete( $entity );
 		if ( $res ) {
@@ -91,12 +93,12 @@ class CheckoutManager {
 	/**
 	 * @param Title $title
 	 * @return bool
-	 * @throws MWException
+	 * @throws LogicException
 	 */
 	public function clearCheckout( Title $title ) {
 		$entity = $this->checkoutRepo->getForPage( $title );
 		if ( !$entity instanceof CheckoutEntity ) {
-			throw new MWException( Message::newFromKey( 'pagecheckout-error-no-checkout' )->text() );
+			throw new LogicException( Message::newFromKey( 'pagecheckout-error-no-checkout' )->text() );
 		}
 		$res = $this->checkoutRepo->delete( $entity );
 		if ( $res ) {
@@ -108,10 +110,6 @@ class CheckoutManager {
 		return false;
 	}
 
-	/**
-	 * @param Title $title
-	 * @return bool
-	 */
 	public function isCheckedOut( Title $title ): bool {
 		return $this->getCheckoutEntity( $title ) instanceof CheckoutEntity;
 	}
@@ -132,6 +130,7 @@ class CheckoutManager {
 	 * @param CheckoutEntity $entity
 	 * @param string $action
 	 * @param string $comment
+	 * @throws LogicException
 	 */
 	private function recordEvent( CheckoutEntity $entity, $action, $comment ) {
 		$event = new CheckoutEvent(
@@ -145,7 +144,7 @@ class CheckoutManager {
 
 		$res = $this->eventRepo->save( $event );
 		if ( !$res ) {
-			throw new MWException( Message::newFromKey( 'pagecheckout-error-save-event' )->text() );
+			throw new LogicException( Message::newFromKey( 'pagecheckout-error-save-event' )->text() );
 		}
 
 		$this->specialLogLogger->log( $entity, $this->actor, $action, $comment );

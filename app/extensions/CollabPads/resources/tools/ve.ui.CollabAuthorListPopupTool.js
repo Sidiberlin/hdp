@@ -131,7 +131,7 @@ ve.ui.CollabAuthorListPopupTool.prototype.createCopyLink = function () {
 	copyLink.addEventListener( 'click', ( event ) => {
 		event.preventDefault();
 		// Copy URL to clipboard
-		navigator.clipboard.writeText( window.location.href ).then( // eslint-disable-line compat/compat, max-len
+		navigator.clipboard.writeText( window.location.href ).then( // eslint-disable-line compat/compat
 			() => {
 				const msg = mw.msg( 'collabpads-clipboard-copy-success' );
 				mw.notify( msg, { type: 'info' } );

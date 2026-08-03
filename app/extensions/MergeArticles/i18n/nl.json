@@ -3,7 +3,8 @@
 		"authors": [
 			"Mainframe98",
 			"McDutchie",
-			"Romaine"
+			"Romaine",
+			"Siebrand"
 		]
 	},
 	"mergearticles-extension-desc": "Maakt vergelijken en samenvoegen van artikelen mogelijk",
@@ -18,7 +19,7 @@
 	"mergearticles-type-category": "Categorie",
 	"mergearticles-no-pages-available": "Niets om te laten zien!",
 	"mergearticles-action-unknown": "Onbekende handeling",
-	"mergearticles-request-invalid": "Ongeldig verzoek",
+	"mergearticles-request-invalid": "Onjuist verzoek",
 	"mergearticles-sp-review": "Pagina’s samenvoegen - beoordelen en samenvoegen",
 	"mergearticles-sp-compare": "Pagina’s samenvoegen – vergelijken en samenvoegen",
 	"mergearticles-do-merge-label": "Samenvoegen",
@@ -29,7 +30,7 @@
 	"mergearticles-merge-new-help": "De pagina “$1” bestaat nog niet, maar zal door deze samenvoeging aangemaakt worden. Controleer vóór het samenvoegen de inhoud en wijzig deze indien nodig.",
 	"mergearticles-file-layout-label": "Bestand",
 	"mergearticles-file-info-name": "Naam: $1",
-	"mergearticles-file-info-extension": "Extensie: $1",
+	"mergearticles-file-info-extension": "Achtervoegsel: $1",
 	"mergearticles-file-info-mime": "MIME-type: $1",
 	"mergearticles-file-info-size": "Grootte: $1",
 	"mergearticles-merge-existing-help": "De pagina “$1” bestaat al! Vergelijk de onderstaande wijzigingen.",

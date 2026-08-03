@@ -10,22 +10,17 @@ use MediaWiki\Extension\Workflows\Storage\Event\WorkflowAborted;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Message\Message as MediaWikiMessage;
 use MediaWiki\Title\Title;
-use MWException;
 
 class ClearCheckoutOnAbort implements Consumer {
 	/** @var CheckoutManager */
 	private $checkoutManager;
 
-	/**
-	 * @param CheckoutManager $checkoutManager
-	 */
 	public function __construct( CheckoutManager $checkoutManager ) {
 		$this->checkoutManager = $checkoutManager;
 	}
 
 	/**
 	 * @param Message $message
-	 * @throws MWException
 	 */
 	public function handle( Message $message ) {
 		$event = $message->event();
@@ -48,7 +43,7 @@ class ClearCheckoutOnAbort implements Consumer {
 		if ( isset( $payload['workflowId'] ) && $payload['workflowId'] === $workflowId->toString() ) {
 			$this->checkoutManager->checkIn(
 				$page,
-				MediaWikiMessage::newFromKey( "page-checkout-workflow-clear-checkout" )->text()
+				MediaWikiMessage::newFromKey( "pagecheckout-workflow-clear-checkout" )->text()
 			);
 		}
 	}

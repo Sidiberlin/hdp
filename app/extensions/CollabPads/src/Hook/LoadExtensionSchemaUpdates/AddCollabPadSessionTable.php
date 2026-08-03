@@ -17,5 +17,11 @@ class AddCollabPadSessionTable implements LoadExtensionSchemaUpdatesHook {
 			'collabpad_session',
 			"$dir/maintenance/db/$dbType/collabpad_session.sql"
 		);
+
+		$updater->addExtensionIndex(
+			'collabpad_session',
+			'collabpad_session_page_namespace_page_title_index',
+			"$dir/maintenance/db/$dbType/collabpad_session_page_namespace_page_title_index.sql"
+		);
 	}
 }

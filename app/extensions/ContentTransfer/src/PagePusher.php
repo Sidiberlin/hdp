@@ -2,6 +2,7 @@
 
 namespace ContentTransfer;
 
+use ContentTransfer\Utility\ApiErrorHelper;
 use MediaWiki\HookContainer\HookContainer;
 use MediaWiki\Language\Language;
 use MediaWiki\Status\Status;
@@ -85,20 +86,35 @@ class PagePusher {
 	 * Do the push process
 	 */
 	public function push() {
-		$this->logger->info( 'Pushing to ' . $this->getTargetTitleText() );
-		if ( $this->requestHandler->getPageProps( $this->getTargetTitleText() ) === null ) {
-			throw new RuntimeException( 'Could not get page props' );
+		$targetTitle = $this->getTargetTitleText();
+		$this->logger->info(
+			'Starting push of "{title}" to "{target}"',
+			[ 'title' => $this->title->getPrefixedText(), 'target' => $targetTitle ]
+		);
+		if ( $this->requestHandler->getPageProps( $targetTitle ) === null ) {
+			$this->status = $this->requestHandler->getStatus();
+			throw new RuntimeException(
+				'Could not get page props for "' . $targetTitle . '" on target "' .
+				$this->requestHandler->getTarget()->getUrl() . '"'
+			);
 		}
 		if ( $this->ensurePushPossible() === false ) {
-			throw new RuntimeException( 'Push not possible' );
+			throw new RuntimeException( 'Push not possible for "' . $targetTitle . '"' );
 		}
 		if ( $this->requestHandler->getCSRFToken() === null ) {
-			throw new RuntimeException( 'Could not get CSRF token' );
+			$this->status = $this->requestHandler->getStatus();
+			throw new RuntimeException(
+				'Could not get CSRF token from "' . $this->requestHandler->getTarget()->getUrl() . '"'
+			);
 		}
 		$pageId = $this->doPush();
 		if ( $pageId === false ) {
-			throw new RuntimeException( 'Main push failed' );
+			throw new RuntimeException( 'Edit request failed for "' . $targetTitle . '"' );
 		}
+		$this->logger->info(
+			'Successfully pushed "{title}" to "{target}"',
+			[ 'title' => $this->title->getPrefixedText(), 'target' => $targetTitle ]
+		);
 		$this->runAdditionalRequests( $pageId );
 	}
 
@@ -109,6 +125,15 @@ class PagePusher {
 	 */
 	public function getStatus() {
 		return $this->status;
+	}
+
+	/**
+	 * Override the current status (used by callers to surface caught exceptions)
+	 *
+	 * @param Status $status
+	 */
+	public function setStatus( Status $status ) {
+		$this->status = $status;
 	}
 
 	/**
@@ -126,6 +151,10 @@ class PagePusher {
 			// Namespace does not exist on received and
 			//cannot be retrieved from page title
 			$namespaceText = $this->title->getNsText();
+			$this->logger->warning(
+				'Push blocked: namespace "{ns}" not found on target for page "{title}"',
+				[ 'ns' => $namespaceText, 'title' => $this->title->getPrefixedText() ]
+			);
 			$this->status = Status::newFatal(
 				wfMessage( 'contenttransfer-namespace-not-found', $namespaceText )
 			);
@@ -133,6 +162,10 @@ class PagePusher {
 			return false;
 		}
 		if ( $this->isPageProtected() && $this->force == false ) {
+			$this->logger->warning(
+				'Push blocked: page "{title}" is protected on target',
+				[ 'title' => $this->getTargetTitleText() ]
+			);
 			$this->status = Status::newFatal(
 				wfMessage( 'contenttransfer-page-protected' )
 			);
@@ -168,20 +201,36 @@ class PagePusher {
 			'summary' => 'Pushed content',
 			'text' => $content,
 			'title' => $this->getTargetTitleText(),
-			'format' => 'json'
+			'format' => 'json',
+			'errorformat' => 'raw'
 		];
 		$status = $this->requestHandler->runPushRequest( $requestData );
 
 		if ( !$status->isOK() ) {
-			$this->status = Status::newFatal( 'contenttransfer-edit-fail' );
+			$errorDetail = $status->getMessage()->text();
+			$this->logger->error(
+				'Edit request failed for "{title}": {error}',
+				[ 'title' => $this->getTargetTitleText(), 'error' => $errorDetail ]
+			);
+			if ( $errorDetail ) {
+				$this->status = Status::newFatal( 'contenttransfer-edit-fail-message', $errorDetail );
+			} else {
+				$this->status = Status::newFatal( 'contenttransfer-edit-fail' );
+			}
 			return false;
 		}
 
 		$response = (object)$status->getValue();
-		if ( property_exists( $response, 'error' ) ) {
+		if ( property_exists( $response, 'errors' ) && $response->errors ) {
+			$error = ApiErrorHelper::extractLocalizedError( $response->errors );
+			$this->logger->error(
+				'Edit request for "{title}" returned API error: {error}',
+				[ 'title' => $this->getTargetTitleText(), 'error' => $error,
+					'response' => json_encode( $response ) ]
+			);
 			$this->status = Status::newFatal(
 				'contenttransfer-edit-fail-message',
-				$response->error->info
+				$error
 			);
 			return false;
 		}
@@ -217,7 +266,17 @@ class PagePusher {
 			$requestData['token'] = $this->requestHandler->getCSRFToken();
 			$requestData['format'] = 'json';
 
-			$this->requestHandler->runAuthenticatedRequest( $requestData );
+			$this->logger->debug(
+				'Running additional request for page "{title}": action={action}',
+				[ 'title' => $this->title->getPrefixedText(), 'action' => $requestData['action'] ?? 'unknown' ]
+			);
+			$additionalReqStatus = $this->requestHandler->runAuthenticatedRequest( $requestData );
+			if ( !$additionalReqStatus->isOK() ) {
+				$this->logger->warning(
+					'Additional request failed for page "{title}": action={action}',
+					[ 'title' => $this->title->getPrefixedText(), 'action' => $requestData['action'] ?? 'unknown' ]
+				);
+			}
 		}
 	}
 

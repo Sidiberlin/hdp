@@ -2,15 +2,14 @@
 
 namespace MediaWiki\Extension\Workflows\MediaWiki\UnifiedTaskOverview;
 
-use Exception;
 use MediaWiki\Extension\UnifiedTaskOverview\ITaskDescriptor;
 use MediaWiki\Extension\Workflows\UserInteractiveActivity;
 use MediaWiki\Extension\Workflows\Workflow;
 use MediaWiki\Language\RawMessage;
 use MediaWiki\MediaWikiServices;
 use MediaWiki\Message\Message;
-use MediaWiki\Page\PageProps;
 use MediaWiki\Title\Title;
+use MWStake\MediaWiki\Component\Utils\DisplayTitleHelper;
 
 class ActivityTask implements ITaskDescriptor {
 	/** @var UserInteractiveActivity */
@@ -21,9 +20,8 @@ class ActivityTask implements ITaskDescriptor {
 	protected $title = null;
 	/** @var Revision|null */
 	protected $revision = null;
-
-	/** @var PageProps */
-	private PageProps $pageProps;
+	/** @var DisplayTitleHelper */
+	private DisplayTitleHelper $displayTitleHelper;
 
 	/**
 	 * @param UserInteractiveActivity $activity
@@ -32,7 +30,8 @@ class ActivityTask implements ITaskDescriptor {
 	public function __construct( UserInteractiveActivity $activity, Workflow $workflow ) {
 		$this->activity = $activity;
 		$this->workflow = $workflow;
-		$this->pageProps = MediaWikiServices::getInstance()->getPageProps();
+		$utilFactory = MediaWikiServices::getInstance()->getService( 'MWStakeCommonUtilsFactory' );
+		$this->displayTitleHelper = $utilFactory->getDisplayTitleHelper();
 
 		$this->trySetTitle();
 	}
@@ -70,28 +69,16 @@ class ActivityTask implements ITaskDescriptor {
 		if ( !$this->title ) {
 			return new RawMessage( '' );
 		}
-
-		$displayTitleProperties = $this->pageProps->getProperties( $this->title, 'displaytitle' );
-		if ( count( $displayTitleProperties ) === 1 ) {
-			$displayTitle = $displayTitleProperties[$this->title->getArticleID()];
-		}
-
-		return new RawMessage( $displayTitle ?? $this->title->getSubpageText() );
+		return new RawMessage(
+			$this->displayTitleHelper->getDisplayTitle( $this->title ) ?? $this->title->getSubpageText()
+		);
 	}
 
 	/**
 	 * @return Message
-	 * @throws Exception
 	 */
 	public function getSubHeader(): Message {
-		// workflows-uto-activity-custom_form
-		// workflows-uto-activity-user_vote
-		// workflows-uto-activity-group_vote
-		// workflows-uto-activity-user_feedback
-		// workflows-uto-activity-group_feedback
-		return Message::newFromKey(
-			'workflows-uto-activity-' . $this->getActivityType()
-		);
+		return new RawMessage( $this->workflow->getDefinition()->getSource()->getTitle() );
 	}
 
 	/**

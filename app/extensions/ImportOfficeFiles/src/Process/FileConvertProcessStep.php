@@ -12,6 +12,7 @@ use MediaWiki\Extension\ImportOfficeFiles\Modules\MSOfficeWord;
 use MediaWiki\Extension\ImportOfficeFiles\Workspace;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Registration\ExtensionRegistry;
 use MWStake\MediaWiki\Component\ProcessManager\IProcessStep;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -169,6 +170,7 @@ class FileConvertProcessStep implements IProcessStep, LoggerAwareInterface {
 			$namespace = array_pop( $titleParts );
 			$title = implode( '_', $titleParts );
 		}
+		$nsfrCompat = ExtensionRegistry::getInstance()->isLoaded( 'NSFileRepo' );
 
 		$this->workspace->addToBucket(
 			MSOfficeWord::BUCKET_ANALYZER_PARAMS,
@@ -177,7 +179,7 @@ class FileConvertProcessStep implements IProcessStep, LoggerAwareInterface {
 				'base-title' => $titleText,
 				'verbose' => false,
 				'split' => $this->split,
-				'ns-filerepo-compat' => 'false',
+				'ns-filerepo-compat' => $nsfrCompat ? 'true' : 'false',
 				'uncollide' => $this->uncollide,
 				'categories' => [],
 			]

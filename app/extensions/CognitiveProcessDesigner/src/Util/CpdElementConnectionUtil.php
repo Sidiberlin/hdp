@@ -9,6 +9,7 @@ use CognitiveProcessDesigner\Exceptions\CpdInvalidArgumentException;
 use CognitiveProcessDesigner\Exceptions\CpdInvalidContentException;
 use CognitiveProcessDesigner\Exceptions\CpdInvalidNamespaceException;
 use CognitiveProcessDesigner\Exceptions\CpdXmlProcessingException;
+use Exception;
 use MediaWiki\Html\TemplateParser;
 use MediaWiki\Message\Message;
 use MediaWiki\Title\Title;
@@ -50,16 +51,28 @@ class CpdElementConnectionUtil {
 		}
 
 		foreach ( $element->getOutgoingLinks() as $outgoingLink ) {
+			$targetPage = $outgoingLink->getDescriptionPage();
+
+			if ( !$targetPage ) {
+				continue;
+			}
+
 			$connections['outgoing'][] = $this->createNavigationConnection(
-				$outgoingLink->getDescriptionPage()->getPrefixedDBkey(),
+				$targetPage,
 				$outgoingLink->getType(),
 				$title,
 				$revId
 			);
 		}
 		foreach ( $element->getIncomingLinks() as $incomingLink ) {
+			$targetPage = $incomingLink->getDescriptionPage();
+
+			if ( !$targetPage ) {
+				continue;
+			}
+
 			$connections['incoming'][] = $this->createNavigationConnection(
-				$incomingLink->getDescriptionPage()->getPrefixedDBkey(),
+				$targetPage,
 				$incomingLink->getType(),
 				$title,
 				$revId
@@ -74,15 +87,16 @@ class CpdElementConnectionUtil {
 	 * @param int|null $revId
 	 *
 	 * @return string
-	 * @throws CpdCreateElementException
-	 * @throws CpdInvalidArgumentException
-	 * @throws CpdInvalidNamespaceException
 	 */
 	public function createNavigationHtml(
 		Title $title,
 		?int $revId = null
 	): string {
-		$connections = $this->getConnections( $title, $revId );
+		try {
+			$connections = $this->getConnections( $title, $revId );
+		} catch ( Exception $e ) {
+			return Message::newFromKey( 'cpd-error-message-missing-connection' )->escaped();
+		}
 
 		$incoming = $this->buildConnection( $connections['incoming'], 'incoming' );
 		$outgoing = $this->buildConnection( $connections['outgoing'], 'outgoing' );
@@ -130,6 +144,10 @@ class CpdElementConnectionUtil {
 		}
 
 		foreach ( $elements as $element ) {
+			if ( !$element->getDescriptionPage() ) {
+				continue;
+			}
+
 			if ( $element->getDescriptionPage()->equals( $title ) ) {
 				return $element;
 			}
@@ -139,7 +157,7 @@ class CpdElementConnectionUtil {
 	}
 
 	/**
-	 * @param string $dbKey
+	 * @param Title $target
 	 * @param string $type
 	 * @param Title $source
 	 * @param int|null $revId
@@ -148,12 +166,11 @@ class CpdElementConnectionUtil {
 	 * @throws CpdInvalidNamespaceException
 	 */
 	private function createNavigationConnection(
-		string $dbKey,
+		Title $target,
 		string $type,
 		Title $source,
 		?int $revId = null
 	): CpdNavigationConnection {
-		$target = Title::newFromDBkey( $dbKey );
 		$lanes = CpdDiagramPageUtil::getLanesFromTitle( $target );
 		$isLaneChange = $lanes !== CpdDiagramPageUtil::getLanesFromTitle( $source );
 

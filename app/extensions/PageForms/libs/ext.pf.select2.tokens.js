@@ -123,10 +123,10 @@ const Sortable = require( 'ext.pageforms.sortable' );
 		});
 
 		$(inputData.$container[0]).on("keyup",(e) => {
-			if( existingValuesOnly ){
+			if ( existingValuesOnly ) {
 				return ;
 			}
-			if( e.keyCode === 9 ){
+			if ( e.key === 'Tab' ) {
 				let rawValue = "";
 				let checkIfPresent = false;
 				const valHighlighted = inputData.$results.find('.select2-results__option--highlighted')[0];
@@ -347,7 +347,7 @@ const Sortable = require( 'ext.pageforms.sortable' );
 					value.pfautocomplete.forEach( (item) => {
 						if (item.displaytitle !== undefined) {
 							values.push({
-								id: item.displaytitle, text: item.displaytitle
+								id: item.title, text: item.displaytitle
 							});
 						} else {
 							values.push({
@@ -428,7 +428,7 @@ const Sortable = require( 'ext.pageforms.sortable' );
 									: item.displaytitle + " (" + item.title + ")";
 							}
 							item.text = displayTitle;
-							item.id = displayTitle
+							item.id = item.title;
 						} else {
 							item.text = item.title;
 							item.id = item.title;

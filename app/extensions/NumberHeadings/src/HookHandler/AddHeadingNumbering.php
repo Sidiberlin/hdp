@@ -41,6 +41,8 @@ class AddHeadingNumbering {
 		if ( !( $content instanceof TextContent ) ) {
 			return true;
 		}
+		// We skip execution of our code if content is parsoid content. This is the case in visual edit mode.
+		// See ERM45110
 		if ( $output->getExtensionData( PageBundleParserOutputConverter::PARSOID_PAGE_BUNDLE_KEY ) !== null ) {
 			return true;
 		}

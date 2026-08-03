@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Amire80",
-			"Neriah"
+			"Neriah",
+			"YaronSh"
 		]
 	},
 	"pagecheckout-desc": "אפשרות לתת הרשאות בלעדיות על דף למשתמש",
@@ -43,5 +44,6 @@
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "משתמש",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user-help": "למי הדף יושאל",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "שם הדף",
-	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename-help": "אם זה לא צוין, ייעשה שימוש בדף ההקשר של זרימת העבודה"
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename-help": "אם זה לא צוין, ייעשה שימוש בדף ההקשר של זרימת העבודה",
+	"pagecheckout-ui-cancel-button": "ביטול"
 }

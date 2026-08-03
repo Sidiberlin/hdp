@@ -3,7 +3,7 @@
 namespace MediaWiki\Extension\CollabPads\HookHandler;
 
 use BlueSpice\Discovery\Hook\LastEditInfoHook;
-use ChangeTags;
+use MediaWiki\ChangeTags\ChangeTagsStore;
 use MediaWiki\Message\Message;
 use MediaWiki\Revision\RevisionRecord;
 use Wikimedia\Rdbms\LoadBalancer;
@@ -13,11 +13,16 @@ class LastEditInfo implements LastEditInfoHook {
 	/** @var LoadBalancer */
 	private $loadBalancer;
 
+	/** @var ChangeTagsStore */
+	private $changeTagsStore;
+
 	/**
 	 * @param LoadBalancer $loadBalancer
+	 * @param ChangeTagsStore $changeTagsStore
 	 */
-	public function __construct( LoadBalancer $loadBalancer ) {
+	public function __construct( LoadBalancer $loadBalancer, ChangeTagsStore $changeTagsStore ) {
 		$this->loadBalancer = $loadBalancer;
+		$this->changeTagsStore = $changeTagsStore;
 	}
 
 	/**
@@ -40,7 +45,7 @@ class LastEditInfo implements LastEditInfoHook {
 	 * @return bool
 	 */
 	private function isLastRevisionCollab( RevisionRecord $revision ): bool {
-		$tags = ChangeTags::getTags(
+		$tags = $this->changeTagsStore->getTags(
 			$this->loadBalancer->getConnection( DB_REPLICA ),
 			null,
 			$revision->getId(),

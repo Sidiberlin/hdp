@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Tensama0415"
+		]
+	},
+	"tabletools-desc": "콘텐츠 테이블 용 추가 기능을 제공합니다",
+	"tabletools-ve-plugin-table-style-sticky": "고정 헤더"
+}

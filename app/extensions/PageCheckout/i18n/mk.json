@@ -42,5 +42,14 @@
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "Корисник",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user-help": "За кого ќе се врати страницата",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Име на страницата",
-	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename-help": "Ако не е укажано, ќе се користи контексната страница на работниот тек"
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename-help": "Ако не е укажано, ќе се користи контексната страница на работниот тек",
+	"pagecheckout-action-checkin-label": "Врати ја страницата",
+	"pagecheckout-action-checkout-label": "Земи ја страницата",
+	"pagecheckout-checkin-not-checked-out-by-user": "Страницата не е присвоена од овој корисник",
+	"pagecheckout-ui-checkout-confirm": "На пат сте да ја земете страницава. Ова ќе ги спречи другите корисници да ја уредуваат сè додека вие не ја вратите.",
+	"pagecheckout-ui-cancel-button": "Откажи",
+	"pagecheckout-ui-checkin-confirm": "На пат сте да ја вратите страницата. Ова ќе им овозможи на другите корисници да ја уредуваат.",
+	"pagecheckout-ui-checkin-comment-label": "Коментар",
+	"pagecheckout-ui-checkout-prompt-ve": "Дали сакате да ја земете страницава? Ова ќе ги спречи другите корисници да ја уредуваат сè додека вие не ја вратите.",
+	"pagecheckout-prompt-on-edit": "Потсети ме за земање на страницата кога почнувам да уредувам"
 }

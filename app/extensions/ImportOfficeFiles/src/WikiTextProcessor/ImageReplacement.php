@@ -59,8 +59,8 @@ class ImageReplacement implements IWikiTextProcessor {
 		if ( isset( $analyzerBucket['ns-filerepo-compat'] ) ) {
 			$nsFileRepoCompatBucket = $analyzerBucket['ns-filerepo-compat'];
 		}
-		if ( $nsFileRepoCompatBucket === 'true' ) {
-			$this->nsFileRepoCompat === true;
+		if ( $nsFileRepoCompatBucket == 'true' ) {
+			$this->nsFileRepoCompat = true;
 		}
 
 		$this->idFilenameMap = $this->workspace->loadBucket( MSOfficeWord::BUCKET_MEDIA_ID_FILENAME );

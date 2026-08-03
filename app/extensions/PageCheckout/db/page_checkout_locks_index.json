@@ -1,0 +1,82 @@
+{
+	"before": {
+		"name": "page_checkout_locks",
+		"columns": [
+			{
+				"name": "pcl_id",
+				"type": "integer",
+				"options": {
+					"unsigned": true,
+					"notnull": true,
+					"autoincrement": true
+				}
+			},
+			{
+				"name": "pcl_page_id",
+				"type": "integer",
+				"options": {
+					"notnull": true
+				}
+			},
+			{
+				"name": "pcl_user_id",
+				"type": "integer",
+				"options": {
+					"notnull": true
+				}
+			},
+			{
+				"name": "pcl_payload",
+				"type": "blob",
+				"options": {
+					"notnull": false
+				}
+			}
+		],
+		"indexes": [],
+		"pk": [ "pcl_id" ]
+	},
+	"after": {
+		"name": "page_checkout_locks",
+		"columns": [
+			{
+				"name": "pcl_id",
+				"type": "integer",
+				"options": {
+					"unsigned": true,
+					"notnull": true,
+					"autoincrement": true
+				}
+			},
+			{
+				"name": "pcl_page_id",
+				"type": "integer",
+				"options": {
+					"notnull": true
+				}
+			},
+			{
+				"name": "pcl_user_id",
+				"type": "integer",
+				"options": {
+					"notnull": true
+				}
+			},
+			{
+				"name": "pcl_payload",
+				"type": "blob",
+				"options": {
+					"notnull": false
+				}
+			}
+		],
+		"indexes": [
+			{
+				"name": "pcl_page_id_user_id_index",
+				"columns": [ "pcl_page_id", "pcl_user_id" ],
+				"unique": false
+			}
+		],
+		"pk": [ "pcl_id" ]
+	}
+}

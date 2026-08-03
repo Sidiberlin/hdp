@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"HalloWelt! GmbH"
+			"HalloWelt! GmbH",
+			"Umherirrender"
 		]
 	},
-	"contentprovisioning-desc": "Description of ContentProvisioning for [[Special:Version]]",
+	"contentprovisioning-desc": "{{desc|name=ContentProvisioning|url=https://www.mediawiki.org/wiki/Extension:ContentProvisioning}}",
 	"contentprovisioning": "Special page name",
 	"right-contentprovisioning-viewspecialpage": "{{doc-right|contentprovisioning-viewspecialpage}}",
 	"action-contentprovisioning-viewspecialpage": "{{doc-action|contentprovisioning-viewspecialpage}}",

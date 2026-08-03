@@ -1,6 +1,6 @@
 {
 	"name": "PDFCreator",
-	"version": "1.1.4",
+	"version": "1.1.9",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"Daniel Vogel",
@@ -13,7 +13,8 @@
 	"requires": {
 		"MediaWiki": ">= 1.43.0",
 		"extensions": {
-			"OOJSPlus": ">= 3.0.0"
+			"OOJSPlus": ">= 3.0.0",
+			"VueJsPlus": "*"
 		}
 	},
 	"attributes": {
@@ -44,14 +45,16 @@
 					"class": "MediaWiki\\Extension\\PDFCreator\\HtmlProvider\\Intro",
 					"services": [
 						"TitleFactory", "PDFCreator.PageParamsFactory",
-						"PDFCreator.WikiTemplateParser", "PDFCreator.MustacheTemplateParser"
+						"PDFCreator.WikiTemplateParser", "PDFCreator.MustacheTemplateParser",
+						"RevisionRenderer", "RevisionLookup", "HookContainer"
 					]
 				},
 				"outro": {
 					"class": "MediaWiki\\Extension\\PDFCreator\\HtmlProvider\\Outro",
 					"services": [
 						"TitleFactory", "PDFCreator.PageParamsFactory",
-						"PDFCreator.WikiTemplateParser", "PDFCreator.MustacheTemplateParser"
+						"PDFCreator.WikiTemplateParser", "PDFCreator.MustacheTemplateParser",
+						"RevisionRenderer", "RevisionLookup", "HookContainer"
 					]
 				},
 				"raw": {
@@ -202,6 +205,10 @@
 	},
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\PDFCreator\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"MediaWiki\\Extension\\PDFCreator\\Tests\\Unit\\": "tests/phpunit/unit/",
+		"MediaWiki\\Extension\\PDFCreator\\Tests\\Integration\\": "tests/phpunit/integration/"
 	},
 	"ExtensionMessagesFiles": {
 		"PDFTemplatesOverviewAlias": "languages/SpecialPDFTemplatesOverview.alias.php"
@@ -565,7 +572,8 @@
 				"PDFCreator.ExportSpecificationFactory",
 				"PDFCreator.ExportModeFactory",
 				"PDFCreator",
-				"PermissionManager"
+				"PermissionManager",
+				"PDFCreator.TemplateProviderFactory"
 			]
 		},
 		{

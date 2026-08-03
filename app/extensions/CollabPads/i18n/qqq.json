@@ -3,10 +3,11 @@
 		"authors": [
 			"Hamish Slater",
 			"Pavlo Yashchenko",
+			"Woytecr",
 			"[http://www.hallowelt.com Hallo Welt! GmbH]"
 		]
 	},
-	"collabpads-desc": "{{desc|name=Collabpads|url=https://www.mediawiki.org/wiki/Extension:Collabpads}}",
+	"collabpads-desc": "{{desc|name=Collabpads|url=https://www.mediawiki.org/wiki/Extension:CollabPads}}",
 	"collabpadsessions": "Title for special page {{CollabPad Sessions}}",
 	"collabpadsessions-admin": "Title for special page {{My CollabPads Sessions}} for admins",
 	"right-collabpadsessions-admin": "{{doc-right|collabpadsessions-admin}}",

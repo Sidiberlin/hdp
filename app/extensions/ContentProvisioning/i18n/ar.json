@@ -1,0 +1,19 @@
+{
+	"@metadata": {
+		"authors": [
+			"Meno25"
+		]
+	},
+	"contentprovisioning-desc": "يوفر نظرة عامة على الصفحات المخصصة ويسمح للمسؤولين بمزامنة المحتوى",
+	"contentprovisioning": "توفير المحتوى",
+	"right-contentprovisioning-viewspecialpage": "عرض صفحة خاصة بتوفير المحتوى",
+	"action-contentprovisioning-viewspecialpage": "عرض صفحة خاصة بتوفير المحتوى",
+	"contentprovisioning-ui-overview-grid-section-page": "صفحة",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "متزامنين؟",
+	"contentprovisioning-ui-overview-grid-action-force-sync": "مزامنة القوة",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "أظهر الفرق",
+	"contentprovisioning-diff-no-change": "لا يوجد فرق بين نسخة البيان ونسخة صفحة ويكي",
+	"contentprovisioning-ui-content-diff-title": "اختلافات المحتوى",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "ويكي",
+	"contentprovisioning-ui-content-diff-headline-provisioner-content": "بعيد"
+}
