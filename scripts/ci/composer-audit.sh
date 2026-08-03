@@ -3,7 +3,7 @@
 # T0 — known CVEs in app/composer.lock (§10.3 Track A).
 #
 # `composer audit --locked` reads the lockfile and the packagist advisory
-# database. It is the only automated CVE signal available for the 148
+# database. It is the only automated CVE signal available for the 381
 # composer-visible packages, and it is blind to everything else in this repo:
 # MediaWiki core is vendored source rather than a composer dependency (that is
 # the release-watch job, Track B), and the two frozen packages are stripped
