@@ -85,6 +85,13 @@ REQUIRED_FILES=(
     scripts/ci/t3-integration.sh
     scripts/ci/t4-smoke.sh
     scripts/ci/lib/stack.sh
+    # T5: the migration job and the snapshot it upgrades. The fixture is the
+    # input — without it t5-migration.sh exits 2 and the upgrade path is
+    # untested again.
+    scripts/ci/t5-migration.sh
+    scripts/ci/make-db-fixture.sh
+    docker/ci/fixtures/seeded-wiki.sql.gz
+    docker/ci/fixtures/seeded-wiki.meta.json
     # T4's CI-only compose overlay: the buildx layer cache and the HuggingFace
     # model cache. `t4-smoke.sh --cache` exits 2 without it.
     docker/ci/compose.cache.yml

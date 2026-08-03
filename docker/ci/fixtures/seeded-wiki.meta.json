@@ -1,0 +1,25 @@
+{
+  "description": [
+    "What scripts/ci/t5-migration.sh runs update.php against: a real wiki's",
+    "database, captured before an upgrade. Regenerate with",
+    "scripts/ci/make-db-fixture.sh, by hand, once per release.",
+    "Credentials are scrubbed in a scratch database before the file is",
+    "written, so the values here are already empty - see that script."
+  ],
+  "generated": "2026-08-03",
+  "mw_core": "1.43.5",
+  "bluespice": "5.1.4",
+  "tables": 198,
+  "pages": 109,
+  "revisions": 110,
+  "users": 6,
+  "bytes_gz": 182595,
+  "sha256": "0aad913d83c5bb49ac564661ce7e45c206f3918b473d3ea059f12a412274fa8c",
+  "data_excluded": [
+    "job",
+    "objectcache",
+    "searchindex",
+    "processes",
+    "bs_extendedsearch_trace"
+  ]
+}

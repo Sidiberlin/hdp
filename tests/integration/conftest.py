@@ -248,6 +248,55 @@ def setup_record():
     return {"exit": int(exit_code), "log": text, "path": log_path}
 
 
+# ─── the update.php run under test (Wave 5 / T5) ────────────────────
+@pytest.fixture(scope="session")
+def migration_record():
+    """The exit code, log and before-counts of the migration under test.
+
+    Populated by scripts/ci/t5-migration.sh, which loads the seeded snapshot
+    over the installed database and runs update.php against it.
+
+    Absent means this tier was pointed at a stack nobody migrated, and the
+    tests fail on that rather than skipping: a green migration suite that ran
+    against a fresh install is exactly the false assurance T5 exists to remove.
+    """
+    log_path = os.environ.get("HDP_UPDATE_LOG")
+    exit_code = os.environ.get("HDP_UPDATE_EXIT")
+    if exit_code is None or not log_path:
+        return None
+    text = ""
+    if os.path.isfile(log_path):
+        text = open(log_path, encoding="utf-8", errors="replace").read()
+    return {
+        "exit": int(exit_code),
+        "log": text,
+        "path": log_path,
+        "before_pages": int(os.environ.get("HDP_MIGRATION_BEFORE_PAGES") or 0),
+        "before_tables": int(os.environ.get("HDP_MIGRATION_BEFORE_TABLES") or 0),
+    }
+
+
+@pytest.fixture(scope="session")
+def migrated(migration_record):
+    """The migration record, or a hard failure naming how to produce one."""
+    assert migration_record is not None, (
+        "the migration tier needs a stack that scripts/ci/t5-migration.sh has "
+        "upgraded. Nothing set HDP_UPDATE_LOG/HDP_UPDATE_EXIT, so this stack is "
+        "a fresh install — asserting against it would prove the opposite of what "
+        "this tier is for. Run: scripts/ci/t5-migration.sh"
+    )
+    return migration_record
+
+
+@pytest.fixture(scope="session")
+def fixture_meta(repo_root):
+    import json as _json
+
+    path = repo_root / "docker" / "ci" / "fixtures" / "seeded-wiki.meta.json"
+    assert path.is_file(), f"{path} is missing — regenerate with scripts/ci/make-db-fixture.sh"
+    return _json.loads(path.read_text(encoding="utf-8"))
+
+
 # ════════════════════════════════════════════════════════════════════
 # Wave 4 / T4 — the full seven-container stack
 #
