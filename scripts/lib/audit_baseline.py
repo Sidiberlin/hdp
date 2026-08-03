@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Compare `composer audit` output against the accepted-advisory baseline.
 
-`composer audit --locked` on this tree reports 34 advisories across 12
-packages, two of them critical. None of those versions is this fork's choice:
-`app/composer.json` is upstream's `bluespice/core`, and the affected packages
-are transitive dependencies of MediaWiki 1.43 and BlueSpice 5.1.4. Fixing them
+`composer audit --locked` on this tree reports 6 advisories across 3 packages
+as of the 1.43.9 / 5.1.9 upgrade, the worst of them a high. None of those
+versions is this fork's choice: `app/composer.json` is upstream's
+`bluespice/core`, and the affected packages are transitive dependencies of
+MediaWiki 1.43 and BlueSpice 5.1.9, or vendored extensions of it. Fixing them
 means re-vendoring upstream, which is the upgrade process in
 docs/dev/upgrade-runbook.md — not something a contributor can do in a PR.
 
