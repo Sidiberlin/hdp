@@ -192,6 +192,7 @@ What it covers today:
 | `patch-ignore` | no patch target is swallowed by a `.gitignore` rule |
 | `manifest` | the patch manifest's schema and target paths |
 | `versions` | ⭐ `VERSIONS.yml` still matches the tree — see [Versions and upgrades](#versions-and-upgrades) |
+| `composer-audit` | ⭐ a **new** CVE in `app/composer.lock` (the 34 known ones are baselined) |
 | `fresh-clone` | ⭐ every input `setup.sh` needs is actually committed |
 | `patches` | all 19 patches are in the tree (`--patches`) |
 
@@ -489,6 +490,41 @@ hand-edited.
 `docker/setup.sh` strips them from `composer.lock` and the vendored source is
 used instead. No tooling will ever flag a CVE in them — the `last_reviewed`
 date is the only signal they have. See `SECURITY.md`.
+
+#### Known CVEs (`composer-audit`)
+
+`composer audit --locked` is the only automated CVE signal for the 148
+composer-visible packages. On this tree it reports **34 advisories across 12
+packages, two of them critical** — none of which is this fork's choice, since
+`app/composer.json` is upstream's `bluespice/core` and every affected package
+is a transitive dependency of MediaWiki 1.43.5 / BlueSpice 5.1.4.
+
+A bare audit as a gate would therefore be red on every push, and a permanently
+red gate gets ignored. So the report is compared against
+`docker/ci/composer-audit-baseline.json`, which records what is knowingly
+carried **with a reason per package**, and the gate fails on anything *new* —
+including a new advisory against a package already in the baseline.
+
+```bash
+./scripts/check.sh --only composer-audit        # the gate
+scripts/ci/composer-audit.sh --report           # composer's own table
+scripts/ci/composer-audit.sh --update-baseline  # re-record; reasons are kept
+```
+
+Four baseline entries are marked **ACTION REQUIRED**: `phpoffice/phpspreadsheet`
+(2 critical, parses uploaded spreadsheets), `phpseclib/phpseclib` (2 high, sits
+under the OIDC client), `mediawiki/maps` and
+`universal-omega/dynamic-page-list3` (high, leaks suppressed usernames). All
+four are fixable *only* by re-vendoring upstream — read them at the start of
+every upgrade, they are the reason to take one.
+
+This gate is blind to MediaWiki core (vendored source, not a composer package —
+that is Track B, the release-watch job) and to the two frozen packages.
+
+`renovate.json` is the other half of Track A: weekly, grouped one PR per
+upstream, **never auto-merged** — merging is what triggers the patch
+re-application. It is configured but unproven; no Renovate app is installed on
+this repository yet.
 
 ### Shell behaviour (`bats`)
 

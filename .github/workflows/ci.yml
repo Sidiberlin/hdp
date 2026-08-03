@@ -77,6 +77,7 @@ jobs:
           - patch-ignore
           - manifest
           - versions
+          - composer-audit
           # TF
           - fresh-clone
 
