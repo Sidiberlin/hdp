@@ -245,14 +245,6 @@
 		const $resultCnt = $( '#bs-es-results' );
 		const $toolsCnt = $( '#bs-es-tools' );
 		const $altSearchCnt = $( '#bs-es-alt-search' );
-		// Upstream 5.1.4 fires the 'getResults' hook below with $searchCnt
-		// but never declares it, so every completed search threw
-		// "ReferenceError: $searchCnt is not defined" out of the .done()
-		// handler — before removeLoading() and result rendering ran. The
-		// Search Center therefore span forever even on a successful query.
-		// The hook has no subscribers in this distribution; bind it to the
-		// results container, which is what observers would expect.
-		const $searchCnt = $resultCnt;
 
 		$resultCnt.children().remove();
 		$toolsCnt.children().remove();
