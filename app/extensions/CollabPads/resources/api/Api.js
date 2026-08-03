@@ -74,7 +74,7 @@ collabpads.api.Api.prototype.deleteSession = function ( pageNamespace, pageTitle
 	return this.get( 'session/delete/' + pageNamespace + '/' + pageTitle );
 };
 
-collabpads.api.Api.prototype.recordParticipants = function ( pageNamespace, pageTitle, revisionId, data ) { // eslint-disable-line max-len
+collabpads.api.Api.prototype.recordParticipants = function ( pageNamespace, pageTitle, revisionId, data ) {
 	pageTitle = this.maskPageTitle( pageTitle );
 	return this.post(
 		'session/recordrevisionparticipants/' +

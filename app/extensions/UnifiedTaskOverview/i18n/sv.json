@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Sabelöga",
+			"Stefan2255",
 			"WikiPhoenix"
 		]
 	},
@@ -9,5 +10,6 @@
 	"unifiedtaskoverview": "Mina uppgifter",
 	"unifiedtaskoverview-label-no-task": "Det finns för nuvarande inga uppgifter att utföra.",
 	"unifiedtaskoverview-personal-url-my-tasks": "Uppgifter",
-	"unifiedtaskoverview-search-placeholder": "Sök"
+	"unifiedtaskoverview-search-placeholder": "Sök",
+	"unifiedtaskoverview-no-login-text": "Vänligen logga in för att se dina uppgifter"
 }

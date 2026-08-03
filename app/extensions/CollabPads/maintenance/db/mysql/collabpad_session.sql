@@ -8,5 +8,6 @@ CREATE TABLE /*_*/collabpad_session (
   s_page_namespace INT DEFAULT 0,
   s_owner VARBINARY(255) DEFAULT 'null',
   s_participants BLOB NOT NULL,
+  INDEX collabpad_session_page_namespace_page_title_index (s_page_namespace, s_page_title),
   PRIMARY KEY(s_id)
 ) /*$wgDBTableOptions*/;

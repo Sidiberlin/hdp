@@ -1,6 +1,6 @@
 {
 	"name": "PageCheckout",
-	"version": "3.0.5",
+	"version": "3.0.14",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[https://www.hallowelt.com Hallo Welt! GmbH]"
@@ -155,6 +155,11 @@
 	"AvailableRights": [
 		"page-checkout-clear"
 	],
+	"GrantPermissions": {
+		"editprotected": {
+			"page-checkout-clear": true
+		}
+	},
 	"ServiceWiringFiles": [
 		"includes/ServiceWiring.php"
 	],

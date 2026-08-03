@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sabelöga"
+			"Sabelöga",
+			"Stefan2255"
 		]
 	},
 	"importofficefiles-desc": "Gör det möjligt att importera kontorsfiler som wikisidor",
@@ -36,5 +37,14 @@
 	"importofficefiles-ui-progress-import-pages-step": "Importerar sidor...",
 	"importofficefiles-ui-progress-remove-files-step": "Tar bort temporära filer...",
 	"importofficefiles-ui-import-error": "Något fel uppstsod vid importering.",
-	"importofficefiles-ui-analyze-error": "Analyseringsprocessen misslyckades av någon anledning."
+	"importofficefiles-ui-analyze-error": "Analyseringsprocessen misslyckades av någon anledning.",
+	"importofficefiles-ui-action-import-msword-title": "Skapa sidor från Microsoft Word-fil",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-characters": "Den här titeln kan inte användas. Den innehåller ett tecken (\"$1\") som inte är tillåtet.",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-fallback": "Den här titeln kan inte användas.",
+	"importofficefiles-ui-dialog-link-imported-page-text": "Fil importerad till $1",
+	"importofficefiles-ui-dialog-page-collection-protected-namespace": "Obs: Sidan \"pages collection\" skapades inte eftersom namnrymden \"$1\" är skyddad.",
+	"importofficefiles-api-storage-error-no-valid-module": "Ingen modul tillgänglig för att hantera den här filen",
+	"importofficefiles-ui-action-import-msword-label": "Import av ny Word-fil",
+	"importofficefiles-ui-dialog-preview-action-close": "Stäng",
+	"importofficefiles-ui-dialog-preview-btn-title": "Förhandsgranska"
 }

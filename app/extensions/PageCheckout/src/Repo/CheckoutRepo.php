@@ -2,10 +2,10 @@
 
 namespace MediaWiki\Extension\PageCheckout\Repo;
 
+use InvalidArgumentException;
 use MediaWiki\Extension\PageCheckout\Entity\CheckoutEntity;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
-use MWException;
 use ObjectCacheFactory;
 use Wikimedia\Rdbms\DBError;
 use Wikimedia\Rdbms\IConnectionProvider;
@@ -18,19 +18,11 @@ class CheckoutRepo {
 	/** @var ObjectCacheFactory */
 	private $objectCacheFactory;
 
-	/**
-	 * @param IConnectionProvider $connectionProvider
-	 * @param ObjectCacheFactory $objectCacheFactory
-	 */
 	public function __construct( IConnectionProvider $connectionProvider, ObjectCacheFactory $objectCacheFactory ) {
 		$this->connectionProvider = $connectionProvider;
 		$this->objectCacheFactory = $objectCacheFactory;
 	}
 
-	/**
-	 * @param Title $title
-	 * @return CheckoutEntity|null
-	 */
 	public function getForPage( Title $title ): ?CheckoutEntity {
 		if ( !$title->exists() ) {
 			return null;
@@ -54,10 +46,6 @@ class CheckoutRepo {
 		);
 	}
 
-	/**
-	 * @param User $user
-	 * @return array
-	 */
 	public function getForUser( User $user ): array {
 		if ( !$user->isRegistered() ) {
 			return [];
@@ -77,6 +65,7 @@ class CheckoutRepo {
 	/**
 	 * @param CheckoutEntity $entity
 	 * @return CheckoutEntity
+	 * @throws DBError
 	 */
 	public function save( CheckoutEntity $entity ): CheckoutEntity {
 		$dbw = $this->connectionProvider->getPrimaryDatabase();
@@ -115,11 +104,11 @@ class CheckoutRepo {
 	/**
 	 * @param CheckoutEntity $entity
 	 * @return bool
-	 * @throws MWException
+	 * @throws InvalidArgumentException
 	 */
 	public function delete( CheckoutEntity $entity ): bool {
 		if ( !$entity->getId() ) {
-			throw new MWException( 'pagecheckout-error-no-checkout-id' );
+			throw new InvalidArgumentException( 'pagecheckout-error-no-checkout-id' );
 		}
 		$dbw = $this->connectionProvider->getPrimaryDatabase();
 		$res = $dbw->delete( 'page_checkout_locks', [ 'pcl_id' => $entity->getId() ], __METHOD__ );

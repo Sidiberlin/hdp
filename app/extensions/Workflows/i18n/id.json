@@ -2,8 +2,10 @@
 	"@metadata": {
 		"authors": [
 			"Agam Riyandana",
+			"Budhiastawa",
 			"Ekirahardian",
 			"Leapofod",
+			"Penyuwangi",
 			"Veracious"
 		]
 	},
@@ -15,7 +17,7 @@
 	"workflows-ui-workflow-overview-action-cancel": "Tutup",
 	"workflows-ui-overview-details-state-finished": "Selesai",
 	"workflows-ui-overview-details-action-reason": "Alasan",
-	"workflows-ui-overview-details-workflow-type-label": "Tipe",
+	"workflows-ui-overview-details-workflow-type-label": "Jenis",
 	"workflows-ui-overview-grid-filter-state-all": "Semua",
 	"workflows-form-instructions-comment": "Komentar",
 	"workflows-error-generic": "Terjadi galat",
@@ -30,5 +32,6 @@
 	"workflows-activity-property-action": "Tindakan",
 	"workflows-editor-editor-dialog-save-title": "Simpan diagram",
 	"workflows-editor-editor-dialog-save-action-save": "Simpan",
-	"workflows-editor-editor-dialog-save-action-cancel": "Batal"
+	"workflows-editor-editor-dialog-save-action-cancel": "Batal",
+	"workflows-ui-editor-inspector-activity-custom-form-title": "Formulir kustom"
 }

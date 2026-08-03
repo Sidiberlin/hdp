@@ -1,11 +1,45 @@
 {
 	"@metadata": {
 		"authors": [
-			"Abijeet Patro"
+			"Abijeet Patro",
+			"Saurmandal"
 		]
 	},
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "सदस्य",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename": "पृष्ठ का नाम",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "सदस्य",
-	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "पृष्ठ का नाम"
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "पृष्ठ का नाम",
+	"pagecheckout-desc": "सदस्यों को पृष्ठों पर अनन्य अधिकार प्रदान करता है",
+	"pagecheckout-error-no-title": "अमान्य शीर्षक",
+	"pagecheckout-error-no-user": "अमान्य सदस्य दिया गया है",
+	"pagecheckout-error-has-checkout": "पृष्ठ को पहले ही चेक-आउट कर दिया जा चुका है",
+	"pagecheckout-error-save-failed": "पृष्ठ को चेक-आउट करने में असफल",
+	"pagecheckout-error-no-checkout": "वर्तमान में चेक-आउट न किए हुए पृष्ठ को चेक-इन नहीं किया जा सकता",
+	"pagecheckout-error-no-checkout-id": "चेक-इन असफल रहा! कोई चेक-आउट ID सेट नहीं है",
+	"pagecheckout-error-db-insert": "चेक-आउट दर्ज करने में असफल",
+	"pagecheckout-error-db-retrieve-inserted": "पहले से दर्ज किया गया चेक-आउट प्राप्त करने में असफल",
+	"pagecheckout-error-save-event": "घटना को सहेजने में असफल",
+	"pagecheckout-lockdown-reason": "\"$1\" की क्रिया की अनुमति नहीं है, क्योंकि पृष्ठ पहले ही $2 द्वारा चेक-आउट कर लिया जा चुका है",
+	"pagecheckout-action-clear-label": "चेक-आउट साफ करें",
+	"apihelp-pagecheckout-clear-example": "Main_Page के लिए चेक-आउट साफ करें",
+	"apihelp-pagecheckout-clear-summary": "सक्रिय पृष्ठ चेक-आउट साफ करें",
+	"apihelp-pagecheckout-clear-param-page_title": "उस पृष्ठ का शीर्षक जिसके लिए चेक-आउट साफ करना है",
+	"log-name-pagecheckout": "पृष्ठ चेक-आउट्स",
+	"log-description-pagecheckout": "पृष्ठों के चेक-आउट और चेक-इन की स्थिति को ट्रैक करता है",
+	"logentry-pagecheckout-checkin": "$1 ने सदस्य $4 के लिए चेक-आउट किए गए पृष्ठ $3 को {{GENDER:$2|चेक-इन किया}}",
+	"logentry-pagecheckout-checkout": "$1 ने पृष्ठ $3 को सदस्य $4 के लिए {{GENDER:$2|चेक-आउट किया}}",
+	"pagecheckout-alertbanner-checkout": "यह पृष्ठ वर्तमान में $2 के लिए {{GENDER:$1|चेक-आउट किया हुआ}} है",
+	"action-page-checkout-clear": "पृष्ठ चेक-आउट साफ करने",
+	"right-page-checkout-clear": "पृष्ठ चेक-आउट साफ करना",
+	"pagecheckout-alertbanner-checkout-with-comment": "यह पृष्ठ वर्तमान में $2 के लिए {{GENDER:$1|चेक-आउट किया हुआ}} है। टिप्पणी: $3",
+	"page-checkout-workflow-activity-checkout-reason": "यह पृष्ठ वर्तमान में एक चल रहे कार्यप्रवाह के कारण चेक-आउट किया हुआ है।",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-pagename-help": "अगर निर्दिष्ट नहीं किया जाता है तो कार्यप्रवाह के प्रासंगिक पृष्ठ का उपयोग किया जाएगा",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-force": "ज़बरदस्ती करें?",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-force-help": "अगर true हो तो (अन्य सदस्यों के लिए) मौजूदा चेक-आउट को हटा देगा और एक नया चेक-आउट बना देगा",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-title": "\"पृष्ठ चेक-इन\" गतिविधि",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user-help": "जिसके लिए पृष्ठ को चेक-आउट किया जाएगा",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename-help": "अगर निर्दिष्ट नहीं किया जाता है तो कार्यप्रवाह के प्रासंगिक पृष्ठ का उपयोग किया जाएगा",
+	"pagecheckout-action-checkin-label": "पृष्ठ को चेक-इन करें",
+	"pagecheckout-action-checkout-label": "पृष्ठ को चेक-आउट करें",
+	"pagecheckout-checkin-not-checked-out-by-user": "पृष्ठ इस सदस्य द्वारा चेक-आउट नहीं किया हुआ है"
 }

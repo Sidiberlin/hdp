@@ -1,0 +1,20 @@
+{
+	"@metadata": {
+		"authors": [
+			"Peterxy",
+			"Peterxy12"
+		]
+	},
+	"contentprovisioning-desc": "提供已供应页面的概要并允许管理员同步内容",
+	"contentprovisioning": "内容供应",
+	"right-contentprovisioning-viewspecialpage": "查看内容供应特殊页面",
+	"action-contentprovisioning-viewspecialpage": "查看内容供应特殊页面",
+	"contentprovisioning-ui-overview-grid-section-page": "页面",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "同步？",
+	"contentprovisioning-ui-overview-grid-action-force-sync": "强制同步",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "显示差异",
+	"contentprovisioning-diff-no-change": "清单版本和wiki页面版本之间没有差异",
+	"contentprovisioning-ui-content-diff-title": "内容差异",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "Wiki",
+	"contentprovisioning-ui-content-diff-headline-provisioner-content": "远程"
+}

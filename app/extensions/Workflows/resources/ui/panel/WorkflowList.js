@@ -80,6 +80,11 @@
 					},
 					autoClosePopup: true
 				},
+				initiator: {
+					headerText: mw.message( 'workflows-ui-overview-details-initiator-column' ).text(),
+					type: 'user',
+					hidden: true
+				},
 				assignee: {
 					headerText: mw.message( 'workflows-ui-overview-details-section-assignee' ).text(),
 					type: 'user',
@@ -149,14 +154,13 @@
 			provideExportData: function () {
 				const dfd = $.Deferred(),
 					store = new workflows.store.Workflows( {
-						pageSize: -1,
 						sorter: {
 							page_prefixed_text: {
 								direction: 'ASC'
 							}
 						}
 					} );
-				store.load().done( ( response ) => {
+				store.loadAll().done( ( response ) => {
 					const $table = $( '<table>' );
 					let $row = $( '<tr>' );
 					let $cell = $( '<td>' );
@@ -168,6 +172,12 @@
 					$cell = $( '<td>' );
 					$cell.append(
 						mw.message( 'workflows-ui-overview-details-section-page' ).text()
+					);
+					$row.append( $cell );
+
+					$cell = $( '<td>' );
+					$cell.append(
+						mw.message( 'workflows-ui-overview-details-initiator-column' ).text()
 					);
 					$row.append( $cell );
 
@@ -221,6 +231,10 @@
 
 						$cell = $( '<td>' );
 						$cell.append( record.page_prefixed_text );
+						$row.append( $cell );
+
+						$cell = $( '<td>' );
+						$cell.append( record.initiator || '' );
 						$row.append( $cell );
 
 						$cell = $( '<td>' );

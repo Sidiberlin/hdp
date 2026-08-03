@@ -1,10 +1,11 @@
 {
 	"@metadata": {
 		"authors": [
-			"Amire80"
+			"Amire80",
+			"Umherirrender"
 		]
 	},
-	"at-mentions-desc": "Description of AtMentions for [[Special:Version]]",
+	"at-mentions-desc": "{{desc|name=AtMentions|url=https://www.mediawiki.org/wiki/Extension:AtMentions}}",
 	"at-mentions-inspector-title": "Title of inspector to add a user mention",
 	"at-mentions-inspector-title-add": "Title of inspector to add a user mention",
 	"at-mentions-inspector-title-edit": "Title of inspector to edit a user mention",

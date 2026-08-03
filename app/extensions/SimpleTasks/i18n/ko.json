@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Tensama0415"
+		]
+	},
+	"simple-tasks-desc": "사용자를 위한 업무를 생성",
+	"simple-tasks-task-duedate": "기한: $1",
+	"simple-tasks-task-desc": "페이지 콘텐츠에 업무 생성됨",
+	"simple-tasks-notif-key": "할당된 업무",
+	"simple-tasks-notif-message": "당신에게 작업을 {{GENDER:$1|할당함}}: \"$1\"",
+	"simple-tasks-notif-message-with-due-date": "당신에게 작업을 {{GENDER:$1|할당함}}: \"$1\". 기한은 $2",
+	"simple-tasks-taskreport-no-results": "선택한 필터 조건에 맞는 업무가 없음",
+	"simple-tasks-taskreport-header-task": "업무",
+	"simple-tasks-taskreport-header-assignee": "할당받은 자",
+	"simple-tasks-taskreport-header-page": "다음 문서에 나타남",
+	"simple-tasks-taskreport-header-due-to": "기한",
+	"simple-tasks-taskreport-header-state": "상태",
+	"simple-tasks-droplet-taskreport-name": "업무 보고서",
+	"simple-tasks-droplet-taskreport-description": "업무 개요를 생성함",
+	"simple-tasks-taskreport-inspector-title": "업무 보고서",
+	"simple-tasks-taskreport-inspector-state-done": "완료",
+	"simple-tasks-taskreport-inspector-state-open": "진행중",
+	"simple-tasks-taskreport-inspector-label-user": "할당받을 자",
+	"simple-tasks-taskreport-inspector-label-namespaces": "이름공간",
+	"simple-tasks-taskreport-inspector-label-due-date": "기한",
+	"simple-tasks-taskreport-inspector-label-state": "상태",
+	"simple-tasks-taskreport-state-title-open": "업무 진행중",
+	"simple-tasks-taskreport-state-title-done": "업무 완료됨",
+	"simple-tasks-taskreport-state-filter-done": "완료",
+	"simple-tasks-taskreport-state-filter-open": "진행중"
+}

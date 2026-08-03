@@ -2,9 +2,37 @@
 	"@metadata": {
 		"authors": [
 			"MITO",
-			"Nike"
+			"Nike",
+			"Wikipeedikko"
 		]
 	},
 	"pagecheckout-error-no-title": "Virheellinen otsikko",
-	"pagecheckout-error-save-event": "Tapahtuman tallennus epäonnistui"
+	"pagecheckout-error-save-event": "Lukituksen tallennus epäonnistui",
+	"pagecheckout-error-save-failed": "Sivun lukitseminen epäonnistui",
+	"pagecheckout-error-no-checkout": "Lukitusta ei voi avata, koska sivua ei ole lukittu",
+	"pagecheckout-error-no-checkout-id": "Lukituksen avaaminen epäonnistui! Lukitustunnusta ei ole asetettu",
+	"pagecheckout-error-db-insert": "Lukituksen asettaminen epäonnistui",
+	"pagecheckout-error-db-retrieve-inserted": "Aiemmin asetetun lukon noutaminen epäonnistui",
+	"pagecheckout-action-clear-label": "Poista lukitus",
+	"apihelp-pagecheckout-clear-summary": "Poista sivun aktiivinen lukitus",
+	"apihelp-pagecheckout-clear-param-page_title": "Sen sivun nimi, jonka lukituksen haluat poistaa",
+	"log-name-pagecheckout": "Sivun lukitukset",
+	"log-description-pagecheckout": "Seuraa sivun lukitusten ja avausten tilaa",
+	"action-page-checkout-clear": "avaa sivun lukitus",
+	"right-page-checkout-clear": "Poista sivun lukitus",
+	"pagecheckout-workflow-activity-checkout-reason": "Tämä sivu on lukittu työnkulun suorittamisen ajaksi",
+	"pagecheckout-workflow-activity-checkout-non-generic-reason": "Lukittu työnkulkua suoritettaessa",
+	"pagecheckout-workflow-clear-checkout": "Lukitus poistettu työnkulun keskeyttämisen vuoksi",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user-help": "Keneltä sivu lukitaan",
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-title": "Sivun lukituksen avaamiseen liittyvä toiminta",
+	"pagecheckout-action-checkin-label": "Avaa lukitus",
+	"pagecheckout-title-checkin-label": "Avaa sivun lukitus",
+	"pagecheckout-action-checkout-label": "Lukitse sivu",
+	"pagecheckout-checkin-not-checked-out-by-user": "Tämä käyttäjä ei ole lukinnut sivua",
+	"pagecheckout-ui-checkout-confirm": "Olet lukitsemassa sivua. Saat yksinoikeuden muokkauksiin aina siihen asti, kunnes avaat sivun lukituksen.",
+	"pagecheckout-ui-checkin-confirm": "Olet avaamassa tämän sivun lukitusta. Tämä antaa muille käyttäjille sivun muokkausoikeudet.",
+	"pagecheckout-ui-checkout-prompt-ve": "Haluatko lukita tämän sivun? Saat yksinoikeuden muokkauksiin aina siihen asti, kunnes avaat sivun lukituksen.",
+	"pagecheckout-ui-checkout-success": "Sivu on lukittu",
+	"pagecheckout-ui-checkin-success": "Sivun lukitus on avattu",
+	"pagecheckout-ns-pref-show-popup": "Sivun lukitsemiskehote muokkauksen aikana"
 }

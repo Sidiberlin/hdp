@@ -4,6 +4,7 @@
 			"Amayus",
 			"Chqaz",
 			"Kokage si",
+			"Tensama0415",
 			"もなー(偽物)"
 		]
 	},
@@ -12,12 +13,12 @@
 	"at-mentions-inspector-title-add": "キャプションを追加する",
 	"at-mentions-inspector-title-edit": "利用者へのメンションを編集する",
 	"at-mentions-ci-title": "利用者へのメンション",
-	"at-mentions-tag-item-actor": "{{GENDER:$1|[[User:$1]]より}}",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|[[User:$1|$1]]より}}",
 	"at-mentions-tag-item-time": "$1",
 	"at-mentions-mentionslist-header-mine-all": "このページであなたがメンションされました",
 	"at-mentions-mentionslist-header-mine": "{{PLURAL:$1|昨日|直近 $1 日以内に}}、あなたは以下のページで言及されています:",
-	"at-mentions-mentionslist-header-all": "利用者{{[[User:$2]]は以下のページで　メンションされています}}:",
-	"at-mentions-mentionslist-header": "{{PLURAL:$1|今日|$1日以内に}}、{{GENDER:$2|[[User:$2]] はこれらのページで言及されています}}:",
+	"at-mentions-mentionslist-header-all": "利用者{{[[User:$2|$2]]は以下のページで　メンションされています}}:",
+	"at-mentions-mentionslist-header": "{{PLURAL:$1|今日|$1日以内に}}、{{GENDER:$2|[[User:$2|$2]] はこれらのページで言及されています}}:",
 	"at-mentions-mention-notification-message": "ページ $2 であなたが{{GENDER:$1|言及されました}}",
 	"at-mentions-mention-notification-key": "あなたはメンションされました",
 	"at-mentions-mention-in-entity-notification-key": "あなたはコメントまたは投稿の中でメンションされました",

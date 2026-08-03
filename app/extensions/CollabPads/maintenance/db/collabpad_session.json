@@ -32,7 +32,13 @@
 				"options": { "length": 65535, "notnull": true }
 			}
 		],
-		"indexes": [],
+		"indexes": [
+			{
+				"name": "collabpad_session_page_namespace_page_title_index",
+				"columns": [ "s_page_namespace", "s_page_title" ],
+				"unique": false
+			}
+		],
 		"pk": [
 			"s_id"
 		]

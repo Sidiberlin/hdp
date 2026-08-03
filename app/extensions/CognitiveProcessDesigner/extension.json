@@ -1,6 +1,6 @@
 {
 	"name": "CognitiveProcessDesigner",
-	"version": "4.1.4",
+	"version": "4.1.9",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[https://www.hallowelt.com Hallo Welt! GmbH]",
@@ -52,19 +52,18 @@
 				}
 			},
 			"PreProcessors": {
-				"AppendNavigationToDescriptionPagePdfExport": {
-					"class": "\\CognitiveProcessDesigner\\Integration\\PDFCreator\\AfterGetDOMDocumentHook\\AppendNavigationToDescriptionPagePdfExport",
+				"AddNavigationIconsToPdfExport": {
+					"class": "\\CognitiveProcessDesigner\\Integration\\PDFCreator\\PreProcessor\\AddNavigationIconsToPdfExport",
 					"services": [
 						"CpdDescriptionPageUtil",
-						"CpdElementConnectionUtil",
 						"TitleFactory"
 					]
 				},
 				"AddLinkedPagesToPdfExport": {
-					"class": "\\CognitiveProcessDesigner\\Integration\\PDFCreator\\AfterGetDOMDocumentHook\\AddLinkedPagesToPdfExport",
+					"class": "\\CognitiveProcessDesigner\\Integration\\PDFCreator\\PreProcessor\\AddLinkedPagesToPdfExport",
 					"services": [
 						"CpdDiagramPageUtil",
-						"CpdDescriptionPageUtil",
+						"CpdXmlProcessor",
 						"TitleFactory",
 						"PDFCreator.ExportPageFactory",
 						"PDFCreator.PageSpecFactory",
@@ -428,11 +427,10 @@
 		"MediaWikiServices": "registerMetaSlot",
 		"ContentStabilizationIsStabilizationEnabled": "enableStabilizationForProcess",
 		"ContentStabilizationStablePointAdded": "stablePointAdded",
-		"ContentStabilizationGetCurrentInclusions": "excludeDiagramImagesFromStabilization",
 		"DifferenceEngineViewHeader": "bpmnDiffer",
 		"TextSlotDiffRendererTablePrefix": "bpmnDiffer",
 		"BSUsageTrackerRegisterCollectors": "registerUsageTracker",
-		"PDFCreatorAfterGetDOMDocument": "appendNavigationToDescriptionPagePdfExport"
+		"PDFCreatorAfterGetDOMDocument": ["appendNavigationToDescriptionPagePdfExport", "appendDiagramImagesToPdfExport" ]
 	},
 	"HookHandlers": {
 		"tag": {
@@ -512,9 +510,6 @@
 				"CpdDescriptionPageUtil"
 			]
 		},
-		"excludeDiagramImagesFromStabilization": {
-			"class": "\\CognitiveProcessDesigner\\HookHandler\\ExcludeDiagramImagesFromStabilization"
-		},
 		"bpmnDiffer": {
 			"class": "\\CognitiveProcessDesigner\\HookHandler\\BpmnDiffer",
 			"services": [
@@ -528,8 +523,13 @@
 			"class": "\\CognitiveProcessDesigner\\Integration\\PDFCreator\\AfterGetDOMDocumentHook\\AppendNavigationToDescriptionPagePdfExport",
 			"services": [
 				"CpdDescriptionPageUtil",
-				"CpdElementConnectionUtil",
-				"TitleFactory"
+				"CpdElementConnectionUtil"
+			]
+		},
+		"appendDiagramImagesToPdfExport": {
+			"class": "\\CognitiveProcessDesigner\\Integration\\PDFCreator\\AfterGetDOMDocumentHook\\AppendDiagramImagesToPdfExport",
+			"services": [
+				"CpdDiagramPageUtil"
 			]
 		}
 	},
@@ -587,5 +587,6 @@
 	"Actions": {
 		"editcpdsource": "\\CognitiveProcessDesigner\\Action\\EditDiagramXmlAction"
 	},
+	"ForeignResourcesDir": "resources/lib",
 	"manifest_version": 2
 }

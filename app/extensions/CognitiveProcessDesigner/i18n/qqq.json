@@ -60,6 +60,7 @@
 	"cpd-error-message-missing-diagram-page": "Error message displayed when a BPMN diagram page is missing.\n\nParameters:\n* $1: Name of process",
 	"cpd-error-message-publish-svg-file": "Error message displayed when publishing an SVG file fails.",
 	"cpd-error-message-missing-svg-file": "Error message displayed when the requested SVG file does not exist.",
+	"cpd-error-message-missing-connection": "Error message displayed when creating connections between elements fails.",
 	"cpd-error-message-missing-parameter-process": "Error message displayed when a required parameter is missing.",
 	"cpd-warning-message-diagram-not-initialized": "Warning message displayed when a process diagram has not been created yet.",
 	"cpd-warning-message-diagram-not-initialized-create-it": "Warning message with a link to create a missing BPMN diagram.",
@@ -80,6 +81,7 @@
 	"cpd-droplet-height-field-label": "Label for input field to set height of BPMN diagram",
 	"cpd-droplet-show-toolbar-field-label-help": "Help text for toggle switch if toolbar should be shown",
 	"cpd-droplet-show-toolbar-field-label": "Label for toggle switch if toolbar should be visible",
+	"cpd-validation-missing-data": "Validation error message when an element has missing data.",
 	"cpd-validation-missing-label": "Validation error message when an element is missing a label.",
 	"cpd-log-no-changes": "Log entry for no changes detected.",
 	"cpd-process-usage-description": "Description for a section listing pages that embed a given process.",
@@ -132,5 +134,7 @@
 	"cpd-pretoclip-button-notification-text": "Notification text",
 	"cpd-button-export": "Button label to export the BPMN diagram as a .bpmn file.",
 	"cpd-button-import": "Button label to import BPMN diagram from a .bpmn file.",
-	"cpd-import-confirm-overwrite": "Confirmation message displayed when importing a BPMN diagram will overwrite the current content."
+	"cpd-import-confirm-overwrite": "Confirmation message displayed when importing a BPMN diagram will overwrite the current content.",
+	"cpd-entrypoint-action-process-aria-label": "Aria label for entrypoint action to create a new process",
+	"cpd-entrypoint-action-process-title": "Title label for entrypoint action to create a new process"
 }

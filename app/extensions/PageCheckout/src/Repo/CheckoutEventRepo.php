@@ -14,9 +14,6 @@ class CheckoutEventRepo {
 	/** @var ILoadBalancer */
 	private $loadBalancer;
 
-	/**
-	 * @param ILoadBalancer $loadBalancer
-	 */
 	public function __construct( ILoadBalancer $loadBalancer ) {
 		$this->loadBalancer = $loadBalancer;
 	}
@@ -62,10 +59,6 @@ class CheckoutEventRepo {
 		return $events;
 	}
 
-	/**
-	 * @param CheckoutEvent $event
-	 * @return bool
-	 */
 	public function save( CheckoutEvent $event ): bool {
 		$db = $this->loadBalancer->getConnection( DB_PRIMARY );
 

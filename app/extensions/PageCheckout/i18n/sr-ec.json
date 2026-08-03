@@ -6,5 +6,8 @@
 	},
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "Корисник",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "Корисник",
-	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Име странице"
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Име странице",
+	"pagecheckout-ui-cancel-button": "Откажи",
+	"pagecheckout-ui-checkin-comment-label": "Коментар",
+	"logentry-pagecheckout-checkout": "$1 је {{GENDER:$2|закључао|закључала}} страницу $3 за {{GENDER:$4|корисника|корисницу}} $4"
 }

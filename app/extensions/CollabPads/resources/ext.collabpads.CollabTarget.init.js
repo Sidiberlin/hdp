@@ -4,7 +4,7 @@
 	$( '#mw-content-text' ).empty();
 
 	const selectFirstContentOffset = function ( surface ) {
-		var firstOffset = surface.getDocument().data.getNearestContentOffset(
+		const firstOffset = surface.getDocument().data.getNearestContentOffset(
 			surface.getAttachedRoot().getOffset(),
 			1
 		);

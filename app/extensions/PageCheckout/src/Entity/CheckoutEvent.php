@@ -40,9 +40,6 @@ class CheckoutEvent implements JsonSerializable {
 		$this->comment = (string)$comment;
 	}
 
-	/**
-	 * @return CheckoutEntity
-	 */
 	public function getEntity(): CheckoutEntity {
 		return $this->entity;
 	}
@@ -54,23 +51,14 @@ class CheckoutEvent implements JsonSerializable {
 		return $this->action;
 	}
 
-	/**
-	 * @return User
-	 */
 	public function getActor(): User {
 		return $this->actor;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getRevision(): int {
 		return $this->revision;
 	}
 
-	/**
-	 * @return DateTime
-	 */
 	public function getTime(): DateTime {
 		return $this->time;
 	}
@@ -82,9 +70,6 @@ class CheckoutEvent implements JsonSerializable {
 		return $this->comment;
 	}
 
-	/**
-	 * @return array
-	 */
 	public function jsonSerialize(): array {
 		return [
 			'action' => $this->getAction(),

@@ -7,5 +7,8 @@
 	"mergearticles-type-template": "ਫਰਮਾ",
 	"mergearticles-discard-draft": "ਇਸ ਖਰੜੇ ਨੂੰ ਰੱਦ ਕਰੋ",
 	"mergearticles-draft-discard-success-header": "ਖਰੜਾ ਰੱਦ ਕੀਤਾ ਗਿਆ!",
-	"mergearticles-file-origin-header": "ਖਰੜਾ (ਨਵਾਂ)"
+	"mergearticles-file-origin-header": "ਖਰੜਾ (ਨਵਾਂ)",
+	"mergearticles-target-new-label": "ਨਵਾਂ ਵਰਕਾ",
+	"mergearticles-type-article": "ਵਰਕਾ",
+	"mergearticles-term-filter-label": "ਵਰਕੇ ਦਾ ਨਾਂ"
 }

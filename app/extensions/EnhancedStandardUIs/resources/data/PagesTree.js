@@ -28,9 +28,8 @@ ext.enhancedUI.data.PagesTree.prototype.build = function ( data, lvl ) {
 		let isLeaf = true;
 		let expanded = false;
 
-		// eslint-disable-next-line no-prototype-builtins
 		if ( ( item.hasOwnProperty( 'leaf' ) && item.leaf === false ) &&
-			// eslint-disable-next-line no-prototype-builtins
+
 			( item.hasOwnProperty( 'children' ) && item.children.length > 0 )
 		) {
 			isLeaf = false;
@@ -75,12 +74,19 @@ ext.enhancedUI.data.PagesTree.prototype.expandNode = function ( name ) {
 
 	const $element = node.$element.find( '> ul.tree-node-list' );
 	if ( $( $element[ 0 ] ).children().length === 0 ) {
+		const skeleton = new OOJSPlus.ui.widget.SkeletonWidget( {
+			variant: 'list',
+			rows: 3,
+			visible: true
+		} );
+		node.$element.append( skeleton.$element );
+		node.$element.attr( 'aria-busy', true );
 		this.store.getSubpages( node.elementId ).done( ( result ) => {
 			const data = this.prepareData( result );
 			const nodes = this.build( data, node.level + 1 );
 
 			for ( const nodeElement in nodes ) {
-				// eslint-disable-next-line no-prototype-builtins
+
 				if ( !nodes.hasOwnProperty( nodeElement ) ) {
 					continue;
 				}
@@ -93,6 +99,8 @@ ext.enhancedUI.data.PagesTree.prototype.expandNode = function ( name ) {
 				this.reEvaluateParent( nodeElement );
 				$( $element ).show();
 			}
+			skeleton.hide();
+			node.$element.removeAttr( 'aria-busy' );
 		} );
 	} else {
 		$( $element ).show();

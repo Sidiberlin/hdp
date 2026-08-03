@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eduardoaddad"
+		]
+	},
+	"unifiedtaskoverview-desc": "Fornece uma página especial com uma visão geral das tarefas dos usuários",
+	"unifiedtaskoverview": "Minhas tarefas",
+	"unifiedtaskoverview-label-no-task": "Neste momento não há tarefas para completar.",
+	"unifiedtaskoverview-personal-url-my-tasks": "Tarefas",
+	"unifiedtaskoverview-search-placeholder": "Pesquisar",
+	"unifiedtaskoverview-no-login-text": "Por favor, entre para ver as suas tarefas"
+}

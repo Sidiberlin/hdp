@@ -8,3 +8,5 @@ CREATE TABLE /*_*/collabpad_session (
   s_page_namespace INTEGER DEFAULT 0,
   s_owner BLOB DEFAULT 'null', s_participants BLOB NOT NULL
 );
+
+CREATE INDEX collabpad_session_page_namespace_page_title_index ON /*_*/collabpad_session (s_page_namespace, s_page_title);

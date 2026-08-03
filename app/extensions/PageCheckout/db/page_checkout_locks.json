@@ -33,7 +33,13 @@
 				}
 			}
 		],
-		"indexes": [],
+		"indexes": [
+			{
+				"name": "pcl_page_id_user_id_index",
+				"columns": [ "pcl_page_id", "pcl_user_id" ],
+				"unique": false
+			}
+		],
 		"pk": [ "pcl_id" ]
 	}
 ]

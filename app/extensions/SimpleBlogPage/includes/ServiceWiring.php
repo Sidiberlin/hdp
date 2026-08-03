@@ -2,6 +2,7 @@
 
 use MediaWiki\Context\RequestContext;
 use MediaWiki\Extension\SimpleBlogPage\BlogFactory;
+use MediaWiki\Extension\SimpleBlogPage\BlogPermissionChecker;
 use MediaWiki\Logger\LoggerFactory;
 use MediaWiki\MediaWikiServices;
 
@@ -13,10 +14,17 @@ return [
 			$services->getTitleFactory(),
 			$context->getLanguage(),
 			$services->getRevisionRenderer(),
-			$services->getPageProps(),
-			$services->getUserFactory()
+			$services->getUserFactory(),
+			$services->getService( 'SimpleBlogPage.PermissionChecker' ),
+			$services->getService( 'MWStakeCommonUtilsFactory' )
 		);
 		$factory->setLogger( LoggerFactory::getInstance( 'SimpleBlogPage' ) );
 		return $factory;
+	},
+	'SimpleBlogPage.PermissionChecker' => static function ( MediaWikiServices $services ) {
+		return new BlogPermissionChecker(
+			$services->getTitleFactory(),
+			$services->getPermissionManager()
+		);
 	},
 ];

@@ -2,11 +2,22 @@
 	"@metadata": {
 		"authors": [
 			"Ajeje Brazorf",
-			"Beta16"
+			"Beta16",
+			"Daimona Eaytoy",
+			"FL2226"
 		]
 	},
 	"pagecheckout-error-no-title": "Titolo non valido",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkout-property-user": "Utente",
 	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-user": "Utente",
-	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Nome della pagina"
+	"pagecheckout-ui-workflows-inspector-activity-page-checkin-property-pagename": "Nome della pagina",
+	"pagecheckout-action-checkin-label": "Sblocca",
+	"pagecheckout-action-checkout-label": "Blocca pagina",
+	"pagecheckout-checkin-not-checked-out-by-user": "La pagina non è stata bloccata da quest'utente",
+	"pagecheckout-ui-checkout-confirm": "Stai per bloccare la pagina. Questo ti garantirà i diritti di modifica esclusivi fino a quando non sbloccherai la pagina.",
+	"pagecheckout-ui-cancel-button": "Annulla",
+	"pagecheckout-ui-checkin-confirm": "Stai per sbloccare questa pagina. Ciò consentirà ad altri utenti di modificarla.",
+	"pagecheckout-ui-checkin-comment-label": "Commento",
+	"pagecheckout-ui-checkout-prompt-ve": "Vuoi bloccare questa pagina? In questo modo otterrai i diritti di modifica esclusivi fino a quando non sbloccherai la pagina.",
+	"pagecheckout-prompt-on-edit": "Ricevi un invito a bloccare la pagina quando inizi una modifica"
 }

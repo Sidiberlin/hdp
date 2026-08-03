@@ -1,10 +1,14 @@
 {
 	"@metadata": {
 		"authors": [
+			"Tensama0415",
 			"Ykhwong"
 		]
 	},
 	"unifiedtaskoverview": "내 작업",
 	"unifiedtaskoverview-label-no-task": "현재 완료할 작업이 없습니다.",
-	"unifiedtaskoverview-search-placeholder": "검색"
+	"unifiedtaskoverview-search-placeholder": "검색",
+	"unifiedtaskoverview-desc": "사용자의 작업 개요를 보여주는 특수 문서를 제공합니다",
+	"unifiedtaskoverview-personal-url-my-tasks": "작업",
+	"unifiedtaskoverview-no-login-text": "작업을 보려면 로그인하세요"
 }

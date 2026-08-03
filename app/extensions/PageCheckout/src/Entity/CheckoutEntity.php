@@ -29,37 +29,22 @@ class CheckoutEntity implements JsonSerializable {
 		$this->payload = $payload;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function getId(): int {
 		return $this->id;
 	}
 
-	/**
-	 * @return Title
-	 */
 	public function getTitle(): Title {
 		return $this->title;
 	}
 
-	/**
-	 * @return User
-	 */
 	public function getUser(): User {
 		return $this->user;
 	}
 
-	/**
-	 * @return array
-	 */
 	public function getPayload(): array {
 		return $this->payload;
 	}
 
-	/**
-	 * @return array
-	 */
 	public function jsonSerialize(): array {
 		return [
 			'id' => $this->getId(),

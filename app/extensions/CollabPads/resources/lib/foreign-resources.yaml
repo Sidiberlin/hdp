@@ -1,0 +1,13 @@
+socket.io-client:
+  license: MIT
+  homepage: https://github.com/socketio/socket.io-client
+  authors: Guillermo Rauch
+  version: 2.5.0
+  purl: pkg:npm/socket.io-client@2.5.0
+  type: tar
+  src: https://registry.npmjs.org/socket.io-client/-/socket.io-client-2.5.0.tgz
+  integrity: sha384-FP9miI35EbDuLLW+kWqFQdW0HpLwaePOyVEUaczZI7rjjkH094VyB9tM4YchgRtO
+  dest:
+    package/dist/socket.io.js:
+    package/LICENSE:
+    package/README.md:

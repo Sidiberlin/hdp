@@ -10,6 +10,7 @@ use MediaWiki\Title\Title;
 use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
 use MWStake\MediaWiki\Component\DataStore\ISecondaryDataProvider;
+use Throwable;
 
 class SecondaryDataProvider implements ISecondaryDataProvider {
 	/** @var WorkflowFactory */
@@ -38,7 +39,6 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 	/**
 	 * @param \MWStake\MediaWiki\Component\DataStore\Record[] $dataSets
 	 * @return \MWStake\MediaWiki\Component\DataStore\Record[]
-	 * @throws \Exception
 	 */
 	public function extend( $dataSets ) {
 		foreach ( $dataSets as &$dataSet ) {
@@ -46,11 +46,14 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 			if ( $title instanceof Title ) {
 				$dataSet->set( Record::PAGE_LINK, $title->getLocalURL() );
 			}
+
+			$dataSet->set( Record::INITIATOR, $this->formatInitiator( $dataSet->get( Record::INITIATOR ) ) );
+
 			/** @var WorkflowId $id */
 			$id = $dataSet->get( Record::ID );
 			try {
-				$workflow = $this->workflowFactory->getWorkflow( $id );
-			} catch ( \Exception $e ) {
+				$workflow = $this->workflowFactory->getWorkflowForBot( $id );
+			} catch ( Throwable $e ) {
 				// If the workflow is not found, we skip it
 				continue;
 			}
@@ -98,6 +101,23 @@ class SecondaryDataProvider implements ISecondaryDataProvider {
 			}
 		}
 		return $res;
+	}
+
+	/**
+	 * @param int|null $initiatorId
+	 * @return string
+	 */
+	private function formatInitiator( $initiatorId ): string {
+		if ( !$initiatorId ) {
+			return '';
+		}
+
+		$user = $this->userFactory->newFromId( (int)$initiatorId );
+		if ( !$user instanceof User || !$user->isRegistered() ) {
+			return '';
+		}
+
+		return $user->getName();
 	}
 
 	/**

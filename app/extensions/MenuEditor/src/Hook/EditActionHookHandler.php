@@ -124,28 +124,59 @@ class EditActionHookHandler implements
 	 * @param array &$links
 	 */
 	public function onSkinTemplateNavigation__Universal( $sktemplate, &$links ): void {
-		if ( !$this->title ) {
+		if ( $this->shouldSkipProcessing( $sktemplate ) ) {
 			return;
 		}
 
 		$user = $sktemplate->getUser();
 		$userCanEdit = $user->isAllowed( 'editinterface' );
 
-		if ( $userCanEdit ) {
-			$links['views']['menueditsource'] = [
-				'text' => $sktemplate->msg( "menueditor-action-menueditsource" )->text(),
-				'href' => $this->title->getLocalURL( [ 'action' => 'menueditsource' ] ),
-				'class' => false,
-				'id' => 'ca-menueditsource',
-				'position' => 12,
-			];
-			$links['views']['edit'] = [
-				'text' => $sktemplate->msg( "menueditor-action-menuedit" )->text(),
-				'href' => $this->title->getLocalURL( [ 'action' => 'edit' ] ),
-				'class' => false,
-				'id' => 'ca-edit',
-				'position' => 10,
-			];
+		if ( !$userCanEdit ) {
+			return;
 		}
+
+		$editSourceQuery = [ 'action' => 'menueditsource' ];
+		$editQuery = [ 'action' => 'edit' ];
+		$oldid = $sktemplate->getRequest()->getVal( 'oldid' );
+		if ( $oldid !== null ) {
+			$editSourceQuery['oldid'] = $oldid;
+			$editQuery['oldid'] = $oldid;
+		}
+
+		$links['views']['menueditsource'] = [
+			'text' => $sktemplate->msg( "menueditor-action-menueditsource" )->text(),
+			'href' => $this->title->getLocalURL( $editSourceQuery ),
+			'class' => false,
+			'id' => 'ca-menueditsource',
+			'position' => 12,
+		];
+		$links['views']['edit'] = [
+			'text' => $sktemplate->msg( "menueditor-action-menuedit" )->text(),
+			'href' => $this->title->getLocalURL( $editQuery ),
+			'class' => false,
+			'id' => 'ca-edit',
+			'position' => 10,
+		];
 	}
+
+	/**
+	 * @param SkinTemplate $sktemplate
+	 * @return bool
+	 */
+	protected function shouldSkipProcessing( SkinTemplate $sktemplate ) {
+		if ( !$this->title ) {
+			return true;
+		}
+
+		$allowedModels = [
+			CONTENT_MODEL_WIKITEXT,
+			CONTENT_MODEL_JSON,
+		];
+
+		return !in_array(
+			$this->title->getContentModel(),
+			$allowedModels
+		);
+	}
+
 }

@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Bennylin",
 			"Veracious"
 		]
 	},
@@ -40,7 +41,7 @@
 	"mergearticles-same-block-label": "{{PLURAL:$1|$1 blok identik}} disembunyikan",
 	"mergearticles-diff-option-hide-identical-blocks-label": "Sembunyikan blok yang identik",
 	"mergearticles-diff-option-accept-all-label": "Setujui semua",
-	"mergearticles-diff-item-undo": "Balikkan",
+	"mergearticles-diff-item-undo": "Batalkan",
 	"mergearticles-show-final-text-button-label": "Tampilkan teks akhir",
 	"mergearticles-show-final-text-label": "Semua konflik penggabungan telah diselesaikan, teks akhir sekarang dapat dilihat dan jika perlu diperbaiki sebelum penggabungan. Catatan: Setelah ini, konflik gabungan tidak dapat diubah lagi!",
 	"mergearticles-final-text-header-label": "Teks akhir",

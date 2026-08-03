@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sabelöga"
+			"Sabelöga",
+			"Stefan2255"
 		]
 	},
 	"mergearticles-extension-desc": "Tillåter en att jämföra och sammanfoga artiklar",
@@ -72,5 +73,6 @@
 	"mergearticles-apihelp-param-target": "Titel på målsidor",
 	"mergearticles-apihelp-param-relatedto": "Heltal. Sidans ID, den angivna sidan borde anges som relaterar till",
 	"action-merge-articles": "sammanfoga denna artikel",
-	"right-merge-articles": "Sammanfoga sidor"
+	"right-merge-articles": "Sammanfoga sidor",
+	"mergearticles-term-filter-label": "Sidnamn"
 }
