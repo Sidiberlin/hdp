@@ -580,6 +580,13 @@ hand-edited.
 used instead. No tooling will ever flag a CVE in them — the `last_reviewed`
 date is the only signal they have. See `SECURITY.md`.
 
+Note that setup.sh rewrites `app/composer.lock` **in place**, so those two
+packages are in the lockfile on a pristine checkout and gone from it on any
+installed tree. Both states are correct, and the gate asserts neither: what it
+asserts is that both are still named in setup.sh's strip list, and that if they
+*are* in the lockfile the version matches. Requiring presence made
+`./scripts/check.sh` red after every install for a reason nobody could fix.
+
 #### Known CVEs (`composer-audit`)
 
 `composer audit --locked` is the only automated CVE signal for the 148

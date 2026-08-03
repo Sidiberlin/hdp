@@ -394,8 +394,21 @@ def check_frozen(decl, obs, rep):
         if not isinstance(meta, dict):
             rep.fail(f"frozen/{name}: entry is not a mapping")
             continue
-        if name not in obs["composer"]:
-            rep.fail(f"frozen/{name}: declared frozen but absent from app/composer.lock")
+        # Presence in the lockfile is NOT asserted, and the reason is the one
+        # thing about these two packages that surprises everybody:
+        # docker/setup.sh rewrites app/composer.lock *in place* to remove them
+        # before running composer. So the file contains them on a pristine
+        # checkout and does not contain them on any tree that has been
+        # installed — and both are correct.
+        #
+        # Requiring presence made `./scripts/check.sh` turn red after every
+        # install, for a reason the operator cannot fix by editing anything.
+        # Found on the clean box, running the gate after T4.
+        in_lock = name in obs["composer"]
+        declared_version = meta.get("version")
+        if in_lock and declared_version and obs["composer"][name] != declared_version:
+            rep.fail(f"frozen/{name}: VERSIONS.yml says {declared_version}, "
+                     f"app/composer.lock says {obs['composer'][name]}")
         if name not in obs["stripped"]:
             rep.fail(f"frozen/{name}: declared frozen but docker/setup.sh does not strip it from composer.lock",
                      "          a frozen package left in the lockfile makes composer install reach a "
@@ -415,7 +428,8 @@ def check_frozen(decl, obs, rep):
                 rep.warn(f"frozen/{name}: last reviewed {age} days ago ({reviewed}) — "
                          f"diff it against the vendored source and update the date")
             else:
-                rep.ok(f"frozen/{name} reviewed {age} days ago, stripped by setup.sh, present in composer.lock")
+                where = "still in composer.lock" if in_lock else "already stripped from composer.lock"
+                rep.ok(f"frozen/{name} reviewed {age} days ago, named in setup.sh's strip list, {where}")
 
 
 def emit_extensions(obs):
