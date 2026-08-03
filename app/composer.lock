@@ -6801,12 +6801,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wikimedia/mediawiki-extensions-Auth_remoteuser.git",
-                "reference": "c99206ef442f5bf52fc564d7250779ef1d51aa5d"
+                "reference": "2c7c5be0634e752361c3fa38e9eabfbc307a6fe6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-Auth_remoteuser/zipball/c99206ef442f5bf52fc564d7250779ef1d51aa5d",
-                "reference": "c99206ef442f5bf52fc564d7250779ef1d51aa5d",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-Auth_remoteuser/zipball/2c7c5be0634e752361c3fa38e9eabfbc307a6fe6",
+                "reference": "2c7c5be0634e752361c3fa38e9eabfbc307a6fe6",
                 "shasum": ""
             },
             "require": {
@@ -6874,7 +6874,7 @@
                 "source": "https://github.com/wikimedia/mediawiki-extensions-Auth_remoteuser",
                 "wiki": "https://www.mediawiki.org/wiki/Extension:Auth_remoteuser"
             },
-            "time": "2026-07-23T03:01:06+00:00"
+            "time": "2025-11-20T05:36:38+00:00"
         },
         {
             "name": "mediawiki/checklists",
@@ -7068,13 +7068,13 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-CommentStreams.git",
-                "reference": "7e0eb010044455da4bb186dcf15e12626ffad92c"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-CommentStreams.git",
+                "reference": "d680de48fc6f3bf2b416efd962b0d6c3b0ee5d6f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-CommentStreams/zipball/7e0eb010044455da4bb186dcf15e12626ffad92c",
-                "reference": "7e0eb010044455da4bb186dcf15e12626ffad92c",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-CommentStreams/zipball/d680de48fc6f3bf2b416efd962b0d6c3b0ee5d6f",
+                "reference": "d680de48fc6f3bf2b416efd962b0d6c3b0ee5d6f",
                 "shasum": ""
             },
             "require": {
@@ -7134,7 +7134,7 @@
                     "homepage": "https://www.hallowelt.com"
                 }
             ],
-            "time": "2026-07-28T05:41:59+00:00"
+            "time": "2026-01-06T05:36:32+00:00"
         },
         {
             "name": "mediawiki/container-filter",
@@ -7715,13 +7715,13 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-ExternalData.git",
-                "reference": "f1d04679d894692fe947780ac2745cd27dcae54e"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-ExternalData.git",
+                "reference": "f57f82907b7e50e0d29badb240347517b0e8df97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-ExternalData/zipball/f1d04679d894692fe947780ac2745cd27dcae54e",
-                "reference": "f1d04679d894692fe947780ac2745cd27dcae54e",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-ExternalData/zipball/f57f82907b7e50e0d29badb240347517b0e8df97",
+                "reference": "f57f82907b7e50e0d29badb240347517b0e8df97",
                 "shasum": ""
             },
             "require": {
@@ -7775,7 +7775,7 @@
                 "GPL-2.0-or-later"
             ],
             "description": "Allows retrieving structured data from external URLs, databases and other sources into MediaWiki-powered wikis",
-            "time": "2026-06-16T05:30:28+00:00"
+            "time": "2026-01-06T05:37:33+00:00"
         },
         {
             "name": "mediawiki/flexiskin",
@@ -7954,13 +7954,13 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-HeaderFooter.git",
-                "reference": "893542ea71c443cebb68f91c7eac14dc1e15ad6d"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-HeaderFooter.git",
+                "reference": "20b2a53b9969a06ef086eb1488d255ec748e0fb9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-HeaderFooter/zipball/893542ea71c443cebb68f91c7eac14dc1e15ad6d",
-                "reference": "893542ea71c443cebb68f91c7eac14dc1e15ad6d",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-HeaderFooter/zipball/20b2a53b9969a06ef086eb1488d255ec748e0fb9",
+                "reference": "20b2a53b9969a06ef086eb1488d255ec748e0fb9",
                 "shasum": ""
             },
             "require": {
@@ -8024,7 +8024,7 @@
                 "issues": "https://bugzilla.wikimedia.org/",
                 "github": "https://github.com/enterprisemediawiki/HeaderFooter/issues"
             },
-            "time": "2026-07-23T13:26:08+00:00"
+            "time": "2025-12-15T13:47:52+00:00"
         },
         {
             "name": "mediawiki/header-tabs",
@@ -8227,13 +8227,13 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-InviteSignup.git",
-                "reference": "117f0f535547059f8f2576acdd32a6cb48122521"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-InviteSignup.git",
+                "reference": "025de49157c46ed6fc2c0d644eb50c65f9a02f1e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-InviteSignup/zipball/117f0f535547059f8f2576acdd32a6cb48122521",
-                "reference": "117f0f535547059f8f2576acdd32a6cb48122521",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-InviteSignup/zipball/025de49157c46ed6fc2c0d644eb50c65f9a02f1e",
+                "reference": "025de49157c46ed6fc2c0d644eb50c65f9a02f1e",
                 "shasum": ""
             },
             "require": {
@@ -8278,20 +8278,20 @@
             "support": {
                 "issues": "https://phabricator.wikimedia.org/"
             },
-            "time": "2026-07-23T14:40:40+00:00"
+            "time": "2025-12-02T06:18:48+00:00"
         },
         {
             "name": "mediawiki/ldap-authentication-2",
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPAuthentication2",
-                "reference": "84308e9f49c14b39b62f8f51e3f416a462d75712"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPAuthentication2",
+                "reference": "98a6da7eda890d4a584b395da78396aa45bdd81e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPAuthentication2/zipball/84308e9f49c14b39b62f8f51e3f416a462d75712",
-                "reference": "84308e9f49c14b39b62f8f51e3f416a462d75712",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPAuthentication2/zipball/98a6da7eda890d4a584b395da78396aa45bdd81e",
+                "reference": "98a6da7eda890d4a584b395da78396aa45bdd81e",
                 "shasum": ""
             },
             "require": {
@@ -8354,20 +8354,20 @@
                 "mediawiki",
                 "wiki"
             ],
-            "time": "2026-07-23T15:08:31+00:00"
+            "time": "2025-12-15T13:47:52+00:00"
         },
         {
             "name": "mediawiki/ldap-authorization",
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPAuthorization",
-                "reference": "a8c9cfd7d89f0044bede825ba462b8bafdb1ccf0"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPAuthorization",
+                "reference": "fd99cdd0e39a4206a515f36d3083653af5ed5d4a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPAuthorization/zipball/a8c9cfd7d89f0044bede825ba462b8bafdb1ccf0",
-                "reference": "a8c9cfd7d89f0044bede825ba462b8bafdb1ccf0",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPAuthorization/zipball/fd99cdd0e39a4206a515f36d3083653af5ed5d4a",
+                "reference": "fd99cdd0e39a4206a515f36d3083653af5ed5d4a",
                 "shasum": ""
             },
             "require": {
@@ -8430,20 +8430,20 @@
                 "mediawiki",
                 "wiki"
             ],
-            "time": "2026-07-23T15:09:36+00:00"
+            "time": "2025-12-15T13:47:52+00:00"
         },
         {
             "name": "mediawiki/ldap-groups",
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPGroups",
-                "reference": "b3bc413008773c8968c3db851e8f173baa9b8bf9"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPGroups",
+                "reference": "b8db272001001e27aecf67e13fa624f70de2245e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPGroups/zipball/b3bc413008773c8968c3db851e8f173baa9b8bf9",
-                "reference": "b3bc413008773c8968c3db851e8f173baa9b8bf9",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPGroups/zipball/b8db272001001e27aecf67e13fa624f70de2245e",
+                "reference": "b8db272001001e27aecf67e13fa624f70de2245e",
                 "shasum": ""
             },
             "require": {
@@ -8507,20 +8507,20 @@
                 "mediawiki",
                 "wiki"
             ],
-            "time": "2026-07-26T14:17:03+00:00"
+            "time": "2025-12-15T13:47:52+00:00"
         },
         {
             "name": "mediawiki/ldap-provider",
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPProvider",
-                "reference": "40e11bdb6da29b062254ad726ffedad7bafcb3f8"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPProvider",
+                "reference": "3daa503f69eef1ba8184e4021788bb9371d3fee9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPProvider/zipball/40e11bdb6da29b062254ad726ffedad7bafcb3f8",
-                "reference": "40e11bdb6da29b062254ad726ffedad7bafcb3f8",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPProvider/zipball/3daa503f69eef1ba8184e4021788bb9371d3fee9",
+                "reference": "3daa503f69eef1ba8184e4021788bb9371d3fee9",
                 "shasum": ""
             },
             "require": {
@@ -8598,26 +8598,25 @@
                 "mediawiki",
                 "wiki"
             ],
-            "time": "2026-07-23T15:12:17+00:00"
+            "time": "2025-12-30T06:20:58+00:00"
         },
         {
             "name": "mediawiki/ldap-sync-all",
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPSyncAll.git",
-                "reference": "757131e083385316e84c041e97bf0465733f0fe4"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPSyncAll.git",
+                "reference": "cfb39e60fa3a4a0bbc32b0cd29f22acbb86b70c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPSyncAll/zipball/757131e083385316e84c041e97bf0465733f0fe4",
-                "reference": "757131e083385316e84c041e97bf0465733f0fe4",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPSyncAll/zipball/cfb39e60fa3a4a0bbc32b0cd29f22acbb86b70c8",
+                "reference": "cfb39e60fa3a4a0bbc32b0cd29f22acbb86b70c8",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "~1.0|~2",
-                "ldaptools/ldaptools": "~0.25",
-                "mwstake/mediawiki-component-wikicron": "~3|~4"
+                "ldaptools/ldaptools": "~0.25"
             },
             "require-dev": {
                 "mediawiki/mediawiki-codesniffer": "45.0.0",
@@ -8654,20 +8653,20 @@
                 }
             ],
             "homepage": "https://www.mediawiki.org/wiki/Extension:LDAPSyncAll",
-            "time": "2026-07-23T15:13:31+00:00"
+            "time": "2025-12-15T13:47:52+00:00"
         },
         {
             "name": "mediawiki/ldap-user-info",
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-LDAPUserInfo",
-                "reference": "297c05d4a39a283ff177b269aa994841917cfc38"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-LDAPUserInfo",
+                "reference": "f47c9353cdea6143c6058732c39368cd27d2ee18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPUserInfo/zipball/297c05d4a39a283ff177b269aa994841917cfc38",
-                "reference": "297c05d4a39a283ff177b269aa994841917cfc38",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-LDAPUserInfo/zipball/f47c9353cdea6143c6058732c39368cd27d2ee18",
+                "reference": "f47c9353cdea6143c6058732c39368cd27d2ee18",
                 "shasum": ""
             },
             "require": {
@@ -8730,7 +8729,7 @@
                 "mediawiki",
                 "wiki"
             ],
-            "time": "2026-07-23T15:16:28+00:00"
+            "time": "2025-12-15T13:47:52+00:00"
         },
         {
             "name": "mediawiki/lingo",
@@ -9033,13 +9032,13 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-NSFileRepo.git",
-                "reference": "a62b2d4bbc127567e0cd2601815a7529b8ddbfad"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-NSFileRepo.git",
+                "reference": "78671c0ac3069ff6305252d0332f29908c93ab45"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-NSFileRepo/zipball/a62b2d4bbc127567e0cd2601815a7529b8ddbfad",
-                "reference": "a62b2d4bbc127567e0cd2601815a7529b8ddbfad",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-NSFileRepo/zipball/78671c0ac3069ff6305252d0332f29908c93ab45",
+                "reference": "78671c0ac3069ff6305252d0332f29908c93ab45",
                 "shasum": ""
             },
             "require": {
@@ -9085,7 +9084,7 @@
                 }
             ],
             "description": "Provide namespace based features to uploaded files",
-            "time": "2026-07-27T07:53:14+00:00"
+            "time": "2025-12-22T10:32:46+00:00"
         },
         {
             "name": "mediawiki/notify-me",
@@ -9305,16 +9304,16 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/wikimedia/mediawiki-extensions-OpenLayers.git",
-                "reference": "8869914b6d9e1e0f4e51430add4a0020ce5aff78"
+                "reference": "fe94fbdfd3fb45d27c0a0650b4c3d603be017bad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-OpenLayers/zipball/8869914b6d9e1e0f4e51430add4a0020ce5aff78",
-                "reference": "8869914b6d9e1e0f4e51430add4a0020ce5aff78",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-OpenLayers/zipball/fe94fbdfd3fb45d27c0a0650b4c3d603be017bad",
+                "reference": "fe94fbdfd3fb45d27c0a0650b4c3d603be017bad",
                 "shasum": ""
             },
             "require-dev": {
-                "mediawiki/minus-x": "2.0.1"
+                "mediawiki/minus-x": "1.1.3"
             },
             "default-branch": true,
             "type": "mediawiki-extension",
@@ -9340,7 +9339,7 @@
             "support": {
                 "source": "https://github.com/wikimedia/mediawiki-extensions-OpenLayers/tree/master"
             },
-            "time": "2026-07-22T03:09:02+00:00"
+            "time": "2025-12-06T11:51:37+00:00"
         },
         {
             "name": "mediawiki/openidconnect",
@@ -10367,29 +10366,27 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SemanticMediaWiki/SemanticScribunto.git",
-                "reference": "9f32900c5a11e3d3463f2557b17cfaed3542bd32"
+                "reference": "7c2ddb1869073fe55c091fcafa47b95ce839f155"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SemanticMediaWiki/SemanticScribunto/zipball/9f32900c5a11e3d3463f2557b17cfaed3542bd32",
-                "reference": "9f32900c5a11e3d3463f2557b17cfaed3542bd32",
+                "url": "https://api.github.com/repos/SemanticMediaWiki/SemanticScribunto/zipball/7c2ddb1869073fe55c091fcafa47b95ce839f155",
+                "reference": "7c2ddb1869073fe55c091fcafa47b95ce839f155",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "^2|^1.0.1",
-                "php": ">=8.1"
+                "php": ">=7.3"
             },
             "require-dev": {
-                "mediawiki/mediawiki-codesniffer": "43.0.0",
-                "mediawiki/minus-x": "1.1.3",
-                "php-parallel-lint/php-console-highlighter": "1.0.0",
-                "php-parallel-lint/php-parallel-lint": "1.4.0"
+                "phpmd/phpmd": "~2.1",
+                "squizlabs/php_codesniffer": "~3.10"
             },
             "default-branch": true,
             "type": "mediawiki-extension",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.x-dev"
+                    "dev-master": "2.4.0-dev"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -10434,7 +10431,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2026-07-19T13:47:02+00:00"
+            "time": "2025-11-09T22:29:04+00:00"
         },
         {
             "name": "mediawiki/simple-blog-page",
@@ -10670,23 +10667,25 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/ProfessionalWiki/SubPageList.git",
-                "reference": "bb2e421e53205eddb31a3a951e796472772d8515"
+                "reference": "32dac6c8488c8cad44e98e12ab5eeec7ca3b03ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ProfessionalWiki/SubPageList/zipball/bb2e421e53205eddb31a3a951e796472772d8515",
-                "reference": "bb2e421e53205eddb31a3a951e796472772d8515",
+                "url": "https://api.github.com/repos/ProfessionalWiki/SubPageList/zipball/32dac6c8488c8cad44e98e12ab5eeec7ca3b03ae",
+                "reference": "32dac6c8488c8cad44e98e12ab5eeec7ca3b03ae",
                 "shasum": ""
             },
             "require": {
                 "composer/installers": "^2|^1.0.1",
-                "mediawiki/parser-hooks": "~1.3|^3.0",
-                "php": ">=8.1"
+                "mediawiki/parser-hooks": "~1.3",
+                "php": ">=7.3"
             },
             "default-branch": true,
             "type": "mediawiki-extension",
             "extra": {
-                "installer-name": "SubPageList"
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -10705,17 +10704,18 @@
                 }
             ],
             "description": "SubPageList is a lightweight extension to display lists of subpages",
-            "homepage": "https://professional.wiki/en/extension/subpagelist",
+            "homepage": "https://github.com/ProfessionalWiki/SubPageList#readme",
             "keywords": [
                 "SubPage",
                 "SubPageList",
                 "mediawiki"
             ],
             "support": {
+                "irc": "irc://irc.libera.chat/mediawiki",
                 "issues": "https://github.com/ProfessionalWiki/SubPageList/issues",
                 "source": "https://github.com/ProfessionalWiki/SubPageList/tree/master"
             },
-            "time": "2026-07-16T12:12:41+00:00"
+            "time": "2025-08-11T12:12:01+00:00"
         },
         {
             "name": "mediawiki/table-tools",
@@ -10867,13 +10867,13 @@
             "version": "dev-REL1_43",
             "source": {
                 "type": "git",
-                "url": "git@github.com:wikimedia/mediawiki-extensions-UserFunctions",
-                "reference": "5a672a6b55f475b2a6b90a92e4e47ab65cc808ac"
+                "url": "https://github.com/wikimedia/mediawiki-extensions-UserFunctions",
+                "reference": "4c8d87dbac0fca5dcd29cbc13cb7a047e0c13b35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-UserFunctions/zipball/5a672a6b55f475b2a6b90a92e4e47ab65cc808ac",
-                "reference": "5a672a6b55f475b2a6b90a92e4e47ab65cc808ac",
+                "url": "https://api.github.com/repos/wikimedia/mediawiki-extensions-UserFunctions/zipball/4c8d87dbac0fca5dcd29cbc13cb7a047e0c13b35",
+                "reference": "4c8d87dbac0fca5dcd29cbc13cb7a047e0c13b35",
                 "shasum": ""
             },
             "require": {
@@ -10909,7 +10909,7 @@
                 "MediaWiki",
                 "User"
             ],
-            "time": "2026-07-24T09:10:07+00:00"
+            "time": "2025-11-23T18:37:06+00:00"
         },
         {
             "name": "mediawiki/user-merge",
