@@ -23,11 +23,13 @@ For full architecture documentation, see [`docs/wiki/`](docs/wiki/) (system diag
 | `app/extensions/ChatBot/` | ChatBot MediaWiki extension — chat widget, REST endpoints, Deepset API client | `extension.json`, `includes/Api/ChatApi.php` |
 | `app/skins/` | MediaWiki skins | `.gitignore` has `/*` **but re-includes the six shipped skins by name** — they are trackable, do not use `git add -f`. See [The `app/skins/.gitignore` Trap](#the-appskinsgitignore-trap) |
 | `docker/patches/` | Patch manifest — one YAML sidecar per patch, plus the Class-A `.patch` files | 19 entries; see [`patches.md`](patches.md) |
-| `scripts/` | Contributor and CI entry points | `check.sh` (run before pushing), `verify-patches.sh`, `apply-patches.sh`, `convert-docs.sh`, `ci/` (incl. `t3-integration.sh`, `t4-smoke.sh`, `lib/stack.sh`), `lib/` |
-| `tests/` | The test suite — see [The four pytest tiers](#the-four-pytest-tiers) | `unit/` (stdlib), `haystack/` (real haystack-ai), `integration/` (a live wiki; `smoke`-marked tests need all seven containers), `bats/` (shell) |
+| `docker/ci/fixtures/` | The seeded database snapshot T5 runs `update.php` against | `seeded-wiki.sql.gz` + `.meta.json`; regenerate with `scripts/ci/make-db-fixture.sh` |
+| `VERSIONS.yml` | **What version this fork is** — gated against the tree by CI | see [Versions and upgrades](#versions-and-upgrades) |
+| `scripts/` | Contributor and CI entry points | `check.sh` (run before pushing), `verify-patches.sh`, `apply-patches.sh`, `convert-docs.sh`, `ci/` (incl. `t3-integration.sh`, `t4-smoke.sh`, `t5-migration.sh`, `release-watch.sh`, `lib/stack.sh`), `lib/` |
+| `tests/` | The test suite — see [The five pytest tiers](#the-five-pytest-tiers) | `unit/` (stdlib), `haystack/` (real haystack-ai), `integration/` (a live wiki; `smoke`-marked tests need all seven containers, `migration`-marked ones need an upgraded stack), `bats/` (shell) |
 | `docker/` | Docker build contexts and setup scripts | `setup.sh` (first-boot install), `haystack/` (RAG pipeline), `chatbot-proxy/` (Deepset→Haystack adapter) |
 | `docker/haystack/` | Haystack RAG pipeline implementation | `hdp_pipeline.yaml`, `ingest_hdp_wiki.py`, `hdp_api_server.py`, `entrypoint.sh`, plus the two Wave 2 extractions `wikitext.py` (pure transforms) and `serialization.py` (`to_native`, `load_pipeline`) |
-| `docs/` | User and architecture documentation | `QA-REPORT.md`, `embedding-providers.md`, `wiki/` (technical wiki) |
+| `docs/` | User and architecture documentation | `QA-REPORT.md`, `embedding-providers.md`, `dev/upgrade-runbook.md` (how to take an upstream release), `wiki/` (technical wiki) |
 | `docker-compose.yml` | All 7 services: MariaDB, MediaWiki (PHP-FPM + Apache + jobrunner), OpenSearch, Haystack, chatbot-proxy | |
 | `.env.example` | Environment variable template (Infisical + plaintext fallback) | |
 | `README-DOCKER.md` | Quick start and troubleshooting | |
@@ -206,7 +208,7 @@ was never committed, or that a `.gitignore` rule silently refuses.
 Note that it tests **committed** state. Uncommitted work in your tree is
 deliberately not under test, and it says so when your tree is dirty.
 
-### The four pytest tiers
+### The five pytest tiers
 
 Tests live in `tests/` at the repo root, not inside `docker/haystack/`. Those
 directories are Docker build contexts; a test placed there either ships inside
@@ -217,19 +219,27 @@ the production image or needs `.dockerignore` surgery.
 | `pytest-unit` | `tests/unit/` | nothing but pytest | ~2s |
 | `pytest-haystack` | `tests/haystack/` | `haystack-ai` + `envsubst` | 0s warm, ~47s cold |
 | `integration` | `tests/integration/` | a running, installed wiki + docker | ~50s against a live stack |
-| `smoke` | `tests/integration/`, unfiltered | **all seven** containers, a drained job queue, an ingested index | ~25 min from nothing |
+| `smoke` | `tests/integration/`, `-m "not migration"` | **all seven** containers, a drained job queue, an ingested index | ~25 min from nothing |
+| `migration` | `tests/integration/`, `-m migration` | a stack `scripts/ci/t5-migration.sh` has upgraded | ~7 min from nothing |
 
 The first split follows what the code actually imports. `render_pipeline.render`,
 `build_result_from_haystack` and the `wikitext` pure functions import nothing
 outside the standard library, so they run on bare Python. Only `to_native()`
 and `load_pipeline()` need Haystack.
 
-The last two are a different kind of thing: they assert on a wiki that is
-actually serving traffic. They are also the same directory — `smoke` is
-`integration` with the marker filter removed — so T4 is a strict superset of
-T3 rather than a second suite to keep in step. See
-[The integration tier](#the-integration-tier) and
-[The smoke tier](#the-smoke-tier-t4) below.
+The last three are a different kind of thing: they assert on a wiki that is
+actually serving traffic. They are also all the *same directory*, separated by
+marker — so T4 is a strict superset of T3 rather than a second suite to keep in
+step, and T5 adds a third without a third conftest or a third wiki client. See
+[The integration tier](#the-integration-tier),
+[The smoke tier](#the-smoke-tier-t4) and
+[The migration tier](#the-migration-tier-t5) below.
+
+`migration` is excluded from both of the others on purpose: those assertions
+only mean anything after the seeded snapshot has been loaded over the installed
+database and `update.php` re-run against it. Collected anywhere else they would
+be asserting against a fresh install, which is the exact thing T5 exists to
+stop being the only thing tested.
 
 **Nothing is mocked, anywhere.** That is affordable because of a measurement:
 
@@ -248,6 +258,7 @@ Run them with `scripts/ci/pytest.sh`, which knows how to satisfy each tier:
 scripts/ci/pytest.sh                  # unit + haystack
 scripts/ci/pytest.sh --tier unit      # the fast one
 scripts/ci/pytest.sh --tier smoke     # the full stack, T4's assertions
+scripts/ci/pytest.sh --tier migration # T5's assertions, after t5-migration.sh
 scripts/ci/pytest.sh -- -k to_native  # args after -- go to pytest
 ```
 
@@ -426,6 +437,84 @@ configured in `docker/ci/compose.cache.yml`. That file is a CI-only overlay —
 a developer's `docker compose up` must not depend on a GitHub cache backend
 existing. `--cache` sets `COMPOSE_BAKE=1`, without which compose ignores the
 `x-bake` block entirely and the build succeeds while caching nothing.
+
+### The migration tier (T5)
+
+T3 proves a **fresh install** works. Every real HDP operator does the other
+thing: runs new code against a database that already holds pages, users and
+permissions. None of the code that *migrates rows* is reached by an install
+into an empty schema, so until Wave 5 the upgrade path had never been executed
+anywhere in CI.
+
+```bash
+scripts/ci/t5-migration.sh            # the whole sequence, from nothing (~7 min)
+scripts/ci/t5-migration.sh --keep     # ... and leave the stack up
+scripts/ci/pytest.sh --tier migration # against a stack it already upgraded
+```
+
+The sequence: install normally, **drop the database**, load
+`docker/ci/fixtures/seeded-wiki.sql.gz` — a real wiki captured before the
+upgrade — and run `update.php` against that.
+
+It installs first because the wiki cannot boot from the snapshot alone:
+`app/vendor/` is gitignored and created by composer, and `LocalSettings.php` is
+written by `install.php`. Committing a `LocalSettings.php` fixture would mean
+committing generated secrets *and* a second source of truth for what `setup.sh`
+produces.
+
+What the tier asserts, in three groups:
+
+- **The fixture** — sha256 matches its `.meta.json`, it was captured from the
+  release `VERSIONS.yml` declares, it carries real content (≥100 pages), and
+  **no password hash is in it**. That last one is a committed-artifact
+  assertion: `--hex-blob` writes `user_password` as `0x3A70626B646632…`, which
+  decodes to a real `:pbkdf2:` hash, so the scrub happens in a scratch database
+  and the file is dumped from *that*.
+- **The migration** — `update.php` exits 0, its log carries no failure
+  patterns, and it *did something*: an updater pointed at the wrong database
+  produces a short clean log and exit 0, which is indistinguishable from
+  success unless you look for the work.
+- **The wiki afterwards** — page and table counts did not shrink, a Help page
+  still renders through the API, and `Special:Preferences` still loads **for a
+  logged-in user**. `t5-migration.sh` resets the Admin password after the
+  upgrade precisely so that assertion can exist; the fixture's hashes are
+  scrubbed, and logged out this wiki answers with a healthy 200 login prompt.
+
+Regenerating the fixture is a **manual, once-per-release** step, for the same
+reason golden files are:
+
+```bash
+scripts/ci/make-db-fixture.sh   # from a running, installed stack you trust
+```
+
+Order matters at upgrade time: the fixture must still be from the **old**
+release when T5 runs, so regenerate it *after* the upgrade merges. See
+[`upgrade-runbook.md`](upgrade-runbook.md) step 7.
+
+### The authentication path
+
+`tests/integration/test_auth_path.py` is unmarked, so it runs in T3, T4 and T5.
+
+Two of the 19 patches are different in kind from the other seventeen:
+`pluggableauth-service` and `oidc-client`. Dropping a MultimediaViewer patch is
+a cosmetic regression somebody notices; dropping either of these is an
+authentication regression that nothing notices. `oidc-client` is also the only
+patch whose target lives under `app/vendor/` — gitignored, `rm -rf`'d on every
+setup run, recreated by composer — so it has no gitignore-level protection at
+all. What protects it is being re-applied on every install and asserted
+afterwards.
+
+Three layers, each catching something the others cannot: the manifest's own
+verdict (`verify-patches.sh --id`, run inside the container where the installed
+tree is); the patched content present **and the vulnerable upstream form
+absent** in the installed file; and the code still parsing, autoloading and
+serving a login form.
+
+Both sidecars now carry an `anti:` pattern — the upstream line the patch
+replaces — and `verify-patches.sh` fails a diff-mode patch whose anti-pattern
+matches even when `patch` reports it as already applied. A fuzzy application
+can leave both forms in the file, and for an authentication library that is a
+fix nobody is using.
 
 ### Generated documentation (`convert-docs.sh`)
 
