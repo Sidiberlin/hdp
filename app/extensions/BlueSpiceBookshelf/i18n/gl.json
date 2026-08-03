@@ -186,5 +186,12 @@
 	"bs-bookshelf-search-center-context-books-label": "{{PLURAL:$1|no libro|nos libros}} '''$2'''",
 	"bs-bookshelf-newbook-dlg-action-create-label": "Crear",
 	"bs-bookshelf-formelement-book-input": "Libro",
-	"bs-bookshelf-formelement-book-input-return-value-label": "Propiedade de retorno"
+	"bs-bookshelf-formelement-book-input-return-value-label": "Propiedade de retorno",
+	"bs-bookshelf-searchbook-ve-placeholder-label": "Texto de marcador de posición para o campo de busca",
+	"bs-bookshelf-searchbook-ve-placeholder-help": "O texto que aparece aquí móstrase como un marcador de posición no campo de busca",
+	"bs-bookshelf-searchbook-ve-placeholder-text": "Escribe para procurar...",
+	"bs-bookshelf-droplet-search-book-label": "Selecciona un libro para a procura",
+	"bs-bookshelf-entrypoint-action-book-aria-label": "Crear un libro",
+	"bs-bookshelf-entrypoint-action-book-aria-title": "Crear un libro",
+	"bs-bookshelf-add-to-book-warning-new-book": "O libro seleccionado aínda non existe. Crearase cando lle engadas páxinas."
 }

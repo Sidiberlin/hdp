@@ -3,7 +3,12 @@ mw.hook( 'pdfcreator.export.data' ).add( ( context, data ) => {
 		return;
 	}
 	if ( mw.util.getParamValue( 'book' ) ) {
-		data.book = mw.util.getParamValue( 'book' );
-		data.relevantTitle = mw.util.getParamValue( 'book' );
+		const activeBook = mw.util.getParamValue( 'book' );
+		data.book = activeBook;
+		data.relevantTitle = activeBook;
+	} else if ( mw.config.get( 'bsActiveBook' ) ) {
+		const activeBook = mw.config.get( 'bsActiveBook' );
+		data.book = activeBook;
+		data.relevantTitle = activeBook;
 	}
 } );

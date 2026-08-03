@@ -3,6 +3,8 @@
 		"authors": [
 			"Gongsoonyee",
 			"SeoJeongHo",
+			"Tensama0415",
+			"YeBoy371",
 			"Ykhwong"
 		]
 	},
@@ -58,5 +60,24 @@
 	"bs-bookshelfui-chapterpager-next": "다음",
 	"bs-bookshelfui-panel-navigation-text": "책 둘러보기로",
 	"bs-bookshelfui-panel-navigation-title": "책 둘러보기로 돌아가기",
-	"bs-bookshelfui-panel-navigation-aria-label": "책 둘러보기로"
+	"bs-bookshelfui-panel-navigation-aria-label": "책 둘러보기로",
+	"bs-bookshelfui-bookmetatag-department": "부서",
+	"right-bookshelfbookmanager-viewspecialpage": "[[Special:BookshelfBookManager]] 특수 문서로 접근",
+	"action-bookshelfbookmanager-viewspecialpage": "[[Special:BookshelfBookManager]] 특수 문서로 접근",
+	"right-bookshelfbookui-viewspecialpage": "[[Special:BookshelfBookUI]] 특수 문서로 접근",
+	"action-bookshelfbookui-viewspecialpage": "[[Special:BookshelfBookUI]] 특수 문서로 접근",
+	"prefs-bookshelfui": "책장 특수 문서",
+	"bs-bookshelfui-bookmetatag-bookshelf": "책장",
+	"bs-bookshelfui-bookmetatag-bookshelfimage": "책장 이미지",
+	"bs-bookshelfui-extension-description": "블루스파이스가 위키문서의 계층적 모음집을 관리할 수 있도록 합니다.",
+	"bs-bookshelfui-delete-book-text": "이 책을 정말로 삭제하시겠습니까? \"책장\" 태그는 연결된 위키문서에서 자동으로 제거되지 <em>않습니다</em>!",
+	"bs-bookshelfui-dlg-copy-target-namespace-qtip": "책의 모든 페이지가 이 이름공간에 복사됩니다. 링크도 이동됩니다.",
+	"apihelp-bs-bookshelf-manage-summary": "책 조작 관련 작업을 제공합니다.",
+	"bs-bookshelfui-flyout-intro": "여기에서 이용 가능한 모든 책을 볼 수 있습니다. 새 책을 추가하려면 [[Special:Bookmanager|책 관리자]]로 이동하세요.",
+	"bs-bookshelfui-intro": "여기에서 이용 가능한 모든 책을 볼 수 있습니다. 새 책을 추가하려면 [[Special:Bookmanager|책 관리자]]로 이동하세요.",
+	"apihelp-bs-bookshelf-page-collection-store-summary": "책에 일괄적으로 추가할 수 있는 문서 모음을 제공합니다.",
+	"apihelp-bs-bookshelf-mass-add-page-store-summary": "책에 일괄적으로 추가할 수 있는 문서들을 제공합니다.",
+	"apihelp-bs-bookshelf-mass-add-page-store-param-root": "문서를 반환할 기준이 되는 루트 값",
+	"apihelp-bs-bookshelf-mass-add-page-store-param-type": "대량 추가를 위한 출처 유형",
+	"bs-bookshelfui-panel-navigation-aria-desc": "트리 구조로 책을 탐색"
 }

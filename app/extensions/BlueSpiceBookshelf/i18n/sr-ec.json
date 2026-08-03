@@ -85,5 +85,6 @@
 	"bs-bookshelf-export-pdf-notification-done": "Извоз PDF завршен",
 	"bs-bookshelf-sesp-books": "Књиге",
 	"bs-bookshelf-search-center-context-books-label": "у {{PLURAL:$1|књизи|књигама}} '''$2'''",
-	"bs-bookshelf-newbook-dlg-action-create-label": "Направи"
+	"bs-bookshelf-newbook-dlg-action-create-label": "Направи",
+	"bs-bookshelf-entrypoint-action-book-aria-title": "Направи књигу"
 }

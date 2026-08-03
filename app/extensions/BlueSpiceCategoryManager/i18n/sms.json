@@ -10,6 +10,8 @@
 	"bs-categorymanager-collection-var-categorizedpages": "Seeid, koin lie kategoria",
 	"bs-categorymanager-collection-var-uncategorizedpages": "Seeid, koin jie leäkku kategoria",
 	"bs-categorymanager-rename-category": "Uuʹd kategoriaaʹje ođđ nõõm",
-	"bs-categorymanager-rename-category-new-name": "Ođđ kategorianõmm:",
-	"bs-categorymanager-statistics-report-category-pages": "Seeid kategoriain"
+	"bs-categorymanager-rename-category-new-name": "Ođđ kategorianõmm",
+	"bs-categorymanager-statistics-report-category-pages": "Seeid kategoriain",
+	"bs-categorymanager-dialog-create-category-placeholder": "Lââʹzzet ođđ kategoria",
+	"bs-categorymanager-dlg-add-title": "Lââʹzzet kategoria"
 }

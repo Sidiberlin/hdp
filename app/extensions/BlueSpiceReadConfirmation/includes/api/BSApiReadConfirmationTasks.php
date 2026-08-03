@@ -105,7 +105,8 @@ class BSApiReadConfirmationTasks extends BSApiTasksBase {
 			'userHasConfirmed' => true
 		];
 
-		if ( $mechanismInstance->canConfirm( $title, $this->getUser(), $revId ) ) {
+		$inhibitRC = $taskData->preventReadConfirmation ?? false;
+		if ( !$inhibitRC && $mechanismInstance->canConfirm( $title, $this->getUser(), $revId ) ) {
 			$result->payload[ 'userHasConfirmed' ] = false;
 		}
 

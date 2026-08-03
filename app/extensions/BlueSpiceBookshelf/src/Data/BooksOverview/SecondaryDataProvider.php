@@ -7,7 +7,6 @@ use BlueSpice\Bookshelf\BooksOverviewActions\BookMetaData;
 use BlueSpice\Bookshelf\BooksOverviewActions\Delete;
 use BlueSpice\Bookshelf\BooksOverviewActions\Edit;
 use BlueSpice\Bookshelf\BooksOverviewActions\View;
-use BlueSpice\Bookshelf\ChapterDataModel;
 use BlueSpice\Bookshelf\ChapterLookup;
 use BlueSpice\Bookshelf\IBooksOverviewAction;
 use MediaWiki\Config\Config;
@@ -127,8 +126,7 @@ class SecondaryDataProvider extends \MWStake\MediaWiki\Component\DataStore\Secon
 		if ( !$book->isKnown() ) {
 			return '';
 		}
-		$chapters = $this->bookChapterLookup->getChaptersOfBook( $book );
-		if ( !empty( $chapters ) ) {
+		if ( $this->bookChapterLookup->countChapters( $book ) > 0 ) {
 			return '';
 		}
 		return $book->getEditURL();
@@ -142,40 +140,11 @@ class SecondaryDataProvider extends \MWStake\MediaWiki\Component\DataStore\Secon
 		$localUrl = '';
 
 		if ( $book->isKnown() ) {
-			$chapters = $this->bookChapterLookup->getChaptersOfBook( $book );
-			if ( empty( $chapters ) ) {
-				return $localUrl;
+			$firstTitle = $this->bookChapterLookup->getFirstChapterTitle( $book );
+			if ( $firstTitle ) {
+				$text = $book->getFullText();
+				$localUrl = $firstTitle->getLocalURL( [ 'book' => $text ] );
 			}
-
-			$chapterDataModel = null;
-			foreach ( $chapters as $chapter ) {
-				if ( $chapter instanceof ChapterDataModel === false ) {
-					continue;
-				}
-
-				if ( $chapter->getType() === 'plain-text' ) {
-					continue;
-				}
-
-				$chapterDataModel = $chapter;
-				break;
-			}
-
-			if ( $chapterDataModel === null ) {
-				return $localUrl;
-			}
-
-			$chapterPage = $this->titleFactory->makeTitle(
-				$chapterDataModel->getNamespace(),
-				$chapterDataModel->getTitle()
-			);
-
-			if ( !$chapterPage ) {
-				return $localUrl;
-			}
-
-			$text = $book->getFullText();
-			$localUrl = $chapterPage->getLocalURL( [ 'book' => $text ] );
 		}
 
 		return $localUrl;
@@ -255,7 +224,7 @@ class SecondaryDataProvider extends \MWStake\MediaWiki\Component\DataStore\Secon
 			$basename = basename( $meta['bookshelfimage'] );
 
 			$fileTitle = $this->titleFactory->newFromText( $basename );
-			if ( !$fileTitle->exists() || $fileTitle->getNamespace() !== NS_FILE ) {
+			if ( !$fileTitle || !$fileTitle->exists() || $fileTitle->getNamespace() !== NS_FILE ) {
 				$fileTitle = $this->titleFactory->makeTitle( NS_FILE, $basename );
 			}
 

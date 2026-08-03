@@ -3,7 +3,6 @@
 class ExpiryHooks {
 
 	/**
-	 *
 	 * @param array &$queryPages
 	 */
 	public static function onQueryPages( &$queryPages ) {

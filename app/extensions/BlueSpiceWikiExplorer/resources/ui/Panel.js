@@ -263,6 +263,8 @@ bs.wikiexplorer.ui.Panel.prototype.makeGrid = function () {
 			columns: columns,
 			store: this.store,
 			provideExportData: () => {
+				const visibleColumns = this.grid.visibleColumns;
+
 				const exportDfd = $.Deferred(),
 					store = new bs.wikiexplorer.store.WikiExplorer( {
 						pageSize: 99999,
@@ -273,27 +275,30 @@ bs.wikiexplorer.ui.Panel.prototype.makeGrid = function () {
 							}
 						}
 					} );
-				store.load().done( ( response ) => {
+				store.loadAll().done( ( response ) => {
 					const $table = $( '<table>' );
 
-					const $thead = $( '<thead>' )
-						.append( $( '<tr>' )
-							.append( $( '<td>' ).text( mw.message( 'bs-wikiexplorer-page-title' ).text() ) )
-							.append( $( '<td>' ).text( mw.message( 'bs-wikiexplorer-page-namespace' ).text() ) )
-							.append( $( '<td>' ).text( mw.message( 'bs-wikiexplorer-page-size' ).text() ) )
-						);
+					// Build header row with visible columns
+					const $headerRow = $( '<tr>' );
 
+					visibleColumns.forEach( ( columnKey ) => {
+						const headerText = this.grid.columns[ columnKey ].headerText;
+						$headerRow.append( $( '<td>' ).text( headerText ) );
+					} );
+					const $thead = $( '<thead>' ).append( $headerRow );
+
+					// Build data rows with visible columns
 					const $tbody = $( '<tbody>' );
 					for ( const id in response ) {
 						if ( !response.hasOwnProperty( id ) ) {
 							continue;
 						}
 						const record = response[ id ];
-						$tbody.append( $( '<tr>' )
-							.append( $( '<td>' ).text( record.page_title ) )
-							.append( $( '<td>' ).text( record.page_namespace ) )
-							.append( $( '<td>' ).text( record.page_len ) )
-						);
+						const $row = $( '<tr>' );
+						visibleColumns.forEach( ( columnKey ) => {
+							$row.append( $( '<td>' ).text( record[ columnKey ] ) );
+						} );
+						$tbody.append( $row );
 					}
 
 					$table.append( $thead, $tbody );

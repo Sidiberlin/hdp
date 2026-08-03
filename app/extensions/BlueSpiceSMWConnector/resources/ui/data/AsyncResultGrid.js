@@ -6,12 +6,15 @@ bs.smwconnector.ui.data.AsyncResultGrid = function ( cfg ) {
 		action: data.storeAction,
 		pageSize: 25,
 		props: data.props || {},
-		query: data.query || ''
+		query: data.query || '',
+		sorter: this.prepareSorter( data.sort ),
 	} );
 	cfg.store.connect( this, {
-		buildMeta: 'onBuildMeta'
+		buildMeta: 'onBuildMeta',
 	} );
 	this.initialized = false;
+	this.hiddenColumns = data.hiddenColumns || [];
+	this.mainlabel = data.mainlabel || '';
 	bs.smwconnector.ui.data.AsyncResultGrid.parent.call( this, cfg );
 };
 
@@ -27,11 +30,13 @@ bs.smwconnector.ui.data.AsyncResultGrid.prototype.initialize = function ( meta )
 	this.initialized = true;
 	this.buildColumns( this.prepareColumns( meta ) );
 	this.addHeader();
+	this.updateToolbar();
 };
 
 bs.smwconnector.ui.data.AsyncResultGrid.prototype.prepareColumns = function ( meta ) {
 	const columns = {
 		page: {
+			headerText: this.mainlabel || '',
 			type: 'text',
 			valueParser: function ( value, row ) {
 				return new OO.ui.HtmlSnippet( row.page_link );
@@ -67,6 +72,46 @@ bs.smwconnector.ui.data.AsyncResultGrid.prototype.prepareColumns = function ( me
 			column.sortable = true;
 		}
 		columns[ key.replaceAll( ' ', '_' ) ] = column;
+
+		if ( this.hiddenColumns.includes( metaItem.property_name ) ) {
+			column.hidden = true;
+		}
 	}
+
 	return columns;
+};
+
+bs.smwconnector.ui.data.AsyncResultGrid.prototype.prepareSorter = function ( sortCfg ) {
+	if ( !sortCfg || !Array.isArray( sortCfg ) ) {
+		return {};
+	}
+	let sorter = {};
+
+	sortCfg.forEach( ( sort ) => {
+		sorter[sort.property] = { 'direction': sort.direction };
+	} );
+
+	return sorter;
+};
+
+/**
+ * Update settings button in toolbar after async retrieval of columns
+ */
+bs.smwconnector.ui.data.AsyncResultGrid.prototype.updateToolbar = function () {
+	const settingsWidget = this.getGridSettingsWidget();
+	if ( !( settingsWidget instanceof OO.ui.PopupButtonWidget ) ) {
+		return;
+	}
+
+	const items = this.toolbar.staticControls.getItems();
+	const toUpdate = items.filter(
+		item => item instanceof OO.ui.PopupButtonWidget
+	);
+
+	if ( toUpdate.length ) {
+		// keep the index of the first removed popup so we can reinsert there
+		const insertIndex = Math.max( 0, items.indexOf( toUpdate[0] ) );
+		this.toolbar.staticControls.removeItems( toUpdate );
+		this.toolbar.staticControls.addItems( [ settingsWidget ], insertIndex );
+	}
 };

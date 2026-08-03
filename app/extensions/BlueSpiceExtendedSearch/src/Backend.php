@@ -7,6 +7,7 @@ use BS\ExtendedSearch\Plugin\IFormattingModifier;
 use BS\ExtendedSearch\Plugin\IIndexProvider;
 use BS\ExtendedSearch\Plugin\ILookupModifier;
 use BS\ExtendedSearch\Plugin\IMappingModifier;
+use BS\ExtendedSearch\Plugin\IRankingModifier;
 use BS\ExtendedSearch\Plugin\ISearchPlugin;
 use Exception;
 use MediaWiki\Config\Config;
@@ -138,11 +139,6 @@ class Backend {
 			$clientBuilder = new ClientBuilder();
 			$clientBuilder->setHosts( [ "$backendTransport://$backendHost:$backendPort" ] );
 			$clientBuilder->setRetries( 2 );
-			// HDP runs OpenSearch with its default self-signed demo certs
-			// (see docker-compose.yml's opensearch healthcheck, which itself
-			// uses `curl -sk`). Without this, every connection fails with
-			// OpenSearch\Common\Exceptions\NoNodesAvailableException.
-			$clientBuilder->setSSLVerification( false );
 			if ( $backendUsername && $backendPassword ) {
 				$clientBuilder->setBasicAuthentication( $backendUsername, $backendPassword );
 			}
@@ -359,10 +355,15 @@ class Backend {
 			// when results are ranked based on original data, it can be modified
 			$source->getFormatter()->formatAutocompleteResults( $results, $searchData );
 		}
-		$plugins = $this->pluginManager->getPluginsImplementing( IFormattingModifier::class );
-		/** @var IFormattingModifier $plugin */
-		foreach ( $plugins as $plugin ) {
-			$plugin->formatAutocompleteResults( $results, $searchData );
+
+		$rankers = $this->pluginManager->getPluginsImplementing( IRankingModifier::class );
+		foreach ( $rankers as $ranker ) {
+			$ranker->rankAutocompleteResults( $results, $searchData );
+		}
+		$formatters = $this->pluginManager->getPluginsImplementing( IFormattingModifier::class );
+		/** @var IFormattingModifier $formatter */
+		foreach ( $formatters as $formatter ) {
+			$formatter->formatAutocompleteResults( $results, $searchData );
 		}
 
 		usort( $results, static function ( $e1, $e2 ) {

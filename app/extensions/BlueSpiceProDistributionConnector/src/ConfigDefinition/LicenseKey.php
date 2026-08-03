@@ -6,7 +6,6 @@ use BlueSpice\ConfigDefinition;
 use BlueSpice\ProDistributionConnector\EditionProvider;
 use MediaWiki\Config\Config;
 use MediaWiki\Context\IContextSource;
-use MediaWiki\MediaWikiServices;
 
 class LicenseKey extends ConfigDefinition\StringSetting {
 	/** @var EditionProvider */
@@ -16,7 +15,7 @@ class LicenseKey extends ConfigDefinition\StringSetting {
 	 * @inheritDoc
 	 */
 	public static function getInstance( $context, $config, $name ) {
-		$editionProvider = MediaWikiServices::getInstance()->getService( 'BlueSpiceEditionProvider' );
+		$editionProvider = new EditionProvider();
 		return new static( $context, $config, $name, $editionProvider );
 	}
 

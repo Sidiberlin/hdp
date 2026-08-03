@@ -5,7 +5,6 @@ namespace BlueSpice\Expiry\ConfigDefinition;
 class EnablePDFWatermark extends \BlueSpice\ConfigDefinition\BooleanSetting {
 
 	/**
-	 *
 	 * @return string[]
 	 */
 	public function getPaths() {
@@ -17,7 +16,6 @@ class EnablePDFWatermark extends \BlueSpice\ConfigDefinition\BooleanSetting {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getLabelMessageKey() {
@@ -25,7 +23,6 @@ class EnablePDFWatermark extends \BlueSpice\ConfigDefinition\BooleanSetting {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getHelpMessageKey() {

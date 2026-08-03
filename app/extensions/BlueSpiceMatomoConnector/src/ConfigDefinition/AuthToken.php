@@ -21,11 +21,6 @@ class AuthToken extends SecretSetting {
 	}
 
 	/** @inheritDoc */
-	public function isRLConfigVar() {
-		return true;
-	}
-
-	/** @inheritDoc */
 	public function getHelpMessageKey() {
 		return 'bs-matomoconnector-pref-authtoken-help';
 	}

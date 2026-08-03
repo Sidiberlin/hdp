@@ -221,10 +221,14 @@ class SidebarBookPanel extends ComponentBase implements ITabPanel {
 	 * @return string
 	 */
 	private function getBookTitle( $activeBook ): string {
-		if ( $activeBook instanceof Title ) {
-			return $activeBook->getText();
+		if ( !$activeBook instanceof Title ) {
+			return '';
 		}
-		return '';
+		$bookInfo = $this->bookLookup->getBookInfo( $activeBook );
+		if ( !$bookInfo ) {
+			return '';
+		}
+		return $bookInfo->getName();
 	}
 
 	/**

@@ -70,12 +70,12 @@ class CreateAccessToken extends \MediaWiki\Maintenance\LoggedUpdateMaintenance {
 		$data = [
 			'action' => 'propose',
 			'name'         => 'ContentTransfer',
-			'version'      => '1.1',
+			'version'      => '1.2',
 			'description'  => 'ContentTransfer client',
 			'oauthVersion' => 2,
 			'callbackUrl' => 'https://dummy.com',
 			'grants' => json_encode( [
-				'editpage', 'createeditmovepage', 'uploadfile', 'uploadeditmovefile', 'highvolume'
+				'editpage', 'createeditmovepage', 'uploadfile', 'uploadeditmovefile', 'highvolume', 'editinterface'
 			] ),
 			'granttype' => 'normal',
 			'ownerOnly' => true,
@@ -177,7 +177,7 @@ class CreateAccessToken extends \MediaWiki\Maintenance\LoggedUpdateMaintenance {
 	 * @return string
 	 */
 	protected function getUpdateKey() {
-		return 'wikifarm-create-access-token-2';
+		return 'wikifarm-create-access-token-3';
 	}
 }
 

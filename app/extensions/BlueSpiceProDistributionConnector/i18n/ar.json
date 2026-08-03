@@ -61,5 +61,17 @@
 	"bs-pro-distribution-config-link-titles-target-ns-help": "الارتباط فقط بالصفحات الموجودة في هذه المساحات",
 	"bs-pro-distribution-config-link-titles-same-ns": "قم فقط بالربط إلى الصفحات الموجودة في نفس مساحة اسم الصفحة المصدر",
 	"bs-pro-distribution-droplet-ec-embed-url-label": "مسار",
-	"bs-pro-distribution-droplets-ec-embed-show-line-numbers-label": "إظهار أرقام الأسطر"
+	"bs-pro-distribution-droplets-ec-embed-show-line-numbers-label": "إظهار أرقام الأسطر",
+	"bs-pro-distribution-droplet-embed-name": "محتوى خارجي",
+	"bs-pro-distribution-droplet-embed-desc": "تضمين محتوى خارجي من مستودعات Git، على سبيل المثال ملفات Markdown",
+	"bs-pro-distribution-droplet-bitbucket-name": "ملف BitBucket",
+	"bs-pro-distribution-droplet-bitbucket-desc": "تضمين الملف من مستودع BitBucket",
+	"bs-pro-distribution-droplets-ec-embed-lang-label": "لغة المحتوى المضمن",
+	"bs-pro-distribution-droplets-ec-embed-lang-help": "إحدى اللغات المدعومة [https://prismjs.com/#supported-languages]. هذا ضروري فقط في حال عدم اكتشاف اللغة من امتداد الملف.",
+	"bs-pro-distribution-droplets-ec-embed-show-lines-label": "خطوط للعرض",
+	"bs-pro-distribution-droplets-ec-embed-show-lines-help": "اعرض أسطرًا محددة فقط. يمكن أن يكون رقم سطر واحد أو نطاقًا مفصولًا بشرطة (-). يمكن فصل أرقام الأسطر أو النطاقات المتعددة بفواصل.",
+	"bs-pro-distribution-ec-config-domain-whitelist": "قائمة النطاقات المسموح بها",
+	"bs-pro-distribution-ec-config-file-whitelist": "قائمة الملفات المسموح بها",
+	"bs-pro-distribution-ec-config-file-whitelist-help": "قائمة بامتدادات الملفات المسموح بها. اتركها فارغة لعدم وجود قيود.",
+	"bs-pro-distribution-ec-config-domain-whitelist-help": "قائمة النطاقات المسموح بتضمين المحتوى منها. لا تُدرج البروتوكول، فقط النطاق. مثال: `github.com`. اترك هذا الحقل فارغًا لعدم وجود قيود."
 }

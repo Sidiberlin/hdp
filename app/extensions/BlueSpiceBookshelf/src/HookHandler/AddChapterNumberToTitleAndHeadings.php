@@ -73,6 +73,7 @@ class AddChapterNumberToTitleAndHeadings {
 		}
 		$number = $chapterInfo->getNumber();
 
+		$out->addJsConfigVars( 'bsActiveBook', $activeBook->getPrefixedDBkey() );
 		$out->addJsConfigVars( 'bsActiveBookId', $bookID );
 		$out->addJsConfigVars( 'bsActiveChapterNumber', $number );
 	}
@@ -117,6 +118,8 @@ class AddChapterNumberToTitleAndHeadings {
 			return true;
 		}
 
+		// We skip execution of our code if content is parsoid content. This is the case in visual edit mode.
+		// See ERM45110
 		if ( $output->getExtensionData( PageBundleParserOutputConverter::PARSOID_PAGE_BUNDLE_KEY ) !== null ) {
 			return true;
 		}
@@ -189,7 +192,7 @@ class AddChapterNumberToTitleAndHeadings {
 			$text = $this->hideHeadingNumberInContent( $text );
 		}
 
-		$output->setText( $text );
+		$output->setRawText( $text );
 	}
 
 	/**

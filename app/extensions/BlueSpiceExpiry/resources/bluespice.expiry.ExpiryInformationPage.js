@@ -25,12 +25,15 @@
 			let data;
 			let pageData;
 			let message;
+			let type = 'notice';
 
 			try {
 				data = await bs.api.store.getData( 'expiry' );
-				pageData = data.results.find( ( item ) => item.page_title === this.pageName );
+				const title = mw.Title.newFromText( this.pageName );
+				pageData = data.results.find( ( item ) => item.page_title === title.getPrefixedText() );
 				if ( pageData ) {
 					message = this.getExpiryMessage( pageData.expiry_date );
+					type = 'warning';
 				} else {
 					message = mw.message( 'bs-expiry-info-dialog-expiry-not-set' ).text();
 				}
@@ -38,10 +41,8 @@
 				message = mw.message( 'bs-expiry-info-dialog-expiry-not-set' ).text();
 			}
 
-			const $liveRegion = $( '#mws-wcag-generic-status-container' );
-			$liveRegion.text( message );
-
-			this.expiryLabel = new OO.ui.LabelWidget( {
+			this.expiryLabel = new OO.ui.MessageWidget( {
+				type: type,
 				label: message
 			} );
 			const expiryDataLayout = new OO.ui.FieldLayout( this.expiryLabel );

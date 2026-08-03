@@ -1,5 +1,5 @@
 diff --git a/resources/mmv.bootstrap/mmv.bootstrap.js b/resources/mmv.bootstrap/mmv.bootstrap.js
-index 3abb67e1..1646af24 100644
+index f5d19919..7d7edc8e 100644
 --- a/resources/mmv.bootstrap/mmv.bootstrap.js
 +++ b/resources/mmv.bootstrap/mmv.bootstrap.js
 @@ -276,7 +276,7 @@ class MultimediaViewerBootstrap {
@@ -39,7 +39,7 @@ index 3abb67e1..1646af24 100644
 +				namespaceNumber = part;
 +			} else if ( part.length === 2 && parts[ index - 1 ].length === 1 ) {
 +				// /e/ea/filename
-+				fileName = decodeURIComponent( parts[ index + 1 ] );
++				fileName = parts[ index + 1 ];
 +			}
 +		} );
 +

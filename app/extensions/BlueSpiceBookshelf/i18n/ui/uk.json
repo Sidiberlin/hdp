@@ -4,6 +4,7 @@
 			"DDPAT",
 			"Ice bulldog",
 			"Piramidion",
+			"Repakr",
 			"Samflint",
 			"Ата"
 		]
@@ -77,5 +78,7 @@
 	"bs-bookshelfui-panel-navigation-text": "Для навігації по книгах",
 	"bs-bookshelfui-panel-navigation-title": "Повернутися до навігації по книзі",
 	"bs-bookshelfui-panel-navigation-aria-label": "Для навігації по книгах",
-	"bs-bookshelfui-panel-navigation-aria-desc": "Книжкова навігація як деревоподібна структура"
+	"bs-bookshelfui-panel-navigation-aria-desc": "Книжкова навігація як деревоподібна структура",
+	"bs-bookshelfui-bookmetatag-bookshelf": "Книжкова полиця",
+	"bs-bookshelfui-bookmetatag-bookshelfimage": "Зображення книжкової полиці"
 }

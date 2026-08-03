@@ -16,13 +16,11 @@ class Expired extends PageInfo {
 	public $expId = '';
 
 	/**
-	 *
 	 * @var bool
 	 */
 	private $showMenu = false;
 
 	/**
-	 *
 	 * @return Message
 	 */
 	public function getLabelMessage() {
@@ -30,7 +28,6 @@ class Expired extends PageInfo {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getName() {
@@ -38,7 +35,6 @@ class Expired extends PageInfo {
 	}
 
 	/**
-	 *
 	 * @return Message
 	 */
 	public function getTooltipMessage() {
@@ -46,7 +42,6 @@ class Expired extends PageInfo {
 	}
 
 	/**
-	 *
 	 * @param \ContextSource $context
 	 * @return bool
 	 */
@@ -86,7 +81,6 @@ class Expired extends PageInfo {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getItemClass() {
@@ -94,7 +88,6 @@ class Expired extends PageInfo {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getUrl() {
@@ -102,7 +95,6 @@ class Expired extends PageInfo {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getHtmlClass() {
@@ -110,7 +102,6 @@ class Expired extends PageInfo {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getHtmlId() {
@@ -118,7 +109,6 @@ class Expired extends PageInfo {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getType() {
@@ -126,7 +116,6 @@ class Expired extends PageInfo {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getMenu() {
@@ -137,7 +126,6 @@ class Expired extends PageInfo {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function makeMenu() {

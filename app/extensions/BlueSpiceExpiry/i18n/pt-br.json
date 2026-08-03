@@ -72,5 +72,17 @@
 	"log-description-bs-expiry": "Registro de ações relacionadas à expiração da página",
 	"logentry-bs-expiry-expired": "A página $3 expirou",
 	"logentry-bs-expiry-change-date": "$1 {{GENDER:$2|mudado}} data de validade na página $3",
-	"logentry-bs-expiry-delete": "$1 {{GENDER:$2|eliminado}} expiração da página $3"
+	"logentry-bs-expiry-delete": "$1 {{GENDER:$2|eliminado}} expiração da página $3",
+	"bs-expiry-event-today-desc": "A página expira hoje",
+	"bs-expiry-event-one-week-desc": "A página expira em uma semana",
+	"bs-expiry-header-action-edit": "Editar",
+	"bs-expiry-header-action-delete": "Excluir",
+	"bs-expiry-pref-enable-page-watermark": "Mostrar a marca de água",
+	"bs-expiry-title-edit": "Editar expiração",
+	"bs-expiry-title-add": "Adicionar expiração",
+	"bs-expiry-pref-enable-page-watermark-help": "Adiciona uma marca d'água a uma página expirada",
+	"bs-expiry-pref-enable-pdf-watermark": "Mostrar marca d'água no PDF",
+	"bs-expiry-pref-enable-pdf-watermark-help": "Adiciona uma marca d'água às páginas expiradas na saída em PDF",
+	"bs-expiry-event-expiry-today-desc": "A página está marcada como expirada hoje",
+	"bs-expiry-event-expiry-one-week-desc": "A página será considerada expirada em uma semana"
 }

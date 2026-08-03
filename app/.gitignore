@@ -125,3 +125,4 @@ dynamic_file.php
 installcheck.php
 /_bluespice/tools/
 .env
+/.stylelintcache

@@ -1,7 +1,7 @@
 <?php
 
 use MediaWiki\MediaWikiServices;
-use MediaWiki\Revision\RevisionStoreRecord;
+use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\EditResult;
 use MediaWiki\User\User;
 
@@ -15,12 +15,12 @@ class ReadConfirmationHooks {
 	 * @param User $user
 	 * @param string $summary
 	 * @param int $flags
-	 * @param RevisionStoreRecord $revision
+	 * @param RevisionRecord $revision
 	 * @param EditResult $editResult
 	 * @return bool
 	 */
 	public static function onPageSaveComplete( WikiPage $wikiPage, User $user, string $summary,
-		int $flags, RevisionStoreRecord $revision, EditResult $editResult ) {
+		int $flags, RevisionRecord $revision, EditResult $editResult ) {
 		if ( $flags & EDIT_MINOR ) {
 			return true;
 		}

@@ -12,7 +12,7 @@ class AddEditBook implements SkinTemplateNavigation__UniversalHook {
 	 * @param SkinTemplate $sktemplate
 	 * @return bool
 	 */
-	protected function skipProcessing( SkinTemplate $sktemplate ) {
+	protected function shouldSkipProcessing( SkinTemplate $sktemplate ) {
 		$title = $sktemplate->getTitle();
 		if ( !$title ) {
 			return true;
@@ -35,24 +35,30 @@ class AddEditBook implements SkinTemplateNavigation__UniversalHook {
 	 * @inheritDoc
 	 */
 	public function onSkinTemplateNavigation__Universal( $sktemplate, &$links ): void {
-		if ( $this->skipProcessing( $sktemplate ) ) {
+		if ( $this->shouldSkipProcessing( $sktemplate ) ) {
 			return;
+		}
+
+		$editQuery = [ 'action' => 'edit' ];
+		$editSourceQuery = [ 'action' => 'editbooksource' ];
+		$oldid = $sktemplate->getRequest()->getVal( 'oldid' );
+		if ( $oldid !== null ) {
+			$editQuery['oldid'] = $oldid;
+			$editSourceQuery['oldid'] = $oldid;
 		}
 
 		// In case VisualEditor overrides with "Edit source"
 		$links['views']['edit']['text'] = $sktemplate->msg( 'edit' )->text();
 		$links['views']['edit']['title'] = $sktemplate->msg( 'edit' )->text();
-		$links['views']['edit']['href'] = $sktemplate->getTitle()->getLocalURL( [
-			'action' => 'edit',
-		] );
+		$links['views']['edit']['href'] = $sktemplate->getTitle()->getLocalURL( $editQuery );
 
 		// Add real "Edit source"
-		$links['views']['menueditsource'] = $links['views']['edit'];
-		$links['views']['menueditsource']['id'] = 'ca-editbooksource';
-		$links['views']['menueditsource']['text']
+		$links['views']['editbooksource'] = $links['views']['edit'];
+		$links['views']['editbooksource']['id'] = 'ca-editbooksource';
+		$links['views']['editbooksource']['text']
 			= $sktemplate->msg( 'bs-bookshelf-action-editbook' )->text();
-		$links['views']['menueditsource']['href'] = $sktemplate->getTitle()->getLinkURL( [
-			'action' => 'editbooksource'
-		] );
+		$links['views']['editbooksource']['href'] = $sktemplate->getTitle()->getLinkURL(
+			$editSourceQuery
+		);
 	}
 }

@@ -12,6 +12,12 @@
 
 	OO.inheritClass( bs.bookshelf.ui.dialog.AddToBook, OOJSPlus.ui.dialog.FormDialog );
 
+	bs.bookshelf.ui.dialog.AddToBook.prototype.makeApi = function () {
+		mw.loader.using( 'bluespice.bookshelf.api' ).done( () => {
+			this.bookApi = new ext.bookshelf.api.Api();
+		} );
+	};
+
 	bs.bookshelf.ui.dialog.AddToBook.prototype.getActions = function () {
 		return [ 'cancel', 'add' ];
 	};
@@ -20,9 +26,12 @@
 		return mw.message( 'bs-bookshelf-add-to-book-label' ).text();
 	};
 
-	bs.bookshelf.ui.dialog.AddToBook.prototype.initialize = function () {
-		bs.bookshelf.ui.dialog.AddToBook.parent.prototype.initialize.call( this );
-		this.actions.setAbilities( { add: false } );
+	bs.bookshelf.ui.dialog.AddToBook.prototype.getSetupProcess = function ( data ) {
+		this.makeApi();
+
+		return bs.bookshelf.ui.dialog.AddToBook.parent.prototype.getSetupProcess.call( this, data ).next( () => {
+			this.actions.setAbilities( { add: false } );
+		} );
 	};
 
 	bs.bookshelf.ui.dialog.AddToBook.prototype.getFormItems = function () {
@@ -39,53 +48,96 @@
 		} );
 
 		this.bookPicker.connect( this, {
-			change: function () {
-				const value = this.bookPicker.getValue();
-				if ( value.length > 0 ) {
-					this.bookPicker.setIndicator( 'clear' );
-					this.bookPicker.$indicator.attr( {
-						tabindex: -1,
-						role: 'button'
-					} );
-					this.bookPicker.$indicator.on( 'click', () => {
-						this.bookPicker.setValue( '' );
-						return false;
-					} );
-					this.chapterPicker.setDisabled( false );
-					this.actions.setAbilities( { add: true } );
-					const data = this.bookPicker.getSelectedItemData();
-					if ( typeof data === 'object' && data !== null ) {
-						this.chapterPicker.setChapters( data.book_id );
-					} else {
-						this.chapterPicker.setFirstChapter();
-					}
-				} else {
-					this.bookPicker.setIndicator( null );
-					this.bookPicker.closeLookupMenu();
-					this.chapterPicker.clear();
-				}
-			}.bind( this )
+			change: 'onBookChange'
 		} );
 
-		this.chapterPicker.connect( this, {
-			updateUI: function () {
-				this.updateSize();
-				setTimeout( () => {
-					this.bookPicker.closeLookupMenu();
-				}, 100 );
-			}
+		this.bookPickerLayout = new OO.ui.FieldLayout( this.bookPicker, {
+			label: mw.message( 'bs-bookshelf-add-to-book-label-book' ).text(),
+			align: 'top'
 		} );
 
 		return [
-			new OO.ui.FieldLayout( this.bookPicker, {
-				label: mw.message( 'bs-bookshelf-add-to-book-label-book' ).text(),
-				align: 'top'
-			} ),
+			this.bookPickerLayout,
 			new OO.ui.FieldLayout( this.chapterPicker, {
 				label: mw.message( 'bs-bookshelf-add-to-book-label-chapter' ).text(),
 				align: 'top'
 			} )
 		];
+	};
+
+	bs.bookshelf.ui.dialog.AddToBook.prototype.onBookChange = function ( value ) {
+		this.selectedBook = null;
+		this.bookPickerLayout.setWarnings( [] );
+		if ( value.length > 0 ) {
+			this.bookPicker.setIndicator( 'clear' );
+			this.bookPicker.$indicator.attr( {
+				tabindex: -1,
+				role: 'button'
+			} );
+			this.bookPicker.$indicator.on( 'click', () => {
+				this.bookPicker.setValue( '' );
+				return false;
+			} );
+			this.trySetBook( value, this.bookPicker.getSelectedItemData() ).then( () => {
+				if ( this.selectedBook && !this.selectedBook.id ) {
+					this.bookPickerLayout.setWarnings( [ mw.message( 'bs-bookshelf-add-to-book-warning-new-book' ).text() ] );
+				}
+				if ( this.selectedBook && this.selectedBook.id ) {
+					this.chapterPicker.setChapters( this.selectedBook.id );
+					this.chapterPicker.setDisabled( false );
+				} else {
+					this.chapterPicker.setFirstChapter();
+				}
+
+				this.updateSize();
+				this.updateSize();
+				setTimeout( () => {
+					if ( this.bookPicker.lookupMenu && this.bookPicker.lookupMenu.isVisible() ) {
+						this.bookPicker.lookupMenu.position();
+						this.bookPicker.lookupMenu.clip();
+					}
+				}, 1 );
+
+				this.actions.setAbilities( { add: !!this.selectedBook } );
+			} );
+		} else {
+			this.bookPicker.setIndicator( null );
+			this.bookPicker.closeLookupMenu();
+			this.chapterPicker.clear();
+			this.actions.setAbilities( { add: false } );
+		}
+	};
+
+	bs.bookshelf.ui.dialog.AddToBook.prototype.trySetBook = function ( value, data ) {
+		const dfd = $.Deferred();
+
+		if ( typeof data === 'object' && data !== null ) {
+			this.selectedBook = {
+				id: data.book_id,
+				name: data.book_prefixedtext,
+				meta: data.book_meta
+			};
+			dfd.resolve();
+		} else {
+			const bookTitle = mw.Title.makeTitle( mw.config.get( 'wgNamespaceIds' ).book, value );
+			if ( bookTitle ) {
+				this.bookApi.getBookInfo( bookTitle.getPrefixedText() ).done( ( info ) => {
+					info.name = bookTitle.getPrefixedText();
+					this.selectedBook = info;
+					dfd.resolve();
+				} ).fail( () => {
+					this.selectedBook = {
+						id: null,
+						name: bookTitle.getPrefixedText(),
+						meta: []
+					};
+					dfd.resolve();
+				} );
+			} else {
+				dfd.resolve();
+			}
+		}
+		return dfd.promise();
 	};
 
 	/**
@@ -95,38 +147,29 @@
 	bs.bookshelf.ui.dialog.AddToBook.prototype.onAction = function ( action ) {
 		if ( action === 'add' ) {
 			const dfd = $.Deferred();
-			const selectedBook = this.bookPicker.getSelectedItemData();
-			let bookName = '';
-			if ( selectedBook === null ) {
-				bookName = 'Book:' + this.bookPicker.getValue();
-			} else {
-				bookName = selectedBook.book_prefixedtext;
+			if ( !this.selectedBook ) {
+				return dfd.reject().promise();
 			}
 
-			const chapters = this.chapterPicker.getChapters();
+			const [ prev, toInsert ] = this.chapterPicker.getChapterToInsert();
 			const data = {
-				nodes: chapters
+				nodes: [ toInsert ],
+				after: prev || null
 			};
 
-			mw.loader.using( 'bluespice.bookshelf.api' ).done( () => {
-				const bookApi = new ext.bookshelf.api.Api();
-				bookApi.getBookMetadata( bookName ).done( ( meta ) => {
-					data.metadata = meta;
-					mw.loader.using( 'ext.menuEditor.api' ).done( () => {
-						const api = new ext.menueditor.api.Api();
-						const bookTitle = mw.util.rawurlencode( mw.util.rawurlencode( bookName ) );
-
-						api.post( bookTitle, data ).done( () => {
-							mw.notify(
-								mw.message( 'bs-bookshelf-add-to-book-added', this.bookPicker.getValue() ).text(),
-								{ title: mw.message( 'bs-bookshelf-add-to-book-label' ).text() }
-							);
-							this.close( { action: action, book: bookName } );
-							dfd.resolve();
-						} ).fail( ( error ) => {
-							dfd.reject( new OO.ui.Error( error ) );
-						} );
-					} );
+			data.metadata = this.selectedBook.meta;
+			mw.loader.using( 'ext.menuEditor.api' ).done( () => {
+				const api = new ext.menueditor.api.Api();
+				const bookTitle = mw.util.rawurlencode( mw.util.rawurlencode( this.selectedBook.name ) );
+				api.post( `append/${ bookTitle }`, data ).done( () => {
+					mw.notify(
+						mw.message( 'bs-bookshelf-add-to-book-added', this.bookPicker.getValue() ).text(),
+						{ title: mw.message( 'bs-bookshelf-add-to-book-label' ).text() }
+					);
+					this.close( { action: action, book: this.selectedBook.name } );
+					dfd.resolve();
+				} ).fail( ( error ) => {
+					dfd.reject( new OO.ui.Error( error ) );
 				} );
 			} );
 

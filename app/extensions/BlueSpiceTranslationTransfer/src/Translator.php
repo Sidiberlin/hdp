@@ -3,10 +3,12 @@
 namespace BlueSpice\TranslationTransfer;
 
 use BlueSpice\TranslationTransfer\Dictionary\TitleDictionary;
+use BlueSpice\TranslationTransfer\Pipeline\WikitextTranslator;
 use BlueSpice\TranslationTransfer\Tests\TranslatorTest;
 use BlueSpice\TranslationTransfer\Util\TranslationsDao;
 use Exception;
 use LogicException;
+use MediaWiki\Config\Config;
 use MediaWiki\Content\TextContent;
 use MediaWiki\Message\Message;
 use MediaWiki\Page\WikiPageFactory;
@@ -53,21 +55,37 @@ class Translator implements LoggerAwareInterface {
 	private $titleDictionary;
 
 	/**
+	 * @var WikitextTranslator|null
+	 */
+	private $wikitextTranslator;
+
+	/**
+	 * @var Config|null
+	 */
+	private $conversionConfig;
+
+	/**
 	 * @param DeepL $deepL
 	 * @param TranslationWikitextConverter $wtConverter
 	 * @param WikiPageFactory $wikiPageFactory
 	 * @param TranslationsDao $translationsDao
 	 * @param TitleDictionary $titleDictionary
+	 * @param WikitextTranslator|null $wikitextTranslator
+	 * @param Config|null $conversionConfig
 	 */
 	public function __construct(
 		DeepL $deepL, TranslationWikitextConverter $wtConverter,
-		WikiPageFactory $wikiPageFactory, TranslationsDao $translationsDao, TitleDictionary $titleDictionary
+		WikiPageFactory $wikiPageFactory, TranslationsDao $translationsDao, TitleDictionary $titleDictionary,
+		?WikitextTranslator $wikitextTranslator = null,
+		?Config $conversionConfig = null
 	) {
 		$this->deepL = $deepL;
 		$this->wtConverter = $wtConverter;
 		$this->wikiPageFactory = $wikiPageFactory;
 		$this->translationsDao = $translationsDao;
 		$this->titleDictionary = $titleDictionary;
+		$this->wikitextTranslator = $wikitextTranslator;
+		$this->conversionConfig = $conversionConfig;
 
 		$this->logger = new NullLogger();
 	}
@@ -107,6 +125,118 @@ class Translator implements LoggerAwareInterface {
 	public function translateTitle( Title $title, string $targetLang, bool $addToDictionary = true ): array {
 		$this->logger->debug( "Translator: starting translation of the title - '{$title->getPrefixedText()}'" );
 
+		if ( $this->wikitextTranslator !== null ) {
+			return $this->translateTitleWithPipeline( $title, $targetLang, $addToDictionary );
+		}
+
+		return $this->translateTitleLegacy( $title, $targetLang, $addToDictionary );
+	}
+
+	/**
+	 * Translate title using the new placeholder-based pipeline.
+	 * DeepL receives only small inline-HTML fragments, no structural wikitext.
+	 *
+	 * @param Title $title
+	 * @param string $targetLang
+	 * @param bool $addToDictionary
+	 * @return array
+	 * @throws Exception
+	 */
+	private function translateTitleWithPipeline( Title $title, string $targetLang, bool $addToDictionary ): array {
+		$wikiPage = $this->wikiPageFactory->newFromTitle( $title );
+		$content = $wikiPage->getContent();
+		if ( !$content instanceof TextContent ) {
+			throw new LogicException( 'Cannot translate non-text content' );
+		}
+		$wikitext = $content->getText();
+
+		// Translate page content via the new pipeline
+		$sourceLang = $this->deepL->extractSourceLanguage();
+		$translatedWikitext = $this->wikitextTranslator->translate( $wikitext, $sourceLang, $targetLang );
+
+		// Translate the page title itself via DeepL (separate single-text call)
+		$status = $this->deepL->translateText( $title->getText(), $sourceLang, $targetLang );
+		if ( !$status->isOk() ) {
+			throw new Exception( 'DeepL title translation failed. Error: ' . $status->getWikiText() );
+		}
+
+		$value = $status->getValue();
+		if ( empty( $value ) ) {
+			throw new Exception( 'Failed to translate title' );
+		}
+
+		$deeplTitleTranslation = $value;
+
+		[ $translatedTitlePrefixedText, $dictionaryUsed ] = $this->wtConverter->getTitleText(
+			$title, $deeplTitleTranslation, $targetLang, $addToDictionary
+		);
+
+		// When page title is NOT translated (keeps source-language URL) but addDisplayTitleToContent
+		// is enabled, prepend {{DISPLAYTITLE:translatedTitle}} so the page visually displays the
+		// translated title. Only adds it if the content doesn't already contain a DISPLAYTITLE.
+		$translatedWikitext = $this->maybeAddDisplayTitle(
+			$translatedWikitext, $deeplTitleTranslation
+		);
+
+		$this->checkIfTranslationExists( $title, $translatedTitlePrefixedText, $targetLang );
+
+		return [
+			'title' => $translatedTitlePrefixedText,
+			'wikitext' => $translatedWikitext,
+			'dictionaryUsed' => $dictionaryUsed
+		];
+	}
+
+	/**
+	 * Prepend {{DISPLAYTITLE:...}} to translated content when configured.
+	 *
+	 * Condition: `translatePageTitle` is false (page URL stays in source language)
+	 * AND `addDisplayTitleToContent` is true. Only adds DISPLAYTITLE if the content
+	 * does not already contain one (the MagicWordTranslator may have translated an
+	 * existing one).
+	 *
+	 * Uses only the last subpage segment for the display title value (ERM 22078).
+	 *
+	 * @param string $wikitext Translated page content
+	 * @param string $translatedTitle DeepL-translated title text
+	 * @return string Wikitext with DISPLAYTITLE prepended if applicable
+	 */
+	private function maybeAddDisplayTitle( string $wikitext, string $translatedTitle ): string {
+		if ( $this->conversionConfig === null ) {
+			return $wikitext;
+		}
+
+		$translatePageTitle = $this->conversionConfig->get( 'translatePageTitle' );
+		$addDisplayTitle = $this->conversionConfig->get( 'addDisplayTitleToContent' );
+
+		if ( $translatePageTitle || !$addDisplayTitle ) {
+			return $wikitext;
+		}
+
+		// Check if content already contains a DISPLAYTITLE (in any language form — after
+		// MagicWordTranslator it will be in English form)
+		if ( preg_match( '/\{\{DISPLAYTITLE:/i', $wikitext ) ) {
+			return $wikitext;
+		}
+
+		// Use only the last subpage segment as display title (ERM 22078)
+		$title = rtrim( $translatedTitle, '/' );
+		$titleBits = explode( '/', $title );
+		$displayTitle = array_pop( $titleBits );
+
+		return "{{DISPLAYTITLE:$displayTitle}}\n\n" . $wikitext;
+	}
+
+	/**
+	 * Original translation logic using EscapeWikitext + ignore_tags.
+	 *
+	 * @param Title $title
+	 * @param string $targetLang
+	 * @param bool $addToDictionary
+	 * @return array
+	 * @throws Exception
+	 */
+	private function translateTitleLegacy( Title $title, string $targetLang, bool $addToDictionary ): array {
 		try {
 			$contentWikitext = $this->convertForTranslation( $title, $targetLang );
 		} catch ( Exception $e ) {
@@ -161,6 +291,11 @@ class Translator implements LoggerAwareInterface {
 	 * @throws Exception If wikitext translation failed during request to DeepL.
 	 */
 	public function translateWikitext( string $wikitext, string $targetLang ): string {
+		if ( $this->wikitextTranslator !== null ) {
+			$sourceLang = $this->deepL->extractSourceLanguage();
+			return $this->wikitextTranslator->translate( $wikitext, $sourceLang, $targetLang );
+		}
+
 		$wikitext = $this->wtConverter->preTranslationProcessing( $wikitext, $targetLang );
 
 		$status = $this->deepL->translateText(

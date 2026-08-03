@@ -6,6 +6,7 @@ use MediaWiki\Config\Config;
 use MediaWiki\Context\IContextSource;
 use MWStake\MediaWiki\Component\DataStore\IStore;
 use MWStake\MediaWiki\Component\DataStore\NoWriterException;
+use WANObjectCache;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class Store implements IStore {
@@ -25,15 +26,22 @@ class Store implements IStore {
 	 */
 	private $loadBalancer = null;
 
+	/** @var WANObjectCache */
+	private $wanCache;
+
 	/**
-	 * @param ContextSource $context
+	 * @param IContextSource $context
 	 * @param Config $config
 	 * @param LoadBalancer $loadBalancer
+	 * @param WANObjectCache $wanCache
 	 */
-	public function __construct( IContextSource $context, Config $config, LoadBalancer $loadBalancer ) {
+	public function __construct(
+		IContextSource $context, Config $config, LoadBalancer $loadBalancer, WANObjectCache $wanCache
+	) {
 		$this->context = $context;
 		$this->config = $config;
 		$this->loadBalancer = $loadBalancer;
+		$this->wanCache = $wanCache;
 	}
 
 	/**
@@ -44,7 +52,8 @@ class Store implements IStore {
 		return new Reader(
 			$this->context,
 			$this->config,
-			$this->loadBalancer
+			$this->loadBalancer,
+			$this->wanCache
 		);
 	}
 

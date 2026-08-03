@@ -185,5 +185,12 @@
 	"bs-bookshelf-search-center-context-books-label": "in le libro{{PLURAL:$1||s}} '''$2'''",
 	"bs-bookshelf-newbook-dlg-action-create-label": "Crear",
 	"bs-bookshelf-formelement-book-input": "Libro",
-	"bs-bookshelf-formelement-book-input-return-value-label": "Proprietate de retorno"
+	"bs-bookshelf-formelement-book-input-return-value-label": "Proprietate de retorno",
+	"bs-bookshelf-searchbook-ve-placeholder-label": "Texto de marcator de position pro le campo de recerca",
+	"bs-bookshelf-searchbook-ve-placeholder-help": "Le texto monstrate hic es monstrate como marcator de position in le campo de recerca",
+	"bs-bookshelf-searchbook-ve-placeholder-text": "Scribe pro cercar…",
+	"bs-bookshelf-droplet-search-book-label": "Selige le libro in le qual cercar",
+	"bs-bookshelf-entrypoint-action-book-aria-label": "Crear libro",
+	"bs-bookshelf-entrypoint-action-book-aria-title": "Crear libro",
+	"bs-bookshelf-add-to-book-warning-new-book": "Le libro seligite non existe ancora. Illo essera create quando tu adde paginas a illo."
 }

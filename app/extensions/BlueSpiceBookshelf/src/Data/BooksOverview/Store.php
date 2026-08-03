@@ -12,6 +12,7 @@ use MediaWiki\Title\TitleFactory;
 use MWStake\MediaWiki\Component\DataStore\IStore;
 use MWStake\MediaWiki\Component\DataStore\NoWriterException;
 use RepoGroup;
+use WANObjectCache;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class Store implements IStore {
@@ -43,8 +44,11 @@ class Store implements IStore {
 	/** @var BookMetaLookup */
 	private $bookMetaLookup = null;
 
+	/** @var WANObjectCache */
+	private $wanCache;
+
 	/**
-	 * @param ContextSource $context
+	 * @param IContextSource $context
 	 * @param Config $config
 	 * @param LoadBalancer $loadBalancer
 	 * @param ChapterLookup $bookChapterLookup
@@ -53,11 +57,12 @@ class Store implements IStore {
 	 * @param PermissionManager $permissionManager
 	 * @param HookContainer $hookContainer
 	 * @param RepoGroup $repoGroup
+	 * @param WANObjectCache $wanCache
 	 */
 	public function __construct(
 		IContextSource $context, Config $config, LoadBalancer $loadBalancer, ChapterLookup $bookChapterLookup,
 		BookMetaLookup $bookMetaLookup, TitleFactory $titleFactory, PermissionManager $permissionManager,
-		HookContainer $hookContainer, RepoGroup $repoGroup
+		HookContainer $hookContainer, RepoGroup $repoGroup, WANObjectCache $wanCache
 	) {
 		$this->context = $context;
 		$this->config = $config;
@@ -68,6 +73,7 @@ class Store implements IStore {
 		$this->permissionManager = $permissionManager;
 		$this->hookRunner = $hookContainer;
 		$this->repoGroup = $repoGroup;
+		$this->wanCache = $wanCache;
 	}
 
 	/**
@@ -84,7 +90,8 @@ class Store implements IStore {
 			$this->hookRunner,
 			$this->repoGroup,
 			$this->bookChapterLookup,
-			$this->bookMetaLookup
+			$this->bookMetaLookup,
+			$this->wanCache
 		);
 	}
 

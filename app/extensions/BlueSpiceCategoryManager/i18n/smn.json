@@ -6,5 +6,8 @@
 		]
 	},
 	"bs-categorymanager-text": "Luokah",
-	"bs-categorymanager-removecategoryconfirm-title": "Meddâlist luoka"
+	"bs-categorymanager-removecategoryconfirm-title": "Meddâlist luoka",
+	"bs-categorymanager-dialog-action-add-label": "Lasseet",
+	"bs-categorymanager-dialog-create-category-placeholder": "Lasseet uđđâ luoka",
+	"bs-categorymanager-dlg-add-title": "Lasseet luoka"
 }

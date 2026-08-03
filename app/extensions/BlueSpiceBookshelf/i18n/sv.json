@@ -5,6 +5,7 @@
 			"Josve05a",
 			"Mjälten",
 			"Sabelöga",
+			"Stefan2255",
 			"Technic2",
 			"WikiPhoenix",
 			"Yupik"
@@ -21,7 +22,7 @@
 	"bs-bookshelf-add-to-book-label-book": "Bok",
 	"bs-bookshelf-add-to-book-label-alias": "Alias",
 	"bs-bookshelf-add-to-book-label-mod-bstag": "Ändra «bookshelf»-taggen på sedan (ny bedömning)",
-	"bs-bookshelf-add-to-book-added": "Sedan har tillfogats boken «$1».",
+	"bs-bookshelf-add-to-book-added": "Sidan har lagts till i boken \"$1\".",
 	"bs-bookshelf-add-to-book-mod-bstag": "«bookshelf»-taggen på sedan har blivit ändrad. Sedan vill lastas på nytt.",
 	"bs-bookshelf-setting-path-feature": "Bok",
 	"bs-bookshelf-empty-selection": "Ingen fil markerad",
@@ -59,5 +60,9 @@
 	"bs-bookshelf-booknav-chapter-help": "Välj ett kapitel att visa",
 	"bs-bookshelf-booknav-searchbox-placeholder": "Sök",
 	"bs-bookshelf-chapter-plain-text-input-label": "Text",
-	"bs-bookshelf-chapter-wikilink-with-alias-text-input-label": "Text"
+	"bs-bookshelf-chapter-wikilink-with-alias-text-input-label": "Text",
+	"bs-bookshelf-searchbook-ve-placeholder-label": "Platshållartext för sökfält",
+	"bs-bookshelf-searchbook-ve-placeholder-help": "Texten som visas här visas som en platshållare i sökfältet",
+	"bs-bookshelf-searchbook-ve-placeholder-text": "Skriv för att söka...",
+	"bs-bookshelf-droplet-search-book-label": "Välj bok för sökning"
 }

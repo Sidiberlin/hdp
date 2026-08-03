@@ -85,5 +85,6 @@
 	"bs-expiry-pref-enable-pdf-watermark": "Monstrar marca de aqua in PDF",
 	"bs-expiry-pref-enable-pdf-watermark-help": "Adde un marca de aqua pro paginas expirate in sortita PDF",
 	"bs-expiry-event-expiry-today-desc": "Le pagina es marcate como expirate hodie",
-	"bs-expiry-event-expiry-one-week-desc": "Le pagina se considerara como expirate in un septimana"
+	"bs-expiry-event-expiry-one-week-desc": "Le pagina se considerara como expirate in un septimana",
+	"bs-expiry-notification-generic-links-intro": "Tu pote visitar directemente le pagina con le sequente ligamine"
 }

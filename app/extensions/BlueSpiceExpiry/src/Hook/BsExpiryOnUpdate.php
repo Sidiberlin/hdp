@@ -9,31 +9,26 @@ use MediaWiki\User\User;
 
 abstract class BsExpiryOnUpdate extends Hook {
 	/**
-	 *
 	 * @var \stdClass
 	 */
 	protected $taskData = null;
 
 	/**
-	 *
 	 * @var int
 	 */
 	protected $id = null;
 
 	/**
-	 *
 	 * @var User
 	 */
 	protected $user = null;
 
 	/**
-	 *
 	 * @var Title
 	 */
 	protected $title = null;
 
 	/**
-	 *
 	 * @param \stdClass $taskData
 	 * @param int $id
 	 * @param User $user

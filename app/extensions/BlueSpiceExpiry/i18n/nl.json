@@ -29,8 +29,8 @@
 	"bs-expiry-create-error": "Vervaldatum kon niet worden aangemaakt.",
 	"bs-expiry-update-error": "Vervaldatum kon niet worden bijgewerkt.",
 	"bs-expiry-update-success": "Vervaldatum is met succes bijgewerkt",
-	"bs-expiry-save-success": "Vervaldatum is succesvol aangemaakt",
-	"bs-expiry-unexpire-success": "Vervaldatum is succesvol verwijderd",
+	"bs-expiry-save-success": "Vervaldatum is aangemaakt",
+	"bs-expiry-unexpire-success": "Vervaldatum is verwijderd",
 	"bs-expiry-unexpire-unsuccess": "Verval-ID niet gevonden",
 	"bs-expiry-menu-entry-create": "Vervaldatum instellen",
 	"bs-expiry-menu-entry-manage": "Beheer vervaldatum",
@@ -66,7 +66,7 @@
 	"bs-expiry-info-dialog": "Vervaldatum van pagina",
 	"bs-expiry-info-dialog-button-label": "Beheer vervaldatums",
 	"bs-expiry-dialog-delete-prompt": "Weet u zeker dat u de vervaldatum voor deze pagina wilt verwijderen?",
-	"bs-expiry-error-invalid-date": "Ongeldige datum",
+	"bs-expiry-error-invalid-date": "Incorrecte datum",
 	"bs-expiry-dialog-create-reminder-prompt": "Wilt u een herinnering voor deze pagina aanmaken?",
 	"bs-expiry-dialog-create-reminder-title": "Herinnering aanmaken",
 	"bs-expiry-dialog-action-no": "Nee",
@@ -90,5 +90,6 @@
 	"bs-expiry-pref-enable-pdf-watermark": "Watermerk weergeven in PDF",
 	"bs-expiry-pref-enable-pdf-watermark-help": "Voegt een watermerk toe aan verlopen pagina’s in PDF-uitvoer",
 	"bs-expiry-event-expiry-today-desc": "De pagina is gemarkeerd als vandaag verlopen",
-	"bs-expiry-event-expiry-one-week-desc": "De pagina wordt over één week als verlopen beschouwd"
+	"bs-expiry-event-expiry-one-week-desc": "De pagina wordt over één week als verlopen beschouwd",
+	"bs-expiry-notification-generic-links-intro": "U kunt de pagina rechtstreeks bezoeken via de volgende koppeling"
 }

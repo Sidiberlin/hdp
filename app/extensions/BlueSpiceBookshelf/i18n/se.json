@@ -24,5 +24,7 @@
 	"bs-bookshelf-notification-subscription-set-book-title": "Girji",
 	"bs-bookshelf-actionmenuentry-create-new-book": "Ráhkat ođđa girjji",
 	"bs-bookshelf-chapter-plain-text-input-label": "Teaksta",
-	"bs-bookshelf-chapter-wikilink-with-alias-text-input-label": "Teaksta"
+	"bs-bookshelf-chapter-wikilink-with-alias-text-input-label": "Teaksta",
+	"bs-bookshelf-booknav-searchbox-placeholder": "Oza",
+	"bs-bookshelf-massadd-dlg-save-action-label": "Lasit"
 }

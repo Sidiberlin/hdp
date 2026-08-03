@@ -7,7 +7,6 @@ use MWStake\MediaWiki\Component\DataStore\PrimaryDatabaseDataProvider;
 class PrimaryDataProvider extends PrimaryDatabaseDataProvider {
 
 	/**
-	 *
 	 * @return string[]
 	 */
 	protected function getTableNames() {
@@ -15,7 +14,6 @@ class PrimaryDataProvider extends PrimaryDatabaseDataProvider {
 	}
 
 	/**
-	 *
 	 * @param \stdClass $row
 	 */
 	protected function appendRowToData( \stdClass $row ) {

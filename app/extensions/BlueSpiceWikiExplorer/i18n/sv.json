@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Mjälten",
-			"Sabelöga"
+			"Sabelöga",
+			"Stefan2255"
 		]
 	},
 	"bs-wikiexplorer-extension-description": "Sortera artiklar efter kriterium",
@@ -18,5 +19,7 @@
 	"bs-wikiexplorer-linked-files": "Länkade sidor",
 	"bs-wikiexplorer-linked-pages": "Länkade sidor",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "API-parameter för att ange om MetaData redan har laddats.",
-	"apihelp-bs-wikiexplorer-store-summary": "Erbjuder all data för tillägget WikiExplorer"
+	"apihelp-bs-wikiexplorer-store-summary": "Erbjuder all data för tillägget WikiExplorer",
+	"bs-wikiexplorer-icon-bool-true-aria-label": "kontrollerade",
+	"bs-wikiexplorer-icon-bool-false-aria-label": "okontrollerad"
 }

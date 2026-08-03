@@ -66,9 +66,12 @@ bs.categoryManager.api.CategoryActions.prototype.renameCategory = function ( old
 		.then( ( pages ) => this.moveCategory( oldCategory, newCategory )
 			.then( () => {
 				if ( pages.length > 0 ) {
-					const actions = pages.map( ( page ) => this.replaceCategoriesInPage( page.title, oldCategory, newCategory )
+					return pages.reduce(
+						( promise, page ) => promise.then(
+							() => this.replaceCategoriesInPage( page.title, oldCategory, newCategory )
+						),
+						Promise.resolve()
 					);
-					return Promise.all( actions );
 				}
 			} ) )
 		.then( () => this.removeCategories( fullName, [ oldCategory ] ) )
@@ -107,9 +110,12 @@ bs.categoryManager.api.CategoryActions.prototype.deleteCategory = function ( cat
 	return this.getRemoveCategoryActions( fullName )
 		.then( ( categoryActions ) => {
 			if ( categoryActions.length > 0 ) {
-				const actions = categoryActions.map( ( action ) => this.removeCategories( action.page, action.categories )
+				return categoryActions.reduce(
+					( promise, action ) => promise.then(
+						() => this.removeCategories( action.page, action.categories )
+					),
+					Promise.resolve()
 				);
-				return Promise.all( actions );
 			}
 			return Promise.resolve();
 		} )
