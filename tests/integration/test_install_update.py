@@ -19,9 +19,14 @@ import pytest
 # a legitimate reason for this to change, and the fix is to update the constant
 # in the same commit that takes the upgrade. Override for a one-off run with
 # HDP_EXPECTED_TABLE_COUNT.
-EXPECTED_TABLE_COUNT = 198
+#
+# 199 since the MediaWiki 1.43.9 / BlueSpice 5.1.9 upgrade. That bump carries
+# mwstake/mediawiki-component-processmanager from 3.1.3 to 5.0.2, which adds
+# `process_plugin_lock` (db/mysql/process_plugin_lock.sql) alongside the
+# `processes` table it already owned. This assertion is what caught it.
+EXPECTED_TABLE_COUNT = 199
 
-# A representative slice rather than all 198: one table from each subsystem
+# A representative slice rather than all 199: one table from each subsystem
 # whose absence has previously meant a broken wiki rather than a missing
 # feature. `bs_reminder`, `workflows_event` and `bs_whoisonline` are named
 # because those three are exactly the tables cache/mw-dberror.log complains
