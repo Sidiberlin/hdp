@@ -8,6 +8,8 @@ target: extensions/PluggableAuth/includes/PluggableAuthService.php
 patch: app/_bluespice/patches/extensions/PluggableAuth/includes/PluggableAuthService.php.diff
 applied_by: app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh
 hunks: 1
+# The upstream branch this patch removes. See the note in oidc-client.yaml.
+anti: 'if \( isset\( \$config\[.weight.\] \) \) \{'
 stale: false
 group: ''
 upstream_version: 'BlueSpice 5.1.4 (inherited patch set)'

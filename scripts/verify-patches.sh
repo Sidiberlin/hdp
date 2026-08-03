@@ -494,8 +494,19 @@ while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale titl
         out="$(cd "$APP_DIR" && patch --dry-run --forward --ignore-whitespace --fuzz 3 \
                "$target" "$patch_abs" 2>&1)"
         if printf '%s' "$out" | grep -qi 'previously applied\|Reversed'; then
-            echo "  ${C_GRN}ok${C_OFF}     $id"
-            PRESENT=$((PRESENT+1))
+            # `anti` on a diff-mode patch: the content that must NOT be there
+            # once the patch is in. A patch can report "previously applied"
+            # while an earlier fuzzy application left the upstream form in the
+            # file as well — for the two authentication patches that is the
+            # difference between a fix and a fix nobody is using.
+            if [ -n "$anti" ] && grep -qE -- "$anti" "$tpath" 2>/dev/null; then
+                report_missing "$id" "$title" "$target" "patch is applied but the anti-pattern also matched" "$anti" \
+                    "the upstream form the patch replaces is still in the file" \
+                    "re-derive the patch; do not ship this"
+            else
+                echo "  ${C_GRN}ok${C_OFF}     $id"
+                PRESENT=$((PRESENT+1))
+            fi
         elif printf '%s' "$out" | grep -qi 'FAILED\|malformed\|misordered'; then
             report_missing "$id" "$title" "$target" "patch neither applied nor applicable" "" \
                 "upstream moved the code this patch is written against" \
