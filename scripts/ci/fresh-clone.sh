@@ -73,6 +73,11 @@ REQUIRED_FILES=(
     scripts/lib/audit_baseline.py
     docker/ci/composer-audit-baseline.json
     renovate.json
+    # Track B: the only thing that can notice a MediaWiki core security
+    # release, since core is vendored source and no lockfile bump will ever
+    # mention it.
+    scripts/ci/release-watch.sh
+    scripts/lib/release_watch.py
     scripts/ci/pytest.sh
     # The two container jobs and the plumbing they share. Both CI workflows are
     # thin callers of these, so a clone without them has a pipeline that cannot
