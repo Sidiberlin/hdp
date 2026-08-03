@@ -178,7 +178,7 @@ What it covers today:
 |---|---|
 | `shellcheck` | shell in `docker/ scripts/ hdp.sh` (not vendored upstream) |
 | `yamllint` | compose, publiccode, pipeline, CI, the patch manifest |
-| `ruff` | Python under `docker/` and `tests/`, against the pinned ruleset in `ruff.toml` |
+| `ruff` | Python under `docker/`, `scripts/` and `tests/`, against the pinned ruleset in `ruff.toml` |
 | `pytest-unit` | `tests/unit/` — stdlib-only unit tests, ~2s, no install needed |
 | `pytest-haystack` | `tests/haystack/` — real `haystack-ai`, no mocks (see below) |
 | `integration` | `tests/integration/` — a live wiki serving real traffic (`--integration`) |
@@ -191,6 +191,7 @@ What it covers today:
 | `publiccode` | `publiccode.yml` schema — openCode validates this file |
 | `patch-ignore` | no patch target is swallowed by a `.gitignore` rule |
 | `manifest` | the patch manifest's schema and target paths |
+| `versions` | ⭐ `VERSIONS.yml` still matches the tree — see [Versions and upgrades](#versions-and-upgrades) |
 | `fresh-clone` | ⭐ every input `setup.sh` needs is actually committed |
 | `patches` | all 19 patches are in the tree (`--patches`) |
 
@@ -453,6 +454,41 @@ the source→page mapping, the source list, and the wikitext cleanup — one
 table, asked for by the shell script. It has golden files
 (`tests/unit/test_convert_docs_postprocess.py`) that need neither docker nor
 pandoc.
+
+### Versions and upgrades
+
+`VERSIONS.yml` at the repo root is the single answer to **"what version is
+this?"**. Before it existed the tree gave four different answers at the same
+time — `MW_VERSION` said 1.43.5, `app/composer.lock` said 5.1.4 with one
+package at 5.1.5, `publiccode.yml` said 5.1.3, and the docs said 5.1.3 — so
+"are we affected by CVE-X" could not be answered without reading the lockfile
+by hand, and the openCode catalogue was being told the wrong number.
+
+The `versions` check compares the declaration against the tree: `MW_VERSION`,
+every `bluespice/*` version in `app/composer.lock`, all 184
+`app/extensions/*/extension.json` files, `publiccode.yml`'s `softwareVersion`,
+the image tags in `docker-compose.yml`, `docker/opensearch/Dockerfile`,
+`docker/haystack/Dockerfile`, and the frozen-package strip list in
+`docker/setup.sh`. It takes about a second, needs no containers and no network.
+
+```bash
+./scripts/check.sh --only versions          # the gate
+python3 scripts/lib/versions.py scan        # what the tree says, as JSON
+python3 scripts/lib/versions.py get bluespice
+python3 scripts/lib/versions.py emit-extensions   # regenerate the inventory block
+```
+
+Editing rules live at the top of `VERSIONS.yml`. The two that matter: a
+BlueSpice bump is a two-line edit (`bluespice:` plus `publiccode.yml`, because
+all 58 BlueSpice extensions and all 59 `bluespice/*` packages are checked
+against that one baseline), and the `extensions:` block is **generated**, never
+hand-edited.
+
+`frozen:` is Track C of the upstream-security process: `hallowelt/chatbot` and
+`mediawiki/page-header` point at a private GitLab this project cannot reach, so
+`docker/setup.sh` strips them from `composer.lock` and the vendored source is
+used instead. No tooling will ever flag a CVE in them — the `last_reviewed`
+date is the only signal they have. See `SECURITY.md`.
 
 ### Shell behaviour (`bats`)
 

@@ -60,6 +60,13 @@ REQUIRED_FILES=(
     hdp.sh
     scripts/check.sh
     scripts/ci/bats.sh
+    # This fork's declared version, and the input to both the
+    # version-consistency gate and the release-watch job. A clone without it
+    # cannot answer "what version are we", which is where the four-way skew
+    # came from.
+    VERSIONS.yml
+    scripts/lib/versions.py
+    scripts/ci/version-consistency.sh
     scripts/ci/pytest.sh
     # The two container jobs and the plumbing they share. Both CI workflows are
     # thin callers of these, so a clone without them has a pipeline that cannot
