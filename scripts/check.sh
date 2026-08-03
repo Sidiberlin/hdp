@@ -43,7 +43,7 @@ IMG_BATS="bats/bats@sha256:5322b877351fda0cc435de8c6116de7d0a2ec79d7c680132a0ef3
 RUFF_PINNED_VERSION="0.16.1"
 
 YAMLLINT_RULES='{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable}}'
-YAML_FILES=(docker-compose.yml docker/ci/compose.cache.yml publiccode.yml docker/haystack/hdp_pipeline.yaml .gitlab-ci.yml .github/workflows/)
+YAML_FILES=(docker-compose.yml docker/ci/compose.cache.yml publiccode.yml VERSIONS.yml docker/haystack/hdp_pipeline.yaml .gitlab-ci.yml .github/workflows/)
 
 # ─── Locate the repo ────────────────────────────────────────────────
 REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel 2>/dev/null || true)"
@@ -83,8 +83,8 @@ declare -a ONLY=()
 # green job that runs nothing at all.
 KNOWN_CHECKS=(
     shellcheck yamllint ruff pytest-unit pytest-haystack bats php-lint compose
-    gitleaks env-example publiccode patch-ignore manifest fresh-clone patches
-    integration smoke
+    gitleaks env-example publiccode patch-ignore manifest versions fresh-clone
+    patches integration smoke
 )
 
 PASSED=(); FAILED=(); SKIPPED=()
@@ -115,7 +115,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' ----- ---- --------
     printf '%-16s %-34s %s\n' shellcheck  'shell in docker/ scripts/ hdp.sh' "shellcheck | $IMG_SHELLCHECK"
     printf '%-16s %-34s %s\n' yamllint    'compose, publiccode, pipeline, CI' "yamllint | $IMG_YAMLLINT"
-    printf '%-16s %-34s %s\n' ruff        'python under docker/ and tests/' "ruff | $IMG_RUFF"
+    printf '%-16s %-34s %s\n' ruff        'python under docker/ scripts/ tests/' "ruff | $IMG_RUFF"
     printf '%-16s %-34s %s\n' pytest-unit 'stdlib unit tests (~2s)' "pytest | $IMG_PYTHON"
     printf '%-16s %-34s %s\n' pytest-haystack 'to_native + load_pipeline' "haystack-ai | $IMG_PYTHON"
     printf '%-16s %-34s %s\n' bats        'infisical-loader.sh behaviour' "bats | ${IMG_BATS%%@*}"
@@ -126,6 +126,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' publiccode  'publiccode.yml schema' 'italia/publiccode-parser-go'
     printf '%-16s %-34s %s\n' patch-ignore 'no patch target is gitignored' 'git'
     printf '%-16s %-34s %s\n' manifest    'patch manifest schema' 'python3 + pyyaml'
+    printf '%-16s %-34s %s\n' versions    'VERSIONS.yml matches the tree' 'python3'
     printf '%-16s %-34s %s\n' fresh-clone 'TF: fresh clone has every input' 'git'
     printf '%-16s %-34s %s\n' patches     'all 19 patches present (--patches)' 'patch(1)'
     printf '%-16s %-34s %s\n' integration 'live wiki (--integration)' 'a running, installed stack'
@@ -254,8 +255,8 @@ check_ruff_run() {
     # tests/ is in scope as of Wave 2. It was not before, and `ruff check
     # docker/` would have skipped the entire suite silently — a linter that
     # does not see the tests is a linter that lets the tests rot.
-    local args=(check docker/ tests/)
-    [ "$FIX" -eq 1 ] && args=(check --fix docker/ tests/)
+    local args=(check docker/ scripts/ tests/)
+    [ "$FIX" -eq 1 ] && args=(check --fix docker/ scripts/ tests/)
 
     if have ruff; then
         local v
@@ -367,6 +368,12 @@ check_publiccode_run() {
 
 check_patch-ignore_run() { scripts/ci/patch-ignore-check.sh; }
 
+# VERSIONS.yml against the tree: MW_VERSION, composer.lock, every
+# extension.json, publiccode.yml, the compose image tags and the frozen-package
+# strip list. ~1s, no containers, no network — and it is what makes "are we
+# affected by CVE-X" answerable at all.
+check_versions_run() { scripts/ci/version-consistency.sh; }
+
 # Manifest schema + target paths. Cheap (no patch(1), no composer), so it runs
 # by default; the full verification needs a composer-installed tree and is
 # opt-in via --patches.
@@ -416,7 +423,7 @@ echo ""
 
 run_check shellcheck "shell scripts we own"
 run_check yamllint   "yaml we own"
-run_check ruff       "python under docker/ + tests/"
+run_check ruff       "python under docker/ scripts/ tests/"
 run_check pytest-unit     "stdlib unit tests"
 run_check pytest-haystack "to_native + load_pipeline"
 run_check bats       "infisical-loader behaviour"
@@ -427,6 +434,7 @@ run_check env-example  ".env.example completeness"
 run_check publiccode   "publiccode.yml schema"
 run_check patch-ignore "patch targets are trackable"
 run_check manifest     "patch manifest schema"
+run_check versions     "VERSIONS.yml matches the tree"
 run_check fresh-clone  "committed tree is complete"
 run_check patches      "all 19 patches in the tree"
 run_check integration  "live wiki serves real traffic"

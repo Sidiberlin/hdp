@@ -76,6 +76,7 @@ jobs:
           - publiccode
           - patch-ignore
           - manifest
+          - versions
           # TF
           - fresh-clone
 

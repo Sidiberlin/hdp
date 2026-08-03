@@ -21,9 +21,9 @@ as fine.
 collapses runs of tabs — tab is IFS whitespace — which silently drops empty
 fields and shifts every column after them.
 """
-import sys
 import glob
 import os
+import sys
 
 FIELDS = ("id", "class", "mode", "target", "patch", "anchor", "marker",
           "anti", "stale", "title", "why", "applied_by", "group",

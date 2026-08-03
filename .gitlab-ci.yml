@@ -55,6 +55,7 @@ yaml-lint:
       yamllint -d "{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable}}" \
         docker-compose.yml \
         publiccode.yml \
+        VERSIONS.yml \
         docker/haystack/hdp_pipeline.yaml \
         docker/patches/ \
         .gitlab-ci.yml \
@@ -68,7 +69,7 @@ ruff:
   script:
     # tests/ is in scope as of Wave 2. Without it the whole suite would be
     # invisible to the linter, which is how test code rots.
-    - ruff check docker/ tests/
+    - ruff check docker/ scripts/ tests/
 
 # ─── Unit tests ─────────────────────────────────────────────────────
 # Two tiers, split by what the code under test actually imports.
@@ -220,6 +221,18 @@ manifest-lint:
     - apk add --no-cache bash git >/dev/null
     - pip install --quiet pyyaml
     - bash scripts/verify-patches.sh --static
+
+version-consistency:
+  stage: lint
+  image: python:3.11-alpine
+  <<: *default_rules
+  script:
+    # The cheapest job in the pipeline, and the prerequisite for every other
+    # part of the upstream-security process: monitoring for "has upstream moved
+    # past us" is meaningless until "where are we" has one answer. It reads
+    # VERSIONS.yml with a stdlib fallback, so no pip install is needed.
+    - apk add --no-cache bash git >/dev/null
+    - bash scripts/ci/version-consistency.sh
 
 # ─── TF — fresh-clone gate ──────────────────────────────────────────
 fresh-clone:

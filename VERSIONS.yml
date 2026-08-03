@@ -1,0 +1,215 @@
+# ============================================================
+# VERSIONS.yml — what version is this fork?
+#
+# One machine-readable answer, checked against the tree by
+# `scripts/ci/version-consistency.sh` (T0, ~1s, no containers) on every push.
+#
+# Before this file existed the repository gave four different answers at once:
+# MW_VERSION said 1.43.5, app/composer.lock said 5.1.4 with one package at
+# 5.1.5, publiccode.yml said 5.1.3, and the docs said 5.1.3. Nobody could
+# answer "are we affected by CVE-X" without reading the lockfile by hand, and
+# the openCode catalogue was being told the wrong number.
+#
+# This file is the declaration. The tree is the fact. When they disagree the
+# gate fails and you fix whichever one is wrong — see
+# docs/dev/upgrade-runbook.md step 7.
+#
+# Editing rules
+#   * A BlueSpice bump is a two-line edit: `bluespice:` here, and the same
+#     value in publiccode.yml. All 58 BlueSpice extensions and all 59
+#     bluespice/* composer packages are checked against that one baseline.
+#   * Anything that deliberately differs goes under `exceptions:` with a
+#     reason. An exception with no reason is a version nobody decided on.
+#   * `extensions:` is generated, not hand-written:
+#         python3 scripts/lib/versions.py emit-extensions
+#   * `frozen:` is Track C of the security process (§10.3). Those two packages
+#     are invisible to Renovate, to composer audit and to the release-watch
+#     job, so the only signal they will ever have is the `last_reviewed` date
+#     below. See SECURITY.md.
+# ============================================================
+
+# ─── The two numbers that define the release ────────────────────────
+# mw_core must equal MW_VERSION in app/includes/Defines.php.
+mw_core: '1.43.5'
+# bluespice is the baseline every bluespice/* package and every BlueSpice*
+# extension is expected to carry, and what publiccode.yml declares.
+bluespice: '5.1.4'
+
+# ─── The runtime, as the compose file and Dockerfiles state it ──────
+# php is not a tag of its own anywhere: it is encoded in the wikimedia image
+# names (bookworm-php83-fpm, bookworm-php83-jobrunner), and every image that
+# states one must agree.
+php: '8.3'
+mariadb: '10.11'
+opensearch: '2.18.0'
+haystack: '2.15.0'
+python: '3.11'
+
+# ─── Deliberate divergences ─────────────────────────────────────────
+# Keyed by composer package name or by extension directory name. Each one is a
+# decision somebody made; the reason belongs in the comment.
+exceptions:
+  # Shipped one patch ahead of the rest of the 5.1.4 set by upstream BlueSpice.
+  bluespice/package-wikifarm: '5.1.5'
+  BlueSpiceWikiFarm: '5.1.5'
+
+# ─── Track C — frozen, and permanently unmonitorable ────────────────
+# Both point at git@gitlab.hallowelt.com, which this project cannot reach.
+# docker/setup.sh strips them from composer.lock and the vendored source under
+# app/extensions/ is used instead. No tooling will ever flag a CVE in them.
+frozen:
+  hallowelt/chatbot:
+    vendored_from: 'gitlab.hallowelt.com/GovTech/mediawiki-extensions-chatbot@d6ab09fb511fe8d483dab3fd2eaccd04fe73e5d5'
+    version: 'dev-main'
+    owner: 'unassigned — see SECURITY.md'
+    last_reviewed: '2026-08-03'
+    why: >-
+      Private GitLab, unreachable from CI. Stripped from composer.lock by
+      docker/setup.sh; app/extensions/ChatBot is the vendored copy.
+  mediawiki/page-header:
+    vendored_from: 'gitlab.hallowelt.com/BlueSpice/mediawiki-extensions-pageheader@505d0aa449e59929744be40feaaa08f5687b9737'
+    version: '3.0.5'
+    owner: 'unassigned — see SECURITY.md'
+    last_reviewed: '2026-08-03'
+    why: >-
+      Private GitLab, unreachable from CI. Stripped from composer.lock by
+      docker/setup.sh; app/extensions/PageHeader is the vendored copy.
+
+# ─── The installed extension inventory ──────────────────────────────
+# 184 directories under app/extensions/ carry an extension.json. The 58
+# BlueSpice* ones are checked against the `bluespice` baseline above and are
+# deliberately not listed here. The rest move on their own schedules, so each
+# is declared: a version changing without this file changing is drift, and
+# drift is what the four-way skew was made of.
+#
+# `core` means the extension ships with MediaWiki and carries no version field
+# of its own — it is versioned by mw_core.
+#
+# Regenerate with:  python3 scripts/lib/versions.py emit-extensions
+extensions:
+  AIEditingAssistant: '2.0.6'
+  AbuseFilter: core
+  AdhocTranslation: '1.0.5'
+  Arrays: '2.2.1'
+  AtMentions: '2.0.5'
+  Auth_remoteuser: '2.1.1'
+  CategoryTree: core
+  ChatBot: '1.0'
+  Checklists: '2.0.5'
+  Cite: core
+  CiteThisPage: core
+  CodeEditor: core
+  CodeMirror: '6.0.0'
+  CognitiveProcessDesigner: '4.1.4'
+  CollabPads: '2.0.4'
+  CommentStreams: '9.0.5'
+  ConfirmEdit: '1.6.0'
+  ContainerFilter: '2.0.5'
+  ContentDroplets: '2.0.4'
+  ContentProvisioning: '2.0.5'
+  ContentStabilization: '3.1.4'
+  ContentTransfer: '3.0.5'
+  CreateUserPage: '3.0'
+  DataTransfer: '1.6.3'
+  DateTimeTools: '2.0.5'
+  DiscussionTools: '0.0.0'
+  DrawioEditor: '3.0.4'
+  DynamicPageList3: '3.6.2'
+  Echo: core
+  EmbedVideo: '4.0.0'
+  EnhancedStandardUIs: '2.0.4'
+  EnhancedUpload: '4.0.4'
+  EventBus: '0.5.0'
+  ExternalData: '3.4-alpha'
+  FilterSpecialPages: '3.0.5'
+  FlexiSkin: '3.0.5'
+  FontAwesome: '2.0.0'
+  Forms: '3.1.4'
+  Gadgets: core
+  HeaderFooter: '4.0.6'
+  HeaderTabs: '2.3'
+  HitCounters: '0.4'
+  ImageMap: core
+  ImageMapEdit: '3.0.5'
+  ImportOfficeFiles: '3.1.4'
+  InputBox: '0.3.0'
+  Interwiki: '3.2'
+  InviteSignup: '1.0.0+2021-09-01'
+  LDAPAuthentication2: '3.0.6'
+  LDAPAuthorization: '3.0.6'
+  LDAPGroups: '3.0.6'
+  LDAPProvider: '3.0.6'
+  LDAPSyncAll: '3.0.6'
+  LDAPUserInfo: '3.0.6'
+  Lingo: '3.2.4'
+  Linter: core
+  LoginNotify: '0.1'
+  Loops: '1.0.0-beta'
+  Maps: '11.0.1'
+  Math: core
+  MenuEditor: '3.1.4'
+  MergeArticles: '3.0.5'
+  Mermaid: '6.0.2'
+  MultimediaViewer: core
+  NSFileRepo: '3.0.6'
+  NotifyMe: '2.0.4'
+  Nuke: core
+  NumberHeadings: '2.0.5'
+  OATHAuth: '0.5.0'
+  OAuth: '1.1.0'
+  OOJSPlus: '3.1.4'
+  OpenIDConnect: '8.3.0'
+  OpenLayers: '1.0.0'
+  PDFCreator: '1.1.4'
+  PDFembed: '3.0.1'
+  PageCheckout: '3.0.5'
+  PageForms: '6.0.4'
+  PageHeader: '3.0.5'
+  PageImages: core
+  ParserFunctions: '1.6.1'
+  PdfHandler: core
+  PluggableAuth: '7.5.0'
+  Poem: core
+  Popups: core
+  PreToClip: '2.0.5'
+  RSS: '2.25.1'
+  Renameuser: core
+  ReplaceText: '1.8'
+  RevisionSlider: core
+  Scribunto: core
+  SectionAnchors: '2.0.5'
+  SecureLinkFixer: core
+  SemanticCompoundQueries: '3.0.0-beta'
+  SemanticExtraSpecialProperties: '4.0.0'
+  SemanticMediaWiki: '6.0.1'
+  SemanticResultFormats: '5.1.0'
+  SemanticScribunto: '2.3.3'
+  SimpleBlogPage: '4.0.5'
+  SimpleSAMLphp: '7.0.1'
+  SimpleTasks: '2.0.4'
+  SpamBlacklist: core
+  StandardDialogs: '3.0.5'
+  SubPageList: '3.0.1'
+  SyntaxHighlight_GeSHi: '2.0'
+  TabberNeue: '3.3.0'
+  TableTools: '2.0.5'
+  TemplateData: '0.1.2'
+  TemplateStyles: '1.0'
+  TextExtracts: core
+  Thanks: '1.2.0'
+  TitleBlacklist: '1.5.0'
+  TwoColConflict: core
+  UnifiedTaskOverview: '3.0.4'
+  UrlGetParameters: '1.6.0'
+  UserFunctions: '2.8.1'
+  UserMerge: '1.10.2'
+  UserProfile: '1.1.4'
+  VEForAll: '0.6'
+  Variables: '2.5.3'
+  VisualEditor: core
+  VisualEditorPlus: '2.1.4'
+  VueJsPlus: '2.0.5'
+  WebAuthn: '1.0.0'
+  Widgets: '1.6.0'
+  WikiEditor: '0.5.4'
+  Workflows: '3.1.4'
