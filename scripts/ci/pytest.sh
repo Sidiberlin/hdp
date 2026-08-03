@@ -66,6 +66,7 @@
 #   scripts/ci/pytest.sh --tier haystack  haystack tier only
 #   scripts/ci/pytest.sh --tier integration   needs a running, installed wiki
 #   scripts/ci/pytest.sh --tier smoke         needs the full 7-container stack
+#   scripts/ci/pytest.sh --tier migration     needs a stack t5-migration.sh upgraded
 #   scripts/ci/pytest.sh -- -k to_native  args after -- go to pytest
 #   scripts/ci/pytest.sh --regen-golden   rewrite the golden JSON fixtures from
 #                                         the current implementation, then show
@@ -100,7 +101,7 @@ while [ $# -gt 0 ]; do
     case "$1" in
         --tier)
             shift
-            [ $# -gt 0 ] || { echo "--tier needs a value (unit|haystack|integration|smoke|all)" >&2; exit 2; }
+            [ $# -gt 0 ] || { echo "--tier needs a value (unit|haystack|integration|smoke|migration|all)" >&2; exit 2; }
             TIER="$1"
             ;;
         --regen-golden) REGEN=1 ;;
@@ -112,8 +113,8 @@ while [ $# -gt 0 ]; do
 done
 
 case "$TIER" in
-    unit|haystack|integration|smoke|all) ;;
-    *) echo "--tier must be one of: unit, haystack, integration, smoke, all (got '$TIER')" >&2; exit 2 ;;
+    unit|haystack|integration|smoke|migration|all) ;;
+    *) echo "--tier must be one of: unit, haystack, integration, smoke, migration, all (got '$TIER')" >&2; exit 2 ;;
 esac
 
 if [ "$REGEN" -eq 1 ]; then
@@ -243,11 +244,26 @@ WIKI_URL="${HDP_WIKI_URL:-http://localhost:8080/w}"
 # T3 omits. Splitting them into two runners would mean two copies of the
 # host-only reasoning above, and they would drift.
 run_smoke() {
-    run_integration_tier "smoke (needs the full seven-container stack)" ""
+    # Everything except the migration assertions. Those need a database that
+    # has had a snapshot loaded over it and update.php re-run, which
+    # scripts/ci/t5-migration.sh arranges and T4 deliberately does not — a
+    # migration test collected here would fail against a perfectly good stack.
+    run_integration_tier "smoke (needs the full seven-container stack)" "not migration"
 }
 
 run_integration() {
-    run_integration_tier "integration (needs a running, installed wiki)" "not smoke"
+    run_integration_tier "integration (needs a running, installed wiki)" "not smoke and not migration"
+}
+
+# ─── migration tier (Wave 5 / T5) ───────────────────────────────────
+# The same directory again, selected by marker. What makes it a tier of its own
+# is not the code but the state: these assertions only mean anything after the
+# seeded snapshot has been loaded over the installed database and update.php
+# has run against it. scripts/ci/t5-migration.sh is what puts a stack into that
+# state; running this tier without it asserts against a fresh install and says
+# so, loudly, rather than passing.
+run_migration() {
+    run_integration_tier "migration (needs a stack t5-migration.sh has upgraded)" "migration"
 }
 
 # run_integration_tier <label> <marker-expression>
@@ -311,6 +327,7 @@ ran=0
 SELECTED=(unit haystack)
 [ "$TIER" = "integration" ] && SELECTED=(integration)
 [ "$TIER" = "smoke" ] && SELECTED=(smoke)
+[ "$TIER" = "migration" ] && SELECTED=(migration)
 
 for tier in "${SELECTED[@]}"; do
     [ "$TIER" = "all" ] || [ "$TIER" = "$tier" ] || continue

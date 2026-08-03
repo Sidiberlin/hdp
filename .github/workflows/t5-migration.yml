@@ -1,0 +1,56 @@
+---
+# T5 — migration. Does `update.php` upgrade an EXISTING wiki?
+#
+# T3 (the sibling workflow) proves a fresh install works. Every real HDP
+# operator instead runs new code against a database that already holds pages,
+# users and permissions — and none of the code that migrates rows is reached by
+# an install into an empty schema. Until this job existed, the upgrade path had
+# never been executed anywhere in CI.
+#
+# scripts/ci/t5-migration.sh installs normally (for app/vendor/ and
+# LocalSettings.php, neither of which is committed), then drops the database,
+# loads docker/ci/fixtures/seeded-wiki.sql.gz — a real wiki captured before the
+# upgrade — and runs update.php against that.
+#
+# Same runner and same profile as T3, four containers, and roughly the same
+# wall clock: the expensive services (haystack, chatbot-proxy) are not involved
+# in a schema migration.
+#
+# It runs on every push to main and on pull requests rather than nightly,
+# because the things that break it — a schema change, a new extension, a
+# settings.d edit — arrive in ordinary commits, not on a schedule.
+
+name: T5 migration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: t5-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  t5:
+    name: update.php upgrades an existing wiki
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Standard library only, like T3: the whole dependency list is docker,
+      # python3 and pytest.
+      - name: Install pytest
+        run: python3 -m pip install --quiet --no-cache-dir pytest==9.0.2
+
+      - name: Run T5
+        run: bash scripts/ci/t5-migration.sh
+
+      - name: Container logs
+        if: failure()
+        run: |
+          docker compose ps || true
+          docker compose logs --no-color --tail 300 mediawiki mediawiki-web || true
