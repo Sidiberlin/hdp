@@ -10,9 +10,10 @@
 # from the lockfile entirely (Track C — see VERSIONS.yml and SECURITY.md).
 #
 # The result is compared against docker/ci/composer-audit-baseline.json rather
-# than used directly, because the tree carries 34 known advisories inherited
-# from upstream's dependency choices and a gate that is red on every push is a
-# gate people stop reading. The comparison fails on anything NEW, which is the
+# than used directly, because the tree carries known advisories inherited from
+# upstream's dependency choices — 6 as of the 1.43.9 / 5.1.9 upgrade, and that
+# file is the count of record — and a gate that is red on every push is a gate
+# people stop reading. The comparison fails on anything NEW, which is the
 # question worth asking on a push. See scripts/lib/audit_baseline.py.
 #
 #   scripts/ci/composer-audit.sh                   the gate
