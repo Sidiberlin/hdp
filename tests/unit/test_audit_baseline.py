@@ -1,0 +1,139 @@
+"""The composer-audit gate — does a new CVE actually turn it red?
+
+The baseline exists so the gate is not red on every push. The risk that
+creates is the opposite one: a baseline broad enough to swallow the next
+advisory too. These tests pin the line between the two.
+
+Standard library only; no network, no composer.
+"""
+import json
+import os
+
+import audit_baseline as ab
+import pytest
+
+REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+BASELINE = os.path.join(REPO, "docker", "ci", "composer-audit-baseline.json")
+
+
+def _adv(pkg, cve=None, pksa="PKSA-aaaa-bbbb-cccc", severity="high"):
+    return {"packageName": pkg, "cve": cve, "advisoryId": pksa,
+            "severity": severity, "title": "t", "affectedVersions": "<1.0",
+            "link": "https://example.invalid/x"}
+
+
+def _report(advisories):
+    return {"advisories": advisories, "abandoned": {}}
+
+
+def _baseline(**accepted):
+    return {"accepted": accepted}
+
+
+def test_a_known_advisory_is_not_new():
+    rep = _report({"a/b": [_adv("a/b", cve="CVE-1")]})
+    new, resolved, moved, problems = ab.compare(
+        rep, _baseline(**{"a/b": {"advisories": ["CVE-1"], "why": "reason"}}))
+    assert new == [] and resolved == [] and problems == []
+
+
+def test_a_new_advisory_against_an_accepted_package_is_still_new():
+    """The likeliest real event: a package we already carry gets another CVE."""
+    rep = _report({"a/b": [_adv("a/b", cve="CVE-1"), _adv("a/b", cve="CVE-2")]})
+    new, _, _, _ = ab.compare(rep, _baseline(**{"a/b": {"advisories": ["CVE-1"], "why": "r"}}))
+    assert [ab.advisory_id(a) for _, a in new] == ["CVE-2"]
+
+
+def test_an_advisory_against_an_unknown_package_is_new():
+    rep = _report({"c/d": [_adv("c/d", cve="CVE-9")]})
+    new, _, _, _ = ab.compare(rep, _baseline(**{"a/b": {"advisories": ["CVE-1"], "why": "r"}}))
+    assert len(new) == 1
+
+
+def test_a_pksa_advisory_still_matches_once_a_cve_is_assigned():
+    """Packagist mints a PKSA id first and the CVE lands later.
+
+    Matching on the PKSA id alone would re-fire the whole entry as "new" on
+    the day the CVE is assigned — noise that trains people to widen the
+    baseline, which is how a real advisory gets missed.
+    """
+    rep = _report({"a/b": [_adv("a/b", cve="CVE-7", pksa="PKSA-known")]})
+    new, _, _, _ = ab.compare(rep, _baseline(**{"a/b": {"advisories": ["PKSA-known"], "why": "r"}}))
+    assert new == []
+
+
+def test_advisories_delivered_as_an_object_are_not_dropped():
+    """composer emits an object rather than an array for some packages.
+
+    phpunit does this today. Reading only the array form makes those packages
+    report clean, which in a security gate is the one bug that must not exist.
+    """
+    rep = _report({"a/b": {"2": _adv("a/b", cve="CVE-3")}})
+    new, _, _, _ = ab.compare(rep, _baseline())
+    assert [ab.advisory_id(a) for _, a in new] == ["CVE-3"]
+
+
+def test_an_acceptance_with_no_reason_fails_the_gate():
+    """--update writes the ids and leaves 'why' blank on purpose."""
+    rep = _report({"a/b": [_adv("a/b", cve="CVE-1")]})
+    _, _, _, problems = ab.compare(rep, _baseline(**{"a/b": {"advisories": ["CVE-1"], "why": ""}}))
+    assert any("no 'why'" in p for p in problems)
+
+
+def test_an_advisory_that_went_away_is_reported_for_removal():
+    rep = _report({})
+    _, resolved, _, problems = ab.compare(
+        rep, _baseline(**{"a/b": {"advisories": ["CVE-1"], "why": "r"}}))
+    assert resolved == [("a/b", "CVE-1")]
+    assert problems == []  # cleanup, not a failure
+
+
+def test_a_version_change_under_an_acceptance_is_reported():
+    rep = _report({"a/b": [_adv("a/b", cve="CVE-1")]})
+    _, _, moved, _ = ab.compare(
+        rep,
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": "r"}}),
+        installed={"a/b": "1.1"})
+    assert moved == [("a/b", "1.0", "1.1")]
+
+
+def test_a_malformed_report_raises_rather_than_passing():
+    with pytest.raises(ab.AuditError):
+        ab.compare({"advisories": {"a/b": "not-a-list"}}, _baseline())
+
+
+def test_update_keeps_reasons_already_written():
+    rep = _report({"a/b": [_adv("a/b", cve="CVE-1"), _adv("a/b", cve="CVE-2")]})
+    lock = {"packages": [{"name": "a/b", "version": "1.2.3"}]}
+    built = ab.build_baseline(rep, lock, {"accepted": {"a/b": {"why": "keep me"}}})
+    assert built["accepted"]["a/b"]["why"] == "keep me"
+    assert built["accepted"]["a/b"]["installed"] == "1.2.3"
+    assert "CVE-2" in built["accepted"]["a/b"]["advisories"]
+
+
+# ─── The committed baseline ─────────────────────────────────────────
+
+def test_the_committed_baseline_is_complete():
+    """Every accepted package carries a reason, and the file says when it was reviewed."""
+    data = json.load(open(BASELINE, encoding="utf-8"))
+    assert data.get("reviewed"), "the baseline must record when a human last looked"
+    assert data["accepted"], "an empty baseline would accept nothing and fail on everything"
+    for pkg, entry in data["accepted"].items():
+        assert entry.get("why"), f"{pkg} is accepted with no stated reason"
+        assert entry.get("advisories"), f"{pkg} lists no advisory ids"
+
+
+def test_the_fixable_ones_stay_marked():
+    """These four are fixable by re-vendoring, and the runbook reads this file.
+
+    If an upgrade drops one of them, delete the entry — do not quietly drop
+    the marker while still carrying the vulnerable version.
+    """
+    data = json.load(open(BASELINE, encoding="utf-8"))
+    flagged = {p for p, e in data["accepted"].items() if "ACTION REQUIRED" in e["why"]}
+    assert flagged == {
+        "mediawiki/maps",
+        "phpoffice/phpspreadsheet",
+        "phpseclib/phpseclib",
+        "universal-omega/dynamic-page-list3",
+    }

@@ -67,6 +67,12 @@ REQUIRED_FILES=(
     VERSIONS.yml
     scripts/lib/versions.py
     scripts/ci/version-consistency.sh
+    # Track A: the CVE gate and the advisories this fork knowingly carries.
+    # The baseline is what keeps the gate honest rather than permanently red.
+    scripts/ci/composer-audit.sh
+    scripts/lib/audit_baseline.py
+    docker/ci/composer-audit-baseline.json
+    renovate.json
     scripts/ci/pytest.sh
     # The two container jobs and the plumbing they share. Both CI workflows are
     # thin callers of these, so a clone without them has a pipeline that cannot
@@ -260,7 +266,11 @@ done
 
 echo ""
 echo "${C_BLD}Machine-readable inputs parse${C_OFF}"
-for j in app/composer.json app/composer.lock app/composer.local.json; do
+# renovate.json is here for a reason a schema check would miss: Renovate reads
+# its config from the default branch and simply does nothing useful if the file
+# will not parse, with no failure visible in this repository at all.
+for j in app/composer.json app/composer.lock app/composer.local.json \
+         renovate.json docker/ci/composer-audit-baseline.json; do
     if [ -f "$CLONE/$j" ]; then
         if python3 -c "import json,sys; json.load(open(sys.argv[1]))" "$CLONE/$j" 2>/dev/null; then
             ok "$j is valid JSON"

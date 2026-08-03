@@ -36,6 +36,9 @@ IMG_PHP="php:8.3-cli"
 IMG_PYTHON="python:3.11-slim"
 # Pinned by digest, not by :latest — see the note above about moving tags.
 IMG_BATS="bats/bats@sha256:5322b877351fda0cc435de8c6116de7d0a2ec79d7c680132a0ef329a633bc66f"
+# composer audit reads app/composer.lock against the packagist advisory
+# database. Kept in step with scripts/ci/composer-audit.sh and .gitlab-ci.yml.
+IMG_COMPOSER="composer:2.8"
 
 # Host binaries are a convenience, not the source of truth. When a host tool's
 # version differs from the pinned image the verdicts can differ too, so say so
@@ -83,8 +86,8 @@ declare -a ONLY=()
 # green job that runs nothing at all.
 KNOWN_CHECKS=(
     shellcheck yamllint ruff pytest-unit pytest-haystack bats php-lint compose
-    gitleaks env-example publiccode patch-ignore manifest versions fresh-clone
-    patches integration smoke
+    gitleaks env-example publiccode patch-ignore manifest versions composer-audit
+    fresh-clone patches integration smoke
 )
 
 PASSED=(); FAILED=(); SKIPPED=()
@@ -127,6 +130,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' patch-ignore 'no patch target is gitignored' 'git'
     printf '%-16s %-34s %s\n' manifest    'patch manifest schema' 'python3 + pyyaml'
     printf '%-16s %-34s %s\n' versions    'VERSIONS.yml matches the tree' 'python3'
+    printf '%-16s %-34s %s\n' composer-audit 'new CVEs in app/composer.lock' "composer | $IMG_COMPOSER"
     printf '%-16s %-34s %s\n' fresh-clone 'TF: fresh clone has every input' 'git'
     printf '%-16s %-34s %s\n' patches     'all 19 patches present (--patches)' 'patch(1)'
     printf '%-16s %-34s %s\n' integration 'live wiki (--integration)' 'a running, installed stack'
@@ -374,6 +378,21 @@ check_patch-ignore_run() { scripts/ci/patch-ignore-check.sh; }
 # affected by CVE-X" answerable at all.
 check_versions_run() { scripts/ci/version-consistency.sh; }
 
+# Known CVEs in the 148 composer-visible packages, compared against the
+# accepted baseline. The only check here that needs the network: it returns 77
+# (SKIP) when the advisory database does not answer, because reporting "no new
+# advisories" on a failed fetch is the one result a security gate must never
+# give.
+check_composer-audit_run() {
+    if ! command -v composer >/dev/null 2>&1 && ! have_docker; then
+        skip composer-audit "no composer on PATH and no docker"; return
+    fi
+    scripts/ci/composer-audit.sh
+    local rc=$?
+    [ "$rc" -eq 77 ] && skip composer-audit "the packagist advisory database did not answer"
+    return $rc
+}
+
 # Manifest schema + target paths. Cheap (no patch(1), no composer), so it runs
 # by default; the full verification needs a composer-installed tree and is
 # opt-in via --patches.
@@ -435,6 +454,7 @@ run_check publiccode   "publiccode.yml schema"
 run_check patch-ignore "patch targets are trackable"
 run_check manifest     "patch manifest schema"
 run_check versions     "VERSIONS.yml matches the tree"
+run_check composer-audit "no new CVEs in composer.lock"
 run_check fresh-clone  "committed tree is complete"
 run_check patches      "all 19 patches in the tree"
 run_check integration  "live wiki serves real traffic"

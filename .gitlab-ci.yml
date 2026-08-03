@@ -234,6 +234,19 @@ version-consistency:
     - apk add --no-cache bash git >/dev/null
     - bash scripts/ci/version-consistency.sh
 
+composer-audit:
+  stage: lint
+  image: composer:2.8
+  <<: *default_rules
+  # The only job in this file that needs the network for its verdict: it reads
+  # app/composer.lock against the packagist advisory database. `allow_failure`
+  # stays false — a new CVE should stop a merge — but the script itself exits
+  # 77 when the database does not answer, so an outage is a loud skip rather
+  # than a false green.
+  script:
+    - apk add --no-cache bash git python3 >/dev/null
+    - bash scripts/ci/composer-audit.sh
+
 # ─── TF — fresh-clone gate ──────────────────────────────────────────
 fresh-clone:
   stage: fresh
