@@ -156,6 +156,15 @@ ENV_STATE="$(hdp_generate_env "$REPO_ROOT")" || { fail "could not prepare .env";
 [ "$ENV_STATE" = "generated" ] && CREATED_ENV=1
 echo "  .env: $ENV_STATE"
 
+# Leftovers from a previous run in this same checkout would make setup.sh skip
+# the install and the seeding, and this job would then assert against a wiki
+# that was never populated. Cannot happen in CI (fresh checkout); happens the
+# second time anyone runs two container jobs in one clone.
+if [ "$ENV_STATE" = "generated" ] && ! hdp_assert_fresh_tree "$REPO_ROOT"; then
+    fail "the working tree is not clean enough to install into"
+    exit 2
+fi
+
 # HDP_LLM_API_KEY is deliberately NOT generated. Without one the chatbot leg
 # asserts the degraded contract (/ready 503, /chat-stream 503), which is the
 # contract CI must hold; with one — exported by whoever runs this on a box —

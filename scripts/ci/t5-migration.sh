@@ -93,24 +93,12 @@ ENV_STATE="$(hdp_generate_env "$REPO_ROOT")" || { fail "could not prepare .env";
 if [ "$ENV_STATE" = "generated" ]; then
     CREATED_ENV=1
     say "generated a throwaway .env from .env.example"
-    # A LocalSettings.php left over from a previous run holds that run's
-    # database password, and app/ is a bind mount, so `docker compose down -v`
-    # does not remove it. setup.sh then skips install.php ("LocalSettings.php
-    # exists"), update.php authenticates with the old password against the new
-    # volume, and the whole thing fails as `DBConnectionError: Access denied`
-    # — which reads like a broken migration and is not one.
-    #
-    # Never in CI, where the checkout is fresh; every time on a developer's
-    # second local run. Refuse rather than delete: this is somebody's working
-    # tree.
-    if [ -f "$REPO_ROOT/app/LocalSettings.php" ]; then
-        fail "app/LocalSettings.php is left over from an earlier run"
-        echo "  This job generated a throwaway .env with new passwords, but that file"
-        echo "  holds the previous run's. setup.sh would skip the install and update.php"
-        echo "  would fail with 'Access denied', which is not a migration failure."
-        echo ""
-        echo "  Remove it and re-run:   rm app/LocalSettings.php"
-        echo "  Or keep your own .env, in which case this job reuses it."
+    # A previous run's LocalSettings.php and seeding markers live in the
+    # bind-mounted tree, not in the volumes, so they survive `down -v` and make
+    # the next run assert against a wiki that was never installed or seeded.
+    # See hdp_assert_fresh_tree in scripts/ci/lib/stack.sh.
+    if ! hdp_assert_fresh_tree "$REPO_ROOT"; then
+        fail "the working tree is not clean enough to install into"
         exit 2
     fi
 else
