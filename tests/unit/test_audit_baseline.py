@@ -124,16 +124,19 @@ def test_the_committed_baseline_is_complete():
 
 
 def test_the_fixable_ones_stay_marked():
-    """These four are fixable by re-vendoring, and the runbook reads this file.
+    """This one is fixable by re-vendoring, and the runbook reads this file.
 
-    If an upgrade drops one of them, delete the entry — do not quietly drop
-    the marker while still carrying the vulnerable version.
+    If an upgrade drops it, delete the entry — do not quietly drop the marker
+    while still carrying the vulnerable version.
+
+    It was four before the 1.43.9 / 5.1.9 upgrade. That upgrade closed three:
+    phpoffice/phpspreadsheet (1.30.1 -> 1.30.6), phpseclib/phpseclib
+    (3.0.48 -> 3.0.56) and universal-omega/dynamic-page-list3
+    (3.6.2.1+BlueSpice511 -> 3.6.4). mediawiki/maps is the one that survived,
+    and it cannot be fixed inside the 5.1 series at all: CVE-2026-52854 is
+    fixed in 12.1.3 and the BlueSpice pro distribution constrains the package
+    to 11.0.*, so only a series bump relaxes it.
     """
     data = json.load(open(BASELINE, encoding="utf-8"))
     flagged = {p for p, e in data["accepted"].items() if "ACTION REQUIRED" in e["why"]}
-    assert flagged == {
-        "mediawiki/maps",
-        "phpoffice/phpspreadsheet",
-        "phpseclib/phpseclib",
-        "universal-omega/dynamic-page-list3",
-    }
+    assert flagged == {"mediawiki/maps"}
