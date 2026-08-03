@@ -21,11 +21,11 @@ This page is the prose; the manifest is the source of truth.
 
 | Class | Count | Applied by | Fails by |
 |---|---|---|---|
-| **A** — composer-clobbered | 2 | `scripts/apply-patches.sh`, called by `docker/setup.sh` | `composer install` reinstalls the package as a dist zipball over the patch |
+| **A** — composer-clobbered | 1 | `scripts/apply-patches.sh`, called by `docker/setup.sh` | `composer install` reinstalls the package as a dist zipball over the patch |
 | **B** — gitignore-swallowed | 0 | — | *(retired, see below)* |
-| **C** — inherited BlueSpice diffs | 17 | `app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh` | the script prints `FAILED!` and continues, with no exit code |
+| **C** — inherited BlueSpice diffs | 18 | `app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh` | the script prints `FAILED!` and continues, with no exit code |
 
-Of the 17 Class-C patches, **one is permanently stale** (`PF_UploadForm.php`,
+Of the 18 Class-C patches, **one is permanently stale** (`PF_UploadForm.php`,
 below), leaving **18 patches that can actually apply**.
 
 ### Getting the count right
@@ -38,30 +38,34 @@ That arithmetic was wrong in two places, and they cancelled out:
   prose says 17 elsewhere; only the table says 16.
 - Class B is now **0**, not 1.
 
-So the total was briefly **20** (2 + 1 + 17), and is now **19** again (2 + 0 +
-17) — the same number as the original estimate, reached a different way. The
+So the total was briefly **20** (2 + 1 + 17), and is now **19** again (1 + 0 +
+18) — the same number as the original estimate, reached a different way. The
 manifest holds **19 sidecars**, and `verify-patches.sh` reports 18 applicable
 plus 1 stale.
 
+The 1 + 18 split is itself post-upgrade arithmetic. Going to BlueSpice 5.1.9
+retired `es-searchcnt` from Class A and added `gallery-slideshow` to Class C,
+so the two classes traded a patch and the total did not move. See "Retired"
+below.
+
 ---
 
-## Class A — composer-clobbered (2)
+## Class A — composer-clobbered (1)
 
-Both live in `app/extensions/BlueSpiceExtendedSearch/`, both are reinstalled
-from a dist zipball by `composer install`, and both are re-applied afterwards by
+It lives in `app/extensions/BlueSpiceExtendedSearch/`, is reinstalled from a
+dist zipball by `composer install`, and is re-applied afterwards by
 `scripts/apply-patches.sh --class A`, which `docker/setup.sh` calls.
 
 | id | Target | Marker |
 |---|---|---|
 | `es-ssl` | `extensions/BlueSpiceExtendedSearch/src/Backend.php` | `// HDP runs OpenSearch with its default self-signed demo certs` |
-| `es-searchcnt` | `extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js` | `// Upstream 5.1.4 fires the 'getResults' hook below with` |
 
-The markers are the comments the patch inserts, not `setSSLVerification` or
-`const $searchCnt`. Matching the code itself would let verify pass if upstream
-one day added its own call while our patch was gone.
+The marker is the comment the patch inserts, not `setSSLVerification`.
+Matching the code itself would let verify pass if upstream one day added its
+own call while our patch was gone.
 
-Note the real path of the second one. The strategy document refers to it as
-`SearchCenter.js`, which matches nothing — the file is
+Note the real path of the retired second one. The strategy document refers to
+it as `SearchCenter.js`, which matches nothing — the file is
 `resources/ext.blueSpiceExtendedSearch.SearchCenter.js`, a flat filename, not
 `resources/<module-dir>/SearchCenter.js`. A `find -name 'SearchCenter.js'`
 returns nothing and will make you think the patch is missing. Use the path
@@ -98,7 +102,27 @@ skin directory without a matching `!/Name/` line is invisible to `git add`.
 That is what the T0 `check-ignore` job is for — it just no longer has a patch
 attached to it.
 
-## Class C — inherited BlueSpice diffs (17)
+## Retired at BlueSpice 5.1.9: `es-searchcnt`
+
+`es-searchcnt` declared the `$searchCnt` that
+`ext.blueSpiceExtendedSearch.SearchCenter.js` fired the
+`bs.extendedsearch.searchcenter.getResults` hook with but never defined — a
+`ReferenceError` out of the `.done()` handler that left the Search Center
+spinning on results the API had already returned.
+
+BlueSpice 5.1.9 deletes both `.fire()` calls. The only `mw.hook` left in the
+file is `bs.extendedSearch.makeLookup`, so there is no longer an undeclared
+variable to declare, and applying the patch just inserts a `const` nothing
+reads. Retired: patch, sidecar and the tree edit are all gone.
+
+Note what made this visible. The patch still *applied* cleanly against 5.1.9 —
+its anchor, `const $altSearchCnt = ...`, is still there — so both
+`apply-patches.sh` and `verify-patches.sh` reported it healthy. A patch that
+applies is not the same as a patch that is still needed, and only reading the
+new upstream tells you which. When triaging an upgrade, check the bug, not
+just the hunk.
+
+## Class C — inherited BlueSpice diffs (18)
 
 `app/_bluespice/patches/**/*.diff`, applied by
 `app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh`, which is fired by
@@ -122,9 +146,16 @@ That one sits under `app/vendor/`, which is wiped by `rm -rf vendor/` on every
 setup run and re-created by composer, so it is re-applied every time rather
 than persisted. Verified present after a full clean-box install.
 
-The remaining 13 target bundled extensions (MultimediaViewer ×3,
-SemanticResultFormats ×3, TextExtracts ×2, PageForms, PdfHandler,
-PluggableAuth, SemanticMediaWiki, VisualEditor).
+The remaining 14 target bundled extensions and core resources
+(MultimediaViewer ×3, SemanticResultFormats ×3, TextExtracts ×2, PageForms,
+PdfHandler, PluggableAuth, SemanticMediaWiki, VisualEditor, and
+`resources/src/mediawiki.page.gallery.slideshow.js`).
+
+`gallery-slideshow` is new in the 5.1.9 patch set — the first addition to the
+inherited patches since this file was written. BlueSpice also re-derived
+`pdfhandler` and `mmv-bootstrap` for 5.1.9; the re-derived `pdfhandler` is
+what kept that row out of AMBER when MediaWiki 1.43.9 reworked the same
+argument list.
 
 ---
 
@@ -288,7 +319,6 @@ The same checks by hand:
 ```bash
 # Class A — marker present?
 grep -c 'setSSLVerification( false )' app/extensions/BlueSpiceExtendedSearch/src/Backend.php
-grep -c 'const \$searchCnt'  app/extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js
 
 # Class C — a patch that is already applied will refuse to apply again.
 # "previously applied" = present. "applies cleanly" = MISSING from the tree.
