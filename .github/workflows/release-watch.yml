@@ -1,0 +1,103 @@
+---
+# Track B of the upstream-security process (§10.3): notice that MediaWiki or
+# BlueSpice released something we do not have.
+#
+# ─── Why an issue and not a pull request ────────────────────────────
+#
+# Renovate can open a PR because a lockfile bump is a diff. This cannot:
+# taking a MediaWiki release in this repository means re-vendoring 53,938
+# committed files and re-applying 19 patches, three of which target core and
+# two of which are on the authentication path. No bot prepares that. What a
+# bot can do is make sure a human hears about it in the same week.
+#
+# ─── Why scheduled and not on push ──────────────────────────────────
+#
+# The answer changes when upstream ships, not when we commit. Making it a gate
+# would also block every merge for a reason no pull request can fix, which is
+# how a pipeline gets ignored.
+#
+# ─── The human backstop ─────────────────────────────────────────────
+#
+# mediawiki-announce. MediaWiki security releases are announced there first and
+# this job sees them up to a week later. Subscribing the maintainer address is
+# a person's job, recorded in SECURITY.md — no workflow can do it.
+
+name: release watch
+
+on:
+  schedule:
+    # Mondays, 06:17 UTC. Off the hour on purpose: scheduled workflows queue
+    # behind everyone else's :00 cron on GitHub's shared runners.
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: release-watch
+  cancel-in-progress: false
+
+jobs:
+  watch:
+    name: poll upstream release feeds
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compare VERSIONS.yml against the release feeds
+        id: watch
+        run: |
+          set +e
+          scripts/ci/release-watch.sh | tee watch.txt
+          rc=${PIPESTATUS[0]}
+          echo "rc=$rc" >> "$GITHUB_OUTPUT"
+          {
+            echo '## release-watch'
+            echo '```'
+            cat watch.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          # 77 means a feed did not answer, which is not "no news". Fail the
+          # job so a broken watcher is visible; a silent green here would be
+          # indistinguishable from being up to date.
+          if [ "$rc" = "77" ]; then
+            echo "::error::release-watch could not read a feed — nothing was compared"
+            exit 1
+          fi
+          exit 0
+
+      - name: File an issue if upstream has moved
+        if: steps.watch.outputs.rc == '1'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Exits 1 by design when there are findings, which is why we are here.
+          scripts/ci/release-watch.sh --issue > payload.json || true
+          title=$(python3 -c 'import json; print(json.load(open("payload.json"))["title"])')
+          python3 -c 'import json; open("body.md","w").write(json.load(open("payload.json"))["body"])'
+
+          # The label may not exist yet, and `gh issue create` fails outright
+          # on an unknown label — which would lose the finding entirely.
+          gh label create upstream-release \
+            --description "Upstream MediaWiki or BlueSpice released a version we do not have" \
+            --color B60205 2>/dev/null || true
+
+          # Deduplicate on the exact title. The title carries the upstream
+          # versions, so a weekly run cannot pile up copies of one finding,
+          # while upstream moving again does produce a new issue.
+          gh issue list --state open --label upstream-release --limit 100 \
+            --json title,number > open.json
+          # One line on purpose: `python3 -c` with an indented first line is an
+          # IndentationError, and a YAML block scalar indents everything.
+          if TITLE="$title" python3 -c 'import json,os,sys; want=os.environ["TITLE"]; sys.exit(0 if any(i["title"]==want for i in json.load(open("open.json"))) else 1)'; then
+            echo "already open — nothing to file"
+            exit 0
+          fi
+
+          gh issue create --title "$title" --body-file body.md \
+            --label upstream-release --label security

@@ -526,6 +526,36 @@ upstream, **never auto-merged** — merging is what triggers the patch
 re-application. It is configured but unproven; no Renovate app is installed on
 this repository yet.
 
+#### Upstream releases (`release-watch`)
+
+Track B, and the only thing in the repo that can notice a **MediaWiki core
+security release**: core here is 53,938 committed files, not a composer
+dependency, so no lockfile bump will ever mention it.
+
+```bash
+scripts/ci/release-watch.sh          # 0 up to date · 1 upstream moved · 77 a feed did not answer
+scripts/ci/release-watch.sh --json
+```
+
+It compares `VERSIONS.yml` against `releases.wikimedia.org` (our branch, and
+newer branches) and `packages.bluespice.com` (BlueSpice's own composer
+repository, via `bluespice/foundation`). `.github/workflows/release-watch.yml`
+runs it weekly and **files an issue**, not a PR — taking a MediaWiki release
+here means re-vendoring the tree and re-applying 19 patches, which no bot can
+prepare. Findings are `ACT` (a patch release on the series we run, where
+security content lands) or `PLAN` (a newer series).
+
+Two properties worth preserving, both tested in
+`tests/unit/test_release_watch.py`: release candidates and `.tar.gz.sig` files
+are **not** releases — the first false alarm is what teaches people to close
+this issue unread — and a feed that fails to answer exits 77 and fails the job,
+because silence must never read as "up to date".
+
+**The human backstop is `mediawiki-announce`.** MediaWiki security releases are
+announced there first and this job sees them up to a week later; subscribing
+the maintainer address is a person's job and no workflow can do it. See
+`SECURITY.md`.
+
 ### Shell behaviour (`bats`)
 
 `tests/bats/` covers `docker/infisical-loader.sh` and nothing else.
