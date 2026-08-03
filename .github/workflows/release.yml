@@ -139,7 +139,15 @@ jobs:
       - name: Assert the tag matches VERSIONS.yml
         run: |
           set -euo pipefail
-          declared=$(python3 -c "import re,sys;print(re.search(r'^\s*bluespice:\s*[\"'\'']?([^\"'\''\s#]+)', open('VERSIONS.yml').read(), re.M).group(1))")
+          # grep+sed, not python: this runs inside a YAML block scalar inside a
+          # shell string, and a python one-liner that has to quote both ' and "
+          # is unreadable and easy to get wrong. VERSIONS.yml declares
+          # `bluespice: '5.1.9'` at column 0, so this is all it takes.
+          declared=$(sed -nE "s/^bluespice:[[:space:]]*['\"]?([^'\"[:space:]#]+).*/\1/p" VERSIONS.yml | head -1)
+          if [ -z "$declared" ]; then
+            echo "::error::could not read 'bluespice:' from VERSIONS.yml"
+            exit 1
+          fi
           tag="${{ steps.rel.outputs.tag }}"
           # v5.1.9-rc1 -> 5.1.9. A pre-release publishes the release it is a
           # candidate for, so only the core version has to match.
