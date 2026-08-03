@@ -212,9 +212,26 @@ def test_a_frozen_package_setup_no_longer_strips_is_drift():
     assert any("does not strip it" in f for f in rep.failures)
 
 
-def test_a_frozen_package_missing_from_the_lockfile_is_drift():
+def test_a_frozen_package_missing_from_the_lockfile_is_NOT_drift():
+    """docker/setup.sh strips both packages from composer.lock in place.
+
+    So the file contains them on a pristine checkout and does not contain them
+    on any installed tree, and both are correct. Requiring presence made
+    `./scripts/check.sh` red after every install, for a reason nobody could fix
+    by editing anything — found on the clean box, running the gate after T4.
+    """
     rep = _run(_decl(), _obs(composer={"bluespice/about": "5.1.4"}))
-    assert any("absent from app/composer.lock" in f for f in rep.failures)
+    assert rep.failures == [], rep.lines
+    assert any("already stripped" in line for line in rep.lines)
+
+
+def test_a_frozen_package_pinned_at_the_wrong_version_is_drift():
+    """What presence *can* honestly assert: it is the version we declared."""
+    decl = _decl(frozen={"hallowelt/chatbot": {
+        "vendored_from": "x", "owner": "y", "why": "z",
+        "last_reviewed": "2026-08-03", "version": "dev-main"}})
+    rep = _run(decl, _obs(composer=dict(_obs()["composer"], **{"hallowelt/chatbot": "dev-other"})))
+    assert any("app/composer.lock says dev-other" in f for f in rep.failures)
 
 
 def test_an_incomplete_frozen_entry_is_drift():
