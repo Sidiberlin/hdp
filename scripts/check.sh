@@ -46,7 +46,7 @@ IMG_COMPOSER="composer:2.8"
 RUFF_PINNED_VERSION="0.16.1"
 
 YAMLLINT_RULES='{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable}}'
-YAML_FILES=(docker-compose.yml docker/ci/compose.cache.yml publiccode.yml VERSIONS.yml docker/haystack/hdp_pipeline.yaml .gitlab-ci.yml .github/workflows/)
+YAML_FILES=(docker-compose.yml docker-compose.prod.yml docker/ci/compose.cache.yml publiccode.yml VERSIONS.yml docker/haystack/hdp_pipeline.yaml .gitlab-ci.yml .github/workflows/)
 
 # ─── Locate the repo ────────────────────────────────────────────────
 REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel 2>/dev/null || true)"
@@ -123,7 +123,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' pytest-haystack 'to_native + load_pipeline' "haystack-ai | $IMG_PYTHON"
     printf '%-16s %-34s %s\n' bats        'infisical-loader.sh behaviour' "bats | ${IMG_BATS%%@*}"
     printf '%-16s %-34s %s\n' php-lint    'syntax of app/settings.d/*.php' "php | $IMG_PHP"
-    printf '%-16s %-34s %s\n' compose     'docker-compose.yml interpolates' 'docker compose v2'
+    printf '%-16s %-34s %s\n' compose     'compose + the prod override merge' 'docker compose v2'
     printf '%-16s %-34s %s\n' gitleaks    'no secrets in owned paths' 'gitleaks | zricethezav/gitleaks'
     printf '%-16s %-34s %s\n' env-example '.env.example covers compose' 'grep'
     printf '%-16s %-34s %s\n' publiccode  'publiccode.yml schema' 'italia/publiccode-parser-go'
@@ -429,6 +429,44 @@ check_compose_run() {
 
     local rc=0
     docker compose config --quiet || rc=1
+
+    # The published-image override is a documented deployment path
+    # (README-DOCKER.md), so it has to parse and it has to actually drop the
+    # inherited `build:` keys. A service left with both `build:` and `image:`
+    # is *built*, not pulled, whenever the image is not already local — which
+    # turns "pull the pre-built images" into a five-minute build with no error
+    # to explain it. `!reset` is what deletes the key, and it is silent when
+    # it does not take, so assert the outcome rather than the syntax.
+    #
+    # `--format json` and stdlib json, not PyYAML: check.sh runs on whatever
+    # python3 a contributor has, and PyYAML is not in the standard library.
+    # This is the same reason scripts/lib/read-manifest.py carries a fallback.
+    if [ -f docker-compose.prod.yml ]; then
+        local merged
+        if ! merged=$(docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+                          config --format json 2>&1); then
+            echo "docker-compose.prod.yml does not merge onto docker-compose.yml:"
+            printf '%s\n' "$merged" | tail -5
+            rc=1
+        elif ! printf '%s' "$merged" | python3 -c '
+import json, sys
+svcs = json.load(sys.stdin)["services"]
+bad = [s for s in ("haystack", "chatbot-proxy", "opensearch") if "build" in svcs.get(s, {})]
+if bad:
+    print("docker-compose.prod.yml leaves a build: on " + ", ".join(bad) + " —")
+    print("those services will be built, not pulled, on a host without the image.")
+    print("each one needs \"build: !reset null\" in the override.")
+    sys.exit(1)
+missing = [s for s in ("haystack", "chatbot-proxy", "opensearch")
+           if not svcs.get(s, {}).get("image", "").startswith("ghcr.io/")]
+if missing:
+    print("docker-compose.prod.yml does not point " + ", ".join(missing) + " at ghcr.io.")
+    sys.exit(1)
+'; then
+            rc=1
+        fi
+    fi
+
     [ "$made_env" -eq 1 ] && rm -f .env
     return $rc
 }
