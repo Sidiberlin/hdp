@@ -551,6 +551,22 @@ are **not** releases — the first false alarm is what teaches people to close
 this issue unread — and a feed that fails to answer exits 77 and fails the job,
 because silence must never read as "up to date".
 
+#### Will the patches survive the upgrade? (`--upgrade-report`)
+
+```bash
+scripts/verify-patches.sh --upgrade-report --tree /path/to/candidate-upstream
+```
+
+The one tool between an upstream bump and silent patch loss. It classifies all
+19 patches as GREEN / BLUE / AMBER / RED / N-A against a candidate tree — full
+table and a worked example against the real MediaWiki 1.43.9 tarball in
+[`patches.md`](patches.md#the-upgrade-report).
+
+The trap worth stating twice: this asks the **opposite** question from
+`verify-patches.sh`. There, a patch that applies cleanly means the patch is
+missing from the tree. Here, a patch that applies cleanly is GREEN. Every state
+is pinned by `tests/bats/upgrade_report.bats`.
+
 **The human backstop is `mediawiki-announce`.** MediaWiki security releases are
 announced there first and this job sees them up to a week later; subscribing
 the maintainer address is a person's job and no workflow can do it. See

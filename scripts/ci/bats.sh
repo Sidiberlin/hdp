@@ -2,7 +2,9 @@
 # ============================================================
 # Wave 2 — the bats runner.
 #
-# Scope is docker/infisical-loader.sh and nothing else, deliberately.
+# Two suites:
+#   infisical_loader.bats  docker/infisical-loader.sh — the Wave 0 security fixes
+#   upgrade_report.bats    verify-patches.sh --upgrade-report — every state
 #
 # docker/setup.sh is the other obvious candidate and is not testable at this
 # level: 557 lines, `set -euo pipefail`, `cd "$MW"` on line 18, and a
@@ -68,8 +70,14 @@ if ! have_docker; then
     exit 77
 fi
 
-# --entrypoint sh because the image's entrypoint is bats itself, and jq/curl
-# have to be installed before the tests run.
+# --entrypoint sh because the image's entrypoint is bats itself, and the
+# dependencies have to be installed before the tests run:
+#   jq, curl   the infisical-loader suite (curl is shadowed by a test double)
+#   python3    read-manifest.py, which verify-patches.sh shells out to
+#   patch      the diff-mode probe in the upgrade report
+# The last two are why upgrade_report.bats exists at all: the image ships
+# neither, and without them every one of its tests fails on the tool rather
+# than on the behaviour.
 docker run --rm --entrypoint sh \
     -v "$REPO_ROOT":/w -w /w "$IMG_BATS" \
-    -c "apk add --no-cache jq curl >/dev/null 2>&1 && bats $TEST_DIR"
+    -c "apk add --no-cache jq curl python3 patch >/dev/null 2>&1 && bats $TEST_DIR"
