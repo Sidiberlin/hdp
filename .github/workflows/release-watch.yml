@@ -81,11 +81,18 @@ jobs:
           title=$(python3 -c 'import json; print(json.load(open("payload.json"))["title"])')
           python3 -c 'import json; open("body.md","w").write(json.load(open("payload.json"))["body"])'
 
-          # The label may not exist yet, and `gh issue create` fails outright
-          # on an unknown label — which would lose the finding entirely.
+          # Both labels, because `gh issue create` fails outright on an unknown
+          # one — "could not add label: 'security' not found", exit 1, and the
+          # finding is lost. Found by running this workflow: `upstream-release`
+          # was guarded and `security` was not, and it is `security` that this
+          # repository did not have. SECURITY.md tells reporters to use that
+          # label, so creating it is right regardless.
           gh label create upstream-release \
             --description "Upstream MediaWiki or BlueSpice released a version we do not have" \
             --color B60205 2>/dev/null || true
+          gh label create security \
+            --description "Security-relevant: vulnerability reports and upstream security releases" \
+            --color D93F0B 2>/dev/null || true
 
           # Deduplicate on the exact title. The title carries the upstream
           # versions, so a weekly run cannot pile up copies of one finding,
