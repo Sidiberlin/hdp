@@ -82,11 +82,15 @@ and your data never leaves your infrastructure.
 | Automated first-boot setup | ✗ | ✗ | ✅ (`setup.sh`) |
 | Healthchecks on all services | ✗ | ✗ | ✅ |
 | Idempotent ingestion (safe to re-run) | ✗ | ✗ | ✅ |
-| CI (lint, secret scan, schema, fresh-clone gate) | ✗ | ✗ | ✅ (GitLab CI, 11 jobs) |
+| CI (lint, secret scan, schema, fresh-clone gate) | ✗ | ✗ | ✅ (16 gates, GitHub + GitLab) |
 | Integration tests against a live wiki | ✗ | ✗ | ✅ (T3: `scripts/ci/t3-integration.sh`) |
 | Full-stack smoke: search results + chatbot, nightly | ✗ | ✗ | ✅ (T4: `scripts/ci/t4-smoke.sh`) |
+| Upgrade tested, not just install (`update.php` on real data) | ✗ | ✗ | ✅ (T5: `scripts/ci/t5-migration.sh`) |
 | One-command local gate matching CI | ✗ | ✗ | ✅ (`./scripts/check.sh`, ~30s) |
 | Patch manifest + integrity verification | ✗ | ✗ | ✅ (19 patches, `scripts/verify-patches.sh`) |
+| One declared version, gated against the tree | ✗ | ✗ | ✅ (`VERSIONS.yml`) |
+| CVE monitoring: composer audit, Renovate, release watch | ✗ | ✗ | ✅ (see [`SECURITY.md`](SECURITY.md)) |
+| Documented upgrade + rollback procedure | ✗ | ✗ | ✅ ([`upgrade-runbook.md`](docs/dev/upgrade-runbook.md)) |
 
 *Note: the table groups related capabilities rather than listing all 167
 bundled extensions individually — see [`docs/dev/AGENTS.md`](docs/dev/AGENTS.md)

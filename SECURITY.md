@@ -1,58 +1,145 @@
-1|1|# Security Policy / Sicherheitsrichtlinie
-2|2|
-3|3|## Reporting a Vulnerability / Melden einer Schwachstelle
-4|4|
-5|5|**EN:**
-6|6|
-7|7|**Do NOT open a public issue for security vulnerabilities.**
-8|8|
-9|9|To report a security issue:
-10|10|1. Open a **confidential** issue in the [GitHub issue tracker](https://github.com/Sieddi/hdp/issues) using the **`security`** label
-11|11|2. Or contact the maintainers directly via GitHub
-12|12|
-13|13|Please include:
-14|14|- Description of the vulnerability
-15|15|- Steps to reproduce or proof of concept
-16|16|- Affected versions (see `publiccode.yml` → `softwareVersion`)
-17|17|- Suggested fix (if any)
-18|18|
-19|19|We will acknowledge receipt within **72 hours** and provide an initial assessment within **7 days**.
-20|20|
-21|21|---
-22|22|
-23|23|**DE:**
-24|24|
-25|25|**Erstellen Sie KEIN öffentliches Issue für Sicherheitslücken.**
-26|26|
-27|27|So melden Sie ein Sicherheitsproblem:
-28|28|1. Erstellen Sie ein **vertrauliches** Issue im [GitHub-Issue-Tracker](https://github.com/Sieddi/hdp/issues) mit dem Template **security** oder dem Label **`security`**
-29|29|2. Oder kontaktieren Sie die Maintainer direkt über GitHub
-30|30|
-31|31|Bitte geben Sie an:
-32|32|- Beschreibung der Schwachstelle
-33|33|- Schritte zur Reproduktion oder Proof of Concept
-34|34|- Betroffene Versionen (siehe `publiccode.yml` → `softwareVersion`)
-35|35|- Vorgeschlagene Lösung (falls vorhanden)
-36|36|
-37|37|Wir bestätigen den Eingang innerhalb von **72 Stunden** und liefern eine Ersteinschätzung innerhalb von **7 Tagen**.
-38|38|
-39|39|---
-40|40|
-41|41|## Supported Versions / Unterstützte Versionen
-42|42|
-43|43|**EN:** Only the latest release (tracked via `publiccode.yml` → `softwareVersion`) receives security updates.
-44|44|
-45|45|**DE:** Nur die neueste Version (verfolgt über `publiccode.yml` → `softwareVersion`) erhält Sicherheitsupdates.
-46|46|
-47|47|## Scope / Geltungsbereich
-48|48|
-49|49|**EN:** This policy covers the HDP Docker distribution, `docker-compose.yml`, `setup.sh`, and the Haystack RAG pipeline. Vulnerabilities in upstream BlueSpice extensions or MediaWiki core should be reported to their respective projects:
-50|50|
-51|51|- MediaWiki: <https://phabricator.wikimedia.org/maniphest/>
-52|52|- BlueSpice: <https://help.bluespice.com/>
-53|53|
-54|54|**DE:** Diese Richtlinie deckt die HDP-Docker-Distribution, `docker-compose.yml`, `setup.sh` und die Haystack-RAG-Pipeline ab. Schwachstellen in Upstream-BlueSpice-Erweiterungen oder MediaWiki-Core sollten bei den jeweiligen Projekten gemeldet werden:
-55|55|
-56|56|- MediaWiki: <https://phabricator.wikimedia.org/maniphest/>
-57|57|- BlueSpice: <https://help.bluespice.com/>
-58|58|
+# Security Policy / Sicherheitsrichtlinie
+
+## Reporting a Vulnerability / Melden einer Schwachstelle
+
+**EN:**
+
+**Do NOT open a public issue for security vulnerabilities.**
+
+To report a security issue:
+1. Open a **confidential** issue in the [GitHub issue tracker](https://github.com/Sidiberlin/hdp/issues) using the **`security`** label
+2. Or contact the maintainers directly via GitHub
+
+Please include:
+- Description of the vulnerability
+- Steps to reproduce or proof of concept
+- Affected versions (see `VERSIONS.yml`)
+- Suggested fix (if any)
+
+We will acknowledge receipt within **72 hours** and provide an initial assessment within **7 days**.
+
+---
+
+**DE:**
+
+**Erstellen Sie KEIN öffentliches Issue für Sicherheitslücken.**
+
+So melden Sie ein Sicherheitsproblem:
+1. Erstellen Sie ein **vertrauliches** Issue im [GitHub-Issue-Tracker](https://github.com/Sidiberlin/hdp/issues) mit dem Template **security** oder dem Label **`security`**
+2. Oder kontaktieren Sie die Maintainer direkt über GitHub
+
+Bitte geben Sie an:
+- Beschreibung der Schwachstelle
+- Schritte zur Reproduktion oder Proof of Concept
+- Betroffene Versionen (siehe `VERSIONS.yml`)
+- Vorgeschlagene Lösung (falls vorhanden)
+
+Wir bestätigen den Eingang innerhalb von **72 Stunden** und liefern eine Ersteinschätzung innerhalb von **7 Tagen**.
+
+---
+
+## Supported Versions / Unterstützte Versionen
+
+**EN:** Only the latest release receives security updates. **`VERSIONS.yml` at
+the repository root is the single source of truth for what version this is** —
+MediaWiki core, BlueSpice, PHP, MariaDB, OpenSearch, Haystack and all 184
+installed extensions. A CI gate (`./scripts/check.sh --only versions`) fails
+the build if that file and the tree disagree, so the answer to *"are we
+affected by CVE-X"* is one file lookup rather than an archaeology exercise.
+
+**DE:** Nur die neueste Version erhält Sicherheitsupdates. **`VERSIONS.yml` im
+Wurzelverzeichnis ist die einzige verbindliche Versionsangabe** — MediaWiki,
+BlueSpice, PHP, MariaDB, OpenSearch, Haystack und alle 184 installierten
+Erweiterungen. Ein CI-Gate schlägt fehl, sobald Datei und Baum voneinander
+abweichen.
+
+## Scope / Geltungsbereich
+
+**EN:** This policy covers the HDP Docker distribution, `docker-compose.yml`, `setup.sh`, and the Haystack RAG pipeline. Vulnerabilities in upstream BlueSpice extensions or MediaWiki core should be reported to their respective projects:
+
+- MediaWiki: <https://phabricator.wikimedia.org/maniphest/>
+- BlueSpice: <https://help.bluespice.com/>
+
+**DE:** Diese Richtlinie deckt die HDP-Docker-Distribution, `docker-compose.yml`, `setup.sh` und die Haystack-RAG-Pipeline ab. Schwachstellen in Upstream-BlueSpice-Erweiterungen oder MediaWiki-Core sollten bei den jeweiligen Projekten gemeldet werden:
+
+- MediaWiki: <https://phabricator.wikimedia.org/maniphest/>
+- BlueSpice: <https://help.bluespice.com/>
+
+---
+
+## How this project watches for vulnerabilities
+
+Three tracks, because the three parts of this tree are visible to completely
+different tooling. Full design in `docs/dev/upgrade-runbook.md`.
+
+### Track A — the composer-visible packages (148 of them)
+
+`composer audit --locked` runs in CI on every push
+(`scripts/ci/composer-audit.sh`). It is compared against
+`docker/ci/composer-audit-baseline.json`, which records the advisories this
+fork **knowingly carries**, with a reason for each, and the gate fails on
+anything new.
+
+The baseline exists because the tree currently carries 34 advisories inherited
+from upstream's dependency choices — `app/composer.json` is upstream's
+`bluespice/core`, so none of those versions is this fork's to pick. A gate that
+is red on every push is a gate people stop reading; a gate that fires on a
+*new* advisory is the signal worth having.
+
+**Four of those entries are marked ACTION REQUIRED** and are fixable only by
+re-vendoring upstream:
+
+| Package | Severity | Fixed in |
+|---|---|---|
+| `phpoffice/phpspreadsheet` | 2 critical, 5 high — parses uploaded spreadsheets | 1.30.6 |
+| `phpseclib/phpseclib` | 2 high — sits under the OIDC client | 3.0.54 |
+| `mediawiki/maps` | high — stored XSS via `display_map` | 12.1.3 |
+| `universal-omega/dynamic-page-list3` | high — exposes suppressed usernames | 3.6.4 |
+
+Renovate (`renovate.json`) opens grouped weekly PRs and **never auto-merges** —
+merging is what triggers the patch re-application this process exists to guard.
+
+### Track B — vendored MediaWiki core and BlueSpice
+
+Invisible to Renovate: MediaWiki core here is 53,938 committed files, not a
+composer dependency. `.github/workflows/release-watch.yml` polls
+`releases.wikimedia.org` and `packages.bluespice.com` weekly, compares them
+against `VERSIONS.yml`, and **opens an issue** on drift.
+
+**The human backstop is the [`mediawiki-announce`](https://lists.wikimedia.org/postorius/lists/mediawiki-announce.lists.wikimedia.org/)
+mailing list.** MediaWiki security releases are announced there first and the
+weekly job sees them up to seven days later. The maintainer address should be
+subscribed; no workflow can do this, and it is the fastest signal available.
+
+### Track C — the two frozen packages
+
+`hallowelt/chatbot` and `mediawiki/page-header` resolve from
+`git@gitlab.hallowelt.com`, a private GitLab this project cannot reach.
+`docker/setup.sh` strips both from `composer.lock` at install time and the
+vendored source under `app/extensions/` is used instead.
+
+**Their security posture is frozen at whatever was vendored.** No tooling will
+ever flag a CVE in them: Renovate cannot resolve them, `composer audit` never
+sees them because they are stripped, and the release-watch job does not know
+they exist.
+
+| Package | Vendored from | Owner |
+|---|---|---|
+| `hallowelt/chatbot` | `gitlab.hallowelt.com/GovTech/mediawiki-extensions-chatbot@d6ab09fb` | **unassigned** |
+| `mediawiki/page-header` | `gitlab.hallowelt.com/BlueSpice/mediawiki-extensions-pageheader@505d0aa4` | **unassigned** |
+
+The declaration lives in `VERSIONS.yml` under `frozen:`, including a
+`last_reviewed` date. The version-consistency gate warns when that date is more
+than six months old and asserts that `setup.sh` still strips both packages — a
+declaration that has drifted from the code is worse than none.
+
+**This is an accepted risk, recorded rather than solved.** The honest options
+are: negotiate read access to the upstream repositories, replace both packages,
+or keep accepting the risk with a named owner and a periodic manual diff.
+Assigning that owner is an open item.
+
+### What none of the three covers
+
+Extensions vendored under `app/extensions/` that are not also composer
+packages. They are inventoried in `VERSIONS.yml` — so a version *change* is
+caught — but no advisory feed is consulted for them.

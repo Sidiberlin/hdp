@@ -30,14 +30,14 @@ docker compose exec mediawiki bash /setup.sh
 
 ### 1. Report Issues / Probleme melden
 
-**EN:** Use the [GitHub issue tracker](https://github.com/Sieddi/hdp/issues). Search existing issues before creating a new one. Include:
+**EN:** Use the [GitHub issue tracker](https://github.com/Sidiberlin/hdp/issues). Search existing issues before creating a new one. Include:
 - BlueSpice HDP version (see `publiccode.yml` → `softwareVersion`)
 - Docker and Docker Compose versions
 - Steps to reproduce
 - Expected vs. actual behavior
 - Relevant log output (`docker compose logs <service>`)
 
-**DE:** Verwenden Sie den [GitHub-Issue-Tracker](https://github.com/Sieddi/hdp/issues). Suchen Sie zunächst in bestehenden Issues. Geben Sie an:
+**DE:** Verwenden Sie den [GitHub-Issue-Tracker](https://github.com/Sidiberlin/hdp/issues). Suchen Sie zunächst in bestehenden Issues. Geben Sie an:
 - BlueSpice-HDP-Version (siehe `publiccode.yml` → `softwareVersion`)
 - Docker- und Docker-Compose-Versionen
 - Schritte zur Reproduktion

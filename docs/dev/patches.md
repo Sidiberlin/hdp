@@ -266,6 +266,12 @@ a component got dropped, and there it has to be chased.
 3. Write `docker/patches/<id>.yaml`. Required keys: `id`, `title`, `class`,
    `mode`, `target`, `stale`, `why`. `mode: insert` also requires `marker`;
    `mode: diff` requires `patch`.
+
+   Consider `anti:` — an ERE matching the **upstream content the patch
+   replaces**, which must not be in the file once the patch is applied. It is
+   checked in every mode, including `diff`, because a fuzzy application can
+   leave both forms in the file and `patch` still reports "previously
+   applied". The two authentication patches carry one for exactly that reason.
 4. `scripts/verify-patches.sh --static` to check the schema, then
    `scripts/verify-patches.sh --id <id>`.
 5. `./scripts/check.sh` before pushing.
