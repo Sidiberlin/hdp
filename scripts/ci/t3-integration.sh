@@ -106,6 +106,14 @@ ENV_STATE="$(hdp_generate_env "$REPO_ROOT")" || { fail "could not prepare .env";
 if [ "$ENV_STATE" = "generated" ]; then
     CREATED_ENV=1
     say "generated a throwaway .env from .env.example"
+    # Leftovers from a previous run in this same checkout would make setup.sh
+    # skip the install and the seeding, and this job would then assert against
+    # a wiki that was never populated. Cannot happen in CI (fresh checkout);
+    # happens the second time anyone runs two container jobs in one clone.
+    if ! hdp_assert_fresh_tree "$REPO_ROOT"; then
+        fail "the working tree is not clean enough to install into"
+        exit 2
+    fi
 else
     say "using the existing .env"
 fi

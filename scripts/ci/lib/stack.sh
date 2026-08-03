@@ -84,3 +84,53 @@ hdp_wait_for_web() {
     done
     curl -s -o /dev/null --max-time 5 "$url/"
 }
+
+# hdp_assert_fresh_tree <repo-root>
+#
+# Refuses to start when a previous run's state is still in the working tree.
+# Returns 1 and explains; the caller decides whether that is fatal.
+#
+# `app/` is a bind mount, so `docker compose down -v` empties the database
+# volume and leaves the *tree* untouched. Two kinds of leftover then make the
+# next run lie about what it tested:
+#
+#   app/LocalSettings.php          setup.sh skips install.php, and update.php
+#                                  authenticates with the previous run's
+#                                  password against the new volume. Surfaces as
+#                                  `DBConnectionError: Access denied`, which
+#                                  reads exactly like a broken migration.
+#   app/cache/.*-populated         setup.sh skips seeding the Main page, the
+#                                  FAQ, the Site: pages and the Help docs, and
+#                                  skips initBackends.php. The wiki comes up
+#                                  empty against a fresh database and T3 fails
+#                                  seven assertions about content that was
+#                                  never written.
+#
+# Both were hit while validating Wave 5, in that order. Neither can happen in
+# CI, where every run starts from a fresh checkout — which is exactly why they
+# are worth a message rather than a debugging session.
+#
+# Nothing is deleted here: this is somebody's working tree.
+hdp_assert_fresh_tree() {
+    local repo_root="$1"
+    local -a leftovers=()
+
+    [ -f "$repo_root/app/LocalSettings.php" ] && leftovers+=("app/LocalSettings.php")
+    local marker
+    for marker in "$repo_root"/app/cache/.*-populated "$repo_root"/app/cache/.extendedsearch-initialized; do
+        [ -e "$marker" ] && leftovers+=("app/cache/$(basename "$marker")")
+    done
+
+    [ "${#leftovers[@]}" -eq 0 ] && return 0
+
+    echo "  A previous run left state in the working tree, and app/ is a bind mount," >&2
+    echo "  so 'docker compose down -v' did not remove it:" >&2
+    printf '    %s\n' "${leftovers[@]}" >&2
+    echo "" >&2
+    echo "  setup.sh would skip the install and the seeding, and this job would then" >&2
+    echo "  assert against a wiki that was never populated." >&2
+    echo "" >&2
+    echo "  Clear it with:  git clean -xfd app/ && git checkout -- app/" >&2
+    echo "  (that also removes app/vendor/, so composer runs again — a few minutes)" >&2
+    return 1
+}
