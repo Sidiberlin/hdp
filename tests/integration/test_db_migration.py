@@ -49,18 +49,52 @@ def test_the_fixture_matches_its_recorded_checksum(repo_root, fixture_meta):
     )
 
 
-def test_the_fixture_was_captured_from_the_declared_release(repo_root, fixture_meta):
-    """The snapshot has to say which release it came from, and be right.
+def _version_tuple(text):
+    """'1.43.9' -> (1, 43, 9). Returns None for anything non-numeric."""
+    parts = text.split(".")
+    if not all(p.isdigit() for p in parts):
+        return None
+    return tuple(int(p) for p in parts)
+
+
+def test_the_fixture_was_captured_from_a_release_at_or_behind_the_declared_one(
+    repo_root, fixture_meta
+):
+    """The snapshot has to say which release it came from, and be plausible.
 
     A migration test whose input is 'some database from some version' cannot
     tell you what it proved.
+
+    This used to require the fixture's release to *equal* the declared one,
+    which is backwards, and the 1.43.5 -> 1.43.9 upgrade is what exposed it.
+    The tier exists to run new code against the previous release's data, so
+    during and after an upgrade the fixture is deliberately one or more
+    releases behind what VERSIONS.yml declares — the runbook says so twice, and
+    says to regenerate the fixture only *after* the upgrade merges. Equality
+    holds exactly when the fixture has been regenerated on the current release,
+    and at that moment update.php is migrating same-version data and the test
+    proves nothing about migration.
+
+    So the real invariant is the ordering: we must know exactly which release
+    the data came from, and it must be at or behind what we now ship. A fixture
+    from a *newer* release than the code is a genuine mistake — it would mean
+    testing a downgrade — and is still caught.
     """
-    declared = (repo_root / "VERSIONS.yml").read_text(encoding="utf-8")
-    assert re.search(rf"^mw_core:\s*'{re.escape(fixture_meta['mw_core'])}'",
-                     declared, re.M), (
-        f"the fixture was captured from MediaWiki {fixture_meta['mw_core']}, which is "
-        f"not what VERSIONS.yml declares. After an upgrade, regenerate the fixture "
-        f"from the OLD release before bumping — that is what makes it a migration test."
+    declared_text = (repo_root / "VERSIONS.yml").read_text(encoding="utf-8")
+    m = re.search(r"^mw_core:\s*'([^']+)'", declared_text, re.M)
+    assert m, "VERSIONS.yml has no mw_core declaration"
+
+    declared, captured = m.group(1), fixture_meta["mw_core"]
+    dv, cv = _version_tuple(declared), _version_tuple(captured)
+    assert dv and cv, (
+        f"cannot order MediaWiki {captured!r} (fixture) against {declared!r} "
+        f"(VERSIONS.yml); both must be plain dotted numbers."
+    )
+    assert cv <= dv, (
+        f"the fixture was captured from MediaWiki {captured}, which is NEWER than "
+        f"the declared {declared}. That tests a downgrade, not a migration. "
+        f"Regenerate it with scripts/ci/make-db-fixture.sh from the release the "
+        f"code actually ships."
     )
 
 
