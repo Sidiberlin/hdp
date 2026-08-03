@@ -11,6 +11,7 @@
 			"Shirayuki",
 			"Suyama",
 			"Tamaki Wakita",
+			"Tensama0415",
 			"背番号4のエース"
 		]
 	},
@@ -31,7 +32,12 @@
 	"bs-categorymanager-collection-var-categorizedpages": "カテゴリのあるページ",
 	"bs-categorymanager-collection-var-uncategorizedpages": "カテゴリのないページ",
 	"bs-categorymanager-rename-category": "カテゴリの名前を変更",
-	"bs-categorymanager-rename-category-new-name": "新しい名前：",
+	"bs-categorymanager-rename-category-new-name": "新しいカテゴリの名前：",
 	"bs-categorymanager-statistics-report-category-pages": "カテゴリ内のページ",
-	"bs-categorymanager-statistics-report-category-pages-axis-value": "ページ数"
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "ページ数",
+	"bs-categorymanager-dialog-action-add-label": "追加",
+	"bs-categorymanager-category-item-rename-label": "改名",
+	"bs-categorymanager-category-item-delete-label": "削除",
+	"bs-categorymanager-dlg-add-title": "カテゴリを追加",
+	"bs-categorymanager-dialog-action-rename-label": "改名"
 }

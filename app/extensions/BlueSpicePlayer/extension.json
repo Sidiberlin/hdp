@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpicePlayer",
-	"version": "5.1.4",
+	"version": "5.1.9",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpicePlayer",
 	"author": [
@@ -37,11 +37,11 @@
 	"ResourceModules": {
 		"ext.bluespice.showtime": {
 			"scripts": [
-				"vendor/plyr/js/plyr.js",
+				"lib/plyr/plyr.js",
 				"bluespice.bluespiceplayer.js"
 			],
 			"styles": [
-				"vendor/plyr/css/plyr.css",
+				"lib/plyr/plyr.css",
 				"plyr.settings.css"
 			]
 		}
@@ -50,6 +50,7 @@
 		"localBasePath": "resources",
 		"remoteExtPath": "BlueSpicePlayer/resources"
 	},
+	"ForeignResourcesDir": "resources/lib",
 	"config_prefix": "bsg",
 	"config": {
 		"ShowtimePrefWidth": {

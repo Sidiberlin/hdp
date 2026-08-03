@@ -59,5 +59,7 @@
 	"bs-pro-distribution-config-link-titles-source-ns-help": "לנתח רק דפים במרחבי השם האלה.",
 	"bs-pro-distribution-config-link-titles-target-ns": "מרחב השם של היעד",
 	"bs-pro-distribution-config-link-titles-target-ns-help": "לקשר רק לדפים במרחבי השם האלה",
-	"bs-pro-distribution-config-link-titles-same-ns": "לקשר רק לדפים באותם מרחבי השם כמו דף המקור"
+	"bs-pro-distribution-config-link-titles-same-ns": "לקשר רק לדפים באותם מרחבי השם כמו דף המקור",
+	"bs-pro-distribution-droplet-ec-embed-url-label": "כתובת URL",
+	"bs-pro-distribution-ec-config-domain-whitelist": "רשימה לבנה של תחומים"
 }

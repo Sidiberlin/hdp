@@ -20,7 +20,6 @@ class MainPanelSkinSlotRendererTest extends TestCase {
 	public function testSortItems(): void {
 		$reflectionClass = new ReflectionClass( MainPanelSkinSlotRenderer::class );
 		$sortItems = $reflectionClass->getMethod( 'sortItems' );
-		$sortItems->setAccessible( true );
 		$mainPanelSkinSlotRenderer = $this->createMock( MainPanelSkinSlotRenderer::class );
 
 		$items = [

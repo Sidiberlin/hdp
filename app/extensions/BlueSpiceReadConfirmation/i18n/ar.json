@@ -46,5 +46,22 @@
 	"bs-readconfirmation-logentry-confirm-suffix-as-of": "(بدءًا من $1 )",
 	"bs-readconfirmation-uto-task-header": "مطلوب تأكيد القراءة",
 	"bs-readconfirmation-uto-task-body-diff": "انظر التغييرات منذ آخر قراءة تأكيد",
-	"bs-readconfirmation-confirm-read-aria-description": "طلب تأكيد القراءة"
+	"bs-readconfirmation-confirm-read-aria-description": "طلب تأكيد القراءة",
+	"bs-readconfirmation-dlg-title": "اقرأ التأكيدات",
+	"bs-readconfirmation-dlg-label-page": "اقرأ تأكيد الصفحة \" $1 \"",
+	"bs-readconfirmation-view-confirmations": "عرض تأكيدات القراءة",
+	"bs-readconfirmation-api-confirmation-error-no-valid-title": "لا يوجد عنوان صفحة صالح متاح",
+	"bs-readconfirmation-api-confirmation-error-no-assignment-title": "لا يوجد عنوان صالح لتخصيص الصفحات",
+	"bs-readconfirmation-api-confirmation-error-no-read-permission": "لا يوجد إذن لعرض تأكيدات القراءة",
+	"bs-readconfirmation-page-info-read-confirmations": "اقرأ التأكيدات",
+	"action-readconfirmationviewconfirmations": "عرض حالة تأكيدات القراءة",
+	"right-readconfirmationviewconfirmations": "عرض حالة تأكيدات القراءة",
+	"bs-readconfirmation-page-info-user": "مستخدم",
+	"bs-readconfirmation-page-info-confirmation": "تأكيد",
+	"readconfirmation-event-confirmation-request-key-desc": "يلزم تأكيد القراءة",
+	"readconfirmation-event-confirmation-request": "{{GENDER:$1|طلب}} تأكيد قراءة الصفحة $2",
+	"readconfirmation-event-confirmation-request-bot": "لقد طُلب منك تأكيد أنك قد قرأت الصفحة $1",
+	"readconfirmation-event-confirmation-remind-key-desc": "تذكير بتأكيد القراءة المعلق",
+	"readconfirmation-event-confirmation-remind-bot": "تذكير: يرجى التأكد من قراءة الصفحة $1",
+	"readconfirmation-event-confirmation-links-intro": "يرجى زيارة الصفحة عبر الرابط التالي للتأكد من قراءة الصفحة."
 }

@@ -35,6 +35,7 @@ class ApiBooksOverviewStore extends \BlueSpice\Api\Store {
 			$this->services->getPermissionManager(),
 			$this->services->getHookContainer(),
 			$this->services->getRepoGroup(),
+			$this->services->getMainWANObjectCache()
 		);
 	}
 }

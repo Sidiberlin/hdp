@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ucukor",
 			"W"
 		]
 	},
@@ -8,5 +9,6 @@
 	"bs-expiry-article-label": "Старонка",
 	"bs-expiry-unknown-page-msg": "Старонка не існуе.",
 	"bs-expiry-edit-grid-header-date": "Дата",
-	"bs-expiry-create-reminder-label": "Стварыць напамін"
+	"bs-expiry-create-reminder-label": "Стварыць напамін",
+	"bs-expiry-header-action-edit": "Рэдагаваць"
 }

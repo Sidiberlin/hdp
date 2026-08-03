@@ -138,7 +138,14 @@ class DefaultBreadCrumbRendererTest extends MediaWikiIntegrationTestCase {
 				'/wiki/Main_Page',
 				'/wiki/Dummy/ABC',
 				[ 'rawmessage' ]
-			]
+			],
+			'specialpage-edit-watchlist' => [
+				Title::newFromText( 'Special:EditWatchlist' ),
+				[ 'title' => 'Special:EditWatchlist/raw' ],
+				$specialpagesPath,
+				'/wiki/Special:EditWatchlist',
+				[ 'bs-discovery-breadcrumb-label-special-editwatchlist-raw' ]
+			],
 		];
 	}
 

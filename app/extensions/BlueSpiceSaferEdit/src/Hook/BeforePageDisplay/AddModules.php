@@ -39,8 +39,19 @@ class AddModules extends BeforePageDisplay {
 	 * @return bool
 	 */
 	private function shouldShowWarning() {
+		$context = $this->getContext();
+		$title = $context->getTitle();
+		if ( !$title ) {
+			return false;
+		}
+
 		$result = false;
 		$this->seManager->askEnvironmentalCheckers( 'shouldShowWarning', $result );
+
+		/** Only show warning if the user can edit the page */
+		$userCanEdit = $context->getAuthority()->probablyCan( 'edit', $title );
+		$result = $result && $userCanEdit;
+
 		return $result;
 	}
 }

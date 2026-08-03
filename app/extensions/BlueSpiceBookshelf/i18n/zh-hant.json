@@ -189,5 +189,9 @@
 	"bs-bookshelf-search-center-context-books-label": "在{{PLURAL:$1|書籍}}'''$2'''",
 	"bs-bookshelf-newbook-dlg-action-create-label": "建立",
 	"bs-bookshelf-formelement-book-input": "書籍",
-	"bs-bookshelf-formelement-book-input-return-value-label": "回傳屬性"
+	"bs-bookshelf-formelement-book-input-return-value-label": "回傳屬性",
+	"bs-bookshelf-searchbook-ve-placeholder-label": "搜尋欄位的佔位符文字",
+	"bs-bookshelf-searchbook-ve-placeholder-help": "此處顯示的文字作為搜尋欄位中的佔位符。",
+	"bs-bookshelf-searchbook-ve-placeholder-text": "要搜尋的類型…",
+	"bs-bookshelf-droplet-search-book-label": "選擇書籍進行搜尋"
 }

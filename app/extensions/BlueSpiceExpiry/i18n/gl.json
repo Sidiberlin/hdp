@@ -85,5 +85,6 @@
 	"bs-expiry-pref-enable-pdf-watermark": "Mostrar a marca de auga no PDF",
 	"bs-expiry-pref-enable-pdf-watermark-help": "Engade unha marca de auga nas páxinas caducadas na saída en formato PDF",
 	"bs-expiry-event-expiry-today-desc": "A páxina está marcada como caducada hoxe",
-	"bs-expiry-event-expiry-one-week-desc": "A páxina conta como caducada nunha semana"
+	"bs-expiry-event-expiry-one-week-desc": "A páxina conta como caducada nunha semana",
+	"bs-expiry-notification-generic-links-intro": "Podes visitar a páxina directamente usando a seguinte ligazón"
 }

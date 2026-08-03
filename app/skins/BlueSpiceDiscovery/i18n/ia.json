@@ -195,5 +195,18 @@
 	"bs-discovery-sidebar-primary-cnt-aria-label": "Navigation principal",
 	"bs-discovery-sidebar-secondary-cnt-aria-label": "Instrumentos de pagina",
 	"bs-discovery-tools-after-content-cnt-aria-label": "Information additional sur le pagina",
-	"bs-discovery-data-after-content-cnt-aria-label": "Appendice del pagina"
+	"bs-discovery-data-after-content-cnt-aria-label": "Appendice del pagina",
+	"bs-discovery-footer-places-alt-text-mediawiki": "Actionate per MediaWiki",
+	"bs-discovery-footer-places-alt-text-bluespice": "Actionate per BlueSpice",
+	"bs-discovery-footer-places-alt-text-semanticmediawiki": "Actionate per Semantic MediaWiki",
+	"bs-discovery-breadcrumb-label-special-editwatchlist-raw": "Modificar",
+	"bs-discovery-breadcrumb-label-special-editwatchlist-clear": "Rader",
+	"bs-discovery-breadcrumb-nav-root-node-title": "Monstrar tote le paginas in le spatio de nomines $1",
+	"bs-discovery-personalurl-blog-text": "Blog",
+	"bs-discovery-menu-provider-namespace-tree-label": "Tote le paginas",
+	"bs-discovery-menu-provider-namespace-tree-desc": "Tote le paginas del spatio de nomines actual como arbore",
+	"bs-discovery-namespace-tree-pnl-header-text": "Paginas",
+	"bs-discovery-namespace-tree-search-btn-label": "Monstrar recerca",
+	"bs-discovery-namespace-tree-create-btn-label": "Crear un nove pagina",
+	"bs-discovery-namespace-tree-search-label": "Cercar un pagina"
 }

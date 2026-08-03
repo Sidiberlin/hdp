@@ -6,7 +6,10 @@ use MediaWiki\Config\Config;
 use MediaWiki\Config\ConfigFactory;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
+use MWStake\MediaWiki\Component\Utils\DisplayTitleHelper;
+use MWStake\MediaWiki\Component\Utils\UtilityFactory;
 use stdClass;
+use WANObjectCache;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\LoadBalancer;
 
@@ -23,17 +26,29 @@ class ChapterLookup {
 	/** @var Config */
 	private $config = null;
 
+	/** @var DisplayTitleHelper|DisplayTitleHelper */
+	private DisplayTitleHelper $displayTitleHelper;
+
+	/** @var WANObjectCache */
+	private $wanCache = null;
+
 	/**
 	 * @param LoadBalancer $loadBalancer
 	 * @param TitleFactory $titleFactory
 	 * @param ConfigFactory $configFactory
+	 * @param UtilityFactory $utilityFactory
+	 * @param WANObjectCache $wanCache
 	 */
 	public function __construct(
-		LoadBalancer $loadBalancer, TitleFactory $titleFactory, ConfigFactory $configFactory
+		LoadBalancer $loadBalancer, TitleFactory $titleFactory,
+		ConfigFactory $configFactory, UtilityFactory $utilityFactory,
+		WANObjectCache $wanCache
 	) {
 		$this->loadBalancer = $loadBalancer;
 		$this->titleFactory = $titleFactory;
 		$this->config = $configFactory->makeConfig( 'bsg' );
+		$this->displayTitleHelper = $utilityFactory->getDisplayTitleHelper();
+		$this->wanCache = $wanCache;
 	}
 
 	/**
@@ -41,6 +56,48 @@ class ChapterLookup {
 	 * @return array
 	 */
 	public function getChaptersOfBook( Title $title ): array {
+		$cacheKey = $this->wanCache->makeGlobalKey(
+			'bsBookshelf', 'chapters',
+			(string)$title->getNamespace(), $title->getDBKey()
+		);
+		$checkKey = $this->makeChaptersCheckKey( $title );
+
+		return $this->wanCache->getWithSetCallback(
+			$cacheKey,
+			WANObjectCache::TTL_DAY,
+			function () use ( $title ) {
+				return $this->doGetChaptersOfBook( $title );
+			},
+			[ 'checkKeys' => [ $checkKey ] ]
+		);
+	}
+
+	/**
+	 * Invalidate the chapters cache for a book page. Call this whenever the NS_BOOK
+	 * page is saved, deleted, or moved so the next request repopulates the cache.
+	 *
+	 * @param Title $book
+	 */
+	public function invalidateChaptersOfBookCache( Title $book ): void {
+		$this->wanCache->touchCheckKey( $this->makeChaptersCheckKey( $book ) );
+	}
+
+	/**
+	 * @param Title $book
+	 * @return string
+	 */
+	private function makeChaptersCheckKey( Title $book ): string {
+		return $this->wanCache->makeGlobalKey(
+			'bsBookshelf', 'chapters-check',
+			(string)$book->getNamespace(), $book->getDBKey()
+		);
+	}
+
+	/**
+	 * @param Title $title
+	 * @return array
+	 */
+	private function doGetChaptersOfBook( Title $title ): array {
 		$pages = [];
 
 		$db = $this->loadBalancer->getConnection( DB_REPLICA );
@@ -77,6 +134,69 @@ class ChapterLookup {
 		}
 
 		return $pages;
+	}
+
+	/**
+	 * Get first valid chapter title for a book, ignoring chapters with invalid titles
+	 *
+	 * @param Title $bookTitle
+	 * @param array $ignoreChapters
+	 *
+	 * @return Title|null if no valid chapter title is found
+	 */
+	public function getFirstChapterTitle( Title $bookTitle, array $ignoreChapters = [] ): ?Title {
+		$db = $this->loadBalancer->getConnection( DB_REPLICA );
+		$query = $db->newSelectQueryBuilder()
+			->select( [ 'chapter_id', 'chapter_namespace', 'chapter_title' ] )
+			->from( 'bs_books', 'b' )
+			->from( 'bs_book_chapters', 'bc' )
+			->join( 'bs_book_chapters', 'bc', [ 'b.book_id = bc.chapter_book_id' ] )
+			->where( [
+				'b.book_namespace' => $bookTitle->getNamespace(),
+				'b.book_title' => $bookTitle->getDBKey(),
+				'bc.chapter_namespace IS NOT NULL'
+			] )
+			->orderBy( [ 'bc.chapter_number' ], 'ASC' )
+			->limit( 1 );
+
+		if ( !empty( $ignoreChapters ) ) {
+			// Mechanism to retry query if chapter title is invalid, ignoring previously found invalid chapter ids
+			$query->where( 'bc.chapter_id NOT IN (' . $db->makeList( $ignoreChapters ) . ')' );
+		}
+		$res = $query->fetchRow();
+
+		if ( !$res ) {
+			return null;
+		}
+		$title = $this->titleFactory->makeTitleSafe(
+			$res->chapter_namespace,
+			$res->chapter_title
+		);
+		if ( !$title ) {
+			return $this->getFirstChapterTitle( $bookTitle, array_merge( $ignoreChapters, [ $res->chapter_id ] ) );
+		}
+		return $title;
+	}
+
+	/**
+	 * @param Title $bookTitle
+	 * @return int
+	 */
+	public function countChapters( Title $bookTitle ): int {
+		$count = $this->loadBalancer->getConnection( DB_REPLICA )->newSelectQueryBuilder()
+			->select( [ 'COUNT(*) as chapter_count' ] )
+			->table( 'bs_books', 'b' )
+			->table( 'bs_book_chapters', 'bc' )
+			->where( [
+				'b.book_namespace' => $bookTitle->getNamespace(),
+				'b.book_title' => $bookTitle->getDBKey(),
+			] )
+			->join( 'bs_book_chapters', 'bc', [ 'b.book_id = bc.chapter_book_id' ] )
+			->fetchField();
+		if ( !$count ) {
+			return 0;
+		}
+		return (int)$count;
 	}
 
 	/**
@@ -206,7 +326,7 @@ class ChapterLookup {
 
 			if ( $title->canExist() ) {
 				// Check if page property displaytitle is set
-				$name = $this->makeName( $title, $title->getText(), $db );
+				$name = $this->makeName( $title, $title->getText() );
 
 				if ( $this->config->get( 'BookshelfTitleDisplayText' )
 					&& $result->chapter_name !== $title->getSubpageText()
@@ -266,24 +386,11 @@ class ChapterLookup {
 	/**
 	 * @param Title $title
 	 * @param string $name
-	 * @param IDatabase $db
 	 * @return string
 	 */
-	private function makeName( Title $title, string $name, IDatabase $db ): string {
-		$res = $db->select(
-			'page_props',
-			[ '*' ],
-			[
-				'pp_page' => $title->getId(),
-				'pp_propname' => 'displaytitle'
-			],
-			__METHOD__
-		);
-
-		foreach ( $res as $row ) {
-			$name = $row->pp_value;
-		}
-		return $name;
+	private function makeName( Title $title, string $name ): string {
+		$display = $this->displayTitleHelper->getDisplayTitle( $title );
+		return $display ?? $name;
 	}
 
 	/**

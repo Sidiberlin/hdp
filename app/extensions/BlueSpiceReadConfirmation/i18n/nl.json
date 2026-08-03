@@ -4,7 +4,8 @@
 			"HanV",
 			"Mainframe98",
 			"McDutchie",
-			"Romaine"
+			"Romaine",
+			"Siebrand"
 		]
 	},
 	"bs-readconfirmation-desc": "Uitbreiding om leesbevestigingen voor een pagina te verzamelen",
@@ -42,7 +43,7 @@
 	"bs-readconfirmation-api-error-not-active-ns": "Leesbevestigingen zijn niet ingeschakeld voor deze naamruimte",
 	"bs-readconfirmation-disabled-ns": "Leesbevestigingen niet ingeschakeld",
 	"bs-readconfirmation-disabled-ns-short": "Uitgeschakeld",
-	"bs-readconfirmation-navigation-link-title": "Toont een overzicht van alle openstaande leesbevestigingen",
+	"bs-readconfirmation-navigation-link-title": "Overzicht van alle openstaande leesbevestigingen",
 	"bs-readconfirmation-navigation-link-text": "Gevraagde leesbevestigingen",
 	"bs-readconfirmation-graphicallist-btn-read": "Lezen",
 	"bs-readconfirmation-privacy-transparency-working-rc": "BlueSpiceReadConfirmation: U hebt bevestigd dat u op $3 de pagina $1 (versie $2) hebt gelezen",

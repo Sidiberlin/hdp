@@ -13,6 +13,8 @@ bs.filterableTables.ui.grid.FilterableTable = function ( cfg ) {
 		'bs-exportable'
 	];
 
+	this.overallWidth = this.getTableWidth( cfg.$table );
+
 	cfg = this.makeGridCfg( cfg );
 	cfg.classes = [ 'bs-filtertable' ];
 
@@ -20,12 +22,26 @@ bs.filterableTables.ui.grid.FilterableTable = function ( cfg ) {
 
 	const classes = this.getTableClassNames( cfg.$table );
 	this.$table.addClass( classes.join( ' ' ) ); // eslint-disable-line mediawiki/class-doc
+	setTimeout( () => {
+		// Execute in next event loop to ensure proper sizing
+		if ( this.overallWidth ) {
+			// Explicit table width set
+			this.$table.css( 'width', this.overallWidth );
+			this.$table.css( 'min-width', 'unset' );
+			// If table is narrower than whole container, resize the container and make table 100%
+			if ( this.$element.width() > this.$table.width() ) {
+				this.$element.css( 'width', this.$table.width() + 'px' );
+				this.$table.css( 'width', '100%' );
+			}
+		}
+	}, 1 );
 };
 
 OO.inheritClass( bs.filterableTables.ui.grid.FilterableTable, OOJSPlus.ui.data.GridWidget );
 
 bs.filterableTables.ui.grid.FilterableTable.prototype.makeGridCfg = function ( cfg ) {
 	const $table = cfg.$table || '';
+
 	if ( $table.find( 'caption' ).length > 0 ) {
 		const captionNodes = cfg.$table.find( 'caption' )[ 0 ].childNodes;
 		let caption = '';
@@ -150,6 +166,7 @@ bs.filterableTables.ui.grid.FilterableTable.prototype.extractMappings = function
 		filter: {
 			type: attributes.type
 		},
+		maxLabelLength: Number.MAX_SAFE_INTEGER, // ERM45005: Disable truncation
 		autoClosePopup: true,
 		valueParser: ( value ) => {
 			// If the value has a sort/display divider, return the display part for rendering
@@ -157,7 +174,7 @@ bs.filterableTables.ui.grid.FilterableTable.prototype.extractMappings = function
 				const [ sort, display ] = value.split( '|SORT_DISPLAY_DIVIDER|', 2 ); // eslint-disable-line no-unused-vars
 				return display || value;
 			}
-			if ( value.startsWith( '<a' ) ) {
+			if ( /<a[\s>]/.test( value ) ) {
 				return new OO.ui.HtmlSnippet( value );
 			}
 			return value;
@@ -252,9 +269,9 @@ bs.filterableTables.ui.grid.FilterableTable.prototype.getElHeaderText = function
 
 bs.filterableTables.ui.grid.FilterableTable.prototype.getElText = function ( $el ) {
 	// Preserve links
-	const anchor = $el.find( 'a' ).get( 0 );
-	if ( anchor ) {
-		return anchor.outerHTML;
+	const $anchors = $el.find( 'a' );
+	if ( $anchors.length ) {
+		return $el.html().trim();
 	}
 
 	let text = $el.text();
@@ -290,4 +307,16 @@ bs.filterableTables.ui.grid.FilterableTable.prototype.formatDate = function ( $e
 
 	// Store both sort and display value
 	$el.text( `${ sortVal }|SORT_DISPLAY_DIVIDER|${ displayVal }` );
+};
+
+bs.filterableTables.ui.grid.FilterableTable.prototype.getTableWidth = function ( $table ) {
+	const attrs = this.getElAttributes( $table );
+	if ( attrs.width ) {
+		return attrs.width;
+	}
+	const parsedWidth = this.parseColumnWidthFromAttribute( attrs.style || '' );
+	if ( parsedWidth ) {
+		return parsedWidth;
+	}
+	return null;
 };

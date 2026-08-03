@@ -8,11 +8,13 @@ use MediaWiki\Config\Config;
 use MediaWiki\Context\IContextSource;
 use MediaWiki\Context\RequestContext;
 use MediaWiki\HookContainer\HookContainer;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Permissions\PermissionManager;
 use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\User;
 use MWStake\MediaWiki\Component\DataStore\ReaderParams;
 use RepoGroup;
+use WANObjectCache;
 use Wikimedia\Rdbms\LoadBalancer;
 
 class Reader extends \MWStake\MediaWiki\Component\DataStore\Reader {
@@ -53,6 +55,9 @@ class Reader extends \MWStake\MediaWiki\Component\DataStore\Reader {
 	/** @var BookMetaLookup */
 	private $bookMetaLookup = null;
 
+	/** @var WANObjectCache */
+	private $wanCache;
+
 	/**
 	 *
 	 * @param IContextSource $context
@@ -64,12 +69,13 @@ class Reader extends \MWStake\MediaWiki\Component\DataStore\Reader {
 	 * @param RepoGroup $repoGroup
 	 * @param ChapterLookup $bookChapterLookup
 	 * @param BookMetaLookup $bookMetaLookup
+	 * @param WANObjectCache|null $wanCache
 	 */
 	public function __construct(
 		IContextSource $context, Config $config, LoadBalancer $loadBalancer,
 		TitleFactory $titleFactory, PermissionManager $permissionManager,
 		HookContainer $hookRunner, RepoGroup $repoGroup, ChapterLookup $bookChapterLookup,
-		BookMetaLookup $bookMetaLookup
+		BookMetaLookup $bookMetaLookup, ?WANObjectCache $wanCache = null
 	) {
 		$context = RequestContext::getMain();
 		$this->config = $config;
@@ -83,6 +89,10 @@ class Reader extends \MWStake\MediaWiki\Component\DataStore\Reader {
 		$this->repoGroup = $repoGroup;
 		$this->bookChapterLookup = $bookChapterLookup;
 		$this->bookMetaLookup = $bookMetaLookup;
+		$this->wanCache = $wanCache;
+		if ( $this->wanCache === null ) {
+			$this->wanCache = MediaWikiServices::getInstance()->getMainWANObjectCache();
+		}
 	}
 
 	/**
@@ -92,7 +102,7 @@ class Reader extends \MWStake\MediaWiki\Component\DataStore\Reader {
 	 */
 	protected function makePrimaryDataProvider( $params ) {
 		$db = $this->loadBalancer->getConnection( DB_REPLICA );
-		return new PrimaryDataProvider( $db );
+		return new PrimaryDataProvider( $db, $this->getSchema(), $this->wanCache );
 	}
 
 	/**

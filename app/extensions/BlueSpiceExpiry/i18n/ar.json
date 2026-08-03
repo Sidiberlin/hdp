@@ -77,5 +77,21 @@
 	"log-description-bs-expiry": "سجل الإجراءات المتعلقة بانتهاء صلاحية الصفحة",
 	"logentry-bs-expiry-expired": "انتهت صلاحية الصفحة $3",
 	"logentry-bs-expiry-change-date": "$1 {{GENDER:$2| تم تغيير}} تاريخ انتهاء الصلاحية على الصفحة $3",
-	"logentry-bs-expiry-delete": "$1 {{GENDER:$2| تم حذف}} انتهاء صلاحية الصفحة $3"
+	"logentry-bs-expiry-delete": "$1 {{GENDER:$2| تم حذف}} انتهاء صلاحية الصفحة $3",
+	"bs-expiry-event-today-desc": "تنتهي صلاحية الصفحة اليوم",
+	"bs-expiry-event-one-week-desc": "تنتهي صلاحية الصفحة خلال أسبوع واحد",
+	"bs-expiry-event-today": "تنتهي صلاحية الصفحة $1 اليوم.<br><br> يرجى مراجعة محتوى الصفحة لتحديد ما إذا كانت بحاجة إلى تحديث.",
+	"bs-expiry-event-today-with-comment": "تنتهي صلاحية الصفحة $1 اليوم.<br><br> يرجى مراجعة محتوى الصفحة لتحديد ما إذا كانت بحاجة إلى تحديث.<br><br> تعليق من تاريخ انتهاء الصلاحية:<br> <b>$2</b>",
+	"bs-expiry-event-one-week": "تنتهي صلاحية الصفحة $1 خلال أسبوع واحد.<br><br> يرجى مراجعة محتوى الصفحة لتحديد ما إذا كانت بحاجة إلى تحديث.",
+	"bs-expiry-event-one-week-with-comment": "تنتهي صلاحية الصفحة $1 خلال أسبوع واحد.<br><br> يرجى مراجعة محتوى الصفحة لتحديد ما إذا كانت بحاجة إلى تحديث.<br><br> تعليق من تاريخ انتهاء الصلاحية:<br> <b>$2</b>",
+	"bs-expiry-title-edit": "تعديل تاريخ الانتهاء",
+	"bs-expiry-title-add": "أضف تاريخ انتهاء الصلاحية",
+	"bs-expiry-header-action-edit": "عدل",
+	"bs-expiry-header-action-delete": "حذف",
+	"bs-expiry-pref-enable-page-watermark": "عرض لامارك",
+	"bs-expiry-pref-enable-page-watermark-help": "يضيف علامة مائية على صفحة منتهية الصلاحية",
+	"bs-expiry-pref-enable-pdf-watermark": "إظهار العلامة المائية في ملف PDF",
+	"bs-expiry-pref-enable-pdf-watermark-help": "يضيف علامة مائية للصفحات منتهية الصلاحية في ملف PDF الناتج",
+	"bs-expiry-event-expiry-today-desc": "تم وضع علامة \"منتهية الصلاحية\" على الصفحة اليوم.",
+	"bs-expiry-event-expiry-one-week-desc": "تم اعتبار الصفحة منتهية الصلاحية خلال أسبوع واحد"
 }

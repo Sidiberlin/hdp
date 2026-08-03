@@ -12,31 +12,29 @@ class Extension extends \BlueSpice\Extension {
 	];
 
 	/**
-	 *
 	 * @param int $articleId
 	 * @param bool|null $onlyExpired
 	 * @return \stdClass|false
 	 */
 	public static function getExpiryForPage( $articleId, $onlyExpired = true ) {
-		// Terrible -.-
 		$type = $onlyExpired ? 'queryExpired' : 'queryAll';
 		// basic caching, do not ask for an article id twice per call
 		if ( isset( self::$expirys[$type][$articleId] ) ) {
 			return self::$expirys[$type][$articleId];
 		}
 
+		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()->getConnection( DB_REPLICA );
 		$conds = [ 'exp_page_id' => $articleId ];
 		if ( $onlyExpired ) {
-			$conds[] = 'exp_date <= CURDATE()';
+			$conds[] = 'exp_date <= ' . $dbr->addQuotes( $dbr->timestamp( time() ) );
 		}
-		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()
-			->getConnection( DB_REPLICA );
-		$res = $dbr->select(
-			[ 'bs_expiry' ],
-			'*',
-			$conds,
-			__METHOD__
-		);
+
+		$res = $dbr->newSelectQueryBuilder()
+			->table( 'bs_expiry' )
+			->fields( '*' )
+			->where( $conds )
+			->caller( __METHOD__ )
+			->fetchResultSet();
 
 		if ( $res && $res->numRows() ) {
 			$row = $res->fetchRow();

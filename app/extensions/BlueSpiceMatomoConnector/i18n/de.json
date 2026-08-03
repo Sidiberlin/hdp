@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Brettchenweber",
-			"Josef Konrad <konrad@hallowelt.biz>"
+			"Josef Konrad <konrad@hallowelt.biz>",
+			"Mschlindwein"
 		]
 	},
 	"bs-matomoconnector-extension-description": "Erlaubt die Anbindung von Matomo an das Wiki, um Dashboards in Matomo zu erstellen",
@@ -14,5 +15,8 @@
 	"bs-matomoconnector-optout-footerlink": "Analysedienste",
 	"bs-matomoconnector-pref-baseurl-help": "Die URL der Matomo-Installation ohne Seiten-ID.",
 	"bs-matomoconnector-pref-optoutfooter-help": "Aktiviert den Link \"Analysedienste\" in der Wiki-Fußzeile. Die Seite Analysedienste beinhaltet ein Matomo-Opt-out-Kontrollkästchen.",
-	"bs-matomoconnector-pref-siteid-help": "Matomo-Seiten-ID. Sichtbar als URL-Parameter in der Adressleiste des Browsers, wenn {{#FORMAL:du|Sie}} bei Matomo angemeldet {{#FORMAL:bist|sind}}."
+	"bs-matomoconnector-pref-siteid-help": "Matomo-Seiten-ID. Sichtbar als URL-Parameter in der Adressleiste des Browsers, wenn {{#FORMAL:du|Sie}} bei Matomo angemeldet {{#FORMAL:bist|sind}}.",
+	"bs-matomoconnector-pref-bsprivacyintegration": "BlueSpicePrivacy-Integration",
+	"bs-matomoconnector-pref-authtoken": "Authentifizierungstoken",
+	"bs-matomoconnector-privacy-cookie-group": "Matomo"
 }

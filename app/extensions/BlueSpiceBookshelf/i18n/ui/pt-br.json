@@ -75,5 +75,7 @@
 	"bs-bookshelfui-panel-navigation-text": "Para reservar a navegação",
 	"bs-bookshelfui-panel-navigation-title": "Voltar à navegação do livro",
 	"bs-bookshelfui-panel-navigation-aria-label": "Para reservar a navegação",
-	"bs-bookshelfui-panel-navigation-aria-desc": "Navegação do livro como estrutura em árvore"
+	"bs-bookshelfui-panel-navigation-aria-desc": "Navegação do livro como estrutura em árvore",
+	"bs-bookshelfui-bookmetatag-bookshelf": "Estante de livros",
+	"bs-bookshelfui-bookmetatag-bookshelfimage": "Imagem da estante de livros"
 }

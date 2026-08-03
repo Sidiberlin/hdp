@@ -380,6 +380,8 @@ class NonMinorEdit implements IMechanism {
 	}
 
 	/**
+	 * Only major (non-minor) revisions
+	 *
 	 * @param array $pageIds
 	 * @return array in form [ <page_id> => <rev_id>, ... ]
 	 */
@@ -391,14 +393,21 @@ class NonMinorEdit implements IMechanism {
 		}
 
 		$res = $this->dbLoadBalancer->getConnection( DB_REPLICA )->newSelectQueryBuilder()
-			->from( 'page' )
-			->select( [ 'page_id', 'page_latest' ] )
-			->where( [ 'page_id' => $pageIds ] )
+			->table( 'revision' )
+			->fields( [
+				'rev_page AS page_id',
+				'MAX(rev_id) AS latest_major_rev'
+			] )
+			->where( [
+				'rev_page' => $pageIds,
+				'rev_minor_edit' => 0
+			] )
+			->groupBy( 'rev_page' )
 			->caller( __METHOD__ )
 			->fetchResultSet();
 
 		foreach ( $res as $row ) {
-			$recentData[ (int)$row->page_id ] = (int)$row->page_latest;
+			$recentData[ (int)$row->page_id ] = (int)$row->latest_major_rev;
 		}
 
 		return $recentData;

@@ -46,7 +46,9 @@ return [
 		$provider = new ChapterLookup(
 			$services->getDBLoadBalancer(),
 			$services->getTitleFactory(),
-			$services->getConfigFactory()
+			$services->getConfigFactory(),
+			$services->getService( 'MWStakeCommonUtilsFactory' ),
+			$services->getMainWANObjectCache()
 		);
 		return $provider;
 	},

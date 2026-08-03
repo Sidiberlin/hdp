@@ -61,8 +61,7 @@ class Extension extends \BlueSpice\Extension {
 		mwsInitComponents();
 		$GLOBALS['mwsgWikitextNodeProcessorRegistry'] += [
 			'bs-bookshelf-chapter-plain-text' => [
-				'class' => ChapterPlainTextProcessor::class,
-				'services' => [ 'TitleFactory' ]
+				'class' => ChapterPlainTextProcessor::class
 			],
 			'bs-bookshelf-chapter-wikilink-with-alias' => [
 				'class' => ChapterWikiLinkWithAliasProcessor::class,

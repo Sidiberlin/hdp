@@ -1,0 +1,15 @@
+plyr:
+  license: MIT
+  homepage: https://github.com/sampotts/plyr
+  authors: Sam Potts
+  version: 3.7.8
+  purl: pkg:npm/plyr@3.7.8
+  type: tar
+  src: https://registry.npmjs.org/plyr/-/plyr-3.7.8.tgz
+  integrity: sha384-DIWAuuPBOHPtGXs6fhu0LzCTZMwvNofZPiUViB5z6SKUPY+2WqahivVZHhOweMlG
+  dest:
+    package/dist/plyr.css:
+    package/dist/plyr.js:
+    package/dist/plyr.svg:
+    package/LICENSE.md:
+    package/README.md:

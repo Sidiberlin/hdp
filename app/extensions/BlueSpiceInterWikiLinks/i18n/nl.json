@@ -9,15 +9,15 @@
 		]
 	},
 	"bs-interwikilinks-desc": "Beheerinterface voor het toevoegen, bewerken en verwijderen van interwiki-koppelingen",
-	"bs-interwikilinks-invalid-pfx-spc": "Het voorvoegsel is ongeldig. Gebruik geen spaties.",
-	"bs-interwikilinks-invalid-url-spc": "De URL is ongeldig. Gebruik geen spaties.",
+	"bs-interwikilinks-invalid-pfx-spc": "Het voorvoegsel is onjuist. Gebruik geen spaties.",
+	"bs-interwikilinks-invalid-url-spc": "De URL is onjuist. Gebruik geen spaties.",
 	"bs-interwikilinks-label": "Interwikilinks",
 	"bs-interwikilinks-link-created": "De interwikikoppeling is aangemaakt.",
 	"bs-interwikilinks-link-added": "De interwikikoppeling is toegevoegd.",
 	"bs-interwikilinks-link-deleted": "De interwikikoppeling is verwijderd.",
 	"bs-interwikilinks-nooldpfx": "Het vorige voorvoegsel is niet gevonden.",
 	"bs-interwikilinks-nopfx": "Geef een voorvoegsel op.",
-	"bs-interwikilinks-nourl": "Geef een URL op.",
+	"bs-interwikilinks-nourl": "Geef een url op.",
 	"bs-interwikilinks-pfxtoolong": "Het voorvoegsel is te lang. Gebruik maximaal 32 tekens.",
 	"bs-interwikilinks-pfxexists": "Dit voorvoegsel bestaat al.",
 	"bs-interwikilinks-headerprefix": "Voorvoegsel",
@@ -26,9 +26,10 @@
 	"bs-interwikilinks-labelprefix": "Voorvoegsel",
 	"bs-interwikilinks-titledeleteinterwikilink": "Interwikilink verwijderen",
 	"bs-interwikilinks-confirmdeleteinterwikilink": "Weet u zeker dat u deze interwikikoppeling wilt verwijderen?",
-	"bs-interwikilinks-link-edited": "De interwiki-link is aangepast",
+	"bs-interwikilinks-link-edited": "De interwiki-koppeling is aangepast",
 	"apihelp-bs-interwikilinks-tasks-summary": "Voorziet in de taken voor de uitbreiding InterWikiLinks.",
 	"action-interwikilinks-viewspecialpage": "de speciale pagina \"{{int:bs-interwikilinks-label}}\" te bekijken",
 	"interwikilinks": "Interwikilinks",
-	"right-interwikilinks-viewspecialpage": "Toegang hebben tot de speciale pagina [[Special:InterWikiLinks]]"
+	"right-interwikilinks-viewspecialpage": "Toegang hebben tot de speciale pagina [[Special:InterWikiLinks]]",
+	"bs-interwikilinks-url-validate-fail": "De url kon niet worden gevalideerd."
 }

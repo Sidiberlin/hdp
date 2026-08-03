@@ -145,12 +145,15 @@ class ReadConfirmation extends AttentionIndicator {
 				'pa_assignee_key' => [ $this->user->getName() ],
 				'pa_assignee_type' => 'user'
 			],
-			[
-				'pa_assignee_key' => $this->userGroupManager->getUserGroups( $this->user ),
-				'pa_assignee_type' => 'group'
-			],
 			[ 'pa_assignee_type' => 'everyone' ]
 		];
+		$userGroups = $this->userGroupManager->getUserGroups( $this->user );
+		if ( !empty( $userGroups ) ) {
+			$cases[] = [
+				'pa_assignee_key' => $userGroups,
+				'pa_assignee_type' => 'group',
+			];
+		}
 		$ids = [];
 		foreach ( $cases as $conditions ) {
 			$res = $this->selectPageIds( $conditions );
@@ -172,12 +175,10 @@ class ReadConfirmation extends AttentionIndicator {
 		}
 
 		foreach ( $ids as $id ) {
-			if ( empty( $userReadConfirmations[$id]['latest_read_rev'] ) ) {
-				$count++;
-				continue;
-			}
-			if ( $userReadConfirmations[$id]['latest_rev']
-				== $userReadConfirmations[$id]['latest_read_rev'] ) {
+			if (
+				!empty( $userReadConfirmations[$id]['latest_read_rev'] ) &&
+				$userReadConfirmations[$id]['latest_rev'] == $userReadConfirmations[$id]['latest_read_rev']
+			) {
 				continue;
 			}
 			$title = $this->titleFactory->newFromID( $id );

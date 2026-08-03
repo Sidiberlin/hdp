@@ -26,5 +26,12 @@
 	"bs-categorymanager-rename-category": "Renomear categoria",
 	"bs-categorymanager-rename-category-new-name": "Novo nome de categoria:",
 	"bs-categorymanager-statistics-report-category-pages": "Páginas em categorias",
-	"bs-categorymanager-statistics-report-category-pages-axis-value": "Número de páginas"
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "Número de páginas",
+	"bs-categorymanager-dialog-action-add-label": "Adicionar",
+	"bs-categorymanager-add-category-label": "Nome da categoria",
+	"bs-configmanager-tool-create-category-label": "Criar categoria",
+	"bs-categorymanager-category-item-rename-label": "Renomear",
+	"bs-categorymanager-category-item-delete-label": "Excluir",
+	"bs-categorymanager-dlg-add-title": "Adicionar categoria",
+	"bs-categorymanager-dialog-action-rename-label": "Renomear"
 }

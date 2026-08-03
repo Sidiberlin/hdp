@@ -61,5 +61,12 @@
 	"bs-pro-distribution-config-link-titles-source-ns-help": "Nur Seiten in diesen Namensräumen analysieren",
 	"bs-pro-distribution-config-link-titles-target-ns": "Zielnamensräume",
 	"bs-pro-distribution-config-link-titles-target-ns-help": "Verweise nur auf Seiten in diesen Namensräumen",
-	"bs-pro-distribution-config-link-titles-same-ns": "Verweise nur auf Seiten im gleichen Namensraum wie die Quellseite"
+	"bs-pro-distribution-config-link-titles-same-ns": "Verweise nur auf Seiten im gleichen Namensraum wie die Quellseite",
+	"bs-pro-distribution-droplet-embed-name": "Externe Inhalte",
+	"bs-pro-distribution-droplet-embed-desc": "Externe Inhalte aus Git-Repositories einbetten, z. B. Markdown-Dateien",
+	"bs-pro-distribution-droplet-bitbucket-name": "BitBucket-Datei",
+	"bs-pro-distribution-droplet-bitbucket-desc": "Datei aus dem BitBucket-Repository einbetten",
+	"bs-pro-distribution-droplet-ec-embed-url-label": "URL",
+	"bs-pro-distribution-droplets-ec-embed-lang-label": "Sprache der eingebetteten Inhalte",
+	"bs-pro-distribution-droplets-ec-embed-show-line-numbers-label": "Zeilennummern anzeigen"
 }

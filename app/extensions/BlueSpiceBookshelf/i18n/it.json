@@ -99,5 +99,7 @@
 	"bs-bookshelf-books-overview-page-book-action-export-book-title": "Esporta libro $1",
 	"bs-bookshelf-books-overview-page-book-action-export-book-text": "Esporta",
 	"bs-bookshelf-book-page-book-action-export-book": "Esporta",
-	"bs-bookshelf-droplet-bookpdf-desc": "Aggiunge un collegamento per esportare un libro selezionato in formato PDF"
+	"bs-bookshelf-droplet-bookpdf-desc": "Aggiunge un collegamento per esportare un libro selezionato in formato PDF",
+	"bs-bookshelf-entrypoint-action-book-aria-label": "Crea libro",
+	"bs-bookshelf-entrypoint-action-book-aria-title": "Crea libro"
 }

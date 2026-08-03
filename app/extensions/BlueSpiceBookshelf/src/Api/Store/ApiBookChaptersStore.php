@@ -24,7 +24,8 @@ class ApiBookChaptersStore extends \BlueSpice\Api\Store {
 		return new Store(
 			new Context( RequestContext::getMain(), $this->getConfig() ),
 			$this->getConfig(),
-			$this->services->getDBLoadBalancer()
+			$this->services->getDBLoadBalancer(),
+			$this->services->getMainWANObjectCache()
 		);
 	}
 }

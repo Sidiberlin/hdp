@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceCategoryCheck",
-	"version": "5.1.4",
+	"version": "5.1.9",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceCategoryCheck",
 	"author": [
@@ -68,11 +68,15 @@
 		"BSApiNamespaceStoreMakeData": "BlueSpice\\CategoryCheck\\Hook\\BSApiNamespaceStoreMakeData\\AddData::callback",
 		"NamespaceManager::editNamespace": "BlueSpice\\CategoryCheck\\Hook\\NamespaceManagerEditNamespace\\SetCategoryCheckValue::callback",
 		"NamespaceManagerBeforePersistSettings": "writeNamespaceConfiguration",
-		"BSUsageTrackerRegisterCollectors": "\\BlueSpice\\CategoryCheck\\Hook\\BSUsageTrackerRegisterCollectors\\CategoryCheckEnabled::callback"
+		"BSUsageTrackerRegisterCollectors": "\\BlueSpice\\CategoryCheck\\Hook\\BSUsageTrackerRegisterCollectors\\CategoryCheckEnabled::callback",
+		"NamespaceManagerCollectNamespaceProperties": "addNamespaceProperties"
 	},
 	"HookHandlers": {
 		"writeNamespaceConfiguration": {
 			"class": "\\BlueSpice\\CategoryCheck\\Hook\\WriteNamespaceConfiguration"
+		},
+		"addNamespaceProperties": {
+			"class": "\\BlueSpice\\CategoryCheck\\Hook\\NamespaceManagerCollectNamespaceProperties\\AddNamespaceProperties"
 		}
 	},
 	"manifest_version": 2

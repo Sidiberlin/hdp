@@ -5,6 +5,7 @@
 			"Josve05a",
 			"Mjälten",
 			"Sabelöga",
+			"Stefan2255",
 			"Technic2",
 			"WikiPhoenix"
 		]
@@ -23,5 +24,23 @@
 	"bs-categorymanager-collection-var-categorizedpages": "Sidor med kategorier",
 	"bs-categorymanager-collection-var-uncategorizedpages": "Sidor utan kategorier",
 	"bs-categorymanager-rename-category": "Byt namn på kategori",
-	"bs-categorymanager-rename-category-new-name": "Nytt kategorinamn:"
+	"bs-categorymanager-rename-category-new-name": "Visa kategorisida",
+	"bluespicecategorymanager-desc": "Visuellt verktyg för att hantera kategorier",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-title": "Kategorin finns redan",
+	"bs-categorymanager-addcategory-dialog-error-duplicate-text": "Försök med ett annat kategorinamn",
+	"bs-categorymanager-statistics-report-category-pages": "Sidor med kategorier",
+	"bs-categorymanager-statistics-report-category-pages-desc": "Antal sidor i en kategori under vald period och intervall, filtrerbart efter namnrymd",
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "Antal sidor",
+	"bs-categorymanager-dialog-action-add-label": "Lägg till",
+	"bs-categorymanager-removecategory-confirm": "Kategorin $1 är borttagen",
+	"bs-categorymanager-dialog-create-category-placeholder": "Lägg till en kategori",
+	"bs-categorymanager-add-category-label": "Kategorinamn",
+	"bs-configmanager-tool-create-category-label": "Skapa kategori",
+	"bs-categorymanager-movecategory-confirm": "Kategorin $1 har flyttats",
+	"bs-categorymanager-category-item-rename-label": "Byt namn",
+	"bs-categorymanager-category-item-view-label": "Visa kategorisida",
+	"bs-categorymanager-category-item-delete-label": "Radera",
+	"bs-categorymanager-dlg-add-title": "Lägg till kategori",
+	"bs-categorymanager-dialog-action-rename-label": "Byt namn",
+	"bs-categorymanager-dlg-create-category-exists-label": "En kategori med detta namn finns redan. Välj ett annat namn."
 }

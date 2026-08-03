@@ -3,7 +3,8 @@
 		"authors": [
 			"Cxz",
 			"MITO",
-			"Pyscowicz"
+			"Pyscowicz",
+			"Yupik"
 		]
 	},
 	"bs-categorymanager-text": "Luokat",
@@ -11,5 +12,6 @@
 	"bs-categorymanager-removecategoryconfirm-text": "Haluatko varmasti poistaa tämän luokan?",
 	"bs-categorymanager-removecategoryconfirm-title": "Poista luokka",
 	"bs-categorymanager-addcategory-dialog-error-title": "Luokan luonti epäonnistui",
-	"bs-categorymanager-collection-var-namespacename": "Nimiavaruus"
+	"bs-categorymanager-collection-var-namespacename": "Nimiavaruus",
+	"bs-categorymanager-dlg-add-title": "Lisää luokka"
 }

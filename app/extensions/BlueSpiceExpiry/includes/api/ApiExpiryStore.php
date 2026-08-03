@@ -6,7 +6,6 @@ use MediaWiki\Title\Title;
 class ApiExpiryStore extends BSApiExtJSStoreBase {
 
 	/**
-	 *
 	 * @param string $mainModule
 	 * @param string $moduleName
 	 * @param string $modulePrefix
@@ -16,7 +15,6 @@ class ApiExpiryStore extends BSApiExtJSStoreBase {
 	}
 
 	/**
-	 *
 	 * @param string $sQuery
 	 *
 	 * @return array
@@ -165,7 +163,6 @@ class ApiExpiryStore extends BSApiExtJSStoreBase {
 	}
 
 	/**
-	 *
 	 * @return bool
 	 */
 	public function isReadMode() {
@@ -173,7 +170,6 @@ class ApiExpiryStore extends BSApiExtJSStoreBase {
 	}
 
 	/**
-	 *
 	 * @param string $sQuery
 	 * @return array
 	 */
@@ -222,7 +218,6 @@ class ApiExpiryStore extends BSApiExtJSStoreBase {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	protected function getDescription() {
