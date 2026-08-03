@@ -198,6 +198,7 @@ scripts/verify-patches.sh --list          # the inventory
 scripts/verify-patches.sh --explain <id>  # what this patch is for
 scripts/verify-patches.sh --stale         # patches that can never apply
 scripts/verify-patches.sh --static        # schema + paths only, no patch(1)
+scripts/verify-patches.sh --upgrade-report --tree DIR   # will they survive DIR?
 
 scripts/apply-patches.sh                  # put back whatever is missing
 scripts/apply-patches.sh --id es-ssl      # just one
@@ -213,6 +214,48 @@ Run the verifier **after** composer, which is when patches disappear. On a fresh
 clone before `setup.sh` has run, `app/vendor/` does not exist yet, so the
 `oidc-client` target is legitimately absent; `--static` reports it as
 not-applicable rather than missing.
+
+### The upgrade report
+
+`--upgrade-report` answers a different question from everything above, and
+mixing the two up is the easiest way to misread it:
+
+| | question | a patch that applies cleanly means |
+|---|---|---|
+| `verify-patches.sh` | is this patch in the tree right now? | it is **missing** |
+| `--upgrade-report` | will this patch still work against *that* tree? | it is **GREEN** |
+
+Same probe, opposite reading, because the trees are different. Point `--tree`
+at a candidate upstream — an extracted `mediawiki-1.43.9`, or a branch where
+the re-vendor commit has landed and nothing has been re-applied yet.
+
+| State | Meaning | Action |
+|---|---|---|
+| **GREEN** | applies cleanly | none |
+| **BLUE** | already in the file: applied here, or upstream adopted it | on a fresh upstream tree, delete the patch, the sidecar and the `.diff` |
+| **AMBER** | target is there, patch does not apply — upstream moved the code | re-derive by hand; this is the regression signal |
+| **RED** | target gone, or the anti-pattern matched | blocker — do not ship |
+| **N/A** | the whole component is absent from that tree | nothing was evaluated; not a pass |
+
+Exit is `0` only when every patch was evaluated and none needs work; AMBER, RED
+**and N/A** all exit `1`, because a report that skipped eight patches is not a
+clean report.
+
+Run against the working tree it prints BLUE for everything — the patches are
+already applied there. That is correct, and it is why BLUE exists.
+
+A worked example, against the real MediaWiki 1.43.9 tarball (2026-08-03):
+
+```
+9 GREEN  0 BLUE  1 AMBER  0 RED  8 not evaluated  1 stale   of 19
+```
+
+All three MediaWiki **core** patches are GREEN against 1.43.9 — the most
+valuable single line in this document, since those are the ones a core security
+release is most likely to break. `pdfhandler` is AMBER: `Hunk #1 FAILED at
+226`. The eight N/A are the BlueSpice extensions and `app/vendor/`, which a
+core tarball does not contain — on a real re-vendored branch an N/A would mean
+a component got dropped, and there it has to be chased.
 
 ### Adding a patch
 

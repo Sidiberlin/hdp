@@ -110,8 +110,9 @@ pytest-haystack:
     - python -m pytest tests/haystack
 
 # ─── Shell behaviour ────────────────────────────────────────────────
-# docker/infisical-loader.sh only. docker/setup.sh is a 557-line top-to-bottom
-# installer under `set -euo pipefail`; asserting its exit code needs MariaDB
+# Two suites: docker/infisical-loader.sh, and verify-patches.sh's upgrade
+# report. docker/setup.sh remains out of scope — it is a 557-line top-to-bottom
+# installer under `set -euo pipefail`, so asserting its exit code needs MariaDB
 # and composer, which is Wave 3's integration job, not this one.
 #
 # Pinned by digest rather than :latest. A moving tag means this job's verdict
@@ -127,7 +128,10 @@ bats:
     entrypoint: [""]
   <<: *default_rules
   before_script:
-    - apk add --no-cache jq curl > /dev/null
+    # jq/curl for the loader suite; python3 and patch for the upgrade-report
+    # suite, which drives verify-patches.sh and would otherwise fail on the
+    # missing tool rather than on the behaviour under test.
+    - apk add --no-cache jq curl python3 patch > /dev/null
   script:
     - bats tests/bats
 
