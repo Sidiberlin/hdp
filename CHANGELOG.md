@@ -11,6 +11,31 @@ For changes in the upstream BlueSpice HDP Edition, see the
 
 ## [Unreleased]
 
+### Changed
+- **Upgraded MediaWiki 1.43.5 → 1.43.9 and BlueSpice 5.1.4 → 5.1.9.** Applied as
+  upstream deltas rather than a tree replacement, so BlueSpice's own core
+  modifications and this fork's patches survive. Covers MediaWiki core, its 37
+  bundled extensions and skins (submodules, and so absent from the core diff),
+  all 59 `bluespice/*` packages, and the 39 further distribution extensions
+  whose constraints resolve forward alongside a BlueSpice bump.
+- `bluespice/package-wikifarm` is 5.1.10 — upstream ships it ahead of the
+  series, as it did at 5.1.5 against 5.1.4. Recorded as a `VERSIONS.yml`
+  exception rather than pinned back.
+
+### Security
+- **28 of 34 known composer advisories cleared**, including both criticals.
+  `phpoffice/phpspreadsheet` 1.30.1 → 1.30.6 (2 critical + 5 high; parses
+  user-uploaded spreadsheets), `phpseclib/phpseclib` 3.0.48 → 3.0.56 (2 high;
+  sits under the OIDC client), `universal-omega/dynamic-page-list3` → 3.6.4
+  (exposed suppressed usernames).
+- **`mediawiki/maps` remains vulnerable** to CVE-2026-52854 (high, stored XSS
+  via `display_map`). The fix is in 12.1.3; BlueSpice constrains the package to
+  `11.0.*`, so no upgrade within the 5.1 series can clear it. Tracked in
+  `docker/ci/composer-audit-baseline.json`.
+- MediaWiki 1.43.9 adds `SVGCSSChecker`, `UnsafeLogFormatter` and
+  `GetSecurityLogContextHook`; OATHAuth's base32 padding fix (T408225,
+  T401393) is now upstream's rather than a distribution backport.
+
 ### Fixed
 - Track 58 missing BlueSpiceDiscovery skin files (fonts, JS, PHP classes, tests) — fresh clones now produce a fully-rendered skin
 - `publiccode.yml` license corrected from invalid `GPLv3.0` to SPDX-valid `GPL-3.0-only`; country codes uppercased to match schema

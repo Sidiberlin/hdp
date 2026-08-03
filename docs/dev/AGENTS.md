@@ -589,11 +589,14 @@ asserts is that both are still named in setup.sh's strip list, and that if they
 
 #### Known CVEs (`composer-audit`)
 
-`composer audit --locked` is the only automated CVE signal for the 148
-composer-visible packages. On this tree it reports **34 advisories across 12
-packages, two of them critical** — none of which is this fork's choice, since
+`composer audit --locked` is the only automated CVE signal for the
+composer-visible packages. On this tree it reports **6 advisories across 3
+packages, one of them high** — none of which is this fork's choice, since
 `app/composer.json` is upstream's `bluespice/core` and every affected package
-is a transitive dependency of MediaWiki 1.43.5 / BlueSpice 5.1.4.
+is a transitive dependency of MediaWiki 1.43.9 / BlueSpice 5.1.9.
+
+It read 34 advisories across 12 packages, two critical, until the 1.43.9 /
+5.1.9 upgrade cleared 28 of them. That is what the upgrade was for.
 
 A bare audit as a gate would therefore be red on every push, and a permanently
 red gate gets ignored. So the report is compared against
@@ -607,12 +610,19 @@ scripts/ci/composer-audit.sh --report           # composer's own table
 scripts/ci/composer-audit.sh --update-baseline  # re-record; reasons are kept
 ```
 
-Four baseline entries are marked **ACTION REQUIRED**: `phpoffice/phpspreadsheet`
-(2 critical, parses uploaded spreadsheets), `phpseclib/phpseclib` (2 high, sits
-under the OIDC client), `mediawiki/maps` and
-`universal-omega/dynamic-page-list3` (high, leaks suppressed usernames). All
-four are fixable *only* by re-vendoring upstream — read them at the start of
-every upgrade, they are the reason to take one.
+Four baseline entries used to be marked **ACTION REQUIRED**, all fixable only
+by re-vendoring upstream. The 1.43.9 / 5.1.9 upgrade closed three of them:
+`phpoffice/phpspreadsheet` 1.30.1 → 1.30.6 (was 2 critical, parses uploaded
+spreadsheets), `phpseclib/phpseclib` 3.0.48 → 3.0.56 (was 2 high, sits under
+the OIDC client), and `universal-omega/dynamic-page-list3` → 3.6.4 (leaked
+suppressed usernames).
+
+The fourth, `mediawiki/maps` (high, CVE-2026-52854, stored XSS via
+`display_map`), **did not move and cannot**: the fix is in 12.1.3 and
+`_bluespice/build/bluespice-pro-distribution/composer.json` constrains it to
+`11.0.*`. No amount of re-vendoring inside the 5.1 series will clear it — only
+a BlueSpice series bump that relaxes that constraint. Read the ACTION REQUIRED
+entries at the start of every upgrade; they are the reason to take one.
 
 This gate is blind to MediaWiki core (vendored source, not a composer package —
 that is Track B, the release-watch job) and to the two frozen packages.

@@ -19,7 +19,7 @@ marker: '// HDP runs OpenSearch with its default self-signed demo certs'
 anti: ''
 group: ''
 stale: false
-upstream_version: 'bluespice/extendedsearch 5.1.4'
+upstream_version: 'bluespice/extendedsearch 5.1.9'
 regex: ERE
 why: >-
   OpenSearch in this stack ships a self-signed certificate and the client

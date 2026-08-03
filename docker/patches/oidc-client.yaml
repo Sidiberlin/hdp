@@ -14,7 +14,7 @@ hunks: 1
 anti: '\$claims->aud === \$this->clientID'
 stale: false
 group: ''
-upstream_version: 'BlueSpice 5.1.4 (inherited patch set)'
+upstream_version: 'BlueSpice 5.1.9 (inherited patch set)'
 regex: n/a
 why: >-
   Security-critical: patches the OIDC authentication library. Lives under
