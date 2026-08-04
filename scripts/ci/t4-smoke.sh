@@ -17,6 +17,9 @@
 #   scripts/ci/t4-smoke.sh --no-ingest    skip the ~8 minute reindex
 #   scripts/ci/t4-smoke.sh --cache        add the buildx GHA layer cache
 #
+# HDP_T4_MIN_DISK_GB=0 skips the free-space precondition; see the disk section
+# below for why there is one.
+#
 # ─── How this differs from T3, and why T4 is a separate job ─────────
 #
 # T3 runs four containers and skips the two expensive ones. That is the right
@@ -109,6 +112,72 @@ fail() { printf '\033[0;31mT4 FAILED: %s\033[0m\n' "$*" >&2; }
 
 command -v docker >/dev/null 2>&1 || { fail "no docker on PATH"; exit 2; }
 docker compose version >/dev/null 2>&1 || { fail "docker compose v2 is required"; exit 2; }
+
+# ─── disk, before anything expensive ────────────────────────────────
+#
+# OpenSearch stops accepting writes when its data path crosses the flood-stage
+# watermark (95% by default). Index creation then returns 403 `cluster
+# create-index blocked (api)` and every write 429 `disk usage exceeded
+# flood-stage watermark, index has read-only-allow-delete block`.
+#
+# Nothing about that is loud. The stack still boots, setup.sh still reports
+# "0 failures", and the job runs to completion — an hour later — with four
+# assertion failures claiming the search index is empty and the ingester
+# produced 9 documents instead of 153. That is run 30837800993, on the
+# v5.1.9-rc1 tag: the block was already in place at setup time, eight minutes
+# in, and everything after it was the ingester retrying against a read-only
+# index.
+#
+# So the check is here rather than nowhere, and up front rather than after the
+# build: it turns a 67-minute job that dies confusingly into a ten-second one
+# that names the cause. Measured on docker's data root, not on $PWD — images
+# and volumes are what fill up, and on CI runners the two are often different
+# filesystems.
+#
+# Where 14 comes from, measured on the box after a full run: haystack 2.57 GB,
+# the custom opensearch (ingest-attachment) 2.47 GB, the two wikimedia PHP
+# bases 1.04 + 1.51 GB, mariadb 0.47 GB, chatbot-proxy 0.18 GB — call it 8.5 GB
+# of images — plus ~1.7 GB of volumes once the model cache is warm, plus build
+# scratch. 14 leaves a little room above the flood-stage watermark rather than
+# sitting on it.
+#
+# It is a floor, not a measurement of the runner: nobody has ever recorded free
+# space on a GitHub runner for this job, which is why the reclaim step in
+# .github/workflows/t4-smoke.yml now prints df before and after. Re-derive this
+# number from the first run that does.
+#
+# HDP_T4_MIN_DISK_GB=0 disables it, for anyone who knows better than this
+# number on their own hardware.
+DISK_MIN_GB="${HDP_T4_MIN_DISK_GB:-14}"
+if [ "$DISK_MIN_GB" != "0" ]; then
+    DOCKER_ROOT="$(docker info --format '{{.DockerRootDir}}' 2>/dev/null || true)"
+    [ -n "$DOCKER_ROOT" ] && [ -d "$DOCKER_ROOT" ] || DOCKER_ROOT=/var/lib/docker
+    [ -d "$DOCKER_ROOT" ] || DOCKER_ROOT=/
+    DISK_FREE_KB="$(df -Pk "$DOCKER_ROOT" 2>/dev/null | awk 'NR==2 {print $4}')"
+    case "$DISK_FREE_KB" in
+        ''|*[!0-9]*)
+            # df said something unparseable. Report it and carry on: refusing
+            # to run because a disk check could not run is worse than the
+            # failure it guards against.
+            echo "  could not read free space on $DOCKER_ROOT — skipping the disk check" ;;
+        *)
+            DISK_FREE_GB=$(( DISK_FREE_KB / 1024 / 1024 ))
+            if [ "$DISK_FREE_GB" -lt "$DISK_MIN_GB" ]; then
+                fail "only ${DISK_FREE_GB} GB free on $DOCKER_ROOT; this job needs ~${DISK_MIN_GB} GB"
+                echo "  The haystack image alone is 2.5 GB and its model weights another 1.7 GB," >&2
+                echo "  on top of the MediaWiki, OpenSearch and MariaDB images and their volumes." >&2
+                echo "  Run it with less and OpenSearch crosses its flood-stage watermark mid-run:" >&2
+                echo "  the index goes read-only, setup.sh still reports success, and the job fails" >&2
+                echo "  an hour later claiming the search index is empty." >&2
+                echo "" >&2
+                echo "  Free some space, or set HDP_T4_MIN_DISK_GB to override this check." >&2
+                echo "  On a GitHub runner, see the reclaim step in .github/workflows/t4-smoke.yml." >&2
+                exit 2
+            fi
+            echo "  disk: ${DISK_FREE_GB} GB free on $DOCKER_ROOT (need ${DISK_MIN_GB})"
+            ;;
+    esac
+fi
 
 COMPOSE_FILES=(-f docker-compose.yml)
 if [ "$CACHE" -eq 1 ]; then

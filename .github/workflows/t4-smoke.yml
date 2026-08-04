@@ -70,6 +70,40 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # ─── Why a runner has to be emptied before this job fits ──────
+      #
+      # ubuntu-latest ships tens of GB of toolchains no job here touches, on a
+      # root filesystem with single-digit GB free. This stack wants the
+      # MediaWiki, OpenSearch and MariaDB images, the haystack image at 2.5 GB,
+      # ~1.7 GB of model weights, all four volumes and the buildx cache.
+      #
+      # Run it without reclaiming and OpenSearch crosses its flood-stage
+      # watermark during setup.sh: the index goes read-only, index creation
+      # returns 403, every write 429, and — this is the part that cost an
+      # afternoon — nothing says so. setup.sh reports "0 failures", the job
+      # runs its full 67 minutes, and fails with four assertions claiming the
+      # search index is empty. That is run 30837800993 on the v5.1.9-rc1 tag.
+      #
+      # This step is deliberately here and not in scripts/ci/t4-smoke.sh: the
+      # script is the thing a developer runs in a terminal, and it has no
+      # business deleting /usr/share/dotnet on their machine. Same split as the
+      # layer cache — runner-specific concerns live in the workflow. The
+      # script's own precondition (HDP_T4_MIN_DISK_GB) is what fails fast if
+      # this step ever stops being enough.
+      #
+      # /opt/hostedtoolcache is left alone on purpose: later steps resolve
+      # python3 and pip through it, and dotnet + android + ghc + boost + swift
+      # are already ~30 GB.
+      - name: Reclaim runner disk
+        run: |
+          echo "before:"
+          df -h / /var/lib/docker 2>/dev/null || df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /usr/local/share/boost /usr/share/swift || true
+          sudo docker image prune -af >/dev/null 2>&1 || true
+          echo "after:"
+          df -h / /var/lib/docker 2>/dev/null || df -h /
+
       # The integration/smoke tier is standard library only — no requests, no
       # haystack, nothing to install beyond pytest itself.
       - name: Install pytest
