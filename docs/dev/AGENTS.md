@@ -590,13 +590,17 @@ asserts is that both are still named in setup.sh's strip list, and that if they
 #### Known CVEs (`composer-audit`)
 
 `composer audit --locked` is the only automated CVE signal for the
-composer-visible packages. On this tree it reports **6 advisories across 3
-packages, one of them high** — none of which is this fork's choice, since
+composer-visible packages. On this tree it reports **8 advisories across 3
+packages, two of them high** — none of which is this fork's choice, since
 `app/composer.json` is upstream's `bluespice/core` and every affected package
 is a transitive dependency of MediaWiki 1.43.9 / BlueSpice 5.1.9.
 
 It read 34 advisories across 12 packages, two critical, until the 1.43.9 /
-5.1.9 upgrade cleared 28 of them. That is what the upgrade was for.
+5.1.9 upgrade cleared 28 of them. That is what the upgrade was for. The count
+went 6 → 8 on 2026-08-04, when two new `guzzlehttp/guzzle` advisories
+(CVE-2026-69246 host-check bypass, high; CVE-2026-69245 cookie-domain scope,
+medium) were published against a version upstream pins exactly — the gate
+caught them, which is the whole point of it.
 
 A bare audit as a gate would therefore be red on every push, and a permanently
 red gate gets ignored. So the report is compared against

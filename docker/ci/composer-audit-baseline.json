@@ -20,7 +20,7 @@
     "(stripped from composer.lock — Track C, see VERSIONS.yml and SECURITY.md),",
     "or any vendored extension that is not also a composer package."
   ],
-  "reviewed": "2026-08-03",
+  "reviewed": "2026-08-04",
   "audited_against": {
     "bluespice": "5.1.9",
     "mw_core": "1.43.9",
@@ -30,12 +30,16 @@
     "guzzlehttp/guzzle": {
       "installed": "7.12.3",
       "advisories": [
+        "CVE-2026-69245",
+        "CVE-2026-69246",
         "PKSA-bbs6-q5q9-f3t4",
+        "PKSA-cnw1-2ytm-cgr8",
         "PKSA-fy2t-3c5f-827y",
+        "PKSA-gcrk-3vtt-1r14",
         "PKSA-pwsk-hy21-4gby",
         "PKSA-qxvb-2bpp-dnk6"
       ],
-      "why": "Pinned to exactly 7.12.3 by upstream's app/composer.json (bluespice/core); wikimedia/shellbox asks for ^7.9.2. The 1.43.9 / 5.1.9 upgrade cleared six of the ten advisories this package used to carry — these four survive because they are fixed in 7.14.2 and 7.15.1, past the version upstream pins. All four are medium and none has a CVE: URI fragments disclosed in redirect Referer headers, host-only cookie scope not preserved, unbounded response cookies, and Proxy-Authorization headers forwarded to origin servers. Guzzle is used server-side by shellbox, monolog and the OAuth path against configured hosts; no untrusted URL reaches it from wiki content, so the redirect- and cookie-scoped issues need an attacker who already controls an outbound target. Moves when upstream repins."
+      "why": "Pinned to exactly 7.12.3 by upstream's app/composer.json (bluespice/core); wikimedia/shellbox is the only runtime requirer and asks for ^7.9.2, so this is not a version this fork picks. Guzzle is also the transport behind MediaWiki core's HttpRequestFactory (app/includes/http/GuzzleHttpRequest.php), which is a wider surface than the shellbox-only framing this entry used to carry. Every advisory below is fixed past 7.12.3, so all six move together when upstream repins — none is closable here.\n\nFOUR MEDIUMS, carried since the 1.43.9 / 5.1.9 upgrade cleared six of the ten this package used to have, and none with a CVE: URI fragments disclosed in redirect Referer headers, host-only cookie scope not preserved, unbounded response cookies, and Proxy-Authorization headers forwarded to origin servers. Fixed in 7.14.2 and 7.15.1.\n\nCVE-2026-69246 (high, CVSS 7.2, fixed in 7.15.2), new 2026-08. Guzzle hands the URI to the transport while supplying Host separately, and libcurl decodes a percent-encoded host — 127.0.0.%31 — that the application's own check saw literally, so a host allowlist, denylist or private-range check can be evaded. It needs the application both to build URIs from untrusted input and to host-validate before handing off, and this tree has no such check to evade: $wgAllowCopyUploads is left at core's default (off) and no $wgCopyUploadsDomains is set anywhere in app/settings.d/. ExternalData is loaded (app/settings.d/040-BlueSpiceProDistribution.php:70) with AllowGetters at its default true, so an editor can already point {{#get_web_data:}} at any host — that is unrestricted SSRF by configuration, which this CVE neither creates nor worsens. Re-review this paragraph the day a host allowlist is introduced, because that is the configuration the CVE is about.\n\nCVE-2026-69245 (medium, CVSS 6.5, fixed in 7.15.2), new 2026-08. SetCookie::matchesDomain() validates before canonicalising, so hex, octal and percent-escaped IP literals keep subdomain scope they should not (CWE-180). Not reachable here: core removes Guzzle's cookie middleware outright and substitutes its own MediaWiki CookieJar (app/includes/http/GuzzleHttpRequest.php:171), so matchesDomain() is not on the path for any core-originated request. The advisory also notes that no public DNS delegation yields such a name, which confines it to private networks and container environments."
     },
     "mediawiki/maps": {
       "installed": "11.0.1",
