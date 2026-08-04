@@ -324,6 +324,6 @@ def test_generator_is_the_expected_mediawiki_release(wiki):
     general = wiki.siteinfo("general")["general"]
     assert general["generator"].startswith("MediaWiki 1.43"), (
         f"the wiki reports {general['generator']!r}. The vendored Vector skin "
-        f"is pinned to upstream REL1_43 and the 19 patches in docker/patches/ "
+        f"is pinned to upstream REL1_43 and the 21 patches in docker/patches/ "
         f"are written against that branch."
     )

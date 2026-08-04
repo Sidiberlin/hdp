@@ -132,7 +132,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' versions    'VERSIONS.yml matches the tree' 'python3'
     printf '%-16s %-34s %s\n' composer-audit 'new CVEs in app/composer.lock' "composer | $IMG_COMPOSER"
     printf '%-16s %-34s %s\n' fresh-clone 'TF: fresh clone has every input' 'git'
-    printf '%-16s %-34s %s\n' patches     'all 19 patches present (--patches)' 'patch(1)'
+    printf '%-16s %-34s %s\n' patches     'all 21 patches present (--patches)' 'patch(1)'
     printf '%-16s %-34s %s\n' integration 'live wiki (--integration)' 'a running, installed stack'
     printf '%-16s %-34s %s\n' smoke       'search + chatbot (--smoke)' 'the full 7-container stack'
 }
@@ -494,7 +494,7 @@ run_check manifest     "patch manifest schema"
 run_check versions     "VERSIONS.yml matches the tree"
 run_check composer-audit "no new CVEs in composer.lock"
 run_check fresh-clone  "committed tree is complete"
-run_check patches      "all 19 patches in the tree"
+run_check patches      "all 21 patches in the tree"
 run_check integration  "live wiki serves real traffic"
 run_check smoke        "full stack searches and answers"
 

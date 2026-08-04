@@ -22,7 +22,7 @@ For full architecture documentation, see [`docs/wiki/`](docs/wiki/) (system diag
 | `app/settings.d/` | **BlueSpice extension loader and config** — loaded in alphanumeric order, NOT via `wfLoadExtension` in `LocalSettings.php` | `050-Fixes.php` (MariaDB mode fixes), `100-ChatBot.php` (chatbot proxy config) |
 | `app/extensions/ChatBot/` | ChatBot MediaWiki extension — chat widget, REST endpoints, Deepset API client | `extension.json`, `includes/Api/ChatApi.php` |
 | `app/skins/` | MediaWiki skins | `.gitignore` has `/*` **but re-includes the six shipped skins by name** — they are trackable, do not use `git add -f`. See [The `app/skins/.gitignore` Trap](#the-appskinsgitignore-trap) |
-| `docker/patches/` | Patch manifest — one YAML sidecar per patch, plus the Class-A `.patch` files | 19 entries; see [`patches.md`](patches.md) |
+| `docker/patches/` | Patch manifest — one YAML sidecar per patch, plus the Class-A `.patch` files | 21 entries; see [`patches.md`](patches.md) |
 | `docker/ci/fixtures/` | The seeded database snapshot T5 runs `update.php` against | `seeded-wiki.sql.gz` + `.meta.json`; regenerate with `scripts/ci/make-db-fixture.sh` |
 | `VERSIONS.yml` | **What version this fork is** — gated against the tree by CI | see [Versions and upgrades](#versions-and-upgrades) |
 | `scripts/` | Contributor and CI entry points | `check.sh` (run before pushing), `verify-patches.sh`, `apply-patches.sh`, `convert-docs.sh`, `ci/` (incl. `t3-integration.sh`, `t4-smoke.sh`, `t5-migration.sh`, `release-watch.sh`, `lib/stack.sh`), `lib/` |
@@ -196,7 +196,7 @@ What it covers today:
 | `versions` | ⭐ `VERSIONS.yml` still matches the tree — see [Versions and upgrades](#versions-and-upgrades) |
 | `composer-audit` | ⭐ a **new** CVE in `app/composer.lock` (the 34 known ones are baselined) |
 | `fresh-clone` | ⭐ every input `setup.sh` needs is actually committed |
-| `patches` | all 19 patches are in the tree (`--patches`) |
+| `patches` | all 21 patches are in the tree (`--patches`) |
 
 `fresh-clone` is the one worth understanding. `docs/QA-REPORT.md` records seven
 bugs, six of them critical, and notes that each *"was invisible in the
@@ -495,7 +495,7 @@ release when T5 runs, so regenerate it *after* the upgrade merges. See
 
 `tests/integration/test_auth_path.py` is unmarked, so it runs in T3, T4 and T5.
 
-Two of the 19 patches are different in kind from the other seventeen:
+Two of the 21 patches are different in kind from the rest:
 `pluggableauth-service` and `oidc-client`. Dropping a MultimediaViewer patch is
 a cosmetic regression somebody notices; dropping either of these is an
 authentication regression that nothing notices. `oidc-client` is also the only
@@ -651,7 +651,7 @@ It compares `VERSIONS.yml` against `releases.wikimedia.org` (our branch, and
 newer branches) and `packages.bluespice.com` (BlueSpice's own composer
 repository, via `bluespice/foundation`). `.github/workflows/release-watch.yml`
 runs it weekly and **files an issue**, not a PR — taking a MediaWiki release
-here means re-vendoring the tree and re-applying 19 patches, which no bot can
+here means re-vendoring the tree and re-applying 21 patches, which no bot can
 prepare. Findings are `ACT` (a patch release on the series we run, where
 security content lands) or `PLAN` (a newer series).
 
@@ -668,7 +668,7 @@ scripts/verify-patches.sh --upgrade-report --tree /path/to/candidate-upstream
 ```
 
 The one tool between an upstream bump and silent patch loss. It classifies all
-19 patches as GREEN / BLUE / AMBER / RED / N-A against a candidate tree — full
+21 patches as GREEN / BLUE / AMBER / RED / N-A against a candidate tree — full
 table and a worked example against the real MediaWiki 1.43.9 tarball in
 [`patches.md`](patches.md#the-upgrade-report).
 

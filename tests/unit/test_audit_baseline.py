@@ -140,3 +140,30 @@ def test_the_fixable_ones_stay_marked():
     data = json.load(open(BASELINE, encoding="utf-8"))
     flagged = {p for p, e in data["accepted"].items() if "ACTION REQUIRED" in e["why"]}
     assert flagged == {"mediawiki/maps"}
+
+
+MAPS_PATCHES = ("maps-layercontrol-xss-php", "maps-layercontrol-xss-js")
+
+
+def test_the_maps_mitigation_the_baseline_claims_actually_exists():
+    """The mediawiki/maps entry says CVE-2026-52854 is mitigated by two patches.
+
+    An acceptance that points at a mitigation is only as good as the mitigation.
+    Deleting the patches while the entry still claims them would leave the one
+    high in this file silently unmitigated, and `composer audit` cannot notice:
+    it reads the installed version, which is 11.0.1 either way.
+
+    So: if the "why" names the patches, the sidecars must be on disk. Retire
+    them together — when Maps reaches 12.1.3 the entry goes and so do they.
+    """
+    why = json.load(open(BASELINE, encoding="utf-8"))["accepted"]["mediawiki/maps"]["why"]
+    patch_dir = os.path.join(REPO, "docker", "patches")
+    for patch_id in MAPS_PATCHES:
+        if patch_id not in why:
+            continue
+        for suffix in (".yaml", ".patch"):
+            path = os.path.join(patch_dir, patch_id + suffix)
+            assert os.path.exists(path), (
+                f"the baseline's mediawiki/maps entry names {patch_id}, "
+                f"but {path} is missing"
+            )
