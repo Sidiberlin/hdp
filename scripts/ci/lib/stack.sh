@@ -134,3 +134,81 @@ hdp_assert_fresh_tree() {
     echo "  (that also removes app/vendor/, so composer runs again — a few minutes)" >&2
     return 1
 }
+
+# ─── the T4 disk precondition ───────────────────────────────────────
+#
+# Split out of scripts/ci/t4-smoke.sh so the arithmetic can be tested against
+# the two data points that produced it, without booting a stack. See
+# tests/bats/t4_disk_guard.bats.
+#
+# The number T4 needs is not a property of the stack alone. OpenSearch stops
+# accepting writes when the filesystem holding its data crosses the flood-stage
+# watermark — 95% by default — so the stack has to fit *and* leave the last 5%
+# of the filesystem untouched. Those are two different quantities and the old
+# flat 14 GB floor conflated them, which is why it passed a runner that then
+# failed:
+#
+#   run 30873842113, branch, 34 GB free   passed  (`disk: 34 GB free … need 14`)
+#   run 30882658336, main,   15 GB free   failed  — 429 cluster_block_exception,
+#                                         `disk usage exceeded flood-stage
+#                                         watermark, index has
+#                                         read-only-allow-delete block`
+#
+# The runner is a 72 GB filesystem, so 5% of it is 3.6 GB that OpenSearch will
+# never let the stack have. The 15 GB failure is therefore also the first real
+# measurement of what the stack consumes on a runner: it got to within 3.6 GB
+# of full, so it wrote at least 15 − 3.6 = 11.4 GB. That corroborates the
+# component-by-component estimate the old comment carried — haystack 2.57,
+# opensearch 2.47, the two PHP bases 1.04 + 1.51, mariadb 0.47, chatbot-proxy
+# 0.18, ~1.7 of model weights, plus build scratch — and STACK_NEED_GB below is
+# 12 rather than 14 because the watermark is now added on top instead of being
+# folded in.
+#
+# 12 + 3.6 = 15.6 GB, which "catches" the 15 GB run by 0.6 GB. That is not a
+# guard, it is a coin toss on a number nobody measured to a tenth of a GB, so
+# the requirement also carries a 20 GB floor. On this runner the floor is what
+# fires; the percentage term is what keeps the guard honest on a filesystem big
+# enough for 5% to exceed 8 GB, where a flat floor would be the thing that is
+# wrong.
+
+# hdp_disk_required_kb <filesystem-total-kb> [stack-need-gb] [floor-gb]
+#
+# Free space T4 requires, in KB: the stack's own footprint plus the slice of
+# the filesystem OpenSearch's flood-stage watermark reserves, never less than
+# the floor.
+#
+# All integer arithmetic, and deliberately divides before it multiplies: a
+# filesystem total in KB times 5 overflows a 32-bit shell somewhere north of
+# 400 GB, and this is a check that must not itself become the bug.
+hdp_disk_required_kb() {
+    local total_kb="$1"
+    local stack_gb="${2:-12}"
+    local floor_gb="${3:-20}"
+    # OpenSearch blocks writes at 95%, so the top 5% is not ours to spend.
+    local reserved_kb=$(( total_kb / 100 * 5 ))
+    local need_kb=$(( stack_gb * 1024 * 1024 + reserved_kb ))
+    local floor_kb=$(( floor_gb * 1024 * 1024 ))
+    [ "$need_kb" -lt "$floor_kb" ] && need_kb="$floor_kb"
+    printf '%s' "$need_kb"
+}
+
+# hdp_gb <kb> — KB rendered as GB to one decimal, without bc or awk.
+#
+# One decimal because the whole point of the numbers above is the 0.6 GB
+# between "fits" and "OpenSearch goes read-only an hour into the job", and
+# truncating 15.6 to 15 in the message would hide exactly that.
+#
+# Rounds to nearest rather than truncating, with the carry that implies. This
+# prints a *requirement*: truncation would report 15.5 for a threshold of 15.6
+# and send somebody off to free 15.5 GB, which is the same class of
+# off-by-a-little that the old flat floor was.
+hdp_gb() {
+    local mb=$(( $1 / 1024 ))
+    local gb=$(( mb / 1024 ))
+    local tenths=$(( (mb % 1024 * 10 + 512) / 1024 ))
+    if [ "$tenths" -ge 10 ]; then
+        gb=$(( gb + 1 ))
+        tenths=0
+    fi
+    printf '%d.%d' "$gb" "$tenths"
+}

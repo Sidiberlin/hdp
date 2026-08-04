@@ -110,8 +110,9 @@ pytest-haystack:
     - python -m pytest tests/haystack
 
 # ─── Shell behaviour ────────────────────────────────────────────────
-# Two suites: docker/infisical-loader.sh, and verify-patches.sh's upgrade
-# report. docker/setup.sh remains out of scope — it is a 557-line top-to-bottom
+# Three suites: docker/infisical-loader.sh, verify-patches.sh's upgrade report,
+# and the T4 free-space arithmetic in scripts/ci/lib/stack.sh.
+# docker/setup.sh remains out of scope — it is a 557-line top-to-bottom
 # installer under `set -euo pipefail`, so asserting its exit code needs MariaDB
 # and composer, which is Wave 3's integration job, not this one.
 #
