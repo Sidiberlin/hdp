@@ -17,8 +17,9 @@
 #   scripts/ci/t4-smoke.sh --no-ingest    skip the ~8 minute reindex
 #   scripts/ci/t4-smoke.sh --cache        add the buildx GHA layer cache
 #
-# HDP_T4_MIN_DISK_GB=0 skips the free-space precondition; see the disk section
-# below for why there is one.
+# HDP_T4_MIN_DISK_GB=0 skips the free-space precondition and any other value
+# replaces it; see the disk section below for why there is one, and why the
+# requirement is computed from the filesystem rather than fixed.
 #
 # ─── How this differs from T3, and why T4 is a separate job ─────────
 #
@@ -134,47 +135,55 @@ docker compose version >/dev/null 2>&1 || { fail "docker compose v2 is required"
 # and volumes are what fill up, and on CI runners the two are often different
 # filesystems.
 #
-# Where 14 comes from, measured on the box after a full run: haystack 2.57 GB,
-# the custom opensearch (ingest-attachment) 2.47 GB, the two wikimedia PHP
-# bases 1.04 + 1.51 GB, mariadb 0.47 GB, chatbot-proxy 0.18 GB — call it 8.5 GB
-# of images — plus ~1.7 GB of volumes once the model cache is warm, plus build
-# scratch. 14 leaves a little room above the flood-stage watermark rather than
-# sitting on it.
+# How much is enough is *not* a constant, and the first version of this check
+# assuming it was is what let run 30882658336 through: 15 GB free, comfortably
+# over the flat 14 GB floor, and it still died read-only an hour later. The
+# derivation — the stack's own footprint, plus the 5% of the filesystem the
+# flood-stage watermark reserves, floored at 20 GB — lives with the arithmetic
+# in hdp_disk_required_kb, in scripts/ci/lib/stack.sh, where a bats suite
+# checks it against that run and against the 34 GB one that passed.
 #
-# It is a floor, not a measurement of the runner: nobody has ever recorded free
-# space on a GitHub runner for this job, which is why the reclaim step in
-# .github/workflows/t4-smoke.yml now prints df before and after. Re-derive this
-# number from the first run that does.
-#
-# HDP_T4_MIN_DISK_GB=0 disables it, for anyone who knows better than this
-# number on their own hardware.
-DISK_MIN_GB="${HDP_T4_MIN_DISK_GB:-14}"
-if [ "$DISK_MIN_GB" != "0" ]; then
+# HDP_T4_MIN_DISK_GB=0 disables the check; any other value replaces the
+# computed requirement, for anyone who knows better on their own hardware.
+if [ "${HDP_T4_MIN_DISK_GB:-}" != "0" ]; then
     DOCKER_ROOT="$(docker info --format '{{.DockerRootDir}}' 2>/dev/null || true)"
     [ -n "$DOCKER_ROOT" ] && [ -d "$DOCKER_ROOT" ] || DOCKER_ROOT=/var/lib/docker
     [ -d "$DOCKER_ROOT" ] || DOCKER_ROOT=/
+    # Field 2 is the filesystem total, field 4 what is free. The watermark is a
+    # percentage of the former, so both are needed — reading only "available"
+    # is the mistake this check used to make.
+    DISK_TOTAL_KB="$(df -Pk "$DOCKER_ROOT" 2>/dev/null | awk 'NR==2 {print $2}')"
     DISK_FREE_KB="$(df -Pk "$DOCKER_ROOT" 2>/dev/null | awk 'NR==2 {print $4}')"
-    case "$DISK_FREE_KB" in
-        ''|*[!0-9]*)
+    case "${DISK_TOTAL_KB}:${DISK_FREE_KB}" in
+        # The word always has the colon, so `:*` and `*:` are what catch an
+        # empty field; a literal '' pattern here could never match.
+        *[!0-9:]*|:*|*:)
             # df said something unparseable. Report it and carry on: refusing
             # to run because a disk check could not run is worse than the
             # failure it guards against.
             echo "  could not read free space on $DOCKER_ROOT — skipping the disk check" ;;
         *)
-            DISK_FREE_GB=$(( DISK_FREE_KB / 1024 / 1024 ))
-            if [ "$DISK_FREE_GB" -lt "$DISK_MIN_GB" ]; then
-                fail "only ${DISK_FREE_GB} GB free on $DOCKER_ROOT; this job needs ~${DISK_MIN_GB} GB"
+            if [ -n "${HDP_T4_MIN_DISK_GB:-}" ]; then
+                DISK_NEED_KB=$(( HDP_T4_MIN_DISK_GB * 1024 * 1024 ))
+            else
+                DISK_NEED_KB="$(hdp_disk_required_kb "$DISK_TOTAL_KB")"
+            fi
+            if [ "$DISK_FREE_KB" -lt "$DISK_NEED_KB" ]; then
+                fail "only $(hdp_gb "$DISK_FREE_KB") GB free on $DOCKER_ROOT; this job needs $(hdp_gb "$DISK_NEED_KB") GB"
+                echo "  Filesystem is $(hdp_gb "$DISK_TOTAL_KB") GB, so OpenSearch's flood-stage watermark" >&2
+                echo "  reserves the last $(hdp_gb $(( DISK_TOTAL_KB / 100 * 5 ))) GB of it — the stack never gets to use them." >&2
+                echo "" >&2
                 echo "  The haystack image alone is 2.5 GB and its model weights another 1.7 GB," >&2
                 echo "  on top of the MediaWiki, OpenSearch and MariaDB images and their volumes." >&2
-                echo "  Run it with less and OpenSearch crosses its flood-stage watermark mid-run:" >&2
-                echo "  the index goes read-only, setup.sh still reports success, and the job fails" >&2
-                echo "  an hour later claiming the search index is empty." >&2
+                echo "  Run it with less and OpenSearch crosses that watermark mid-run: the index" >&2
+                echo "  goes read-only, setup.sh still reports success, and the job fails an hour" >&2
+                echo "  later claiming the search index is empty." >&2
                 echo "" >&2
                 echo "  Free some space, or set HDP_T4_MIN_DISK_GB to override this check." >&2
                 echo "  On a GitHub runner, see the reclaim step in .github/workflows/t4-smoke.yml." >&2
                 exit 2
             fi
-            echo "  disk: ${DISK_FREE_GB} GB free on $DOCKER_ROOT (need ${DISK_MIN_GB})"
+            echo "  disk: $(hdp_gb "$DISK_FREE_KB") GB free on $DOCKER_ROOT of $(hdp_gb "$DISK_TOTAL_KB") GB (need $(hdp_gb "$DISK_NEED_KB"))"
             ;;
     esac
 fi

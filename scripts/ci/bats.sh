@@ -2,9 +2,11 @@
 # ============================================================
 # Wave 2 — the bats runner.
 #
-# Two suites:
+# Three suites:
 #   infisical_loader.bats  docker/infisical-loader.sh — the Wave 0 security fixes
 #   upgrade_report.bats    verify-patches.sh --upgrade-report — every state
+#   t4_disk_guard.bats     scripts/ci/lib/stack.sh — the T4 free-space maths,
+#                          pinned to the two runs that produced the numbers
 #
 # docker/setup.sh is the other obvious candidate and is not testable at this
 # level: 557 lines, `set -euo pipefail`, `cd "$MW"` on line 18, and a
