@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Compare `composer audit` output against the accepted-advisory baseline.
 
-`composer audit --locked` on this tree reports 6 advisories across 3 packages
-as of the 1.43.9 / 5.1.9 upgrade, the worst of them a high. None of those
-versions is this fork's choice: `app/composer.json` is upstream's
+`composer audit --locked` on this tree reports 8 advisories across 3 packages
+as reviewed on 2026-08-04, two of them high. None of those versions is this
+fork's choice: `app/composer.json` is upstream's
 `bluespice/core`, and the affected packages are transitive dependencies of
 MediaWiki 1.43 and BlueSpice 5.1.9, or vendored extensions of it. Fixing them
 means re-vendoring upstream, which is the upgrade process in
@@ -176,7 +176,11 @@ def main(argv):
             previous = {}
         built = build_baseline(report, lock, previous)
         with open(baseline_path, "w", encoding="utf-8") as fh:
-            json.dump(built, fh, indent=2, sort_keys=False)
+            # ensure_ascii=False because the reasons are prose and contain em
+            # dashes and arrows. Without it every regeneration rewrites every
+            # "why" line into \uXXXX escapes, and the real change — which
+            # advisories moved — is buried in a diff nobody will read.
+            json.dump(built, fh, indent=2, sort_keys=False, ensure_ascii=False)
             fh.write("\n")
         missing = [p for p, e in built["accepted"].items() if not e["why"]]
         print(f"  wrote {baseline_path}: {len(built['accepted'])} package(s)")
