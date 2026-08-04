@@ -1,0 +1,34 @@
+# Class A — clobbered by composer, re-applied by scripts/apply-patches.sh.
+#
+# `composer install` reinstalls mediawiki/maps as a dist zipball, which
+# overwrites app/extensions/Maps wholesale on every run. Paired with
+# maps-layercontrol-xss-php; both halves are needed, see that sidecar.
+id: maps-layercontrol-xss-js
+title: escape Leaflet layer-control labels (CVE-2026-52854)
+class: A
+mode: insert
+target: extensions/Maps/resources/leaflet/jquery.leaflet.js
+applied_by: scripts/apply-patches.sh (called by docker/setup.sh)
+patch: docker/patches/maps-layercontrol-xss-js.patch
+# ERE. The line the first hunk is anchored after.
+anchor: '\$\.each\(options\.overlays, function\(index, overlayName\) \{'
+# Deliberately the comment this patch inserts, not mw.html.escape: Maps 12.1.3
+# adds its own call to that method, so matching the code would go green against
+# a re-vendored tree where this patch is gone — which is fine, but it would
+# also go green if only half the patch survived a re-derive.
+marker: '// HDP: layer-control labels are rendered as HTML by Leaflet \(CVE-2026-52854\)'
+# The unescaped assignment must be gone once the patch is in.
+anti: 'overlays\[overlayName\]'
+group: maps-layercontrol-xss
+stale: false
+upstream_version: 'mediawiki/maps 11.0.1'
+regex: ERE
+hunks: 2
+why: >-
+  CVE-2026-52854, stored XSS. Leaflet's L.control.layers renders layer and
+  overlay names as HTML, so a name carrying markup executes for every reader of
+  the page. Backported from upstream Maps 12.1.3 commit 737a993f; this tree
+  vendors 11.0.1 and the BlueSpice pro distribution constrains mediawiki/maps
+  to 11.0.*, so the upstream fix cannot be taken by re-vendoring inside the 5.1
+  series. Retire this patch, its pair and both sidecars when Maps reaches
+  12.1.3 or later.

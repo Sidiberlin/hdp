@@ -14,7 +14,7 @@ Four facts, each of which changes the procedure:
 
 1. **Upgrading is re-vendoring, not `composer update`.** The whole MediaWiki +
    BlueSpice tree is committed — 53,938 tracked files under `app/`. A version
-   bump is a large tree replacement with **19 patches re-applied on top**, not
+   bump is a large tree replacement with **21 patches re-applied on top**, not
    a lockfile edit.
 2. **Three patches target MediaWiki core** — `UserGroupManager.php`,
    `MultiHttpClient.php`, `RequestFromGlobals.php` — which is precisely what a

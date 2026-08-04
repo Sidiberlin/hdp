@@ -1,0 +1,23 @@
+--- extensions/Maps/resources/leaflet/jquery.leaflet.js
++++ extensions/Maps/resources/leaflet/jquery.leaflet.js
+@@ -290,8 +290,9 @@
+ 		this.addOverlays = function() {
+ 			let overlays = {};
+ 
++			// HDP: layer-control labels are rendered as HTML by Leaflet (CVE-2026-52854)
+ 			$.each(options.overlays, function(index, overlayName) {
+-				overlays[overlayName] = new L.tileLayer.provider(overlayName).addTo(_this.map);
++				overlays[mw.html.escape(overlayName)] = new L.tileLayer.provider(overlayName).addTo(_this.map);
+ 			});
+ 
+ 			return overlays;
+@@ -306,7 +307,8 @@
+ 			if (layers.size > 1 || options.overlays.length > 0) {
+ 				let control = L.control.layers([], overlays).addTo(this.map);
+ 				layers.forEach(function(layerObject, layerName) {
+-					control.addBaseLayer(layerObject, layerName);
++					// HDP: base-layer labels are rendered as HTML too (CVE-2026-52854)
++					control.addBaseLayer(layerObject, mw.html.escape(layerName));
+ 				});
+ 			}
+ 		};
