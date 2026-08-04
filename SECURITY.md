@@ -72,29 +72,46 @@ abweichen.
 Three tracks, because the three parts of this tree are visible to completely
 different tooling. Full design in `docs/dev/upgrade-runbook.md`.
 
-### Track A — the composer-visible packages (148 of them)
+### Track A — the composer-visible packages (381 of them)
 
 `composer audit --locked` runs in CI on every push
 (`scripts/ci/composer-audit.sh`). It is compared against
 `docker/ci/composer-audit-baseline.json`, which records the advisories this
 fork **knowingly carries**, with a reason for each, and the gate fails on
-anything new.
+anything new. It audits the whole lockfile, `packages` and `packages-dev`
+both — 311 + 70. (This section used to say 148, which is the count of the
+`mediawiki/*` and `bluespice/*` entries alone, not what the gate covers.)
 
-The baseline exists because the tree currently carries 34 advisories inherited
-from upstream's dependency choices — `app/composer.json` is upstream's
+The baseline exists because the tree carries advisories inherited from
+upstream's dependency choices — `app/composer.json` is upstream's
 `bluespice/core`, so none of those versions is this fork's to pick. A gate that
 is red on every push is a gate people stop reading; a gate that fires on a
 *new* advisory is the signal worth having.
 
-**Four of those entries are marked ACTION REQUIRED** and are fixable only by
+**As reviewed on 2026-08-04 that is 8 advisories across 3 packages, two of them
+high.** It was 34 across 12 packages, two critical, until the 1.43.9 / 5.1.9
+upgrade cleared 28 — that is what the upgrade was for. The baseline file is the
+count of record; the numbers here date, it does not.
+
+**One of those entries is marked ACTION REQUIRED** and is fixable only by
 re-vendoring upstream:
 
 | Package | Severity | Fixed in |
 |---|---|---|
-| `phpoffice/phpspreadsheet` | 2 critical, 5 high — parses uploaded spreadsheets | 1.30.6 |
-| `phpseclib/phpseclib` | 2 high — sits under the OIDC client | 3.0.54 |
 | `mediawiki/maps` | high — stored XSS via `display_map` | 12.1.3 |
-| `universal-omega/dynamic-page-list3` | high — exposes suppressed usernames | 3.6.4 |
+
+It was four. The 1.43.9 / 5.1.9 upgrade closed three of them —
+`phpoffice/phpspreadsheet` (2 critical, 5 high; parses uploaded spreadsheets)
+at 1.30.6, `phpseclib/phpseclib` (2 high; sits under the OIDC client) at
+3.0.56, and `universal-omega/dynamic-page-list3` (high; exposed suppressed
+usernames) at 3.6.4. `mediawiki/maps` survived and **cannot be fixed inside the
+5.1 series at all**: the fix is in 12.1.3 and the BlueSpice pro distribution
+constrains the package to `11.0.*`, so only a series bump relaxes it.
+
+The other two entries — `guzzlehttp/guzzle` and `web-auth/webauthn-lib` — are
+carried, not fixable here, and not marked: both are pinned by upstream past the
+version that would close them. The `why` field on each says what the exposure
+is and what would change the assessment.
 
 Renovate (`renovate.json`) opens grouped weekly PRs and **never auto-merges** —
 merging is what triggers the patch re-application this process exists to guard.
