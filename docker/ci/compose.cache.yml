@@ -17,12 +17,36 @@
 # transformers, sentence-transformers). Caching its layers turns the nightly
 # T4's build step from ~5 minutes into well under one on a warm cache.
 #
-# `x-bake` rather than plain `cache_from`: compose's own `build.cache_from` is
-# passed to the classic builder and does not understand `type=gha` at all.
-# Buildx does, and compose hands the build to buildx bake when COMPOSE_BAKE=1
-# — which scripts/ci/t4-smoke.sh sets whenever --cache is passed. Without that
-# variable the block below is silently ignored and the build succeeds while
-# caching nothing, which is the failure mode worth knowing about.
+# ─── `cache_from`/`cache_to`, and the `x-bake` this used to say ─────
+#
+# This block was written as `build.x-bake.cache-from`, on the belief that
+# compose's own `build.cache_from` goes to the classic builder and cannot
+# express `type=gha`. That is wrong, and it cost run 30873842113 a red
+# cache-proof job: `docker compose build` reads no `x-bake` key at all.
+#
+# `x-bake` is a *bake* extension. It is honoured when buildx consumes a compose
+# file directly — `docker buildx bake -f docker-compose.yml` — because bake
+# parses the file itself. `docker compose build` with COMPOSE_BAKE=1 does not
+# hand bake this file; it builds its own bake definition from the compose model
+# and shells out with that. Unknown `x-*` keys are not part of the model, so
+# they are dropped in the translation, silently and by design.
+#
+# What that translation *does* carry is the standard fields: compose's
+# build_bake.go sets the bake target's `cache-from`/`cache-to` straight from
+# `build.cache_from`/`build.cache_to`, verbatim, `type=gha` and all. So the
+# plain spelling is not the weaker one here — it is the only one that works.
+#
+# How it looked when it was broken, in both jobs of run 30873842113: the build
+# printed `#1 [internal] load local bake definitions`, so bake was in use and
+# COMPOSE_BAKE was doing its job, and then no `importing cache manifest` step
+# and no cache export step — nothing was read and, more tellingly, nothing was
+# ever written either. A cache that is misconfigured on the import side still
+# exports; one that is dropped before bake sees it does neither.
+#
+# COMPOSE_BAKE=1 is still required — scripts/ci/t4-smoke.sh sets it whenever
+# --cache is passed. `docker compose build --print` renders the bake definition
+# these fields produce, which is what .github/workflows/t4-smoke.yml now
+# asserts against, so this can never again be ambiguous in a log.
 #
 # `mode=max` exports intermediate layers too, not just the final image. For a
 # multi-stage-ish pip install that is the difference between caching the whole
@@ -52,26 +76,23 @@
 services:
   opensearch:
     build:
-      x-bake:
-        cache-from:
-          - type=gha,scope=hdp-opensearch
-        cache-to:
-          - type=gha,scope=hdp-opensearch,mode=max
+      cache_from:
+        - type=gha,scope=hdp-opensearch
+      cache_to:
+        - type=gha,scope=hdp-opensearch,mode=max
 
   haystack:
     build:
-      x-bake:
-        cache-from:
-          - type=gha,scope=hdp-haystack
-        cache-to:
-          - type=gha,scope=hdp-haystack,mode=max
+      cache_from:
+        - type=gha,scope=hdp-haystack
+      cache_to:
+        - type=gha,scope=hdp-haystack,mode=max
     volumes:
       - ./.hf-cache:/root/.cache/huggingface
 
   chatbot-proxy:
     build:
-      x-bake:
-        cache-from:
-          - type=gha,scope=hdp-chatbot-proxy
-        cache-to:
-          - type=gha,scope=hdp-chatbot-proxy,mode=max
+      cache_from:
+        - type=gha,scope=hdp-chatbot-proxy
+      cache_to:
+        - type=gha,scope=hdp-chatbot-proxy,mode=max
