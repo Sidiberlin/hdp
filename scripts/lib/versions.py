@@ -205,6 +205,26 @@ def scan(root):
     setup = _read(root, "docker/setup.sh")
     obs["stripped"] = sorted(set(re.findall(r'"(hallowelt/[\w-]+|mediawiki/[\w-]+)"', setup)))
 
+    # The patch inventory, for check_patch_counts(). Counted from the two
+    # places that actually hold patches, so prose stating a number can be
+    # checked against something rather than against the last person's memory.
+    obs["patch_sidecars"] = {}
+    sidecar_dir = os.path.join(root, "docker", "patches")
+    if os.path.isdir(sidecar_dir):
+        for name in sorted(os.listdir(sidecar_dir)):
+            if not name.endswith(".yaml"):
+                continue
+            text = open(os.path.join(sidecar_dir, name), encoding="utf-8").read()
+            m = re.search(r"^class:\s*['\"]?(\w+)", text, re.M)
+            obs["patch_sidecars"][name[:-5]] = m.group(1) if m else "?"
+
+    obs["class_c_diffs"] = 0
+    diff_root = os.path.join(root, "app", "_bluespice", "patches")
+    if os.path.isdir(diff_root):
+        obs["class_c_diffs"] = sum(
+            1 for _, _, files in os.walk(diff_root) for f in files if f.endswith(".diff")
+        )
+
     # The release tag pair — see check_release_tag(). Both files are optional so
     # that a tree without them still scans; the check reports on what it finds.
     obs["release_tag_pattern"] = None
@@ -388,7 +408,52 @@ def check(decl, obs):
 
     check_frozen(decl, obs, rep)
     check_release_tag(obs, rep)
+    check_patch_counts(obs, rep)
     return rep
+
+
+def check_patch_counts(obs, rep):
+    """The Class-C sidecars and the .diff files they describe must agree.
+
+    Every number in this repository's documentation is meant to be checked, and
+    the patch counts were the ones that were not: the runbook said the triage
+    table had 19 rows when the manifest had 21, and docker/setup.sh said it
+    applied 17 Class-C patches when there were 18. None of it was load-bearing,
+    but "the counts are checked" is the whole review posture here, and a stale
+    count is read as fact by the next person doing an upgrade.
+
+    Prose cannot be asserted, so this asserts the thing the prose is about: one
+    Class-C sidecar per committed .diff. A patch added to app/_bluespice/patches
+    without a sidecar (or the reverse) is now drift rather than a discrepancy
+    somebody notices in review.
+    """
+    sidecars = obs.get("patch_sidecars") or {}
+    if not sidecars:
+        rep.warn("docker/patches holds no sidecars — the patch manifest is the "
+                 "only record of what this fork changes")
+        return
+
+    by_class = {}
+    for name, cls in sidecars.items():
+        by_class.setdefault(cls, []).append(name)
+
+    class_c = len(by_class.get("C", []))
+    diffs = obs.get("class_c_diffs", 0)
+    if diffs == 0:
+        # app/_bluespice/patches is committed, so this means the tree is
+        # incomplete rather than that there is nothing to check.
+        rep.warn("app/_bluespice/patches holds no .diff files — cannot check the "
+                 f"{class_c} Class-C sidecars against them")
+    elif class_c != diffs:
+        rep.fail(f"patches: {class_c} Class-C sidecars in docker/patches, "
+                 f"{diffs} .diff files in app/_bluespice/patches",
+                 "          every inherited patch needs a sidecar and every sidecar needs its "
+                 "patch;\n          one without the other is a patch nothing verifies, or a "
+                 "manifest entry\n          that describes nothing")
+    else:
+        summary = ", ".join(f"{len(v)} × class {k}" for k, v in sorted(by_class.items()))
+        rep.ok(f"{len(sidecars)} patch sidecars ({summary}); the {class_c} Class-C ones "
+               "match the .diff files on disk")
 
 
 # The tag shape .github/workflows/release.yml's "Resolve and check the release

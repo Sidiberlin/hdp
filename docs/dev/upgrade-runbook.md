@@ -45,9 +45,16 @@ git status                       # must be clean. You will not be able to tell
 scripts/ci/release-watch.sh      # what is actually available upstream
 ```
 
-Read `docker/ci/composer-audit-baseline.json`, specifically the four entries
-marked **ACTION REQUIRED**. They are known-vulnerable versions that only a
-re-vendor can fix, and they are usually the reason to be doing this at all.
+Read `docker/ci/composer-audit-baseline.json`, specifically the entries marked
+**ACTION REQUIRED** — as of the 1.43.9 / 5.1.9 upgrade there is one,
+`mediawiki/maps`. They are known-vulnerable versions that only a re-vendor can
+fix, and they are usually the reason to be doing this at all.
+
+(It was four. That upgrade closed three: `phpoffice/phpspreadsheet`,
+`phpseclib/phpseclib` and `universal-omega/dynamic-page-list3`. The baseline
+file is the count of record —
+`tests/unit/test_audit_baseline.py::test_the_fixable_ones_stay_marked` asserts
+exactly `{"mediawiki/maps"}` — so read it rather than this sentence.)
 
 ---
 
@@ -75,7 +82,7 @@ Re-vendor the upstream tree, or bump `app/composer.lock`. **No other changes in
 this commit**, so the upstream diff is reviewable in isolation and a bad bump is
 revertible on its own.
 
-### 4. TRIAGE — the 19-row table
+### 4. TRIAGE — the 21-row table
 
 ```bash
 scripts/verify-patches.sh --upgrade-report

@@ -131,6 +131,9 @@ def _obs(**over):
         "python": "3.11",
         "publiccode": "5.1.4",
         "stripped": ["hallowelt/chatbot"],
+        "patch_sidecars": {"es-ssl": "A", "maps-layercontrol-xss-js": "A",
+                           "smw-pager": "C", "srf-filter": "C"},
+        "class_c_diffs": 2,
         "release_tag_pattern": "{{raw}}",
         "prod_image_tags": {"hdp-haystack": "v5.1.4",
                             "hdp-chatbot-proxy": "v5.1.4",
@@ -327,3 +330,40 @@ def test_the_committed_release_yml_and_prod_override_agree():
     versions.check_release_tag(obs, rep)
     assert rep.failures == [], rep.lines
     assert rep.warnings == [], rep.lines
+
+
+# ─── The patch counts ───────────────────────────────────────────────
+# Added after a review found the runbook claiming a 19-row triage table against
+# a 21-row manifest, and setup.sh claiming 17 Class-C patches against 18.
+
+
+def test_a_class_c_sidecar_without_its_diff_is_drift():
+    rep = _run(_decl(), _obs(class_c_diffs=1))
+    assert any("Class-C sidecars" in f for f in rep.failures), rep.lines
+
+
+def test_a_diff_without_its_sidecar_is_drift():
+    """The reverse: a patch nothing in the manifest describes, so nothing
+    verifies it and no upgrade triage will ever look at it."""
+    rep = _run(_decl(), _obs(class_c_diffs=3))
+    assert any("Class-C sidecars" in f for f in rep.failures), rep.lines
+
+
+def test_an_empty_patch_tree_warns_rather_than_passing_silently():
+    rep = _run(_decl(), _obs(class_c_diffs=0))
+    assert any(".diff files" in w for w in rep.warnings), rep.lines
+    rep = _run(_decl(), _obs(patch_sidecars={}))
+    assert any("no sidecars" in w for w in rep.warnings), rep.lines
+
+
+def test_the_committed_patch_manifest_matches_the_tree():
+    """The real files: 21 sidecars, 3 class A + 18 class C, 18 .diff on disk."""
+    obs = versions.scan(versions.repo_root())
+    assert len(obs["patch_sidecars"]) == 21
+    classes = sorted(obs["patch_sidecars"].values())
+    assert classes.count("A") == 3
+    assert classes.count("C") == 18
+    assert obs["class_c_diffs"] == 18
+    rep = versions.Report()
+    versions.check_patch_counts(obs, rep)
+    assert rep.failures == [] and rep.warnings == [], rep.lines
