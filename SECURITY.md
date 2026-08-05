@@ -25,7 +25,8 @@ Please include:
 - Affected versions (see `VERSIONS.yml`)
 - Suggested fix (if any)
 
-We will acknowledge receipt within **72 hours** and provide an initial assessment within **7 days**.
+We strive to acknowledge receipt within **72 hours** and to provide an initial
+assessment within **7 days**, on a best-effort basis with no guarantee.
 
 > **Maintainer note.** Private vulnerability reporting has to be switched on for
 > the link above to work: *Settings → Code security → Private vulnerability
@@ -62,7 +63,9 @@ Bitte geben Sie an:
 - Betroffene Versionen (siehe `VERSIONS.yml`)
 - Vorgeschlagene Lösung (falls vorhanden)
 
-Wir bestätigen den Eingang innerhalb von **72 Stunden** und liefern eine Ersteinschätzung innerhalb von **7 Tagen**.
+Wir sind bestrebt, den Eingang innerhalb von **72 Stunden** zu bestätigen und
+innerhalb von **7 Tagen** eine Ersteinschätzung zu liefern — nach bestem
+Bemühen und ohne Gewähr.
 
 ---
 
@@ -170,8 +173,8 @@ they exist.
 
 | Package | Vendored from | Owner |
 |---|---|---|
-| `hallowelt/chatbot` | `gitlab.hallowelt.com/GovTech/mediawiki-extensions-chatbot@d6ab09fb` | **unassigned** |
-| `mediawiki/page-header` | `gitlab.hallowelt.com/BlueSpice/mediawiki-extensions-pageheader@505d0aa4` | **unassigned** |
+| `hallowelt/chatbot` | `gitlab.hallowelt.com/GovTech/mediawiki-extensions-chatbot@d6ab09fb` | **best-effort** |
+| `mediawiki/page-header` | `gitlab.hallowelt.com/BlueSpice/mediawiki-extensions-pageheader@505d0aa4` | **best-effort** |
 
 The declaration lives in `VERSIONS.yml` under `frozen:`, including a
 `last_reviewed` date. The version-consistency gate warns when that date is more
@@ -180,8 +183,10 @@ declaration that has drifted from the code is worse than none.
 
 **This is an accepted risk, recorded rather than solved.** The honest options
 are: negotiate read access to the upstream repositories, replace both packages,
-or keep accepting the risk with a named owner and a periodic manual diff.
-Assigning that owner is an open item.
+or keep accepting the risk with a periodic manual diff. Today it is the third,
+on a best-effort basis: nobody is on the hook for a response time, and the
+`last_reviewed` date in `VERSIONS.yml` is the only record of when either was
+last looked at.
 
 ### What none of the three covers
 

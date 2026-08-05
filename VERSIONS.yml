@@ -63,7 +63,7 @@ frozen:
   hallowelt/chatbot:
     vendored_from: 'gitlab.hallowelt.com/GovTech/mediawiki-extensions-chatbot@d6ab09fb511fe8d483dab3fd2eaccd04fe73e5d5'
     version: 'dev-main'
-    owner: 'unassigned — see SECURITY.md'
+    owner: 'best-effort — see SECURITY.md'
     last_reviewed: '2026-08-03'
     why: >-
       Private GitLab, unreachable from CI. Stripped from composer.lock by
@@ -71,7 +71,7 @@ frozen:
   mediawiki/page-header:
     vendored_from: 'gitlab.hallowelt.com/BlueSpice/mediawiki-extensions-pageheader@505d0aa449e59929744be40feaaa08f5687b9737'
     version: '3.0.5'
-    owner: 'unassigned — see SECURITY.md'
+    owner: 'best-effort — see SECURITY.md'
     last_reviewed: '2026-08-03'
     why: >-
       Private GitLab, unreachable from CI. Stripped from composer.lock by
