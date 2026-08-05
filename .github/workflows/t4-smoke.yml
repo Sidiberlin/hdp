@@ -165,36 +165,72 @@ jobs:
   # "The second run is faster than the first" is the property, and asserting it
   # across two scheduled runs would mean carrying a timing from one job to the
   # next and hoping nothing else changed. This does it inside one run instead,
-  # and proves something stronger: a build on a *fresh builder* that reads the
-  # GHA cache must not have to execute the layers the t4 job already built. If
-  # the export in the t4 job did not work, this job's build pays full price.
+  # and proves something stronger: a build on a *fresh builder*, holding no
+  # local state whatsoever, must not have to execute layers that an earlier
+  # build already exported to the GHA cache. The only place the second build
+  # can get them from is the network.
   #
-  # It needs the t4 job to have exported the cache first, so it runs after it —
-  # and only after a success, since a t4 that never reached the build step has
-  # nothing to prove.
+  # ─── Why this job builds twice instead of reading the t4 job's export ─────
   #
-  # ─── Why this job asserts twice, and not on timing ────────────────
+  # It used to take the t4 job's export as the exporting side, and went red on
+  # run 30966673385 with the cache correctly wired, correctly exported, and the
+  # manifest correctly imported. The two jobs had simply built on top of
+  # different base images:
+  #
+  #   t4          01:34  FROM python:3.12-slim@sha256:57cd7c3a…
+  #   cache-proof 02:49  FROM python:3.12-slim@sha256:507285ff…
+  #
+  # `python:3.12-slim` is a moving tag and Docker Hub republished it inside the
+  # 75 minutes t4 spends booting the stack, draining the job queue, ingesting
+  # the wiki and running the smoke tier. Every step's cache key is chained off
+  # the base image, so a new base invalidates all of them at once: the manifest
+  # imports, matches nothing, and the build pays full price. Reproduced off a
+  # runner with a local cache backend — same base digest across two fresh
+  # builders gives two CACHED steps, a changed one gives zero and the same
+  # "importing cache manifest" line, which is exactly what the red job printed.
+  #
+  # Buildkit was right both times. The assertion was the thing that was wrong:
+  # it could only hold if an upstream tag stayed still for the length of the
+  # slowest job in the pipeline, which is not a property this repo controls.
+  # Pinning the base by digest would buy determinism at the price of silently
+  # missing Debian's security rebuilds, which is a bad trade for a wiki that
+  # ships to the public.
+  #
+  # So the exporting side is now a build this job runs itself, seconds before
+  # the importing one, on the same runner and through the same overlay. A tag
+  # cannot move inside that window, and the property under test is unchanged.
+  # The freshness that makes the second build meaningful comes from calling
+  # setup-buildx-action twice: each call creates a new docker-container
+  # builder, so the second build starts against an empty buildkit.
+  #
+  # `needs: t4` survives that change for a different reason than before — not
+  # to consume its export, but so that two jobs are never writing the
+  # hdp-chatbot-proxy scope at the same moment. Sequencing costs nothing in a
+  # nightly.
+  #
+  # ─── What the two assertions divide between them ──────────────────
   #
   # The first version asserted one thing — that the build log contained
-  # `CACHED` — and went red on run 30873842113. It was right to: nothing was
-  # cached, because `docker compose build` ignores the `x-bake` key the overlay
-  # was written around (see docker/ci/compose.cache.yml). But the log could not
-  # say *that*. "No CACHED lines" is equally consistent with a broken cache and
+  # `CACHED` — and went red on run 30873842113, correctly: nothing was cached,
+  # because `docker compose build` ignores the `x-bake` key the overlay was
+  # written around (see docker/ci/compose.cache.yml). But the log could not say
+  # *that*. "No CACHED lines" is equally consistent with a broken cache and
   # with a grep that does not match what bake emits, and reading the log for an
   # hour did not distinguish them.
   #
-  # So the wiring is now checked directly, before the build, against the bake
-  # definition compose actually generates — `build --print` is compose's own
-  # rendering of what it will hand to bake, so a cache-from that gets dropped
-  # in translation is visible there and nowhere else. That check is exact and
-  # cannot be confused with a cold cache.
+  # So the wiring is checked directly, before any build, against the bake
+  # definition compose generates — `build --print` is compose's own rendering
+  # of what it will hand to bake, so a cache-from dropped in translation is
+  # visible there and nowhere else. It covers all three built services rather
+  # than the one this job builds, because haystack is the service whose cache
+  # is actually worth money and no other job looks at its wiring.
   #
   # Timing is printed and deliberately not asserted. chatbot-proxy was chosen
   # because it builds in seconds even cold, which is what makes this job cheap
   # and is *also* what makes its wall clock worthless as evidence: three
   # layers, of which the FROM is re-pulled either way, so warm and cold differ
   # by about a second. Any threshold over that would be measuring runner noise.
-  # The two structural assertions are the proof; the seconds are a comment.
+  # The structural assertions are the proof; the seconds are a comment.
   cache-proof:
     name: the GHA layer cache round-trips
     needs: t4
@@ -204,24 +240,37 @@ jobs:
       contents: read
       actions: write
 
+    # Both builds are parsed line by line below, so neither may come back as a
+    # redrawn TTY display.
+    env:
+      BUILDKIT_PROGRESS: plain
+      COMPOSE_BAKE: "1"
+
     steps:
       - uses: actions/checkout@v4
+
+      # The first of two builders. The second is created further down, after
+      # the seeding build, and is what makes the warm build a real test.
       - uses: docker/setup-buildx-action@v3
       - uses: crazy-max/ghaction-github-runtime@v3
+
+      # compose declares `env_file: .env` and will not parse the model without
+      # one. Made once and left in place: this runner is thrown away, and every
+      # step below needs it.
+      - name: Provide a .env for compose
+        run: cp .env.example .env
 
       # Assertion 1 of 2: the cache configuration survives compose's
       # translation into a bake definition. This is the step that would have
       # named the x-bake bug in one line instead of costing an afternoon, and
-      # it runs before the build so a wiring failure is reported as a wiring
+      # it runs before any build so a wiring failure is reported as a wiring
       # failure rather than as a cache miss.
-      - name: Assert the cache backend reaches the bake target
+      - name: Assert the cache backend reaches every built target
         run: |
           set -euo pipefail
-          cp .env.example .env
-          COMPOSE_BAKE=1 docker compose \
+          docker compose \
             -f docker-compose.yml -f docker/ci/compose.cache.yml \
-            build --print chatbot-proxy > bake.json
-          rm -f .env
+            build --print > bake.json
           cat bake.json
           python3 - bake.json <<'PY'
           import json, sys
@@ -235,51 +284,66 @@ jobs:
           bake = json.load(open(sys.argv[1]))
           targets = bake.get("target", {})
 
-          # compose names each bake target after the service, with dots turned
-          # into underscores and nothing else changed.
-          name = "chatbot-proxy".replace(".", "_")
-          if name not in targets:
-              die(f"no {name} target in the bake definition; it has {sorted(targets)}")
+          # Every service docker/ci/compose.cache.yml configures. Spelled out
+          # rather than read back from the overlay, so that a service losing
+          # its cache block is a failure here and not a silently shorter list.
+          for service in ("opensearch", "haystack", "chatbot-proxy"):
+              # compose names each bake target after the service, with dots
+              # turned into underscores and nothing else changed.
+              name = service.replace(".", "_")
+              if name not in targets:
+                  die(f"no {name} target in the bake definition; it has {sorted(targets)}")
 
-          for field, want in (("cache-from", "type=gha,scope=hdp-chatbot-proxy"),
-                              ("cache-to", "type=gha,scope=hdp-chatbot-proxy,mode=max")):
-              got = targets[name].get(field) or []
-              if want not in got:
-                  die(
-                      f"{field} did not reach the bake target: wanted {want!r}, got {got!r}. "
-                      "docker/ci/compose.cache.yml must use the standard build.cache_from / "
-                      "build.cache_to fields — compose drops x-* keys when it builds the bake "
-                      "definition, so an x-bake block there caches nothing and says nothing."
-                  )
-              print(f"ok: {field} = {got}")
+              for field, want in (("cache-from", f"type=gha,scope=hdp-{service}"),
+                                  ("cache-to", f"type=gha,scope=hdp-{service},mode=max")):
+                  got = targets[name].get(field) or []
+                  if want not in got:
+                      die(
+                          f"{service}: {field} did not reach the bake target: wanted {want!r}, "
+                          f"got {got!r}. docker/ci/compose.cache.yml must use the standard "
+                          "build.cache_from / build.cache_to fields — compose drops x-* keys "
+                          "when it builds the bake definition, so an x-bake block there caches "
+                          "nothing and says nothing."
+                      )
+                  print(f"ok: {service} {field} = {got}")
           PY
 
       # chatbot-proxy, not haystack: the assertion is about the cache backend
       # working, and this one builds in seconds even cold, so the job costs
       # almost nothing and cannot fail for being slow. haystack's cache is
       # exercised by the t4 job itself every night.
-      #
-      # BUILDKIT_PROGRESS=plain so the log is the one-line-per-event form the
-      # assertion below parses, rather than a redrawn TTY display.
-      - name: Warm build from the exported cache
-        id: warm
-        env:
-          BUILDKIT_PROGRESS: plain
+      - name: Seed the cache (build 1 of 2)
+        id: seed
         run: |
           set -euo pipefail
-          cp .env.example .env
           start=$SECONDS
-          COMPOSE_BAKE=1 docker compose \
+          docker compose \
+            -f docker-compose.yml -f docker/ci/compose.cache.yml \
+            build chatbot-proxy 2>&1 | tee seed.log
+          echo "seconds=$(( SECONDS - start ))" >> "$GITHUB_OUTPUT"
+
+      # A second, empty builder. Nothing the seeding build left on disk is
+      # reachable from here, so anything the next build does not execute came
+      # over the wire from the GHA cache.
+      - name: A fresh builder, with none of the first one's state
+        uses: docker/setup-buildx-action@v3
+
+      - name: Warm build from the exported cache (build 2 of 2)
+        id: warm
+        run: |
+          set -euo pipefail
+          start=$SECONDS
+          docker compose \
             -f docker-compose.yml -f docker/ci/compose.cache.yml \
             build chatbot-proxy 2>&1 | tee build.log
           echo "seconds=$(( SECONDS - start ))" >> "$GITHUB_OUTPUT"
-          rm -f .env
 
       # Assertion 2 of 2: the cache was not merely configured, it was used.
       - name: Assert the layers came from the cache
         run: |
           set -euo pipefail
-          echo "warm build took ${{ steps.warm.outputs.seconds }}s (not asserted — see the comment above)"
+          echo "seed build ${{ steps.seed.outputs.seconds }}s, warm build ${{ steps.warm.outputs.seconds }}s"
+          echo "(neither is asserted — see the comment above)"
 
           # buildkit prints `#N CACHED` on its own line for every step it did
           # not execute. Anchored, because an unanchored 'CACHED' also matches
@@ -288,17 +352,32 @@ jobs:
           echo "cached steps: $cached"
 
           if [ "$cached" -gt 0 ]; then
-            grep -B1 -E '^#[0-9]+ CACHED' build.log || true
+            grep -E '^#[0-9]+ CACHED' build.log || true
             echo "cache hit: $cached layer(s) came from the GHA cache"
             exit 0
           fi
 
-          echo "::error::no CACHED layers — the cache is wired into the bake target (asserted above) but nothing was reused."
+          # The one benign reason for a miss, and the one that cost run
+          # 30966673385: the base image is a moving tag, and if it moved
+          # between these two builds every cache key below it changed with it.
+          # Two builds a minute apart make that very unlikely rather than
+          # impossible, so it is worth naming before anything else.
+          base() { grep -oE 'FROM [^ ]+@sha256:[0-9a-f]{64}' "$1" | head -1; }
+          echo "seed base: $(base seed.log)"
+          echo "warm base: $(base build.log)"
+          if [ "$(base seed.log)" != "$(base build.log)" ]; then
+            echo "::error::the base image moved between the two builds, so no layer could be reused."
+            echo "python:3.12-slim was republished mid-job. Re-run; this is upstream, not the cache."
+            exit 1
+          fi
+
+          echo "::error::no CACHED layers — the cache is wired into the bake target (asserted above), the base image did not move, and nothing was reused."
           echo "The wiring check passed, so this is not an x-bake or COMPOSE_BAKE problem. Look at:"
-          echo "  * whether the t4 job's build exported at all — search its log for a cache export step"
-          echo "  * a scope mismatch between the exporting and importing side"
-          echo "  * python:3.12-slim moving between the two jobs, which changes the parent of"
-          echo "    every later layer and legitimately produces zero cache hits"
-          echo "--- cache-related steps in the build log ---"
+          echo "  * whether the seeding build exported at all — search seed.log for a cache export step"
+          echo "  * whether the second builder really was a new one (two 'Creating a new builder instance' groups above)"
+          echo "  * the ACTIONS_* variables, which crazy-max/ghaction-github-runtime exports and buildx needs to find a backend"
+          echo "--- cache-related steps in the seeding build ---"
+          grep -iE 'cache' seed.log || echo "(none — nothing was imported or exported)"
+          echo "--- cache-related steps in the warm build ---"
           grep -iE 'cache' build.log || echo "(none — nothing was imported or exported)"
           exit 1

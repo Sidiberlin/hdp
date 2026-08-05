@@ -435,8 +435,16 @@ The nightly workflow adds two things `t4-smoke.sh` takes as a flag rather than
 assuming: a buildx GHA layer cache and a saved HuggingFace model cache, both
 configured in `docker/ci/compose.cache.yml`. That file is a CI-only overlay —
 a developer's `docker compose up` must not depend on a GitHub cache backend
-existing. `--cache` sets `COMPOSE_BAKE=1`, without which compose ignores the
-`x-bake` block entirely and the build succeeds while caching nothing.
+existing. `--cache` sets `COMPOSE_BAKE=1`, without which the build goes to the
+classic builder, which does not understand `type=gha`, and succeeds while
+caching nothing.
+
+The cache is worth exactly as much as the base image tags hold still: every
+layer key is chained off the resolved digest of `python:3.12-slim`,
+`python:3.11-slim-bookworm` or `opensearchproject/opensearch:2.18.0`, so a
+republished tag legitimately costs one nightly its whole cache. That is what
+made the `cache-proof` job flaky when it read the cache the `t4` job exported
+75 minutes earlier; it now seeds and reads the cache itself, seconds apart.
 
 ### The migration tier (T5)
 
