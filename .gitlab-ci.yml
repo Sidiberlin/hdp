@@ -169,7 +169,10 @@ compose-validate:
 # ─── T0 provenance ──────────────────────────────────────────────────
 gitleaks:
   stage: lint
-  image: zricethezav/gitleaks:latest
+  # Digest, not `:latest`, and the same one scripts/ci/gitleaks.sh pins — the
+  # thing that decides whether this repository publishes a secret must not
+  # change under two runs of the same commit. gitleaks v8.30.1.
+  image: zricethezav/gitleaks@sha256:c00b6bd0aeb3071cbcb79009cb16a60dd9e0a7c60e2be9ab65d25e6bc8abbb7f
   <<: *default_rules
   before_script:
     # git refuses to operate on a tree it considers foreign-owned. Harmless

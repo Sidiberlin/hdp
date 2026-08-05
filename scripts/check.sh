@@ -358,6 +358,12 @@ check_gitleaks_run() {
     if ! command -v gitleaks >/dev/null 2>&1 && ! have_docker; then
         skip gitleaks "no gitleaks on PATH and no docker"; return
     fi
+    # gitleaks.sh returns 2 when a scanner it *does* have could not complete —
+    # image pull failed, scan crashed, output no longer carries the marker it
+    # asserts. That is deliberately not translated to 77/SKIP: having no
+    # scanner is a gap the operator can see and close, while having one that
+    # silently stopped working is the failure this gate was rewritten to
+    # refuse. It falls through to FAIL.
     scripts/ci/gitleaks.sh
 }
 
