@@ -28,6 +28,11 @@ For changes in the upstream BlueSpice HDP Edition, see the
   user-uploaded spreadsheets), `phpseclib/phpseclib` 3.0.48 → 3.0.56 (2 high;
   sits under the OIDC client), `universal-omega/dynamic-page-list3` → 3.6.4
   (exposed suppressed usernames).
+  That leaves **6** carried out of the 34, but the baseline and `SECURITY.md`
+  say **8**, and both are right: `CVE-2026-69245` and `CVE-2026-69246` (both
+  `guzzlehttp/guzzle`) were published after the 34-item count was taken and are
+  marked *new 2026-08* in `docker/ci/composer-audit-baseline.json`. 6 + 2 = 8.
+  The baseline file is the count of record; these numbers date, it does not.
 - **`mediawiki/maps` remains vulnerable** to CVE-2026-52854 (high, stored XSS
   via `display_map`). The fix is in 12.1.3; BlueSpice constrains the package to
   `11.0.*`, so no upgrade within the 5.1 series can clear it. Tracked in

@@ -233,7 +233,7 @@ with open('composer.lock', 'w') as f:
     #
     # This is also what fires the pre-autoload-dump hook, i.e. all eight
     # scripts in _bluespice/pre-autoload-dump.d/, including the one that
-    # applies 17 .diff patches. Capture the output so their failures can be
+    # applies 18 .diff patches. Capture the output so their failures can be
     # detected; `tee` keeps it on the console exactly as before.
     #
     # 05-add_installer_overrides.sh is checked by state rather than by log
@@ -275,7 +275,7 @@ fi
 #      fuzz factor) that 99-apply_patches.sh already uses for the inherited
 #      BlueSpice patches.
 #
-# Class A only: the 17 inherited Class-C patches are applied by
+# Class A only: the 18 inherited Class-C patches are applied by
 # 99-apply_patches.sh during `composer dump-autoload`, above.
 #
 # Paths are passed explicitly because the container has no repo root — only
