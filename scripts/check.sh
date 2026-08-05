@@ -465,11 +465,21 @@ check_compose_run() {
     # python3 a contributor has, and PyYAML is not in the standard library.
     # This is the same reason scripts/lib/read-manifest.py carries a fallback.
     if [ -f docker-compose.prod.yml ]; then
-        local merged
+        local merged err
+        # stderr to a file, not into `merged`. It used to be `2>&1`, which is
+        # right for the failure branch below (it needs compose's message) and
+        # wrong for the success branch, which parses this as JSON: compose
+        # prints a `level=warning msg="The \"X\" variable is not set"` line per
+        # undefined variable, and one of those in front of the document turns
+        # this check into a python traceback about "Expecting value: line 1
+        # column 1". Reproduced with a .env predating the HDP_INFISICAL_* block
+        # — an operator whose .env is merely incomplete got a JSONDecodeError
+        # naming neither the variable nor the file.
+        err="$(mktemp)"
         if ! merged=$(docker compose -f docker-compose.yml -f docker-compose.prod.yml \
-                          config --format json 2>&1); then
+                          config --format json 2>"$err"); then
             echo "docker-compose.prod.yml does not merge onto docker-compose.yml:"
-            printf '%s\n' "$merged" | tail -5
+            tail -5 "$err"
             rc=1
         elif ! printf '%s' "$merged" | python3 -c '
 import json, sys
@@ -487,7 +497,12 @@ if missing:
     sys.exit(1)
 '; then
             rc=1
+            # The warnings are not a failure on their own, but when the parse
+            # went wrong they are usually the reason, so surface them here
+            # rather than leaving the traceback unexplained.
+            [ -s "$err" ] && { echo "  compose also reported:"; sed 's/^/    /' "$err" | head -5; }
         fi
+        rm -f "$err"
     fi
 
     [ "$made_env" -eq 1 ] && rm -f .env
