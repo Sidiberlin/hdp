@@ -60,14 +60,26 @@ IMG_GITLEAKS="${IMG_GITLEAKS:-zricethezav/gitleaks@sha256:c00b6bd0aeb3071cbcb790
 CLEAN_MARKER='no leaks found'
 
 # Everything this project authors and commits.
+#
+# `.github/workflows/` is first for a reason: CI definitions are the canonical
+# place a hardcoded token lands, they are project-authored, and this repository
+# gained six of them without any of them being scanned. `tests/`, `docs/`,
+# `VERSIONS.yml` and `docker-compose.prod.yml` were outside the boundary for no
+# reason other than that they did not exist when the list was written. A gate
+# whose scope lags the tree is a gate that quietly covers less every month.
 TARGETS=(
+    .github/workflows
     docker
     scripts
+    tests
+    docs
     app/settings.d
     .env.example
     .gitlab-ci.yml
     docker-compose.yml
+    docker-compose.prod.yml
     publiccode.yml
+    VERSIONS.yml
     hdp.sh
 )
 

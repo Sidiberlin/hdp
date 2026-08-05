@@ -145,48 +145,13 @@ docker compose version >/dev/null 2>&1 || { fail "docker compose v2 is required"
 #
 # HDP_T4_MIN_DISK_GB=0 disables the check; any other value replaces the
 # computed requirement, for anyone who knows better on their own hardware.
-if [ "${HDP_T4_MIN_DISK_GB:-}" != "0" ]; then
-    DOCKER_ROOT="$(docker info --format '{{.DockerRootDir}}' 2>/dev/null || true)"
-    [ -n "$DOCKER_ROOT" ] && [ -d "$DOCKER_ROOT" ] || DOCKER_ROOT=/var/lib/docker
-    [ -d "$DOCKER_ROOT" ] || DOCKER_ROOT=/
-    # Field 2 is the filesystem total, field 4 what is free. The watermark is a
-    # percentage of the former, so both are needed — reading only "available"
-    # is the mistake this check used to make.
-    DISK_TOTAL_KB="$(df -Pk "$DOCKER_ROOT" 2>/dev/null | awk 'NR==2 {print $2}')"
-    DISK_FREE_KB="$(df -Pk "$DOCKER_ROOT" 2>/dev/null | awk 'NR==2 {print $4}')"
-    case "${DISK_TOTAL_KB}:${DISK_FREE_KB}" in
-        # The word always has the colon, so `:*` and `*:` are what catch an
-        # empty field; a literal '' pattern here could never match.
-        *[!0-9:]*|:*|*:)
-            # df said something unparseable. Report it and carry on: refusing
-            # to run because a disk check could not run is worse than the
-            # failure it guards against.
-            echo "  could not read free space on $DOCKER_ROOT — skipping the disk check" ;;
-        *)
-            if [ -n "${HDP_T4_MIN_DISK_GB:-}" ]; then
-                DISK_NEED_KB=$(( HDP_T4_MIN_DISK_GB * 1024 * 1024 ))
-            else
-                DISK_NEED_KB="$(hdp_disk_required_kb "$DISK_TOTAL_KB")"
-            fi
-            if [ "$DISK_FREE_KB" -lt "$DISK_NEED_KB" ]; then
-                fail "only $(hdp_gb "$DISK_FREE_KB") GB free on $DOCKER_ROOT; this job needs $(hdp_gb "$DISK_NEED_KB") GB"
-                echo "  Filesystem is $(hdp_gb "$DISK_TOTAL_KB") GB, so OpenSearch's flood-stage watermark" >&2
-                echo "  reserves the last $(hdp_gb $(( DISK_TOTAL_KB / 100 * 5 ))) GB of it — the stack never gets to use them." >&2
-                echo "" >&2
-                echo "  The haystack image alone is 2.5 GB and its model weights another 1.7 GB," >&2
-                echo "  on top of the MediaWiki, OpenSearch and MariaDB images and their volumes." >&2
-                echo "  Run it with less and OpenSearch crosses that watermark mid-run: the index" >&2
-                echo "  goes read-only, setup.sh still reports success, and the job fails an hour" >&2
-                echo "  later claiming the search index is empty." >&2
-                echo "" >&2
-                echo "  Free some space, or set HDP_T4_MIN_DISK_GB to override this check." >&2
-                echo "  On a GitHub runner, see the reclaim step in .github/workflows/t4-smoke.yml." >&2
-                exit 2
-            fi
-            echo "  disk: $(hdp_gb "$DISK_FREE_KB") GB free on $DOCKER_ROOT of $(hdp_gb "$DISK_TOTAL_KB") GB (need $(hdp_gb "$DISK_NEED_KB"))"
-            ;;
-    esac
-fi
+#
+# The check itself is hdp_require_disk in scripts/ci/lib/stack.sh, shared with
+# T3 and T5, which boot the same opensearch and had no guard at all. 12 and 20
+# are T4's numbers and are the defaults of hdp_disk_required_kb: this tier is
+# the one that pulls the haystack image (2.5 GB) and its model weights (1.7 GB)
+# on top of the MediaWiki, OpenSearch and MariaDB images and their volumes.
+hdp_require_disk T4 12 20 "${HDP_T4_MIN_DISK_GB:-}" HDP_T4_MIN_DISK_GB || exit 2
 
 COMPOSE_FILES=(-f docker-compose.yml)
 if [ "$CACHE" -eq 1 ]; then
