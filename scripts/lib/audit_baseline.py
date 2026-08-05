@@ -21,9 +21,11 @@ signal — "did upstream's dependency surface get worse since we last looked" �
 and it is the question `composer audit` can answer that nothing else in this
 repo can.
 
-Exit: 0 nothing new · 1 a new advisory · 2 malformed input
+Exit: 0 nothing new · 1 a new advisory, a version move, or a bad entry
+      2 malformed input
 """
 import json
+import os
 import sys
 
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -134,6 +136,8 @@ def render(new, resolved, moved, problems):
         lines.append(f"  gone   {pkg} {known} is no longer reported — drop it from the baseline")
     for pkg, was, now in moved:
         lines.append(f"  moved  {pkg} was {was}, is now {now} — re-review the acceptance")
+        lines.append(f"         the reason recorded for {pkg} argues about {was} specifically;")
+        lines.append("         at a different version it is an assertion, not an assessment")
     for p in problems:
         lines.append(f"  BAD    {p}")
     return lines
@@ -194,12 +198,40 @@ def main(argv):
         print(line)
 
     total = sum(len(v) for v in normalise(report).values())
-    if new or problems:
+
+    # `moved` fails, and it did not used to. compare() found it and render()
+    # printed it, but main() returned 1 only on `new or problems`, so a package
+    # whose installed version changed under an existing acceptance went by as a
+    # line in a passing log.
+    #
+    # That is the wrong way round. These acceptances lean hard on the exact
+    # version: guzzle's is a 400-word argument about 7.12.3 — which call sites
+    # exist in this tree, that core substitutes its own CookieJar, that
+    # $wgAllowCopyUploads is off — and it is reasoning about a specific
+    # dependency surface, not about the package in general. A version move is
+    # precisely the moment that reasoning stops being known-good, which makes it
+    # the same class as a blank `why`: an acceptance nobody has actually made.
+    #
+    # `--update-baseline` rewrites `installed` and keeps the prose, so clearing
+    # this is a deliberate act — re-read the reason, then regenerate.
+    if new or problems or moved:
         print("")
-        print("  A new advisory is the signal this gate exists for. Either take the fix")
-        print("  (docs/dev/upgrade-runbook.md — the security fast path), or record the")
-        print("  acceptance with a reason:")
+        if new or problems:
+            print("  A new advisory is the signal this gate exists for. Either take the fix")
+            print("  (docs/dev/upgrade-runbook.md — the security fast path), or record the")
+            print("  acceptance with a reason:")
+        else:
+            print("  An accepted package moved version. The recorded reason was written")
+            print("  against the old one, so re-read it against the new one — then, if it")
+            print("  still holds, record the move:")
         print("    scripts/ci/composer-audit.sh --update-baseline")
+        # GitHub renders these in the job summary and against the file, which is
+        # where somebody skimming a red run actually looks.
+        if os.environ.get("GITHUB_ACTIONS"):
+            for pkg, was, now in moved:
+                print(f"::error title=Accepted advisory moved version::{pkg} was {was}, "
+                      f"is now {now} — the acceptance in {baseline_path} was reasoned "
+                      "against the old version")
         return 1
     print(f"  {total} known advisory/advisories, all accepted in "
           f"{baseline_path} (reviewed {baseline.get('reviewed', '?')})")

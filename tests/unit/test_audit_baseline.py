@@ -167,3 +167,96 @@ def test_the_maps_mitigation_the_baseline_claims_actually_exists():
                 f"the baseline's mediawiki/maps entry names {patch_id}, "
                 f"but {path} is missing"
             )
+
+
+# ─── The exit code, which is the part CI reads ──────────────────────
+# compare() found `moved` and render() printed it, but main() returned 1 only
+# on `new or problems` — so a package whose installed version changed under an
+# existing acceptance scrolled past as a line in a *passing* log. These call
+# main() rather than compare(), because the exit code is the only part of this
+# script anything downstream acts on.
+
+
+def _run_main(tmp_path, report, baseline, lock_versions):
+    (tmp_path / "audit.json").write_text(json.dumps(report))
+    (tmp_path / "baseline.json").write_text(json.dumps(baseline))
+    (tmp_path / "composer.lock").write_text(json.dumps(
+        {"packages": [{"name": n, "version": v} for n, v in lock_versions.items()],
+         "packages-dev": []}))
+    return ab.main([str(tmp_path / "audit.json"), str(tmp_path / "baseline.json"),
+                    str(tmp_path / "composer.lock")])
+
+
+def test_a_fully_accepted_tree_exits_zero(tmp_path):
+    rc = _run_main(
+        tmp_path,
+        _report({"a/b": [_adv("a/b", cve="CVE-1")]}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": "r"}}),
+        {"a/b": "1.0"})
+    assert rc == 0
+
+
+def test_a_version_move_under_an_acceptance_fails_the_gate(tmp_path):
+    """The acceptances reason about a specific version.
+
+    guzzle's `why` is a 400-word argument about 7.12.3 — which call sites exist
+    in this tree, that core substitutes its own CookieJar, that
+    $wgAllowCopyUploads is off. At a different version that is an assertion, not
+    an assessment, which makes a move the same class as a blank `why`.
+    """
+    rc = _run_main(
+        tmp_path,
+        _report({"a/b": [_adv("a/b", cve="CVE-1")]}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": "r"}}),
+        {"a/b": "1.1"})
+    assert rc == 1
+
+
+def test_a_new_advisory_still_fails_the_gate(tmp_path):
+    rc = _run_main(
+        tmp_path,
+        _report({"a/b": [_adv("a/b", cve="CVE-1"), _adv("a/b", cve="CVE-2")]}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": "r"}}),
+        {"a/b": "1.0"})
+    assert rc == 1
+
+
+def test_a_blank_why_still_fails_the_gate(tmp_path):
+    rc = _run_main(
+        tmp_path,
+        _report({"a/b": [_adv("a/b", cve="CVE-1")]}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": ""}}),
+        {"a/b": "1.0"})
+    assert rc == 1
+
+
+def test_a_resolved_advisory_alone_does_not_fail_the_gate(tmp_path):
+    """Cleanup, not news — dropping a stale baseline entry is not urgent."""
+    rc = _run_main(
+        tmp_path, _report({}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": "r"}}),
+        {"a/b": "1.0"})
+    assert rc == 0
+
+
+def test_a_move_is_annotated_for_github(tmp_path, capsys, monkeypatch):
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    _run_main(
+        tmp_path,
+        _report({"a/b": [_adv("a/b", cve="CVE-1")]}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": "r"}}),
+        {"a/b": "1.1"})
+    assert "::error title=Accepted advisory moved version::" in capsys.readouterr().out
+
+
+def test_the_committed_baseline_passes_against_its_own_versions():
+    """The real baseline against app/composer.lock — this must not go red."""
+    baseline = json.load(open(BASELINE, encoding="utf-8"))
+    lock = json.load(open(os.path.join(REPO, "app", "composer.lock"), encoding="utf-8"))
+    installed = {p["name"]: p["version"]
+                 for p in lock.get("packages", []) + lock.get("packages-dev", [])}
+    stale = [(pkg, e["installed"], installed.get(pkg))
+             for pkg, e in baseline["accepted"].items()
+             if e.get("installed") and installed.get(pkg)
+             and installed[pkg] != e["installed"]]
+    assert stale == [], f"baseline 'installed' has drifted from composer.lock: {stale}"
