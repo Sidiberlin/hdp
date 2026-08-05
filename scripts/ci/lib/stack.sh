@@ -224,3 +224,71 @@ hdp_gb() {
     fi
     printf '%d.%d' "$gb" "$tenths"
 }
+
+# hdp_require_disk <tier> <stack-gb> <floor-gb> <override-gb> <override-var-name>
+#
+# The precondition itself, shared by every tier that boots opensearch. Returns
+# 0 when there is room (or when the check could not run), 2 when there is not.
+#
+# This lived inline in t4-smoke.sh, and T3 and T5 boot the same
+# `mariadb opensearch mediawiki mediawiki-web` without it — same failure mode,
+# only a different probability. What OpenSearch does when the filesystem passes
+# the flood-stage watermark is not loud: the index goes read-only, setup.sh
+# still reports success, and the job fails much later with assertions that point
+# somewhere else entirely. T5 is the worse case of the two — it builds the
+# 2.47 GB opensearch image and loads a DB fixture on a stock ubuntu-latest.
+#
+# <override-gb> is the tier's own env var already expanded by the caller: "0"
+# disables the check, any other value replaces the computed requirement, empty
+# means compute it. <override-var-name> is only used to name it in the error.
+#
+# Measured on docker's data root, not on $PWD — images and volumes are what fill
+# up, and on CI runners the two are often different filesystems.
+hdp_require_disk() {
+    local tier="$1" stack_gb="$2" floor_gb="$3" override="$4" override_var="$5"
+    [ "$override" != "0" ] || return 0
+
+    local docker_root total_kb free_kb need_kb
+    docker_root="$(docker info --format '{{.DockerRootDir}}' 2>/dev/null || true)"
+    [ -n "$docker_root" ] && [ -d "$docker_root" ] || docker_root=/var/lib/docker
+    [ -d "$docker_root" ] || docker_root=/
+
+    # Field 2 is the filesystem total, field 4 what is free. The watermark is a
+    # percentage of the former, so both are needed — reading only "available"
+    # is the mistake this check used to make.
+    total_kb="$(df -Pk "$docker_root" 2>/dev/null | awk 'NR==2 {print $2}')"
+    free_kb="$(df -Pk "$docker_root" 2>/dev/null | awk 'NR==2 {print $4}')"
+    case "${total_kb}:${free_kb}" in
+        # The word always has the colon, so `:*` and `*:` are what catch an
+        # empty field; a literal '' pattern here could never match.
+        *[!0-9:]*|:*|*:)
+            # df said something unparseable. Report it and carry on: refusing
+            # to run because a disk check could not run is worse than the
+            # failure it guards against.
+            echo "  could not read free space on $docker_root — skipping the disk check"
+            return 0 ;;
+    esac
+
+    if [ -n "$override" ]; then
+        need_kb=$(( override * 1024 * 1024 ))
+    else
+        need_kb="$(hdp_disk_required_kb "$total_kb" "$stack_gb" "$floor_gb")"
+    fi
+
+    if [ "$free_kb" -lt "$need_kb" ]; then
+        printf '\033[0;31m%s FAILED: only %s GB free on %s; this job needs %s GB\033[0m\n' \
+            "$tier" "$(hdp_gb "$free_kb")" "$docker_root" "$(hdp_gb "$need_kb")" >&2
+        echo "  Filesystem is $(hdp_gb "$total_kb") GB, so OpenSearch's flood-stage watermark" >&2
+        echo "  reserves the last $(hdp_gb $(( total_kb / 100 * 5 ))) GB of it — the stack never gets to use them." >&2
+        echo "" >&2
+        echo "  Run it with less and OpenSearch crosses that watermark mid-run: the index" >&2
+        echo "  goes read-only, setup.sh still reports success, and the job fails much" >&2
+        echo "  later claiming the search index is empty." >&2
+        echo "" >&2
+        echo "  Free some space, or set $override_var to override this check." >&2
+        echo "  On a GitHub runner, see the reclaim step in .github/workflows/t4-smoke.yml." >&2
+        return 2
+    fi
+    echo "  disk: $(hdp_gb "$free_kb") GB free on $docker_root of $(hdp_gb "$total_kb") GB (need $(hdp_gb "$need_kb"))"
+    return 0
+}

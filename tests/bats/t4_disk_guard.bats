@@ -118,3 +118,84 @@ setup() {
     # …and carries instead of printing a tenth of 10.
     [ "$(hdp_gb $(( 15 * GB + GB * 98 / 100 )))" = "16.0" ]
 }
+
+# ─── hdp_require_disk — the guard T3 and T5 now share ───────────────
+# The arithmetic above was already covered; the wrapper around it was not, and
+# it is what three tiers call. These use a stub `df` and `docker` on PATH so
+# they assert the branching rather than the machine they run on.
+
+_stub_env() {   # total_kb free_kb
+    STUB="$BATS_TEST_TMPDIR/bin"
+    mkdir -p "$STUB"
+    cat > "$STUB/df" <<EOF
+#!/bin/sh
+echo "Filesystem 1024-blocks Used Available Capacity Mounted"
+echo "/dev/stub $1 0 $2 1% /"
+EOF
+    cat > "$STUB/docker" <<'EOF'
+#!/bin/sh
+echo /
+EOF
+    chmod +x "$STUB/df" "$STUB/docker"
+    PATH="$STUB:$PATH"
+}
+
+@test "hdp_require_disk passes when there is room" {
+    _stub_env $(( 72 * GB )) $(( 40 * GB ))
+    run hdp_require_disk T4 12 20 "" HDP_T4_MIN_DISK_GB
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"disk:"* ]]
+}
+
+@test "hdp_require_disk returns 2 when there is not, before anything boots" {
+    _stub_env $(( 72 * GB )) $(( 15 * GB ))
+    run hdp_require_disk T4 12 20 "" HDP_T4_MIN_DISK_GB
+    [ "$status" -eq 2 ]
+    [[ "$output" == *"T4 FAILED"* ]]
+}
+
+@test "the 15 GB runner that killed T4 would also be refused for T3 and T5" {
+    # The point of adding the guard to the other two tiers: same opensearch,
+    # same read-only-index failure, only the probability differed.
+    _stub_env $(( 72 * GB )) $(( 13 * GB ))
+    run hdp_require_disk T3 8 14 "" HDP_T3_MIN_DISK_GB
+    [ "$status" -eq 2 ]
+    run hdp_require_disk T5 10 16 "" HDP_T5_MIN_DISK_GB
+    [ "$status" -eq 2 ]
+}
+
+@test "T3 needs less than T5, which needs less than T4" {
+    # The tiers pull different images; the requirements must reflect that or
+    # the numbers are decoration.
+    t3="$(hdp_disk_required_kb $(( 72 * GB )) 8 14)"
+    t5="$(hdp_disk_required_kb $(( 72 * GB )) 10 16)"
+    t4="$(hdp_disk_required_kb $(( 72 * GB )) 12 20)"
+    [ "$t3" -lt "$t5" ]
+    [ "$t5" -lt "$t4" ]
+}
+
+@test "an override of 0 disables the check entirely" {
+    _stub_env $(( 72 * GB )) $(( 1 * GB ))
+    run hdp_require_disk T4 12 20 "0" HDP_T4_MIN_DISK_GB
+    [ "$status" -eq 0 ]
+    [ -z "$output" ]
+}
+
+@test "a non-zero override replaces the computed requirement" {
+    _stub_env $(( 72 * GB )) $(( 15 * GB ))
+    run hdp_require_disk T4 12 20 "10" HDP_T4_MIN_DISK_GB
+    [ "$status" -eq 0 ]
+}
+
+@test "unparseable df is reported and does not block the run" {
+    # Refusing to run because a disk check could not run is worse than the
+    # failure it guards against.
+    STUB="$BATS_TEST_TMPDIR/bin"; mkdir -p "$STUB"
+    printf '#!/bin/sh\necho garbage\n' > "$STUB/df"
+    printf '#!/bin/sh\necho /\n' > "$STUB/docker"
+    chmod +x "$STUB/df" "$STUB/docker"
+    PATH="$STUB:$PATH"
+    run hdp_require_disk T4 12 20 "" HDP_T4_MIN_DISK_GB
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"could not read free space"* ]]
+}
