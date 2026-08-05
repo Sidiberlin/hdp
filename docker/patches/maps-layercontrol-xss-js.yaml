@@ -17,8 +17,21 @@ anchor: '\$\.each\(options\.overlays, function\(index, overlayName\) \{'
 # a re-vendored tree where this patch is gone — which is fine, but it would
 # also go green if only half the patch survived a re-derive.
 marker: '// HDP: layer-control labels are rendered as HTML by Leaflet \(CVE-2026-52854\)'
-# The unescaped assignment must be gone once the patch is in.
-anti: 'overlays\[overlayName\]'
+# Both unescaped sinks must be gone once the patch is in — one per hunk:
+#
+#   hunk 1  overlays[overlayName]                        the overlay labels
+#   hunk 2  control.addBaseLayer(layerObject, layerName) the base-layer labels
+#
+# Alternation, because `anti` is asserted absent: `grep -qE 'A|B'` matches if
+# either survives, so "no match" means both hunks landed. This is not cosmetic.
+# `marker` describes hunk 1 alone, and with `anti` describing hunk 1 alone too, a
+# backport where hunk 1 applied and hunk 2 did not read green in apply-patches.sh
+# (marker present), green in verify-patches.sh (marker present, anti absent) and
+# green in test_the_maps_mitigation_the_baseline_claims_actually_exists (both
+# files on disk) — a half-fixed stored XSS with three gates saying it was fine.
+# Verified by reverting hunk 2 out of a patched tree: the old anti scored 0, this
+# one scores 1.
+anti: 'overlays\[overlayName\]|control\.addBaseLayer\( *layerObject, *layerName *\)'
 group: maps-layercontrol-xss
 stale: false
 upstream_version: 'mediawiki/maps 11.0.1'
