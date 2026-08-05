@@ -52,6 +52,25 @@
 # multi-stage-ish pip install that is the difference between caching the whole
 # dependency install and caching nothing useful.
 #
+# ─── What this cache cannot do, and why that is correct ─────────────
+#
+# Every step's cache key is chained off the resolved digest of the base image,
+# so when `python:3.12-slim`, `python:3.11-slim-bookworm` or
+# `opensearchproject/opensearch:2.18.0` is republished, the whole chain under it
+# is invalidated and the next build is cold no matter what is in the cache. That
+# is not a misconfiguration to be worked around — it is the cache noticing that
+# the image would otherwise be built on a base nobody asked for.
+#
+# It does mean the warm-cache figure above is a best case, not a nightly
+# guarantee. Docker Hub moved `python:3.12-slim` three times in the 28 hours
+# around 2026-08-05, and each of those costs one nightly its chatbot-proxy
+# cache; `python:3.11-slim-bookworm` moves more slowly, which is fortunate,
+# because haystack is the one that matters. Pinning the bases by digest would
+# make every night warm, at the price of taking Debian's security rebuilds only
+# when somebody remembers to bump a sha256. That trade is not worth making for a
+# build-time saving, and the T4 workflow's cache-proof job no longer depends on
+# the tags holding still either.
+#
 # Per-service `scope`: the GHA backend keys its cache by scope, and without
 # distinct ones the three builds overwrite each other's entry on every run and
 # the cache never hits. This is the single easiest way to configure a cache

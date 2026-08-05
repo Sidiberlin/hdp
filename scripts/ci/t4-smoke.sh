@@ -192,9 +192,10 @@ COMPOSE_FILES=(-f docker-compose.yml)
 if [ "$CACHE" -eq 1 ]; then
     [ -f "$CACHE_OVERLAY" ] || { fail "--cache needs $CACHE_OVERLAY"; exit 2; }
     COMPOSE_FILES+=(-f "$CACHE_OVERLAY")
-    # Compose delegates the build to buildx bake, which is what reads the
-    # `x-bake` block in the overlay. Without this the cache settings are
-    # silently ignored and the build looks fine while caching nothing.
+    # Compose delegates the build to buildx bake, and only buildx understands
+    # `type=gha`. Without this the overlay's cache_from/cache_to go to the
+    # classic builder, which ignores them, and the build looks fine while
+    # caching nothing.
     export COMPOSE_BAKE=1
     mkdir -p "$REPO_ROOT/.hf-cache"
 fi
