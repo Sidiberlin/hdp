@@ -93,6 +93,17 @@ fail_patch() {   # id title target reason cause fix
     echo "    cause  : $5"
     echo "    fix    : $6"
     echo "    docs   : docs/dev/patches.md"
+    # Machine-readable, for docker/setup.sh. It used to recover the failed ids
+    # by grepping this block's `  ✗ <id> —` line, which does not survive a
+    # C/POSIX locale: `✗` is three UTF-8 bytes and ERE `.` matches one byte, so
+    # in the wikimedia php-fpm image (which sets no locale) the pattern never
+    # matched and every real per-patch failure degraded to the generic
+    # "failed before it could report per-patch results" — losing the patch ids,
+    # which is the only part an operator can act on.
+    #
+    # Anchored at column 0 and pure ASCII on purpose: no locale, no byte-width
+    # and no colour escape can come between a caller and the id.
+    echo "HDP_PATCH_FAILED=$1"
     FAILED=$((FAILED+1)); FAILED_IDS+=("$1")
 }
 
@@ -161,17 +172,65 @@ while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale titl
     # path once, so `cd "$APP_DIR"` below cannot break them regardless of
     # whether we are in the repo or in the container.
     PATCH_ABS="$(cd "$(dirname "$patch")" && pwd)/$(basename "$patch")"
+
+    # `hunks` used to be read and never used (both scripts carried a shellcheck
+    # disable for it). Assert it against the patch file itself: a re-derive that
+    # drops a hunk is otherwise invisible, because every remaining hunk still
+    # applies and every check downstream still passes. This is the static half —
+    # it holds even for patches that are already applied, and it fails on the
+    # manifest, which is where the disagreement actually is.
+    if [ -n "$hunks" ]; then
+        declared_hunks="$(printf '%s' "$hunks" | tr -cd '0-9')"
+        actual_hunks="$(grep -c '^@@' "$PATCH_ABS" 2>/dev/null || echo 0)"
+        if [ -n "$declared_hunks" ] && [ "$declared_hunks" != "$actual_hunks" ]; then
+            fail_patch "$id" "$title" "$target" \
+                "manifest declares $declared_hunks hunks, $patch contains $actual_hunks" \
+                "the patch was re-derived and gained or lost a hunk, or the manifest was not updated with it" \
+                "reconcile 'hunks:' in $MANIFEST_DIR/$id.yaml with $patch — a dropped hunk still applies cleanly"
+            continue
+        fi
+    fi
+
     probe="$(cd "$APP_DIR" && patch --dry-run --forward --ignore-whitespace --fuzz 3 \
              "$target" "$PATCH_ABS" 2>&1)"
-    if printf '%s' "$probe" | grep -qi 'previously applied\|Reversed'; then
-        echo "  ${C_GRN}ok${C_OFF}     $id ${C_DIM}(already present)${C_OFF}"
-        ALREADY=$((ALREADY+1)); continue
-    fi
+
+    # FAILED is tested first, and the order is load-bearing. A probe can report
+    # both — "Reversed (or previously applied)" for the hunks already in the
+    # file and a failure for one that is not — and the old order let the
+    # already-applied branch win, which reported `ok (already present)` for a
+    # half-applied patch and skipped every check below.
     if printf '%s' "$probe" | grep -qi 'FAILED\|malformed\|misordered'; then
         fail_patch "$id" "$title" "$target" "patch does not apply, even with --fuzz 3" \
             "upstream moved the code this patch is written against" \
             "re-derive $patch against the current upstream, then update $MANIFEST_DIR/$id.yaml"
         continue
+    fi
+    if printf '%s' "$probe" | grep -qi 'previously applied\|Reversed'; then
+        # "Already applied" is a claim about the file, so check the file. patch
+        # says "Reversed (or previously applied)" whenever the hunks it can see
+        # are already there — including when only *some* of them are, in which
+        # case it reports "2 out of 2 hunks ignored" and exits as though nothing
+        # were wrong. Measured against a tree with hunk 2 of
+        # maps-layercontrol-xss-js reverted out: the probe said previously
+        # applied, and this branch reported ok, for a half-fixed stored XSS.
+        #
+        # marker present and anti absent is the same pair verify-patches.sh
+        # asserts. Doing it here too is what makes the applier's `ok` mean the
+        # same thing as the verifier's.
+        if [ -n "$marker" ] && ! grep -qE -- "$marker" "$tpath" 2>/dev/null; then
+            fail_patch "$id" "$title" "$target" "patch reports already applied but the marker is absent" \
+                "the file matches the patch context without carrying its result — upstream may have changed it independently" \
+                "inspect app/$target against $patch by hand"
+            continue
+        fi
+        if [ -n "$anti" ] && grep -qE -- "$anti" "$tpath" 2>/dev/null; then
+            fail_patch "$id" "$title" "$target" "patch reports already applied but the anti-pattern still matches" \
+                "the patch is only partly present — at least one hunk did not land" \
+                "re-apply $patch by hand and check every hunk; do not ship this"
+            continue
+        fi
+        echo "  ${C_GRN}ok${C_OFF}     $id ${C_DIM}(already present)${C_OFF}"
+        ALREADY=$((ALREADY+1)); continue
     fi
 
     if [ "$DRY" = 1 ]; then
@@ -186,6 +245,16 @@ while IFS=$'\x1f' read -r id cls mode target patch anchor marker anti stale titl
         if [ -n "$marker" ] && ! grep -qE -- "$marker" "$tpath" 2>/dev/null; then
             fail_patch "$id" "$title" "$target" "patch reported success but the marker is absent" \
                 "the patch applied into changed context and produced the wrong result" \
+                "re-derive $patch; do not ship this"
+            continue
+        fi
+        # And the anti-pattern must be gone. On a multi-hunk patch the marker
+        # only witnesses the hunk it lives in, so marker-alone would call a
+        # partial apply a success — see the sidecar for maps-layercontrol-xss-js,
+        # where the marker is in hunk 1 and the second XSS sink is in hunk 2.
+        if [ -n "$anti" ] && grep -qE -- "$anti" "$tpath" 2>/dev/null; then
+            fail_patch "$id" "$title" "$target" "patch reported success but the anti-pattern still matches" \
+                "at least one hunk did not produce its result — the marker only witnesses the hunk it is in" \
                 "re-derive $patch; do not ship this"
             continue
         fi
