@@ -44,7 +44,12 @@ on:
     - cron: '17 3 * * *'
   push:
     tags:
-      - '*'
+      # 'v*', not '*', and the same filter release.yml uses. The header's
+      # justification for firing on a tag at all is "a tag is a release
+      # candidate" — which argues for release tags, not for every tag. Under
+      # '*' any bookkeeping tag (backup-2026-08-05, pre-migration) launched a
+      # seven-container job with a 90-minute budget.
+      - 'v*'
   workflow_dispatch:
     inputs:
       skip_ingest:
