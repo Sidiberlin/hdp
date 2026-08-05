@@ -53,16 +53,28 @@ hdp_generate_env() {
     local var secret
     for var in HDP_DB_ROOT_PASSWORD HDP_DB_PASSWORD HDP_ADMIN_PASSWORD HDP_OPENSEARCH_PASSWORD; do
         secret="CI$(head -c 18 /dev/urandom | base64 | tr -dc 'A-Za-z0-9')aA1!"
-        python3 - "$repo_root/.env" "$var" "$secret" <<'PY'
+        # The secret goes in on stdin, never in argv — the header above claims
+        # exactly that, and passing it as sys.argv[3] (which this did) made it
+        # readable from /proc/<pid>/cmdline by any process on the box for the
+        # life of the interpreter. Same class as 61a1406b3 and 2ce40551f, and
+        # the same fix: `printf` is a bash builtin, so the value never reaches
+        # another process's argv on the way here either, and the pipe keeps it
+        # off the filesystem. The path and variable name stay in argv; neither
+        # is a secret.
+        #
+        # `python3 -c` rather than a `<<'PY'` heredoc because the heredoc *is*
+        # stdin — the secret has nowhere else to arrive.
+        printf '%s' "$secret" | python3 -c '
 import sys, pathlib
-path, var, value = sys.argv[1], sys.argv[2], sys.argv[3]
+path, var = sys.argv[1], sys.argv[2]
+value = sys.stdin.read()
 p = pathlib.Path(path)
 lines = p.read_text().splitlines()
 out = [f"{var}={value}" if ln.startswith(var + "=") else ln for ln in lines]
 if not any(ln.startswith(var + "=") for ln in lines):
     out.append(f"{var}={value}")
 p.write_text("\n".join(out) + "\n")
-PY
+' "$repo_root/.env" "$var"
     done
     echo generated
 }
