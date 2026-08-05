@@ -4,11 +4,20 @@
 
 **EN:**
 
-**Do NOT open a public issue for security vulnerabilities.**
+**Do NOT open an issue for security vulnerabilities.** Issues in this
+repository are public, and there is no such thing as a confidential issue on
+GitHub — an earlier version of this file told you to open one, which would have
+published your report along with a working exploit.
 
-To report a security issue:
-1. Open a **confidential** issue in the [GitHub issue tracker](https://github.com/Sidiberlin/hdp/issues) using the **`security`** label
-2. Or contact the maintainers directly via GitHub
+To report a security issue, use GitHub's **private vulnerability reporting**:
+
+1. Go to **[Security → Report a vulnerability](https://github.com/Sidiberlin/hdp/security/advisories/new)**
+   (repository → *Security* tab → *Report a vulnerability*). The report is
+   visible only to you and the maintainers, and it becomes the draft advisory
+   the fix is published from.
+2. If that page is not available to you, contact a maintainer directly through
+   GitHub and ask for a private channel — **do not describe the issue in a
+   public issue, pull request, or discussion thread first.**
 
 Please include:
 - Description of the vulnerability
@@ -18,15 +27,34 @@ Please include:
 
 We will acknowledge receipt within **72 hours** and provide an initial assessment within **7 days**.
 
+> **Maintainer note.** Private vulnerability reporting has to be switched on for
+> the link above to work: *Settings → Code security → Private vulnerability
+> reporting → Enable*. It is available on public repositories, so it must be
+> enabled as part of making this one public — a disclosure policy whose only
+> channel is a 404 is the same failure as the confidential-issue text it
+> replaces. If a monitored mail address is preferred instead, name it here and
+> delete this note; either is fine, an unreachable channel is not.
+
 ---
 
 **DE:**
 
-**Erstellen Sie KEIN öffentliches Issue für Sicherheitslücken.**
+**Erstellen Sie KEIN Issue für Sicherheitslücken.** Issues in diesem Repository
+sind öffentlich, und vertrauliche Issues gibt es auf GitHub nicht — eine
+frühere Fassung dieser Datei forderte genau das, was Ihre Meldung samt
+funktionsfähigem Exploit veröffentlicht hätte.
 
-So melden Sie ein Sicherheitsproblem:
-1. Erstellen Sie ein **vertrauliches** Issue im [GitHub-Issue-Tracker](https://github.com/Sidiberlin/hdp/issues) mit dem Template **security** oder dem Label **`security`**
-2. Oder kontaktieren Sie die Maintainer direkt über GitHub
+So melden Sie ein Sicherheitsproblem — über GitHubs **private
+Schwachstellenmeldung**:
+
+1. Öffnen Sie **[Security → Report a vulnerability](https://github.com/Sidiberlin/hdp/security/advisories/new)**
+   (Repository → Reiter *Security* → *Report a vulnerability*). Die Meldung ist
+   nur für Sie und die Maintainer sichtbar und wird zum Entwurf des Advisories,
+   aus dem der Fix veröffentlicht wird.
+2. Falls diese Seite für Sie nicht verfügbar ist, kontaktieren Sie eine
+   Maintainerin oder einen Maintainer direkt über GitHub und bitten Sie um einen
+   vertraulichen Kanal — **beschreiben Sie das Problem nicht vorab in einem
+   öffentlichen Issue, Pull Request oder Diskussionsthread.**
 
 Bitte geben Sie an:
 - Beschreibung der Schwachstelle
