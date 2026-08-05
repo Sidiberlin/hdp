@@ -21,6 +21,14 @@
 # infrastructure failure — it takes the tag to build as an input rather than
 # guessing, so it cannot silently publish `main` under a release name.
 #
+# The two pre-existing tags in this repository — `5.1.3+20260107095645` and
+# `4.5.3-beta+20241107125617` — do not match the `v`-prefixed pattern the
+# resolve step enforces, so they cannot be published through here at all. That
+# is deliberate: they predate this workflow, nothing in the tree points a pull
+# at them, and relaxing the pattern to admit them would also admit every future
+# tag shaped like them. Publishing either one means tagging the commit again
+# under a `v` name.
+#
 # **This workflow does not gate on the test tiers.** T4 smoke also fires on
 # tags (see t4-smoke.yml) and takes ~25 minutes; blocking the publish on it via
 # `workflow_run` would couple two workflows through a fragile trigger for a
@@ -184,8 +192,21 @@ jobs:
           # Lowercased on purpose: GHCR rejects an uppercase path, and the
           # owner here is `Sidiberlin`.
           images: ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}
+          # `{{raw}}`, not `{{version}}`. `{{version}}` is the *parsed* semver,
+          # so `refs/tags/v5.1.9` would publish `…/hdp-haystack:5.1.9` — the `v`
+          # stripped. Every consumer in this repo asks for it back:
+          # docker-compose.prod.yml defaults all three services to
+          # `v5.1.9-rc1`, and README-DOCKER.md documents `HDP_IMAGE_TAG=v5.1.9`
+          # and a `docker image inspect …:v5.1.9`. The operator error for the
+          # mismatch is `manifest unknown`, from a compose file and a README
+          # that both say the tag is right.
+          #
+          # `{{raw}}` keeps the tag verbatim and leaves `latest=auto` intact, so
+          # the pre-release rule above still holds. scripts/lib/versions.py
+          # asserts this pattern against docker-compose.prod.yml's default tag,
+          # because unasserted this drifts back.
           tags: |
-            type=semver,pattern={{version}},value=${{ steps.rel.outputs.tag }}
+            type=semver,pattern={{raw}},value=${{ steps.rel.outputs.tag }}
           labels: |
             org.opencontainers.image.title=${{ matrix.image }}
             org.opencontainers.image.source=https://github.com/${{ github.repository }}

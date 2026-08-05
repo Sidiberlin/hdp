@@ -131,6 +131,10 @@ def _obs(**over):
         "python": "3.11",
         "publiccode": "5.1.4",
         "stripped": ["hallowelt/chatbot"],
+        "release_tag_pattern": "{{raw}}",
+        "prod_image_tags": {"hdp-haystack": "v5.1.4",
+                            "hdp-chatbot-proxy": "v5.1.4",
+                            "hdp-opensearch": "v5.1.4"},
     }
     base.update(over)
     return base
@@ -264,3 +268,62 @@ def test_a_malformed_review_date_is_drift():
 def test_dropping_the_frozen_section_entirely_is_not_silent():
     rep = _run(_decl(frozen={}), _obs())
     assert any("frozen" in w for w in rep.warnings)
+
+
+# ─── The release tag pair ───────────────────────────────────────────
+# release.yml publishes a name and docker-compose.prod.yml pulls one. Nothing
+# connects them at runtime, so the only place the pair can be checked is here.
+
+
+def test_a_pattern_that_rewrites_the_tag_is_drift():
+    """`{{version}}` is the parsed semver: tag v5.1.9 publishes 5.1.9.
+
+    This is the bug the check was written for. Every consumer in the tree —
+    the compose default, README-DOCKER.md's HDP_IMAGE_TAG and its
+    `docker image inspect` — asks for the `v` back, and the operator error for
+    the mismatch is `manifest unknown` from files that both say the tag is right.
+    """
+    rep = _run(_decl(), _obs(release_tag_pattern="{{version}}"))
+    assert any("rewrites the tag" in f for f in rep.failures), rep.lines
+
+
+@pytest.mark.parametrize("pattern", ["{{major}}", "{{version}}"])
+def test_only_a_verbatim_pattern_passes(pattern):
+    rep = _run(_decl(), _obs(release_tag_pattern=pattern))
+    assert rep.failures, rep.lines
+
+
+def test_a_compose_default_release_yml_would_refuse_is_drift():
+    """release.yml's resolve step only accepts vMAJOR.MINOR.PATCH[-pre].
+
+    A default outside that shape names an image no run of the workflow can
+    ever produce, which is a broken pull with no failing build to explain it.
+    """
+    rep = _run(_decl(), _obs(prod_image_tags={"hdp-haystack": "5.1.4"}))
+    assert any("would refuse to publish" in f for f in rep.failures), rep.lines
+
+
+def test_the_three_images_must_default_to_one_tag():
+    """One release is one tag; a split default pulls two releases into a stack."""
+    rep = _run(_decl(), _obs(prod_image_tags={"hdp-haystack": "v5.1.4",
+                                              "hdp-chatbot-proxy": "v5.1.3",
+                                              "hdp-opensearch": "v5.1.4"}))
+    assert any("different tags" in f for f in rep.failures), rep.lines
+
+
+def test_losing_the_ability_to_read_either_file_is_not_silent():
+    """Both halves are read by regex, so a reformat that defeats the regex
+    must warn rather than quietly reduce the check to nothing."""
+    rep = _run(_decl(), _obs(release_tag_pattern=None))
+    assert any("release.yml" in w for w in rep.warnings), rep.lines
+    rep = _run(_decl(), _obs(prod_image_tags={}))
+    assert any("docker-compose.prod.yml" in w for w in rep.warnings), rep.lines
+
+
+def test_the_committed_release_yml_and_prod_override_agree():
+    """The real files, not a fixture — this is the assertion that has to hold."""
+    obs = versions.scan(versions.repo_root())
+    rep = versions.Report()
+    versions.check_release_tag(obs, rep)
+    assert rep.failures == [], rep.lines
+    assert rep.warnings == [], rep.lines

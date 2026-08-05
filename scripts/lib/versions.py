@@ -205,6 +205,28 @@ def scan(root):
     setup = _read(root, "docker/setup.sh")
     obs["stripped"] = sorted(set(re.findall(r'"(hallowelt/[\w-]+|mediawiki/[\w-]+)"', setup)))
 
+    # The release tag pair — see check_release_tag(). Both files are optional so
+    # that a tree without them still scans; the check reports on what it finds.
+    obs["release_tag_pattern"] = None
+    try:
+        rel = _read(root, ".github/workflows/release.yml")
+    except OSError:
+        pass
+    else:
+        m = re.search(r"type=semver,pattern=(\{\{\w+\}\})", rel)
+        obs["release_tag_pattern"] = m.group(1) if m else None
+
+    obs["prod_image_tags"] = {}
+    try:
+        prod = _read(root, "docker-compose.prod.yml")
+    except OSError:
+        pass
+    else:
+        for image, default in re.findall(
+            r"^\s*image:\s*ghcr\.io/\S+/(\S+?):\$\{HDP_IMAGE_TAG:-([^}]+)\}\s*$", prod, re.M
+        ):
+            obs["prod_image_tags"][image] = default
+
     return obs
 
 
@@ -365,7 +387,70 @@ def check(decl, obs):
             rep.ok(f"{key} {want} matches the {label}")
 
     check_frozen(decl, obs, rep)
+    check_release_tag(obs, rep)
     return rep
+
+
+# The tag shape .github/workflows/release.yml's "Resolve and check the release
+# tag" step enforces. Kept here so the two cannot drift apart silently.
+RELEASE_TAG_RE = re.compile(r"^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$")
+
+# metadata-action patterns that keep the git tag verbatim. `{{version}}` is the
+# *parsed* semver and drops the `v`; `{{major}}`/`{{major}}.{{minor}}` publish a
+# moving tag, which is not what a pinned deployment asks for.
+VERBATIM_TAG_PATTERNS = ("{{raw}}",)
+
+
+def check_release_tag(obs, rep):
+    """What release.yml publishes must be what docker-compose.prod.yml pulls.
+
+    These two files are the whole of the pre-built-image path, and nothing
+    connects them at runtime: release.yml pushes a name, the compose override
+    asks for a name, and if they disagree the operator gets `manifest unknown`
+    from a compose file and a README that both insist the tag is right.
+
+    The bug this exists to prevent already happened once — release.yml shipped
+    `pattern={{version}}`, which strips the `v` and would have published
+    `hdp-haystack:5.1.9` for tag `v5.1.9` while every consumer asked for
+    `v5.1.9`. It did not fail at the time only because the one image in the
+    registry was pushed by hand before the workflow existed.
+
+    So assert the pair, not either half: the pattern has to be one that keeps
+    the tag verbatim, the compose default has to be a tag release.yml would
+    accept, and all three services have to ask for the same one.
+    """
+    pattern = obs.get("release_tag_pattern")
+    defaults = obs.get("prod_image_tags") or {}
+
+    if pattern is None:
+        rep.warn("release.yml: no `type=semver,pattern=…` found — "
+                 "the published tag can no longer be read from the workflow")
+    elif pattern not in VERBATIM_TAG_PATTERNS:
+        rep.fail(f"release.yml publishes `type=semver,pattern={pattern}`, which rewrites the tag",
+                 "          docker-compose.prod.yml pulls the tag verbatim, so the published "
+                 "image would carry a\n          name no consumer asks for. Use "
+                 f"{' or '.join(VERBATIM_TAG_PATTERNS)}.")
+
+    if not defaults:
+        rep.warn("docker-compose.prod.yml: no `${HDP_IMAGE_TAG:-…}` image defaults found")
+        return
+
+    distinct = sorted(set(defaults.values()))
+    if len(distinct) > 1:
+        rep.fail("docker-compose.prod.yml: the three images default to different tags: "
+                 + ", ".join(f"{k}={v}" for k, v in sorted(defaults.items())),
+                 "          one release is one tag; a split default pulls two releases into one stack")
+        return
+
+    tag = distinct[0]
+    if not RELEASE_TAG_RE.match(tag):
+        rep.fail(f"docker-compose.prod.yml defaults HDP_IMAGE_TAG to '{tag}', which release.yml "
+                 "would refuse to publish",
+                 "          release.yml only accepts vMAJOR.MINOR.PATCH[-prerelease], so no run "
+                 "of it can ever\n          produce the image this file asks for")
+    elif pattern in VERBATIM_TAG_PATTERNS:
+        rep.ok(f"release tag {tag} is published verbatim by release.yml and pulled by "
+               f"docker-compose.prod.yml ({len(defaults)} images)")
 
 
 def check_frozen(decl, obs, rep):
