@@ -163,16 +163,45 @@ def test_update_php_actually_did_something(migrated):
 
 # ─── the wiki afterwards ────────────────────────────────────────────
 
+def _count(out, column, what):
+    """One integer out of sql.php's print_r output, by column name.
+
+    This used to be `re.search(r"\\b(\\d+)\\b", out.replace(column, " "))`, which
+    stripped every occurrence of the letter from the *whole* output in order to
+    remove one column header, then took the first integer appearing anywhere.
+    It worked against today's format and would not have announced itself when
+    that changed: any stray number — a warning, a deprecation notice, a row id,
+    a timestamp — silently becomes the count, and a count read wrong here is
+    read as data loss or as its absence.
+
+    sql.php prints PHP print_r, so the row is `    [n] => 153`. That is the same
+    shape test_install_update.py and test_site_config.py already scrape, which
+    makes this the format one change would break in one obvious way rather than
+    three subtle ones. Anchoring on the column name and requiring the value to
+    be an integer on its own means a format change fails loudly here.
+    """
+    matches = re.findall(rf"\[{re.escape(column)}\]\s*=>\s*(\S+)", out)
+    assert matches, (
+        f"could not read the {what} from sql.php — no `[{column}] => …` row in "
+        f"its output. The format may have changed:\n{out[-1000:]}"
+    )
+    assert len(matches) == 1, (
+        f"sql.php returned {len(matches)} `[{column}]` rows for a query that "
+        f"selects one aggregate; refusing to guess which is the {what}:\n{out[-1000:]}"
+    )
+    value = matches[0].strip()
+    assert value.isdigit(), (
+        f"the {what} from sql.php is {value!r}, which is not a number:\n{out[-1000:]}"
+    )
+    return int(value)
+
 def test_the_content_survived_the_migration(migrated, mw_sql, fixture_meta):
     """Every page in the snapshot is still there afterwards.
 
     This is the assertion the whole tier exists for: not "the updater was
     quiet" but "the data came through".
     """
-    out = mw_sql("SELECT COUNT(*) AS n FROM page")
-    match = re.search(r"\b(\d+)\b", out.replace("n", " "))
-    assert match, f"could not read a page count from sql.php:\n{out[-1000:]}"
-    after = int(match.group(1))
+    after = _count(mw_sql("SELECT COUNT(*) AS n FROM page"), "n", "page count")
     assert after >= fixture_meta["pages"], (
         f"the snapshot had {fixture_meta['pages']} pages and the migrated wiki has "
         f"{after}. update.php exited 0, so this is silent data loss."
@@ -180,11 +209,10 @@ def test_the_content_survived_the_migration(migrated, mw_sql, fixture_meta):
 
 
 def test_the_schema_is_at_least_what_the_snapshot_had(migrated, mw_sql):
-    out = mw_sql("SELECT COUNT(*) AS n FROM information_schema.tables "
-                 "WHERE table_schema = DATABASE()")
-    match = re.search(r"\b(\d+)\b", out.replace("n", " "))
-    assert match, f"could not read a table count from sql.php:\n{out[-1000:]}"
-    after = int(match.group(1))
+    after = _count(
+        mw_sql("SELECT COUNT(*) AS n FROM information_schema.tables "
+               "WHERE table_schema = DATABASE()"),
+        "n", "table count")
     assert after >= migrated["before_tables"], (
         f"the snapshot had {migrated['before_tables']} tables and the migrated "
         f"database has {after} — update.php dropped tables"

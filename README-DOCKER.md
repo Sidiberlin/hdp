@@ -157,6 +157,22 @@ This is for operators deploying a release unchanged. It trades the ~5 minute
 build for a download, and it pins you to a published tag rather than to your
 working tree.
 
+**Requires Docker Compose ≥ 2.24.** Check with `docker compose version`.
+`docker-compose.yml` declares `build:` for these three services, and a service
+with both `build:` and `image:` is *built* rather than pulled whenever the image
+is not already local — which is exactly the five-minute build this path exists
+to avoid, with no error to explain it. The override deletes the inherited key
+with the `!reset` tag, which 2.24 introduced.
+
+On an older compose this file **fails to parse** rather than silently ignoring
+the tag, so you will see an error — it just will not mention the version. The
+fallback there is to pull explicitly before bringing the stack up:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
 ### Pinning a version
 
 `docker-compose.prod.yml` defaults to the release it ships with, so a fresh

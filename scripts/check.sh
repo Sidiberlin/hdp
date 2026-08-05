@@ -330,14 +330,31 @@ check_smoke_run() {
 
 # ─── php -l over the 17 settings.d files ────────────────────────────
 # These gate ~130 extensions; a syntax error here takes the wiki down at boot.
+#
+# An unmatched glob expands to itself in bash, so with the directory missing
+# this used to run `php -l 'app/settings.d/*.php'` and report a lint failure —
+# blaming the syntax of a file that is not there instead of saying the tree is
+# incomplete. Both branches guard for it, and both report the same thing.
 check_php-lint_run() {
+    # Same test in both branches: the docker branch mounts this same tree, so
+    # if the host cannot see the files neither can the container.
+    local files=(app/settings.d/*.php)
+    if [ ! -e "${files[0]}" ]; then
+        echo "app/settings.d/ holds no .php files — the tree is incomplete, not the syntax."
+        echo "This directory is committed; check the clone rather than the files."
+        return 1
+    fi
+
     if have php; then
         local f rc=0
-        for f in app/settings.d/*.php; do php -l "$f" >/dev/null || rc=1; done
-        [ $rc -eq 0 ] || { for f in app/settings.d/*.php; do php -l "$f" >/dev/null || php -l "$f"; done; return 1; }
+        for f in "${files[@]}"; do php -l "$f" >/dev/null || rc=1; done
+        [ $rc -eq 0 ] || { for f in "${files[@]}"; do php -l "$f" >/dev/null || php -l "$f"; done; return 1; }
     elif have_docker; then
         docker run --rm -v "$REPO_ROOT":/w -w /w "$IMG_PHP" \
-            sh -c 'rc=0; for f in app/settings.d/*.php; do php -l "$f" >/dev/null || { php -l "$f"; rc=1; }; done; exit $rc'
+            sh -c 'rc=0; for f in app/settings.d/*.php; do
+                       [ -e "$f" ] || { echo "no app/settings.d/*.php in the container mount"; exit 1; }
+                       php -l "$f" >/dev/null || { php -l "$f"; rc=1; }
+                   done; exit $rc'
     else
         skip php-lint "no php on PATH and no docker"
     fi
