@@ -74,6 +74,15 @@ components:
           hosts:
             - "${OPENSEARCH_HOST}:${OPENSEARCH_PORT}"
           use_ssl: true
+          # Deliberate, not an oversight. OpenSearch in this stack serves its
+          # default self-signed demo certificate and is reachable only on the
+          # internal `hdp` Docker network — no published port, no external
+          # client. Verification would fail against that certificate and the
+          # retriever would return nothing. The same decision is recorded for
+          # the PHP side in docker/patches/es-ssl.yaml and for the ingest
+          # script in docker/haystack/ingest_hdp_wiki.py. Anyone exposing
+          # OpenSearch beyond the compose network must issue a real
+          # certificate and flip this back to true.
           verify_certs: false
           http_auth:
             - admin
@@ -105,6 +114,15 @@ components:
           hosts:
             - "${OPENSEARCH_HOST}:${OPENSEARCH_PORT}"
           use_ssl: true
+          # Deliberate, not an oversight. OpenSearch in this stack serves its
+          # default self-signed demo certificate and is reachable only on the
+          # internal `hdp` Docker network — no published port, no external
+          # client. Verification would fail against that certificate and the
+          # retriever would return nothing. The same decision is recorded for
+          # the PHP side in docker/patches/es-ssl.yaml and for the ingest
+          # script in docker/haystack/ingest_hdp_wiki.py. Anyone exposing
+          # OpenSearch beyond the compose network must issue a real
+          # certificate and flip this back to true.
           verify_certs: false
           http_auth:
             - admin

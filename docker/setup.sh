@@ -131,7 +131,12 @@ echo ""
 echo "[0/4] Waiting for MariaDB at ${DB_HOST}..."
 max_wait=120
 waited=0
-while ! mariadb -h "${DB_HOST}" -u "${DB_USER}" -p"${DB_PASS}" -e "SELECT 1" "${DB_NAME}" &>/dev/null; do
+# MYSQL_PWD rather than -p"${DB_PASS}", for the same reason install.php below
+# gets its passwords from files: an argv password is world-readable via
+# /proc/<pid>/cmdline, and this loop can spawn up to 60 clients. The
+# environment is not perfect either, but /proc/<pid>/environ is readable only
+# by the process owner, and the variable is scoped to the one command.
+while ! MYSQL_PWD="${DB_PASS}" mariadb -h "${DB_HOST}" -u "${DB_USER}" -e "SELECT 1" "${DB_NAME}" &>/dev/null; do
     if [ "$waited" -ge "$max_wait" ]; then
         echo "ERROR: MariaDB not reachable after ${max_wait}s"
         exit 1
@@ -334,19 +339,50 @@ else
     # wfLoadExtension('Echo') into LocalSettings.php, which then conflicts with
     # the BlueSpice shim in settings.d/030-BlueSpiceFreeDistribution.php that
     # loads Echo from a different path ("loaded twice" fatal).
+    #
+    # The two passwords go in through --dbpassfile/--passfile, not
+    # --dbpass/--pass. Anything in argv is world-readable via
+    # /proc/<pid>/cmdline for the whole life of the process, and install.php
+    # is not a quick one — it builds the entire schema. Same reasoning as the
+    # Infisical login body and bearer token in docker/infisical-loader.sh.
+    # The files are written under a 0700 dir with umask 077 and removed on the
+    # way out, including on failure, via the trap.
+    #
+    # --installdbuser/--installdbpass are dropped rather than converted,
+    # because install.php has no --installdbpassfile. That is behaviour-
+    # identical here, not a shortcut: with --installdbuser absent, CliInstaller
+    # defaults _InstallUser/_InstallPassword to wgDBuser/wgDBpassword — exactly
+    # the ${DB_USER}/${DB_PASS} pair they were being handed. The one other
+    # thing --installdbuser did was flip _CreateDBAccount on, and
+    # MysqlInstaller::setupUser() returns early whenever wgDBuser equals
+    # _InstallUser, so that flag was never read in this configuration. The
+    # account is created by MariaDB's own MYSQL_USER bootstrap regardless.
+    PASSDIR="$(mktemp -d)"
+    chmod 700 "$PASSDIR"
+    trap 'rm -rf "$PASSDIR"' EXIT
+    (
+        umask 077
+        # No trailing newline: install.php trims only "\r\n", so an
+        # echo here would still be right, but printf keeps the file
+        # byte-identical to the variable.
+        printf '%s' "${DB_PASS}"    > "$PASSDIR/dbpass"
+        printf '%s' "${ADMIN_PASS}" > "$PASSDIR/adminpass"
+    )
+
     php maintenance/install.php \
         --dbtype mysql \
         --dbserver "${DB_HOST}" \
         --dbuser "${DB_USER}" \
-        --dbpass "${DB_PASS}" \
+        --dbpassfile "$PASSDIR/dbpass" \
         --dbname "${DB_NAME}" \
-        --installdbuser "${DB_USER}" \
-        --installdbpass "${DB_PASS}" \
         --server "${SERVER}" \
         --scriptpath /w \
         --lang "${LANG}" \
-        --pass "${ADMIN_PASS}" \
+        --passfile "$PASSDIR/adminpass" \
         "${SITENAME}" Admin
+
+    rm -rf "$PASSDIR"
+    trap - EXIT
 
     # The installer generates a clean LocalSettings.php that auto-detects
     # all extensions in extensions/ and writes wfLoadExtension() calls for

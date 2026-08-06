@@ -42,8 +42,15 @@ node_modules/
 *.swp
 *~
 
-# Secrets
+# Secrets. Same coverage as .gitignore, and for the same reason: `.env` alone
+# was too narrow, because a working copy on the build box can hold siblings
+# like `.env.bak-preexisting` with live credentials in them. Those are
+# untracked, so they never reach the image via git — but they do sit in the
+# build context, which is what these lines are about. No Dockerfile COPYs
+# `.env.example`, so it is excluded here too rather than re-included.
 .env
+.env.*
+*.env
 *.env.local
 
 # Tests. Bind-mounted read-only at run time by scripts/ci/pytest.sh, never

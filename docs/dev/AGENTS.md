@@ -821,7 +821,7 @@ NOT just "it compiles" or "no PHP fatal errors."
 
 ## Do NOT
 
-- **Do NOT touch running stacks** outside the current work directory — `/root/hdp-freshtest`, `/root/hdp-pubtest`, etc. are isolated test stacks.
+- **Do NOT touch running stacks** outside the current work directory — `/path/to/hdp-test`, `/path/to/hdp-pubtest`, etc. are isolated test stacks.
 - **Do NOT commit secrets** — `.env` is gitignored for a reason; never commit actual passwords/API keys.
 - **Do NOT break existing functionality** — This is a hard rule. The chatbot worked after QA fixes; changes must preserve that.
 - **Do NOT use SQLite** — MariaDB is required for BlueSpice.

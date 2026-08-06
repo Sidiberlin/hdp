@@ -25,3 +25,11 @@ why: >-
   OpenSearch in this stack ships a self-signed certificate and the client
   rejects it, so search returns nothing. Not mockable in CI: a mock with a
   valid certificate cannot reproduce the condition this patch exists for.
+  Scope, since this is the kind of line that reads badly out of context:
+  OpenSearch is reachable only on the internal `hdp` Docker network, with no
+  published port and no external client, so the verification being turned off
+  here never applies to traffic that leaves the compose stack. The identical
+  decision is made for the Haystack retrievers in
+  docker/haystack/hdp_pipeline.yaml and for the ingest script in
+  docker/haystack/ingest_hdp_wiki.py. Publishing the OpenSearch port means
+  issuing a real certificate and dropping this patch.

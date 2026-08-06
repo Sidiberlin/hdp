@@ -1,7 +1,7 @@
 # HDP Publication Readiness — QA Report
 
 **Date:** 2026-07-29
-**Scope:** BlueSpice HDP (MediaWiki/BlueSpice fork + Haystack RAG chatbot), `/root/hdp`
+**Scope:** BlueSpice HDP (MediaWiki/BlueSpice fork + Haystack RAG chatbot), `/path/to/hdp`
 **Test method:** Fresh-clone, isolated Docker stack, simulating a first-time user
 
 ---
@@ -29,14 +29,14 @@ working instance without any of the tacit knowledge accumulated during
 development, testing was performed in an **isolated clone**, not the
 development checkout:
 
-- **Test clone:** `/root/hdp-freshtest` (separate directory, separate git
-  clone of `/root/hdp`)
+- **Test clone:** `/path/to/hdp-test` (separate directory, separate git
+  clone of `/path/to/hdp`)
 - **Test stack:** separate Docker Compose project name `hdptest`, running on
   host port `8090` (vs. the production stack's `8080`), so the two stacks
   could run side-by-side without interference
 - **Test credentials:** newly generated, isolated from production (admin
   password `d3e98c…`, OpenSearch password `Test-fdab…` — both randomly
-  generated per run and test-only, stored in `/root/hdp-freshtest/.env`;
+  generated per run and test-only, stored in `/path/to/hdp-test/.env`;
   truncated here rather than printed in full, since a committed document
   becomes searchable the moment the repository is public)
 - **No shortcuts:** no manually copied config, no pre-seeded database, no

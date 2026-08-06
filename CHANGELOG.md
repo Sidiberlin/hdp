@@ -44,7 +44,7 @@ For changes in the upstream BlueSpice HDP Edition, see the
 ### Fixed
 - Track 58 missing BlueSpiceDiscovery skin files (fonts, JS, PHP classes, tests) — fresh clones now produce a fully-rendered skin
 - `publiccode.yml` license corrected from invalid `GPLv3.0` to SPDX-valid `GPL-3.0-only`; country codes uppercased to match schema
-- Standardized Infisical secret names — removed `GLM_API_KEY` / `VOICE_TOOLS_OPENAI_KEY` special cases; all secrets now use the `HDP_` prefix convention
+- Standardized Infisical secret names — removed special-case legacy keys; all secrets now use the `HDP_` prefix convention
 
 ### Added
 - `CONTRIBUTING.md` — bilingual dev setup, PR workflow, code style guide
