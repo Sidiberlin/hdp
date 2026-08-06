@@ -1,0 +1,13 @@
+{
+	"@metadata": {
+		"authors": [
+			"Amire80",
+			"Neriah"
+		]
+	},
+	"contentprovisioning-ui-overview-grid-section-page": "דף",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "ויקי",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "מסונכרן?",
+	"contentprovisioning-ui-overview-grid-action-force-sync": "לכפות סנכרון",
+	"contentprovisioning-ui-overview-grid-action-show-diff": "הצגת שינויים"
+}

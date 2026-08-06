@@ -17,6 +17,10 @@
 #   scripts/ci/t4-smoke.sh --no-ingest    skip the ~8 minute reindex
 #   scripts/ci/t4-smoke.sh --cache        add the buildx GHA layer cache
 #
+# HDP_T4_MIN_DISK_GB=0 skips the free-space precondition and any other value
+# replaces it; see the disk section below for why there is one, and why the
+# requirement is computed from the filesystem rather than fixed.
+#
 # ─── How this differs from T3, and why T4 is a separate job ─────────
 #
 # T3 runs four containers and skips the two expensive ones. That is the right
@@ -110,13 +114,53 @@ fail() { printf '\033[0;31mT4 FAILED: %s\033[0m\n' "$*" >&2; }
 command -v docker >/dev/null 2>&1 || { fail "no docker on PATH"; exit 2; }
 docker compose version >/dev/null 2>&1 || { fail "docker compose v2 is required"; exit 2; }
 
+# ─── disk, before anything expensive ────────────────────────────────
+#
+# OpenSearch stops accepting writes when its data path crosses the flood-stage
+# watermark (95% by default). Index creation then returns 403 `cluster
+# create-index blocked (api)` and every write 429 `disk usage exceeded
+# flood-stage watermark, index has read-only-allow-delete block`.
+#
+# Nothing about that is loud. The stack still boots, setup.sh still reports
+# "0 failures", and the job runs to completion — an hour later — with four
+# assertion failures claiming the search index is empty and the ingester
+# produced 9 documents instead of 153. That is run 30837800993, on the
+# v5.1.9-rc1 tag: the block was already in place at setup time, eight minutes
+# in, and everything after it was the ingester retrying against a read-only
+# index.
+#
+# So the check is here rather than nowhere, and up front rather than after the
+# build: it turns a 67-minute job that dies confusingly into a ten-second one
+# that names the cause. Measured on docker's data root, not on $PWD — images
+# and volumes are what fill up, and on CI runners the two are often different
+# filesystems.
+#
+# How much is enough is *not* a constant, and the first version of this check
+# assuming it was is what let run 30882658336 through: 15 GB free, comfortably
+# over the flat 14 GB floor, and it still died read-only an hour later. The
+# derivation — the stack's own footprint, plus the 5% of the filesystem the
+# flood-stage watermark reserves, floored at 20 GB — lives with the arithmetic
+# in hdp_disk_required_kb, in scripts/ci/lib/stack.sh, where a bats suite
+# checks it against that run and against the 34 GB one that passed.
+#
+# HDP_T4_MIN_DISK_GB=0 disables the check; any other value replaces the
+# computed requirement, for anyone who knows better on their own hardware.
+#
+# The check itself is hdp_require_disk in scripts/ci/lib/stack.sh, shared with
+# T3 and T5, which boot the same opensearch and had no guard at all. 12 and 20
+# are T4's numbers and are the defaults of hdp_disk_required_kb: this tier is
+# the one that pulls the haystack image (2.5 GB) and its model weights (1.7 GB)
+# on top of the MediaWiki, OpenSearch and MariaDB images and their volumes.
+hdp_require_disk T4 12 20 "${HDP_T4_MIN_DISK_GB:-}" HDP_T4_MIN_DISK_GB || exit 2
+
 COMPOSE_FILES=(-f docker-compose.yml)
 if [ "$CACHE" -eq 1 ]; then
     [ -f "$CACHE_OVERLAY" ] || { fail "--cache needs $CACHE_OVERLAY"; exit 2; }
     COMPOSE_FILES+=(-f "$CACHE_OVERLAY")
-    # Compose delegates the build to buildx bake, which is what reads the
-    # `x-bake` block in the overlay. Without this the cache settings are
-    # silently ignored and the build looks fine while caching nothing.
+    # Compose delegates the build to buildx bake, and only buildx understands
+    # `type=gha`. Without this the overlay's cache_from/cache_to go to the
+    # classic builder, which ignores them, and the build looks fine while
+    # caching nothing.
     export COMPOSE_BAKE=1
     mkdir -p "$REPO_ROOT/.hf-cache"
 fi

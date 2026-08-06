@@ -184,16 +184,17 @@ class DrawioEditor {
 				&$noApproved,
 				&$displayImage
 			] );
+			if ( $displayImage !== false ) {
+				$img_url_ts = $displayImage->getUrl();
+				$ts = $displayImage->getTimestamp();
+				if ( $ts ) {
+					$img_url_ts .= "?t=$ts";
+				}
 
-			$img_url_ts = $displayImage->getUrl();
-			$ts = $displayImage->getTimestamp();
-			if ( $ts ) {
-				$img_url_ts .= "?t=$ts";
+				$img_desc_url = $displayImage->getDescriptionUrl();
+				$img_height = $displayImage->getHeight() . 'px';
+				$img_width = $displayImage->getWidth() . 'px';
 			}
-
-			$img_desc_url = $displayImage->getDescriptionUrl();
-			$img_height = $displayImage->getHeight() . 'px';
-			$img_width = $displayImage->getWidth() . 'px';
 		}
 
 		$css_img_height = $opt_height === 'chart' ? $img_height : $opt_height;
@@ -357,6 +358,14 @@ class DrawioEditor {
 				'id' => "drawio-placeholder-$id",
 				'class' => 'DrawioEditorInfoBox'
 			], Html::element( 'b', [], $dispname ) );
+		} elseif ( $img && $displayImage === false ) {
+			// show placeholder with failure message
+			$output .= Html::rawElement( 'div', [
+				'id' => "drawio-placeholder-$id",
+				'class' => 'DrawioEditorInfoBox'
+			], Html::element( 'b', [], Message::newFromKey(
+				'drawioeditor-diagram-load-failed', $dispname
+			)->text() ) );
 		} else {
 			// the image or object element must be there in any case
 			// (it's hidden as long as there is no content.)
@@ -390,7 +399,7 @@ class DrawioEditor {
 		 * created (i.e. saved in the DrawioEditor for the first time).
 		 */
 		if ( $img ) {
-			$parser->getOutput()->addImage( $img->getTitle()->getDBkey() );
+			$parser->getOutput()->addImage( $img->getTitle()->getDBkey(), $img->getTimestamp(), $img->getSha1() );
 		}
 
 		$parser->getOutput()->addModules( [ 'ext.drawioeditor' ] );

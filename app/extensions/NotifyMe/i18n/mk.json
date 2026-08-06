@@ -208,5 +208,17 @@
 	"prefs-subs": "Претплати на известувања",
 	"notifyme-notification-filter-count-aria-label": "содржи {{PLURAL:$1|едно известување| $1 известувања}}",
 	"notifyme-notification-filter-aria-label": "Филтер на известувања",
-	"notifyme-notification-center-pagination-number-aria-label": "Прикажани известувањата $1 до $2"
+	"notifyme-notification-center-pagination-number-aria-label": "Прикажани известувањата $1 до $2",
+	"notifyme-automation-arbitrary-notification-action": "Испрати известување",
+	"notifyme-automation-arbitrary-title-notification-action": "Испрати известување поврзано со страницата",
+	"notifyme-arbitrary-event-action-message-label": "Порака",
+	"notifyme-arbitrary-event-action-event-target-user-label": "Целни корисници",
+	"notifyme-arbitrary-event-action-send-as-bot-label": "Испрати како ботовски корисник",
+	"notifyme-notification-center-filter-label-source": "Вики",
+	"notifyme-notification-center-filter-label-source-local": "Ова вики",
+	"notifyme-arbitrary-event-default-subject": "Автоматско известување",
+	"notifyme-arbitrary-event-action-subject-label": "Тема на известувањето",
+	"notifyme-arbitrary-event-action-subject-help": "Ќе се користи како наслов на известувањето по е-пошта. Вредноста може да биде прост текст или клуч на порака",
+	"notifyme-arbitrary-event-action-message-help": "Вредноста може да биде прост текст или клуч на порака",
+	"notifyme-arbitrary-event-action-with-title-message-help": "Вредноста може да биде прост текст или клуч за порака. Насловната котва на релевантата страница се дава како прв параметар. Пример: Страницата $1 беше уредена, ќе гласи Страницата <a href=\"...\">Моја страница</a> беше уредена, што ќе биде соодветно расчленето кога се испишува известувањето за приказ на врска до страницата. Ако е укажан клуч на пораката, се очекува дека тој ќе ракува со параметарот $1."
 }

@@ -3,6 +3,10 @@ bs.util.registerNamespace( 'ext.bookshelf.ui.data.tree' );
 ext.bookshelf.ui.data.tree.BookNavigationTreeItem = function ( cfg ) {
 	cfg = cfg || {};
 	ext.bookshelf.ui.data.tree.BookNavigationTreeItem.parent.call( this, cfg );
+	const activeNumber = mw.config.get( 'bsActiveChapterNumber' );
+	if ( cfg.number && cfg.number === activeNumber ) {
+		this.$element.addClass( 'active' );
+	}
 };
 
 OO.inheritClass( ext.bookshelf.ui.data.tree.BookNavigationTreeItem, OOJSPlus.ui.data.tree.NavigationTreeItem );

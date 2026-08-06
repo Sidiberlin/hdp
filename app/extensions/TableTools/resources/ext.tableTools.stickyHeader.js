@@ -58,26 +58,21 @@ mw.hook( 'wikipage.content' ).add( function ( $content ) {
 
 $( function () {
 	// Position sticky header in BlueSpiceDiscovery skin and derived from BlueSpiceDiscovery
-	query = [
-		'body.skin-bluespicediscovery .mw-sticky-header',
-		'body.skin-bluespicediscovery .jquery-tablesorter',
-		'body.base-bluespicediscovery .mw-sticky-header',
-		'body.base-bluespicediscovery .jquery-tablesorter'
-	];
-	var $sticky = $( query.join( ',' ) );
-	if ( $sticky.length === 0 ) {
-		return;
-	}
+	let $sticky = $();
 
-	function updateStickyPosition() {
+	const updateStickyPosition = ( $sticky ) => {
 		var $components = $( 'body.title-fixed #title-line, #nb-pri' );
 		var offset = 0;
-		$components.each( function() {
+		$components.each( function () {
 			var $this = $( this ),
 				height = $this.outerHeight();
 			offset += height;
 		} );
-		$sticky.each( function() {
+		setStickyOffset( $sticky, offset );
+	}
+
+	const setStickyOffset = ( $sticky, offset ) => {
+		$sticky.each( function () {
 			const $thead = $( this ).find( 'thead' );
 			if ( !$thead.length ) {
 				return;
@@ -85,15 +80,39 @@ $( function () {
 			$thead.css( 'top', offset );
 		} );
 	}
-	updateStickyPosition();
+
+	const setStickyHeaders = () => {
+		const query = [
+			'body.skin-bluespicediscovery .mw-sticky-header:not(.responsive-table)',
+			'body.skin-bluespicediscovery .jquery-tablesorter:not(.responsive-table)',
+			'body.base-bluespicediscovery .mw-sticky-header:not(.responsive-table)',
+			'body.base-bluespicediscovery .jquery-tablesorter:not(.responsive-table)'
+		];
+
+		$sticky = $( query.join( ',' ) );
+	}
+	setStickyHeaders();
+
+	if ( $sticky.length === 0 ) {
+		return;
+	}
+
+	updateStickyPosition( $sticky );
 
 	// Watch body for mutations. We are looking for sticky title line change
 	var observer = new MutationObserver( function( mutations ) {
 		mutations.forEach( function( mutation ) {
 			if ( mutation.type === 'attributes' && mutation.attributeName === 'class' ) {
-				updateStickyPosition();
+				updateStickyPosition( $sticky );
 			}
 		} );
 	} );
 	observer.observe( document.body, { attributes: true } );
+
+	window.addEventListener( "resize", () => {
+		// Reset offset on resize to recalculate it
+		setStickyOffset( $sticky, 0 );
+		setStickyHeaders();
+		setStickyOffset( $sticky );
+	} );
 } );

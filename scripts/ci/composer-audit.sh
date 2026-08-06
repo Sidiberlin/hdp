@@ -3,16 +3,17 @@
 # T0 — known CVEs in app/composer.lock (§10.3 Track A).
 #
 # `composer audit --locked` reads the lockfile and the packagist advisory
-# database. It is the only automated CVE signal available for the 148
+# database. It is the only automated CVE signal available for the 381
 # composer-visible packages, and it is blind to everything else in this repo:
 # MediaWiki core is vendored source rather than a composer dependency (that is
 # the release-watch job, Track B), and the two frozen packages are stripped
 # from the lockfile entirely (Track C — see VERSIONS.yml and SECURITY.md).
 #
 # The result is compared against docker/ci/composer-audit-baseline.json rather
-# than used directly, because the tree carries 34 known advisories inherited
-# from upstream's dependency choices and a gate that is red on every push is a
-# gate people stop reading. The comparison fails on anything NEW, which is the
+# than used directly, because the tree carries known advisories inherited from
+# upstream's dependency choices — 8 as reviewed on 2026-08-04, and that file is
+# the count of record — and a gate that is red on every push is a gate
+# people stop reading. The comparison fails on anything NEW, which is the
 # question worth asking on a push. See scripts/lib/audit_baseline.py.
 #
 #   scripts/ci/composer-audit.sh                   the gate

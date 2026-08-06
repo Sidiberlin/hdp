@@ -2,7 +2,6 @@
 
 namespace MediaWiki\Extension\Forms\ContentHandler;
 
-use Article;
 use MediaWiki\Content\Content;
 use MediaWiki\Content\JsonContentHandler;
 use MediaWiki\Content\Renderer\ContentParseParams;
@@ -10,16 +9,36 @@ use MediaWiki\Extension\Forms\Action\FormDataEditAction;
 use MediaWiki\Extension\Forms\Content\FormDataContent;
 use MediaWiki\Html\Html;
 use MediaWiki\Json\FormatJson;
+use MediaWiki\Linker\LinkRenderer;
 use MediaWiki\MediaWikiServices;
+use MediaWiki\Message\Message;
 use MediaWiki\Parser\ParserOutput;
+use MediaWiki\Revision\RevisionLookup;
 use MediaWiki\Title\Title;
 
 class FormDataHandler extends JsonContentHandler {
+
+	/** @var LinkRenderer */
+	protected $linkRenderer;
+
+	/** @var RevisionLookup */
+	protected $revisionLookup;
+
 	/**
 	 * @param string $modelId
+	 * @param LinkRenderer|null $linkRenderer
+	 * @param RevisionLookup|null $revisionLookup
 	 */
-	public function __construct( $modelId = 'FormData' ) {
+	public function __construct(
+		$modelId = 'FormData',
+		?LinkRenderer $linkRenderer = null,
+		?RevisionLookup $revisionLookup = null
+	) {
 		parent::__construct( $modelId );
+		$this->linkRenderer = $linkRenderer ??
+			MediaWikiServices::getInstance()->getLinkRenderer();
+		$this->revisionLookup = $revisionLookup ??
+			MediaWikiServices::getInstance()->getRevisionLookup();
 	}
 
 	/**
@@ -70,6 +89,9 @@ class FormDataHandler extends JsonContentHandler {
 	 */
 	private $forcedFormName = null;
 
+	/** @var bool */
+	private bool $noTitle = false;
+
 	/**
 	 * @param Title $destination
 	 * @param string $text
@@ -88,13 +110,15 @@ class FormDataHandler extends JsonContentHandler {
 	 * @param ContentParseParams $cpoParams
 	 * @param ParserOutput $output
 	 * @param string $definitionForm
-	 *
+	 * @param bool $noTitle
 	 * @return void
 	 */
 	public function fillParserOutputForDefinition(
-		Content $content, ContentParseParams $cpoParams, ParserOutput $output, string $definitionForm
+		Content $content, ContentParseParams $cpoParams, ParserOutput $output,
+		string $definitionForm, bool $noTitle = false
 	) {
 		$this->forcedFormName = $definitionForm;
+		$this->noTitle = $noTitle;
 		$this->fillParserOutput( $content, $cpoParams, $output, 'create' );
 	}
 
@@ -114,23 +138,29 @@ class FormDataHandler extends JsonContentHandler {
 			throw new \InvalidArgumentException( 'FormDataHandler can only handle FormDataContent' );
 		}
 
-		$title = Title::castFromPageReference( $cpoParams->getPage() );
+		$title = $this->noTitle ? null : Title::castFromPageReference( $cpoParams->getPage() );
 		$data = $content->getData()->getValue() ?? new \stdClass;
 
-		if ( $content->isRedirect() ) {
+		if ( $title && $content->isRedirect() ) {
 			$destTitle = $this->getRedirectTarget( $data );
 			if ( $destTitle instanceof Title ) {
 				$output->addLink( $destTitle );
 				if ( $cpoParams->getGenerateHtml() ) {
-					$output->setRawText(
-						Article::getRedirectHeaderHtml( $title->getPageLanguage(), $destTitle )
+					$output->setRawText( '' );
+					$output->setRedirectHeader(
+						$this->linkRenderer->makeRedirectHeader(
+							$title->getPageLanguage(), $destTitle, false
+						)
 					);
 					$output->addModuleStyles( [ 'mediawiki.action.view.redirectPage' ] );
 				}
 			}
 			return;
 		}
-		$output->setDisplayTitle( $content->getDisplayTitle( $title ) );
+		$displayTitle = $title ?
+			$content->getDisplayTitle( $title ) :
+			Message::newFromKey( 'forms-formdata-notitle-displaytitle' )->text();
+		$output->setDisplayTitle( $displayTitle );
 		$output->setRawText( $this->getFormContainer( $data, $defaultAction, $title ) );
 		$output->addModules( [ 'ext.forms.init' ] );
 	}
@@ -138,14 +168,14 @@ class FormDataHandler extends JsonContentHandler {
 	/**
 	 * @param mixed $data
 	 * @param string $action
-	 * @param Title $title
+	 * @param Title|null $title
 	 * @return string
 	 */
-	private function getFormContainer( $data, $action, Title $title ) {
+	private function getFormContainer( $data, $action, ?Title $title ) {
 		$formConfig = [
 			'data-action' => $action,
 			'class' => 'forms-form-container',
-			'data-target-title' => $title->getPrefixedDBkey(),
+			'data-target-title' => $title?->getPrefixedDBkey(),
 		];
 		if ( $this->forcedFormName ) {
 			$formConfig['data-form'] = $this->forcedFormName;
@@ -159,9 +189,8 @@ class FormDataHandler extends JsonContentHandler {
 			$data = FormatJson::encode( $data );
 			$formConfig['data-data'] = $data;
 			$formConfig['data-form'] = $this->forcedFormName ?? $this->formName;
-			if ( $title->exists() ) {
-				$firstRev = MediaWikiServices::getInstance()->getRevisionLookup()
-					->getFirstRevision( $title->toPageIdentity() );
+			if ( $title && $title->exists() ) {
+				$firstRev = $this->revisionLookup->getFirstRevision( $title->toPageIdentity() );
 				$formConfig['data-form-created'] = $firstRev->getTimestamp();
 			}
 		}

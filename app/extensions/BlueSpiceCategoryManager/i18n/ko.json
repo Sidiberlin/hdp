@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Tensama0415",
 			"Ykhwong"
 		]
 	},
@@ -37,5 +38,7 @@
 	"bs-categorymanager-add-category-label": "분류 이름",
 	"bs-categorymanager-category-item-rename-label": "이름 바꾸기",
 	"bs-categorymanager-dlg-add-title": "분류 추가",
-	"bs-categorymanager-dialog-action-rename-label": "이름 바꾸기"
+	"bs-categorymanager-dialog-action-rename-label": "이름 바꾸기",
+	"bs-categorymanager-statistics-report-category-pages-desc": "선택한 기간 및 간격 내 특정 분류의 문서 수 (이름공간별 필터링 가능)",
+	"bs-categorymanager-dlg-create-category-exists-label": "이 이름의 분류가 이미 존재합니다. 다른 제목을 선택해 주세요."
 }

@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Suleiman the Magnificent Television",
+			"Tensama0415",
 			"Ykhwong"
 		]
 	},
@@ -16,5 +17,35 @@
 	"importofficefiles-ui-dialog-action-back": "뒤로",
 	"importofficefiles-ui-dialog-action-done": "완료",
 	"importofficefiles-ui-dialog-label-select-file": "파일 선택",
-	"importofficefiles-ui-dialog-settings-page-title": "제목"
+	"importofficefiles-ui-dialog-settings-page-title": "제목",
+	"importofficefiles-ui-import-completed": "가져오기 완료!",
+	"importofficefiles-ui-import-in-progress": "가져오기 진행 중...",
+	"importofficefiles-ui-dialog-configuration-settings-title": "가져오기 설정 구성하기",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-characters": "이 제목은 사용할 수 없습니다. 허용되지 않는 문자(\"$1\")가 포함되어 있습니다.",
+	"importofficefiles-ui-dialog-configuration-settings-title-invalid-fallback": "이 제목은 사용할 수 없습니다.",
+	"importofficefiles-ui-dialog-settings-pagetitle-label": "새 문서의 제목을 선택하세요",
+	"importofficefiles-ui-dialog-settings-conflicts-override": "덮어쓰기",
+	"importofficefiles-ui-dialog-settings-split-level-1": "1단계 문단 제목",
+	"importofficefiles-ui-dialog-settings-split-level-2": "2단계 문단 제목",
+	"importofficefiles-ui-dialog-settings-split-level-3": "3단계 문단 제목",
+	"importofficefiles-ui-dialog-preview-title": "미리 보기",
+	"importofficefiles-ui-dialog-preview-label": "다음의 문서들이 가져와집니다",
+	"importofficefiles-ui-progress-import-images-step": "이미지를 가져오는 중...",
+	"importofficefiles-ui-progress-import-pages-step": "문서를 가져오는 중...",
+	"importofficefiles-ui-progress-remove-files-step": "임시 파일을 삭제하는 중...",
+	"importofficefiles-ui-import-error": "가져오기 도중 오류가 발생했습니다.",
+	"importofficefiles-ui-dialog-preview-action-close": "닫기",
+	"importofficefiles-ui-dialog-preview-btn-title": "미리 보기",
+	"importofficefiles-desc": "오피스 파일을 위키페이지로 가져올 수 있습니다",
+	"importofficefiles-ui-dialog-settings-structure-label": "내용 구조",
+	"importofficefiles-ui-dialog-settings-structure-label-checkbox": "문서의 내용 나누기",
+	"importofficefiles-ui-dialog-settings-conflicts-title": "문서 제목과 충돌",
+	"importofficefiles-ui-dialog-settings-conflicts-behavior-label": "문서 이름이 이미 존재하는 경우의 동작",
+	"importofficefiles-ui-dialog-settings-choose-split-level-label": "문서를 나눌 기준을 선택",
+	"importofficefiles-ui-dialog-link-import-files-text": "$1(으)로 내보내진 가져온 파일 목록",
+	"importofficefiles-ui-dialog-link-imported-page-text": "파일 $1(으)로 가져와짐",
+	"importofficefiles-ui-dialog-page-collection-protected-namespace": "참고: \"$1\" 이름공간이 보호되어 있으므로 \"문서 모음\" 문서가 생성되지 않았습니다",
+	"importofficefiles-api-storage-error-no-available-file": "업로드 가능한 파일이 없습니다",
+	"importofficefiles-api-storage-error-save-temp": "임시 저장할 수 없습니다",
+	"importofficefiles-ui-analyze-error": "분석 프로세스가 무언가의 이유로 실패했습니다."
 }

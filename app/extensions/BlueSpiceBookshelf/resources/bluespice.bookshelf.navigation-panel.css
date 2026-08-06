@@ -4,11 +4,10 @@
 	font-weight: var( --content-h4-font-weight );
 }
 
-/* tree nav */
-#bs-book-tree-nav .mws-tree-item.acitve > div:first-child {
-	border-color: var( --sidebar-primary-marker--hover );
-	background-color: var( --sidebar-primary-bg--hover );
-	color: var( --sidebar-primary-fg--hover );
+.oojsplus-data-navigation-tree .oojs-ui-data-tree-item.active > div:first-child {
+	border-color: var( --sidebar-primary-marker--hover ) !important;
+	background-color: var( --sidebar-primary-bg--hover ) !important;
+	color: var( --sidebar-primary-fg--hover ) !important;
 }
 
 #n-book-panel .card-footer {

@@ -12,13 +12,14 @@ class SpecialLogLogger {
 	 * @param User $actor
 	 * @param string $action
 	 * @param string $comment
-	 * @throws \MWException
 	 */
 	public function log( CheckoutEntity $entity, User $actor, $action, $comment ) {
 		$logEntry = new ManualLogEntry( 'pagecheckout', $action );
 		$logEntry->setPerformer( $actor );
 		$logEntry->setTarget( $entity->getTitle() );
 		$logEntry->setComment( $comment );
+		// Messages where this parameter will appear: logentry-pagecheckout-checkin,
+		// logentry-pagecheckout-checkout
 		$logEntry->setParameters( [
 			'4::affectedUser' => $entity->getUser()->getName()
 		] );

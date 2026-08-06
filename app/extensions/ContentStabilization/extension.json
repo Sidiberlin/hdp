@@ -1,6 +1,6 @@
 {
 	"name": "ContentStabilization",
-	"version": "3.1.4",
+	"version": "3.1.9",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[http://www.hallowelt.com Hallo Welt! GmbH]"
@@ -322,6 +322,13 @@
 			"contentstabilization-stabilize": true
 		}
 	},
+	"GrantPermissions": {
+		"editprotected": {
+			"contentstabilization-admin": true,
+			"contentstabilization-oversight": true,
+			"contentstabilization-stabilize": true
+		}
+	},
 	"Hooks": {
 		"BeforePageDisplay": [ "addBootstrap", "integrationAddStyles", "stabilizeContent" ],
 		"LoadExtensionSchemaUpdates": "runDatabaseUpdates",
@@ -369,12 +376,14 @@
 		"NotifyMeBeforeGenerateNotification": "stabilizeNotifications",
 		"CognitiveProcessDesignerBeforeRender": "stabilizeCognitiveProcessDesigner",
 		"getUserPermissionsErrors": "stabilizeContent",
-		"MediaWikiServices": "overrideServices",
+		"MediaWikiServices": [ "overrideServices", "registerCrons" ],
 		"ApiQueryBaseBeforeQuery": "overrideApis",
 		"ModifyExportQuery": "overrideApis",
 		"APIGetAllowedParams": "addStabilizationDataToApiReports",
 		"APIQueryAfterExecute": "addStabilizationDataToApiReports",
-		"OutputPageBodyAttributes": "stabilizeContent"
+		"OutputPageBodyAttributes": "stabilizeContent",
+		"NamespaceManagerCollectNamespaceProperties": "addNamespaceProperties",
+		"ContentStabilizationResetState": "stabilizeContent"
 	},
 	"HookHandlers": {
 		"addBootstrap": {
@@ -485,6 +494,12 @@
 		"addStabilizationDataToApiReports": {
 			"class": "MediaWiki\\Extension\\ContentStabilization\\Hook\\AddStabilizationDataToApiReports",
 			"services": [ "DBLoadBalancer", "TitleFactory", "ContentStabilization.Lookup" ]
+		},
+		"addNamespaceProperties": {
+			"class": "MediaWiki\\Extension\\ContentStabilization\\Hook\\NamespaceManagerCollectNamespaceProperties\\AddNamespaceProperties"
+		},
+		"registerCrons": {
+			"class": "MediaWiki\\Extension\\ContentStabilization\\Hook\\RegisterCrons"
 		}
 	},
 	"SpecialPages": {
@@ -557,6 +572,22 @@
 		"BlueSpicePageApprovedReminderDelay": {
 			"public": false,
 			"value": 168
+		},
+		"WikiRAGIndexOnlyStable": {
+			"description": "Whether to index only stable content in the WikiRAG index",
+			"value": false
+		},
+		"ContentStabilizationApprovalSyncEnabled": {
+			"description": "Whether to enable nightly sync of approved pages to target wikis via ContentTransfer.",
+			"value": false
+		},
+		"ContentStabilizationApprovalSyncSource": {
+			"description": "Identifier of the source wiki to push approved pages from. Must match the value of ContentTransferCurrentWiki on that wiki.",
+			"value": ""
+		},
+		"ContentStabilizationApprovalSyncTargets": {
+			"description": "Array of ContentTransfer target keys to push approved pages to. Each key must exist in ContentTransferTargets.",
+			"value": []
 		}
 	},
 	"LogTypes": [ "stabilization" ],

@@ -245,14 +245,6 @@
 		const $resultCnt = $( '#bs-es-results' );
 		const $toolsCnt = $( '#bs-es-tools' );
 		const $altSearchCnt = $( '#bs-es-alt-search' );
-		// Upstream 5.1.4 fires the 'getResults' hook below with $searchCnt
-		// but never declares it, so every completed search threw
-		// "ReferenceError: $searchCnt is not defined" out of the .done()
-		// handler — before removeLoading() and result rendering ran. The
-		// Search Center therefore span forever even on a successful query.
-		// The hook has no subscribers in this distribution; bind it to the
-		// results container, which is what observers would expect.
-		const $searchCnt = $resultCnt;
 
 		$resultCnt.children().remove();
 		$toolsCnt.children().remove();
@@ -262,7 +254,6 @@
 
 		const queryData = bs.extendedSearch.utils.getFragment();
 		if ( $.isEmptyObject( queryData ) || searchBar.$searchBox.val() === '' ) {
-			mw.hook( 'bs.extendedsearch.searchcenter.getResults' ).fire( $searchCnt, { total: 0, results: [] }, {} );
 			bs.extendedSearch.SearchCenter.removeLoading();
 			$resultCnt.append( new bs.extendedSearch.ResultMessage( {
 				mode: 'help'
@@ -277,7 +268,6 @@
 		$( d ).trigger( 'BSExtendedSearchSearchCenterExecSearch', [ queryData, bs.extendedSearch.SearchCenter ] );
 
 		searchPromise.done( ( response ) => {
-			mw.hook( 'bs.extendedsearch.searchcenter.getResults' ).fire( $searchCnt, response, queryData );
 			if ( response.exception ) {
 				bs.extendedSearch.SearchCenter.removeLoading();
 				$resultCnt.trigger( 'resultsReady' );

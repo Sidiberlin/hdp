@@ -2,7 +2,7 @@
 
 namespace BlueSpice\Bookshelf;
 
-class BookInfo {
+class BookInfo implements \JsonSerializable {
 
 	/** @var string */
 	private $id = '';
@@ -69,5 +69,18 @@ class BookInfo {
 	 */
 	public function getType(): string {
 		return $this->type;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function jsonSerialize(): mixed {
+		return [
+			'id' => $this->id,
+			'namespace' => $this->namespace,
+			'title' => $this->title,
+			'name' => $this->name,
+			'type' => $this->type
+		];
 	}
 }

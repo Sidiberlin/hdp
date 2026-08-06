@@ -22,13 +22,11 @@ class ApiExpiryTasks extends BSApiTasksBase {
 	}
 
 	/**
-	 *
 	 * @var string[]
 	 */
 	protected $aTasks = [ 'saveExpiry', 'changeDate', 'deleteExpiry', 'getDetailsForExpiry' ];
 
 	/**
-	 *
 	 * @param \stdClass $oTaskData
 	 * @param array $aParams
 	 * @return Standard
@@ -59,7 +57,6 @@ class ApiExpiryTasks extends BSApiTasksBase {
 	}
 
 	/**
-	 *
 	 * @param \stdClass $oTaskData
 	 * @param array $aParams
 	 * @return Standard
@@ -114,7 +111,6 @@ class ApiExpiryTasks extends BSApiTasksBase {
 	}
 
 	/**
-	 *
 	 * @param \stdClass $oTaskData
 	 * @param array $aParams
 	 * @return Standard
@@ -283,7 +279,6 @@ class ApiExpiryTasks extends BSApiTasksBase {
 	}
 
 	/**
-	 *
 	 * @param \stdClass $oTaskData
 	 * @param array $aParams
 	 * @return Standard
@@ -331,7 +326,6 @@ class ApiExpiryTasks extends BSApiTasksBase {
 	}
 
 	/**
-	 *
 	 * @return array
 	 */
 	protected function getRequiredTaskPermissions() {

@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Mehtab ahmed"
+		]
+	},
+	"at-mentions-desc": "ڪنھن واپرائيندڙ کي مينشن ڪريو",
+	"at-mentions-inspector-title": "واپرائيندڙ کي مينشن ڪريو",
+	"at-mentions-inspector-title-add": "مينشن ڪريو",
+	"at-mentions-inspector-title-edit": "واپرائيندڙ کي مينشن ڪرڻ کي سنواريو",
+	"at-mentions-ci-title": "واپرائيندڙ کي مينشن ڪرڻ",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|[[User:$1|$1]] پاران}}",
+	"at-mentions-tag-item-time": "$1 تي",
+	"at-mentions-mentionslist-header-mine-all": "توھان کي ھن صفحي تي مينشن ڪيو ويو آھي",
+	"at-mentions-mentionslist-header-mine": "گذريل {{PLURAL:$1| ڏينھن| $1 ڏينھن}} اندر، توهان کي ھنن صفحن تي مينشن ڪيو ويو آهي:",
+	"at-mentions-mentionslist-header-all": "واپرائيندڙ {{GENDER:$2| [[User: $2 | $2 ]] کي ھنن صفحن تي مينشن ڪيو ويو آهي}}:",
+	"at-mentions-mentionslist-header": "گذريل {{PLURAL:$1| ڏينھن| $1 ڏينھن}} اندر، {{GENDER:$2| [[User:$2|$2]] کي ھنن صفحن تي مينشن ڪيو ويو آهي}}:",
+	"at-mentions-mention-notification-message": "{{GENDER:$1|توھان کي}} صفحي $2 تي مينشن ڪيو آھي",
+	"at-mentions-mention-notification-key": "توھان کي مينشن ڪيو ويو آھي",
+	"at-mentions-mention-in-entity-notification-key": "توھان کي ڪنھن لوسٽ يا تبصري ۾ مينشن ڪيو ويو آھي",
+	"at-mentions-mention-in-entity-notification-message": "{{GENDER:$1|توھان کي}} صفحي $2 تي ھڪ پوسٽ يا تبصري \"$3\" ۾ مينشن ڪيو آھي.",
+	"at-mentions-toolbar-tool-title": "مينشن ڪريو"
+}

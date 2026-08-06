@@ -1,0 +1,241 @@
+---
+# Release — build the three custom images and publish them to GHCR.
+#
+# End users should not have to build this stack. A cold `docker compose build`
+# is ~5 minutes and ~5 GB of layers, almost all of it the haystack image
+# (torch, transformers, sentence-transformers). This workflow publishes the
+# three images a release is made of so that `docker compose -f
+# docker-compose.yml -f docker-compose.prod.yml up -d` pulls instead of builds.
+#
+# The other four services in docker-compose.yml — mariadb and the three
+# wikimedia php-fpm/apache2/jobrunner images — are upstream images used
+# unchanged, so there is nothing to publish for them.
+#
+# ─── Why a tag, and only a tag ──────────────────────────────────────
+#
+# A published image is a thing other people depend on, so it needs a name that
+# does not move under them. `refs/tags/v*` gives exactly one publish per
+# release and makes the tag the single source of the version.
+#
+# `workflow_dispatch` is there for re-publishing a tag whose run was lost to an
+# infrastructure failure — it takes the tag to build as an input rather than
+# guessing, so it cannot silently publish `main` under a release name.
+#
+# The two pre-existing tags in this repository — `5.1.3+20260107095645` and
+# `4.5.3-beta+20241107125617` — do not match the `v`-prefixed pattern the
+# resolve step enforces, so they cannot be published through here at all. That
+# is deliberate: they predate this workflow, nothing in the tree points a pull
+# at them, and relaxing the pattern to admit them would also admit every future
+# tag shaped like them. Publishing either one means tagging the commit again
+# under a `v` name.
+#
+# **This workflow does not gate on the test tiers.** T4 smoke also fires on
+# tags (see t4-smoke.yml) and takes ~25 minutes; blocking the publish on it via
+# `workflow_run` would couple two workflows through a fragile trigger for a
+# guarantee the release process already provides — you tag a commit that is
+# green, and CI + T3 have already run on it as a push to the branch. If a tag
+# turns out to be bad, delete the package version; do not expect this file to
+# have caught it.
+#
+# ─── Why `latest` does not follow a pre-release ─────────────────────
+#
+# `type=semver` with docker/metadata-action's default `latest=auto` moves
+# `:latest` only for a tag with no pre-release component. `v5.1.9` moves it;
+# `v5.1.9-rc1` does not. This is a deliberate departure from "tag name +
+# latest": docker-compose.prod.yml and the README tell an operator to pull, and
+# the default an operator gets when they do not think about it must not be a
+# release candidate.
+#
+# ─── Why buildx and the GHA cache ───────────────────────────────────
+#
+# Same backend t4-smoke.yml already uses, with the same per-service `scope`
+# values as docker/ci/compose.cache.yml — so a nightly T4 and a release build
+# warm each other's cache rather than evicting it. The scopes must stay in step
+# with that file; distinct scopes are the whole reason the cache ever hits.
+#
+# ─── Why not compose ────────────────────────────────────────────────
+#
+# docker-compose.yml is the developer's build, and it names local image tags
+# (`hdp-opensearch:2.18.0`, and project-prefixed names for the other two).
+# Publishing from it would mean tagging local names to remote ones in a shell
+# step and re-deriving the build contexts anyway. The matrix below states each
+# context/dockerfile pair once, and `docker/build-push-action` pushes straight
+# to the registry without a local tag in between. The contexts are the same
+# ones docker-compose.yml declares — keep them in step.
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing tag to (re)publish, e.g. v5.1.9-rc1'
+        required: true
+        type: string
+
+concurrency:
+  group: release-${{ inputs.tag || github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  # GITHUB_TOKEN gets write:packages from this, so no PAT is needed. It is
+  # scoped to packages owned by this repository's owner, which is why
+  # ghcr.io/${{ github.repository_owner }} below is not just cosmetic.
+  packages: write
+  # The buildx GHA cache backend writes through the Actions cache service.
+  actions: write
+
+jobs:
+  images:
+    name: ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    strategy:
+      # One bad image should not hide the state of the other two, and a partial
+      # publish is recoverable by re-running the failed job.
+      fail-fast: false
+      matrix:
+        include:
+          # haystack and opensearch build from the repo root because their
+          # Dockerfiles COPY from more than one directory (docker/haystack/*
+          # and docker/infisical-loader.sh). chatbot-proxy's context is its own
+          # directory, exactly as docker-compose.yml declares it.
+          - image: hdp-haystack
+            context: .
+            dockerfile: docker/haystack/Dockerfile
+          - image: hdp-chatbot-proxy
+            context: ./docker/chatbot-proxy
+            dockerfile: ./docker/chatbot-proxy/Dockerfile
+          - image: hdp-opensearch
+            context: .
+            dockerfile: docker/opensearch/Dockerfile
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # On workflow_dispatch there is no tag ref to check out, so take the
+          # one the operator named. On a tag push this is empty and checkout
+          # uses the triggering ref.
+          ref: ${{ inputs.tag || '' }}
+
+      # Fails loudly rather than publishing something surprising: a dispatch
+      # naming a branch, or a tag that does not look like a version, would
+      # otherwise be published under whatever name metadata-action derived.
+      - name: Resolve and check the release tag
+        id: rel
+        run: |
+          set -euo pipefail
+          tag="${{ inputs.tag || github.ref_name }}"
+          if ! printf '%s' "$tag" | grep -qE '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$'; then
+            echo "::error::'$tag' is not a vMAJOR.MINOR.PATCH[-prerelease] tag."
+            exit 1
+          fi
+          if ! git rev-parse -q --verify "refs/tags/$tag" >/dev/null; then
+            echo "::error::'$tag' is not a tag in this repository."
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      # The declared version has to agree with the tag, or the images carry a
+      # name the stack inside them does not answer to. VERSIONS.yml is Wave 5's
+      # one declared version and is already gated on every push; this is the
+      # same check applied at the moment it becomes a published artifact.
+      - name: Assert the tag matches VERSIONS.yml
+        run: |
+          set -euo pipefail
+          # grep+sed, not python: this runs inside a YAML block scalar inside a
+          # shell string, and a python one-liner that has to quote both ' and "
+          # is unreadable and easy to get wrong. VERSIONS.yml declares
+          # `bluespice: '5.1.9'` at column 0, so this is all it takes.
+          declared=$(sed -nE "s/^bluespice:[[:space:]]*['\"]?([^'\"[:space:]#]+).*/\1/p" VERSIONS.yml | head -1)
+          if [ -z "$declared" ]; then
+            echo "::error::could not read 'bluespice:' from VERSIONS.yml"
+            exit 1
+          fi
+          tag="${{ steps.rel.outputs.tag }}"
+          # v5.1.9-rc1 -> 5.1.9. A pre-release publishes the release it is a
+          # candidate for, so only the core version has to match.
+          core="${tag#v}"; core="${core%%-*}"
+          if [ "$core" != "$declared" ]; then
+            echo "::error::tag $tag implies BlueSpice $core but VERSIONS.yml declares $declared."
+            exit 1
+          fi
+          echo "tag $tag agrees with VERSIONS.yml ($declared)"
+
+      - name: Set up buildx
+        uses: docker/setup-buildx-action@v3
+
+      # Exports ACTIONS_CACHE_URL / ACTIONS_RUNTIME_TOKEN. build-push-action
+      # gets them injected, but keeping this here matches t4-smoke.yml and
+      # costs nothing.
+      - uses: crazy-max/ghaction-github-runtime@v3
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Produces the tag list and the OCI labels. The labels matter for more
+      # than tidiness: org.opencontainers.image.source is what makes GHCR link
+      # the package to this repository, which is how the package inherits the
+      # repo's visibility and shows a README at all.
+      - name: Derive tags and labels
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          # Lowercased on purpose: GHCR rejects an uppercase path, and the
+          # owner here is `Sidiberlin`.
+          images: ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}
+          # `{{raw}}`, not `{{version}}`. `{{version}}` is the *parsed* semver,
+          # so `refs/tags/v5.1.9` would publish `…/hdp-haystack:5.1.9` — the `v`
+          # stripped. Every consumer in this repo asks for it back:
+          # docker-compose.prod.yml defaults all three services to
+          # `v5.1.9-rc1`, and README-DOCKER.md documents `HDP_IMAGE_TAG=v5.1.9`
+          # and a `docker image inspect …:v5.1.9`. The operator error for the
+          # mismatch is `manifest unknown`, from a compose file and a README
+          # that both say the tag is right.
+          #
+          # `{{raw}}` keeps the tag verbatim and leaves `latest=auto` intact, so
+          # the pre-release rule above still holds. scripts/lib/versions.py
+          # asserts this pattern against docker-compose.prod.yml's default tag,
+          # because unasserted this drifts back.
+          tags: |
+            type=semver,pattern={{raw}},value=${{ steps.rel.outputs.tag }}
+          labels: |
+            org.opencontainers.image.title=${{ matrix.image }}
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.version=${{ steps.rel.outputs.tag }}
+            org.opencontainers.image.revision=${{ github.sha }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          # linux/amd64 only, deliberately. The opensearch base image and the
+          # torch wheels the haystack image installs are the constraint, and an
+          # arm64 build would need emulation for a ~2.5 GB image. Add
+          # platforms here the day someone needs it, with a measurement.
+          platforms: linux/amd64
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          # Scopes match docker/ci/compose.cache.yml so release builds and the
+          # nightly T4 share one cache instead of evicting each other.
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,scope=${{ matrix.image }},mode=max
+          provenance: true
+          sbom: true
+
+      - name: Published
+        run: |
+          echo "### ${{ matrix.image }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          echo "${{ steps.meta.outputs.tags }}" >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"

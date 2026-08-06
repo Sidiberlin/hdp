@@ -1,7 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Lakejason0"
+			"Lakejason0",
+			"Peterxy",
+			"Peterxy12"
 		]
 	},
 	"collabpads-desc": "允许协作编辑wiki页面",
@@ -53,9 +55,11 @@
 	"collabpads-last-edit-info": "最后编辑于$1<br />由$2和其他人",
 	"collabpads-out-of-sync": "您的客户端与服务器不同步。页面将重新加载以重新建立连接。",
 	"collabpads-invalid-change-dialog-title": "无效的更改",
-	"collabpads-invalid-change-dialog-message": "应用更改时出错。请保存或删除所有更改。",
+	"collabpads-invalid-change-dialog-message": "应用更改时出错。请尝试重新载入页面以重新创建连接。如果仍然出现此错误，请保存更改或删除阶段。",
 	"collabpads-invalid-change-dialog-delete-button": "删除",
 	"collabpads-invalid-change-dialog-save-button": "保存",
 	"collabpads-session-ended-title": "会话已结束",
-	"collabpads-session-ended-message": "此会话已结束。"
+	"collabpads-session-ended-message": "此会话已结束。",
+	"collabpads-invalid-initialization-dialog-title": "初始化失败",
+	"collabpads-invalid-initialization-dialog-message": "此页面包含无法使用协作编辑器编辑的内容。启动阶段失败。"
 }

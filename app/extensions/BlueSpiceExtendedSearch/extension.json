@@ -1,7 +1,7 @@
 {
 	"name": "BlueSpiceExtendedSearch",
 	"license-name": "GPL-3.0-only",
-	"version": "5.1.4",
+	"version": "5.1.9",
 	"author": [
 		"Robert Vogel",
 		"Dejan Savuljesku"
@@ -243,6 +243,9 @@
 			}
 		}
 	},
+	"DefaultUserOptions": {
+		"searchShortcut": true
+	},
 	"GroupPermissions": {
 		"*": {
 			"extendedsearch-search-specialpage": true,
@@ -317,7 +320,10 @@
 			"BS\\ExtendedSearch\\Hook\\LoadExtensionSchemaUpdates\\AddHistoryTable::callback",
 			"BS\\ExtendedSearch\\Hook\\LoadExtensionSchemaUpdates\\AddTraceTable::callback"
 		],
-		"GetPreferences": "BS\\ExtendedSearch\\Hook\\GetPreferences\\AddUserPreferredNamespaces::callback",
+		"GetPreferences": [
+			"BS\\ExtendedSearch\\Hook\\GetPreferences\\AddUserPreferredNamespaces::callback",
+			"BS\\ExtendedSearch\\Hook\\GetPreferences\\AddUserPreferenceSearchShortCut::callback"
+		],
 		"NamespaceManager::editNamespace": "\\BS\\ExtendedSearch\\Hook\\NamespaceManagerEditNamespace\\ReindexNamespace::callback",
 		"UserMergeAccountFields": "\\BS\\ExtendedSearch\\Hook\\UserMergeAccountFields\\MergeExtendedSearchDBFields::callback",
 		"MWStakeCommonUIRegisterSkinSlotComponents": [ "extendedsearchform" ],
@@ -838,6 +844,14 @@
 		"ESIndexPrefix": {
 			"description": "Which prefix to use on the index names. Will use `WikiMap::getCurrentWikiId()` if empty.",
 			"value": ""
+		},
+		"ESSecureResults": {
+			"description": "If true, results will be filtered to only show pages the user has access to",
+			"value": true
+		},
+		"ESSecureResultsRigor": {
+			"description": "Can be `strict` or `quick`. In quick mode, only general namespace permission are checked, which in strict mode, permissions for each individual page are checked.",
+			"value": "strict"
 		}
 	},
 	"callback": "\\BS\\ExtendedSearch\\Setup::onRegistration",

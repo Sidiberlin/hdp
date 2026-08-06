@@ -193,7 +193,7 @@ class NotificationStore {
 			[
 				'ne_key' => $event->getKey(),
 				'ne_agent' => $event->getAgent()->getId(),
-				'ne_timestamp' => $event->getTime()->format( 'YmdHis' ),
+				'ne_timestamp' => $dbw->timestamp( $event->getTime()->format( 'YmdHis' ) ),
 				'ne_payload' => json_encode( $this->serializer->serializeEvent( $event ) ),
 			],
 			__METHOD__
@@ -225,53 +225,6 @@ class NotificationStore {
 			],
 			__METHOD__
 		);
-	}
-
-	/**
-	 * @param int $eventId
-	 * @param string $status
-	 *
-	 * @return void
-	 */
-	public function updateEventProcessStatus( int $eventId, string $status ) {
-		$dbw = $this->loadBalancer->getConnection( DB_PRIMARY );
-		$dbw->update(
-			'notifications_event',
-			[
-				'ne_process_result' => $status,
-			],
-			[
-				'ne_id' => $eventId,
-			],
-			__METHOD__
-		);
-	}
-
-	/**
-	 * Get process IDs for events that are still active
-	 * @return array
-	 */
-	public function getPendingEventProcesses(): array {
-		$dbr = $this->loadBalancer->getConnection( ILoadBalancer::DB_REPLICA );
-		$res = $dbr->select(
-			'notifications_event',
-			[ 'ne_id', 'ne_process', 'ne_process_result' ],
-			[
-				'ne_process_result' => 'active'
-			],
-			__METHOD__
-		);
-
-		$processes = [];
-		foreach ( $res as $row ) {
-			$processes[] = [
-				'id' => (int)$row->ne_id,
-				'process' => $row->ne_process,
-				'status' => $row->ne_process_result
-			];
-		}
-
-		return $processes;
 	}
 
 	/**

@@ -17,16 +17,16 @@ This page is the prose; the manifest is the source of truth.
 
 ---
 
-## Inventory: 19 targets, 18 live
+## Inventory: 21 targets, 20 live
 
 | Class | Count | Applied by | Fails by |
 |---|---|---|---|
-| **A** — composer-clobbered | 2 | `scripts/apply-patches.sh`, called by `docker/setup.sh` | `composer install` reinstalls the package as a dist zipball over the patch |
+| **A** — composer-clobbered | 3 | `scripts/apply-patches.sh`, called by `docker/setup.sh` | `composer install` reinstalls the package as a dist zipball over the patch |
 | **B** — gitignore-swallowed | 0 | — | *(retired, see below)* |
-| **C** — inherited BlueSpice diffs | 17 | `app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh` | the script prints `FAILED!` and continues, with no exit code |
+| **C** — inherited BlueSpice diffs | 18 | `app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh` | the script prints `FAILED!` and continues, with no exit code |
 
-Of the 17 Class-C patches, **one is permanently stale** (`PF_UploadForm.php`,
-below), leaving **18 patches that can actually apply**.
+Of the 18 Class-C patches, **one is permanently stale** (`PF_UploadForm.php`,
+below), leaving **20 patches that can actually apply**.
 
 ### Getting the count right
 
@@ -38,30 +38,76 @@ That arithmetic was wrong in two places, and they cancelled out:
   prose says 17 elsewhere; only the table says 16.
 - Class B is now **0**, not 1.
 
-So the total was briefly **20** (2 + 1 + 17), and is now **19** again (2 + 0 +
-17) — the same number as the original estimate, reached a different way. The
-manifest holds **19 sidecars**, and `verify-patches.sh` reports 18 applicable
-plus 1 stale.
+So the total was briefly **20** (2 + 1 + 17), and reached **19** again (1 + 0 +
+18) — the same number as the original estimate, arrived at a different way.
+
+The 1 + 18 split was itself post-upgrade arithmetic. Going to BlueSpice 5.1.9
+retired `es-searchcnt` from Class A and added `gallery-slideshow` to Class C,
+so the two classes traded a patch and the total did not move. See "Retired"
+below.
+
+It is now **21** (3 + 0 + 18): the two `maps-layercontrol-xss-*` patches landed
+on 2026-08-04 as the in-tree mitigation for CVE-2026-52854, which cannot be
+fixed by re-vendoring inside the BlueSpice 5.1 series. The manifest holds **21
+sidecars**, and `verify-patches.sh` reports 20 applicable plus 1 stale.
 
 ---
 
-## Class A — composer-clobbered (2)
+## Class A — composer-clobbered (3)
 
-Both live in `app/extensions/BlueSpiceExtendedSearch/`, both are reinstalled
-from a dist zipball by `composer install`, and both are re-applied afterwards by
+These live under `app/extensions/`, are reinstalled from dist zipballs by
+`composer install`, and are re-applied afterwards by
 `scripts/apply-patches.sh --class A`, which `docker/setup.sh` calls.
 
 | id | Target | Marker |
 |---|---|---|
 | `es-ssl` | `extensions/BlueSpiceExtendedSearch/src/Backend.php` | `// HDP runs OpenSearch with its default self-signed demo certs` |
-| `es-searchcnt` | `extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js` | `// Upstream 5.1.4 fires the 'getResults' hook below with` |
+| `maps-layercontrol-xss-js` | `extensions/Maps/resources/leaflet/jquery.leaflet.js` | `// HDP: layer-control labels are rendered as HTML by Leaflet (CVE-2026-52854)` |
+| `maps-layercontrol-xss-php` | `extensions/Maps/src/LeafletService.php` | `HDP: backport of upstream Maps 12.1.3 (CVE-2026-52854)` |
 
-The markers are the comments the patch inserts, not `setSSLVerification` or
-`const $searchCnt`. Matching the code itself would let verify pass if upstream
-one day added its own call while our patch was gone.
+In every case the marker is a comment the patch inserts, not the code it
+changes. Matching the code would let verify pass if upstream one day made the
+same change while our patch was gone — and for the Maps pair upstream *has*
+made it, in 12.1.3, so matching `mw.html.escape` would be actively misleading.
 
-Note the real path of the second one. The strategy document refers to it as
-`SearchCenter.js`, which matches nothing — the file is
+### The Maps pair — CVE-2026-52854
+
+Stored XSS: Leaflet's `L.control.layers` renders base-layer and overlay names
+as HTML, and the `layers` / `overlays` parameters of `display_map` declare a
+`values` whitelist that ParamProcessor only *warns* about rather than
+enforcing. So any editor who can save wikitext could put markup into a layer
+name and have it execute for every reader of the page.
+
+Backported from upstream commit `737a993f`, released in Maps **12.1.3**. Two
+sidecars for one upstream commit because a manifest entry is one target file:
+
+- **`-php`** filters `layers` and `overlays` to the
+  `egMapsLeafletAvailableLayers` / `egMapsLeafletAvailableOverlayLayers`
+  whitelists in `LeafletService::newMapDataFromParameters`, so a non-enabled
+  value never reaches the client. This is the half that actually closes it.
+- **`-js`** wraps the label in `mw.html.escape` at both places Leaflet uses one
+  as a control label. Defence in depth: with the PHP half in place the names
+  are already known-good.
+
+Note the deviation from upstream in the JS half. Upstream 12.1.x builds a
+`baseLayers` object and passes it to `L.control.layers(baseLayers, overlays)`;
+11.0.1 calls `control.addBaseLayer(layerObject, layerName)` in a loop instead.
+The escape goes on the `addBaseLayer` argument here. The overlay half is
+verbatim.
+
+**This is not the real fix and is not meant to be permanent.** The real fix is
+Maps ≥ 12.1.3, which this tree cannot take: `mediawiki/maps` is constrained to
+`11.0.*` by `app/_bluespice/build/bluespice-pro-distribution/composer.json`, so
+only a BlueSpice series bump relaxes it. `composer audit` will keep reporting
+CVE-2026-52854 against the installed 11.0.1 — correctly, since the version is
+still the vulnerable one — and the baseline entry in
+`docker/ci/composer-audit-baseline.json` stays **ACTION REQUIRED** for that
+reason. Retire both patches and both sidecars when Maps moves to 12.1.3 or
+later; `--upgrade-report` will call them BLUE against such a tree, which is the
+signal to delete rather than re-derive.
+
+Note the real path of the retired second one. The strategy document refers to
+it as `SearchCenter.js`, which matches nothing — the file is
 `resources/ext.blueSpiceExtendedSearch.SearchCenter.js`, a flat filename, not
 `resources/<module-dir>/SearchCenter.js`. A `find -name 'SearchCenter.js'`
 returns nothing and will make you think the patch is missing. Use the path
@@ -98,7 +144,27 @@ skin directory without a matching `!/Name/` line is invisible to `git add`.
 That is what the T0 `check-ignore` job is for — it just no longer has a patch
 attached to it.
 
-## Class C — inherited BlueSpice diffs (17)
+## Retired at BlueSpice 5.1.9: `es-searchcnt`
+
+`es-searchcnt` declared the `$searchCnt` that
+`ext.blueSpiceExtendedSearch.SearchCenter.js` fired the
+`bs.extendedsearch.searchcenter.getResults` hook with but never defined — a
+`ReferenceError` out of the `.done()` handler that left the Search Center
+spinning on results the API had already returned.
+
+BlueSpice 5.1.9 deletes both `.fire()` calls. The only `mw.hook` left in the
+file is `bs.extendedSearch.makeLookup`, so there is no longer an undeclared
+variable to declare, and applying the patch just inserts a `const` nothing
+reads. Retired: patch, sidecar and the tree edit are all gone.
+
+Note what made this visible. The patch still *applied* cleanly against 5.1.9 —
+its anchor, `const $altSearchCnt = ...`, is still there — so both
+`apply-patches.sh` and `verify-patches.sh` reported it healthy. A patch that
+applies is not the same as a patch that is still needed, and only reading the
+new upstream tells you which. When triaging an upgrade, check the bug, not
+just the hunk.
+
+## Class C — inherited BlueSpice diffs (18)
 
 `app/_bluespice/patches/**/*.diff`, applied by
 `app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh`, which is fired by
@@ -122,9 +188,16 @@ That one sits under `app/vendor/`, which is wiped by `rm -rf vendor/` on every
 setup run and re-created by composer, so it is re-applied every time rather
 than persisted. Verified present after a full clean-box install.
 
-The remaining 13 target bundled extensions (MultimediaViewer ×3,
-SemanticResultFormats ×3, TextExtracts ×2, PageForms, PdfHandler,
-PluggableAuth, SemanticMediaWiki, VisualEditor).
+The remaining 14 target bundled extensions and core resources
+(MultimediaViewer ×3, SemanticResultFormats ×3, TextExtracts ×2, PageForms,
+PdfHandler, PluggableAuth, SemanticMediaWiki, VisualEditor, and
+`resources/src/mediawiki.page.gallery.slideshow.js`).
+
+`gallery-slideshow` is new in the 5.1.9 patch set — the first addition to the
+inherited patches since this file was written. BlueSpice also re-derived
+`pdfhandler` and `mmv-bootstrap` for 5.1.9; the re-derived `pdfhandler` is
+what kept that row out of AMBER when MediaWiki 1.43.9 reworked the same
+argument list.
 
 ---
 
@@ -288,7 +361,6 @@ The same checks by hand:
 ```bash
 # Class A — marker present?
 grep -c 'setSSLVerification( false )' app/extensions/BlueSpiceExtendedSearch/src/Backend.php
-grep -c 'const \$searchCnt'  app/extensions/BlueSpiceExtendedSearch/resources/ext.blueSpiceExtendedSearch.SearchCenter.js
 
 # Class C — a patch that is already applied will refuse to apply again.
 # "previously applied" = present. "applies cleanly" = MISSING from the tree.

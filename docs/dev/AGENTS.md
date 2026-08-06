@@ -22,7 +22,7 @@ For full architecture documentation, see [`docs/wiki/`](docs/wiki/) (system diag
 | `app/settings.d/` | **BlueSpice extension loader and config** — loaded in alphanumeric order, NOT via `wfLoadExtension` in `LocalSettings.php` | `050-Fixes.php` (MariaDB mode fixes), `100-ChatBot.php` (chatbot proxy config) |
 | `app/extensions/ChatBot/` | ChatBot MediaWiki extension — chat widget, REST endpoints, Deepset API client | `extension.json`, `includes/Api/ChatApi.php` |
 | `app/skins/` | MediaWiki skins | `.gitignore` has `/*` **but re-includes the six shipped skins by name** — they are trackable, do not use `git add -f`. See [The `app/skins/.gitignore` Trap](#the-appskinsgitignore-trap) |
-| `docker/patches/` | Patch manifest — one YAML sidecar per patch, plus the Class-A `.patch` files | 19 entries; see [`patches.md`](patches.md) |
+| `docker/patches/` | Patch manifest — one YAML sidecar per patch, plus the Class-A `.patch` files | 21 entries; see [`patches.md`](patches.md) |
 | `docker/ci/fixtures/` | The seeded database snapshot T5 runs `update.php` against | `seeded-wiki.sql.gz` + `.meta.json`; regenerate with `scripts/ci/make-db-fixture.sh` |
 | `VERSIONS.yml` | **What version this fork is** — gated against the tree by CI | see [Versions and upgrades](#versions-and-upgrades) |
 | `scripts/` | Contributor and CI entry points | `check.sh` (run before pushing), `verify-patches.sh`, `apply-patches.sh`, `convert-docs.sh`, `ci/` (incl. `t3-integration.sh`, `t4-smoke.sh`, `t5-migration.sh`, `release-watch.sh`, `lib/stack.sh`), `lib/` |
@@ -196,7 +196,7 @@ What it covers today:
 | `versions` | ⭐ `VERSIONS.yml` still matches the tree — see [Versions and upgrades](#versions-and-upgrades) |
 | `composer-audit` | ⭐ a **new** CVE in `app/composer.lock` (the 34 known ones are baselined) |
 | `fresh-clone` | ⭐ every input `setup.sh` needs is actually committed |
-| `patches` | all 19 patches are in the tree (`--patches`) |
+| `patches` | all 21 patches are in the tree (`--patches`) |
 
 `fresh-clone` is the one worth understanding. `docs/QA-REPORT.md` records seven
 bugs, six of them critical, and notes that each *"was invisible in the
@@ -435,8 +435,16 @@ The nightly workflow adds two things `t4-smoke.sh` takes as a flag rather than
 assuming: a buildx GHA layer cache and a saved HuggingFace model cache, both
 configured in `docker/ci/compose.cache.yml`. That file is a CI-only overlay —
 a developer's `docker compose up` must not depend on a GitHub cache backend
-existing. `--cache` sets `COMPOSE_BAKE=1`, without which compose ignores the
-`x-bake` block entirely and the build succeeds while caching nothing.
+existing. `--cache` sets `COMPOSE_BAKE=1`, without which the build goes to the
+classic builder, which does not understand `type=gha`, and succeeds while
+caching nothing.
+
+The cache is worth exactly as much as the base image tags hold still: every
+layer key is chained off the resolved digest of `python:3.12-slim`,
+`python:3.11-slim-bookworm` or `opensearchproject/opensearch:2.18.0`, so a
+republished tag legitimately costs one nightly its whole cache. That is what
+made the `cache-proof` job flaky when it read the cache the `t4` job exported
+75 minutes earlier; it now seeds and reads the cache itself, seconds apart.
 
 ### The migration tier (T5)
 
@@ -495,7 +503,7 @@ release when T5 runs, so regenerate it *after* the upgrade merges. See
 
 `tests/integration/test_auth_path.py` is unmarked, so it runs in T3, T4 and T5.
 
-Two of the 19 patches are different in kind from the other seventeen:
+Two of the 21 patches are different in kind from the rest:
 `pluggableauth-service` and `oidc-client`. Dropping a MultimediaViewer patch is
 a cosmetic regression somebody notices; dropping either of these is an
 authentication regression that nothing notices. `oidc-client` is also the only
@@ -589,11 +597,18 @@ asserts is that both are still named in setup.sh's strip list, and that if they
 
 #### Known CVEs (`composer-audit`)
 
-`composer audit --locked` is the only automated CVE signal for the 148
-composer-visible packages. On this tree it reports **34 advisories across 12
-packages, two of them critical** — none of which is this fork's choice, since
+`composer audit --locked` is the only automated CVE signal for the
+composer-visible packages. On this tree it reports **8 advisories across 3
+packages, two of them high** — none of which is this fork's choice, since
 `app/composer.json` is upstream's `bluespice/core` and every affected package
-is a transitive dependency of MediaWiki 1.43.5 / BlueSpice 5.1.4.
+is a transitive dependency of MediaWiki 1.43.9 / BlueSpice 5.1.9.
+
+It read 34 advisories across 12 packages, two critical, until the 1.43.9 /
+5.1.9 upgrade cleared 28 of them. That is what the upgrade was for. The count
+went 6 → 8 on 2026-08-04, when two new `guzzlehttp/guzzle` advisories
+(CVE-2026-69246 host-check bypass, high; CVE-2026-69245 cookie-domain scope,
+medium) were published against a version upstream pins exactly — the gate
+caught them, which is the whole point of it.
 
 A bare audit as a gate would therefore be red on every push, and a permanently
 red gate gets ignored. So the report is compared against
@@ -607,12 +622,19 @@ scripts/ci/composer-audit.sh --report           # composer's own table
 scripts/ci/composer-audit.sh --update-baseline  # re-record; reasons are kept
 ```
 
-Four baseline entries are marked **ACTION REQUIRED**: `phpoffice/phpspreadsheet`
-(2 critical, parses uploaded spreadsheets), `phpseclib/phpseclib` (2 high, sits
-under the OIDC client), `mediawiki/maps` and
-`universal-omega/dynamic-page-list3` (high, leaks suppressed usernames). All
-four are fixable *only* by re-vendoring upstream — read them at the start of
-every upgrade, they are the reason to take one.
+Four baseline entries used to be marked **ACTION REQUIRED**, all fixable only
+by re-vendoring upstream. The 1.43.9 / 5.1.9 upgrade closed three of them:
+`phpoffice/phpspreadsheet` 1.30.1 → 1.30.6 (was 2 critical, parses uploaded
+spreadsheets), `phpseclib/phpseclib` 3.0.48 → 3.0.56 (was 2 high, sits under
+the OIDC client), and `universal-omega/dynamic-page-list3` → 3.6.4 (leaked
+suppressed usernames).
+
+The fourth, `mediawiki/maps` (high, CVE-2026-52854, stored XSS via
+`display_map`), **did not move and cannot**: the fix is in 12.1.3 and
+`_bluespice/build/bluespice-pro-distribution/composer.json` constrains it to
+`11.0.*`. No amount of re-vendoring inside the 5.1 series will clear it — only
+a BlueSpice series bump that relaxes that constraint. Read the ACTION REQUIRED
+entries at the start of every upgrade; they are the reason to take one.
 
 This gate is blind to MediaWiki core (vendored source, not a composer package —
 that is Track B, the release-watch job) and to the two frozen packages.
@@ -637,7 +659,7 @@ It compares `VERSIONS.yml` against `releases.wikimedia.org` (our branch, and
 newer branches) and `packages.bluespice.com` (BlueSpice's own composer
 repository, via `bluespice/foundation`). `.github/workflows/release-watch.yml`
 runs it weekly and **files an issue**, not a PR — taking a MediaWiki release
-here means re-vendoring the tree and re-applying 19 patches, which no bot can
+here means re-vendoring the tree and re-applying 21 patches, which no bot can
 prepare. Findings are `ACT` (a patch release on the series we run, where
 security content lands) or `PLAN` (a newer series).
 
@@ -654,7 +676,7 @@ scripts/verify-patches.sh --upgrade-report --tree /path/to/candidate-upstream
 ```
 
 The one tool between an upstream bump and silent patch loss. It classifies all
-19 patches as GREEN / BLUE / AMBER / RED / N-A against a candidate tree — full
+21 patches as GREEN / BLUE / AMBER / RED / N-A against a candidate tree — full
 table and a worked example against the real MediaWiki 1.43.9 tarball in
 [`patches.md`](patches.md#the-upgrade-report).
 

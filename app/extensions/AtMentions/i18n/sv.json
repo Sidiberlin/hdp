@@ -1,13 +1,24 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kakan spelar"
+			"Kakan spelar",
+			"Stefan2255"
 		]
 	},
 	"at-mentions-inspector-title": "Nämn en användare",
 	"at-mentions-mentionslist-header-mine-all": "Du har nämnts på den här sidan",
-	"at-mentions-mention-notification-message": "nämnde dig på sidan $1",
+	"at-mentions-mention-notification-message": "{{GENDER:$1|nämnde}} dig på sidan $2",
 	"at-mentions-mention-notification-key": "Du har blivit nämnd",
 	"at-mentions-mention-in-entity-notification-key": "Du har nämnts i en kommentar eller ett inlägg",
-	"at-mentions-mention-in-entity-notification-message": "nämnde dig i en kommentar eller ett inlägg \"$2\" på sidan $1"
+	"at-mentions-mention-in-entity-notification-message": "{{GENDER:$1|nämnde}} dig i en kommentar eller ett inlägg \"$3\" på sidan $2",
+	"at-mentions-desc": "Lägg till ett användaromnämnande",
+	"at-mentions-inspector-title-add": "Lägg till ett omnämnande",
+	"at-mentions-inspector-title-edit": "Redigera användaromnämnande",
+	"at-mentions-ci-title": "Användaromnämnande",
+	"at-mentions-tag-item-actor": "{{GENDER:$1|av [[User:$1|$1]]}}",
+	"at-mentions-tag-item-time": "vid $1",
+	"at-mentions-mentionslist-header-mine": "Inom de senaste {{PLURAL:$1|dagen|$1 dagarna}} har du nämnts på dessa sidor:",
+	"at-mentions-mentionslist-header-all": "Användaren {{GENDER:$2|[[User:$2|$2]] har nämnts på dessa sidor}}:",
+	"at-mentions-mentionslist-header": "Inom de senaste {{PLURAL:$1|dagen|$1 dagarna}} har {{GENDER:$2|[[User:$2|$2]] nämnts på dessa sidor}}:",
+	"at-mentions-toolbar-tool-title": "Lägg till ett omnämnande"
 }

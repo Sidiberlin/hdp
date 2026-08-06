@@ -2,10 +2,21 @@
 	"@metadata": {
 		"authors": [
 			"Bisang",
-			"Ykhwong"
+			"Tensama0415",
+			"Ykhwong",
+			"解浪"
 		]
 	},
 	"contentprovisioning-ui-overview-grid-action-force-sync": "강제 동기화",
 	"contentprovisioning-ui-overview-grid-action-show-diff": "차이 보기",
-	"contentprovisioning-ui-content-diff-title": "콘텐츠 차이점"
+	"contentprovisioning-ui-content-diff-title": "콘텐츠 차이점",
+	"contentprovisioning-ui-overview-grid-section-page": "문서",
+	"contentprovisioning-ui-overview-grid-section-in-sync": "동기화 여부",
+	"contentprovisioning-ui-content-diff-headline-wiki-content": "위키",
+	"contentprovisioning-ui-content-diff-headline-provisioner-content": "원격",
+	"contentprovisioning-desc": "프로비저닝된 문서에 대한 개요를 제공하고 관리자가 콘텐츠를 동기화할 수 있도록 합니다",
+	"contentprovisioning": "콘텐츠 프로비저닝",
+	"right-contentprovisioning-viewspecialpage": "콘텐츠 프로비저닝 특수 문서 보기",
+	"action-contentprovisioning-viewspecialpage": "콘텐츠 프로비저닝 특수 문서 보기",
+	"contentprovisioning-diff-no-change": "매니페스트 버전과 위키 페이지 버전 간에 차이가 없습니다"
 }

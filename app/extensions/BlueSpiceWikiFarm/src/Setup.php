@@ -61,9 +61,12 @@ class Setup {
 	 */
 	protected static function setupInterwikiLinks() {
 		if ( !FARMER_IS_ROOT_WIKI_CALL ) {
+			$globalServer = $GLOBALS['wgWikiFarmConfigInternal']->get( 'globalServer' );
+			$basePath = $GLOBALS['wgWikiFarmConfigInternal']->get( 'basePath' );
+			$basePath = '/' . trim( $basePath, '/' ) . '/';
 			$GLOBALS['wgWikiFarmConfig_interwikiLinks']['w'] = [
 				'iw_prefix' => 'w',
-				'iw_url' => $GLOBALS['wgServer'] . '/wiki/$1',
+				'iw_url' => rtrim( $globalServer, '/' ) . $basePath . 'wiki/$1',
 				'iw_api' => false,
 				'iw_wikiid' => 'w',
 				'iw_local' => false
@@ -80,7 +83,7 @@ class Setup {
 			}
 			$prefix = mb_strtolower( $instance->getPath() );
 			$iwPrefix = "wiki-$prefix";
-			$GLOBALS['wgWikiFarmConfig_interwikiLinks'][$prefix] = [
+			$GLOBALS['wgWikiFarmConfig_interwikiLinks'][$iwPrefix] = [
 				'iw_prefix' => $iwPrefix,
 				'iw_url' => $instance->getUrl( $GLOBALS['wgWikiFarmConfigInternal'] ) . '/wiki/$1',
 				'iw_api' => '',
@@ -191,7 +194,11 @@ class Setup {
 	 * @return void
 	 */
 	public static function setupContentTransfer() {
-		if ( MW_ENTRY_POINT !== 'index' && MW_ENTRY_POINT !== 'api' && MW_ENTRY_POINT !== 'rest' ) {
+		if (
+			MW_ENTRY_POINT !== 'index' &&
+			MW_ENTRY_POINT !== 'api' &&
+			MW_ENTRY_POINT !== 'rest' &&
+			MW_ENTRY_POINT !== 'cli' ) {
 			return;
 		}
 		if ( !ExtensionRegistry::getInstance()->isLoaded( 'OAuth' ) ) {
@@ -237,6 +244,12 @@ class Setup {
 				'displayText' => $instance->getDisplayName(),
 				'draftNamespace' => 'Draft'
 			];
+		}
+
+		// Give opportunity for generic extensions to get ContentTransfer key (instance path)
+		// for current wiki instance.
+		if ( FARMER_CALLED_INSTANCE !== 'w' ) {
+			$GLOBALS['wgContentTransferCurrentWiki'] = FARMER_CALLED_INSTANCE;
 		}
 
 		// Set up root wiki language as "leading language" for BlueSpiceTranslationTransfer

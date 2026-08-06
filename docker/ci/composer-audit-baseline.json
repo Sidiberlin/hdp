@@ -6,10 +6,10 @@
     "The gate (scripts/ci/composer-audit.sh) fails on any advisory NOT listed",
     "here. That is the point: none of these versions is this fork's choice —",
     "app/composer.json is upstream's bluespice/core and every affected package is",
-    "a transitive dependency of MediaWiki 1.43.5 / BlueSpice 5.1.4 — so a bare",
-    "audit would be red on every push and would be ignored within a week. What",
-    "is worth failing a push over is a NEW advisory, and that is what this",
-    "comparison detects.",
+    "a transitive dependency of MediaWiki 1.43.9 / BlueSpice 5.1.9, or a vendored",
+    "extension of it — so a bare audit would be red on every push and would be",
+    "ignored within a week. What is worth failing a push over is a NEW advisory,",
+    "and that is what this comparison detects.",
     "",
     "Entries marked ACTION REQUIRED are fixable, but only by re-vendoring an",
     "upstream tree, which is docs/dev/upgrade-runbook.md, not a PR. Read them",
@@ -20,50 +20,26 @@
     "(stripped from composer.lock — Track C, see VERSIONS.yml and SECURITY.md),",
     "or any vendored extension that is not also a composer package."
   ],
-  "reviewed": "2026-08-03",
+  "reviewed": "2026-08-04",
   "audited_against": {
-    "bluespice": "5.1.4",
-    "mw_core": "1.43.5",
+    "bluespice": "5.1.9",
+    "mw_core": "1.43.9",
     "composer": "2.8"
   },
   "accepted": {
-    "firebase/php-jwt": {
-      "installed": "v6.11.1",
-      "advisories": [
-        "CVE-2025-45769",
-        "PKSA-y2cr-5h3j-g3ys"
-      ],
-      "why": "Transitive dependency of mediawiki/oauth. CVE-2025-45769 (low) is fixed only in 7.0.0, a major bump that upstream MediaWiki 1.43 has not taken; this fork does not choose the version. Not reachable unless the OAuth extension is enabled, which this deployment does not enable."
-    },
     "guzzlehttp/guzzle": {
-      "installed": "7.9.2",
+      "installed": "7.12.3",
       "advisories": [
-        "CVE-2026-55568",
-        "CVE-2026-55767",
-        "CVE-2026-59883",
-        "PKSA-93qv-9n9h-6k6p",
+        "CVE-2026-69245",
+        "CVE-2026-69246",
         "PKSA-bbs6-q5q9-f3t4",
-        "PKSA-bcdd-5xc7-gwfb",
+        "PKSA-cnw1-2ytm-cgr8",
         "PKSA-fy2t-3c5f-827y",
-        "PKSA-k22t-f949-t9g6",
+        "PKSA-gcrk-3vtt-1r14",
         "PKSA-pwsk-hy21-4gby",
         "PKSA-qxvb-2bpp-dnk6"
       ],
-      "why": "Pinned to exactly 7.9.2 by upstream's app/composer.json (bluespice/core). Every advisory is fixed in 7.12.1-7.15.1, so the fix is a re-vendor of upstream, not a lockfile edit here. Used server-side by shellbox, monolog and the OAuth path; no untrusted URL reaches it from wiki content."
-    },
-    "guzzlehttp/psr7": {
-      "installed": "2.8.0",
-      "advisories": [
-        "CVE-2026-48998",
-        "CVE-2026-49214",
-        "CVE-2026-55766",
-        "CVE-2026-59882",
-        "PKSA-7qs6-zvnz-h66r",
-        "PKSA-gm5x-j3mz-71n9",
-        "PKSA-jj5t-2zs1-dcfm",
-        "PKSA-vznr-tgp9-fd7d"
-      ],
-      "why": "Transitive dependency of guzzlehttp/guzzle, which upstream pins exactly. Moves only when guzzle moves."
+      "why": "Pinned to exactly 7.12.3 by upstream's app/composer.json (bluespice/core); wikimedia/shellbox is the only runtime requirer and asks for ^7.9.2, so this is not a version this fork picks. Guzzle is also the transport behind MediaWiki core's HttpRequestFactory (app/includes/http/GuzzleHttpRequest.php), which is a wider surface than the shellbox-only framing this entry used to carry. Every advisory below is fixed past 7.12.3, so all six move together when upstream repins — none is closable here.\n\nFOUR MEDIUMS, carried since the 1.43.9 / 5.1.9 upgrade cleared six of the ten this package used to have, and none with a CVE: URI fragments disclosed in redirect Referer headers, host-only cookie scope not preserved, unbounded response cookies, and Proxy-Authorization headers forwarded to origin servers. Fixed in 7.14.2 and 7.15.1.\n\nCVE-2026-69246 (high, CVSS 7.2, fixed in 7.15.2), new 2026-08. Guzzle hands the URI to the transport while supplying Host separately, and libcurl decodes a percent-encoded host — 127.0.0.%31 — that the application's own check saw literally, so a host allowlist, denylist or private-range check can be evaded. It needs the application both to build URIs from untrusted input and to host-validate before handing off, and this tree has no such check to evade: $wgAllowCopyUploads is left at core's default (off) and no $wgCopyUploadsDomains is set anywhere in app/settings.d/. ExternalData is loaded (app/settings.d/040-BlueSpiceProDistribution.php:70) with AllowGetters at its default true, so an editor can already point {{#get_web_data:}} at any host — that is unrestricted SSRF by configuration, which this CVE neither creates nor worsens. Re-review this paragraph the day a host allowlist is introduced, because that is the configuration the CVE is about.\n\nCVE-2026-69245 (medium, CVSS 6.5, fixed in 7.15.2), new 2026-08. SetCookie::matchesDomain() validates before canonicalising, so hex, octal and percent-escaped IP literals keep subdomain scope they should not (CWE-180). Not reachable here: core removes Guzzle's cookie middleware outright and substitutes its own MediaWiki CookieJar (app/includes/http/GuzzleHttpRequest.php:171), so matchesDomain() is not on the path for any core-originated request. The advisory also notes that no public DNS delegation yields such a name, which confines it to private networks and container environments."
     },
     "mediawiki/maps": {
       "installed": "11.0.1",
@@ -71,96 +47,14 @@
         "CVE-2026-52854",
         "PKSA-hjtx-83wm-5fvj"
       ],
-      "why": "ACTION REQUIRED at the next upgrade. CVE-2026-52854 (high) is fixed in 12.1.3 and this tree vendors 11.0.1. Fixing it means re-vendoring the Maps extension, which is an upstream-tree change and belongs to the upgrade process, not to a CI gate. Recorded here so it cannot be forgotten."
-    },
-    "phpoffice/phpspreadsheet": {
-      "installed": "1.30.1",
-      "advisories": [
-        "CVE-2026-34084",
-        "CVE-2026-35453",
-        "CVE-2026-40296",
-        "CVE-2026-40863",
-        "CVE-2026-40902",
-        "CVE-2026-45034",
-        "CVE-2026-59931",
-        "CVE-2026-59932",
-        "CVE-2026-59933",
-        "PKSA-8cfg-tzhf-fr83",
-        "PKSA-dqzt-yst9-1w9y",
-        "PKSA-gz3f-3cz3-3wsw",
-        "PKSA-hznc-gbby-6w16",
-        "PKSA-jtdk-dcr5-f11n",
-        "PKSA-m9cr-9614-rsf7",
-        "PKSA-r22k-87hv-mfk4",
-        "PKSA-x13r-n4wc-4gcr",
-        "PKSA-x678-4z45-v3d5"
-      ],
-      "why": "ACTION REQUIRED at the next upgrade — the worst entry in this file. Nine advisories including two critical, all fixed in 1.30.6 or later against the vendored 1.30.1. It parses user-uploaded spreadsheets for bluespice/uemoduletable2excel and mediawiki/data-transfer, so the input is genuinely untrusted wherever upload is permitted. Version chosen by upstream BlueSpice 5.1.4; fixed by re-vendoring."
-    },
-    "phpseclib/phpseclib": {
-      "installed": "3.0.48",
-      "advisories": [
-        "CVE-2026-32935",
-        "CVE-2026-40194",
-        "CVE-2026-44167",
-        "CVE-2026-55599",
-        "PKSA-432p-hv1d-chf7",
-        "PKSA-km2b-zc3b-mjm3",
-        "PKSA-smrh-yx37-92ws",
-        "PKSA-zh4j-by9m-7mz8"
-      ],
-      "why": "ACTION REQUIRED at the next upgrade. Two high advisories, fixed in 3.0.54 against the vendored 3.0.48. It sits under jumbojett/openid-connect-php — the same library the security-critical oidc-client patch targets — so this is on the authentication path whenever OIDC login is configured."
-    },
-    "phpunit/phpunit": {
-      "installed": "9.6.19",
-      "advisories": [
-        "CVE-2026-24765",
-        "PKSA-z3gr-8qht-p93v"
-      ],
-      "why": "Development-only: packages-dev, and docker/setup.sh installs with --no-dev, so it is not in the shipped vendor/ tree at all. CVE-2026-24765 cannot be reached by a wiki request."
-    },
-    "psy/psysh": {
-      "installed": "v0.12.18",
-      "advisories": [
-        "CVE-2026-25129",
-        "PKSA-4s4z-t146-6123"
-      ],
-      "why": "Development-only (packages-dev, --no-dev at install). It is MediaWiki's eval.php shell; reaching it already requires shell access to the container."
-    },
-    "symfony/process": {
-      "installed": "v6.4.31",
-      "advisories": [
-        "CVE-2026-24739",
-        "PKSA-rkkf-636k-qjb3"
-      ],
-      "why": "Transitive dependency pulled in by symfony/console and mwstake's process manager. CVE-2026-24739 (medium) is fixed in 6.4.33 against the vendored 6.4.31; the version is resolved by upstream's constraints."
-    },
-    "symfony/yaml": {
-      "installed": "v5.4.45",
-      "advisories": [
-        "CVE-2026-45133",
-        "CVE-2026-45304",
-        "CVE-2026-45305",
-        "PKSA-b14r-zh1d-vdrc",
-        "PKSA-ft77-7h5f-p3r6",
-        "PKSA-v5yj-8nmz-sk2q"
-      ],
-      "why": "Pinned to exactly 5.4.45 by upstream's app/composer.json. Three low stack-exhaustion advisories in the parser; the YAML this wiki parses is repo-controlled (pipeline and config files), not user input."
-    },
-    "universal-omega/dynamic-page-list3": {
-      "installed": "3.6.2.1+BlueSpice511",
-      "advisories": [
-        "CVE-2025-53625",
-        "PKSA-5fdy-91p7-w18s"
-      ],
-      "why": "ACTION REQUIRED at the next upgrade. CVE-2025-53625 (high) exposes hidden/suppressed usernames and is fixed in 3.6.4; BlueSpice 5.1.4 vendors the 3.6.2.1+BlueSpice511 build. Relevant to any wiki that suppresses users, and fixed only by re-vendoring the extension."
+      "why": "ACTION REQUIRED, and still open as a version: the 1.43.9 / 5.1.9 upgrade did not move Maps and cannot. CVE-2026-52854 (high) is stored XSS through the layers and overlays parameters of the display_map parser function, fixed upstream in 12.1.3; this tree vendors 11.0.1 at app/extensions/Maps and app/_bluespice/build/bluespice-pro-distribution/composer.json:36 constrains mediawiki/maps to 11.0.*, so only a BlueSpice series bump relaxes it. Any editor who can save wikitext can reach the parser function, which made this the most exposed entry in this file.\n\nMITIGATED IN TREE as of 2026-08-04, but deliberately still listed. Upstream commit 737a993f (released in 12.1.3) is backported as two Class A patches, maps-layercontrol-xss-php and maps-layercontrol-xss-js — see docs/dev/patches.md. The PHP half filters layers and overlays to the egMapsLeafletAvailableLayers / egMapsLeafletAvailableOverlayLayers whitelists that ParamProcessor only warned about, so a hostile value never reaches the client; the JS half escapes both places Leaflet renders a name as a layer-control label. Class A means composer reinstalls the package over them on every run and docker/setup.sh re-applies them; scripts/verify-patches.sh is what catches it if that ever stops happening.\n\nThe entry stays and the marker stays because the installed version is still 11.0.1 — composer audit is reporting the truth, and a patched tree is not the same as a fixed dependency. Re-vendoring to 12.1.3 remains the real fix; when it lands, delete this entry and both patches together."
     },
     "web-auth/webauthn-lib": {
-      "installed": "4.9.2",
+      "installed": "4.9.3",
       "advisories": [
         "PKSA-zk1n-qbm6-d3rq"
       ],
-      "why": "Low, and specific to SimpleFakeCredentialGenerator used with an empty secret — a username-enumeration hardening feature, not an authentication bypass. Fixed in 5.3.5; the vendored 4.9.2 comes with mediawiki/web-authn."
+      "why": "Low, and specific to SimpleFakeCredentialGenerator used with an empty secret — a username-enumeration hardening feature, not an authentication bypass. The upgrade moved this 4.9.2 → 4.9.3, which does not clear it: the advisory covers >=4.9.0,<5.3.5 and mediawiki/web-authn requires ^4.9.2, so the fix is a major bump upstream has not taken. Not this fork's version to choose."
     }
   }
 }

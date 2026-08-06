@@ -89,5 +89,6 @@
 	"bs-expiry-pref-enable-pdf-watermark": "Label for configuration of whether to show watermark for expired pages in PDF",
 	"bs-expiry-pref-enable-pdf-watermark-help": "Description for config variable \"ExpiryEnablePDFWatermark\"",
 	"bs-expiry-event-expiry-today-desc": "Description of the event trigger",
-	"bs-expiry-event-expiry-one-week-desc": "Description of the event trigger"
+	"bs-expiry-event-expiry-one-week-desc": "Description of the event trigger",
+	"bs-expiry-notification-generic-links-intro": "Introduction text for generic links in notifications.\n{{Identical|You can visit the page directly by using the following link}}"
 }

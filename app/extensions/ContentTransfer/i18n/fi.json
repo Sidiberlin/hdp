@@ -1,7 +1,9 @@
 {
 	"@metadata": {
 		"authors": [
-			"Pyscowicz"
+			"Pyscowicz",
+			"Wikipeedikko",
+			"Yupik"
 		]
 	},
 	"contenttransfer-extension-description": "Mahdollistaa sisällön siirtämisen wikistä toiseen",
@@ -20,5 +22,13 @@
 	"contenttransfer-dialog-push-preview-page-group-label-file": "Tiedosto ($1)",
 	"contenttransfer-dialog-push-preview-page-group-label-category": "Luokkasivu ($1)",
 	"contenttransfer-dialog-push-preview-page-group-label-template": "Malline ($1)",
-	"contenttransfer-progress-current-operation": "Siirretään sivua $1"
+	"contenttransfer-progress-current-operation": "Siirretään sivua $1",
+	"contenttransfer-filter-toggle-btn-hide": "Piilota",
+	"contenttransfer-filter-toggle-btn-show": "Näytä",
+	"contenttransfer-selection-toggle-btn-label": "Valitse kaikki",
+	"contenttransfer-progress-user-action-skip": "Ohita",
+	"contenttransfer-cannot-create-message": "Sivua ei voi luoda: $1",
+	"contenttransfer-push-failed": "Siirto epäonnistui: $1",
+	"contenttransfer-preflight-failed": "Siirtoa ei voi jatkaa: todennus tai CSRF-tunnus puuttuu",
+	"contenttransfer-authentication-bad-login": "Kirjautuminen vastaanottavaan wikiin epäonnistui. Tarkista botin käyttäjätunnukset."
 }

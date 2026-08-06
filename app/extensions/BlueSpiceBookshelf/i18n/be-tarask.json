@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ucukor",
 			"W"
 		]
 	},
@@ -9,5 +10,7 @@
 	"bs-bookshelf-add-to-book-label": "Дадаць кнігу",
 	"bs-bookshelf-add-to-book-label-book": "Кніга",
 	"bs-bookshelf-setting-path-feature": "Кніга",
-	"bs-bookshelf-book-grid-title": "Кнігі"
+	"bs-bookshelf-book-grid-title": "Кнігі",
+	"bs-books-overview-page-book-action-edit-text": "Рэдагаваць",
+	"bs-bookshelf-ve-booklist-attr-filter-label": "Фільтар"
 }

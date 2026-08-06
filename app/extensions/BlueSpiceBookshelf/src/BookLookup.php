@@ -92,7 +92,7 @@ class BookLookup {
 					->table( 'bs_book_chapters' )
 					->field( 'chapter_book_id' )
 					->where( [
-						'chapter_namespace' => $title->getNamespace(),
+						'chapter_namespace' => (string)$title->getNamespace(),
 						'chapter_title' => $title->getDBKey()
 					] )
 					->orderBy( 'chapter_number' )

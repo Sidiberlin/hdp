@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Stefan2255"
+		]
+	},
+	"datetimetools-desc": "Tillhandahåller datumverktyg i VisualEditor",
+	"datetimetools-ve-inspector-title": "redigeringsdatum",
+	"datetimetools-ve-inspector-date-picker-label": "Valt datum",
+	"datetimetools-droplet-date-name": "Datum",
+	"datetimetools-droplet-date-description": "Infogar ett datum"
+}

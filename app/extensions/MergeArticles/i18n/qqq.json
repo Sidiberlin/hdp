@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Dejan Savuljesku",
+			"Nike",
 			"Patric Wirth",
 			"Verdy p"
 		]
@@ -17,7 +18,7 @@
 	"mergearticles-type-template": "Label for the merge type \"template\".\n{{Identical|Template}}",
 	"mergearticles-type-category": "Label for the merge type \"category\".\n{{Identical|Category}}",
 	"mergearticles-no-pages-available": "Info text in merge overview, when there is currently no pages, that should be merged.",
-	"mergearticles-action-unknown": "Error message, when the selected action is unknown to the system.\n{{Identical|Unknown action}}",
+	"mergearticles-action-unknown": "Error message, when the selected action is unknown to the system.",
 	"mergearticles-request-invalid": "Error message, when the merge request to the API with given data was invalid\n{{Identical|Invalid request}}",
 	"mergearticles-sp-review": "Special page heading for the [[Special:MergeArticles]] special page in \"review\" mode.",
 	"mergearticles-sp-compare": "Special page heading for the [[Special:MergeArticles]] special page in \"compare\" mode.",

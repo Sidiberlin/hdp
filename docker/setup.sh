@@ -233,7 +233,7 @@ with open('composer.lock', 'w') as f:
     #
     # This is also what fires the pre-autoload-dump hook, i.e. all eight
     # scripts in _bluespice/pre-autoload-dump.d/, including the one that
-    # applies 17 .diff patches. Capture the output so their failures can be
+    # applies 18 .diff patches. Capture the output so their failures can be
     # detected; `tee` keeps it on the console exactly as before.
     #
     # 05-add_installer_overrides.sh is checked by state rather than by log
@@ -275,7 +275,7 @@ fi
 #      fuzz factor) that 99-apply_patches.sh already uses for the inherited
 #      BlueSpice patches.
 #
-# Class A only: the 17 inherited Class-C patches are applied by
+# Class A only: the 18 inherited Class-C patches are applied by
 # 99-apply_patches.sh during `composer dump-autoload`, above.
 #
 # Paths are passed explicitly because the container has no repo root — only
@@ -303,8 +303,15 @@ if [ -x /hdp-scripts/apply-patches.sh ] && [ -d /hdp-patches ]; then
             [ -n "$line" ] || continue
             record_failure "patch not re-applied: $line"
             _apply_named=1
-        done < <(grep -oE '^  . [a-z0-9-]+ —' "$APPLY_LOG" 2>/dev/null \
-                 | sed -E 's/^  . ([a-z0-9-]+) —$/\1/' || true)
+        # apply-patches.sh emits one `HDP_PATCH_FAILED=<id>` line per failure,
+        # at column 0, pure ASCII. This used to read the human line
+        # (`  ✗ <id> — <title>`) with `grep -oE '^  . [a-z0-9-]+ —'`, which
+        # breaks in a C/POSIX locale — the default in this image, since nothing
+        # sets one — because `✗` is three UTF-8 bytes and ERE `.` matches one.
+        # The result was not a silent pass (setup.sh still exits 1) but every
+        # named failure degraded to the generic message below, dropping exactly
+        # the patch ids an operator needs. Contract now, not formatting.
+        done < <(sed -n 's/^HDP_PATCH_FAILED=\([a-z0-9-]*\)$/\1/p' "$APPLY_LOG" 2>/dev/null || true)
         if [ "$_apply_named" -eq 0 ]; then
             record_failure "apply-patches.sh failed before it could report per-patch results (see output above)"
         fi

@@ -41,6 +41,27 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Same reclaim as t4-smoke.yml. T5 is the tightest of the three tiers for
+      # space after T4: it builds the 2.47 GB opensearch image and loads a DB
+      # fixture on top, on a stock ubuntu-latest. The failure it buys headroom
+      # against is the quiet one — OpenSearch past the flood-stage watermark
+      # turns the index read-only, setup.sh still reports success, and the
+      # migration assertions fail much later pointing at the wrong thing. The
+      # script's own HDP_T5_MIN_DISK_GB precondition fails fast if this step
+      # ever stops being enough.
+      #
+      # /opt/hostedtoolcache is left alone on purpose: the pytest step below
+      # resolves python3 and pip through it.
+      - name: Reclaim runner disk
+        run: |
+          echo "before:"
+          df -h / /var/lib/docker 2>/dev/null || df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /usr/local/share/boost /usr/share/swift || true
+          sudo docker image prune -af >/dev/null 2>&1 || true
+          echo "after:"
+          df -h / /var/lib/docker 2>/dev/null || df -h /
+
       # Standard library only, like T3: the whole dependency list is docker,
       # python3 and pytest.
       - name: Install pytest

@@ -68,6 +68,9 @@ ve.dm.SurfaceSynchronizer = function VeDmSurfaceSynchronizer( surface, documentI
 	this.socket.on( 'alreadyLoggedIn', this.alreadyLogedIn.bind( this ) );
 	this.socket.on( 'saveRevision', this.onSaveRevision.bind( this ) );
 	this.socket.on( 'deleteSession', this.onDeleteSession.bind( this ) );
+	// Bug fix: wire the built-in Socket.IO disconnect event so the client
+	// reacts to dropped connections and can re-sync on reconnect.
+	this.socket.on( 'disconnect', this.onDisconnect.bind( this ) );
 
 	this.authorData = ve.init.platform.sessionStorage.getObject( 've-collab-author' );
 	if ( this.authorData ) {
@@ -571,13 +574,19 @@ ve.dm.SurfaceSynchronizer.prototype.onNewChange = function ( serializedChange ) 
 
 ve.dm.SurfaceSynchronizer.prototype.onDisconnect = function () {
 	this.initialized = false;
+	// Reset rebase client state so that when Socket.IO auto-reconnects and the
+	// server sends a fresh initDoc, acceptChange re-processes the full history
+	// instead of treating the session as already up-to-date.
+	this.commitLength = 0;
+	this.sentLength = 0;
+	this.backtrack = 0;
 	this.emit( 'disconnect' );
 };
 
 ve.dm.SurfaceSynchronizer.prototype.updateAuthorsSinceLastChange = function () {
 	for ( const authorId in this.authors ) {
 		const authorName = this.authors[ authorId ].name;
-		if ( this.authorsSinceLastSave.indexOf( authorName ) === -1 ) {
+		if ( !this.authorsSinceLastSave.includes( authorName ) ) {
 			this.authorsSinceLastSave.push( authorName );
 		}
 	}

@@ -8,11 +8,11 @@ applicationSuite: BlueSpice pro
 url: 'https://gitlab.opencode.de/bmbf/teamdigital/hdp'
 landingURL: 'https://bluespice.com/de/'
 logo: BlueSpice_Logo.svg
-releaseDate: '2025-01-08'
+releaseDate: '2026-08-03'
 # Kept in step with VERSIONS.yml by the version-consistency gate. This said
 # 5.1.3 while every bluespice/* package in app/composer.lock was 5.1.4, so the
 # openCode catalogue was being told the wrong version.
-softwareVersion: 5.1.4
+softwareVersion: 5.1.9
 developmentStatus: stable
 platforms:
   - linux

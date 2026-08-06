@@ -49,18 +49,52 @@ def test_the_fixture_matches_its_recorded_checksum(repo_root, fixture_meta):
     )
 
 
-def test_the_fixture_was_captured_from_the_declared_release(repo_root, fixture_meta):
-    """The snapshot has to say which release it came from, and be right.
+def _version_tuple(text):
+    """'1.43.9' -> (1, 43, 9). Returns None for anything non-numeric."""
+    parts = text.split(".")
+    if not all(p.isdigit() for p in parts):
+        return None
+    return tuple(int(p) for p in parts)
+
+
+def test_the_fixture_was_captured_from_a_release_at_or_behind_the_declared_one(
+    repo_root, fixture_meta
+):
+    """The snapshot has to say which release it came from, and be plausible.
 
     A migration test whose input is 'some database from some version' cannot
     tell you what it proved.
+
+    This used to require the fixture's release to *equal* the declared one,
+    which is backwards, and the 1.43.5 -> 1.43.9 upgrade is what exposed it.
+    The tier exists to run new code against the previous release's data, so
+    during and after an upgrade the fixture is deliberately one or more
+    releases behind what VERSIONS.yml declares — the runbook says so twice, and
+    says to regenerate the fixture only *after* the upgrade merges. Equality
+    holds exactly when the fixture has been regenerated on the current release,
+    and at that moment update.php is migrating same-version data and the test
+    proves nothing about migration.
+
+    So the real invariant is the ordering: we must know exactly which release
+    the data came from, and it must be at or behind what we now ship. A fixture
+    from a *newer* release than the code is a genuine mistake — it would mean
+    testing a downgrade — and is still caught.
     """
-    declared = (repo_root / "VERSIONS.yml").read_text(encoding="utf-8")
-    assert re.search(rf"^mw_core:\s*'{re.escape(fixture_meta['mw_core'])}'",
-                     declared, re.M), (
-        f"the fixture was captured from MediaWiki {fixture_meta['mw_core']}, which is "
-        f"not what VERSIONS.yml declares. After an upgrade, regenerate the fixture "
-        f"from the OLD release before bumping — that is what makes it a migration test."
+    declared_text = (repo_root / "VERSIONS.yml").read_text(encoding="utf-8")
+    m = re.search(r"^mw_core:\s*'([^']+)'", declared_text, re.M)
+    assert m, "VERSIONS.yml has no mw_core declaration"
+
+    declared, captured = m.group(1), fixture_meta["mw_core"]
+    dv, cv = _version_tuple(declared), _version_tuple(captured)
+    assert dv and cv, (
+        f"cannot order MediaWiki {captured!r} (fixture) against {declared!r} "
+        f"(VERSIONS.yml); both must be plain dotted numbers."
+    )
+    assert cv <= dv, (
+        f"the fixture was captured from MediaWiki {captured}, which is NEWER than "
+        f"the declared {declared}. That tests a downgrade, not a migration. "
+        f"Regenerate it with scripts/ci/make-db-fixture.sh from the release the "
+        f"code actually ships."
     )
 
 
@@ -129,16 +163,45 @@ def test_update_php_actually_did_something(migrated):
 
 # ─── the wiki afterwards ────────────────────────────────────────────
 
+def _count(out, column, what):
+    """One integer out of sql.php's print_r output, by column name.
+
+    This used to be `re.search(r"\\b(\\d+)\\b", out.replace(column, " "))`, which
+    stripped every occurrence of the letter from the *whole* output in order to
+    remove one column header, then took the first integer appearing anywhere.
+    It worked against today's format and would not have announced itself when
+    that changed: any stray number — a warning, a deprecation notice, a row id,
+    a timestamp — silently becomes the count, and a count read wrong here is
+    read as data loss or as its absence.
+
+    sql.php prints PHP print_r, so the row is `    [n] => 153`. That is the same
+    shape test_install_update.py and test_site_config.py already scrape, which
+    makes this the format one change would break in one obvious way rather than
+    three subtle ones. Anchoring on the column name and requiring the value to
+    be an integer on its own means a format change fails loudly here.
+    """
+    matches = re.findall(rf"\[{re.escape(column)}\]\s*=>\s*(\S+)", out)
+    assert matches, (
+        f"could not read the {what} from sql.php — no `[{column}] => …` row in "
+        f"its output. The format may have changed:\n{out[-1000:]}"
+    )
+    assert len(matches) == 1, (
+        f"sql.php returned {len(matches)} `[{column}]` rows for a query that "
+        f"selects one aggregate; refusing to guess which is the {what}:\n{out[-1000:]}"
+    )
+    value = matches[0].strip()
+    assert value.isdigit(), (
+        f"the {what} from sql.php is {value!r}, which is not a number:\n{out[-1000:]}"
+    )
+    return int(value)
+
 def test_the_content_survived_the_migration(migrated, mw_sql, fixture_meta):
     """Every page in the snapshot is still there afterwards.
 
     This is the assertion the whole tier exists for: not "the updater was
     quiet" but "the data came through".
     """
-    out = mw_sql("SELECT COUNT(*) AS n FROM page")
-    match = re.search(r"\b(\d+)\b", out.replace("n", " "))
-    assert match, f"could not read a page count from sql.php:\n{out[-1000:]}"
-    after = int(match.group(1))
+    after = _count(mw_sql("SELECT COUNT(*) AS n FROM page"), "n", "page count")
     assert after >= fixture_meta["pages"], (
         f"the snapshot had {fixture_meta['pages']} pages and the migrated wiki has "
         f"{after}. update.php exited 0, so this is silent data loss."
@@ -146,11 +209,10 @@ def test_the_content_survived_the_migration(migrated, mw_sql, fixture_meta):
 
 
 def test_the_schema_is_at_least_what_the_snapshot_had(migrated, mw_sql):
-    out = mw_sql("SELECT COUNT(*) AS n FROM information_schema.tables "
-                 "WHERE table_schema = DATABASE()")
-    match = re.search(r"\b(\d+)\b", out.replace("n", " "))
-    assert match, f"could not read a table count from sql.php:\n{out[-1000:]}"
-    after = int(match.group(1))
+    after = _count(
+        mw_sql("SELECT COUNT(*) AS n FROM information_schema.tables "
+               "WHERE table_schema = DATABASE()"),
+        "n", "table count")
     assert after >= migrated["before_tables"], (
         f"the snapshot had {migrated['before_tables']} tables and the migrated "
         f"database has {after} — update.php dropped tables"

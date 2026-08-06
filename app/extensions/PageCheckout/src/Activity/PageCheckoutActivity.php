@@ -7,7 +7,6 @@ use MediaWiki\Extension\Workflows\WorkflowContext;
 use MediaWiki\Message\Message;
 use MediaWiki\Title\Title;
 use MediaWiki\User\User;
-use MWException;
 
 class PageCheckoutActivity extends CheckoutActivity {
 	/** @var bool */
@@ -24,7 +23,6 @@ class PageCheckoutActivity extends CheckoutActivity {
 	/**
 	 * @param User $user
 	 * @param Title $title
-	 * @throws MWException
 	 */
 	protected function doAction( User $user, Title $title ) {
 		if ( $this->force && $this->manager->isCheckedOut( $title ) ) {
@@ -35,11 +33,11 @@ class PageCheckoutActivity extends CheckoutActivity {
 		];
 		if ( $user->isSystemUser() ) {
 			$payload['alertText'] = Message::newFromKey(
-				'page-checkout-workflow-activity-checkout-reason'
+				'pagecheckout-workflow-activity-checkout-reason'
 			)->text();
 		} else {
 			$payload['comment'] = Message::newFromKey(
-				'page-checkout-workflow-activity-checkout-non-generic-reason'
+				'pagecheckout-workflow-activity-checkout-non-generic-reason'
 			)->text();
 		}
 		$this->manager->checkout( $title, $user, $payload );

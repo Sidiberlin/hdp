@@ -10,3 +10,5 @@ CREATE TABLE collabpad_session (
   s_participants TEXT NOT NULL,
   PRIMARY KEY(s_id)
 );
+
+CREATE INDEX collabpad_session_page_namespace_page_title_index ON collabpad_session (s_page_namespace, s_page_title);

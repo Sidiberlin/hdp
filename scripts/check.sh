@@ -46,7 +46,7 @@ IMG_COMPOSER="composer:2.8"
 RUFF_PINNED_VERSION="0.16.1"
 
 YAMLLINT_RULES='{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable}}'
-YAML_FILES=(docker-compose.yml docker/ci/compose.cache.yml publiccode.yml VERSIONS.yml docker/haystack/hdp_pipeline.yaml .gitlab-ci.yml .github/workflows/)
+YAML_FILES=(docker-compose.yml docker-compose.prod.yml docker/ci/compose.cache.yml publiccode.yml VERSIONS.yml docker/haystack/hdp_pipeline.yaml .gitlab-ci.yml .github/workflows/)
 
 # ─── Locate the repo ────────────────────────────────────────────────
 REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel 2>/dev/null || true)"
@@ -123,7 +123,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' pytest-haystack 'to_native + load_pipeline' "haystack-ai | $IMG_PYTHON"
     printf '%-16s %-34s %s\n' bats        'infisical-loader.sh behaviour' "bats | ${IMG_BATS%%@*}"
     printf '%-16s %-34s %s\n' php-lint    'syntax of app/settings.d/*.php' "php | $IMG_PHP"
-    printf '%-16s %-34s %s\n' compose     'docker-compose.yml interpolates' 'docker compose v2'
+    printf '%-16s %-34s %s\n' compose     'compose + the prod override merge' 'docker compose v2'
     printf '%-16s %-34s %s\n' gitleaks    'no secrets in owned paths' 'gitleaks | zricethezav/gitleaks'
     printf '%-16s %-34s %s\n' env-example '.env.example covers compose' 'grep'
     printf '%-16s %-34s %s\n' publiccode  'publiccode.yml schema' 'italia/publiccode-parser-go'
@@ -132,7 +132,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' versions    'VERSIONS.yml matches the tree' 'python3'
     printf '%-16s %-34s %s\n' composer-audit 'new CVEs in app/composer.lock' "composer | $IMG_COMPOSER"
     printf '%-16s %-34s %s\n' fresh-clone 'TF: fresh clone has every input' 'git'
-    printf '%-16s %-34s %s\n' patches     'all 19 patches present (--patches)' 'patch(1)'
+    printf '%-16s %-34s %s\n' patches     'all 21 patches present (--patches)' 'patch(1)'
     printf '%-16s %-34s %s\n' integration 'live wiki (--integration)' 'a running, installed stack'
     printf '%-16s %-34s %s\n' smoke       'search + chatbot (--smoke)' 'the full 7-container stack'
 }
@@ -330,14 +330,31 @@ check_smoke_run() {
 
 # ─── php -l over the 17 settings.d files ────────────────────────────
 # These gate ~130 extensions; a syntax error here takes the wiki down at boot.
+#
+# An unmatched glob expands to itself in bash, so with the directory missing
+# this used to run `php -l 'app/settings.d/*.php'` and report a lint failure —
+# blaming the syntax of a file that is not there instead of saying the tree is
+# incomplete. Both branches guard for it, and both report the same thing.
 check_php-lint_run() {
+    # Same test in both branches: the docker branch mounts this same tree, so
+    # if the host cannot see the files neither can the container.
+    local files=(app/settings.d/*.php)
+    if [ ! -e "${files[0]}" ]; then
+        echo "app/settings.d/ holds no .php files — the tree is incomplete, not the syntax."
+        echo "This directory is committed; check the clone rather than the files."
+        return 1
+    fi
+
     if have php; then
         local f rc=0
-        for f in app/settings.d/*.php; do php -l "$f" >/dev/null || rc=1; done
-        [ $rc -eq 0 ] || { for f in app/settings.d/*.php; do php -l "$f" >/dev/null || php -l "$f"; done; return 1; }
+        for f in "${files[@]}"; do php -l "$f" >/dev/null || rc=1; done
+        [ $rc -eq 0 ] || { for f in "${files[@]}"; do php -l "$f" >/dev/null || php -l "$f"; done; return 1; }
     elif have_docker; then
         docker run --rm -v "$REPO_ROOT":/w -w /w "$IMG_PHP" \
-            sh -c 'rc=0; for f in app/settings.d/*.php; do php -l "$f" >/dev/null || { php -l "$f"; rc=1; }; done; exit $rc'
+            sh -c 'rc=0; for f in app/settings.d/*.php; do
+                       [ -e "$f" ] || { echo "no app/settings.d/*.php in the container mount"; exit 1; }
+                       php -l "$f" >/dev/null || { php -l "$f"; rc=1; }
+                   done; exit $rc'
     else
         skip php-lint "no php on PATH and no docker"
     fi
@@ -358,6 +375,12 @@ check_gitleaks_run() {
     if ! command -v gitleaks >/dev/null 2>&1 && ! have_docker; then
         skip gitleaks "no gitleaks on PATH and no docker"; return
     fi
+    # gitleaks.sh returns 2 when a scanner it *does* have could not complete —
+    # image pull failed, scan crashed, output no longer carries the marker it
+    # asserts. That is deliberately not translated to 77/SKIP: having no
+    # scanner is a gap the operator can see and close, while having one that
+    # silently stopped working is the failure this gate was rewritten to
+    # refuse. It falls through to FAIL.
     scripts/ci/gitleaks.sh
 }
 
@@ -429,6 +452,59 @@ check_compose_run() {
 
     local rc=0
     docker compose config --quiet || rc=1
+
+    # The published-image override is a documented deployment path
+    # (README-DOCKER.md), so it has to parse and it has to actually drop the
+    # inherited `build:` keys. A service left with both `build:` and `image:`
+    # is *built*, not pulled, whenever the image is not already local — which
+    # turns "pull the pre-built images" into a five-minute build with no error
+    # to explain it. `!reset` is what deletes the key, and it is silent when
+    # it does not take, so assert the outcome rather than the syntax.
+    #
+    # `--format json` and stdlib json, not PyYAML: check.sh runs on whatever
+    # python3 a contributor has, and PyYAML is not in the standard library.
+    # This is the same reason scripts/lib/read-manifest.py carries a fallback.
+    if [ -f docker-compose.prod.yml ]; then
+        local merged err
+        # stderr to a file, not into `merged`. It used to be `2>&1`, which is
+        # right for the failure branch below (it needs compose's message) and
+        # wrong for the success branch, which parses this as JSON: compose
+        # prints a `level=warning msg="The \"X\" variable is not set"` line per
+        # undefined variable, and one of those in front of the document turns
+        # this check into a python traceback about "Expecting value: line 1
+        # column 1". Reproduced with a .env predating the HDP_INFISICAL_* block
+        # — an operator whose .env is merely incomplete got a JSONDecodeError
+        # naming neither the variable nor the file.
+        err="$(mktemp)"
+        if ! merged=$(docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+                          config --format json 2>"$err"); then
+            echo "docker-compose.prod.yml does not merge onto docker-compose.yml:"
+            tail -5 "$err"
+            rc=1
+        elif ! printf '%s' "$merged" | python3 -c '
+import json, sys
+svcs = json.load(sys.stdin)["services"]
+bad = [s for s in ("haystack", "chatbot-proxy", "opensearch") if "build" in svcs.get(s, {})]
+if bad:
+    print("docker-compose.prod.yml leaves a build: on " + ", ".join(bad) + " —")
+    print("those services will be built, not pulled, on a host without the image.")
+    print("each one needs \"build: !reset null\" in the override.")
+    sys.exit(1)
+missing = [s for s in ("haystack", "chatbot-proxy", "opensearch")
+           if not svcs.get(s, {}).get("image", "").startswith("ghcr.io/")]
+if missing:
+    print("docker-compose.prod.yml does not point " + ", ".join(missing) + " at ghcr.io.")
+    sys.exit(1)
+'; then
+            rc=1
+            # The warnings are not a failure on their own, but when the parse
+            # went wrong they are usually the reason, so surface them here
+            # rather than leaving the traceback unexplained.
+            [ -s "$err" ] && { echo "  compose also reported:"; sed 's/^/    /' "$err" | head -5; }
+        fi
+        rm -f "$err"
+    fi
+
     [ "$made_env" -eq 1 ] && rm -f .env
     return $rc
 }
@@ -447,7 +523,7 @@ run_check pytest-unit     "stdlib unit tests"
 run_check pytest-haystack "to_native + load_pipeline"
 run_check bats       "infisical-loader behaviour"
 run_check php-lint   "app/settings.d syntax"
-run_check compose    "compose interpolation"
+run_check compose    "compose + prod override"
 run_check gitleaks     "no committed secrets"
 run_check env-example  ".env.example completeness"
 run_check publiccode   "publiccode.yml schema"
@@ -456,7 +532,7 @@ run_check manifest     "patch manifest schema"
 run_check versions     "VERSIONS.yml matches the tree"
 run_check composer-audit "no new CVEs in composer.lock"
 run_check fresh-clone  "committed tree is complete"
-run_check patches      "all 19 patches in the tree"
+run_check patches      "all 21 patches in the tree"
 run_check integration  "live wiki serves real traffic"
 run_check smoke        "full stack searches and answers"
 

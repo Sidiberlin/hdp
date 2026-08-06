@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceFilterableTables",
-	"version": "5.1.4",
+	"version": "5.1.9",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceFilterableTables",
 	"author": "Patric Wirth",
@@ -43,7 +43,8 @@
 	"ResourceModules": {
 		"ext.bluespice.filterabletables": {
 			"scripts": [
-				"bluespice.filterabletables.js"
+				"bluespice.filterabletables.js",
+				"plugin/LingoTooltips.js"
 			]
 		},
 		"ext.bluespice.filterabletables.grid": {

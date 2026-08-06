@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceReminder",
-	"version": "5.1.4",
+	"version": "5.1.9",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceReminder",
 	"author": [ "Sebastian Ulbricht", "Stephan Muggli", "Tobias Weichart", "Markus Glaser", "Peter Böhm" ],
 	"descriptionmsg": "bs-reminder-extension-description",
@@ -280,10 +280,16 @@
 			"class": "\\BlueSpice\\Reminder\\HookHandler\\StandardDialogs"
 		},
 		"addReminderUrl": {
-			"class": "\\BlueSpice\\Reminder\\HookHandler\\SkinTemplateNavigation\\AddReminderUrl"
+			"class": "\\BlueSpice\\Reminder\\HookHandler\\SkinTemplateNavigation\\AddReminderUrl",
+			"services": [
+				"SpecialPageFactory"
+			]
 		},
 		"addReminderEntry": {
-			"class": "\\BlueSpice\\Reminder\\HookHandler\\SkinTemplateNavigation\\AddReminderEntry"
+			"class": "\\BlueSpice\\Reminder\\HookHandler\\SkinTemplateNavigation\\AddReminderEntry",
+			"services": [
+				"PermissionManager"
+			]
 		}
 	},
 	"Hooks": {

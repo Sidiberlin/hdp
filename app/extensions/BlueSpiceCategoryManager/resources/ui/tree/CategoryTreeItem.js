@@ -9,9 +9,15 @@ bs.categoryManager.ui.tree.CategoryTreeItem = function ( cfg ) {
 	cfg.classes = cfg.classes || [];
 	this.catText = cfg.label || '';
 	this.catTitle = mw.Title.newFromText( this.catText, bs.ns.NS_CATEGORY );
-	cfg.href = this.catTitle.getUrl();
+	this.catExists = cfg.exists;
 
+	cfg.href = this.catTitle.getUrl();
 	bs.categoryManager.ui.tree.CategoryTreeItem.parent.call( this, cfg );
+
+	if ( this.catExists === false ) {
+		this.$element.find( 'a.oojsplus-ui-widget-linkwidget-label' ).addClass( 'new' );
+	}
+
 	this.expanded = cfg.expanded;
 	this.children = [];
 };
@@ -20,15 +26,18 @@ OO.inheritClass( bs.categoryManager.ui.tree.CategoryTreeItem, OOJSPlus.ui.data.t
 
 bs.categoryManager.ui.tree.CategoryTreeItem.prototype.possiblyAddOptions = function () {
 	const options = [];
-	this.editBtn = new OO.ui.ButtonWidget( {
-		framed: false,
-		label: mw.message( 'bs-categorymanager-category-item-rename-label' ).text(),
-		icon: 'edit'
-	} );
-	this.editBtn.connect( this, {
-		click: 'onEditClick'
-	} );
-	options.push( this.editBtn.$element );
+
+	if ( this.catExists !== false ) {
+		this.editBtn = new OO.ui.ButtonWidget( {
+			framed: false,
+			label: mw.message( 'bs-categorymanager-category-item-rename-label' ).text(),
+			icon: 'edit'
+		} );
+		this.editBtn.connect( this, {
+			click: 'onEditClick'
+		} );
+		options.push( this.editBtn.$element );
+	}
 
 	this.viewButton = new OO.ui.ButtonWidget( {
 		framed: false,

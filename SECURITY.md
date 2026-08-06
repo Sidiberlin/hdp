@@ -4,11 +4,20 @@
 
 **EN:**
 
-**Do NOT open a public issue for security vulnerabilities.**
+**Do NOT open an issue for security vulnerabilities.** Issues in this
+repository are public, and there is no such thing as a confidential issue on
+GitHub — an earlier version of this file told you to open one, which would have
+published your report along with a working exploit.
 
-To report a security issue:
-1. Open a **confidential** issue in the [GitHub issue tracker](https://github.com/Sidiberlin/hdp/issues) using the **`security`** label
-2. Or contact the maintainers directly via GitHub
+To report a security issue, use GitHub's **private vulnerability reporting**:
+
+1. Go to **[Security → Report a vulnerability](https://github.com/Sidiberlin/hdp/security/advisories/new)**
+   (repository → *Security* tab → *Report a vulnerability*). The report is
+   visible only to you and the maintainers, and it becomes the draft advisory
+   the fix is published from.
+2. If that page is not available to you, contact a maintainer directly through
+   GitHub and ask for a private channel — **do not describe the issue in a
+   public issue, pull request, or discussion thread first.**
 
 Please include:
 - Description of the vulnerability
@@ -16,17 +25,37 @@ Please include:
 - Affected versions (see `VERSIONS.yml`)
 - Suggested fix (if any)
 
-We will acknowledge receipt within **72 hours** and provide an initial assessment within **7 days**.
+We strive to acknowledge receipt within **72 hours** and to provide an initial
+assessment within **7 days**, on a best-effort basis with no guarantee.
+
+> **Maintainer note.** Private vulnerability reporting has to be switched on for
+> the link above to work: *Settings → Code security → Private vulnerability
+> reporting → Enable*. It is available on public repositories, so it must be
+> enabled as part of making this one public — a disclosure policy whose only
+> channel is a 404 is the same failure as the confidential-issue text it
+> replaces. If a monitored mail address is preferred instead, name it here and
+> delete this note; either is fine, an unreachable channel is not.
 
 ---
 
 **DE:**
 
-**Erstellen Sie KEIN öffentliches Issue für Sicherheitslücken.**
+**Erstellen Sie KEIN Issue für Sicherheitslücken.** Issues in diesem Repository
+sind öffentlich, und vertrauliche Issues gibt es auf GitHub nicht — eine
+frühere Fassung dieser Datei forderte genau das, was Ihre Meldung samt
+funktionsfähigem Exploit veröffentlicht hätte.
 
-So melden Sie ein Sicherheitsproblem:
-1. Erstellen Sie ein **vertrauliches** Issue im [GitHub-Issue-Tracker](https://github.com/Sidiberlin/hdp/issues) mit dem Template **security** oder dem Label **`security`**
-2. Oder kontaktieren Sie die Maintainer direkt über GitHub
+So melden Sie ein Sicherheitsproblem — über GitHubs **private
+Schwachstellenmeldung**:
+
+1. Öffnen Sie **[Security → Report a vulnerability](https://github.com/Sidiberlin/hdp/security/advisories/new)**
+   (Repository → Reiter *Security* → *Report a vulnerability*). Die Meldung ist
+   nur für Sie und die Maintainer sichtbar und wird zum Entwurf des Advisories,
+   aus dem der Fix veröffentlicht wird.
+2. Falls diese Seite für Sie nicht verfügbar ist, kontaktieren Sie eine
+   Maintainerin oder einen Maintainer direkt über GitHub und bitten Sie um einen
+   vertraulichen Kanal — **beschreiben Sie das Problem nicht vorab in einem
+   öffentlichen Issue, Pull Request oder Diskussionsthread.**
 
 Bitte geben Sie an:
 - Beschreibung der Schwachstelle
@@ -34,7 +63,9 @@ Bitte geben Sie an:
 - Betroffene Versionen (siehe `VERSIONS.yml`)
 - Vorgeschlagene Lösung (falls vorhanden)
 
-Wir bestätigen den Eingang innerhalb von **72 Stunden** und liefern eine Ersteinschätzung innerhalb von **7 Tagen**.
+Wir sind bestrebt, den Eingang innerhalb von **72 Stunden** zu bestätigen und
+innerhalb von **7 Tagen** eine Ersteinschätzung zu liefern — nach bestem
+Bemühen und ohne Gewähr.
 
 ---
 
@@ -72,29 +103,46 @@ abweichen.
 Three tracks, because the three parts of this tree are visible to completely
 different tooling. Full design in `docs/dev/upgrade-runbook.md`.
 
-### Track A — the composer-visible packages (148 of them)
+### Track A — the composer-visible packages (381 of them)
 
 `composer audit --locked` runs in CI on every push
 (`scripts/ci/composer-audit.sh`). It is compared against
 `docker/ci/composer-audit-baseline.json`, which records the advisories this
 fork **knowingly carries**, with a reason for each, and the gate fails on
-anything new.
+anything new. It audits the whole lockfile, `packages` and `packages-dev`
+both — 311 + 70. (This section used to say 148, which is the count of the
+`mediawiki/*` and `bluespice/*` entries alone, not what the gate covers.)
 
-The baseline exists because the tree currently carries 34 advisories inherited
-from upstream's dependency choices — `app/composer.json` is upstream's
+The baseline exists because the tree carries advisories inherited from
+upstream's dependency choices — `app/composer.json` is upstream's
 `bluespice/core`, so none of those versions is this fork's to pick. A gate that
 is red on every push is a gate people stop reading; a gate that fires on a
 *new* advisory is the signal worth having.
 
-**Four of those entries are marked ACTION REQUIRED** and are fixable only by
+**As reviewed on 2026-08-04 that is 8 advisories across 3 packages, two of them
+high.** It was 34 across 12 packages, two critical, until the 1.43.9 / 5.1.9
+upgrade cleared 28 — that is what the upgrade was for. The baseline file is the
+count of record; the numbers here date, it does not.
+
+**One of those entries is marked ACTION REQUIRED** and is fixable only by
 re-vendoring upstream:
 
 | Package | Severity | Fixed in |
 |---|---|---|
-| `phpoffice/phpspreadsheet` | 2 critical, 5 high — parses uploaded spreadsheets | 1.30.6 |
-| `phpseclib/phpseclib` | 2 high — sits under the OIDC client | 3.0.54 |
 | `mediawiki/maps` | high — stored XSS via `display_map` | 12.1.3 |
-| `universal-omega/dynamic-page-list3` | high — exposes suppressed usernames | 3.6.4 |
+
+It was four. The 1.43.9 / 5.1.9 upgrade closed three of them —
+`phpoffice/phpspreadsheet` (2 critical, 5 high; parses uploaded spreadsheets)
+at 1.30.6, `phpseclib/phpseclib` (2 high; sits under the OIDC client) at
+3.0.56, and `universal-omega/dynamic-page-list3` (high; exposed suppressed
+usernames) at 3.6.4. `mediawiki/maps` survived and **cannot be fixed inside the
+5.1 series at all**: the fix is in 12.1.3 and the BlueSpice pro distribution
+constrains the package to `11.0.*`, so only a series bump relaxes it.
+
+The other two entries — `guzzlehttp/guzzle` and `web-auth/webauthn-lib` — are
+carried, not fixable here, and not marked: both are pinned by upstream past the
+version that would close them. The `why` field on each says what the exposure
+is and what would change the assessment.
 
 Renovate (`renovate.json`) opens grouped weekly PRs and **never auto-merges** —
 merging is what triggers the patch re-application this process exists to guard.
@@ -125,8 +173,8 @@ they exist.
 
 | Package | Vendored from | Owner |
 |---|---|---|
-| `hallowelt/chatbot` | `gitlab.hallowelt.com/GovTech/mediawiki-extensions-chatbot@d6ab09fb` | **unassigned** |
-| `mediawiki/page-header` | `gitlab.hallowelt.com/BlueSpice/mediawiki-extensions-pageheader@505d0aa4` | **unassigned** |
+| `hallowelt/chatbot` | `gitlab.hallowelt.com/GovTech/mediawiki-extensions-chatbot@d6ab09fb` | **best-effort** |
+| `mediawiki/page-header` | `gitlab.hallowelt.com/BlueSpice/mediawiki-extensions-pageheader@505d0aa4` | **best-effort** |
 
 The declaration lives in `VERSIONS.yml` under `frozen:`, including a
 `last_reviewed` date. The version-consistency gate warns when that date is more
@@ -135,8 +183,10 @@ declaration that has drifted from the code is worse than none.
 
 **This is an accepted risk, recorded rather than solved.** The honest options
 are: negotiate read access to the upstream repositories, replace both packages,
-or keep accepting the risk with a named owner and a periodic manual diff.
-Assigning that owner is an open item.
+or keep accepting the risk with a periodic manual diff. Today it is the third,
+on a best-effort basis: nobody is on the hook for a response time, and the
+`last_reviewed` date in `VERSIONS.yml` is the only record of when either was
+last looked at.
 
 ### What none of the three covers
 

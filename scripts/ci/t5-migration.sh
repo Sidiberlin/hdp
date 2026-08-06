@@ -70,6 +70,16 @@ command -v docker >/dev/null 2>&1 || { fail "no docker on PATH"; exit 2; }
 docker compose version >/dev/null 2>&1 || { fail "docker compose v2 is required"; exit 2; }
 [ -f "$FIXTURE" ] || { fail "$FIXTURE is missing — regenerate it with scripts/ci/make-db-fixture.sh"; exit 2; }
 
+# Same opensearch, same read-only-index failure mode as T4 and T3 — and this is
+# the worst of the three for space: it builds the 2.47 GB opensearch image and
+# loads a DB fixture on top, on a stock ubuntu-latest with no reclaim step in
+# .github/workflows/t5-migration.yml.
+#
+# 10 and 16 are T3's derivation plus the opensearch image this tier builds.
+# Derived from T4's measured 12/20, not independently measured; if a T5 run ever
+# fails on disk, replace these with the numbers from it.
+hdp_require_disk T5 10 16 "${HDP_T5_MIN_DISK_GB:-}" HDP_T5_MIN_DISK_GB || exit 2
+
 UPDATE_LOG="$(mktemp -t hdp-update-XXXXXX.log)"
 SETUP_LOG="$(mktemp -t hdp-setup-XXXXXX.log)"
 CREATED_ENV=0

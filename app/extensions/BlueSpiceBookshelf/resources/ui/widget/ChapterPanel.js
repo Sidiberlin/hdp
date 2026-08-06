@@ -322,7 +322,7 @@ ext.bookshelf.ui.widget.ChapterPanel.prototype.initializeChapterWidgets = functi
 	}
 };
 
-ext.bookshelf.ui.widget.ChapterPanel.prototype.getChapters = function () {
+ext.bookshelf.ui.widget.ChapterPanel.prototype.getChapterToInsert = function () {
 	let index = -1;
 
 	if ( this.previousChapterWidget.isVisible() ) {
@@ -343,52 +343,25 @@ ext.bookshelf.ui.widget.ChapterPanel.prototype.getChapters = function () {
 		index = this.chapters.findIndex( ( obj ) => obj.data.id === id );
 	}
 
-	if ( index < 0 ) {
-		return [ {
+	index++;
+	if ( index === 0 ) {
+		// First page in book
+		return [ null, {
 			type: 'bs-bookshelf-chapter-wikilink-with-alias',
 			label: this.insertionChapterWidget.getLabel(),
 			level: '1',
 			target: mw.config.get( 'wgPageName' )
 		} ];
 	}
-	index++;
 
-	const structuredChapters = [];
-	for ( const i in this.chapters ) {
-		const chapterData = this.chapters[ i ].data;
-		if ( parseInt( i ) === index ) {
-			structuredChapters.push( {
-				type: 'bs-bookshelf-chapter-wikilink-with-alias',
-				label: this.insertionChapterWidget.getLabel(),
-				level: this.calculateLevel( this.insertionChapterWidget.getNumber() ),
-				target: mw.config.get( 'wgPageName' )
-			} );
-		}
-		if ( chapterData.type !== 'wikilink-with-alias' ) {
-			structuredChapters.push( {
-				type: 'bs-bookshelf-chapter-plain-text',
-				text: chapterData.text,
-				level: this.calculateLevel( chapterData.number )
-			} );
-			continue;
-		}
-		const title = mw.Title.newFromText( chapterData.title, chapterData.namespace );
-		structuredChapters.push( {
-			type: 'bs-bookshelf-chapter-wikilink-with-alias',
-			label: chapterData.text,
-			level: this.calculateLevel( chapterData.number ),
-			target: title.getPrefixedText()
-		} );
-	}
-	if ( index >= this.chapters.length ) {
-		structuredChapters.push( {
-			type: 'bs-bookshelf-chapter-wikilink-with-alias',
-			label: this.insertionChapterWidget.getLabel(),
-			level: this.calculateLevel( this.insertionChapterWidget.getNumber() ),
-			target: mw.config.get( 'wgPageName' )
-		} );
-	}
-	return structuredChapters;
+	const prevIndex = index - 1;
+	const prev = this.chapters[ prevIndex ].data || {};
+	return [ prev.number || null, {
+		type: 'bs-bookshelf-chapter-wikilink-with-alias',
+		label: this.insertionChapterWidget.getLabel(),
+		level: this.calculateLevel( this.insertionChapterWidget.getNumber() ),
+		target: mw.config.get( 'wgPageName' )
+	} ];
 };
 
 ext.bookshelf.ui.widget.ChapterPanel.prototype.calculateLevel = function ( number ) {

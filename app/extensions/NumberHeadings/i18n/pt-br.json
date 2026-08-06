@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Eduardoaddad"
+		]
+	},
+	"numberheadings-desc": "Títulos numéricos em espaços nominais de conteúdo",
+	"numberheadings-conf-exlude-namespaces": "Excluir espaços nominais da numeração dos títulos"
+}

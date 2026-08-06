@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Tensama0415",
 			"Ykhwong"
 		]
 	},
@@ -16,5 +17,8 @@
 	"bs-wikiexplorer-categories": "분류",
 	"bs-wikiexplorer-linked-files": "링크된 파일",
 	"bs-wikiexplorer-linked-pages": "링크된 문서",
-	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "메타데이터가 이미 로드되었는지 여부를 확인하기 위한 API 변수입니다."
+	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "메타데이터가 이미 로드되었는지 여부를 확인하기 위한 API 매개변수입니다.",
+	"apihelp-bs-wikiexplorer-store-summary": "WikiExplorer 확장 기능에 대한 모든 데이터를 제공합니다",
+	"bs-wikiexplorer-icon-bool-true-aria-label": "체크됨",
+	"bs-wikiexplorer-icon-bool-false-aria-label": "체크 해제됨"
 }

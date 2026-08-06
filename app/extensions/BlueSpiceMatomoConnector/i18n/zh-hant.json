@@ -1,0 +1,23 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kly"
+		]
+	},
+	"bs-matomoconnector-pref-baseurl": "基礎 URL",
+	"bs-matomoconnector-privacy-cookie-group": "Matomo",
+	"bs-matomoconnector-extension-description": "允許將 Matomo 整合到 wiki 中，以便在 Matomo 中建立功能面板。",
+	"bs-matomoconnector-pref-siteid": "站台 ID",
+	"bs-matomoconnector-special-optoutheading": "分析服務",
+	"bs-matomoconnector-optout-footerlink": "分析服務",
+	"bs-matomoconnector-pref-bsprivacyintegration": "BlueSpicePrivacy 整合",
+	"bs-matomoconnector-pref-bsprivacyintegration-help": "啟用 BlueSpicePrivacy 整合。安裝 Matomo 必須要啟用 AjaxOptOut 套件。詳見：docs/PrivacyIntegration.md",
+	"bs-matomoconnector-pref-siteid-help": "Matomo 站台 ID。這可在您登入 Matomo 後，於瀏覽器網址列的 URL 參數中找到。",
+	"bs-matomoconnector-pref-baseurl-help": "不含站台 ID 的安裝 Matomo 根 URL。",
+	"bs-matomoconnector-pref-authtoken": "驗證權杖",
+	"bs-matomoconnector-pref-authtoken-help": "用於 HTTP API 的身份驗證權杖。可在 Matomo 中找到：管理 -> 個人 -> 安全性 -> 身份驗證權杖。",
+	"bs-matomoconnector-pref-optoutfooter": "在頁尾顯示退出連結",
+	"bs-matomoconnector-pref-optoutfooter-help": "在 wiki 頁尾顯示「分析服務」連結。分析服務頁面包含一個退出 Matomo 複選框。",
+	"bs-matomoconnector-special-privacynote": "<p>我們的網站使用 Matomo，這是一種網路分析服務。Matomo 使用一種叫做「cookie」的東西。這些是保存在您電腦上的小型檔案，能讓我們分析您對我們網站的使用情況。Cookie 產生的使用資訊（包括您的縮寫 IP 位址）會傳輸到我們的伺服器並保存，以便我們分析您對我們網站的使用情況，幫助我們對網站最佳化。在此過程中，您的 IP 位址會匿名化處理，因此您的使用者身分對我們而言是匿名的。由 cookie 所產生關於您使用我們網站的資訊，都不會傳輸給第三方。您可以透過網頁瀏覽器的相關設定來禁止使用 cookie。但是這可能意味著：您無法完全使用網站的所有功能。</p>\n<br />\n<p>如果您不同意保存與評估您使用本網站的資料，您可以隨時透過滑鼠點擊下方選擇退出此儲存和使用。此時，系統將保存一個名為「退出 cookie」的 cookie，來禁止 Matomo 保存任何連線階段資料。請注意：如果您刪除 cookie，退出 cookie 也會被一同刪除，之後您可能需要重新啟動。</p>\n<br />\n<h3>矛盾：</h3>",
+	"bs-matomoconnector-privacy-cookie-group-desc": "我們的網站使用 Matomo，這是一種網路分析服務。Matomo 使用一種叫做「cookie」的東西。這些是保存在您電腦上的小型檔案，能讓我們分析您對我們網站的使用情況。Cookie 產生的使用資訊（包括您的縮寫 IP 位址）會傳輸到我們的伺服器並保存，以便我們分析您對我們網站的使用情況，幫助我們對網站最佳化。在此過程中，您的 IP 位址會匿名化處理，因此您的使用者身分對我們而言是匿名的。由 cookie 所產生關於您使用我們網站的資訊，都不會傳輸給第三方。"
+}

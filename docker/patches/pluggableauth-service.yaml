@@ -12,7 +12,7 @@ hunks: 1
 anti: 'if \( isset\( \$config\[.weight.\] \) \) \{'
 stale: false
 group: ''
-upstream_version: 'BlueSpice 5.1.4 (inherited patch set)'
+upstream_version: 'BlueSpice 5.1.9 (inherited patch set)'
 regex: n/a
 why: >-
   Security-critical: part of the authentication path. Dropping it silently

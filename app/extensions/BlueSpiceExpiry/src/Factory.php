@@ -17,7 +17,6 @@ use MWStake\MediaWiki\Component\DataStore\ResultSet;
 class Factory {
 
 	/**
-	 *
 	 * @var Record[]
 	 */
 	protected $targetCache = [];
@@ -26,7 +25,6 @@ class Factory {
 	}
 
 	/**
-	 *
 	 * @param Title $title
 	 * @return bool|Record
 	 */
@@ -66,7 +64,6 @@ class Factory {
 	}
 
 	/**
-	 *
 	 * @param Title $title
 	 * @param DateTime $date
 	 * @param string $comment
@@ -89,7 +86,6 @@ class Factory {
 	}
 
 	/**
-	 *
 	 * @param DateTime|null $from
 	 * @param DateTime|null $to
 	 * @return Title[]
@@ -134,7 +130,6 @@ class Factory {
 	}
 
 	/**
-	 *
 	 * @param Record $record
 	 */
 	protected function appendCache( Record $record ) {
@@ -142,7 +137,6 @@ class Factory {
 	}
 
 	/**
-	 *
 	 * @param Title $title
 	 * @return Record|false
 	 */
@@ -154,7 +148,6 @@ class Factory {
 	}
 
 	/**
-	 *
 	 * @param Title $title
 	 * @return true
 	 */
@@ -166,7 +159,6 @@ class Factory {
 	}
 
 	/**
-	 *
 	 * @return Store
 	 */
 	protected function getStore() {

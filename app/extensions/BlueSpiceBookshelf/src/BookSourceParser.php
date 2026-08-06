@@ -13,6 +13,7 @@ use MediaWiki\Json\FormatJson;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Storage\PageUpdater;
 use MediaWiki\Title\TitleFactory;
+use MWStake\MediaWiki\Lib\Nodes\INode;
 
 class BookSourceParser extends WikitextMenuParser {
 
@@ -42,18 +43,54 @@ class BookSourceParser extends WikitextMenuParser {
 	}
 
 	/**
+	 * @inheritDoc
+	 */
+	public function addNodeAfter( INode $node, mixed $afterNode, bool $newline = true ): void {
+		$nodes = $this->parse();
+		if ( !$afterNode || empty( $nodes ) ) {
+			$this->addNode( $node, 'prepend', $newline );
+			return;
+		}
+		$nodes = $this->getChapterDataModels();
+
+		foreach ( $nodes as $nodeData ) {
+			$existingNode = $nodeData[0];
+			/** @var ChapterDataModel $existingNodeModel */
+			$existingNodeModel = $nodeData[1];
+			if ( $existingNodeModel->getNumber() === $afterNode ) {
+				// Found "after node", insert after
+				// First match, in case there are multiple
+				parent::addNodeAfter( $node, $existingNode, $newline );
+				return;
+			}
+		}
+	}
+
+	/**
 	 * @param PageUpdater $updater
 	 * @return void
 	 */
 	protected function setUpdaterSlotsOnSave( PageUpdater $updater ) {
 		parent::setUpdaterSlotsOnSave( $updater );
-		$updater->setContent( 'book_meta', $this->revision->getContent( 'book_meta' ) );
+		$metaSlot = $this->revision->hasSlot( 'book_meta' ) ?
+			$this->revision->getContent( 'book_meta' ) : new JsonContent( FormatJson::encode( [] ) );
+		$updater->setContent( 'book_meta', $metaSlot );
 	}
 
 	/**
-	 * @return DataChapterModel[]
+	 * @return ChapterDataModel[]
 	 */
 	public function getChapterDataModelArray(): array {
+		$chapters = $this->getChapterDataModels();
+		return array_map( static function ( $chapter ) {
+			return $chapter[1];
+		}, $chapters );
+	}
+
+	/**
+	 * @return array
+	 */
+	private function getChapterDataModels(): array {
 		$nodes = $this->parse();
 
 		$lastLevel = 1;
@@ -64,13 +101,13 @@ class BookSourceParser extends WikitextMenuParser {
 				continue;
 			}
 			if ( $node instanceof ChapterPlainText ) {
-				$chapters[] = new ChapterDataModel(
+				$chapters[] = [ $node, new ChapterDataModel(
 					null,
 					null,
 					$node->getNodeText(),
 					$this->buildChapterNumber( $node->getLevel(), $lastLevel, $number ),
 					ChapterDataModel::PLAIN_TEXT
-				);
+				) ];
 			} elseif ( $node instanceof ChapterWikiLinkWithAlias ) {
 				$target = $this->titleFactory->newFromText( $node->getTarget() );
 
@@ -79,13 +116,13 @@ class BookSourceParser extends WikitextMenuParser {
 					$name = $target->getText();
 				}
 
-				$chapters[] = new ChapterDataModel(
+				$chapters[] = [ $node, new ChapterDataModel(
 					$target->getNamespace(),
 					$target->getDBkey(),
 					$name,
 					$this->buildChapterNumber( $node->getLevel(), $lastLevel, $number ),
 					ChapterDataModel::WIKILINK_WITH_ALIAS
-				);
+				) ];
 			} else {
 				continue;
 			}

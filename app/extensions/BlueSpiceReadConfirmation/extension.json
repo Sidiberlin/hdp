@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceReadConfirmation",
-	"version": "5.1.4",
+	"version": "5.1.9",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"Robert Vogel",
@@ -188,7 +188,7 @@
 		"LoadExtensionSchemaUpdates": "\\BlueSpice\\ReadConfirmation\\Hook\\LoadExtensionSchemaUpdates\\AddReadConfirmationDatabase::callback",
 		"BeforePageDisplay": [
 			"\\BlueSpice\\ReadConfirmation\\Hook\\BeforePageDisplay\\AddManagePageAssignmentsIntegration::callback",
-			"\\BlueSpice\\ReadConfirmation\\Hook\\BeforePageDisplay\\AddResources::callback"
+			"addResources"
 		],
 		"PageSaveComplete": "ReadConfirmationHooks::onPageSaveComplete",
 		"NamespaceManager::getMetaFields": "ReadConfirmationHooks::onNamespaceManager_getMetaFields",
@@ -198,7 +198,8 @@
 		"UnifiedTaskOverviewGetTaskDescriptors": "addUTOReadConfirmations",
 		"SkinTemplateNavigation::Universal": "skin",
 		"NamespaceManagerBeforePersistSettings": "writeNamespaceConfiguration",
-		"StandardDialogsRegisterPageInfoPanelModules": "standard-dialogs"
+		"StandardDialogsRegisterPageInfoPanelModules": "standard-dialogs",
+		"NamespaceManagerCollectNamespaceProperties": "addNamespaceProperties"
 	},
 	"HookHandlers": {
 		"addUTOReadConfirmations": {
@@ -216,6 +217,13 @@
 		},
 		"addReadConfirmationInfoToPageAssignments": {
 			"class": "\\BlueSpice\\ReadConfirmation\\HookHandler\\AddReadConfirmationInfoToPageAssignments"
+		},
+		"addResources": {
+			"class": "\\BlueSpice\\ReadConfirmation\\Hook\\BeforePageDisplay\\AddResources",
+			"services": [ "RevisionLookup", "BSReadConfirmationMechanismFactory", "PermissionManager" ]
+		},
+		"addNamespaceProperties": {
+			"class": "\\BlueSpice\\ReadConfirmation\\HookHandler\\NamespaceManagerCollectNamespaceProperties\\AddNamespaceProperties"
 		}
 	},
 	"RestRoutes": [
@@ -252,6 +260,12 @@
 		"readconfirmationremind",
 		"readconfirmationviewconfirmations"
 	],
+	"GrantPermissions": {
+		"editprotected": {
+			"readconfirmationremind": true,
+			"readconfirmationviewconfirmations": true
+		}
+	},
 	"config_prefix": "bsgReadConfirmation",
 	"config": {
 		"Mechanism": {

@@ -98,5 +98,13 @@
 	"bs-bookshelf-sesp-books": "Bicher",
 	"bs-bookshelf-search-center-context-books-label": "{{PLURAL:$1|am Buch|an de Bicher}} '''$2'''",
 	"bs-bookshelf-newbook-dlg-action-create-label": "Uleeën",
-	"bs-bookshelf-formelement-book-input": "Buch"
+	"bs-bookshelf-formelement-book-input": "Buch",
+	"bs-books-overview-page-book-action-view-text": "Kapitelen",
+	"bs-bookshelf-newbook-dlg-title": "Neit Buch uleeën",
+	"bs-bookshelf-newbook-dlg-input-title-placeholder": "Buchtitel uleeën",
+	"bs-bookshelf-newbook-dlg-input-subtitle-placeholder": "Ënnertitel uleeën",
+	"bs-bookshelf-tag-searchinbook-error": "Gitt e gültege Buchnumm un",
+	"bs-bookshelf-actionmenuentry-create-new-book": "Neit Buch uleeën",
+	"bs-bookshelf-entrypoint-action-book-aria-label": "Buch uleeën",
+	"bs-bookshelf-entrypoint-action-book-aria-title": "Buch uleeën"
 }

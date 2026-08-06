@@ -20,10 +20,8 @@ class PageAssignmentsWikiExplorerHooks {
 		&$aFields, &$aConditions, &$aJoinConditions ) {
 		$dbr = MediaWikiServices::getInstance()->getDBLoadBalancer()
 			->getConnection( DB_REPLICA );
-		$sTablePrefix = $dbr->tablePrefix();
-		$tableName = $sTablePrefix . 'bs_pageassignments';
-		$aTables[] = "$tableName";
-		$aJoinConditions["$tableName"] = [
+		$aTables[] = 'bs_pageassignments';
+		$aJoinConditions['bs_pageassignments'] = [
 			'LEFT OUTER JOIN',
 			"page_id=pa_page_id"
 		];
@@ -130,7 +128,7 @@ class PageAssignmentsWikiExplorerHooks {
 
 		foreach ( $aRows as $iKey => $aRowSet ) {
 			$aRows[$iKey]['page_assignments'] = '';
-			if ( array_key_exists( $iKey, $aData ) ) {
+			if ( array_key_exists( $iKey, $aData ) && array_key_exists( $iKey, $aUserIds ) ) {
 				$aRows[$iKey]['page_assignments'] = Html::rawElement(
 					'ul',
 					[

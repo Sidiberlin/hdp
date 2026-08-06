@@ -9,7 +9,7 @@
 	"descriptionmsg": "collabpads-desc",
 	"license-name": "GPL-3.0-only",
 	"type": "other",
-	"version": "2.0.4",
+	"version": "2.0.9",
 	"requires": {
 		"MediaWiki": ">= 1.43.0",
 		"extensions": {
@@ -71,6 +71,11 @@
 	"AvailableRights": [
 		"collabpadsessions-admin"
 	],
+	"GrantPermissions": {
+		"editprotected": {
+			"collabpadsessions-admin": true
+		}
+	},
 	"RecentChangesFlags": {
 		"collab-edit": {
 			"letter": "collabpads-recentchangesflags-letter",
@@ -152,7 +157,7 @@
 		},
 		"lastEditInfo": {
 			"class": "MediaWiki\\Extension\\CollabPads\\HookHandler\\LastEditInfo",
-			"services": [ "DBLoadBalancer" ]
+			"services": [ "DBLoadBalancer", "ChangeTagsStore" ]
 		},
 		"addModules": {
 			"class": "MediaWiki\\Extension\\CollabPads\\HookHandler\\AddModules"
@@ -378,7 +383,7 @@
 		},
 		"bs.socket.io": {
 			"scripts": [
-				"socket.io/socket.io.min.js"
+				"lib/socket.io-client/socket.io.js"
 			]
 		},
 		"collabpad.ui.participants.styles": {
@@ -390,12 +395,25 @@
 			"scripts": [
 				"ext.collabpads.enhanced.history.js"
 			]
+		},
+		"ext.collabpads.title": {
+			"scripts": [
+				"ext.collabpads.title.js"
+			],
+			"dependencies": [
+				"ext.visualEditor.desktopArticleTarget.init"
+			],
+			"messages": [
+				"pagetitle",
+				"editing"
+			]
 		}
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "resources",
 		"remoteExtPath": "CollabPads/resources"
 	},
+	"ForeignResourcesDir": "resources/lib",
 	"Actions": {
 		"collab-edit": "EditAction"
 	},

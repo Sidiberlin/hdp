@@ -41,6 +41,25 @@ docker compose exec mediawiki bash /setup.sh
 open http://localhost:8080/w/
 ```
 
+### Or: pull the pre-built images instead of building
+
+Step 2 builds three images from source — roughly five minutes and ~5 GB of
+layers, nearly all of it the Haystack image. Those three are published to GHCR
+for each release, so you can pull them instead:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+Everything else in the Quick Start is unchanged; only step 2 differs. The
+other four services (MariaDB and the three Wikimedia PHP-FPM/Apache/jobrunner
+images) are upstream images and are pulled either way.
+
+**Building from source is the default and always works.** The override is a
+convenience, not a requirement, and nothing else in this repository depends on
+it. See [Pre-built images](#pre-built-images) for pinning, authentication and
+how the images are produced.
+
 **Login:** `Admin` / (the `HDP_ADMIN_PASSWORD` you set in `.env` or Infisical)
 
 > **Note — private by default:** BlueSpice requires login before any page
@@ -96,13 +115,104 @@ and fail with `ERR_CONNECTION_REFUSED`.
 | `mediawiki` | `docker-registry.wikimedia.org/dev/bookworm-php83-fpm:1.0.0` | PHP-FPM application server |
 | `mediawiki-web` | `docker-registry.wikimedia.org/dev/bookworm-apache2:1.0.1` | Apache reverse proxy |
 | `mediawiki-jobrunner` | `docker-registry.wikimedia.org/dev/bookworm-php83-jobrunner:1.0.0` | Background job runner |
-| `opensearch` | `opensearchproject/opensearch:2.18.0` | Search + RAG vector store |
+| `opensearch` | Custom build (`docker/opensearch/`, on `opensearchproject/opensearch:2.18.0`) | Search + RAG vector store |
 | `haystack` | Custom build (`docker/haystack/`) | Haystack RAG pipeline (hayhooks + custom FastAPI wrapper on port 1417) |
 | `chatbot-proxy` | Custom build (`docker/chatbot-proxy/`) | Bridges BlueSpice ChatBot extension's Deepset-API format to Haystack's API |
 
 Ports published to the host: `${MW_DOCKER_PORT:-8080}` (wiki),
 `${HAYHOOKS_PORT:-1416}` (hayhooks admin/docs UI), `${HDP_PDF_PORT:-1417}`
 (Haystack RAG query API, used by `chatbot-proxy` and directly testable).
+
+The last three rows are the three images this project builds; the first four
+are upstream images used unchanged. Those three are also published — see
+below.
+
+## Pre-built images
+
+The three custom images are published to the GitHub Container Registry on
+every `v*` tag by [`.github/workflows/release.yml`](.github/workflows/release.yml):
+
+| Image | Approx. size |
+|---|---|
+| `ghcr.io/sidiberlin/hdp-haystack` | 2.57 GB |
+| `ghcr.io/sidiberlin/hdp-opensearch` | 2.47 GB |
+| `ghcr.io/sidiberlin/hdp-chatbot-proxy` | 177 MB |
+
+`linux/amd64` only.
+
+### Two supported paths, and which to use
+
+**Build from source — the default.** `docker compose up -d --build`, as in the
+Quick Start. This is what CI runs, what every test tier runs, and the only
+path that picks up local changes. If you are developing on this repository,
+this is your path and the override below is not for you.
+
+**Pull the published images.** Add the override file:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+This is for operators deploying a release unchanged. It trades the ~5 minute
+build for a download, and it pins you to a published tag rather than to your
+working tree.
+
+**Requires Docker Compose ≥ 2.24.** Check with `docker compose version`.
+`docker-compose.yml` declares `build:` for these three services, and a service
+with both `build:` and `image:` is *built* rather than pulled whenever the image
+is not already local — which is exactly the five-minute build this path exists
+to avoid, with no error to explain it. The override deletes the inherited key
+with the `!reset` tag, which 2.24 introduced.
+
+On an older compose this file **fails to parse** rather than silently ignoring
+the tag, so you will see an error — it just will not mention the version. The
+fallback there is to pull explicitly before bringing the stack up:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod.yml pull
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+```
+
+### Pinning a version
+
+`docker-compose.prod.yml` defaults to the release it ships with, so a fresh
+clone gets a known-good set with no configuration. To move, set the tag in
+`.env`:
+
+```bash
+HDP_IMAGE_TAG=v5.1.9
+```
+
+`:latest` exists but deliberately does not follow a pre-release tag — `v5.1.9`
+moves it, `v5.1.9-rc1` does not. Pin explicitly for anything you care about.
+
+### Authentication
+
+GHCR packages are private when first published. If `up` or `pull` fails with
+`denied` or `unauthorized`, either the packages are still private or you are
+not logged in:
+
+```bash
+echo "$GITHUB_TOKEN" | docker login ghcr.io -u <your-github-user> --password-stdin
+```
+
+The token needs `read:packages`. Once the packages are made public, no login
+is required.
+
+### Verifying what you pulled
+
+Images published by the workflow carry OCI labels naming the commit they were
+built from:
+
+```bash
+docker image inspect ghcr.io/sidiberlin/hdp-haystack:v5.1.9 \
+  --format '{{index .Config.Labels "org.opencontainers.image.revision"}}'
+```
+
+`v5.1.9-rc1` is the exception: it was built and pushed by hand from
+`7f4aac3cb` before this workflow existed, so it carries only the labels its
+Dockerfile sets and that command prints nothing for it. Every tag published
+from `v5.1.9` onward goes through the workflow and is labelled.
 
 ## What `setup.sh` Does
 

@@ -9,7 +9,6 @@ use MediaWiki\Extension\SimpleBlogPage\Util\HtmlSnippetCreator;
 use MediaWiki\Language\Language;
 use MediaWiki\Message\Message;
 use MediaWiki\Page\PageIdentity;
-use MediaWiki\Page\PageProps;
 use MediaWiki\Permissions\Authority;
 use MediaWiki\Revision\RevisionRecord;
 use MediaWiki\Revision\RevisionRenderer;
@@ -19,6 +18,8 @@ use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\User;
 use MediaWiki\User\UserFactory;
 use MediaWiki\User\UserIdentity;
+use MWStake\MediaWiki\Component\Utils\DisplayTitleHelper;
+use MWStake\MediaWiki\Component\Utils\UtilityFactory;
 use PermissionsError;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerInterface;
@@ -29,7 +30,7 @@ use Wikimedia\Rdbms\DBError;
 use Wikimedia\Rdbms\ILoadBalancer;
 use Wikimedia\Rdbms\IResultWrapper;
 
-class BlogFactory implements LoggerAwareInterface {
+final class BlogFactory implements LoggerAwareInterface {
 
 	/** @var LoggerInterface */
 	private $logger;
@@ -46,31 +47,38 @@ class BlogFactory implements LoggerAwareInterface {
 	/** @var RevisionRenderer */
 	private $revisionRenderer;
 
-	/** @var PageProps */
-	private $pageProps;
-
 	/** @var UserFactory */
 	private $userFactory;
+
+	/** @var BlogPermissionChecker */
+	private BlogPermissionChecker $permissionChecker;
+
+	/** @var DisplayTitleHelper */
+	private DisplayTitleHelper $displayNameHelper;
+	/** @var array */
+	private array $userCache = [];
 
 	/**
 	 * @param ILoadBalancer $lb
 	 * @param TitleFactory $titleFactory
 	 * @param Language $language
 	 * @param RevisionRenderer $revisionRenderer
-	 * @param PageProps $pageProps
 	 * @param UserFactory $userFactory
+	 * @param BlogPermissionChecker $permissionChecker
+	 * @param UtilityFactory $utilityFactory
 	 */
 	public function __construct(
 		ILoadBalancer $lb, TitleFactory $titleFactory, Language $language, RevisionRenderer $revisionRenderer,
-		PageProps $pageProps, UserFactory $userFactory
+		UserFactory $userFactory, BlogPermissionChecker $permissionChecker, UtilityFactory $utilityFactory
 	) {
 		$this->lb = $lb;
 		$this->titleFactory = $titleFactory;
 		$this->language = $language;
 		$this->revisionRenderer = $revisionRenderer;
-		$this->pageProps = $pageProps;
 		$this->userFactory = $userFactory;
 		$this->logger = new NullLogger();
+		$this->permissionChecker = $permissionChecker;
+		$this->displayNameHelper = $utilityFactory->getDisplayTitleHelper();
 	}
 
 	/**
@@ -160,7 +168,9 @@ class BlogFactory implements LoggerAwareInterface {
 	 * @throws PermissionsError
 	 */
 	public function serializeForOutput( BlogEntry $entry, Authority $forUser ): array {
-		$this->assertActorCan( 'read', $forUser );
+		if ( !$this->permissionChecker->userCanRead( $forUser, $entry->getTitle() ) ) {
+			throw new PermissionsError( 'read' );
+		}
 		$rendered = $this->renderText( $entry, $forUser );
 
 		try {
@@ -269,12 +279,7 @@ class BlogFactory implements LoggerAwareInterface {
 	 * @return bool
 	 */
 	public function canUserPostInBlog( User $user, ?Title $blogRoot ): bool {
-		if ( $blogRoot && $blogRoot->getNamespace() === NS_USER_BLOG ) {
-			if ( str_replace( ' ', '_', $user->getName() ) !== $blogRoot->getDBkey() ) {
-				return false;
-			}
-		}
-		return $user->isAllowed( 'createblogpost' );
+		return $this->permissionChecker->canUserPostInBlog( $user, $blogRoot );
 	}
 
 	/**
@@ -331,30 +336,6 @@ class BlogFactory implements LoggerAwareInterface {
 	}
 
 	/**
-	 * @param string $action
-	 * @param Authority $actor
-	 * @return void
-	 * @throws PermissionsError
-	 */
-	private function assertActorCan( string $action, Authority $actor ) {
-		$rights = [];
-		switch ( $action ) {
-			case 'create':
-				$rights = [ 'createblogpost' ];
-				break;
-			case 'read':
-				$rights = [ 'read' ];
-				break;
-		}
-		if ( empty( $rights ) ) {
-			return;
-		}
-		if ( !$actor->isAllowedAll( ...$rights ) ) {
-			throw new PermissionsError( $rights[0] );
-		}
-	}
-
-	/**
 	 * @param BlogEntry $entry
 	 * @param Authority|null $forAuthority
 	 * @return string|null
@@ -378,7 +359,8 @@ class BlogFactory implements LoggerAwareInterface {
 			] );
 			throw new RuntimeException( Message::newFromKey( 'simpleblogpage-error-rendering-failed' ) );
 		}
-		return $po->getRawText();
+
+		return $this->sanitizeBlogEntryText( $po->getRawText() );
 	}
 
 	/**
@@ -387,16 +369,15 @@ class BlogFactory implements LoggerAwareInterface {
 	 */
 	private function getPageDisplayTitle( Title $title ) {
 		if ( $title->getNamespace() === NS_USER_BLOG && !$title->isSubpage() ) {
-			$user = $this->userFactory->newFromName( $title->getText() );
+			if ( !isset( $this->userCache[$title->getText()] ) ) {
+				$this->userCache[$title->getText()] = $this->userFactory->newFromName( $title->getText() );
+			}
+			$user = $this->userCache[$title->getText()];
 			if ( $user && $user->isRegistered() ) {
 				return $user->getRealName() ?: $user->getName();
 			}
 		}
-		$props = $this->pageProps->getProperties( $title, [ 'displaytitle' ] );
-		if ( isset( $props[$title->getArticleID()]['displaytitle'] ) ) {
-			return $props[$title->getArticleID()]['displaytitle'];
-		}
-		return $title->getText();
+		return $this->displayNameHelper->getDisplayTitle( $title ) ?? $title->getText();
 	}
 
 	/**
@@ -411,5 +392,23 @@ class BlogFactory implements LoggerAwareInterface {
 			return $display;
 		}
 		return substr( $blogPage, strlen( $root->getText() . '/' ) );
+	}
+
+	/**
+	 * Remove section edit links manually
+	 * Its a workaround.
+	 * There could be a fundamental bug in internal parser, because
+	 * $parserOptions->setSuppressSectionEditLinks(); is not working
+	 *
+	 * @param string $text
+	 *
+	 * @return string
+	 */
+	private function sanitizeBlogEntryText( string $text ): string {
+		// Remove mw:editsection elements (both self-closing and with content)
+		$text = preg_replace( '/<mw:editsection[^>]*>.*?<\/mw:editsection>/s', '', $text );
+		$text = preg_replace( '/<mw:editsection[^>]*\/>/s', '', $text );
+
+		return $text;
 	}
 }

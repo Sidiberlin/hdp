@@ -1,9 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
+			"GuoPC",
 			"Lakejason0"
 		]
 	},
 	"numberheadings-desc": "在内容命名空间中为标题添加编号",
-	"numberheadings-conf-exlude-namespaces": "不添加标题编号的命名空间"
+	"numberheadings-conf-exlude-namespaces": "不添加标题编号的命名空间",
+	"numberheadings-conf-enable-numbering": "显示标题编号",
+	"numberheadings-conf-enable-numbering-help": "将目录中的编号添加到页面标题中"
 }

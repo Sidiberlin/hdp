@@ -95,6 +95,10 @@ REQUIRED_FILES=(
     # T4's CI-only compose overlay: the buildx layer cache and the HuggingFace
     # model cache. `t4-smoke.sh --cache` exits 2 without it.
     docker/ci/compose.cache.yml
+    # The published-image deployment path. README-DOCKER.md's Quick Start
+    # offers it as the alternative to a ~5 minute build, so a clone without it
+    # has a documented command that fails on the file not existing.
+    docker-compose.prod.yml
     scripts/convert-docs.sh
     # convert-docs.sh exits 1 without this — it owns the page mapping, the
     # source list and the post-processor, so a clone missing it cannot

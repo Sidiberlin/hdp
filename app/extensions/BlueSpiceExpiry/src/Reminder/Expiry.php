@@ -7,7 +7,6 @@ use BlueSpice\Reminder\Reminder;
 class Expiry extends Reminder {
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getLabelMsgKey() {

@@ -9,7 +9,7 @@ the release feeds directly and compare against VERSIONS.yml.
 
 The output is an *issue*, not a pull request. There is no automatable diff for
 a vendored tree: taking a MediaWiki release here means re-vendoring 53,938
-files and re-applying 19 patches, three of which target core. A bot cannot
+files and re-applying 21 patches, three of which target core. A bot cannot
 prepare that. What it can do is make sure a human hears about it in the same
 week rather than the same year.
 
@@ -255,7 +255,7 @@ def issue_payload(report):
         "### What to do",
         "",
         "Read `docs/dev/upgrade-runbook.md`. The first step is deliberately not the",
-        "bump — it is the patch baseline, because 19 patches have to survive it and",
+        "bump — it is the patch baseline, because 21 patches have to survive it and",
         "three of them target MediaWiki core:",
         "",
         "```",

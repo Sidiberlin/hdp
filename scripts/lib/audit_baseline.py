@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Compare `composer audit` output against the accepted-advisory baseline.
 
-`composer audit --locked` on this tree reports 34 advisories across 12
-packages, two of them critical. None of those versions is this fork's choice:
-`app/composer.json` is upstream's `bluespice/core`, and the affected packages
-are transitive dependencies of MediaWiki 1.43 and BlueSpice 5.1.4. Fixing them
+`composer audit --locked` on this tree reports 8 advisories across 3 packages
+as reviewed on 2026-08-04, two of them high. None of those versions is this
+fork's choice: `app/composer.json` is upstream's
+`bluespice/core`, and the affected packages are transitive dependencies of
+MediaWiki 1.43 and BlueSpice 5.1.9, or vendored extensions of it. Fixing them
 means re-vendoring upstream, which is the upgrade process in
 docs/dev/upgrade-runbook.md — not something a contributor can do in a PR.
 
@@ -20,9 +21,11 @@ signal — "did upstream's dependency surface get worse since we last looked" �
 and it is the question `composer audit` can answer that nothing else in this
 repo can.
 
-Exit: 0 nothing new · 1 a new advisory · 2 malformed input
+Exit: 0 nothing new · 1 a new advisory, a version move, or a bad entry
+      2 malformed input
 """
 import json
+import os
 import sys
 
 SEVERITY_ORDER = {"critical": 0, "high": 1, "medium": 2, "low": 3}
@@ -133,6 +136,8 @@ def render(new, resolved, moved, problems):
         lines.append(f"  gone   {pkg} {known} is no longer reported — drop it from the baseline")
     for pkg, was, now in moved:
         lines.append(f"  moved  {pkg} was {was}, is now {now} — re-review the acceptance")
+        lines.append(f"         the reason recorded for {pkg} argues about {was} specifically;")
+        lines.append("         at a different version it is an assertion, not an assessment")
     for p in problems:
         lines.append(f"  BAD    {p}")
     return lines
@@ -175,7 +180,11 @@ def main(argv):
             previous = {}
         built = build_baseline(report, lock, previous)
         with open(baseline_path, "w", encoding="utf-8") as fh:
-            json.dump(built, fh, indent=2, sort_keys=False)
+            # ensure_ascii=False because the reasons are prose and contain em
+            # dashes and arrows. Without it every regeneration rewrites every
+            # "why" line into \uXXXX escapes, and the real change — which
+            # advisories moved — is buried in a diff nobody will read.
+            json.dump(built, fh, indent=2, sort_keys=False, ensure_ascii=False)
             fh.write("\n")
         missing = [p for p, e in built["accepted"].items() if not e["why"]]
         print(f"  wrote {baseline_path}: {len(built['accepted'])} package(s)")
@@ -189,12 +198,40 @@ def main(argv):
         print(line)
 
     total = sum(len(v) for v in normalise(report).values())
-    if new or problems:
+
+    # `moved` fails, and it did not used to. compare() found it and render()
+    # printed it, but main() returned 1 only on `new or problems`, so a package
+    # whose installed version changed under an existing acceptance went by as a
+    # line in a passing log.
+    #
+    # That is the wrong way round. These acceptances lean hard on the exact
+    # version: guzzle's is a 400-word argument about 7.12.3 — which call sites
+    # exist in this tree, that core substitutes its own CookieJar, that
+    # $wgAllowCopyUploads is off — and it is reasoning about a specific
+    # dependency surface, not about the package in general. A version move is
+    # precisely the moment that reasoning stops being known-good, which makes it
+    # the same class as a blank `why`: an acceptance nobody has actually made.
+    #
+    # `--update-baseline` rewrites `installed` and keeps the prose, so clearing
+    # this is a deliberate act — re-read the reason, then regenerate.
+    if new or problems or moved:
         print("")
-        print("  A new advisory is the signal this gate exists for. Either take the fix")
-        print("  (docs/dev/upgrade-runbook.md — the security fast path), or record the")
-        print("  acceptance with a reason:")
+        if new or problems:
+            print("  A new advisory is the signal this gate exists for. Either take the fix")
+            print("  (docs/dev/upgrade-runbook.md — the security fast path), or record the")
+            print("  acceptance with a reason:")
+        else:
+            print("  An accepted package moved version. The recorded reason was written")
+            print("  against the old one, so re-read it against the new one — then, if it")
+            print("  still holds, record the move:")
         print("    scripts/ci/composer-audit.sh --update-baseline")
+        # GitHub renders these in the job summary and against the file, which is
+        # where somebody skimming a red run actually looks.
+        if os.environ.get("GITHUB_ACTIONS"):
+            for pkg, was, now in moved:
+                print(f"::error title=Accepted advisory moved version::{pkg} was {was}, "
+                      f"is now {now} — the acceptance in {baseline_path} was reasoned "
+                      "against the old version")
         return 1
     print(f"  {total} known advisory/advisories, all accepted in "
           f"{baseline_path} (reviewed {baseline.get('reviewed', '?')})")

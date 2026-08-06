@@ -3,6 +3,7 @@
 namespace BlueSpice\Bookshelf\MenuEditor\Node;
 
 use MediaWiki\Extension\MenuEditor\Node\MenuNode;
+use MediaWiki\MediaWikiServices;
 use MediaWiki\Title\Title;
 use MediaWiki\Title\TitleFactory;
 
@@ -89,7 +90,9 @@ class ChapterWikiLinkWithAlias extends MenuNode {
 	 * @return bool
 	 */
 	protected function isLink( string $target ) {
-		return (bool)preg_match( '/^(?i:' . wfUrlProtocols() . ')/', $target );
+		return (bool)preg_match( '/^(?i:' .
+			MediaWikiServices::getInstance()->getUrlUtils()->validProtocols()
+			. ')/', $target );
 	}
 
 	/**

@@ -11,17 +11,10 @@ class PageCheckout implements IAlertProvider {
 	/** @var CheckoutManager */
 	private $manager;
 
-	/**
-	 * ApplyCheckout constructor.
-	 * @param CheckoutManager $manager
-	 */
 	public function __construct( CheckoutManager $manager ) {
 		$this->manager = $manager;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getHTML(): string {
 		$context = RequestContext::getMain();
 		if ( !$context->getTitle() || !$context->getTitle()->exists() ) {
@@ -50,9 +43,6 @@ class PageCheckout implements IAlertProvider {
 			->text();
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getType(): string {
 		return IAlertProvider::TYPE_DANGER;
 	}

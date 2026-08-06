@@ -20,10 +20,6 @@ class ApplyCheckout implements GetUserPermissionsErrorsHook {
 	/** @var CheckoutManager */
 	private $manager;
 
-	/**
-	 * ApplyCheckout constructor.
-	 * @param CheckoutManager $manager
-	 */
 	public function __construct( CheckoutManager $manager ) {
 		$this->manager = $manager;
 	}

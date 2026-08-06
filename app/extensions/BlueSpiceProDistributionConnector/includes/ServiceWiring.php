@@ -10,10 +10,7 @@ return [
 			$services->getConfigFactory()->makeConfig( 'bsg' ),
 			$services->getMainConfig(),
 			$services->getDBLoadBalancer(),
-			$services->getService( 'BlueSpiceEditionProvider' )
+			new EditionProvider()
 		);
-	},
-	'BlueSpiceEditionProvider' => static function ( MediaWikiServices $services ) {
-		return new EditionProvider();
 	},
 ];

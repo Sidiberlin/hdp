@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceRating",
-	"version": "5.1.4",
+	"version": "5.1.9",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceRating",
 	"author": "Patric Wirth",
@@ -293,6 +293,9 @@
 		"addResources": {
 			"class": "\\BlueSpice\\Rating\\Hook\\BeforePageDisplay\\AddResources",
 			"services": [ "ConfigFactory", "BSRatingRegistry", "BSRatingConfigFactory" ]
+		},
+		"addNamespaceProperties": {
+			"class": "\\BlueSpice\\Rating\\HookHandler\\NamespaceManagerCollectNamespaceProperties\\AddNamespaceProperties"
 		}
 	},
 	"Hooks": {
@@ -312,7 +315,9 @@
 		"GetDoubleUnderscoreIDs": "\\BlueSpice\\Rating\\Hook\\GetDoubleUnderscoreIDs\\AddNoRating::callback",
 		"BSMigrateSettingsSetNewSettings": "\\BlueSpice\\Rating\\Hook\\BSMigrateSettingsSetNewSettings\\SetGlobals::callback",
 		"UserMergeAccountFields": "\\BlueSpice\\Rating\\Hook\\UserMergeAccountFields\\MergeRatingDBFields::callback",
-		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface"
+		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface",
+		"NamespaceManagerCollectNamespaceProperties": "addNamespaceProperties"
+
 	},
 	"load_composer_autoloader": true,
 	"manifest_version": 2

@@ -1,8 +1,12 @@
 {
 	"@metadata": {
 		"authors": [
-			"Ykhwong"
+			"Tensama0415"
 		]
 	},
-	"numberheadings-conf-enable": "제목 번호 매기기 활성화"
+	"numberheadings-conf-enable": "제목 번호 매기기 활성화",
+	"numberheadings-desc": "콘텐츠 이름공간의 번호 문단 제목입니다",
+	"numberheadings-conf-exlude-namespaces": "문단 제목 번호 매기기에서 이름공간을 제외",
+	"numberheadings-conf-enable-numbering": "문단 제목 번호 매기기 활성화",
+	"numberheadings-conf-enable-numbering-help": "목차의 번호를 문서 문단 제목에 추가합니다"
 }

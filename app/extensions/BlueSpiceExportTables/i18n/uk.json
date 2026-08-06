@@ -3,6 +3,7 @@
 		"authors": [
 			"DDPAT",
 			"Ice bulldog",
+			"Movses",
 			"Piramidion",
 			"Vlad5250",
 			"Ата"
@@ -16,5 +17,7 @@
 	"bs-exporttables-ve-exportable-option": "Експортабельна",
 	"bs-exporttables-loading-text": "Будь ласка, зачекайте, поки генеруються дані експорту…",
 	"bs-exporttables-loading-title": "Експорт таблиці",
-	"bs-exporttables-statistics-btn-text": "Експортувати"
+	"bs-exporttables-statistics-btn-text": "Експортувати",
+	"bs-exporttables-oojs-btn-aria-label": "Експортувати",
+	"bs-exporttables-export-error": "Під час експорту таблиці сталася помилка. Спробуйте ще раз пізніше."
 }

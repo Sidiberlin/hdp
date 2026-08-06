@@ -5,8 +5,11 @@ namespace BlueSpice\Bookshelf\HookHandler;
 use BlueSpice\Bookshelf\BookInfo;
 use BlueSpice\Bookshelf\BookLookup;
 use BlueSpice\Bookshelf\BookSourceParser;
+use BlueSpice\Bookshelf\ChapterLookup;
 use BlueSpice\Bookshelf\ChapterUpdater;
 use BlueSpice\Bookshelf\Content\BookContent;
+use BlueSpice\Bookshelf\Data\BookChapters\PrimaryDataProvider as BookChaptersPrimaryDataProvider;
+use BlueSpice\Bookshelf\Data\BooksOverview\PrimaryDataProvider as BooksOverviewPrimaryDataProvider;
 use Exception;
 use ManualLogEntry;
 use MediaWiki\Content\JsonContent;
@@ -23,6 +26,7 @@ use MediaWiki\Title\TitleFactory;
 use MediaWiki\User\UserFactory;
 use MWStake\MediaWiki\Component\Wikitext\ParserFactory;
 use Psr\Log\LoggerInterface;
+use WANObjectCache;
 use Wikimedia\Rdbms\IDatabase;
 use Wikimedia\Rdbms\LoadBalancer;
 
@@ -46,6 +50,12 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 	/** @var ChapterUpdater */
 	private $chapterUpdater;
 
+	/** @var ChapterLookup */
+	private $chapterLookup;
+
+	/** @var WANObjectCache */
+	private $wanCache;
+
 	/** @var LoggerInterface */
 	private $logger = null;
 
@@ -56,11 +66,14 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 	 * @param BookLookup $bookLookup
 	 * @param UserFactory $userFactory
 	 * @param ChapterUpdater $chapterUpdater
+	 * @param ChapterLookup $chapterLookup
+	 * @param WANObjectCache $wanCache
 	 */
 	public function __construct(
 		TitleFactory $titleFactory, ParserFactory $parserFactory,
 		LoadBalancer $loadBalancer, BookLookup $bookLookup,
-		UserFactory $userFactory, ChapterUpdater $chapterUpdater
+		UserFactory $userFactory, ChapterUpdater $chapterUpdater,
+		ChapterLookup $chapterLookup, WANObjectCache $wanCache
 	) {
 		$this->titleFactory = $titleFactory;
 		$this->parserFactory = $parserFactory;
@@ -68,6 +81,8 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 		$this->bookLookup = $bookLookup;
 		$this->userFactory = $userFactory;
 		$this->chapterUpdater = $chapterUpdater;
+		$this->chapterLookup = $chapterLookup;
+		$this->wanCache = $wanCache;
 		$this->logger = LoggerFactory::getInstance( 'BSBookshelf' );
 	}
 
@@ -97,6 +112,8 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 		if ( $content instanceof BookContent || $content->isEmpty() ) {
 			$this->doSaveBookSource( $title, $revisionRecord );
 		}
+		$this->chapterLookup->invalidateChaptersOfBookCache( $title );
+		$this->invalidateDataStoreCaches( $title );
 		return true;
 	}
 
@@ -137,6 +154,8 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 			__METHOD__
 		);
 
+		$this->chapterLookup->invalidateChaptersOfBookCache( $title );
+		$this->invalidateDataStoreCaches( $title );
 		return true;
 	}
 
@@ -163,6 +182,10 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 
 		$this->moveBook( $oldBookInfo, $newBook, $db );
 
+		$this->chapterLookup->invalidateChaptersOfBookCache( $oldBook );
+		$this->chapterLookup->invalidateChaptersOfBookCache( $newBook );
+		$this->invalidateDataStoreCaches( $oldBook );
+		$this->invalidateDataStoreCaches( $newBook );
 		return true;
 	}
 
@@ -318,5 +341,18 @@ class BookActions implements MultiContentSaveHook, PageDeleteCompleteHook, PageM
 			$this->logger->error( 'onMultiContentSave: Could not create book' );
 			throw new Exception( 'onMultiContentSave: Could not create book' );
 		}
+	}
+
+	/**
+	 * Invalidate the WAN cache for BookChapters and BooksOverview data stores.
+	 *
+	 * @param Title $book
+	 */
+	private function invalidateDataStoreCaches( Title $book ): void {
+		$bookId = $this->bookLookup->getBookId( $book );
+		if ( $bookId !== null ) {
+			BookChaptersPrimaryDataProvider::invalidateCache( $this->wanCache, $bookId );
+		}
+		BooksOverviewPrimaryDataProvider::invalidateCache( $this->wanCache );
 	}
 }

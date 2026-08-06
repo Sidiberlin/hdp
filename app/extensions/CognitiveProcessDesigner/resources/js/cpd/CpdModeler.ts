@@ -1,8 +1,8 @@
 import BpmnModeler from "bpmn-js/lib/Modeler";
 import BpmnColorPickerModule from "../../../node_modules/bpmn-js-color-picker/colors/index";
-import { SaveSVGResult } from "bpmn-js/lib/BaseViewer";
-import { LoadDiagramResult, SaveDiagramResult } from "./helper/CpdApi";
-import { CpdTool } from "./CpdTool";
+import {SaveSVGResult} from "bpmn-js/lib/BaseViewer";
+import {LoadDiagramResult, SaveDiagramResult} from "./helper/CpdApi";
+import {CpdTool} from "./CpdTool";
 import CpdChangeLogger from "./helper/CpdChangeLogger";
 import CpdValidator from "./helper/CpdValidator";
 import CpdInlineSvgRenderer from "./helper/CpdInlineSvgRenderer";
@@ -10,7 +10,7 @@ import ElementRegistry from "diagram-js/lib/core/ElementRegistry";
 import bpmnlintConfig from "../../../bpmn-lint.config";
 import lintModule from 'bpmn-js-bpmnlint';
 import EventBus from "diagram-js/lib/core/EventBus";
-import { MessageType } from "./oojs-ui/SaveDialog";
+import {MessageType} from "./oojs-ui/SaveDialog";
 import CpdTranslator from "./helper/CpdTranslator";
 import CustomPaletteProvider from "./CustomPaletteProvider";
 import CustomReplaceMenuProvider from "./CustomReplaceMenuProvider";
@@ -19,6 +19,7 @@ import CpdXml from "./helper/CpdXml";
 
 class CpdModeler extends CpdTool {
 	private changeLogger: CpdChangeLogger;
+	private beforeUnloadHandler: ( e: BeforeUnloadEvent ) => void;
 
 	public constructor( process: string, container: HTMLElement, enableLinting: boolean = true ) {
 		const translator = new CpdTranslator( mw.config.get( "wgUserLanguage" ) );
@@ -58,6 +59,14 @@ class CpdModeler extends CpdTool {
 		const eventBus = this.bpmnTool.get( "eventBus" ) as EventBus;
 
 		this.changeLogger = new CpdChangeLogger( eventBus, this.elementFactory, svgRenderer );
+		this.beforeUnloadHandler = ( e: BeforeUnloadEvent ) => {
+			e.preventDefault();
+			e.returnValue = "";
+		};
+		this.changeLogger.on( "diagramChanged", () => {
+			window.addEventListener( "beforeunload", this.beforeUnloadHandler );
+		} );
+
 		const validator = new CpdValidator( eventBus );
 		validator.on( CpdValidator.VALIDATION_EVENT, this.onValidation.bind( this ) );
 
@@ -122,6 +131,8 @@ class CpdModeler extends CpdTool {
 	}
 
 	private onCancel(): void {
+		window.removeEventListener( "beforeunload", this.beforeUnloadHandler );
+
 		OO.ui.confirm( mw.message( 'cpd-cancel-confirm' ).text() )
 			.done( ( confirmed ) => {
 				if ( confirmed ) {
@@ -131,6 +142,8 @@ class CpdModeler extends CpdTool {
 	}
 
 	private async onSave( withPages: boolean ): Promise<void> {
+		window.removeEventListener( "beforeunload", this.beforeUnloadHandler );
+
 		this.xml = await this.getUpdatedXml();
 		const svgResult = await this.getSVG();
 

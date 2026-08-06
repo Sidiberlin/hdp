@@ -23,13 +23,13 @@
 		"ext-gd": "*",
 		"param-processor/param-processor": "1.12.*",
 		"composer/installers": "~1.0|~2",
-		"mwstake/mediawiki-component-commonuserinterface": "~6",
+		"mwstake/mediawiki-component-commonuserinterface": "^7.0",
 		"mwstake/mediawiki-component-runjobstrigger": "~2",
 		"mwstake/mediawiki-component-alertbanners": "~2",
 		"mwstake/mediawiki-component-manifestregistry": "~3",
 		"mwstake/mediawiki-component-utils": "~3",
-		"mwstake/mediawiki-component-datastore": "~2",
-		"mwstake/mediawiki-component-dynamicfiledispatcher": "~1.0"
+		"mwstake/mediawiki-component-datastore": "~3",
+		"mwstake/mediawiki-component-dynamicfiledispatcher": "~2.0"
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "45.0.0",

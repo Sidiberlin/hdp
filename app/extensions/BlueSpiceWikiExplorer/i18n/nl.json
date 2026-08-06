@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Mainframe98",
-			"McDutchie"
+			"McDutchie",
+			"Siebrand"
 		]
 	},
 	"bs-wikiexplorer-extension-description": "Artikelen sorteren op criterium",
@@ -18,7 +19,7 @@
 	"bs-wikiexplorer-linked-files": "Gekoppelde bestanden",
 	"bs-wikiexplorer-linked-pages": "Gekoppelde pagina's",
 	"apihelp-bs-wikiexplorer-store-param-metaLoaded": "API-parameter om aan te geven of de metagegevens al zijn geladen.",
-	"apihelp-bs-wikiexplorer-store-summary": "Voorziet in alle gegevens voor de extensie WikiExplorer",
+	"apihelp-bs-wikiexplorer-store-summary": "Voorziet in alle gegevens voor de uitbreiding WikiExplorer",
 	"bs-wikiexplorer-icon-bool-true-aria-label": "aangevinkt",
 	"bs-wikiexplorer-icon-bool-false-aria-label": "niet aangevinkt"
 }

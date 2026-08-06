@@ -15,5 +15,6 @@
 	"mergearticles-show-final-text-label": "Alle flettekonflikter har blitt løst, og den endelige teksten kan nå sees og, om nødvendig, rettes før flytting. Obs: Flettekonflikter kan ikke bli redigert lengre etter dette punktet.",
 	"apihelp-ma-merge-page-new-summary": "Fletter en kladd med en ny side",
 	"action-merge-articles": "flett denne artikkelen",
-	"mergearticles-file-info-size": "Størrelse: $1"
+	"mergearticles-file-info-size": "Størrelse: $1",
+	"mergearticles-type-category": "Kategori"
 }

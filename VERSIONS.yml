@@ -30,10 +30,10 @@
 
 # ─── The two numbers that define the release ────────────────────────
 # mw_core must equal MW_VERSION in app/includes/Defines.php.
-mw_core: '1.43.5'
+mw_core: '1.43.9'
 # bluespice is the baseline every bluespice/* package and every BlueSpice*
 # extension is expected to carry, and what publiccode.yml declares.
-bluespice: '5.1.4'
+bluespice: '5.1.9'
 
 # ─── The runtime, as the compose file and Dockerfiles state it ──────
 # php is not a tag of its own anywhere: it is encoded in the wikimedia image
@@ -49,9 +49,11 @@ python: '3.11'
 # Keyed by composer package name or by extension directory name. Each one is a
 # decision somebody made; the reason belongs in the comment.
 exceptions:
-  # Shipped one patch ahead of the rest of the 5.1.4 set by upstream BlueSpice.
-  bluespice/package-wikifarm: '5.1.5'
-  BlueSpiceWikiFarm: '5.1.5'
+  # Shipped one patch ahead of the rest of the 5.1.9 set by upstream BlueSpice.
+  # It was 5.1.5 against the 5.1.4 baseline; upstream still ships it ahead, so
+  # `5.1.*` resolves it to 5.1.10 and it stays an exception rather than a pin.
+  bluespice/package-wikifarm: '5.1.10'
+  BlueSpiceWikiFarm: '5.1.10'
 
 # ─── Track C — frozen, and permanently unmonitorable ────────────────
 # Both point at git@gitlab.hallowelt.com, which this project cannot reach.
@@ -61,7 +63,7 @@ frozen:
   hallowelt/chatbot:
     vendored_from: 'gitlab.hallowelt.com/GovTech/mediawiki-extensions-chatbot@d6ab09fb511fe8d483dab3fd2eaccd04fe73e5d5'
     version: 'dev-main'
-    owner: 'unassigned — see SECURITY.md'
+    owner: 'best-effort — see SECURITY.md'
     last_reviewed: '2026-08-03'
     why: >-
       Private GitLab, unreachable from CI. Stripped from composer.lock by
@@ -69,7 +71,7 @@ frozen:
   mediawiki/page-header:
     vendored_from: 'gitlab.hallowelt.com/BlueSpice/mediawiki-extensions-pageheader@505d0aa449e59929744be40feaaa08f5687b9737'
     version: '3.0.5'
-    owner: 'unassigned — see SECURITY.md'
+    owner: 'best-effort — see SECURITY.md'
     last_reviewed: '2026-08-03'
     why: >-
       Private GitLab, unreachable from CI. Stripped from composer.lock by
@@ -87,51 +89,51 @@ frozen:
 #
 # Regenerate with:  python3 scripts/lib/versions.py emit-extensions
 extensions:
-  AIEditingAssistant: '2.0.6'
+  AIEditingAssistant: '2.0.13'
   AbuseFilter: core
-  AdhocTranslation: '1.0.5'
+  AdhocTranslation: '1.0.12'
   Arrays: '2.2.1'
-  AtMentions: '2.0.5'
+  AtMentions: '2.0.12'
   Auth_remoteuser: '2.1.1'
   CategoryTree: core
   ChatBot: '1.0'
-  Checklists: '2.0.5'
+  Checklists: '2.0.12'
   Cite: core
   CiteThisPage: core
   CodeEditor: core
   CodeMirror: '6.0.0'
-  CognitiveProcessDesigner: '4.1.4'
-  CollabPads: '2.0.4'
+  CognitiveProcessDesigner: '4.1.9'
+  CollabPads: '2.0.9'
   CommentStreams: '9.0.5'
   ConfirmEdit: '1.6.0'
-  ContainerFilter: '2.0.5'
-  ContentDroplets: '2.0.4'
-  ContentProvisioning: '2.0.5'
-  ContentStabilization: '3.1.4'
-  ContentTransfer: '3.0.5'
+  ContainerFilter: '2.0.12'
+  ContentDroplets: '2.0.9'
+  ContentProvisioning: '2.0.12'
+  ContentStabilization: '3.1.9'
+  ContentTransfer: '3.0.12'
   CreateUserPage: '3.0'
   DataTransfer: '1.6.3'
-  DateTimeTools: '2.0.5'
+  DateTimeTools: '2.0.12'
   DiscussionTools: '0.0.0'
-  DrawioEditor: '3.0.4'
-  DynamicPageList3: '3.6.2'
+  DrawioEditor: '3.0.11'
+  DynamicPageList3: '3.6.4'
   Echo: core
   EmbedVideo: '4.0.0'
-  EnhancedStandardUIs: '2.0.4'
-  EnhancedUpload: '4.0.4'
+  EnhancedStandardUIs: '2.0.9'
+  EnhancedUpload: '4.0.9'
   EventBus: '0.5.0'
   ExternalData: '3.4-alpha'
-  FilterSpecialPages: '3.0.5'
-  FlexiSkin: '3.0.5'
+  FilterSpecialPages: '3.0.14'
+  FlexiSkin: '3.0.14'
   FontAwesome: '2.0.0'
-  Forms: '3.1.4'
+  Forms: '3.1.9'
   Gadgets: core
   HeaderFooter: '4.0.6'
   HeaderTabs: '2.3'
   HitCounters: '0.4'
   ImageMap: core
-  ImageMapEdit: '3.0.5'
-  ImportOfficeFiles: '3.1.4'
+  ImageMapEdit: '3.0.12'
+  ImportOfficeFiles: '3.1.9'
   InputBox: '0.3.0'
   Interwiki: '3.2'
   InviteSignup: '1.0.0+2021-09-01'
@@ -147,23 +149,23 @@ extensions:
   Loops: '1.0.0-beta'
   Maps: '11.0.1'
   Math: core
-  MenuEditor: '3.1.4'
-  MergeArticles: '3.0.5'
+  MenuEditor: '3.1.11'
+  MergeArticles: '3.0.12'
   Mermaid: '6.0.2'
   MultimediaViewer: core
   NSFileRepo: '3.0.6'
-  NotifyMe: '2.0.4'
+  NotifyMe: '2.0.9'
   Nuke: core
-  NumberHeadings: '2.0.5'
+  NumberHeadings: '2.0.12'
   OATHAuth: '0.5.0'
   OAuth: '1.1.0'
-  OOJSPlus: '3.1.4'
+  OOJSPlus: '3.1.9'
   OpenIDConnect: '8.3.0'
   OpenLayers: '1.0.0'
-  PDFCreator: '1.1.4'
+  PDFCreator: '1.1.9'
   PDFembed: '3.0.1'
-  PageCheckout: '3.0.5'
-  PageForms: '6.0.4'
+  PageCheckout: '3.0.14'
+  PageForms: '6.0.10'
   PageHeader: '3.0.5'
   PageImages: core
   ParserFunctions: '1.6.1'
@@ -171,45 +173,45 @@ extensions:
   PluggableAuth: '7.5.0'
   Poem: core
   Popups: core
-  PreToClip: '2.0.5'
+  PreToClip: '2.0.12'
   RSS: '2.25.1'
   Renameuser: core
   ReplaceText: '1.8'
   RevisionSlider: core
   Scribunto: core
-  SectionAnchors: '2.0.5'
+  SectionAnchors: '2.0.12'
   SecureLinkFixer: core
   SemanticCompoundQueries: '3.0.0-beta'
   SemanticExtraSpecialProperties: '4.0.0'
   SemanticMediaWiki: '6.0.1'
   SemanticResultFormats: '5.1.0'
   SemanticScribunto: '2.3.3'
-  SimpleBlogPage: '4.0.5'
+  SimpleBlogPage: '4.0.12'
   SimpleSAMLphp: '7.0.1'
-  SimpleTasks: '2.0.4'
+  SimpleTasks: '2.0.9'
   SpamBlacklist: core
-  StandardDialogs: '3.0.5'
+  StandardDialogs: '3.0.14'
   SubPageList: '3.0.1'
   SyntaxHighlight_GeSHi: '2.0'
   TabberNeue: '3.3.0'
-  TableTools: '2.0.5'
+  TableTools: '2.0.12'
   TemplateData: '0.1.2'
   TemplateStyles: '1.0'
   TextExtracts: core
   Thanks: '1.2.0'
   TitleBlacklist: '1.5.0'
   TwoColConflict: core
-  UnifiedTaskOverview: '3.0.4'
+  UnifiedTaskOverview: '3.0.9'
   UrlGetParameters: '1.6.0'
   UserFunctions: '2.8.1'
   UserMerge: '1.10.2'
-  UserProfile: '1.1.4'
+  UserProfile: '1.1.9'
   VEForAll: '0.6'
   Variables: '2.5.3'
   VisualEditor: core
-  VisualEditorPlus: '2.1.4'
-  VueJsPlus: '2.0.5'
+  VisualEditorPlus: '2.1.9'
+  VueJsPlus: '2.0.12'
   WebAuthn: '1.0.0'
   Widgets: '1.6.0'
   WikiEditor: '0.5.4'
-  Workflows: '3.1.4'
+  Workflows: '3.1.9'

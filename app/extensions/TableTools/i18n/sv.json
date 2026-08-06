@@ -1,0 +1,9 @@
+{
+	"@metadata": {
+		"authors": [
+			"Stefan2255"
+		]
+	},
+	"tabletools-desc": "Lägger till ytterligare funktioner för innehållstabeller",
+	"tabletools-ve-plugin-table-style-sticky": "Klibbig rubrik"
+}

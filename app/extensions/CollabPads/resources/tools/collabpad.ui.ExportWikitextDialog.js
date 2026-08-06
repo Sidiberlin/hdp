@@ -7,7 +7,7 @@
  * @constructor
  * @param {boolean} forceDeleteSession Force session delete; InvalidChangeDialog passes this
  */
-collabpad.ui.ExportWikitextDialog = function VeUiMwExportWikitextDialog( forceDeleteSession = false ) { // eslint-disable-line max-len
+collabpad.ui.ExportWikitextDialog = function VeUiMwExportWikitextDialog( forceDeleteSession = false ) {
 	// Initialization
 	this.forceDeleteSession = forceDeleteSession;
 	this.surface = ve.init.target.getSurface();
@@ -96,7 +96,6 @@ collabpad.ui.ExportWikitextDialog.prototype.getActionProcess = function ( action
 			} catch ( error ) {
 				console.error( 'CollabPads error: ' + error ); // eslint-disable-line no-console
 				this.popPending();
-				dfd.reject();
 			}
 		}
 		if ( action === 'close' ) {
@@ -171,7 +170,7 @@ collabpad.ui.ExportWikitextDialog.prototype.export = async function () {
  * @param {string} fullPageName
  * @param {number} delay
  */
-collabpad.ui.ExportWikitextDialog.prototype.deleteSessionRedirect = function ( fullPageName, delay ) { // eslint-disable-line max-len
+collabpad.ui.ExportWikitextDialog.prototype.deleteSessionRedirect = function ( fullPageName, delay ) {
 	const pageName = mw.config.get( 'wgTitle' );
 	mw.loader.using( [ 'ext.collabpads.api' ] ).then( () => {
 		const collabApi = new collabpads.api.Api();

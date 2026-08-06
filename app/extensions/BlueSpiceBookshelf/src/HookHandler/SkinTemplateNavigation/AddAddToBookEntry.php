@@ -4,6 +4,7 @@ namespace BlueSpice\Bookshelf\HookHandler\SkinTemplateNavigation;
 
 use MediaWiki\Hook\SkinTemplateNavigation__UniversalHook;
 use MediaWiki\Permissions\PermissionManager;
+use MediaWiki\Title\TitleFactory;
 use SkinTemplate;
 
 class AddAddToBookEntry implements SkinTemplateNavigation__UniversalHook {
@@ -11,11 +12,16 @@ class AddAddToBookEntry implements SkinTemplateNavigation__UniversalHook {
 	/** @var PermissionManager */
 	private $permissionManager;
 
+	/** @var TitleFactory */
+	private $titleFactory;
+
 	/**
 	 * @param PermissionManager $permissionManager
+	 * @param TitleFactory $titleFactory
 	 */
-	public function __construct( PermissionManager $permissionManager ) {
+	public function __construct( PermissionManager $permissionManager, TitleFactory $titleFactory ) {
 		$this->permissionManager = $permissionManager;
+		$this->titleFactory = $titleFactory;
 	}
 
 	/**
@@ -23,6 +29,7 @@ class AddAddToBookEntry implements SkinTemplateNavigation__UniversalHook {
 	 * @return bool
 	 */
 	protected function skipProcessing( SkinTemplate $sktemplate ) {
+		$user = $sktemplate->getUser();
 		$title = $sktemplate->getTitle();
 		if ( !$title->exists() ) {
 			return true;
@@ -30,7 +37,9 @@ class AddAddToBookEntry implements SkinTemplateNavigation__UniversalHook {
 		if ( !$title->isContentPage() ) {
 			return true;
 		}
-		if ( !$this->permissionManager->userCan( 'edit', $sktemplate->getUser(), $title ) ) {
+		// Check if user has right to edit in NS Book
+		$dummyBookTitle = $this->titleFactory->newFromText( 'Dummy', NS_BOOK );
+		if ( !$this->permissionManager->userCan( 'edit', $user, $dummyBookTitle ) ) {
 			return true;
 		}
 		return false;

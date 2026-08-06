@@ -254,7 +254,7 @@
 	"workflows-ui-editor-inspector-properties-additional": "Neue Eigenschaft hinzufügen",
 	"workflows-ui-editor-inspector-properties-additional-name": "Name",
 	"workflows-ui-editor-inspector-properties-additional-value": "Wert",
-	"workflows-ui-editor-inspector-activity-custom-form-title": "Custom form activity",
+	"workflows-ui-editor-inspector-activity-custom-form-title": "Benutzerdefiniertes Formular",
 	"workflows-ui-editor-inspector-activity-custom-form-form-to-use": "Zu verwendendes Formular",
 	"workflows-ui-editor-inspector-activity-custom-form-form-type": "Formulartyp",
 	"workflows-ui-editor-inspector-activity-custom-form-form-type-on-wiki": "On-wiki-Form",
@@ -368,5 +368,11 @@
 	"workflows-ui-editor-toolbar-create-end-event": "Erstellen des EndEvents",
 	"workflows-ui-editor-toolbar-create-exclusive-gateway": "Erstellen eines Gateways",
 	"workflows-ui-dialog-action-back": "Zurück",
-	"workflows-ui-dialog-action-next": "Weiter"
+	"workflows-ui-dialog-action-next": "Weiter",
+	"workflows-droplet-myopenworkflows-name": "Meine offenen Workflows",
+	"workflows-droplet-myopenworkflows-description": "Zeigt eine Liste der offenen Workflows des angemeldeten Benutzers",
+	"workflows-tag-myopenworkflows-anon": "Sie müssen angemeldet sein, um Ihre Workflows zu sehen.",
+	"workflows-tag-myopenworkflows-empty": "Sie haben keine offenen Workflows.",
+	"workflows-tag-myopenworkflows-unknown": "Unbekannter Workflow",
+	"workflows-ui-overview-details-initiator-column": "Gestartet von"
 }

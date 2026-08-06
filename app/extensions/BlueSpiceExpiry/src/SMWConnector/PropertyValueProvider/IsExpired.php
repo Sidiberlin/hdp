@@ -16,7 +16,6 @@ use SMWDIBoolean;
 class IsExpired extends PropertyValueProvider {
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getAliasMessageKey() {
@@ -24,7 +23,6 @@ class IsExpired extends PropertyValueProvider {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getDescriptionMessageKey() {
@@ -32,7 +30,6 @@ class IsExpired extends PropertyValueProvider {
 	}
 
 	/**
-	 *
 	 * @return int
 	 */
 	public function getType() {
@@ -40,7 +37,6 @@ class IsExpired extends PropertyValueProvider {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getId() {
@@ -48,7 +44,6 @@ class IsExpired extends PropertyValueProvider {
 	}
 
 	/**
-	 *
 	 * @return string
 	 */
 	public function getLabel() {
@@ -81,7 +76,6 @@ class IsExpired extends PropertyValueProvider {
 	}
 
 	/**
-	 *
 	 * @return Factory
 	 */
 	private function getFactory() {

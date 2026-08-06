@@ -1,6 +1,6 @@
 {
 	"name": "Workflows",
-	"version": "3.1.4",
+	"version": "3.1.9",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[https://www.hallowelt.com Hallo Welt! GmbH]"
@@ -201,6 +201,11 @@
 					"buckets": [ "personal" ]
 				}
 			}
+		},
+		"BlueSpiceVisualEditorConnector": {
+			"PluginModules": [
+				"ext.workflows.visualEditorPlugin.magic"
+			]
 		}
 	},
 	"callback": "MediaWiki\\Extension\\Workflows\\Extension::register",
@@ -355,6 +360,7 @@
 				"workflows-ui-overview-grid-filter-state-active",
 				"workflows-error-generic",
 				"workflows-ui-overview-details-section-assignee",
+				"workflows-ui-overview-details-initiator-column",
 				"workflows-ui-overview-details-has-notice-label",
 				"workflows-ui-overview-details-start-time-raw-column",
 				"workflows-ui-overview-details-last-time-raw-column"
@@ -671,8 +677,6 @@
 				"workflows-activity-property-username",
 				"workflows-activity-property-due_date",
 				"workflows-activity-property-groupname",
-				"workflows-uto-activity-custom_form",
-				"workflows-uto-activity-user_vote",
 				"workflows-ui-editor-inspector-activity-title",
 				"workflows-ui-editor-inspector-properties",
 				"workflows-ui-editor-inspector-properties-additional",
@@ -793,12 +797,28 @@
 				"workflows-editor-viewer-section-diagram",
 				"workflows-editor-viewer-section-xml"
 			]
+		},
+		"ext.workflows.visualEditorPlugin.magic": {
+			"scripts": [
+				"ui/plugin/MWMetaDialog.js",
+				"dm/NoWorkflowMetaItem.js",
+				"ext.workflows.visualEditorPlugin.magic.js"
+			],
+			"messages": [
+				"workflows-ui-meta-noworkflows-yes",
+				"workflows-ui-meta-noworkflows-no",
+				"workflows-ui-meta-noworkflows-label"
+			],
+			"dependencies": [
+				"ext.workflows.bootstrap"
+			]
 		}
 	},
 	"ResourceFileModulePaths": {
 		"localBasePath": "resources",
 		"remoteExtPath": "Workflows/resources"
 	},
+	"ForeignResourcesDir": "resources/lib",
 	"Hooks": {
 		"LoadExtensionSchemaUpdates": "runDatabaseUpdates",
 		"BeforePageDisplay": "addBootstrap",
@@ -811,7 +831,8 @@
 		"MWStakeCommonUIRegisterSkinSlotComponents": "common-user-interface",
 		"CodeEditorGetPageLanguage": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\IntegrateCodeEditor::onCodeEditorGetPageLanguage",
 		"PageSaveComplete": "triggerWorkflows",
-		"MovePageIsValidMove": "preventChangesToDefinitions"
+		"MovePageIsValidMove": "preventChangesToDefinitions",
+		"GetDoubleUnderscoreIDs": "addMagic"
 	},
 	"HookHandlers": {
 		"runDatabaseUpdates": {
@@ -847,11 +868,14 @@
 		},
 		"triggerWorkflows": {
 			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\TriggerWorkflows",
-			"services": [ "WorkflowTriggerRunner", "WorkflowLogger" ]
+			"services": [ "WorkflowTriggerRunner", "WorkflowLogger", "WorkflowTriggerRepo" ]
 		},
 		"preventChangesToDefinitions": {
 			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\PreventChangesToDefinitions",
 			"services": [ "WorkflowsStateStore" ]
+		},
+		"addMagic": {
+			"class": "MediaWiki\\Extension\\Workflows\\MediaWiki\\Hook\\AddMagic"
 		}
 	},
 	"ContentHandlers": {
@@ -876,6 +900,17 @@
 		"workflows-execute",
 		"workflows-admin"
 	],
+	"GrantPermissions": {
+		"basic": {
+			"workflows-view": true
+		},
+		"editpage": {
+			"workflows-execute": true
+		},
+		"editprotected": {
+			"workflows-admin": true
+		}
+	},
 	"RestRoutes": [
 		{
 			"path": "/workflow/list",
@@ -1006,7 +1041,8 @@
 		}
 	},
 	"ExtensionMessagesFiles": {
-		"WorkflowsOverviewAlias": "languages/SpecialWorkflowOverview.alias.php"
+		"WorkflowsOverviewAlias": "languages/SpecialWorkflowOverview.alias.php",
+		"WorkflowsMagic": "languages/Workflows.magic.php"
 	},
 	"DefaultUserOptions": {
 		"echo-subscriptions-email-workflow-cat": 1

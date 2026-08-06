@@ -73,6 +73,18 @@ fail() { printf '\033[0;31mT3 FAILED: %s\033[0m\n' "$*" >&2; }
 command -v docker >/dev/null 2>&1 || { fail "no docker on PATH"; exit 2; }
 docker compose version >/dev/null 2>&1 || { fail "docker compose v2 is required"; exit 2; }
 
+# T3 boots the same opensearch T4 does, so it has the same failure mode: past
+# the flood-stage watermark the index goes read-only, setup.sh still reports
+# success, and the job fails much later with assertions that point at the wrong
+# thing. T4 has had this guard since run 30882658336; T3 did not, and only the
+# probability differs.
+#
+# 8 and 14 are T4's measured 12 and 20 less the haystack image (2.5 GB) and its
+# model weights (1.7 GB), which this tier does not pull. Derived, not measured —
+# no T3 run has failed on disk yet. If one ever does, replace these with the
+# numbers from it, the way hdp_disk_required_kb's defaults were replaced.
+hdp_require_disk T3 8 14 "${HDP_T3_MIN_DISK_GB:-}" HDP_T3_MIN_DISK_GB || exit 2
+
 SETUP_LOG="$(mktemp -t hdp-setup-XXXXXX.log)"
 CREATED_ENV=0
 

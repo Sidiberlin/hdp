@@ -15,7 +15,7 @@
 	"require": {
 		"composer/installers": "~1.0|~2",
 		"phpoffice/phpword": "~0.18",
-		"mwstake/mediawiki-component-processmanager": "~3"
+		"mwstake/mediawiki-component-processmanager": "~5"
 	},
 	"require-dev": {
 		"mediawiki/mediawiki-codesniffer": "45.0.0",

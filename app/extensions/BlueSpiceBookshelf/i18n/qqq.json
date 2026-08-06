@@ -195,5 +195,12 @@
 	"bs-bookshelf-search-center-context-books-label": "Label for the search context field.\n$1 - number of books to search in, $2 - book names",
 	"bs-bookshelf-newbook-dlg-action-create-label": "Label for dialog action button to create dialog.\n{{Identical|Create}}",
 	"bs-bookshelf-formelement-book-input": "Form element label",
-	"bs-bookshelf-formelement-book-input-return-value-label": "Configuration item label for form element"
+	"bs-bookshelf-formelement-book-input-return-value-label": "Configuration item label for form element",
+	"bs-bookshelf-searchbook-ve-placeholder-label": "Label for input field to set placeholder label",
+	"bs-bookshelf-searchbook-ve-placeholder-help": "Help text for input field to set placeholder label",
+	"bs-bookshelf-searchbook-ve-placeholder-text": "Placeholder text for input field",
+	"bs-bookshelf-droplet-search-book-label": "Label for input field to select book to search in",
+	"bs-bookshelf-entrypoint-action-book-aria-label": "Aria label for entrypoint action to create a new book",
+	"bs-bookshelf-entrypoint-action-book-aria-title": "Title for entrypoint action to create a new book",
+	"bs-bookshelf-add-to-book-warning-new-book": "Warning message when adding a page to a book that has not been created yet."
 }

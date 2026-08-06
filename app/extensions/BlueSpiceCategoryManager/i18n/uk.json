@@ -5,6 +5,7 @@
 			"Ice bulldog",
 			"Movses",
 			"Piramidion",
+			"Repakr",
 			"Vlad5250",
 			"Ата",
 			"Пан Хаунд"
@@ -29,5 +30,18 @@
 	"bs-categorymanager-rename-category": "Перейменувати категорію",
 	"bs-categorymanager-rename-category-new-name": "Нова назва категорії",
 	"bs-categorymanager-statistics-report-category-pages": "Сторінки у категоріях",
-	"bs-categorymanager-statistics-report-category-pages-axis-value": "Кількість сторінок"
+	"bs-categorymanager-statistics-report-category-pages-axis-value": "Кількість сторінок",
+	"bs-categorymanager-statistics-report-category-pages-desc": "Кількість сторінок у категорії за обраний період та інтервал, відсортованих за простором назв",
+	"bs-categorymanager-dialog-action-add-label": "Додати",
+	"bs-categorymanager-removecategory-confirm": "Категорію $1 вилучено",
+	"bs-categorymanager-dialog-create-category-placeholder": "Додати нову категорію",
+	"bs-categorymanager-add-category-label": "Назва категорії",
+	"bs-configmanager-tool-create-category-label": "Створити категорію",
+	"bs-categorymanager-movecategory-confirm": "Категорію $1 перейменовано",
+	"bs-categorymanager-category-item-rename-label": "Перейменувати",
+	"bs-categorymanager-category-item-view-label": "Переглянути сторінку категорії",
+	"bs-categorymanager-category-item-delete-label": "Вилучити",
+	"bs-categorymanager-dlg-add-title": "Додати категорію",
+	"bs-categorymanager-dialog-action-rename-label": "Перейменувати",
+	"bs-categorymanager-dlg-create-category-exists-label": "Категорія з цією назвою вже існує. Будь ласка, оберіть іншу назву."
 }

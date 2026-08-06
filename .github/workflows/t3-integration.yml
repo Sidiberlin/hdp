@@ -42,6 +42,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Same reclaim as t4-smoke.yml, and for the same reason: this job boots
+      # the same OpenSearch, and past the flood-stage watermark the index goes
+      # read-only, setup.sh still reports success, and the job fails much later
+      # with assertions that point somewhere else. T3 pulls less than T4, so it
+      # has more headroom — but "more headroom" is not a guard, and the script's
+      # own HDP_T3_MIN_DISK_GB precondition is what fails fast if this step ever
+      # stops being enough.
+      #
+      # /opt/hostedtoolcache is left alone on purpose: the pytest step below
+      # resolves python3 and pip through it.
+      - name: Reclaim runner disk
+        run: |
+          echo "before:"
+          df -h / /var/lib/docker 2>/dev/null || df -h /
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+                      /usr/local/share/boost /usr/share/swift || true
+          sudo docker image prune -af >/dev/null 2>&1 || true
+          echo "after:"
+          df -h / /var/lib/docker 2>/dev/null || df -h /
+
       # The integration tier is standard library only — no requests, no
       # haystack, nothing to install beyond pytest itself. That is the whole
       # reason this job's dependencies are just docker and python3.

@@ -10,5 +10,6 @@
 	"mergearticles-file-info-name": "Namma: $1",
 	"mergearticles-file-diff-header": "Fiila",
 	"mergearticles-term-filter-label": "Siidonamma",
-	"mergearticles-file-info-size": "Sturrodat: $1"
+	"mergearticles-file-info-size": "Sturrodat: $1",
+	"mergearticles-type-category": "Kategoriija"
 }

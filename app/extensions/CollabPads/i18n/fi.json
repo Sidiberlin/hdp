@@ -10,5 +10,6 @@
 	"collabpads-save-dialog-watch-page": "Tarkkaile tätä sivua",
 	"collabpads-dialog-cancel-button": "Peruuta",
 	"collabpads-save-complete-notif": "Sivu tallennettu",
-	"collabpads-invalid-change-dialog-save-button": "Tallenna"
+	"collabpads-invalid-change-dialog-save-button": "Tallenna",
+	"collabpads-toolbar-save-button": "Tallenna muutokset…"
 }

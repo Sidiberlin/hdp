@@ -107,7 +107,7 @@ class BookmarksXMLBuilder extends DefaultBookmarksXMLBuilder {
 			$pageLabel = str_replace( trim( $label, ' ' ), '', $pageLabel );
 			$label .= trim( $pageLabel, ' ' );
 		}
-		return $label;
+		return htmlspecialchars( $label );
 	}
 
 	/**

@@ -197,5 +197,11 @@
 	"bs-bookshelf-search-center-context-books-label": "{{PLURAL:$1|im Buch|in Bücher}} '''$2'''",
 	"bs-bookshelf-newbook-dlg-action-create-label": "Erstellen",
 	"bs-bookshelf-formelement-book-input": "Buch",
-	"bs-bookshelf-formelement-book-input-return-value-label": "Rückgabeeigenschaft"
+	"bs-bookshelf-formelement-book-input-return-value-label": "Rückgabeeigenschaft",
+	"bs-bookshelf-searchbook-ve-placeholder-label": "Platzhaltertext für Suchfeld",
+	"bs-bookshelf-searchbook-ve-placeholder-help": "Der hier angegebene Text wird als Platzhalter im Suchfeld angezeigt",
+	"bs-bookshelf-searchbook-ve-placeholder-text": "Zum Suchen tippen...",
+	"bs-bookshelf-droplet-search-book-label": "Buch für die Suche auswählen",
+	"bs-bookshelf-entrypoint-action-book-aria-label": "Buch erstellen",
+	"bs-bookshelf-entrypoint-action-book-aria-title": "Buch erstellen"
 }

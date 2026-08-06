@@ -116,5 +116,9 @@
 	"bs-bookshelf-newbook-dlg-input-image-select-placeholder": ">Elige la imagen existente",
 	"bs-books-overview-page-book-action-metadata-text": "Editar metadatos",
 	"bs-books-overview-page-book-action-metadata-title": "Editar metadatos para el libro $1",
-	"bs-bookshelf-massadd-dlg-save-action-label": "Añadir"
+	"bs-bookshelf-massadd-dlg-save-action-label": "Añadir",
+	"bs-bookshelf-searchbook-ve-placeholder-label": "Texto de marcador de posición para el campo de búsqueda",
+	"bs-bookshelf-searchbook-ve-placeholder-help": "El texto que se muestra aquí es solo un marcador de posición en el campo de búsqueda.",
+	"bs-bookshelf-searchbook-ve-placeholder-text": "Escriba para buscar...",
+	"bs-bookshelf-droplet-search-book-label": "Seleccione un libro para buscar"
 }

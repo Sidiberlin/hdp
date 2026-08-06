@@ -1,0 +1,12 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ucukor"
+		]
+	},
+	"contentstabilization-ui-approve-cancel": "Скасаваць",
+	"content-stabilization-integration-activity-error-context-data-missing": "брак \"pageId\"",
+	"contentstabilization-export-stablerevisiondate-tag-text": "Вэрсія: $1",
+	"contentstabilization-overview-header-status": "Стан",
+	"contentstabilization-versionhistory-grid-header-state": "Стан"
+}

@@ -3,7 +3,8 @@
 		"authors": [
 			"HanV",
 			"McDutchie",
-			"Rots61"
+			"Rots61",
+			"Siebrand"
 		]
 	},
 	"bs-prodistributionconnector-desc": "Verbindt BlueSpice met verscheidene MediaWiki-uitbreidingen",
@@ -64,13 +65,13 @@
 	"bs-pro-distribution-droplet-embed-desc": "Externe inhoud van Git-repository’s insluiten, bv. Markdown-bestanden",
 	"bs-pro-distribution-droplet-bitbucket-name": "BitBucket-bestand",
 	"bs-pro-distribution-droplet-bitbucket-desc": "Bestand insluiten vanuit de BitBucket-repository",
-	"bs-pro-distribution-droplet-ec-embed-url-label": "URL",
+	"bs-pro-distribution-droplet-ec-embed-url-label": "Url",
 	"bs-pro-distribution-droplets-ec-embed-render-label": "Markdown weergeven",
 	"bs-pro-distribution-droplets-ec-embed-lang-label": "Taal van ingebedde inhoud",
 	"bs-pro-distribution-droplets-ec-embed-lang-help": "Een van de [https://prismjs.com/#supported-languages ondersteunde talen]. Alleen nodig als de taal niet kan worden afgeleid van de bestandsnaamextensie.",
-	"bs-pro-distribution-droplets-ec-embed-show-lines-label": "Te tonen regels",
-	"bs-pro-distribution-droplets-ec-embed-show-lines-help": "Alleen bepaalde regels weergeven. Dat kan een enkel regelnummer zijn of een bereik, gescheiden door een koppelteken (-). Meerdere regelnummers of bereiken kunnen door komma’s worden gescheiden.",
-	"bs-pro-distribution-droplets-ec-embed-show-line-numbers-label": "Regelnummers tonen",
+	"bs-pro-distribution-droplets-ec-embed-show-lines-label": "Weer te geven regels",
+	"bs-pro-distribution-droplets-ec-embed-show-lines-help": "Alleen specifieke regels weergeven. Dat kan een enkel regelnummer zijn of een bereik, gescheiden door een koppelteken (-). Meerdere regelnummers of bereiken kunnen door komma’s worden gescheiden.",
+	"bs-pro-distribution-droplets-ec-embed-show-line-numbers-label": "Regelnummers weergeven",
 	"bs-pro-distribution-ec-config-domain-whitelist": "Toegestane domeinen",
 	"bs-pro-distribution-ec-config-file-whitelist": "Toegestane bestandsnaamextensies",
 	"bs-pro-distribution-ec-config-file-whitelist-help": "Lijst met toegestane bestandsnaamextensies. Laat leeg om geen beperkingen in te stellen.",

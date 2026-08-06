@@ -1,6 +1,6 @@
 {
 	"name": "Forms",
-	"version": "3.1.4",
+	"version": "3.1.9",
 	"license-name": "GPL-3.0-only",
 	"author": [
 		"[https://www.hallowelt.com Hallo Welt! GmbH]"
@@ -79,6 +79,9 @@
 	],
 	"AutoloadNamespaces": {
 		"MediaWiki\\Extension\\Forms\\": "src/"
+	},
+	"TestAutoloadNamespaces": {
+		"MediaWiki\\Extension\\Forms\\Tests\\": "tests/phpunit/"
 	},
 	"ContentHandlers": {
 		"FormDefinition": "MediaWiki\\Extension\\Forms\\ContentHandler\\FormDefinitionHandler",
@@ -262,7 +265,10 @@
 				"forms-editor-group-empty-help",
 				"forms-editor-toolbar-done",
 				"forms-form-editor-form-props-summary-label",
-				"forms-form-editor-form-props-summary-placeholder"
+				"forms-form-editor-form-props-summary-placeholder",
+				"forms-form-editor-prop-target-json-wikipage-predefined-title",
+				"forms-form-editor-prop-target-json-wikipage-predefined-title-help",
+				"forms-form-editor-prop-target-json-wikipage-predefined-title-ph"
 			],
 			"dependencies": [
 				"ext.forms.init",
@@ -295,6 +301,10 @@
 		},
 		"setupContentModels": {
 			"class": "MediaWiki\\Extension\\Forms\\HookHandler\\SetupContentModels"
+		},
+		"setCategoryManipulator": {
+			"class": "MediaWiki\\Extension\\Forms\\HookHandler\\SetCategoryManipulator",
+			"services": [ "RevisionLookup", "WikiPageFactory" ]
 		}
 	},
 	"Hooks": {
@@ -307,7 +317,8 @@
 			"addFormRevisionTable"
 		],
 		"BlueSpiceDiscoveryTemplateDataProviderAfterInit": "addContentActionsDiscovery",
-		"MediaWikiServices": "setupContentModels"
+		"MediaWikiServices": "setupContentModels",
+		"BlueSpiceInsertCategoryGetCategoryManipulator": "setCategoryManipulator"
 	},
 	"manifest_version": 2,
 	"load_composer_autoloader": true

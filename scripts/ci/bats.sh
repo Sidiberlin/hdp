@@ -2,9 +2,11 @@
 # ============================================================
 # Wave 2 — the bats runner.
 #
-# Two suites:
+# Three suites:
 #   infisical_loader.bats  docker/infisical-loader.sh — the Wave 0 security fixes
 #   upgrade_report.bats    verify-patches.sh --upgrade-report — every state
+#   t4_disk_guard.bats     scripts/ci/lib/stack.sh — the T4 free-space maths,
+#                          pinned to the two runs that produced the numbers
 #
 # docker/setup.sh is the other obvious candidate and is not testable at this
 # level: 557 lines, `set -euo pipefail`, `cd "$MW"` on line 18, and a
@@ -56,8 +58,22 @@ have_docker() { have docker && docker info >/dev/null 2>&1; }
 [ -d "$TEST_DIR" ] || { echo "  $TEST_DIR does not exist"; exit 77; }
 
 # A host bats is a convenience, not the source of truth — same posture
-# check.sh takes for ruff. It also needs jq, which the image installs itself.
-if have bats && have jq; then
+# check.sh takes for ruff.
+#
+# The tool list is the same one the docker branch installs below, and it has to
+# be: this path checked only for bats and jq, so a host with those two and no
+# `patch` ran upgrade_report.bats against a missing tool and failed "on the tool
+# rather than on the behaviour" — which is the exact thing the docker branch's
+# own comment says it installs them to prevent. A host missing one of them now
+# falls through to docker instead of failing.
+HOST_TOOLS="bats jq python3 patch"
+host_ready() {
+    local t
+    for t in $HOST_TOOLS; do have "$t" || return 1; done
+    return 0
+}
+
+if host_ready; then
     v="$(bats --version 2>/dev/null | awk '{print $2}')"
     if [ -n "$v" ] && [ "$v" != "$BATS_PINNED_VERSION" ]; then
         echo "note: host bats $v differs from the pinned $BATS_PINNED_VERSION"
@@ -66,7 +82,13 @@ if have bats && have jq; then
 fi
 
 if ! have_docker; then
-    echo "  no bats+jq on PATH and no usable docker"
+    missing=""
+    for t in $HOST_TOOLS; do have "$t" || missing="$missing $t"; done
+    # Name what is missing. "no bats+jq" sent people to install bats when the
+    # gap was `patch`.
+    echo "  no usable docker, and the host is missing:$missing"
+    echo "  (the suite needs$(printf ' %s' $HOST_TOOLS) — python3 for read-manifest.py"
+    echo "  and patch for the diff-mode probe in the upgrade report)"
     exit 77
 fi
 

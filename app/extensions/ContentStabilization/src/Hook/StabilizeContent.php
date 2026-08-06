@@ -144,6 +144,7 @@ class StabilizeContent implements
 	public function onArticleViewHeader( $article, &$outputDone, &$pcache ) {
 		$start = microtime( true );
 		$this->setViewFromArticle( $article );
+
 		if ( !$this->view ) {
 			return;
 		}
@@ -186,6 +187,7 @@ class StabilizeContent implements
 		$parserOutput->setRevisionTimestampUsed( $revisionUsed->getTimestamp() );
 		$parserOutput->setCacheRevisionId( $revisionUsed->getId() );
 		$parserOutput->setRevisionUsedSha1Base36( $revisionUsed->getSha1() );
+		$parserOutput->setExtensionData( 'stabilization-state', $this->view->getStatus() );
 
 		$pageTitle = $this->titleFactory->castFromPageIdentity( $revisionUsed->getPage() );
 		$this->hookContainer->run(
@@ -424,6 +426,7 @@ class StabilizeContent implements
 	 * @return void
 	 */
 	private function setViewFromArticle( Article $article ) {
+		$this->processedInclusions = [];
 		if ( $article->getContext()->getRequest()->getBool( 'nostabilize' ) ) {
 			$this->view = null;
 			return;
@@ -469,13 +472,13 @@ class StabilizeContent implements
 	 * @inheritDoc
 	 */
 	public function onMediaWikiPerformAction( $output, $article, $title, $user, $request, $mediaWiki ) {
-		if ( !$this->lookup->isStabilizationEnabled( $title ) ) {
+		if ( !$title->exists() || !$this->lookup->isStabilizationEnabled( $title ) ) {
 			return true;
 		}
-		$this->setViewFromArticle( $article );
 
 		$action = $request->getText( 'veaction', $request->getText( 'action', 'view' ) );
 		if ( $action === 'edit' || $action === 'editsource' ) {
+			$this->setViewFromArticle( $article );
 			if ( $request->getBool( 'nostabilize' ) || !$this->shouldSwitchToLatestForEdit( $title, $user ) ) {
 				return true;
 			}
@@ -485,6 +488,7 @@ class StabilizeContent implements
 		}
 
 		if ( $action === 'raw' ) {
+			$this->setViewFromArticle( $article );
 			if (
 				$this->view && $this->view->getRevision() &&
 				( $this->view->getStatus() === StableView::STATE_STABLE || $this->lookup->canUserSeeUnstable( $user ) )
@@ -496,6 +500,18 @@ class StabilizeContent implements
 			}
 		}
 		return true;
+	}
+
+	/**
+	 * Internal hook, for resetting state between test assertions.
+	 * Normally, there wouldn't be multiple users and multiple page states evaluated per request
+	 * but in tests that is the case, so we need to externally reset state.
+	 *
+	 * @return void
+	 */
+	public function onContentStabilizationResetState(): void {
+		$this->view = null;
+		$this->processedInclusions = [];
 	}
 
 	/**
@@ -600,7 +616,11 @@ class StabilizeContent implements
 			if ( $renderedRev ) {
 				$text = $renderedRev->getRevisionParserOutput()->runOutputPipeline( $options )->getContentHolderText();
 				// Remove wrapping in <div class="mw-parser-output">...</div>
-				$text = preg_replace( '/^<div class="mw-parser-output">(.*)<\/div>$/s', '$1', $text );
+				$text = preg_replace(
+					'/^<div[^>]*class="[^"]*\bmw-parser-output\b[^"]*"[^>]*>(.*)<\/div>$/s',
+					'$1',
+					$text
+				);
 				$parserOutput->setRawText( $text );
 			}
 			$this->allowParserOutputAlteration = true;

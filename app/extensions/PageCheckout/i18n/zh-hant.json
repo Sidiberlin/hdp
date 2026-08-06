@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Kly"
+			"Kly",
+			"LowensteinYang"
 		]
 	},
 	"pagecheckout-desc": "允許給使用者在頁面上的獨占權限",
@@ -22,8 +23,8 @@
 	"pagecheckout-ui-clear-confirm": "確認要清除此頁面上的有效簽出嗎？這會讓所有正常符合資格的使用者都可以編輯頁面",
 	"log-name-pagecheckout": "頁面簽出",
 	"log-description-pagecheckout": "追蹤頁面簽出和簽入的狀態",
-	"logentry-pagecheckout-checkin": "$1{{GENDER:$2|簽入了}}已為使用者$4簽出的頁面$3",
-	"logentry-pagecheckout-checkout": "$1已替使用者$4{{GENDER:$2|簽出}}頁面$3",
+	"logentry-pagecheckout-checkin": "$1{{GENDER:$2|鎖住了}}已為使用者$4簽出的頁面$3",
+	"logentry-pagecheckout-checkout": "$1已替使用者$4{{GENDER:$2|鎖住}}頁面$3",
 	"pagecheckout-alertbanner-checkout": "目前此頁面已替$2{{GENDER:$1|簽出}}",
 	"action-page-checkout-clear": "清除頁面簽出",
 	"right-page-checkout-clear": "清除頁面簽出",

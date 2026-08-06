@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sabelöga"
+			"Sabelöga",
+			"Stefan2255"
 		]
 	},
 	"bs-player-extension-description": "Bäddar in en mediespelare på en sida.",
@@ -9,5 +10,6 @@
 	"bs-player-file-does-not-exist": "Filen finns inte.",
 	"bs-player-unsupported-type": "Den här filtypen stöds inte.",
 	"bs-player-config-prefwidth": "Standardbredd för videor",
-	"bs-player-config-prefheight": "Standardhöjd för videor"
+	"bs-player-config-prefheight": "Standardhöjd för videor",
+	"prefs-videoplayer": "Videospelare"
 }

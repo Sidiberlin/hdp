@@ -1,6 +1,6 @@
 {
 	"name": "BlueSpiceBookshelf",
-	"version": "5.1.4",
+	"version": "5.1.9",
 	"license-name": "GPL-3.0-only",
 	"url": "https://en.wiki.bluespice.com/wiki/Reference:BlueSpiceBookshelf",
 	"author": [
@@ -358,7 +358,8 @@
 				"bs-bookshelf-add-to-book-label-chapter",
 				"bs-bookshelf-chapter-insertion-btn-move-up",
 				"bs-bookshelf-chapter-insertion-btn-move-down",
-				"bs-bookshelf-chapter-insertion-clear-btn-label"
+				"bs-bookshelf-chapter-insertion-clear-btn-label",
+				"bs-bookshelf-add-to-book-warning-new-book"
 			],
 			"dependencies": [
 				"ext.bluespice",
@@ -887,7 +888,7 @@
 		},
 		"addAddToBookEntry": {
 			"class": "\\BlueSpice\\Bookshelf\\HookHandler\\SkinTemplateNavigation\\AddAddToBookEntry",
-			"services": [ "PermissionManager" ]
+			"services": [ "PermissionManager", "TitleFactory" ]
 		},
 		"addEditBook": {
 			"class": "\\BlueSpice\\Bookshelf\\HookHandler\\SkinTemplateNavigation\\AddEditBook"
@@ -898,7 +899,7 @@
 		},
 		"book-source-actions": {
 			"class": "\\BlueSpice\\Bookshelf\\HookHandler\\BookActions",
-			"services": [ "TitleFactory", "MWStakeWikitextParserFactory", "DBLoadBalancer", "BSBookshelfBookLookup", "UserFactory", "BSBookshelfChapterUpdater" ]
+			"services": [ "TitleFactory", "MWStakeWikitextParserFactory", "DBLoadBalancer", "BSBookshelfBookLookup", "UserFactory", "BSBookshelfChapterUpdater", "BSBookshelfBookChapterLookup", "MainWANObjectCache" ]
 		},
 		"book-content-default-mode": {
 			"class": "\\BlueSpice\\Bookshelf\\HookHandler\\SetBookContentHandler"
@@ -930,12 +931,17 @@
 		},
 		"addPDFTemplates": {
 			"class": "\\BlueSpice\\Bookshelf\\Hook\\LoadExtensionSchemaUpdates\\AddPDFTemplates"
+		},
+		"set-book-name": {
+			"class": "\\BlueSpice\\Bookshelf\\HookHandler\\SetBookName",
+			"services": [ "BSBookshelfBookLookup" ]
 		}
 	},
 	"Hooks": {
 		"BeforePageDisplay": [
 			"\\BlueSpice\\Bookshelf\\Hook\\BeforePageDisplay\\AddResources::callback",
-			"add-chapter-number-to-title-and-headings"
+			"add-chapter-number-to-title-and-headings",
+			"set-book-name"
 		],
 		"ContentHandlerDefaultModelFor": "book-content-default-mode",
 		"MediaWikiServices": "book-content-default-mode",
@@ -980,7 +986,13 @@
 			"method": "GET",
 			"path": "/bookshelf/metadata/{booktitle}",
 			"class": "\\BlueSpice\\Bookshelf\\Rest\\GetBookMetadata",
-			"services": [ "TitleFactory", "BSBookshelfBookMetaLookup" ]
+			"services": [ "TitleFactory", "BSBookshelfBookLookup", "BSBookshelfBookMetaLookup" ]
+		},
+		{
+			"method": "GET",
+			"path": "/bookshelf/info/{booktitle}",
+			"class": "\\BlueSpice\\Bookshelf\\Rest\\GetBookInfo",
+			"services": [ "TitleFactory", "BSBookshelfBookLookup", "BSBookshelfBookMetaLookup" ]
 		},
 		{
 			"method": "GET",

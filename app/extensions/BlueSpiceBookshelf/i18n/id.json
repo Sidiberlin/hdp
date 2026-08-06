@@ -1,6 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
+			"Fafau06",
+			"Penyuwangi",
 			"Rebeccayoga",
 			"Syman51",
 			"Veracious"
@@ -10,7 +12,7 @@
 	"bs-bookshelf-ve-booklistinspector-title": "Daftar buku",
 	"bs-bookshelf-ve-booklist-attr-filter-label": "Saring",
 	"bs-bookshelf-ve-booklist-attr-filter-help": "Saring dengan metadata didalam format key:value, contoh judul:handbook",
-	"bs-bookshelf-tag-bookmeta-description": "Tag digunakan untuk menyimpan variasi meta data di halaman buku. Itu ada di dalam buku. Atribusi tag ini harus korelasi dengan meta data halaman buku",
+	"bs-bookshelf-tag-bookmeta-description": "Tanda untuk menyimpan berbagai metadata pada halaman buku. Metadata ini disertakan dalam buku. Atribut tanda ini harus berkorelasi dengan metadata halaman buku.",
 	"bs-bookshelf-ve-bookmetainspector-title": "Metabuku",
 	"bs-bookshelf-ve-bookmeta-attr-title-label": "Judul",
 	"bs-bookshelf-ve-bookmeta-attr-subtitle-label": "Subjudul",
@@ -21,5 +23,6 @@
 	"bs-bookshelf-ve-bookmeta-attr-version-help": "Atur versi buku",
 	"bs-bookshelf-ve-bookshelf-attr-book-label": "Buku",
 	"bs-bookshelf-ve-bookshelf-attr-book-help": "Pertahankan buku kepada",
-	"bs-bookshelf-actionmenuentry-new-book": "Buku baru"
+	"bs-bookshelf-actionmenuentry-new-book": "Buku baru",
+	"bs-bookshelf-searchbook-ve-placeholder-text": "Ketik untuk mencari..."
 }

@@ -124,16 +124,139 @@ def test_the_committed_baseline_is_complete():
 
 
 def test_the_fixable_ones_stay_marked():
-    """These four are fixable by re-vendoring, and the runbook reads this file.
+    """This one is fixable by re-vendoring, and the runbook reads this file.
 
-    If an upgrade drops one of them, delete the entry — do not quietly drop
-    the marker while still carrying the vulnerable version.
+    If an upgrade drops it, delete the entry — do not quietly drop the marker
+    while still carrying the vulnerable version.
+
+    It was four before the 1.43.9 / 5.1.9 upgrade. That upgrade closed three:
+    phpoffice/phpspreadsheet (1.30.1 -> 1.30.6), phpseclib/phpseclib
+    (3.0.48 -> 3.0.56) and universal-omega/dynamic-page-list3
+    (3.6.2.1+BlueSpice511 -> 3.6.4). mediawiki/maps is the one that survived,
+    and it cannot be fixed inside the 5.1 series at all: CVE-2026-52854 is
+    fixed in 12.1.3 and the BlueSpice pro distribution constrains the package
+    to 11.0.*, so only a series bump relaxes it.
     """
     data = json.load(open(BASELINE, encoding="utf-8"))
     flagged = {p for p, e in data["accepted"].items() if "ACTION REQUIRED" in e["why"]}
-    assert flagged == {
-        "mediawiki/maps",
-        "phpoffice/phpspreadsheet",
-        "phpseclib/phpseclib",
-        "universal-omega/dynamic-page-list3",
-    }
+    assert flagged == {"mediawiki/maps"}
+
+
+MAPS_PATCHES = ("maps-layercontrol-xss-php", "maps-layercontrol-xss-js")
+
+
+def test_the_maps_mitigation_the_baseline_claims_actually_exists():
+    """The mediawiki/maps entry says CVE-2026-52854 is mitigated by two patches.
+
+    An acceptance that points at a mitigation is only as good as the mitigation.
+    Deleting the patches while the entry still claims them would leave the one
+    high in this file silently unmitigated, and `composer audit` cannot notice:
+    it reads the installed version, which is 11.0.1 either way.
+
+    So: if the "why" names the patches, the sidecars must be on disk. Retire
+    them together — when Maps reaches 12.1.3 the entry goes and so do they.
+    """
+    why = json.load(open(BASELINE, encoding="utf-8"))["accepted"]["mediawiki/maps"]["why"]
+    patch_dir = os.path.join(REPO, "docker", "patches")
+    for patch_id in MAPS_PATCHES:
+        if patch_id not in why:
+            continue
+        for suffix in (".yaml", ".patch"):
+            path = os.path.join(patch_dir, patch_id + suffix)
+            assert os.path.exists(path), (
+                f"the baseline's mediawiki/maps entry names {patch_id}, "
+                f"but {path} is missing"
+            )
+
+
+# ─── The exit code, which is the part CI reads ──────────────────────
+# compare() found `moved` and render() printed it, but main() returned 1 only
+# on `new or problems` — so a package whose installed version changed under an
+# existing acceptance scrolled past as a line in a *passing* log. These call
+# main() rather than compare(), because the exit code is the only part of this
+# script anything downstream acts on.
+
+
+def _run_main(tmp_path, report, baseline, lock_versions):
+    (tmp_path / "audit.json").write_text(json.dumps(report))
+    (tmp_path / "baseline.json").write_text(json.dumps(baseline))
+    (tmp_path / "composer.lock").write_text(json.dumps(
+        {"packages": [{"name": n, "version": v} for n, v in lock_versions.items()],
+         "packages-dev": []}))
+    return ab.main([str(tmp_path / "audit.json"), str(tmp_path / "baseline.json"),
+                    str(tmp_path / "composer.lock")])
+
+
+def test_a_fully_accepted_tree_exits_zero(tmp_path):
+    rc = _run_main(
+        tmp_path,
+        _report({"a/b": [_adv("a/b", cve="CVE-1")]}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": "r"}}),
+        {"a/b": "1.0"})
+    assert rc == 0
+
+
+def test_a_version_move_under_an_acceptance_fails_the_gate(tmp_path):
+    """The acceptances reason about a specific version.
+
+    guzzle's `why` is a 400-word argument about 7.12.3 — which call sites exist
+    in this tree, that core substitutes its own CookieJar, that
+    $wgAllowCopyUploads is off. At a different version that is an assertion, not
+    an assessment, which makes a move the same class as a blank `why`.
+    """
+    rc = _run_main(
+        tmp_path,
+        _report({"a/b": [_adv("a/b", cve="CVE-1")]}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": "r"}}),
+        {"a/b": "1.1"})
+    assert rc == 1
+
+
+def test_a_new_advisory_still_fails_the_gate(tmp_path):
+    rc = _run_main(
+        tmp_path,
+        _report({"a/b": [_adv("a/b", cve="CVE-1"), _adv("a/b", cve="CVE-2")]}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": "r"}}),
+        {"a/b": "1.0"})
+    assert rc == 1
+
+
+def test_a_blank_why_still_fails_the_gate(tmp_path):
+    rc = _run_main(
+        tmp_path,
+        _report({"a/b": [_adv("a/b", cve="CVE-1")]}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": ""}}),
+        {"a/b": "1.0"})
+    assert rc == 1
+
+
+def test_a_resolved_advisory_alone_does_not_fail_the_gate(tmp_path):
+    """Cleanup, not news — dropping a stale baseline entry is not urgent."""
+    rc = _run_main(
+        tmp_path, _report({}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": "r"}}),
+        {"a/b": "1.0"})
+    assert rc == 0
+
+
+def test_a_move_is_annotated_for_github(tmp_path, capsys, monkeypatch):
+    monkeypatch.setenv("GITHUB_ACTIONS", "true")
+    _run_main(
+        tmp_path,
+        _report({"a/b": [_adv("a/b", cve="CVE-1")]}),
+        _baseline(**{"a/b": {"advisories": ["CVE-1"], "installed": "1.0", "why": "r"}}),
+        {"a/b": "1.1"})
+    assert "::error title=Accepted advisory moved version::" in capsys.readouterr().out
+
+
+def test_the_committed_baseline_passes_against_its_own_versions():
+    """The real baseline against app/composer.lock — this must not go red."""
+    baseline = json.load(open(BASELINE, encoding="utf-8"))
+    lock = json.load(open(os.path.join(REPO, "app", "composer.lock"), encoding="utf-8"))
+    installed = {p["name"]: p["version"]
+                 for p in lock.get("packages", []) + lock.get("packages-dev", [])}
+    stale = [(pkg, e["installed"], installed.get(pkg))
+             for pkg, e in baseline["accepted"].items()
+             if e.get("installed") and installed.get(pkg)
+             and installed[pkg] != e["installed"]]
+    assert stale == [], f"baseline 'installed' has drifted from composer.lock: {stale}"
