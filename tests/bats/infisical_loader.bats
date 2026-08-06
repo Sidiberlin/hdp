@@ -9,13 +9,13 @@
 #
 # Two Wave 0 fixes are the reason this exists. Both regress silently:
 #
-#   a3f505d98  default the four INFISICAL_* vars so `set -u` cannot abort
+#   41bc523f5  default the four INFISICAL_* vars so `set -u` cannot abort
 #              setup.sh. Without the `:-` defaults, sourcing this file under
 #              `set -u` with an unconfigured environment kills the caller —
 #              no message, no fallback, no wiki.
 #
-#   2ce40551f  read the bearer token from stdin instead of argv
-#   61a1406b3  send the client secret over stdin, not argv
+#   89428d26f  read the bearer token from stdin instead of argv
+#   f8bee773b  send the client secret over stdin, not argv
 #              Anything in argv is world-readable via /proc/<pid>/cmdline for
 #              the lifetime of the request, by any process in the container.
 #
@@ -92,7 +92,7 @@ source_under_set_u() {
     ' _ "$LOADER"
 }
 
-# ─── The set -u abort (Wave 0 fix a3f505d98) ────────────────────────────
+# ─── The set -u abort (Wave 0 fix 41bc523f5) ────────────────────────────
 
 @test "sourcing under set -u with nothing configured does not kill the caller" {
     # No INFISICAL_* variables exist at all. Before the fix, the bare
@@ -147,7 +147,7 @@ source_under_set_u() {
     [[ "$output" == *"STILL_RUNNING"* ]]
 }
 
-# ─── The argv leak (Wave 0 fixes 61a1406b3 / 2ce40551f) ─────────────────
+# ─── The argv leak (Wave 0 fixes f8bee773b / 89428d26f) ─────────────────
 
 @test "the client secret never appears in any curl argv" {
     configured_env

@@ -19,9 +19,9 @@
 # clean early-return path, and the two Wave 0 fixes it carries both regress
 # silently.
 #
-#   a3f505d98  the `:-` defaults that stop `set -u` aborting setup.sh
-#   61a1406b3  the client secret on stdin rather than argv
-#   2ce40551f  the bearer token on stdin rather than argv
+#   41bc523f5  the `:-` defaults that stop `set -u` aborting setup.sh
+#   f8bee773b  the client secret on stdin rather than argv
+#   89428d26f  the bearer token on stdin rather than argv
 #
 # Nothing about a regression in any of those produces an error message. The
 # first one produces a wiki that never installs; the other two produce a

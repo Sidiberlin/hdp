@@ -210,7 +210,7 @@ docker image inspect ghcr.io/sidiberlin/hdp-haystack:v5.1.9 \
 ```
 
 `v5.1.9-rc1` is the exception: it was built and pushed by hand from
-`7f4aac3cb` before this workflow existed, so it carries only the labels its
+`3464df769` before this workflow existed, so it carries only the labels its
 Dockerfile sets and that command prints nothing for it. Every tag published
 from `v5.1.9` onward goes through the workflow and is labelled.
 

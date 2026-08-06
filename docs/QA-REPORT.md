@@ -55,19 +55,19 @@ and only surfaced on a genuinely fresh clone.
 
 | # | Bug | Severity | Fix Commit |
 |---|-----|----------|------------|
-| 1 | Docker infra never committed to git | Critical | `5d8b1e2e0` |
-| 2 | `app/skins/.gitignore` excluded `HookRunner.php` | Critical | `13534c77a` |
-| 3 | `composer install` fails on SSH URLs | Critical | `13534c77a` |
-| 4 | MariaDB `ONLY_FULL_GROUP_BY` breaks logged-in pages | Critical | `13534c77a` |
-| 5 | ChatBot config used wrong global variable prefix | Critical | `13534c77a` |
-| 6 | Main page showed generic upstream boilerplate | UX | `13534c77a` |
-| 7 | MariaDB startup wait too short (60s → 120s) | Minor | `a0e7adbf1` |
+| 1 | Docker infra never committed to git | Critical | `3d4d86b88` |
+| 2 | `app/skins/.gitignore` excluded `HookRunner.php` | Critical | `ab450d341` |
+| 3 | `composer install` fails on SSH URLs | Critical | `ab450d341` |
+| 4 | MariaDB `ONLY_FULL_GROUP_BY` breaks logged-in pages | Critical | `ab450d341` |
+| 5 | ChatBot config used wrong global variable prefix | Critical | `ab450d341` |
+| 6 | Main page showed generic upstream boilerplate | UX | `ab450d341` |
+| 7 | MariaDB startup wait too short (60s → 120s) | Minor | `5b9fa939d` |
 
 ### Bug 1 — Docker infra never committed to git
 **Symptom:** A fresh `git clone` produced a repository with zero deployment
 files — no `docker-compose.yml`, no `docker/`, no docs.
 **Fix:** Committed all 31 deployment files (`docker-compose.yml`, `docker/`,
-`docs/`, `.env.example`, `.gitignore`, `README-DOCKER.md`) in `5d8b1e2e0`.
+`docs/`, `.env.example`, `.gitignore`, `README-DOCKER.md`) in `3d4d86b88`.
 Verified via a subsequent fresh re-clone.
 
 ### Bug 2 — `app/skins/.gitignore` blanket-excluded the skins tree
@@ -76,7 +76,7 @@ Verified via a subsequent fresh re-clone.
 BlueSpiceDiscovery ChatBot dock) had been applied live in an earlier session
 but silently dropped by `git add -A`, because `app/skins/.gitignore` contains
 a blanket `/*` exclusion.
-**Fix:** Force-added the file (`git add -f`) and committed in `13534c77a`.
+**Fix:** Force-added the file (`git add -f`) and committed in `ab450d341`.
 
 ### Bug 3 — `composer install` fails on fresh clone (SSH URLs)
 **File:** `docker/setup.sh`
@@ -135,7 +135,7 @@ overwritten.
 health check had already reported "healthy." The container's healthy state
 and the point at which the `bluespice` application user/database could
 actually be reached did not coincide reliably in slower environments.
-**Fix:** Increased `max_wait` from 60s to 120s (commit `a0e7adbf1`). Root
+**Fix:** Increased `max_wait` from 60s to 120s (commit `5b9fa939d`). Root
 cause was confirmed to be a startup-ordering/timing gap, not a configuration
 defect — a subsequent run with the extended wait completed successfully with
 no other changes.

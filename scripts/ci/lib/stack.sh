@@ -56,7 +56,7 @@ hdp_generate_env() {
         # The secret goes in on stdin, never in argv — the header above claims
         # exactly that, and passing it as sys.argv[3] (which this did) made it
         # readable from /proc/<pid>/cmdline by any process on the box for the
-        # life of the interpreter. Same class as 61a1406b3 and 2ce40551f, and
+        # life of the interpreter. Same class as f8bee773b and 89428d26f, and
         # the same fix: `printf` is a bash builtin, so the value never reaches
         # another process's argv on the way here either, and the pipe keeps it
         # off the filesystem. The path and variable name stay in argv; neither

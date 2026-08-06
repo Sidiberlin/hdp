@@ -714,7 +714,7 @@ itself are real.
 pipefail`.** A command substitution whose pipeline exits non-zero aborts
 `setup.sh` itself, with the reason swallowed by the `2>/dev/null` that keeps
 secrets out of the logs. That is why every `curl`/`jq` substitution in that file
-ends in `|| true`; three separate crash paths (`e33edc6c4`) came from exactly
+ends in `|| true`; three separate crash paths (`061388d6e`) came from exactly
 this.
 
 ---
