@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Sidiberlin
 """JSON-safe serialization and pipeline loading, extracted from hdp_api_server.py.
 
 Both functions here were previously unreachable from a test. hdp_api_server.py

@@ -35,8 +35,10 @@ development checkout:
   host port `8090` (vs. the production stack's `8080`), so the two stacks
   could run side-by-side without interference
 - **Test credentials:** newly generated, isolated from production (admin
-  password `d3e98c2193345acc9d63e83f5357e9d9`, OpenSearch password
-  `Test-fdab1245-26!` — both test-only, stored in `/root/hdp-freshtest/.env`)
+  password `d3e98c…`, OpenSearch password `Test-fdab…` — both randomly
+  generated per run and test-only, stored in `/root/hdp-freshtest/.env`;
+  truncated here rather than printed in full, since a committed document
+  becomes searchable the moment the repository is public)
 - **No shortcuts:** no manually copied config, no pre-seeded database, no
   hand-fixed files — only what `git clone` + the committed `setup.sh` produce
 - **Verification style:** real browser automation (login flow, main page

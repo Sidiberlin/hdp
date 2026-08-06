@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Sidiberlin
 """Read docker/patches/*.yaml and emit one \x1f-delimited record per patch.
 
 Shared by scripts/verify-patches.sh and scripts/apply-patches.sh so the two

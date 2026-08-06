@@ -32,6 +32,11 @@ concurrency:
   group: t5-${{ github.ref }}
   cancel-in-progress: true
 
+# Installs, loads a database fixture and runs update.php — all inside the
+# runner. Nothing is written back to the repository.
+permissions:
+  contents: read
+
 jobs:
   t5:
     name: update.php upgrades an existing wiki

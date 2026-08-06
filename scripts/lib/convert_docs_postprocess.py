@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Sidiberlin
 """The wikitext post-processor behind scripts/convert-docs.sh.
 
 Pandoc turns `docs/wiki/*.md` into MediaWiki markup; this module turns pandoc's

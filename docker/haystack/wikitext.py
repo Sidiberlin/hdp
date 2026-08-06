@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Sidiberlin
 """Pure wiki-text transforms, extracted from ingest_hdp_wiki.py.
 
 Everything in here is a pure function of its arguments: no database, no

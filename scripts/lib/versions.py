@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Sidiberlin
 """VERSIONS.yml — read it, scan the tree, and compare the two.
 
 `VERSIONS.yml` is this fork's single answer to "what version are we". Before it

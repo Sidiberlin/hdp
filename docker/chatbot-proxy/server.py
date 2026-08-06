@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Sidiberlin
 """
 ChatBot Proxy: translates between BlueSpice ChatBot (Deepset API format)
 and Haystack hayhooks RAG pipeline.

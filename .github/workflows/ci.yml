@@ -50,6 +50,13 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# Every check here reads the tree and writes nothing back. Without this block
+# GITHUB_TOKEN inherits the repository default, which on many accounts is still
+# "Read and write" — a write-scoped token handed to fourteen jobs that only
+# ever need to check out.
+permissions:
+  contents: read
+
 jobs:
   check:
     name: ${{ matrix.check }}

@@ -12,7 +12,7 @@
 #   echo $HDP_DB_PASSWORD  # (don't actually echo this)
 #
 # Requires these env vars (passed via docker-compose environment):
-#   INFISICAL_URL           - e.g. https://infisical.example.com
+#   INFISICAL_URL           - e.g. https://your-infisical-instance.example.com
 #   INFISICAL_PROJECT_ID    - Project UUID
 #   INFISICAL_CLIENT_ID     - Machine identity client ID
 #   INFISICAL_CLIENT_SECRET - Machine identity client secret

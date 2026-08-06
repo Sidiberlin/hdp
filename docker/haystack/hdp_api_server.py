@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Sidiberlin
 """HDP RAG API — numpy-safe wrapper around Haystack pipeline."""
 import asyncio
 import logging

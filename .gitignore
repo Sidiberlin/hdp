@@ -13,7 +13,6 @@
 *.env
 *.env.local
 !.env.example
-.claude-brief.md
 
 # Docker volumes / data (bind-mounted, not tracked)
 mediawiki_data/
@@ -45,8 +44,15 @@ DEBRIEFING.md
 HAYSTACK_FIX_PLAN.md
 INGESTION_PIPELINE_PLAN.md
 DOCKER_SETUP.md
-.claude-qa-briefing.md
 .claude/
+
+# Agent briefings and audit output — working notes about the repository, not
+# part of it. Wildcarded rather than listed one by one: this started as three
+# individual `.claude-*.md` lines and a fourth briefing appeared untracked next
+# to them, holding the build host's public IP. A pattern covers the next one
+# the day it is created rather than the day someone notices it in `git status`.
+.claude-*
+hdp-publication-readiness-report.md
 
 # Logs
 *.log

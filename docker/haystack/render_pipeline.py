@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Sidiberlin
 """
 Renders the query-time embedder component in hdp_pipeline.yaml based on
 HDP_EMBEDDING_PROVIDER, then writes the result to PIPELINE_OUT (or overwrites

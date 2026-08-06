@@ -33,6 +33,12 @@ concurrency:
   group: t3-${{ github.ref }}
   cancel-in-progress: true
 
+# Boots containers from a checkout and asserts against them; nothing is written
+# back to the repository. Least privilege for the same reason as ci.yml — the
+# repository default would otherwise apply.
+permissions:
+  contents: read
+
 jobs:
   t3:
     name: wiki boots and serves authenticated traffic

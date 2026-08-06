@@ -5,8 +5,8 @@
 publiccodeYmlVersion: '0.2'
 name: BlueSpice Wiki mit Chatbot
 applicationSuite: BlueSpice pro
-url: 'https://gitlab.opencode.de/bmbf/teamdigital/hdp'
-landingURL: 'https://bluespice.com/de/'
+url: 'https://github.com/Sidiberlin/hdp'
+landingURL: 'https://github.com/Sidiberlin/hdp#readme'
 logo: BlueSpice_Logo.svg
 releaseDate: '2026-08-03'
 # Kept in step with VERSIONS.yml by the version-consistency gate. This said
@@ -17,10 +17,13 @@ developmentStatus: stable
 platforms:
   - linux
 softwareType: addon
-usedBy:
-  - Bundesministerium für Bildung und Forschung
-  - 'GovTech Campus Deutschland e.V.'
-  - Fraunhofer IVV
+# `usedBy` is deliberately empty. Upstream listed the Bundesministerium für
+# Bildung und Forschung, GovTech Campus Deutschland e.V. and Fraunhofer IVV —
+# their institutional users, not this fork's. Inheriting that list would assert
+# that a federal ministry runs this repository, which it does not. Their role
+# in the original project is credited in README.md and in `longDescription`
+# below, which is where it belongs.
+usedBy: []
 categories:
   - blog
   - collaboration
@@ -29,17 +32,19 @@ categories:
   - knowledge-management
   - translation
   - workflow-management
+# Upstream's contacts (Robert Vogel, Richard Heigl, both at BlueSpice) were
+# removed: they maintain the original, not this fork, and naming them here
+# routes this fork's issues to people who never agreed to receive them.
 maintenance:
-  type: internal
+  type: community
   contacts:
-    - name: Robert Vogel
-      affiliation: BlueSpice
-    - name: Richard Heigl
-      affiliation: BlueSpice
+    - name: Sidiberlin
 legal:
   license: GPL-3.0-only
+  # Unchanged, and correct: Hallo Welt! GmbH holds copyright in the bulk of
+  # this tree. Only the *repository* owner differs on a fork.
   mainCopyrightOwner: Hallo Welt! GmbH
-  repoOwner: Hallo Welt! GmbH
+  repoOwner: Sidiberlin
 intendedAudience:
   countries:
     - DE
@@ -57,8 +62,7 @@ description:
   de:
     genericName: BlueSpice Wiki mit Chatbot
     localisedName: BlueSpice Wiki mit Chatbot
-    screenshots:
-      - .opencode/screenshots/sshot1.png
+    screenshots: []
     shortDescription: >-
       Die BlueSpice HDP Edition liefert einen KI-Chatbot für Online
       Wissensdatenbanken.

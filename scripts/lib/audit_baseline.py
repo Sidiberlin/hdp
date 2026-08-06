@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# SPDX-License-Identifier: GPL-3.0-only
+# Copyright (C) 2026 Sidiberlin
 """Compare `composer audit` output against the accepted-advisory baseline.
 
 `composer audit --locked` on this tree reports 8 advisories across 3 packages
