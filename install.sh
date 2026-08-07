@@ -481,25 +481,58 @@ step "7/8  Embedding provider (how wiki pages are indexed)"
 
 info "This embedder is used both at ingestion time and for every live query."
 printf '\n'
-ask_choice "Embeddings" 1 \
-    "Local CPU   ${C_DIM}(default, zero config — sentence-transformers in-container)${C_OFF}" \
+
+# GPU detection happens up front so it can be part of the choice menu.
+# nvidia-smi is absent inside containers that do have a GPU, and /proc/driver/nvidia
+# exists whenever the kernel module is loaded, even with no CLI tools installed.
+GPU_DETECTED=0
+GPU_NAMES=''
+if have nvidia-smi && nvidia-smi -L >/dev/null 2>&1; then
+    GPU_DETECTED=1
+    GPU_NAMES="$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | paste -sd', ' - || true)"
+elif [ -d /proc/driver/nvidia ]; then
+    GPU_DETECTED=1
+fi
+if [ "$GPU_DETECTED" -eq 1 ]; then
+    ok "NVIDIA GPU detected${GPU_NAMES:+: $GPU_NAMES}"
+fi
+
+# The menu changes based on whether a GPU is visible. When detected, "Local GPU"
+# is the default (it's why you'd run on a GPU box). When not detected, GPU is
+# still listed — the installer may be running inside a container that can't see
+# the host's GPU, and the user knows their hardware.
+if [ "$GPU_DETECTED" -eq 1 ]; then
+    DEFAULT_EMBED=3
+else
+    DEFAULT_EMBED=1
+fi
+ask_choice "Embeddings" "$DEFAULT_EMBED" \
+    "Local CPU   ${C_DIM}(zero config — sentence-transformers in-container)${C_OFF}" \
     "Remote API  ${C_DIM}(OpenAI-compatible embeddings endpoint, e.g. a TEI server)${C_OFF}" \
+    "Local GPU   ${C_DIM}(NVIDIA + CUDA PyTorch — seconds per page, needs build from source)${C_OFF}" \
     "Skip        ${C_DIM}(leave whatever .env already says)${C_OFF}"
 
 EMBED_SUMMARY='local (CPU, in-container)'
+EMBED_DEVICE='cpu'
+USE_GPU=0
+
 case "$REPLY_CHOICE" in
     1)
+        # Local CPU
         set_env HDP_EMBEDDING_PROVIDER local
         set_env HDP_EMBEDDING_BASE_URL ""
         set_env HDP_EMBEDDING_API_KEY ""
+        set_env HAYSTACK_DEVICE cpu
         [ -n "$(get_env HDP_EMBEDDING_MODEL)" ] \
             || set_env HDP_EMBEDDING_MODEL "mixedbread-ai/deepset-mxbai-embed-de-large-v1"
         [ -n "$(get_env HDP_EMBEDDING_DIM)" ] || set_env HDP_EMBEDDING_DIM 1024
-        ok "Local embeddings — nothing else to configure."
-        note "Expect 1–3 min per wiki page at ingestion time on CPU."
+        ok "Local embeddings on CPU — nothing else to configure."
+        note "Expect 1–3 min per wiki page at ingestion time."
         ;;
     2)
+        # Remote API
         set_env HDP_EMBEDDING_PROVIDER remote
+        set_env HAYSTACK_DEVICE cpu
         ask "Embeddings base URL" "$(get_env HDP_EMBEDDING_BASE_URL)"
         [ -n "$REPLY_VALUE" ] || die "a base URL is required for the remote embedding provider"
         set_env HDP_EMBEDDING_BASE_URL "$REPLY_VALUE"
@@ -521,61 +554,61 @@ case "$REPLY_CHOICE" in
         warn "The dimension must match the index. Changing it on an existing install"
         note "  means a full re-ingestion, not an incremental one."
         ;;
+    3)
+        # Local GPU — CUDA PyTorch variant, needs nvidia-container-toolkit
+        GPU_PROCEED=1
+        if [ "$GPU_DETECTED" -eq 1 ]; then
+            ok "Using the detected NVIDIA GPU${GPU_NAMES:+: $GPU_NAMES}"
+        else
+            warn "No NVIDIA GPU was detected by the installer."
+            note "  This is common inside containers. Proceed only if the Docker host"
+            note "  has a GPU and the NVIDIA Container Toolkit installed."
+            confirm "Proceed with GPU mode anyway?" n || GPU_PROCEED=0
+        fi
+
+        if [ "$GPU_PROCEED" -eq 1 ]; then
+            USE_GPU=1
+            set_env HDP_EMBEDDING_PROVIDER local
+            set_env HDP_EMBEDDING_BASE_URL ""
+            set_env HDP_EMBEDDING_API_KEY ""
+            set_env HAYSTACK_DEVICE gpu
+            EMBED_DEVICE='gpu (NVIDIA)'
+            EMBED_SUMMARY='local (GPU, in-container)'
+            [ -n "$(get_env HDP_EMBEDDING_MODEL)" ] \
+                || set_env HDP_EMBEDDING_MODEL "mixedbread-ai/deepset-mxbai-embed-de-large-v1"
+            [ -n "$(get_env HDP_EMBEDDING_DIM)" ] || set_env HDP_EMBEDDING_DIM 1024
+            printf '\n'
+            ok "HAYSTACK_DEVICE=gpu — the CUDA PyTorch variant will be built (~8 GB image)."
+            warn "GPU mode requires building from source (pre-built images are CPU-only)."
+            warn "Install the NVIDIA Container Toolkit on the host first:"
+            note "    sudo apt-get install -y nvidia-container-toolkit"
+            note "    sudo nvidia-ctk runtime configure --runtime=docker && sudo systemctl restart docker"
+            note "  Verify: docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi"
+        else
+            # User declined GPU — fall back to CPU
+            set_env HDP_EMBEDDING_PROVIDER local
+            set_env HDP_EMBEDDING_BASE_URL ""
+            set_env HDP_EMBEDDING_API_KEY ""
+            set_env HAYSTACK_DEVICE cpu
+            [ -n "$(get_env HDP_EMBEDDING_MODEL)" ] \
+                || set_env HDP_EMBEDDING_MODEL "mixedbread-ai/deepset-mxbai-embed-de-large-v1"
+            [ -n "$(get_env HDP_EMBEDDING_DIM)" ] || set_env HDP_EMBEDDING_DIM 1024
+            EMBED_SUMMARY='local (CPU, fell back from GPU)'
+            ok "Falling back to local CPU embeddings."
+            note "Expect 1–3 min per wiki page at ingestion time."
+        fi
+        ;;
     *)
+        # Skip — leave everything as-is in .env
         EMBED_SUMMARY="unchanged — $(get_env HDP_EMBEDDING_PROVIDER)"
+        DEVICE_IN_ENV="$(get_env HAYSTACK_DEVICE)"
+        if [ "$DEVICE_IN_ENV" = "gpu" ]; then
+            EMBED_DEVICE='gpu (NVIDIA)'
+            USE_GPU=1
+        fi
         ok "Embedding settings left as they are."
         ;;
 esac
-
-# ─── 4d-bis. CPU or GPU ─────────────────────────────────────────────
-# Asked regardless of the provider above: `local` runs the embedder in this
-# container, and `remote` still loads the reranker model here, so the device
-# matters either way.
-#
-# Detection is a convenience that sets the default answer, never the answer
-# itself — nvidia-smi is absent inside plenty of containers that do have a GPU,
-# and present on hosts whose Docker cannot reach one. /proc/driver/nvidia is
-# the second look because it exists whenever the kernel module is loaded, even
-# with no CLI tools installed.
-printf '\n'
-GPU_DETECTED=0
-if have nvidia-smi && nvidia-smi -L >/dev/null 2>&1; then
-    GPU_DETECTED=1
-    GPU_NAMES="$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | paste -sd', ' - || true)"
-    ok "NVIDIA GPU detected${GPU_NAMES:+: $GPU_NAMES}"
-elif [ -d /proc/driver/nvidia ]; then
-    GPU_DETECTED=1
-    ok "NVIDIA driver detected (/proc/driver/nvidia)"
-else
-    note "No NVIDIA GPU detected — embeddings will run on CPU."
-fi
-
-USE_GPU=0
-if [ "$GPU_DETECTED" -eq 1 ]; then
-    note "GPU inference needs the NVIDIA Container Toolkit on the host, and a"
-    note "source build — the published images ship CPU-only PyTorch."
-    confirm "Use the GPU for embeddings?" y && USE_GPU=1
-else
-    # Still offered: a GPU the installer cannot see from where it runs is a real
-    # case, and the cost of a wrong yes is a failed `up` with a clear message.
-    confirm "Use GPU for embeddings anyway?" n && USE_GPU=1
-fi
-
-if [ "$USE_GPU" -eq 1 ]; then
-    set_env HAYSTACK_DEVICE gpu
-    EMBED_DEVICE='gpu (NVIDIA)'
-    printf '\n'
-    ok "HAYSTACK_DEVICE=gpu — the CUDA PyTorch variant will be built (~8 GB image)."
-    warn "This needs the NVIDIA Container Toolkit installed on the host:"
-    note "    sudo apt-get install -y nvidia-container-toolkit"
-    note "    sudo nvidia-ctk runtime configure --runtime=docker && sudo systemctl restart docker"
-    note "  Verify with: docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi"
-    note "  The stack must then be started with the GPU override:"
-    note "    docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build"
-else
-    set_env HAYSTACK_DEVICE cpu
-    EMBED_DEVICE='cpu'
-fi
 
 # ─── 4e. Passwords ──────────────────────────────────────────────────
 step "8/8  Passwords"
