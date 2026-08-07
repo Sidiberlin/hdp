@@ -51,13 +51,13 @@
 services:
   haystack:
     build: !reset null
-    image: ghcr.io/sidiberlin/hdp-haystack:${HDP_IMAGE_TAG:-v5.1.9-rc1}
+    image: ghcr.io/sidiberlin/hdp-haystack:${HDP_IMAGE_TAG:-v5.1.9}
 
   chatbot-proxy:
     build: !reset null
-    image: ghcr.io/sidiberlin/hdp-chatbot-proxy:${HDP_IMAGE_TAG:-v5.1.9-rc1}
+    image: ghcr.io/sidiberlin/hdp-chatbot-proxy:${HDP_IMAGE_TAG:-v5.1.9}
 
   opensearch:
     build: !reset null
     # Replaces the local `hdp-opensearch:2.18.0` tag docker-compose.yml sets.
-    image: ghcr.io/sidiberlin/hdp-opensearch:${HDP_IMAGE_TAG:-v5.1.9-rc1}
+    image: ghcr.io/sidiberlin/hdp-opensearch:${HDP_IMAGE_TAG:-v5.1.9}
