@@ -129,9 +129,9 @@ def render(new, resolved, moved, problems):
         lines.append("")
         lines.append(f"  {len(new)} advisory/advisories are NOT in the accepted baseline:")
         for pkg, adv in sorted(new, key=lambda t: (SEVERITY_ORDER.get(t[1].get("severity"), 9), t[0])):
-            lines.append(f"    {adv.get('severity', '?'):8s} {pkg}  {advisory_id(adv)}")
-            lines.append(f"             {adv.get('title', '')[:100]}")
-            lines.append(f"             affects {adv.get('affectedVersions', '?')[:80]}")
+            lines.append(f"    {adv.get('severity') or '?':8s} {pkg}  {advisory_id(adv)}")
+            lines.append(f"             {(adv.get('title') or '')[:100]}")
+            lines.append(f"             affects {(adv.get('affectedVersions') or '?')[:80]}")
             if adv.get("link"):
                 lines.append(f"             {adv['link']}")
     for pkg, known in resolved:

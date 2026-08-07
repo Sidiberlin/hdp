@@ -49,6 +49,14 @@
       ],
       "why": "ACTION REQUIRED, and still open as a version: the 1.43.9 / 5.1.9 upgrade did not move Maps and cannot. CVE-2026-52854 (high) is stored XSS through the layers and overlays parameters of the display_map parser function, fixed upstream in 12.1.3; this tree vendors 11.0.1 at app/extensions/Maps and app/_bluespice/build/bluespice-pro-distribution/composer.json:36 constrains mediawiki/maps to 11.0.*, so only a BlueSpice series bump relaxes it. Any editor who can save wikitext can reach the parser function, which made this the most exposed entry in this file.\n\nMITIGATED IN TREE as of 2026-08-04, but deliberately still listed. Upstream commit 737a993f (released in 12.1.3) is backported as two Class A patches, maps-layercontrol-xss-php and maps-layercontrol-xss-js — see docs/dev/patches.md. The PHP half filters layers and overlays to the egMapsLeafletAvailableLayers / egMapsLeafletAvailableOverlayLayers whitelists that ParamProcessor only warned about, so a hostile value never reaches the client; the JS half escapes both places Leaflet renders a name as a layer-control label. Class A means composer reinstalls the package over them on every run and docker/setup.sh re-applies them; scripts/verify-patches.sh is what catches it if that ever stops happening.\n\nThe entry stays and the marker stays because the installed version is still 11.0.1 — composer audit is reporting the truth, and a patched tree is not the same as a fixed dependency. Re-vendoring to 12.1.3 remains the real fix; when it lands, delete this entry and both patches together."
     },
+    "squizlabs/php_codesniffer": {
+      "installed": "3.10.3",
+      "advisories": [
+        "CVE-2026-67434",
+        "PKSA-rdkp-vv9z-mjkg"
+      ],
+      "why": "Dev-only transitive dependency (packages-dev) pulled in by mediawiki/mediawiki-codesniffer v45.0.0, which pins it to exactly 3.10.3. Neither check.sh nor .gitlab-ci.yml invokes phpcs — the tool ships in the lockfile but is never executed by any gate or runtime image. The advisory (CVE-2026-67434, high, OS command injection, fixed in 3.13.6) cannot be reached without deliberately running phpcs against hostile input, which this fork does not do. Clearing it would require bumping mediawiki-codesniffer from v45 to v52 (the only version shipping phpcs 3.13.6), a jump that also requires PHP 8.3 and pulls in new coding-standard rules — disproportionate for a tool this fork does not invoke."
+    },
     "web-auth/webauthn-lib": {
       "installed": "4.9.3",
       "advisories": [

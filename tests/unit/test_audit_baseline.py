@@ -111,6 +111,23 @@ def test_update_keeps_reasons_already_written():
     assert "CVE-2" in built["accepted"]["a/b"]["advisories"]
 
 
+def test_render_does_not_crash_on_null_fields():
+    """Packagist emits ``null`` for unpopulated fields (severity, title,
+    affectedVersions).  The default of ``.get(key, default)`` is the value
+    returned only when the key is **absent**; when the key is present with a
+    ``None`` value the default is ignored, and the subsequent format spec or
+    slice raises ``TypeError``.  This is exactly the bug that crashed the gate
+    in production.
+    """
+    adv = {"packageName": "x/y", "advisoryId": "PKSA-1", "cve": "CVE-1",
+           "severity": None, "title": None, "affectedVersions": None, "link": None}
+    lines = ab.render([("x/y", adv)], [], [], [])
+    joined = "\n".join(lines)
+    assert "?" in joined            # severity fell back
+    assert "CVE-1" in joined        # advisory still identified
+    assert "x/y" in joined
+
+
 # ─── The committed baseline ─────────────────────────────────────────
 
 def test_the_committed_baseline_is_complete():
