@@ -10,11 +10,25 @@
 #
 # It clones the repository if it is not already in one, checks the three
 # prerequisites (docker, compose v2, openssl), walks every configuration choice
-# .env.example documents, writes the answers to .env, and offers to start the
-# stack. Nothing here is irreversible: an existing .env is copied to .env.bak
-# before a single line is changed, and every question is pre-filled with the
-# value that .env already holds — so re-running this on a configured install is
-# a way to change one setting, not a way to lose the rest.
+# .env.example documents, writes the answers to .env, and then — this is the
+# point of the whole thing — brings the stack up and runs first-boot setup, so
+# that what you have when it exits is a wiki you can log into rather than a list
+# of commands still to run. The one job deliberately left to the operator is
+# indexing the wiki for the chatbot, which takes hours on a large wiki and wants
+# to be started when it suits them.
+#
+# Nothing here is irreversible: an existing .env is copied to .env.bak before a
+# single line is changed, and every question is pre-filled with the value that
+# .env already holds — so re-running this on a configured install is a way to
+# change one setting, not a way to lose the rest.
+#
+# ─── Questions it does not ask ──────────────────────────────────────
+#
+# Whether to pull the published images or build from source used to be a
+# question and is now a decision: it tries the pull, and builds only if the
+# registry cannot supply the images. The operator has no information the
+# installer lacks at that point, and both wrong answers are expensive — a
+# needless five-minute build, or a stack that will not start.
 #
 # ─── Why every read is from fd 3 ────────────────────────────────────
 #
@@ -24,7 +38,9 @@
 # prompt reads from it; with no controlling terminal the script refuses to run
 # rather than guessing answers.
 #
-# Exit: 0 configured (and started, if asked) · 1 prerequisite or user abort
+# Exit: 0 configured, and started + installed if asked
+#       1 prerequisite missing, user abort, or first-boot setup did not finish
+#         (the containers are up in that case — see the closing message)
 # ============================================================
 set -uo pipefail
 
@@ -227,13 +243,20 @@ if ! docker info >/dev/null 2>&1; then
 fi
 
 # compose >= 2.24 is what the published-image override needs — it uses the
-# !reset tag to delete the inherited build: keys. Older compose fails to parse
-# that file, so know now rather than at `up`.
+# !reset tag to delete the inherited build: keys, and older compose fails to
+# parse the file outright.
+#
+# That is not fatal here: start_stack() tries the pull and falls back to a
+# source build, so an old-compose host still ends up with a working wiki — it
+# just spends five minutes building images that were sitting in the registry.
+# Recorded so the fallback can say which of the two reasons it fired for,
+# instead of leaving the operator to guess whether the registry was down.
 COMPOSE_HAS_RESET=1
 if [ -n "$COMPOSE_VERSION" ]; then
     if [ "$(printf '2.24.0\n%s\n' "$COMPOSE_VERSION" | sort -V | head -1)" != "2.24.0" ]; then
         COMPOSE_HAS_RESET=0
-        warn "compose v$COMPOSE_VERSION is older than 2.24 — the pre-built-image path needs an explicit pull."
+        warn "compose v$COMPOSE_VERSION is older than 2.24 — the published-image path"
+        note "  needs 2.24's !reset tag, so this install will build from source."
     fi
 fi
 
@@ -578,8 +601,8 @@ case "$REPLY_CHOICE" in
                 || set_env HDP_EMBEDDING_MODEL "mixedbread-ai/deepset-mxbai-embed-de-large-v1"
             [ -n "$(get_env HDP_EMBEDDING_DIM)" ] || set_env HDP_EMBEDDING_DIM 1024
             printf '\n'
-            ok "HAYSTACK_DEVICE=gpu — the CUDA PyTorch variant will be built (~8 GB image)."
-            warn "GPU mode requires building from source (pre-built images are CPU-only)."
+            ok "HAYSTACK_DEVICE=gpu — the CUDA PyTorch variant (~8 GB image)."
+            note "Available both pre-built (ghcr.io/…/hdp-haystack:<tag>-gpu) and from source."
             warn "Install the NVIDIA Container Toolkit on the host first:"
             note "    sudo apt-get install -y nvidia-container-toolkit"
             note "    sudo nvidia-ctk runtime configure --runtime=docker && sudo systemctl restart docker"
@@ -741,128 +764,323 @@ if ! confirm "Configuration looks right?" y; then
     exit 0
 fi
 
-# ─── Start ──────────────────────────────────────────────────────────
-step "Starting the stack"
-
+# ─── From here on, the installer drives docker ──────────────────────
 # .env is complete and the operator has approved it, so the interrupt handler
 # has nothing left to protect — and from here it would be actively wrong:
 # Ctrl-C during `docker compose up` signals the whole foreground group, so the
 # handler would revert the .env of a stack that is already half up.
 trap - INT TERM
 
-# The default start command, and the one printed under "Next steps" when the
-# stack is not started from here. GPU adds one override to whichever path the
-# operator picks — it composes with both the source build and the published
-# images, though only the source build produces an image that can use the GPU.
-COMPOSE_ARGS=(compose)
+# The two possible start commands. Which one is used is decided by trying the
+# published images and falling back, not by asking — see start_stack().
+#
+# GPU is not an override stacked on top of either — it is a different file per
+# path. Building from source uses docker-compose.gpu.yml (build args + device
+# reservation); pulling uses docker-compose.prod-gpu.yml (the `-gpu` image +
+# device reservation, no build key at all). The one combination that must never
+# be assembled is prod.yml + gpu.yml, which parses and then fails at `up`; see
+# the header of either file.
+PULL_ARGS=(compose -f docker-compose.yml -f docker-compose.prod.yml)
 BUILD_ARGS=(compose)
 if [ "$USE_GPU" -eq 1 ]; then
-    COMPOSE_ARGS=(compose -f docker-compose.yml -f docker-compose.gpu.yml)
-    BUILD_ARGS=("${COMPOSE_ARGS[@]}")
+    PULL_ARGS=(compose -f docker-compose.yml -f docker-compose.prod-gpu.yml)
+    BUILD_ARGS=(compose -f docker-compose.yml -f docker-compose.gpu.yml)
 fi
-STARTED=0
+# The published images are the expected path, so they are also the commands
+# printed if the stack is never started from here. start_stack() reassigns this
+# if the pull does not work out.
+COMPOSE_ARGS=("${PULL_ARGS[@]}")
+UP_FLAGS=(up -d)
+
+# ─── Pre-downloading the models ─────────────────────────────────────
+# The embedder (~600 MB) and the cross-encoder ranker (~450 MB) are pulled from
+# HuggingFace by docker/haystack/entrypoint.sh the first time the container
+# runs. That is correct but invisible: it happens behind a healthcheck whose
+# start_period is 90s, so `docker compose ps` shows haystack "starting" for five
+# to ten minutes with no indication that a download is what it is waiting on.
+#
+# Doing it here instead costs the same minutes but shows them, and it does it
+# while the operator is still watching the installer rather than after they have
+# walked away. The models land in the same `haystack_models` volume
+# (/root/.cache/huggingface, see docker-compose.yml), so the entrypoint finds
+# them cached and starts immediately.
+#
+# Via `docker compose run`, not a bare `docker run`: the models are only worth
+# anything if they land in *this project's* volume, and the volume's real name
+# is the compose project name plus `_haystack_models` — which is derived from
+# the directory name and overridable, so nothing here can reconstruct it
+# reliably. compose knows it. `--no-deps` keeps this from starting opensearch,
+# and `--entrypoint python3` skips entrypoint.sh, which would otherwise wait for
+# an OpenSearch that is not running.
+#
+# It also doubles as the probe start_stack() would otherwise have to make on its
+# own: it pulls the haystack image, which is the largest of the three and the
+# one most likely to be missing from the registry.
+PREDOWNLOAD_PY='
+import os
+
+from sentence_transformers import SentenceTransformer
+
+models = [
+    os.environ.get("HDP_EMBEDDING_MODEL") or "mixedbread-ai/deepset-mxbai-embed-de-large-v1",
+    "PM-AI/bi-encoder_msmarco_bert-base_german",
+]
+for name in models:
+    print("  fetching  " + name, flush=True)
+    SentenceTransformer(name)
+    print("  cached    " + name, flush=True)
+print("OK")
+'
+
+# Answers "is there a local model to fetch at all?" — remote embeddings have no
+# in-container embedder. The ranker is always local, but on its own it is not
+# worth a prompt and the entrypoint already fetches it.
+embeddings_are_local() { [ "$(get_env HDP_EMBEDDING_PROVIDER)" = "local" ]; }
+
+predownload_models() {
+    local model
+    model="$(get_env HDP_EMBEDDING_MODEL)"
+    [ -n "$model" ] || model='mixedbread-ai/deepset-mxbai-embed-de-large-v1'
+
+    info "Two models run in-container and are downloaded on first start:"
+    printf '       %s%s%s %s(embedder, ~600 MB)%s\n' \
+        "$C_BLD" "$model" "$C_OFF" "$C_DIM" "$C_OFF"
+    printf '       %sPM-AI/bi-encoder_msmarco_bert-base_german%s %s(ranker, ~450 MB)%s\n' \
+        "$C_BLD" "$C_OFF" "$C_DIM" "$C_OFF"
+    note "Fetching them now makes the first start a start, rather than five to ten"
+    note "minutes of a healthcheck with nothing to show for itself."
+    printf '\n'
+    if ! confirm "Pre-download embedding models now? (saves time on first start)" y; then
+        note "Skipped — they will download on first container start."
+        return 0
+    fi
+
+    printf '\n'
+    info "docker ${PULL_ARGS[*]} run --rm --no-deps --entrypoint python3 haystack …"
+    printf '\n'
+    if docker "${PULL_ARGS[@]}" run --rm --no-deps --entrypoint python3 \
+            haystack -c "$PREDOWNLOAD_PY"; then
+        printf '\n'
+        ok "Models cached in the haystack_models volume."
+    else
+        # Deliberately not fatal. A failure here costs the operator nothing but
+        # the wait they would have had anyway — the entrypoint retries the exact
+        # same download — so it must not stand between them and a running stack.
+        printf '\n'
+        warn "Pre-download did not complete. This is not fatal:"
+        note "  the container downloads the same models on first start."
+    fi
+}
+
+# ─── Bringing the stack up ──────────────────────────────────────────
+
+# compose_state <service> — one word describing the container behind a service:
+# its healthcheck's verdict where it has one, its container state otherwise, and
+# `gone` when compose does not know about it at all.
+compose_state() {
+    local cid
+    cid="$(docker "${COMPOSE_ARGS[@]}" ps -q "$1" 2>/dev/null | head -1)"
+    [ -n "$cid" ] || { printf 'gone'; return 0; }
+    docker inspect \
+        -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' \
+        "$cid" 2>/dev/null || printf 'gone'
+}
+
+# wait_ready <label> <timeout-seconds> <service>... — returns 0 once every named
+# service reports healthy (or running, for the ones with no healthcheck).
+#
+# Polling the containers rather than sleeping a fixed 60s: on a warm host
+# MariaDB is up in fifteen seconds and on a cold one with a cold image cache it
+# can take three minutes, and a fixed sleep is wrong in both directions — it
+# either wastes the operator's time or hands setup.sh a database that is not
+# accepting connections yet, which fails in a way that reads like a bug.
+wait_ready() {
+    local label="$1" limit="$2"
+    shift 2
+    local services=("$@") waited=0 svc state pending
+    printf '  %s' "$label"
+    while :; do
+        pending=''
+        for svc in "${services[@]}"; do
+            state="$(compose_state "$svc")"
+            case "$state" in
+                healthy|running) ;;
+                *) pending="$pending $svc($state)" ;;
+            esac
+        done
+        if [ -z "$pending" ]; then
+            printf ' %s✓%s\n' "$C_GRN" "$C_OFF"
+            return 0
+        fi
+        if [ "$waited" -ge "$limit" ]; then
+            printf ' %s!%s\n' "$C_YEL" "$C_OFF"
+            warn "after ${limit}s, still waiting on:$pending"
+            return 1
+        fi
+        printf '.'
+        sleep 3
+        waited=$((waited + 3))
+    done
+}
+
+# Pre-built images first, a source build only if the registry cannot supply
+# them. This is deliberately not a question: an operator who has just answered
+# eight of them does not have information the installer lacks here, and the
+# wrong answer costs them five minutes or a stack that will not start. `pull` is
+# the probe because it is also the work — a successful pull leaves exactly the
+# images `up` is about to want.
+start_stack() {
+    info "Fetching the published images…"
+    printf '\n'
+    if docker "${PULL_ARGS[@]}" pull; then
+        COMPOSE_ARGS=("${PULL_ARGS[@]}")
+        UP_FLAGS=(up -d)
+        printf '\n'
+        ok "Using the published images."
+    else
+        COMPOSE_ARGS=("${BUILD_ARGS[@]}")
+        UP_FLAGS=(up -d --build)
+        printf '\n'
+        warn "The published images could not be pulled — building from source instead."
+        note "  About five minutes, and the result is the same stack."
+        if [ "$COMPOSE_HAS_RESET" -eq 0 ]; then
+            note "  Expected here: compose v${COMPOSE_VERSION:-<2.24} cannot parse the override."
+        fi
+        if [ "$USE_GPU" -eq 1 ]; then
+            note "  The CUDA build is ~8 GB, so allow longer on a slow disk."
+        fi
+    fi
+    printf '\n'
+    info "docker ${COMPOSE_ARGS[*]} ${UP_FLAGS[*]}"
+    printf '\n'
+    docker "${COMPOSE_ARGS[@]}" "${UP_FLAGS[@]}" \
+        || die "docker compose up failed — see the output above."
+}
+
+# ─── Start ──────────────────────────────────────────────────────────
+WIKI_URL="$MW_SERVER_VAL/w/"
+SETUP_OK=1
 
 if [ "$DOCKER_READY" -eq 0 ]; then
-    warn "Docker is not running, so the stack cannot be started from here."
-else
-    ask_choice "How should the three custom images be obtained?" 1 \
-        "Pull pre-built images  ${C_DIM}(GHCR, ~5 GB download, no build)${C_OFF}" \
-        "Build from source      ${C_DIM}(~5 minutes, picks up local changes)${C_OFF}" \
-        "Do not start now       ${C_DIM}(just write .env)${C_OFF}"
+    step "Not starting — Docker is not running"
 
-    case "$REPLY_CHOICE" in
-        1)
-            COMPOSE_ARGS=(compose -f docker-compose.yml -f docker-compose.prod.yml)
-            # Deliberately NOT adding the GPU override here. It cannot help —
-            # the published images carry CPU-only torch — and layering it on
-            # prod.yml's `build: !reset null` re-creates a build: key with no
-            # dockerfile, so `up` would try to build ./Dockerfile and fail. See
-            # docker-compose.gpu.yml. Falling back to a working CPU stack beats
-            # both a broken build and a GPU reservation that does nothing.
-            if [ "$USE_GPU" -eq 1 ]; then
-                USE_GPU=0
-                set_env HAYSTACK_DEVICE cpu
-                warn "The published images are CPU-only builds, so GPU inference is off for this run."
-                note "  HAYSTACK_DEVICE reset to cpu, keeping .env honest about what is running."
-                note "  For the GPU, re-run ./install.sh and choose 'Build from source'."
-            fi
-            if [ "$COMPOSE_HAS_RESET" -eq 0 ]; then
-                warn "compose < 2.24: pulling explicitly first, as the override cannot drop build: keys."
-                docker "${COMPOSE_ARGS[@]}" pull || die "docker compose pull failed"
-            fi
-            info "docker ${COMPOSE_ARGS[*]} up -d"
-            printf '\n'
-            docker "${COMPOSE_ARGS[@]}" up -d || die "docker compose up failed — see the output above."
-            STARTED=1
-            ;;
-        2)
-            COMPOSE_ARGS=("${BUILD_ARGS[@]}")
-            info "docker ${COMPOSE_ARGS[*]} up -d --build"
-            printf '\n'
-            docker "${COMPOSE_ARGS[@]}" up -d --build \
-                || die "docker compose up --build failed — see the output above."
-            STARTED=1
-            ;;
-        *)
-            info "Skipped. Start it later with the commands below."
-            ;;
-    esac
+    warn "The Docker daemon did not respond, so nothing can be started from here."
+    note "Start it (usually: sudo systemctl start docker), then:"
+    printf '\n'
+    printf '       cd %s && docker %s %s\n' "$REPO_ROOT" "${COMPOSE_ARGS[*]}" "${UP_FLAGS[*]}"
+    printf '       docker %s exec mediawiki bash /setup.sh\n\n' "${COMPOSE_ARGS[*]}"
+    printf '  %sWiki:%s   %s   %slogin Admin / the password above%s\n' \
+        "$C_BLD" "$C_OFF" "$WIKI_URL" "$C_DIM" "$C_OFF"
+    printf '  %sDocs:%s   README-DOCKER.md\n\n' "$C_BLD" "$C_OFF"
+    exec 3<&-
+    exit 0
 fi
 
-# ─── Next steps ─────────────────────────────────────────────────────
-step "Next steps"
+# Before the start question on purpose. The download is the single longest thing
+# the installer does, it is entirely independent of whether the stack comes up
+# now, and an operator who says "not now" still keeps the cached models for
+# whenever they do start it.
+if embeddings_are_local; then
+    step "Embedding models"
+    predownload_models
+fi
 
-CC="docker ${COMPOSE_ARGS[*]}"
+step "Services"
 
-# The list is one item longer when the stack was not started here, so the
-# numbers are counted rather than written out — a hardcoded "1." appearing
-# twice is exactly the kind of detail a reader stops trusting the rest over.
-N=0
-num() { N=$((N + 1)); printf '  %s%d.%s ' "$C_BLD" "$N" "$C_OFF"; }
-
-if [ "$STARTED" -eq 1 ]; then
+if ! confirm "Start the services now?" y; then
     printf '\n'
-    ok "Containers are up."
+    ok "Nothing started. Everything is configured and waiting."
     printf '\n'
-else
-    num; printf 'Start the stack\n\n'
     printf '       cd %s\n' "$REPO_ROOT"
-    if [ "$USE_GPU" -eq 1 ]; then
-        # --build is not optional on the GPU path: the CUDA image has to be
-        # built locally, since the published ones are CPU-only.
-        printf '       %s up -d --build\n\n' "$CC"
-        printf '     %sThe -f docker-compose.gpu.yml override is what reserves the GPU;%s\n' "$C_DIM" "$C_OFF"
-        printf '     %severy command below carries it for the same reason.%s\n\n' "$C_DIM" "$C_OFF"
-    else
-        printf '       %s up -d\n\n' "$CC"
-    fi
+    printf '       docker %s %s\n' "${COMPOSE_ARGS[*]}" "${UP_FLAGS[*]}"
+    printf '       docker %s exec mediawiki bash /setup.sh   %s# first boot, several minutes%s\n' \
+        "${COMPOSE_ARGS[*]}" "$C_DIM" "$C_OFF"
+    printf '       docker %s exec haystack python3 ingest_hdp_wiki.py   %s# chatbot index%s\n\n' \
+        "${COMPOSE_ARGS[*]}" "$C_DIM" "$C_OFF"
+    printf '  %sWiki:%s   %s   %slogin Admin / the password above%s\n' \
+        "$C_BLD" "$C_OFF" "$WIKI_URL" "$C_DIM" "$C_OFF"
+    printf '  %sDocs:%s   README-DOCKER.md\n\n' "$C_BLD" "$C_OFF"
+    exec 3<&-
+    exit 0
 fi
 
-num; printf 'Wait until mariadb and opensearch report "healthy" (30–60s)\n\n'
-printf '       %s ps\n\n' "$CC"
+printf '\n'
+start_stack
 
-num; printf 'Run the first-boot setup — installs MediaWiki + ~130 BlueSpice\n'
-printf '     extensions, creates the database schema and the Admin account.\n'
-printf '     Takes several minutes and only needs to be done once.\n\n'
-printf '       %s exec mediawiki bash /setup.sh\n\n' "$CC"
+printf '\n'
+ok "Containers are up."
+note "MariaDB and OpenSearch take 30–60s to report healthy. Waiting for them —"
+note "nothing below can run until they do."
+printf '\n'
 
-num; printf 'Open the wiki and log in as Admin\n\n'
-printf '       %s\n\n' "$MW_SERVER_VAL/w/"
-printf '     %sBlueSpice requires a login before any page is visible, including the%s\n' "$C_DIM" "$C_OFF"
-printf '     %smain page. A privacy consent prompt on first login is expected.%s\n\n' "$C_DIM" "$C_OFF"
+# 300s, not 60: OpenSearch on a cold single-node cluster with a slow disk is the
+# long pole, and failing here would abandon a stack that was merely slow. The
+# timeout exists so this cannot hang forever, not as an expected duration.
+if wait_ready "database and search  " 300 mariadb opensearch \
+    && wait_ready "wiki container      " 180 mediawiki; then
 
-num; printf 'Index the wiki for the chatbot (it answers nothing until this runs)\n\n'
-printf '       %s exec haystack python3 ingest_hdp_wiki.py --dry-run\n' "$CC"
-printf '       %s exec haystack python3 ingest_hdp_wiki.py\n\n' "$CC"
-if [ "$USE_GPU" -eq 1 ]; then
-    printf '     %sOn the GPU expect seconds rather than minutes per page; ingestion is%s\n' "$C_DIM" "$C_OFF"
+    step "First-boot setup"
+
+    info "Installing MediaWiki and ~130 BlueSpice extensions, creating the"
+    info "database schema and the Admin account. Several minutes, once ever."
+    printf '\n'
+    info "docker ${COMPOSE_ARGS[*]} exec -T mediawiki bash /setup.sh"
+    printf '\n'
+    # -T because stdin here is the installer's own stdin, which under
+    # `curl … | bash` is the script itself and is not a terminal. Without it
+    # compose refuses with "the input device is not a TTY" and the whole
+    # one-command promise dies on the last step.
+    docker "${COMPOSE_ARGS[@]}" exec -T mediawiki bash /setup.sh || SETUP_OK=0
 else
-    printf '     %sWith local CPU embeddings expect 1–3 min per page; ingestion is%s\n' "$C_DIM" "$C_OFF"
+    SETUP_OK=0
+    printf '\n'
+    warn "Services did not become healthy in time, so first-boot setup was not run."
 fi
-printf '     %sidempotent, so --missing-only resumes an interrupted run.%s\n\n' "$C_DIM" "$C_OFF"
 
-printf '  %sDocs:%s  README-DOCKER.md · docs/embedding-providers.md · docs/dev/AGENTS.md\n' "$C_BLD" "$C_OFF"
-printf '  %sLogs:%s  %s logs -f haystack\n\n' "$C_BLD" "$C_OFF" "$CC"
+# ─── Done ───────────────────────────────────────────────────────────
+if [ "$SETUP_OK" -eq 1 ]; then
+    step "Your wiki is ready"
 
+    printf '  %sWiki%s      %s%s%s\n' "$C_BLD" "$C_OFF" "$C_BLD$C_BLU" "$WIKI_URL" "$C_OFF"
+    printf '  %sLogin%s     Admin  /  %s%s%s\n' "$C_BLD" "$C_OFF" "$C_BLD" "$PW_ADMIN" "$C_OFF"
+    printf '\n'
+    note "BlueSpice shows nothing before you log in, including the main page."
+    note "A privacy consent prompt on first login is expected."
+    printf '\n'
+    printf '  %sOne thing left.%s The chatbot answers nothing until the wiki is indexed,\n' \
+        "$C_BLD" "$C_OFF"
+    printf '  which is a long job and is left to you to start when it suits:\n\n'
+    printf '       docker %s exec haystack python3 ingest_hdp_wiki.py\n\n' "${COMPOSE_ARGS[*]}"
+    if [ "$USE_GPU" -eq 1 ]; then
+        note "On the GPU expect seconds per page; --missing-only resumes an interrupted run."
+    else
+        note "With local CPU embeddings expect 1–3 min per page; --missing-only resumes"
+        note "an interrupted run."
+    fi
+    printf '\n'
+    printf '  %sLogs:%s  docker %s logs -f haystack\n' "$C_BLD" "$C_OFF" "${COMPOSE_ARGS[*]}"
+    printf '  %sDocs:%s  README-DOCKER.md · docs/embedding-providers.md\n\n' "$C_BLD" "$C_OFF"
+    exec 3<&-
+    exit 0
+fi
+
+# Setup did not complete. The containers are up, so this is a troubleshooting
+# problem and not a lost install — say exactly that, and do not pretend the
+# wiki is usable. Exit 1: something the installer set out to do did not happen,
+# and a caller that checks the status should hear about it.
+step "Services are up, but first-boot setup did not finish"
+
+warn "The wiki is not installed yet. Nothing is lost — the containers are"
+note "  running and setup.sh is safe to re-run once the cause is fixed."
+printf '\n'
+printf '  %sLook first at%s\n\n' "$C_BLD" "$C_OFF"
+printf '       docker %s ps\n' "${COMPOSE_ARGS[*]}"
+printf '       docker %s logs mariadb\n' "${COMPOSE_ARGS[*]}"
+printf '       docker %s logs mediawiki\n\n' "${COMPOSE_ARGS[*]}"
+printf '  %sThen re-run%s\n\n' "$C_BLD" "$C_OFF"
+printf '       docker %s exec mediawiki bash /setup.sh\n\n' "${COMPOSE_ARGS[*]}"
+printf '  %sWiki (once setup succeeds):%s %s   %slogin Admin / the password above%s\n' \
+    "$C_BLD" "$C_OFF" "$WIKI_URL" "$C_DIM" "$C_OFF"
+printf '  %sDocs:%s README-DOCKER.md\n\n' "$C_BLD" "$C_OFF"
 exec 3<&-
-exit 0
+exit 1

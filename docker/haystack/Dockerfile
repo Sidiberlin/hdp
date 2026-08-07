@@ -72,6 +72,13 @@ COPY docker/haystack/hdp_api_server.py /opt/pipeline/hdp_api_server.py
 COPY docker/infisical-loader.sh /infisical-loader.sh
 RUN chmod +x /opt/pipeline/entrypoint.sh /infisical-loader.sh
 
+# Re-declared: the ARG above the first FROM is only in scope for the FROM lines
+# themselves, so without this the two labels below interpolated to the empty
+# string and every image claimed hdp.device="". That was cosmetic while only one
+# variant was ever published; now that release.yml pushes both a CPU and a GPU
+# image, this label is how you tell a pulled image apart from its twin.
+ARG HAYSTACK_DEVICE
+
 # Label for documentation
 LABEL org.opencontainers.image.title="BlueSpice HDP Haystack Pipeline"
 LABEL org.opencontainers.image.description="RAG pipeline (hayhooks) for BlueSpice HDP — ${HAYSTACK_DEVICE} build"

@@ -118,13 +118,14 @@ curl -fsSL https://raw.githubusercontent.com/Sidiberlin/hdp/main/install.sh | ba
 
 The installer clones this repository, checks prerequisites, walks you through
 every configuration choice (secrets backend, wiki settings, LLM provider,
-embedding provider, passwords), writes `.env`, and offers to start the stack.
-If you would rather read the script first, `git clone` and run `./install.sh`
-from the checkout — same wizard.
+embedding provider, passwords), writes `.env`, then starts the stack and runs
+first-boot setup — so it ends at a wiki you can log into, with the URL and the
+Admin password printed. The one command left to you is indexing the wiki for the
+chatbot. If you would rather read the script first, `git clone` and run
+`./install.sh` from the checkout — same wizard.
 
 See [README-DOCKER.md](README-DOCKER.md) for hardware requirements, the manual
-setup path, configuration reference (`.env.example`), and what to run after the
-wizard finishes.
+setup path, and the configuration reference (`.env.example`).
 
 ## License
 

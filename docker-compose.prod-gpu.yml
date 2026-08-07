@@ -1,0 +1,91 @@
+---
+# Pull the published GPU images instead of building them.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.prod-gpu.yml up -d
+#
+# This is docker-compose.prod.yml and docker-compose.gpu.yml in one file, and it
+# replaces both — do not add either of them to the command above. It swaps the
+# three services this project builds for the images the `release` workflow
+# publishes to GHCR, takes the `-gpu` variant of haystack, and reserves the
+# host's NVIDIA GPU for it. A first `up` costs a download instead of a ~8 GB
+# CUDA build.
+#
+# ─── Why this is not just `-f prod.yml -f gpu.yml` ──────────────────
+#
+# That combination is broken, and it is the reason this file exists rather than
+# being spelled out at the command line. prod.yml's `build: !reset null` deletes
+# the inherited build block *including* `dockerfile: docker/haystack/Dockerfile`;
+# gpu.yml's `build.args` then re-create a `build:` key that has lost its
+# dockerfile and context, so compose falls back to its defaults and tries to
+# build ./Dockerfile, which does not exist. `config` parses; `up` fails.
+#
+# This file sets no build args at all — the device is baked into the published
+# `-gpu` image, chosen by release.yml's HAYSTACK_DEVICE=gpu build arg — so
+# nothing re-creates a `build:` key and there is nothing left to build.
+#
+# ─── What the host needs ────────────────────────────────────────────
+#
+# The NVIDIA Container Toolkit (package: nvidia-container-toolkit) installed and
+# wired into the Docker daemon. Without it `up` fails with "could not select
+# device driver "nvidia" with capabilities: [[gpu]]" — the daemon, not compose,
+# is what rejects the reservation. A working host driver is not enough; it says
+# nothing about whether containers can reach the GPU. Install and verify with:
+#
+#   sudo apt-get install -y nvidia-container-toolkit
+#   sudo nvidia-ctk runtime configure --runtime=docker
+#   sudo systemctl restart docker
+#   docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi
+#
+# ─── Pinning ────────────────────────────────────────────────────────
+#
+# HDP_IMAGE_TAG is shared with docker-compose.prod.yml and defaults to the same
+# release, so the `-gpu` haystack and the two CPU-agnostic services always come
+# from one publish. Override it in `.env` to move:
+#
+#   HDP_IMAGE_TAG=v5.1.9
+#
+# The suffix is appended after the tag — `v5.1.9` here means
+# `hdp-haystack:v5.1.9-gpu`. `latest-gpu` exists too and, like `latest`,
+# deliberately does not follow a pre-release tag (see
+# .github/workflows/release.yml).
+#
+# ─── Compose version ────────────────────────────────────────────────
+#
+# Needs compose >= 2.24 for the `!reset` tag, same as docker-compose.prod.yml.
+# Older compose fails to parse this file rather than silently ignoring the tag;
+# the fallback there is an explicit `docker compose ... pull` before `up`.
+#
+# ─── Authentication ─────────────────────────────────────────────────
+#
+# None needed. These packages are public, so `pull` and `up` work without a
+# `docker login` and without a token.
+services:
+  haystack:
+    build: !reset null
+    image: ghcr.io/sidiberlin/hdp-haystack:${HDP_IMAGE_TAG:-v5.1.9}-gpu
+    # Pinned here as well as in the image. Reserving the device only makes it
+    # visible; the pipeline still reads HAYSTACK_DEVICE at runtime to decide
+    # where to put the model. An operator who adds this override but forgets the
+    # .env line would otherwise get a CUDA image and a GPU reservation running
+    # everything on CPU — which looks like it works and is merely slow.
+    environment:
+      HAYSTACK_DEVICE: gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
+  chatbot-proxy:
+    build: !reset null
+    # No GPU variant: this service is a stateless HTTP adapter with no model in
+    # it, so release.yml publishes exactly one image for it.
+    image: ghcr.io/sidiberlin/hdp-chatbot-proxy:${HDP_IMAGE_TAG:-v5.1.9}
+
+  opensearch:
+    build: !reset null
+    # Likewise — the JVM does not care about the host GPU. Replaces the local
+    # `hdp-opensearch:2.18.0` tag docker-compose.yml sets.
+    image: ghcr.io/sidiberlin/hdp-opensearch:${HDP_IMAGE_TAG:-v5.1.9}

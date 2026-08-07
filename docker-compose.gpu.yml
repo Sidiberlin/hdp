@@ -39,22 +39,18 @@
 #
 # ─── Do not stack this on docker-compose.prod.yml ───────────────────
 #
-# Two independent reasons, and the second one is not obvious:
+# `-f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.gpu.yml`
+# is actively broken. prod.yml's `build: !reset null` deletes the inherited
+# build block *including* `dockerfile: docker/haystack/Dockerfile`; the
+# build.args above then re-create a `build:` key that has lost its dockerfile
+# and context. Compose fills in its defaults and tries to build ./Dockerfile,
+# which does not exist. `config` parses; `up` fails.
 #
-#  1. The published GHCR images are built with the default HAYSTACK_DEVICE=cpu
-#     (release.yml passes no build-arg), so they have no CUDA torch to use the
-#     device with. The reservation would succeed and change nothing.
-#
-#  2. `-f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.gpu.yml`
-#     is actively broken. prod.yml's `build: !reset null` deletes the inherited
-#     build block *including* `dockerfile: docker/haystack/Dockerfile`; the
-#     build.args above then re-create a `build:` key that has lost its
-#     dockerfile and context. Compose fills in its defaults and tries to build
-#     ./Dockerfile, which does not exist. `config` parses; `up` fails.
-#
-# On a GPU host, build from source. install.sh enforces this: pick "Build from
-# source" and it uses this override, pick the published images and it drops
-# back to CPU rather than producing either surprise.
+# If you want the GPU *without* building, that is what docker-compose.prod-gpu.yml
+# is for — a single override that pulls `hdp-haystack:<tag>-gpu` (release.yml
+# builds it with HAYSTACK_DEVICE=gpu) and reserves the device, with no build
+# key for anything to re-create. Use this file only when you are building from
+# source; install.sh tries prod-gpu.yml first and falls back to this one.
 services:
   haystack:
     build:

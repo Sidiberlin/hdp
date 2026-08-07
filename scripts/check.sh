@@ -46,7 +46,7 @@ IMG_COMPOSER="composer:2.8"
 RUFF_PINNED_VERSION="0.16.1"
 
 YAMLLINT_RULES='{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable}}'
-YAML_FILES=(docker-compose.yml docker-compose.prod.yml docker-compose.gpu.yml docker/ci/compose.cache.yml publiccode.yml VERSIONS.yml docker/haystack/hdp_pipeline.yaml .gitlab-ci.yml .github/workflows/)
+YAML_FILES=(docker-compose.yml docker-compose.prod.yml docker-compose.prod-gpu.yml docker-compose.gpu.yml docker/ci/compose.cache.yml publiccode.yml VERSIONS.yml docker/haystack/hdp_pipeline.yaml .gitlab-ci.yml .github/workflows/)
 
 # ─── Locate the repo ────────────────────────────────────────────────
 REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel 2>/dev/null || true)"
@@ -123,7 +123,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' pytest-haystack 'to_native + load_pipeline' "haystack-ai | $IMG_PYTHON"
     printf '%-16s %-34s %s\n' bats        'infisical-loader.sh behaviour' "bats | ${IMG_BATS%%@*}"
     printf '%-16s %-34s %s\n' php-lint    'syntax of app/settings.d/*.php' "php | $IMG_PHP"
-    printf '%-16s %-34s %s\n' compose     'compose + the prod override merge' 'docker compose v2'
+    printf '%-16s %-34s %s\n' compose     'compose + both prod overrides' 'docker compose v2'
     printf '%-16s %-34s %s\n' gitleaks    'no secrets in owned paths' 'gitleaks | zricethezav/gitleaks'
     printf '%-16s %-34s %s\n' env-example '.env.example covers compose' 'grep'
     printf '%-16s %-34s %s\n' publiccode  'publiccode.yml schema' 'italia/publiccode-parser-go'
@@ -453,18 +453,26 @@ check_compose_run() {
     local rc=0
     docker compose config --quiet || rc=1
 
-    # The published-image override is a documented deployment path
-    # (README-DOCKER.md), so it has to parse and it has to actually drop the
+    # The two published-image overrides are documented deployment paths
+    # (README-DOCKER.md), so each has to parse and each has to actually drop the
     # inherited `build:` keys. A service left with both `build:` and `image:`
     # is *built*, not pulled, whenever the image is not already local — which
     # turns "pull the pre-built images" into a five-minute build with no error
     # to explain it. `!reset` is what deletes the key, and it is silent when
     # it does not take, so assert the outcome rather than the syntax.
     #
+    # prod-gpu.yml additionally has to keep the two things that make it a GPU
+    # deployment at all: the `-gpu` image, and the nvidia device reservation.
+    # Both are easy to lose in a merge and neither fails loudly — the stack
+    # comes up and runs the whole pipeline on CPU, ten to a hundred times
+    # slower, with nothing in the logs to say so.
+    #
     # `--format json` and stdlib json, not PyYAML: check.sh runs on whatever
     # python3 a contributor has, and PyYAML is not in the standard library.
     # This is the same reason scripts/lib/read-manifest.py carries a fallback.
-    if [ -f docker-compose.prod.yml ]; then
+    local override
+    for override in docker-compose.prod.yml docker-compose.prod-gpu.yml; do
+        [ -f "$override" ] || continue
         local merged err
         # stderr to a file, not into `merged`. It used to be `2>&1`, which is
         # right for the failure branch below (it needs compose's message) and
@@ -476,26 +484,44 @@ check_compose_run() {
         # — an operator whose .env is merely incomplete got a JSONDecodeError
         # naming neither the variable nor the file.
         err="$(mktemp)"
-        if ! merged=$(docker compose -f docker-compose.yml -f docker-compose.prod.yml \
+        if ! merged=$(docker compose -f docker-compose.yml -f "$override" \
                           config --format json 2>"$err"); then
-            echo "docker-compose.prod.yml does not merge onto docker-compose.yml:"
+            echo "$override does not merge onto docker-compose.yml:"
             tail -5 "$err"
             rc=1
         elif ! printf '%s' "$merged" | python3 -c '
 import json, sys
+
+override = sys.argv[1]
 svcs = json.load(sys.stdin)["services"]
-bad = [s for s in ("haystack", "chatbot-proxy", "opensearch") if "build" in svcs.get(s, {})]
+built = ("haystack", "chatbot-proxy", "opensearch")
+
+bad = [s for s in built if "build" in svcs.get(s, {})]
 if bad:
-    print("docker-compose.prod.yml leaves a build: on " + ", ".join(bad) + " —")
+    print(override + " leaves a build: on " + ", ".join(bad) + " —")
     print("those services will be built, not pulled, on a host without the image.")
     print("each one needs \"build: !reset null\" in the override.")
     sys.exit(1)
-missing = [s for s in ("haystack", "chatbot-proxy", "opensearch")
+missing = [s for s in built
            if not svcs.get(s, {}).get("image", "").startswith("ghcr.io/")]
 if missing:
-    print("docker-compose.prod.yml does not point " + ", ".join(missing) + " at ghcr.io.")
+    print(override + " does not point " + ", ".join(missing) + " at ghcr.io.")
     sys.exit(1)
-'; then
+
+if override.endswith("prod-gpu.yml"):
+    hay = svcs.get("haystack", {})
+    image = hay.get("image", "")
+    if not image.endswith("-gpu"):
+        print(override + " pulls " + image + ", which is the CPU image.")
+        print("the GPU variant release.yml publishes carries a -gpu suffix.")
+        sys.exit(1)
+    devices = (hay.get("deploy", {}).get("resources", {})
+                  .get("reservations", {}).get("devices", []))
+    if not any(d.get("driver") == "nvidia" for d in devices):
+        print(override + " reserves no nvidia device for haystack —")
+        print("the CUDA image would come up and run everything on CPU.")
+        sys.exit(1)
+' "$override"; then
             rc=1
             # The warnings are not a failure on their own, but when the parse
             # went wrong they are usually the reason, so surface them here
@@ -503,7 +529,7 @@ if missing:
             [ -s "$err" ] && { echo "  compose also reported:"; sed 's/^/    /' "$err" | head -5; }
         fi
         rm -f "$err"
-    fi
+    done
 
     [ "$made_env" -eq 1 ] && rm -f .env
     return $rc
@@ -523,7 +549,7 @@ run_check pytest-unit     "stdlib unit tests"
 run_check pytest-haystack "to_native + load_pipeline"
 run_check bats       "infisical-loader behaviour"
 run_check php-lint   "app/settings.d syntax"
-run_check compose    "compose + prod override"
+run_check compose    "compose + prod overrides"
 run_check gitleaks     "no committed secrets"
 run_check env-example  ".env.example completeness"
 run_check publiccode   "publiccode.yml schema"

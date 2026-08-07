@@ -31,8 +31,9 @@ curl -fsSL https://raw.githubusercontent.com/Sidiberlin/hdp/main/install.sh | ba
 v2 and OpenSSL are present, and then walks you through every configuration
 choice: secrets backend (plain `.env` or Infisical), site name/language/port,
 LLM provider and API key, embedding provider, and the four passwords — which
-it can generate for you. It writes `.env`, shows a summary, and offers to
-start the stack.
+it can generate for you. It writes `.env`, shows a summary, and then brings the
+stack up and runs first-boot setup, so that what you have when it exits is a
+wiki you can log into rather than a list of commands still to run.
 
 Already cloned, or prefer to read a script before running it? Same wizard:
 
@@ -48,35 +49,45 @@ one setting without retyping the rest.
 
 ### What happens after the wizard
 
-The wizard offers to start the stack — either pulling the pre-built images
-(`docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`, a
-download) or building from source (`docker compose up -d --build`, ~5 minutes).
-It then prints these steps, which are still yours to run:
+Two questions after the configuration summary, and then it does the work itself:
+
+1. **"Pre-download embedding models now?"** — asked only with local embeddings.
+   The embedder and ranker (~1 GB) are fetched into the `haystack_models` volume
+   now, where you can watch them, rather than behind haystack's healthcheck for
+   the following five to ten minutes. Declining is fine: the container fetches
+   them itself on first start, into the same volume, once.
+2. **"Start the services now?"** — on yes, the installer pulls the published
+   images, runs `docker compose up -d`, waits for MariaDB, OpenSearch and the
+   wiki container to report healthy, and then runs `/setup.sh` itself — the
+   several-minute first-boot install of MediaWiki and ~130 BlueSpice extensions.
+   It closes by printing the wiki URL and the Admin login.
+
+It does not ask whether to pull or build. It tries the pull and falls back to a
+source build only if the registry cannot supply the images. On a GPU host the
+pull uses `docker-compose.prod-gpu.yml`; see [GPU inference](#gpu-inference).
+
+**One command is left to you.** Indexing the wiki for the chatbot takes 1–3
+minutes per page on CPU, so it is yours to start when it suits:
 
 ```bash
-# 1. Wait for MariaDB and OpenSearch to become healthy (30-60s)
-docker compose ps
-
-# 2. First-boot setup: installs MediaWiki + ~130 BlueSpice extensions.
-#    Several minutes, once per installation.
-docker compose exec mediawiki bash /setup.sh
-
-# 3. Open the wiki and log in
-open http://localhost:8080/w/
-
-# 4. Index the wiki for the chatbot — it answers nothing until this runs
 docker compose exec haystack python3 ingest_hdp_wiki.py --dry-run   # preview
 docker compose exec haystack python3 ingest_hdp_wiki.py             # for real
 ```
 
 **Login:** `Admin` / (the `HDP_ADMIN_PASSWORD` the wizard generated or you set
-in `.env` or Infisical)
+in `.env` or Infisical). The installer prints it at the end.
+
+Answer "no" to starting, or leave the Docker daemon stopped, and the installer
+prints the two or three commands that reach the same place and exits 0. If
+first-boot setup fails it leaves the containers up, prints the logs to look at
+and the command to re-run, and exits 1 rather than claiming success.
 
 <details>
 <summary><strong>Manual setup — skip the wizard</strong></summary>
 
-`install.sh` only writes `.env`; nothing in the stack depends on having used
-it. The equivalent by hand:
+Nothing in the stack depends on having used `install.sh` — the only file it
+writes is `.env`, and everything after that is the commands below. The
+equivalent by hand:
 
 ```bash
 # 1. Configure environment
@@ -90,6 +101,8 @@ cp .env.example .env
 docker compose up -d --build
 #    ...or pull the pre-built images instead of building:
 #    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+#    ...on an NVIDIA host, the pre-built GPU images:
+#    docker compose -f docker-compose.yml -f docker-compose.prod-gpu.yml up -d
 
 # 3. Wait for MariaDB and OpenSearch to be healthy (30-60s)
 docker compose ps
@@ -180,13 +193,20 @@ below.
 The three custom images are published to the GitHub Container Registry on
 every `v*` tag by [`.github/workflows/release.yml`](.github/workflows/release.yml):
 
-| Image | Approx. size |
-|---|---|
-| `ghcr.io/sidiberlin/hdp-haystack` | 2.57 GB |
-| `ghcr.io/sidiberlin/hdp-opensearch` | 2.47 GB |
-| `ghcr.io/sidiberlin/hdp-chatbot-proxy` | 177 MB |
+| Image | Tag | Approx. size |
+|---|---|---|
+| `ghcr.io/sidiberlin/hdp-haystack` | `v5.1.9`, `latest` | 2.57 GB |
+| `ghcr.io/sidiberlin/hdp-haystack` | `v5.1.9-gpu`, `latest-gpu` | ~8 GB |
+| `ghcr.io/sidiberlin/hdp-opensearch` | `v5.1.9`, `latest` | 2.47 GB |
+| `ghcr.io/sidiberlin/hdp-chatbot-proxy` | `v5.1.9`, `latest` | 177 MB |
 
 `linux/amd64` only.
+
+Haystack is published twice because PyTorch is chosen at build time: the `-gpu`
+tag carries the CUDA wheels and the unsuffixed tag carries the CPU-only ones. No
+runtime flag converts one into the other. OpenSearch and the chatbot proxy have
+no model in them and are published once each — the GPU deployment uses exactly
+the same two images. See [GPU inference](#gpu-inference).
 
 ### Two supported paths, and which to use
 
@@ -203,7 +223,8 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 This is for operators deploying a release unchanged. It trades the ~5 minute
 build for a download, and it pins you to a published tag rather than to your
-working tree.
+working tree. On an NVIDIA host use `docker-compose.prod-gpu.yml` in its place —
+same idea, `-gpu` haystack image, device reserved.
 
 **Requires Docker Compose ≥ 2.24.** Check with `docker compose version`.
 `docker-compose.yml` declares `build:` for these three services, and a service
@@ -223,13 +244,16 @@ docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
 ### Pinning a version
 
-`docker-compose.prod.yml` defaults to the release it ships with, so a fresh
-clone gets a known-good set with no configuration. To move, set the tag in
-`.env`:
+`docker-compose.prod.yml` and `docker-compose.prod-gpu.yml` default to the
+release they ship with, so a fresh clone gets a known-good set with no
+configuration. To move, set the tag in `.env`:
 
 ```bash
 HDP_IMAGE_TAG=v5.1.9
 ```
+
+Both files read the same variable, and the GPU one appends its suffix after it —
+`HDP_IMAGE_TAG=v5.1.9` there means `hdp-haystack:v5.1.9-gpu`.
 
 `:latest` exists but deliberately does not follow a pre-release tag — `v5.1.9`
 moves it, `v5.1.9-rc1` does not. Pin explicitly for anything you care about.
@@ -255,19 +279,37 @@ that label.
 ## GPU inference
 
 Embedding a wiki page on CPU takes 1–3 minutes; on an NVIDIA GPU it takes
-seconds. `install.sh` detects a GPU and offers to use it; to enable it by hand,
-set `HAYSTACK_DEVICE=gpu` in `.env` and add the override:
+seconds. `install.sh` detects a GPU and offers to use it. By hand there are two
+paths, and they use **different override files** — pick one, do not combine them.
+
+**Pull the pre-built GPU image.** Since `v5.1.9` the release workflow publishes a
+CUDA build of the haystack image under a `-gpu` tag, so a GPU host no longer has
+to build ~8 GB from source:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.prod-gpu.yml pull
+docker compose -f docker-compose.yml -f docker-compose.prod-gpu.yml up -d
+```
+
+`docker-compose.prod-gpu.yml` is `docker-compose.prod.yml` and
+`docker-compose.gpu.yml` merged into one file: it pulls
+`ghcr.io/sidiberlin/hdp-haystack:${HDP_IMAGE_TAG:-v5.1.9}-gpu` plus the two
+device-agnostic images, and reserves the host GPU for `haystack`. It replaces
+both — adding either of them to that command is wrong.
+
+**Build from source.** Set `HAYSTACK_DEVICE=gpu` in `.env` and add the build
+override:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build
 ```
 
-The override reserves the host GPU for the `haystack` service and pins
+That override reserves the host GPU for the `haystack` service and pins
 `HAYSTACK_DEVICE=gpu` for both the build and the container, so the image is
 built with CUDA PyTorch (~8 GB, against ~2 GB for the CPU image).
 
-The host needs the **NVIDIA Container Toolkit** — a working driver is not
-enough, since that says nothing about whether containers can reach the GPU:
+Either way the host needs the **NVIDIA Container Toolkit** — a working driver is
+not enough, since that says nothing about whether containers can reach the GPU:
 
 ```bash
 sudo apt-get install -y nvidia-container-toolkit
@@ -280,13 +322,17 @@ docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi
 Without it, `up` fails with `could not select device driver "nvidia" with
 capabilities: [[gpu]]`.
 
-Do **not** stack this on `docker-compose.prod.yml`. The published images are
-CPU-only builds, so the reservation would buy nothing — and the combination is
-worse than useless: `prod.yml`'s `build: !reset null` drops the inherited
-`dockerfile:` path, the GPU override's build args re-create a `build:` key
-without one, and `up` then tries to build a non-existent `./Dockerfile`. On a
-GPU host, build from source. (`install.sh` already enforces this: choosing the
-published images turns GPU mode back off and says so.)
+Do **not** stack `docker-compose.gpu.yml` on `docker-compose.prod.yml`. That
+combination parses and then fails at `up`: `prod.yml`'s `build: !reset null`
+drops the inherited `dockerfile:` path, the GPU override's build args re-create a
+`build:` key without one, and compose then tries to build a non-existent
+`./Dockerfile`. `docker-compose.prod-gpu.yml` exists precisely so that "GPU
+without building" is one file rather than that combination — it sets no build
+args at all, because the device is already baked into the `-gpu` image.
+
+`install.sh` picks between the two for you: choose GPU inference and it tries
+`prod-gpu.yml` first, falling back to `gpu.yml` and a source build only if the
+`-gpu` image cannot be pulled.
 
 ## What `setup.sh` Does
 

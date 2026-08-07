@@ -104,6 +104,12 @@ REQUIRED_FILES=(
     # offers it as the alternative to a ~5 minute build, so a clone without it
     # has a documented command that fails on the file not existing.
     docker-compose.prod.yml
+    # The same path on a GPU host, and the only one that pulls the `-gpu`
+    # haystack image release.yml publishes. install.sh names this file whenever
+    # the operator picks GPU inference *and* pre-built images — the combination
+    # that used to be refused — so a clone without it turns that answer into "no
+    # such file or directory" at the first `up`.
+    docker-compose.prod-gpu.yml
     scripts/convert-docs.sh
     # convert-docs.sh exits 1 without this — it owns the page mapping, the
     # source list and the post-processor, so a clone missing it cannot
