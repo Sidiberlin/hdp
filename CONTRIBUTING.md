@@ -1,8 +1,8 @@
 # Contributing to HDP / Beiträge leisten
 
-> **EN:** Contributions are welcome! This project is funded by BMBF and developed as an open-source BlueSpice MediaWiki distribution with a Haystack RAG chatbot.
+> **EN:** Contributions are welcome! This is a community fork of BlueSpice HDP Edition. The original project was funded by the German BMBF; this fork is independently maintained and adds a self-hosted Haystack RAG pipeline, Docker deployment, and quality tooling.
 >
-> **DE:** Beiträge sind willkommen! Dieses Projekt wird vom BMBF gefördert und als Open-Source-BlueSpice-MediaWiki-Distribution mit Haystack-RAG-Chatbot entwickelt.
+> **DE:** Beiträge sind willkommen! Dies ist ein Community-Fork der BlueSpice HDP Edition. Das Originalprojekt wurde vom deutschen BMBF gefördert; dieser Fork wird unabhängig gepflegt und ergänzt eine selbstgehostete Haystack-RAG-Pipeline, Docker-Bereitstellung und Qualitätswerkzeuge.
 
 ---
 

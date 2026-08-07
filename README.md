@@ -134,8 +134,10 @@ GPL-3.0-only.
 
 ## Original Project Description / Ursprüngliche Projektbeschreibung
 
-*The following section is the original German-language project description
-from the upstream BMBF-funded project, kept here for historical context.*
+*The following is the original German-language project description from the
+upstream project. It is reproduced here for attribution and historical
+context. **This fork is not BMBF-funded** — it is an independent community
+effort that builds on the upstream codebase.*
 
 **Original repository:** [gitlab.opencode.de/bmbf/teamdigital/hdp](https://gitlab.opencode.de/bmbf/teamdigital/hdp)
 
