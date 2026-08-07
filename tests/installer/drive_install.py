@@ -16,7 +16,6 @@ import pty
 import re
 import select
 import shutil
-import subprocess
 import sys
 import tempfile
 

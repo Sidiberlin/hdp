@@ -109,6 +109,22 @@ fi
 echo "Rendering pipeline embedder block for HDP_EMBEDDING_PROVIDER=${HDP_EMBEDDING_PROVIDER}..."
 python3 "$PIPELINE_DIR/render_pipeline.py" "$PIPELINE_FILE"
 
+# Re-assert the hayhooks numpy serialization patch. The Dockerfile applies this
+# at build time and fails the build if it cannot, so on a stock image this is a
+# no-op that costs one interpreter start — it re-reads the file, finds the
+# marker and returns. It is here for what it prints: one line in the container
+# log saying whether hayhooks' :1416 endpoint can serialize its own results, so
+# `docker compose logs haystack | grep "numpy patch"` answers that question
+# without exec'ing into the container. It also re-applies the patch if hayhooks
+# was reinstalled inside a running container, which is the one way the built-in
+# copy can go missing.
+#
+# Deliberately not fatal: the build-time apply is the guarantee, and a container
+# that starts and serves the :1417 API is more useful than one that refuses to
+# boot because a defensive re-check failed.
+python3 -m hayhooks_numpy_patch \
+    || echo "WARNING: could not verify the hayhooks numpy patch. Queries to hayhooks on :${HAYHOOKS_PORT} may fail to serialize (see docker/haystack/hayhooks_numpy_patch.py). The API on :${HDP_PDF_PORT} is unaffected."
+
 # Start hayhooks server in background
 echo "Starting hayhooks on port ${HAYHOOKS_PORT}..."
 hayhooks run --host 0.0.0.0 --port "$HAYHOOKS_PORT" &

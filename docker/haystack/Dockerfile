@@ -84,6 +84,24 @@ RUN pip install --no-cache-dir \
 # bind-mounted read-only at run time, so no test code ships in the image.
 # Keep the version in step with tests/requirements.txt.
 
+# ---- Patch hayhooks for numpy serialization ----
+# hayhooks' own /{pipeline}/run endpoint (:1416) hands the pipeline result to a
+# Pydantic response model, and Haystack puts numpy.float32 in Document.score —
+# which Pydantic cannot serialize. A successful query returns 500. Upstream has
+# not fixed this as of 1.23.0; the module's docstring has the detail.
+#
+# This RUN must stay *after* the pip install above: it edits an installed file,
+# so a reordering would have pip overwrite the patch. It fails the build if the
+# anchor is not found, which is what a hayhooks version bump will do — that is
+# the intent, not a bug. The module is installed into site-packages (rather
+# than /opt/pipeline) because the patched deploy_utils.py imports it from
+# inside site-packages, where /opt/pipeline is not on sys.path.
+COPY docker/haystack/hayhooks_numpy_patch.py /tmp/hayhooks_numpy_patch.py
+RUN SITE_PACKAGES="$(python3 -c 'import sysconfig; print(sysconfig.get_paths()["purelib"])')" \
+    && cp /tmp/hayhooks_numpy_patch.py "$SITE_PACKAGES/hayhooks_numpy_patch.py" \
+    && rm /tmp/hayhooks_numpy_patch.py \
+    && python3 -m hayhooks_numpy_patch
+
 COPY docker/haystack/hdp_pipeline.yaml /opt/pipeline/hdp_pipeline.yaml
 COPY docker/haystack/render_pipeline.py /opt/pipeline/render_pipeline.py
 COPY docker/haystack/entrypoint.sh /opt/pipeline/entrypoint.sh
