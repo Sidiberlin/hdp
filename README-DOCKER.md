@@ -204,7 +204,11 @@ every `v*` tag by [`.github/workflows/release.yml`](.github/workflows/release.ym
 
 Haystack is published twice because PyTorch is chosen at build time: the `-gpu`
 tag carries the CUDA wheels and the unsuffixed tag carries the CPU-only ones. No
-runtime flag converts one into the other. OpenSearch and the chatbot proxy have
+runtime flag converts one into the other. The `-gpu` tag is a **CUDA 12.4**
+build and needs a driver that supports 12.4 or newer; an older driver has to
+build from source with `HAYSTACK_CUDA_VERSION=cu118` — see
+[Driver compatibility](#driver-compatibility-haystack_cuda_version).
+OpenSearch and the chatbot proxy have
 no model in them and are published once each — the GPU deployment uses exactly
 the same two images. See [GPU inference](#gpu-inference).
 
@@ -308,6 +312,46 @@ That override reserves the host GPU for the `haystack` service and pins
 `HAYSTACK_DEVICE=gpu` for both the build and the container, so the image is
 built with CUDA PyTorch (~8 GB, against ~2 GB for the CPU image).
 
+### Driver compatibility (`HAYSTACK_CUDA_VERSION`)
+
+NVIDIA drivers are backward compatible but not forward compatible: a newer
+driver runs an older CUDA runtime, never the other way round. The published
+`-gpu` image and the default source build both carry **CUDA 12.4** PyTorch, so
+they need a driver that supports CUDA 12.4 or newer. On an older one the
+container builds, starts, passes its healthcheck, and then fails on the first
+embedding with:
+
+```
+CUDA driver version is insufficient for CUDA runtime version
+```
+
+`nvidia-smi` prints the ceiling in its header — `CUDA Version: 12.4` means "the
+highest CUDA this driver supports", not "the toolkit installed here":
+
+| Driver supports  | `HAYSTACK_CUDA_VERSION` | How to get it                    |
+| ---------------- | ----------------------- | -------------------------------- |
+| CUDA 12.4+       | `cu124` (default)       | pre-built `-gpu` image, or source |
+| CUDA 11.8 – 12.3 | `cu118`                 | source build only                |
+| below CUDA 11.8  | —                       | no GPU build works; use CPU or update the driver |
+
+A CUDA 12.0 driver takes `cu118`, not `cu124`: `cu118` wheels run on every
+driver from 11.8 up, 12.x included. There is no pre-built `cu118` image, so that
+host must build from source:
+
+```bash
+# in .env
+HAYSTACK_DEVICE=gpu
+HAYSTACK_CUDA_VERSION=cu118
+
+docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build
+```
+
+`install.sh` does all of this for you: it reads the ceiling out of `nvidia-smi`,
+writes the matching `HAYSTACK_CUDA_VERSION`, skips the pre-built image when it
+would not run, and falls back to CPU embeddings on a driver older than 11.8.
+Changing the variable later means a rebuild — the wheels are chosen at build
+time, not at start-up.
+
 Either way the host needs the **NVIDIA Container Toolkit** — a working driver is
 not enough, since that says nothing about whether containers can reach the GPU:
 
@@ -315,7 +359,9 @@ not enough, since that says nothing about whether containers can reach the GPU:
 sudo apt-get install -y nvidia-container-toolkit
 sudo nvidia-ctk runtime configure --runtime=docker
 sudo systemctl restart docker
-# verify:
+# verify (use an image tag your driver supports — 11.8.0-base-ubuntu22.04 on a
+# driver whose ceiling is below CUDA 12.4, or this check fails for a reason that
+# has nothing to do with the toolkit):
 docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi
 ```
 
@@ -332,7 +378,8 @@ args at all, because the device is already baked into the `-gpu` image.
 
 `install.sh` picks between the two for you: choose GPU inference and it tries
 `prod-gpu.yml` first, falling back to `gpu.yml` and a source build only if the
-`-gpu` image cannot be pulled.
+`-gpu` image cannot be pulled — or, on a driver that needs `cu118`, without
+trying the pull at all.
 
 ## What `setup.sh` Does
 

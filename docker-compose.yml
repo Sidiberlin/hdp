@@ -212,6 +212,11 @@ services:
       dockerfile: docker/haystack/Dockerfile
       args:
         HAYSTACK_DEVICE: ${HAYSTACK_DEVICE:-cpu}
+        # Ignored by the CPU stage, which pins its own CPU-only index URL.
+        # Threaded here anyway so `HAYSTACK_DEVICE=gpu` in .env builds the CUDA
+        # wheels the host driver can actually run, whether or not the operator
+        # remembered to add docker-compose.gpu.yml. See that file's header.
+        HAYSTACK_CUDA_VERSION: ${HAYSTACK_CUDA_VERSION:-cu124}
     restart: unless-stopped
     ports:
       # Bound to loopback on purpose. Neither port carries any authentication:

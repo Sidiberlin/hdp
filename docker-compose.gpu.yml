@@ -37,6 +37,20 @@
 # GPU-reserving container running CPU-only torch — which looks like it works
 # and is merely slow.
 #
+# ─── Why HAYSTACK_CUDA_VERSION is here ──────────────────────────────
+#
+# Which CUDA build of PyTorch goes into the image. Defaults to cu124, which is
+# also what the published -gpu image carries, so leaving it unset changes
+# nothing. Set it to cu118 in .env when the host's NVIDIA driver is older than
+# CUDA 12.4 — drivers are backward compatible, not forward compatible, so a
+# cu124 torch on a 12.0 driver fails at model load with "CUDA driver version is
+# insufficient for CUDA runtime version". install.sh reads the ceiling out of
+# nvidia-smi and writes this line for you; by hand, `nvidia-smi` prints it as
+# "CUDA Version:" in its header.
+#
+# This is a build arg only. There is no pre-built cu118 image, which is exactly
+# why the installer forces the from-source path on such a host.
+#
 # ─── Do not stack this on docker-compose.prod.yml ───────────────────
 #
 # `-f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.gpu.yml`
@@ -56,6 +70,7 @@ services:
     build:
       args:
         HAYSTACK_DEVICE: gpu
+        HAYSTACK_CUDA_VERSION: ${HAYSTACK_CUDA_VERSION:-cu124}
     environment:
       HAYSTACK_DEVICE: gpu
     deploy:

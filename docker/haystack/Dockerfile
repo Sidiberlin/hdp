@@ -4,12 +4,21 @@
 # Build args:
 #   HAYSTACK_DEVICE=cpu   (default) — CPU-only PyTorch, ~2GB image
 #   HAYSTACK_DEVICE=gpu             — CUDA PyTorch, ~8GB image (needs NVIDIA runtime)
+#   HAYSTACK_CUDA_VERSION=cu124 (default) — which CUDA PyTorch build, gpu only
 #
 # In docker-compose.yml:
 #   CPU:  just `docker compose build haystack`
 #   GPU:  set HAYSTACK_DEVICE=gpu in .env, add deploy.resources.reservations.devices
 
 ARG HAYSTACK_DEVICE=cpu
+
+# Declared here as well as inside deps-gpu, for two reasons that are both about
+# builds that do not use it: a global ARG is what makes BuildKit accept the
+# value on a CPU build instead of warning that the build-arg was not consumed
+# (docker-compose.yml passes both args for either device), and it is where you
+# look for the default. The stage below re-declares it because a global ARG is
+# out of scope inside a build stage — only the FROM lines can read it.
+ARG HAYSTACK_CUDA_VERSION=cu124
 
 FROM python:3.11-slim-bookworm AS base
 
@@ -28,12 +37,25 @@ RUN pip install --no-cache-dir \
     --index-url https://download.pytorch.org/whl/cpu
 
 # ---- GPU variant: install CUDA PyTorch ----
+# The index URL is not optional decoration. Without it pip takes whatever CUDA
+# build PyPI currently defaults to — cu124 today — and NVIDIA drivers are
+# backward compatible but not forward compatible: a driver that tops out at
+# CUDA 12.0 loads a cu118 torch fine and dies on a cu124 one with "CUDA driver
+# version is insufficient for CUDA runtime version", at model load, inside the
+# container, long after the build looked like it worked. install.sh reads the
+# host driver's ceiling out of nvidia-smi and pins this arg accordingly.
+#
+# cu124 stays the default so the published -gpu image and every existing build
+# are unchanged. Only deps-gpu carries the index URL, so the CPU stage above
+# still gets its CPU-only wheels.
 FROM base AS deps-gpu
+ARG HAYSTACK_CUDA_VERSION=cu124
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libgl1 \
         libglib2.0-0 \
     && pip install --no-cache-dir \
         torch \
+        --index-url "https://download.pytorch.org/whl/${HAYSTACK_CUDA_VERSION}" \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ---- Final stage: common deps + pipeline on top of selected torch ----

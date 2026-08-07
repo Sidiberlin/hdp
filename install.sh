@@ -516,15 +516,97 @@ if have nvidia-smi && nvidia-smi -L >/dev/null 2>&1; then
 elif [ -d /proc/driver/nvidia ]; then
     GPU_DETECTED=1
 fi
+
+# ─── Which PyTorch CUDA build this host's driver can run ────────────
+# `pip install torch` with no index URL takes whatever CUDA build PyPI
+# currently defaults to — cu124 today. NVIDIA drivers are backward compatible
+# but not forward compatible: a driver whose ceiling is CUDA 12.0 loads a cu118
+# torch happily and dies on a cu124 one with "CUDA driver version is
+# insufficient for CUDA runtime version". That failure arrives at model load,
+# inside the container, minutes after an install that looked like it worked, so
+# it is worth two seconds of nvidia-smi here.
+#
+# nvidia-smi's header prints the highest CUDA version the *driver* supports,
+# which is the number to compare against — not the CUDA toolkit that may or may
+# not be installed alongside it.
+#
+# The cu124 threshold is 12.4 and not 12.0: cu124 wheels want a 12.4 driver,
+# while cu118 wheels run on anything from 11.8 up, every 12.x driver included.
+# A 12.0 driver therefore takes cu118 — the closest build below it, not the
+# nearest 12.x one.
+CUDA_MIN_CU124='12.4'
+CUDA_MIN_CU118='11.8'
+
+CUDA_MAX=''          # highest CUDA the host driver supports, e.g. 12.4
+CUDA_WHEEL_TAG=''    # cu124 | cu118 | '' when no supported build fits
+CUDA_UNKNOWN=0       # nvidia-smi told us nothing parseable
+CUDA_TOO_OLD=0       # driver predates every PyTorch GPU build available
+CUDA_VERIFY_TAG=''   # nvidia/cuda image tag this driver can actually run
+
+# ver_ge <a> <b> — true when version a is at least version b.
+ver_ge() {
+    [ "$1" = "$2" ] && return 0
+    [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -1)" = "$1" ]
+}
+
+if [ "$GPU_DETECTED" -eq 1 ] && have nvidia-smi; then
+    # Two spellings of one field: the header table is what every normal driver
+    # prints, `-q` covers the packages that ship nvidia-smi without it. sed and
+    # not grep -oP — -P is a GNU extension and this is not a line worth losing
+    # on a host whose grep lacks it.
+    CUDA_MAX="$(nvidia-smi 2>/dev/null \
+        | sed -n 's/.*CUDA Version: *\([0-9][0-9.]*\).*/\1/p' | head -1)"
+    [ -n "$CUDA_MAX" ] || CUDA_MAX="$(nvidia-smi -q 2>/dev/null \
+        | sed -n 's/.*CUDA Version *: *\([0-9][0-9.]*\).*/\1/p' | head -1)"
+fi
+
+# Unparseable is not the same as too old, and the two get opposite treatment:
+# an unknown version defaults to cu124 and says so, because refusing the GPU on
+# a host that may well support it would be the more expensive mistake.
+case "$CUDA_MAX" in
+    ''|*[!0-9.]*)
+        CUDA_MAX=''; CUDA_UNKNOWN=1; CUDA_WHEEL_TAG='cu124' ;;
+    *)
+        if ver_ge "$CUDA_MAX" "$CUDA_MIN_CU124"; then
+            CUDA_WHEEL_TAG='cu124'
+        elif ver_ge "$CUDA_MAX" "$CUDA_MIN_CU118"; then
+            CUDA_WHEEL_TAG='cu118'
+        else
+            CUDA_TOO_OLD=1; CUDA_WHEEL_TAG=''
+        fi ;;
+esac
+
+# The image the toolkit-verification command below uses. It must be one this
+# driver can run: nvidia/cuda:12.4.0-base on a 12.0 driver fails with the very
+# error this detection exists to avoid, and an operator debugging *that* would
+# reasonably conclude their container toolkit is broken when it is fine.
+case "$CUDA_WHEEL_TAG" in
+    cu118) CUDA_VERIFY_TAG='11.8.0-base-ubuntu22.04' ;;
+    *)     CUDA_VERIFY_TAG='12.4.0-base-ubuntu22.04' ;;
+esac
+
 if [ "$GPU_DETECTED" -eq 1 ]; then
     ok "NVIDIA GPU detected${GPU_NAMES:+: $GPU_NAMES}"
+    if [ "$CUDA_TOO_OLD" -eq 1 ]; then
+        note "  Driver supports CUDA $CUDA_MAX — older than every PyTorch GPU build"
+        note "  (the oldest, cu118, needs CUDA $CUDA_MIN_CU118)"
+    elif [ "$CUDA_UNKNOWN" -eq 1 ]; then
+        note "  Driver CUDA version could not be read from nvidia-smi"
+    else
+        note "  Driver supports CUDA $CUDA_MAX — using PyTorch $CUDA_WHEEL_TAG build"
+    fi
 fi
 
 # The menu changes based on whether a GPU is visible. When detected, "Local GPU"
 # is the default (it's why you'd run on a GPU box). When not detected, GPU is
 # still listed — the installer may be running inside a container that can't see
 # the host's GPU, and the user knows their hardware.
-if [ "$GPU_DETECTED" -eq 1 ]; then
+#
+# A GPU whose driver is too old for every PyTorch build is the one case where a
+# GPU is present and GPU is still not the default: pressing Enter would pick an
+# option this script is about to refuse, which is a bad default no matter how
+# good the hardware is.
+if [ "$GPU_DETECTED" -eq 1 ] && [ "$CUDA_TOO_OLD" -eq 0 ]; then
     DEFAULT_EMBED=3
 else
     DEFAULT_EMBED=1
@@ -538,6 +620,10 @@ ask_choice "Embeddings" "$DEFAULT_EMBED" \
 EMBED_SUMMARY='local (CPU, in-container)'
 EMBED_DEVICE='cpu'
 USE_GPU=0
+# Set when the driver needs a PyTorch build the published -gpu image does not
+# carry. release.yml publishes exactly one GPU image and it is cu124, so a
+# cu118 host has nothing to pull that would work and must build from source.
+GPU_FORCE_BUILD=0
 
 case "$REPLY_CHOICE" in
     1)
@@ -580,7 +666,27 @@ case "$REPLY_CHOICE" in
     3)
         # Local GPU — CUDA PyTorch variant, needs nvidia-container-toolkit
         GPU_PROCEED=1
-        if [ "$GPU_DETECTED" -eq 1 ]; then
+        GPU_FELL_BACK_REASON='fell back from GPU'
+        # The too-old check comes first, ahead of "using the detected GPU": on
+        # this host there is a GPU and it still cannot be used, and announcing
+        # it before refusing it reads like a bug.
+        #
+        # A driver below CUDA 11.8 runs no PyTorch GPU wheel there is to
+        # install, so the fallback is automatic rather than a question:
+        # proceeding produces an image that builds, starts, passes its
+        # healthcheck and then fails on the first embedding. The operator's real
+        # choice is "update the driver or stay on CPU", and that is not one this
+        # installer can make for them mid-run.
+        if [ "$CUDA_TOO_OLD" -eq 1 ]; then
+            GPU_PROCEED=0
+            GPU_FELL_BACK_REASON="driver supports only CUDA $CUDA_MAX"
+            warn "This host's NVIDIA driver supports only CUDA $CUDA_MAX."
+            note "  The oldest PyTorch GPU build available is cu118, which needs a driver"
+            note "  supporting CUDA $CUDA_MIN_CU118 — so GPU mode here would fail at model load"
+            note "  with \"CUDA driver version is insufficient for CUDA runtime version\"."
+            note "  Update the NVIDIA driver and re-run this installer to use the GPU."
+            printf '\n'
+        elif [ "$GPU_DETECTED" -eq 1 ]; then
             ok "Using the detected NVIDIA GPU${GPU_NAMES:+: $GPU_NAMES}"
         else
             warn "No NVIDIA GPU was detected by the installer."
@@ -591,22 +697,42 @@ case "$REPLY_CHOICE" in
 
         if [ "$GPU_PROCEED" -eq 1 ]; then
             USE_GPU=1
+            [ "$CUDA_WHEEL_TAG" = 'cu124' ] || GPU_FORCE_BUILD=1
             set_env HDP_EMBEDDING_PROVIDER local
             set_env HDP_EMBEDDING_BASE_URL ""
             set_env HDP_EMBEDDING_API_KEY ""
             set_env HAYSTACK_DEVICE gpu
-            EMBED_DEVICE='gpu (NVIDIA)'
+            set_env HAYSTACK_CUDA_VERSION "$CUDA_WHEEL_TAG"
+            EMBED_DEVICE="gpu (NVIDIA, $CUDA_WHEEL_TAG)"
             EMBED_SUMMARY='local (GPU, in-container)'
             [ -n "$(get_env HDP_EMBEDDING_MODEL)" ] \
                 || set_env HDP_EMBEDDING_MODEL "mixedbread-ai/deepset-mxbai-embed-de-large-v1"
             [ -n "$(get_env HDP_EMBEDDING_DIM)" ] || set_env HDP_EMBEDDING_DIM 1024
             printf '\n'
             ok "HAYSTACK_DEVICE=gpu — the CUDA PyTorch variant (~8 GB image)."
-            note "Available both pre-built (ghcr.io/…/hdp-haystack:<tag>-gpu) and from source."
+            if [ "$CUDA_UNKNOWN" -eq 1 ]; then
+                warn "Could not determine the CUDA driver version. Defaulting to cu124."
+                note "  If the container reports \"CUDA driver version insufficient\", set"
+                note "  HAYSTACK_CUDA_VERSION=cu118 in .env and rebuild:"
+                note "    docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build"
+            else
+                ok "HAYSTACK_CUDA_VERSION=$CUDA_WHEEL_TAG — matched to a driver that supports CUDA $CUDA_MAX."
+            fi
+            if [ "$GPU_FORCE_BUILD" -eq 1 ]; then
+                warn "The pre-built GPU image carries CUDA 12.4 PyTorch, which this driver"
+                note "  cannot run. Building from source with the $CUDA_WHEEL_TAG wheels instead —"
+                note "  one slower install, and the only build that will actually start."
+            else
+                note "Available both pre-built (ghcr.io/…/hdp-haystack:<tag>-gpu) and from source."
+            fi
             warn "Install the NVIDIA Container Toolkit on the host first:"
             note "    sudo apt-get install -y nvidia-container-toolkit"
             note "    sudo nvidia-ctk runtime configure --runtime=docker && sudo systemctl restart docker"
-            note "  Verify: docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi"
+            # The verification image has to be one this driver can run, or the
+            # check fails for a reason that has nothing to do with the toolkit
+            # it is meant to be testing — which is exactly the confusion this
+            # whole detection step exists to prevent.
+            note "  Verify: docker run --rm --gpus all nvidia/cuda:${CUDA_VERIFY_TAG} nvidia-smi"
         else
             # User declined GPU — fall back to CPU
             set_env HDP_EMBEDDING_PROVIDER local
@@ -616,7 +742,7 @@ case "$REPLY_CHOICE" in
             [ -n "$(get_env HDP_EMBEDDING_MODEL)" ] \
                 || set_env HDP_EMBEDDING_MODEL "mixedbread-ai/deepset-mxbai-embed-de-large-v1"
             [ -n "$(get_env HDP_EMBEDDING_DIM)" ] || set_env HDP_EMBEDDING_DIM 1024
-            EMBED_SUMMARY='local (CPU, fell back from GPU)'
+            EMBED_SUMMARY="local (CPU, $GPU_FELL_BACK_REASON)"
             ok "Falling back to local CPU embeddings."
             note "Expect 1–3 min per wiki page at ingestion time."
         fi
@@ -626,7 +752,14 @@ case "$REPLY_CHOICE" in
         EMBED_SUMMARY="unchanged — $(get_env HDP_EMBEDDING_PROVIDER)"
         DEVICE_IN_ENV="$(get_env HAYSTACK_DEVICE)"
         if [ "$DEVICE_IN_ENV" = "gpu" ]; then
-            EMBED_DEVICE='gpu (NVIDIA)'
+            # Take the wheel choice from .env too, not from this host's driver:
+            # "skip" means "keep what is configured", and an existing cu118
+            # install still has to build from source rather than silently
+            # switching to the pre-built cu124 image on the next start.
+            CUDA_WHEEL_TAG="$(get_env HAYSTACK_CUDA_VERSION)"
+            [ -n "$CUDA_WHEEL_TAG" ] || CUDA_WHEEL_TAG='cu124'
+            [ "$CUDA_WHEEL_TAG" = 'cu124' ] || GPU_FORCE_BUILD=1
+            EMBED_DEVICE="gpu (NVIDIA, $CUDA_WHEEL_TAG)"
             USE_GPU=1
         fi
         ok "Embedding settings left as they are."
@@ -792,6 +925,17 @@ fi
 COMPOSE_ARGS=("${PULL_ARGS[@]}")
 UP_FLAGS=(up -d)
 
+# …except on a GPU host whose driver cannot run the published image. There is
+# one published -gpu image and it is a CUDA 12.4 build, so on a driver that
+# needs cu118 the pull is not a shortcut, it is a 5 GB download of something
+# that will not start. Decided here rather than in start_stack() so that the
+# commands printed by the "not now" and "Docker is not running" exits are the
+# ones that would actually work.
+if [ "$GPU_FORCE_BUILD" -eq 1 ]; then
+    COMPOSE_ARGS=("${BUILD_ARGS[@]}")
+    UP_FLAGS=(up -d --build)
+fi
+
 # ─── Pre-downloading the models ─────────────────────────────────────
 # The embedder (~600 MB) and the cross-encoder ranker (~450 MB) are pulled from
 # HuggingFace by docker/haystack/entrypoint.sh the first time the container
@@ -815,7 +959,10 @@ UP_FLAGS=(up -d)
 #
 # It also doubles as the probe start_stack() would otherwise have to make on its
 # own: it pulls the haystack image, which is the largest of the three and the
-# one most likely to be missing from the registry.
+# one most likely to be missing from the registry. COMPOSE_ARGS and not
+# PULL_ARGS, because on the forced-build GPU path there is no image to pull —
+# compose builds it here instead, which is a longer wait in the same place
+# rather than a wasted download followed by a build.
 PREDOWNLOAD_PY='
 import os
 
@@ -855,10 +1002,16 @@ predownload_models() {
         return 0
     fi
 
+    if [ "$GPU_FORCE_BUILD" -eq 1 ]; then
+        printf '\n'
+        note "This also builds the CUDA image ($CUDA_WHEEL_TAG wheels, ~8 GB) — it has to"
+        note "exist before anything can run in it. Allow longer on a slow disk."
+    fi
+
     printf '\n'
-    info "docker ${PULL_ARGS[*]} run --rm --no-deps --entrypoint python3 haystack …"
+    info "docker ${COMPOSE_ARGS[*]} run --rm --no-deps --entrypoint python3 haystack …"
     printf '\n'
-    if docker "${PULL_ARGS[@]}" run --rm --no-deps --entrypoint python3 \
+    if docker "${COMPOSE_ARGS[@]}" run --rm --no-deps --entrypoint python3 \
             haystack -c "$PREDOWNLOAD_PY"; then
         printf '\n'
         ok "Models cached in the haystack_models volume."
@@ -928,26 +1081,41 @@ wait_ready() {
 # eight of them does not have information the installer lacks here, and the
 # wrong answer costs them five minutes or a stack that will not start. `pull` is
 # the probe because it is also the work — a successful pull leaves exactly the
-# images `up` is about to want.
+# images `up` is about to want. The exception is a GPU host whose driver cannot
+# run the published CUDA 12.4 image; there the answer is known in advance and
+# the probe is skipped.
 start_stack() {
-    info "Fetching the published images…"
-    printf '\n'
-    if docker "${PULL_ARGS[@]}" pull; then
-        COMPOSE_ARGS=("${PULL_ARGS[@]}")
-        UP_FLAGS=(up -d)
-        printf '\n'
-        ok "Using the published images."
-    else
+    if [ "$GPU_FORCE_BUILD" -eq 1 ]; then
+        # The one case where the pull is not even attempted. There is a single
+        # published GPU image and it is a CUDA 12.4 build, so on a driver that
+        # needs cu118 the registry has nothing to probe for — and a successful
+        # pull here would be worse than a failed one, buying a container that
+        # starts and then cannot load a model.
         COMPOSE_ARGS=("${BUILD_ARGS[@]}")
         UP_FLAGS=(up -d --build)
+        info "Building the haystack image from source — the published GPU image is a"
+        note "  CUDA 12.4 build and this host's driver needs $CUDA_WHEEL_TAG."
+        note "  The CUDA build is ~8 GB, so allow longer on a slow disk."
+    else
+        info "Fetching the published images…"
         printf '\n'
-        warn "The published images could not be pulled — building from source instead."
-        note "  About five minutes, and the result is the same stack."
-        if [ "$COMPOSE_HAS_RESET" -eq 0 ]; then
-            note "  Expected here: compose v${COMPOSE_VERSION:-<2.24} cannot parse the override."
-        fi
-        if [ "$USE_GPU" -eq 1 ]; then
-            note "  The CUDA build is ~8 GB, so allow longer on a slow disk."
+        if docker "${PULL_ARGS[@]}" pull; then
+            COMPOSE_ARGS=("${PULL_ARGS[@]}")
+            UP_FLAGS=(up -d)
+            printf '\n'
+            ok "Using the published images."
+        else
+            COMPOSE_ARGS=("${BUILD_ARGS[@]}")
+            UP_FLAGS=(up -d --build)
+            printf '\n'
+            warn "The published images could not be pulled — building from source instead."
+            note "  About five minutes, and the result is the same stack."
+            if [ "$COMPOSE_HAS_RESET" -eq 0 ]; then
+                note "  Expected here: compose v${COMPOSE_VERSION:-<2.24} cannot parse the override."
+            fi
+            if [ "$USE_GPU" -eq 1 ]; then
+                note "  The CUDA build is ~8 GB, so allow longer on a slow disk."
+            fi
         fi
     fi
     printf '\n'
