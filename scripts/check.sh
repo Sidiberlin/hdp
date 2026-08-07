@@ -46,7 +46,7 @@ IMG_COMPOSER="composer:2.8"
 RUFF_PINNED_VERSION="0.16.1"
 
 YAMLLINT_RULES='{extends: default, rules: {line-length: disable, document-start: disable, truthy: disable}}'
-YAML_FILES=(docker-compose.yml docker-compose.prod.yml docker/ci/compose.cache.yml publiccode.yml VERSIONS.yml docker/haystack/hdp_pipeline.yaml .gitlab-ci.yml .github/workflows/)
+YAML_FILES=(docker-compose.yml docker-compose.prod.yml docker-compose.gpu.yml docker/ci/compose.cache.yml publiccode.yml VERSIONS.yml docker/haystack/hdp_pipeline.yaml .gitlab-ci.yml .github/workflows/)
 
 # ─── Locate the repo ────────────────────────────────────────────────
 REPO_ROOT="$(git -C "$(dirname "${BASH_SOURCE[0]}")" rev-parse --show-toplevel 2>/dev/null || true)"

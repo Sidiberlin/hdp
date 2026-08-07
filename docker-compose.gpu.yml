@@ -1,0 +1,71 @@
+---
+# Pass the host's NVIDIA GPU through to the haystack container.
+#
+#   docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build
+#
+# CPU stays the default and must always work — see docker-compose.yml and
+# README-DOCKER.md. This file is the other path: embedding a wiki page on CPU
+# takes 1–3 minutes, and on a GPU it takes seconds, so for anything past a few
+# hundred pages this is the difference between an overnight ingestion and a
+# coffee break.
+#
+# ─── What the host needs ────────────────────────────────────────────
+#
+# The NVIDIA Container Toolkit (package: nvidia-container-toolkit) installed
+# and wired into the Docker daemon. Without it `up` fails with "could not
+# select device driver "nvidia" with capabilities: [[gpu]]" — the daemon, not
+# compose, is what rejects the reservation. Install and verify with:
+#
+#   sudo apt-get install -y nvidia-container-toolkit
+#   sudo nvidia-ctk runtime configure --runtime=docker
+#   sudo systemctl restart docker
+#   docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi
+#
+# A driver alone is not enough: `nvidia-smi` working on the host says nothing
+# about whether containers can reach the GPU.
+#
+# ─── Why HAYSTACK_DEVICE is set here too ────────────────────────────
+#
+# Reserving the device only makes it visible; PyTorch still has to be the CUDA
+# build to use it. docker/haystack/Dockerfile selects that through the
+# HAYSTACK_DEVICE build arg (cpu → ~2 GB CPU-only wheels, gpu → ~8 GB CUDA
+# wheels), and docker-compose.yml threads ${HAYSTACK_DEVICE} into both the
+# build arg and the container environment — but both read ${HAYSTACK_DEVICE},
+# which comes from .env. Pinning the value in this file instead means the
+# override alone is sufficient: an operator who adds -f docker-compose.gpu.yml
+# but forgets the .env line still gets a CUDA image, rather than a
+# GPU-reserving container running CPU-only torch — which looks like it works
+# and is merely slow.
+#
+# ─── Do not stack this on docker-compose.prod.yml ───────────────────
+#
+# Two independent reasons, and the second one is not obvious:
+#
+#  1. The published GHCR images are built with the default HAYSTACK_DEVICE=cpu
+#     (release.yml passes no build-arg), so they have no CUDA torch to use the
+#     device with. The reservation would succeed and change nothing.
+#
+#  2. `-f docker-compose.yml -f docker-compose.prod.yml -f docker-compose.gpu.yml`
+#     is actively broken. prod.yml's `build: !reset null` deletes the inherited
+#     build block *including* `dockerfile: docker/haystack/Dockerfile`; the
+#     build.args above then re-create a `build:` key that has lost its
+#     dockerfile and context. Compose fills in its defaults and tries to build
+#     ./Dockerfile, which does not exist. `config` parses; `up` fails.
+#
+# On a GPU host, build from source. install.sh enforces this: pick "Build from
+# source" and it uses this override, pick the published images and it drops
+# back to CPU rather than producing either surprise.
+services:
+  haystack:
+    build:
+      args:
+        HAYSTACK_DEVICE: gpu
+    environment:
+      HAYSTACK_DEVICE: gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

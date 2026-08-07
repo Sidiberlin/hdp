@@ -273,14 +273,58 @@ ENV_FILE="$REPO_ROOT/.env"
 # ─── .env ───────────────────────────────────────────────────────────
 step "3/8  Configuration file"
 
+ENV_WAS_CREATED=0
 if [ -f "$ENV_FILE" ]; then
     cp -p "$ENV_FILE" "$ENV_FILE.bak" || die "could not back up .env"
     ok "Existing .env backed up to .env.bak — its values become the defaults below."
 else
     cp .env.example "$ENV_FILE" || die "could not create .env from .env.example"
+    ENV_WAS_CREATED=1
     ok "Created .env from .env.example"
 fi
 chmod 600 "$ENV_FILE" 2>/dev/null || true
+
+# ─── Interrupt handling ─────────────────────────────────────────────
+# Installed here and not at the top of the script on purpose: before this point
+# a Ctrl-C leaves nothing behind, and a trap that fires then would print a
+# cleanup message about a file it never touched.
+#
+# From here on there IS partial state. The wizard writes .env key by key as the
+# answers come in, so an interrupt halfway through leaves a file that is neither
+# the old configuration nor a complete new one — some values set, the rest still
+# the placeholders from .env.example. That file is worse than either end state:
+# `docker compose up` accepts it and the stack fails later, on a password that
+# is literally "changeme".
+#
+# So: restore the backup if we made one, delete the file if we created it, and
+# say which happened. 130 is the conventional exit for SIGINT (128 + 2).
+#
+# ENV_WAS_CREATED is tested before the backup, not after: a .env.bak left by an
+# earlier run survives a `rm .env`, so on a host in that state the two
+# conditions are both true and restoring would resurrect a backup of an install
+# this run knows nothing about. What this run made, this run removes.
+on_interrupt() {
+    trap - INT TERM
+    printf '\n\n'
+    if [ "$ENV_WAS_CREATED" -eq 1 ]; then
+        rm -f "$ENV_FILE"
+        warn "Setup interrupted. The partially written .env has been removed."
+    elif [ -f "$ENV_FILE.bak" ]; then
+        if cp -p "$ENV_FILE.bak" "$ENV_FILE" 2>/dev/null; then
+            warn "Setup interrupted. .env has been restored from .env.bak."
+        else
+            warn "Setup interrupted, and .env could NOT be restored automatically."
+            note "  Your previous configuration is still in $ENV_FILE.bak — copy it back by hand."
+        fi
+    else
+        warn "Setup interrupted."
+    fi
+    info "Re-run ./install.sh to try again."
+    printf '\n'
+    exec 3<&- 2>/dev/null || true
+    exit 130
+}
+trap on_interrupt INT TERM
 
 # get_env <key> — first uncommented assignment, quotes stripped.
 get_env() {
@@ -483,6 +527,56 @@ case "$REPLY_CHOICE" in
         ;;
 esac
 
+# ─── 4d-bis. CPU or GPU ─────────────────────────────────────────────
+# Asked regardless of the provider above: `local` runs the embedder in this
+# container, and `remote` still loads the reranker model here, so the device
+# matters either way.
+#
+# Detection is a convenience that sets the default answer, never the answer
+# itself — nvidia-smi is absent inside plenty of containers that do have a GPU,
+# and present on hosts whose Docker cannot reach one. /proc/driver/nvidia is
+# the second look because it exists whenever the kernel module is loaded, even
+# with no CLI tools installed.
+printf '\n'
+GPU_DETECTED=0
+if have nvidia-smi && nvidia-smi -L >/dev/null 2>&1; then
+    GPU_DETECTED=1
+    GPU_NAMES="$(nvidia-smi --query-gpu=name --format=csv,noheader 2>/dev/null | paste -sd', ' - || true)"
+    ok "NVIDIA GPU detected${GPU_NAMES:+: $GPU_NAMES}"
+elif [ -d /proc/driver/nvidia ]; then
+    GPU_DETECTED=1
+    ok "NVIDIA driver detected (/proc/driver/nvidia)"
+else
+    note "No NVIDIA GPU detected — embeddings will run on CPU."
+fi
+
+USE_GPU=0
+if [ "$GPU_DETECTED" -eq 1 ]; then
+    note "GPU inference needs the NVIDIA Container Toolkit on the host, and a"
+    note "source build — the published images ship CPU-only PyTorch."
+    confirm "Use the GPU for embeddings?" y && USE_GPU=1
+else
+    # Still offered: a GPU the installer cannot see from where it runs is a real
+    # case, and the cost of a wrong yes is a failed `up` with a clear message.
+    confirm "Use GPU for embeddings anyway?" n && USE_GPU=1
+fi
+
+if [ "$USE_GPU" -eq 1 ]; then
+    set_env HAYSTACK_DEVICE gpu
+    EMBED_DEVICE='gpu (NVIDIA)'
+    printf '\n'
+    ok "HAYSTACK_DEVICE=gpu — the CUDA PyTorch variant will be built (~8 GB image)."
+    warn "This needs the NVIDIA Container Toolkit installed on the host:"
+    note "    sudo apt-get install -y nvidia-container-toolkit"
+    note "    sudo nvidia-ctk runtime configure --runtime=docker && sudo systemctl restart docker"
+    note "  Verify with: docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi"
+    note "  The stack must then be started with the GPU override:"
+    note "    docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build"
+else
+    set_env HAYSTACK_DEVICE cpu
+    EMBED_DEVICE='cpu'
+fi
+
 # ─── 4e. Passwords ──────────────────────────────────────────────────
 step "8/8  Passwords"
 
@@ -597,6 +691,7 @@ printf '  %-22s %s\n' "LLM endpoint"      "$LLM_BASE_URL"
 printf '  %-22s %s\n' "LLM model"         "$LLM_MODEL_VAL"
 printf '  %-22s %s\n' "LLM API key"       "$LLM_KEY_STATE"
 printf '  %-22s %s\n' "Embeddings"        "$EMBED_SUMMARY"
+printf '  %-22s %s\n' "Inference device"  "$EMBED_DEVICE"
 printf '  %s%s%s\n' "$C_DIM" "${RULE:0:56}" "$C_OFF"
 printf '  %-22s %s\n' "MariaDB root pw"   "$(mask "$PW_DB_ROOT")"
 printf '  %-22s %s\n' "MariaDB user pw"   "$(mask "$PW_DB")"
@@ -616,7 +711,22 @@ fi
 # ─── Start ──────────────────────────────────────────────────────────
 step "Starting the stack"
 
+# .env is complete and the operator has approved it, so the interrupt handler
+# has nothing left to protect — and from here it would be actively wrong:
+# Ctrl-C during `docker compose up` signals the whole foreground group, so the
+# handler would revert the .env of a stack that is already half up.
+trap - INT TERM
+
+# The default start command, and the one printed under "Next steps" when the
+# stack is not started from here. GPU adds one override to whichever path the
+# operator picks — it composes with both the source build and the published
+# images, though only the source build produces an image that can use the GPU.
 COMPOSE_ARGS=(compose)
+BUILD_ARGS=(compose)
+if [ "$USE_GPU" -eq 1 ]; then
+    COMPOSE_ARGS=(compose -f docker-compose.yml -f docker-compose.gpu.yml)
+    BUILD_ARGS=("${COMPOSE_ARGS[@]}")
+fi
 STARTED=0
 
 if [ "$DOCKER_READY" -eq 0 ]; then
@@ -630,6 +740,19 @@ else
     case "$REPLY_CHOICE" in
         1)
             COMPOSE_ARGS=(compose -f docker-compose.yml -f docker-compose.prod.yml)
+            # Deliberately NOT adding the GPU override here. It cannot help —
+            # the published images carry CPU-only torch — and layering it on
+            # prod.yml's `build: !reset null` re-creates a build: key with no
+            # dockerfile, so `up` would try to build ./Dockerfile and fail. See
+            # docker-compose.gpu.yml. Falling back to a working CPU stack beats
+            # both a broken build and a GPU reservation that does nothing.
+            if [ "$USE_GPU" -eq 1 ]; then
+                USE_GPU=0
+                set_env HAYSTACK_DEVICE cpu
+                warn "The published images are CPU-only builds, so GPU inference is off for this run."
+                note "  HAYSTACK_DEVICE reset to cpu, keeping .env honest about what is running."
+                note "  For the GPU, re-run ./install.sh and choose 'Build from source'."
+            fi
             if [ "$COMPOSE_HAS_RESET" -eq 0 ]; then
                 warn "compose < 2.24: pulling explicitly first, as the override cannot drop build: keys."
                 docker "${COMPOSE_ARGS[@]}" pull || die "docker compose pull failed"
@@ -640,9 +763,11 @@ else
             STARTED=1
             ;;
         2)
-            info "docker compose up -d --build"
+            COMPOSE_ARGS=("${BUILD_ARGS[@]}")
+            info "docker ${COMPOSE_ARGS[*]} up -d --build"
             printf '\n'
-            docker compose up -d --build || die "docker compose up --build failed — see the output above."
+            docker "${COMPOSE_ARGS[@]}" up -d --build \
+                || die "docker compose up --build failed — see the output above."
             STARTED=1
             ;;
         *)
@@ -669,7 +794,15 @@ if [ "$STARTED" -eq 1 ]; then
 else
     num; printf 'Start the stack\n\n'
     printf '       cd %s\n' "$REPO_ROOT"
-    printf '       %s up -d\n\n' "$CC"
+    if [ "$USE_GPU" -eq 1 ]; then
+        # --build is not optional on the GPU path: the CUDA image has to be
+        # built locally, since the published ones are CPU-only.
+        printf '       %s up -d --build\n\n' "$CC"
+        printf '     %sThe -f docker-compose.gpu.yml override is what reserves the GPU;%s\n' "$C_DIM" "$C_OFF"
+        printf '     %severy command below carries it for the same reason.%s\n\n' "$C_DIM" "$C_OFF"
+    else
+        printf '       %s up -d\n\n' "$CC"
+    fi
 fi
 
 num; printf 'Wait until mariadb and opensearch report "healthy" (30–60s)\n\n'
@@ -688,7 +821,11 @@ printf '     %smain page. A privacy consent prompt on first login is expected.%s
 num; printf 'Index the wiki for the chatbot (it answers nothing until this runs)\n\n'
 printf '       %s exec haystack python3 ingest_hdp_wiki.py --dry-run\n' "$CC"
 printf '       %s exec haystack python3 ingest_hdp_wiki.py\n\n' "$CC"
-printf '     %sWith local CPU embeddings expect 1–3 min per page; ingestion is%s\n' "$C_DIM" "$C_OFF"
+if [ "$USE_GPU" -eq 1 ]; then
+    printf '     %sOn the GPU expect seconds rather than minutes per page; ingestion is%s\n' "$C_DIM" "$C_OFF"
+else
+    printf '     %sWith local CPU embeddings expect 1–3 min per page; ingestion is%s\n' "$C_DIM" "$C_OFF"
+fi
 printf '     %sidempotent, so --missing-only resumes an interrupted run.%s\n\n' "$C_DIM" "$C_OFF"
 
 printf '  %sDocs:%s  README-DOCKER.md · docs/embedding-providers.md · docs/dev/AGENTS.md\n' "$C_BLD" "$C_OFF"

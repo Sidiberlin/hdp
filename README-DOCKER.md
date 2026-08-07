@@ -252,6 +252,42 @@ docker image inspect ghcr.io/sidiberlin/hdp-haystack:v5.1.9 \
 Every tag published from `v5.1.9` onward goes through the workflow and carries
 that label.
 
+## GPU inference
+
+Embedding a wiki page on CPU takes 1–3 minutes; on an NVIDIA GPU it takes
+seconds. `install.sh` detects a GPU and offers to use it; to enable it by hand,
+set `HAYSTACK_DEVICE=gpu` in `.env` and add the override:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build
+```
+
+The override reserves the host GPU for the `haystack` service and pins
+`HAYSTACK_DEVICE=gpu` for both the build and the container, so the image is
+built with CUDA PyTorch (~8 GB, against ~2 GB for the CPU image).
+
+The host needs the **NVIDIA Container Toolkit** — a working driver is not
+enough, since that says nothing about whether containers can reach the GPU:
+
+```bash
+sudo apt-get install -y nvidia-container-toolkit
+sudo nvidia-ctk runtime configure --runtime=docker
+sudo systemctl restart docker
+# verify:
+docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi
+```
+
+Without it, `up` fails with `could not select device driver "nvidia" with
+capabilities: [[gpu]]`.
+
+Do **not** stack this on `docker-compose.prod.yml`. The published images are
+CPU-only builds, so the reservation would buy nothing — and the combination is
+worse than useless: `prod.yml`'s `build: !reset null` drops the inherited
+`dockerfile:` path, the GPU override's build args re-create a `build:` key
+without one, and `up` then tries to build a non-existent `./Dockerfile`. On a
+GPU host, build from source. (`install.sh` already enforces this: choosing the
+published images turns GPU mode back off and says so.)
+
 ## What `setup.sh` Does
 
 The setup script handles first-boot installation:
@@ -274,6 +310,8 @@ things worth calling out here:
   three modes (local CPU, remote OpenAI-compatible API, or a HuggingFace
   ZeroGPU Space for fast one-off ingestion). See
   [`docs/embedding-providers.md`](docs/embedding-providers.md).
+- **Inference device**: `HAYSTACK_DEVICE` is `cpu` by default. On a machine
+  with an NVIDIA GPU, see [GPU inference](#gpu-inference) above.
 
 ## Running / Re-running Ingestion
 

@@ -45,6 +45,10 @@ bad()  { printf '  %sFAIL%s %s\n' "$C_RED" "$C_OFF" "$1"; FAILS=$((FAILS+1)); }
 # Deployment surface. QA Bug 1 was this entire group being absent.
 REQUIRED_FILES=(
     docker-compose.yml
+    # The GPU override. install.sh names it in the start command whenever the
+    # operator picks GPU inference, so a clone without it turns a configured
+    # install into "no such file or directory" at the first `up`.
+    docker-compose.gpu.yml
     .env.example
     .gitignore
     docker/setup.sh
