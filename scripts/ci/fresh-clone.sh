@@ -57,6 +57,7 @@ REQUIRED_FILES=(
     docker/haystack/ingest_hdp_wiki.py
     docker/haystack/wikitext.py
     docker/haystack/render_pipeline.py
+    install.sh
     hdp.sh
     scripts/check.sh
     scripts/ci/bats.sh

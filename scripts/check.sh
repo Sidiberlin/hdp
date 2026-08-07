@@ -116,7 +116,7 @@ EOF
 list_checks() {
     printf '%-16s %-34s %s\n' CHECK WHAT REQUIRES
     printf '%-16s %-34s %s\n' ----- ---- --------
-    printf '%-16s %-34s %s\n' shellcheck  'shell in docker/ scripts/ hdp.sh' "shellcheck | $IMG_SHELLCHECK"
+    printf '%-16s %-34s %s\n' shellcheck  'shell in docker/ scripts/ + installers' "shellcheck | $IMG_SHELLCHECK"
     printf '%-16s %-34s %s\n' yamllint    'compose, publiccode, pipeline, CI' "yamllint | $IMG_YAMLLINT"
     printf '%-16s %-34s %s\n' ruff        'python under docker/ scripts/ tests/' "ruff | $IMG_RUFF"
     printf '%-16s %-34s %s\n' pytest-unit 'stdlib unit tests (~2s)' "pytest | $IMG_PYTHON"
@@ -227,16 +227,16 @@ run_check() {
 skip() { SKIP_REASON["$1"]="$2"; return 77; }
 
 # ─── shellcheck ─────────────────────────────────────────────────────
-# Include list, not exclude list — matches .gitlab-ci.yml. Passing hdp.sh to
-# find as a start path keeps this to a single invocation so the exit status
-# cannot be masked.
+# Include list, not exclude list — matches .gitlab-ci.yml. Passing install.sh and
+# hdp.sh to find as start paths keeps this to a single invocation so the exit
+# status cannot be masked.
 check_shellcheck_run() {
     if have shellcheck; then
-        find docker scripts hdp.sh -name '*.sh' -print0 \
+        find docker scripts install.sh hdp.sh -name '*.sh' -print0 \
             | xargs -0 -r shellcheck --severity=warning --
     elif have_docker; then
         docker run --rm -v "$REPO_ROOT":/mnt -w /mnt "$IMG_SHELLCHECK" \
-            sh -c "find docker scripts hdp.sh -name '*.sh' -print0 | xargs -0 -r shellcheck --severity=warning --"
+            sh -c "find docker scripts install.sh hdp.sh -name '*.sh' -print0 | xargs -0 -r shellcheck --severity=warning --"
     else
         skip shellcheck "no shellcheck on PATH and no docker"
     fi

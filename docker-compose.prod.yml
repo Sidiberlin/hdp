@@ -39,15 +39,10 @@
 # .github/workflows/release.yml), so it is a defensible thing to ask for — but
 # a pinned tag is what an operator wants, and it is what the default gives.
 #
-# ─── These packages may require authentication ──────────────────────
+# ─── Authentication ─────────────────────────────────────────────────
 #
-# GHCR packages are private when first published and inherit nothing from the
-# repository automatically. If `up` fails with `denied` or `unauthorized`, the
-# packages have not been made public yet, and you need:
-#
-#   echo "$GITHUB_TOKEN" | docker login ghcr.io -u <your-github-user> --password-stdin
-#
-# with a token carrying `read:packages`.
+# None needed. These packages are public, so `pull` and `up` work without a
+# `docker login` and without a token.
 services:
   haystack:
     build: !reset null

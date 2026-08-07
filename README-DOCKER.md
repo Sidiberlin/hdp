@@ -21,18 +21,78 @@ faster for large wikis.
 
 ## Quick Start
 
+One command on a fresh Linux box, from any directory:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Sidiberlin/hdp/main/install.sh | bash
+```
+
+`install.sh` clones this repository into `./hdp`, checks that Docker, Compose
+v2 and OpenSSL are present, and then walks you through every configuration
+choice: secrets backend (plain `.env` or Infisical), site name/language/port,
+LLM provider and API key, embedding provider, and the four passwords — which
+it can generate for you. It writes `.env`, shows a summary, and offers to
+start the stack.
+
+Already cloned, or prefer to read a script before running it? Same wizard:
+
+```bash
+git clone https://github.com/Sidiberlin/hdp.git
+cd hdp
+./install.sh
+```
+
+It is safe to re-run: an existing `.env` is copied to `.env.bak` first and its
+values become the defaults for every question, so re-running is how you change
+one setting without retyping the rest.
+
+### What happens after the wizard
+
+The wizard offers to start the stack — either pulling the pre-built images
+(`docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d`, a
+download) or building from source (`docker compose up -d --build`, ~5 minutes).
+It then prints these steps, which are still yours to run:
+
+```bash
+# 1. Wait for MariaDB and OpenSearch to become healthy (30-60s)
+docker compose ps
+
+# 2. First-boot setup: installs MediaWiki + ~130 BlueSpice extensions.
+#    Several minutes, once per installation.
+docker compose exec mediawiki bash /setup.sh
+
+# 3. Open the wiki and log in
+open http://localhost:8080/w/
+
+# 4. Index the wiki for the chatbot — it answers nothing until this runs
+docker compose exec haystack python3 ingest_hdp_wiki.py --dry-run   # preview
+docker compose exec haystack python3 ingest_hdp_wiki.py             # for real
+```
+
+**Login:** `Admin` / (the `HDP_ADMIN_PASSWORD` the wizard generated or you set
+in `.env` or Infisical)
+
+<details>
+<summary><strong>Manual setup — skip the wizard</strong></summary>
+
+`install.sh` only writes `.env`; nothing in the stack depends on having used
+it. The equivalent by hand:
+
 ```bash
 # 1. Configure environment
 cp .env.example .env
-# Edit .env — at minimum set the *_PASSWORD variables and HDP_LLM_API_KEY
-# (or configure Infisical for secret management — see .env.example)
+# Edit .env — at minimum set the four *_PASSWORD variables and HDP_LLM_API_KEY
+# (or configure Infisical for secret management — see .env.example).
+# HDP_OPENSEARCH_PASSWORD must pass a zxcvbn strength check; generate one with:
+#   printf 'Hdp-%s-26!\n' "$(openssl rand -hex 4)"
 
 # 2. Build and start all services
 docker compose up -d --build
+#    ...or pull the pre-built images instead of building:
+#    docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
 
-# 3. Wait for MariaDB and OpenSearch to be healthy
+# 3. Wait for MariaDB and OpenSearch to be healthy (30-60s)
 docker compose ps
-# mariadb and opensearch should show "healthy"; this can take 30-60s
 
 # 4. Run first-boot setup (installs MediaWiki + ~130 BlueSpice extensions)
 docker compose exec mediawiki bash /setup.sh
@@ -41,33 +101,21 @@ docker compose exec mediawiki bash /setup.sh
 open http://localhost:8080/w/
 ```
 
-### Or: pull the pre-built images instead of building
+</details>
 
-Step 2 builds three images from source — roughly five minutes and ~5 GB of
-layers, nearly all of it the Haystack image. Those three are published to GHCR
-for each release, so you can pull them instead:
-
-```bash
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
-```
-
-Everything else in the Quick Start is unchanged; only step 2 differs. The
-other four services (MariaDB and the three Wikimedia PHP-FPM/Apache/jobrunner
-images) are upstream images and are pulled either way.
-
-**Building from source is the default and always works.** The override is a
-convenience, not a requirement, and nothing else in this repository depends on
-it. See [Pre-built images](#pre-built-images) for pinning, authentication and
-how the images are produced.
-
-**Login:** `Admin` / (the `HDP_ADMIN_PASSWORD` you set in `.env` or Infisical)
+**Building from source is the default and always works.** The pre-built-image
+override is a convenience, not a requirement, and nothing else in this
+repository depends on it. See [Pre-built images](#pre-built-images) for pinning
+and how the images are produced. The other four services (MariaDB and the three
+Wikimedia PHP-FPM/Apache/jobrunner images) are upstream images and are pulled
+either way.
 
 > **Note — private by default:** BlueSpice requires login before any page
 > (including the main page) is visible to anonymous visitors. Log in with
 > the Admin account above. On first login you'll be asked to accept a
 > privacy consent — this is standard BlueSpice behavior.
 
-### 6. Index wiki content for the chatbot (first ingestion)
+### First ingestion — indexing wiki content for the chatbot
 
 The RAG chatbot needs wiki pages indexed into OpenSearch before it can
 answer questions. This is a separate step after `setup.sh`:
@@ -188,16 +236,8 @@ moves it, `v5.1.9-rc1` does not. Pin explicitly for anything you care about.
 
 ### Authentication
 
-GHCR packages are private when first published. If `up` or `pull` fails with
-`denied` or `unauthorized`, either the packages are still private or you are
-not logged in:
-
-```bash
-echo "$GITHUB_TOKEN" | docker login ghcr.io -u <your-github-user> --password-stdin
-```
-
-The token needs `read:packages`. Once the packages are made public, no login
-is required.
+None. The packages are public — `docker compose ... pull` and `up` work with
+no `docker login` and no token.
 
 ### Verifying what you pulled
 
@@ -209,10 +249,8 @@ docker image inspect ghcr.io/sidiberlin/hdp-haystack:v5.1.9 \
   --format '{{index .Config.Labels "org.opencontainers.image.revision"}}'
 ```
 
-`v5.1.9-rc1` is the exception: it was built and pushed by hand from
-`3464df769` before this workflow existed, so it carries only the labels its
-Dockerfile sets and that command prints nothing for it. Every tag published
-from `v5.1.9` onward goes through the workflow and is labelled.
+Every tag published from `v5.1.9` onward goes through the workflow and carries
+that label.
 
 ## What `setup.sh` Does
 

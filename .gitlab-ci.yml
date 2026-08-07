@@ -36,10 +36,12 @@ shellcheck:
     # Explicit include list, not an exclude list. The previous exclude form
     # linted upstream MediaWiki and BlueSpice shell under app/vendor/,
     # app/includes/ and app/_bluespice/ — code this project does not own.
-    # Passing hdp.sh to find as a start path keeps this to one invocation, so
-    # the exit status cannot be masked by a later command.
+    # Passing install.sh and hdp.sh to find as start paths keeps this to one
+    # invocation, so the exit status cannot be masked by a later command.
+    # Kept identical to scripts/check.sh's shellcheck step — the point of that
+    # script is that its verdict is this job's verdict.
     - |
-      find docker scripts hdp.sh -name '*.sh' -print0 \
+      find docker scripts install.sh hdp.sh -name '*.sh' -print0 \
         | xargs -0 -r shellcheck --severity=warning --
 
 # ─── YAML validation ────────────────────────────────────────────────

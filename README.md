@@ -110,8 +110,21 @@ documentation.
 
 ## Getting Started
 
-See [README-DOCKER.md](README-DOCKER.md) for hardware requirements,
-configuration (`.env.example`), and the one-command deployment flow.
+One command on a fresh Linux machine with Docker installed:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Sidiberlin/hdp/main/install.sh | bash
+```
+
+The installer clones this repository, checks prerequisites, walks you through
+every configuration choice (secrets backend, wiki settings, LLM provider,
+embedding provider, passwords), writes `.env`, and offers to start the stack.
+If you would rather read the script first, `git clone` and run `./install.sh`
+from the checkout — same wizard.
+
+See [README-DOCKER.md](README-DOCKER.md) for hardware requirements, the manual
+setup path, configuration reference (`.env.example`), and what to run after the
+wizard finishes.
 
 ## License
 
