@@ -61,6 +61,59 @@ def call_hayhooks(question: str) -> dict:
         return {"error": str(e)}
 
 
+def extract_references(answer_text: str, documents: list) -> tuple:
+    """Parse [N] citations from the answer text and build the _references
+    array the BlueSpice ChatBot frontend needs to render clickable links.
+
+    The pipeline prompt tells the LLM to cite sources as [N] (1-based,
+    matching the Jinja loop.index in the document list). The frontend's
+    ReferenceFactory reads answer.meta._references — an array of
+    {document_position, document_id, answer_start_idx} — and uses
+    ReferencesUtil.insertLinks to replace each [N] with a markdown link
+    to the source wiki page.
+
+    Without this, [3] appears as literal text with no link and no
+    reference list, which is the bug this fixes.
+
+    Returns (cleaned_text, references) where cleaned_text has the [N]
+    markers removed (insertLinks re-inserts them as links at the
+    positions given by answer_start_idx) and references is the list to
+    put in answer.meta._references.
+    """
+    import re
+
+    references = []
+    cleaned_parts = []
+    pos_in_cleaned = 0
+    last_end = 0
+
+    for match in re.finditer(r'\[(\d+)\]', answer_text):
+        # Text before this citation — kept verbatim
+        prefix = answer_text[last_end:match.start()]
+        cleaned_parts.append(prefix)
+        pos_in_cleaned += len(prefix)
+
+        ref_num = int(match.group(1))
+        doc_index = ref_num - 1  # pipeline prompt uses 1-based loop.index
+        if 0 <= doc_index < len(documents):
+            doc = documents[doc_index]
+            references.append({
+                "document_position": ref_num,
+                "document_id": doc.get("id", str(doc_index)),
+                "answer_start_idx": pos_in_cleaned,
+            })
+        else:
+            # Citation number doesn't map to a retrieved document — keep it
+            # as literal text rather than silently dropping it.
+            cleaned_parts.append(match.group(0))
+            pos_in_cleaned += len(match.group(0))
+
+        last_end = match.end()
+
+    cleaned_parts.append(answer_text[last_end:])
+    return "".join(cleaned_parts), references
+
+
 def build_result_from_haystack(hay_response: dict, query: str) -> dict:
     """
     Convert Haystack pipeline response into the Deepset-compatible format
@@ -75,7 +128,9 @@ def build_result_from_haystack(hay_response: dict, query: str) -> dict:
         "query": "...",
         "answers": [
           {"answer": query, ...},              # [0] reformulated question
-          {"answer": "actual answer", "result_id": "...", "meta": {...}}
+          {"answer": "actual answer", "result_id": "...", "meta": {
+              "_references": [...]              # citation metadata for [N] links
+          }}
         ],
         "documents": [
           {"id": "...", "meta": {"prefixed_title": "...", "uri": "..."}}
@@ -126,6 +181,13 @@ def build_result_from_haystack(hay_response: dict, query: str) -> dict:
             },
         })
 
+    # Parse [N] citations from the answer text and build the _references
+    # metadata the frontend needs to render them as clickable wiki links.
+    # The answer text is cleaned (citations stripped) because
+    # ReferencesUtil.insertLinks re-inserts them as markdown links at the
+    # positions recorded in answer_start_idx.
+    cleaned_answer, references = extract_references(answer_text, docs[:10])
+
     result_id = str(uuid.uuid4())
     query_id = str(uuid.uuid4())
 
@@ -134,12 +196,13 @@ def build_result_from_haystack(hay_response: dict, query: str) -> dict:
         "answers": [
             {"answer": query},  # [0] = reformulated question
             {
-                "answer": answer_text,
+                "answer": cleaned_answer,
                 "result_id": result_id,
                 "query_id": query_id,
                 "meta": {
                     "doc_ids": [d["id"] for d in deepset_docs],
                     "documents": deepset_docs,
+                    "_references": references,
                 },
             },
         ],
