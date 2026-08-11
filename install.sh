@@ -1136,7 +1136,9 @@ if [ "$DOCKER_READY" -eq 0 ]; then
     note "Start it (usually: sudo systemctl start docker), then:"
     printf '\n'
     printf '       cd %s && docker %s %s\n' "$REPO_ROOT" "${COMPOSE_ARGS[*]}" "${UP_FLAGS[*]}"
-    printf '       docker %s exec mediawiki bash /setup.sh\n\n' "${COMPOSE_ARGS[*]}"
+    printf '       docker %s exec mediawiki bash /setup.sh\n' "${COMPOSE_ARGS[*]}"
+    printf '       docker %s exec haystack python3 ingest_hdp_wiki.py   %s# needed for grounded chatbot answers%s\n\n' \
+        "${COMPOSE_ARGS[*]}" "$C_DIM" "$C_OFF"
     printf '  %sWiki:%s   %s   %slogin Admin / the password above%s\n' \
         "$C_BLD" "$C_OFF" "$WIKI_URL" "$C_DIM" "$C_OFF"
     printf '  %sDocs:%s   README-DOCKER.md\n\n' "$C_BLD" "$C_OFF"
@@ -1163,7 +1165,7 @@ if ! confirm "Start the services now?" y; then
     printf '       docker %s %s\n' "${COMPOSE_ARGS[*]}" "${UP_FLAGS[*]}"
     printf '       docker %s exec mediawiki bash /setup.sh   %s# first boot, several minutes%s\n' \
         "${COMPOSE_ARGS[*]}" "$C_DIM" "$C_OFF"
-    printf '       docker %s exec haystack python3 ingest_hdp_wiki.py   %s# chatbot index%s\n\n' \
+    printf '       docker %s exec haystack python3 ingest_hdp_wiki.py   %s# chatbot index (needed for grounded answers)%s\n\n' \
         "${COMPOSE_ARGS[*]}" "$C_DIM" "$C_OFF"
     printf '  %sWiki:%s   %s   %slogin Admin / the password above%s\n' \
         "$C_BLD" "$C_OFF" "$WIKI_URL" "$C_DIM" "$C_OFF"
@@ -1215,16 +1217,44 @@ if [ "$SETUP_OK" -eq 1 ]; then
     note "BlueSpice shows nothing before you log in, including the main page."
     note "A privacy consent prompt on first login is expected."
     printf '\n'
-    printf '  %sOne thing left.%s The chatbot answers nothing until the wiki is indexed,\n' \
+    # ─── Ingestion step ────────────────────────────────────────────
+    # The chatbot returns ungrounded answers ("I did not provide any
+    # documents") until the wiki pages are embedded into OpenSearch. Offer
+    # to run it now rather than leaving it as a post-install manual step,
+    # but make it optional — on a large wiki or CPU-only embeddings it can
+    # take hours.
+    printf '\n'
+    printf '  %sOne thing left.%s The chatbot returns no grounded answers until the wiki is indexed.\n' \
         "$C_BLD" "$C_OFF"
-    printf '  which is a long job and is left to you to start when it suits:\n\n'
-    printf '       docker %s exec haystack python3 ingest_hdp_wiki.py\n\n' "${COMPOSE_ARGS[*]}"
     if [ "$USE_GPU" -eq 1 ]; then
-        note "On the GPU expect seconds per page; --missing-only resumes an interrupted run."
+        note "On the GPU expect seconds per page."
     else
-        note "With local CPU embeddings expect 1–3 min per page; --missing-only resumes"
-        note "an interrupted run."
+        note "With local CPU embeddings expect 1–3 min per page."
     fi
+
+    if confirm "Run wiki ingestion now?" n; then
+        printf '\n'
+        info "Indexing the wiki into OpenSearch. This runs in the foreground so you"
+        info "can watch progress — Ctrl+C stops it, and --missing-only resumes later."
+        printf '\n'
+        info "docker ${COMPOSE_ARGS[*]} exec -T haystack python3 ingest_hdp_wiki.py"
+        printf '\n'
+        INGEST_OK=0
+        docker "${COMPOSE_ARGS[@]}" exec -T haystack python3 ingest_hdp_wiki.py || INGEST_OK=1
+        if [ "$INGEST_OK" -ne 0 ]; then
+            printf '\n'
+            warn "Ingestion did not complete — see the output above. Re-run with:"
+            printf '       docker %s exec haystack python3 ingest_hdp_wiki.py --missing-only\n\n' "${COMPOSE_ARGS[*]}"
+        fi
+    else
+        printf '\n'
+        note "Run ingestion when ready — the chatbot cannot provide grounded answers"
+        note "without it:"
+        printf '\n'
+        printf '       docker %s exec haystack python3 ingest_hdp_wiki.py\n' "${COMPOSE_ARGS[*]}"
+        printf '       %s# add --missing-only to resume an interrupted run%s\n' "$C_DIM" "$C_OFF"
+    fi
+
     printf '\n'
     printf '  %sLogs:%s  docker %s logs -f haystack\n' "$C_BLD" "$C_OFF" "${COMPOSE_ARGS[*]}"
     printf '  %sDocs:%s  README-DOCKER.md · docs/embedding-providers.md\n\n' "$C_BLD" "$C_OFF"
