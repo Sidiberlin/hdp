@@ -447,8 +447,19 @@ printf '\n'
 note "MW_SERVER is the base URL MediaWiki puts in every link and redirect."
 note "Keep localhost only for single-machine testing — from another device,"
 note "logins would redirect the browser to its own localhost and fail."
-ask "Server URL" "http://localhost:$MW_PORT_VAL"
-MW_SERVER_VAL="$REPLY_VALUE"
+while :; do
+    ask "Server URL" "http://localhost:$MW_PORT_VAL"
+    MW_SERVER_VAL="$REPLY_VALUE"
+    # MediaWiki's $wgServer requires an explicit http:// or https:// prefix.
+    # Without it, maintenance/install.php writes a value that breaks form
+    # submissions (editing, login) — every POST is rejected because the
+    # action URL is malformed. The operator sees the raw hostname in the
+    # error, which is not obviously a missing-protocol problem.
+    case "$MW_SERVER_VAL" in
+        http://*|https://*) break ;;
+        *) warn "the URL must start with http:// or https://" ;;
+    esac
+done
 set_env MW_SERVER "$MW_SERVER_VAL"
 
 # ─── 4c. LLM provider ───────────────────────────────────────────────
