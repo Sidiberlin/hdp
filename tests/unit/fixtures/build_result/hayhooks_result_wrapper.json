@@ -6,6 +6,7 @@
     {
       "answer": "Eingepackte Antwort",
       "meta": {
+        "_references": [],
         "doc_ids": [
           "doc-1"
         ],

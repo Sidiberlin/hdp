@@ -4,9 +4,20 @@
       "answer": "Was sind Cloud-Computing-Modelle?"
     },
     {
-      "answer": "IaaS, PaaS und SaaS.",
+      "answer": "Gemäß  ist X korrekt. Auch  bestätigt dies.",
       "meta": {
-        "_references": [],
+        "_references": [
+          {
+            "answer_start_idx": 6,
+            "document_id": "doc-1",
+            "document_position": 1
+          },
+          {
+            "answer_start_idx": 27,
+            "document_id": "doc-2",
+            "document_position": 2
+          }
+        ],
         "doc_ids": [
           "doc-1",
           "doc-2"

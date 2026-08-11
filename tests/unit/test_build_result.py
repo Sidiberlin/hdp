@@ -150,6 +150,20 @@ CASES = {
 
     # An upstream error payload. call_hayhooks returns this shape on HTTPError.
     "hayhooks_error_payload": {"error": "connection refused", "status": 502},
+
+    # Citations in the answer text. [1] and [2] map to the 1st and 2nd
+    # documents; extract_references strips them and records their positions
+    # in _references so the frontend's ReferencesUtil.insertLinks can
+    # re-insert them as clickable wiki links.
+    "citations_in_answer": {
+        "answer_joiner": {"answers": [
+            answer("Frage"),
+            answer(
+                "Gemäß [1] ist X korrekt. Auch [2] bestätigt dies.",
+                documents=[doc(1), doc(2)],
+            ),
+        ]}
+    },
 }
 
 
