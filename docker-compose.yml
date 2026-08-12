@@ -133,7 +133,7 @@ services:
       interval: 10s
       timeout: 5s
       retries: 15
-      start_period: 30s
+      start_period: 90s
     depends_on:
       mediawiki:
         condition: service_started
