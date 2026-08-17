@@ -85,7 +85,8 @@ flowchart TD
 ### mediawiki-web (Apache)
 - **Image:** `docker-registry.wikimedia.org/dev/bookworm-apache2:1.0.1`
 - **Ports:** `${MW_DOCKER_PORT:-8080}:8080` — the only host-published wiki port
-- **Health check:** `curl http://localhost:${MW_DOCKER_PORT}/w/`
+- **Health check:** `curl http://localhost:8080/w/` (in-container probe —
+  only :8080 listens inside the container; independent of `MW_DOCKER_PORT`)
 
 ### mediawiki-jobrunner
 - **Image:** `docker-registry.wikimedia.org/dev/bookworm-php83-jobrunner:1.0.0`

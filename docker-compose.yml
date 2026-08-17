@@ -129,7 +129,7 @@ services:
       MW_LOG_DIR: /var/www/html/w/cache
       MW_DOCKER_PORT: '${MW_DOCKER_PORT:-8080}'
     healthcheck:
-      test: ["CMD-SHELL", "curl -sf -o /dev/null http://localhost:${MW_DOCKER_PORT:-8080}/w/ || exit 1"]
+      test: ["CMD-SHELL", "curl -sf -o /dev/null http://localhost:8080/w/ || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 15

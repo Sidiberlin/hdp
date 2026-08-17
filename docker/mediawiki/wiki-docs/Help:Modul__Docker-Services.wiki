@@ -80,7 +80,7 @@ context and scripts live under [https://github.com/Sidiberlin/hdp/blob/main/dock
 
 * '''Image:''' <code>docker-registry.wikimedia.org/dev/bookworm-apache2:1.0.1</code>
 * '''Ports:''' <code>${MW_DOCKER_PORT:-8080}:8080</code> — the only host-published wiki port
-* '''Health check:''' <code>curl http://localhost:${MW_DOCKER_PORT}/w/</code>
+* '''Health check:''' <code>curl http://localhost:8080/w/</code> (in-container probe — only :8080 listens inside the container; independent of <code>MW_DOCKER_PORT</code>)
 
 === mediawiki-jobrunner ===
 
