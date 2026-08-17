@@ -1,0 +1,15 @@
+'''Über'''
+
+Diese Seite ist ein Platzhalter. Bitte stelle hier deine Organisation und dieses Wiki vor.
+
+== Verwendung ==
+
+* Lösche diesen Platzhaltertext
+* Beschreibe hier deine Organisation und den Zweck dieses Wikis
+* Veröffentliche die Seite
+
+----
+
+'''About'''
+
+This page is a placeholder. Please introduce your organization and this wiki.

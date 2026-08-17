@@ -508,6 +508,39 @@ if [ ! -f cache/.site-pages-populated ]; then
     touch cache/.site-pages-populated
 fi
 
+# ─── Step 4c3: Populate QoL2 Site: legal placeholder pages (v2) ──────
+# Site:Impressum / Site:Haftungsausschluss / Site:Über are linked from the
+# BlueSpice footer (FooterLinks.DE.wiki) and were red links on fresh
+# installs (Finding 2). Separate marker so existing installs gain exactly
+# these pages and the two original pages are never re-overwritten.
+if [ ! -f cache/.site-pages-populated-v2 ]; then
+    echo ""
+    echo "[4/4] Populating Site: legal placeholder pages (QoL2)..."
+    missing=0
+    for page_file in \
+        "Site:Impressum|/site-impressum.wiki" \
+        "Site:Haftungsausschluss|/site-haftungsausschluss.wiki" \
+        "Site:Über|/site-ueber.wiki"; do
+        page="${page_file%%|*}"
+        file="${page_file##*|}"
+        if [ -f "$file" ]; then
+            echo "  -> ${page}"
+            php maintenance/run.php edit.php \
+                --user Admin \
+                --summary "Initial setup: populate legal placeholder page" \
+                "$page" < "$file" \
+                || echo "  WARNING: population of ${page} failed (non-fatal, continuing)"
+        else
+            missing=1
+        fi
+    done
+    if [ "$missing" -eq 0 ]; then
+        touch cache/.site-pages-populated-v2
+    else
+        echo "  WARNING: one or more Site: page files are not mounted; not marking populated"
+    fi
+fi
+
 # ─── Step 4d: Populate codewiki Help-namespace docs (first install only) ─
 # Ships the docs/wiki/*.md tree (converted to wikitext by
 # scripts/convert-docs.sh, checked into docker/mediawiki/wiki-docs/) into

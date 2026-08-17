@@ -1,0 +1,15 @@
+'''Impressum'''
+
+Diese Seite ist ein Platzhalter. Bitte trage hier die Impressumsangaben deiner Organisation ein.
+
+== Verwendung ==
+
+* Lösche diesen Platzhaltertext
+* Trage hier die Impressumsangaben deiner Organisation ein
+* Veröffentliche die Seite
+
+----
+
+'''Imprint'''
+
+This page is a placeholder. Please customize the legal notice (imprint) for your organization.

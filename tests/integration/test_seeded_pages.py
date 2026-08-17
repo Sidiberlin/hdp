@@ -29,7 +29,7 @@ import pytest
 # which is not a defect in anything. Filtering the user-owned namespaces makes
 # the number describe what this file is actually about: the content the repo
 # ships.
-EXPECTED_SEEDED_PAGES = 107
+EXPECTED_SEEDED_PAGES = 110
 
 # ns 4 is the meta namespace, which app/settings.d/020-DefaultSettings.php
 # names "Site" via $wgMetaNamespace.
@@ -45,6 +45,9 @@ SEEDED_SINGLETONS = [
     (NS_MAIN, "Chatbot-FAQ"),         # docker/mediawiki/chatbot-faq.wiki
     (NS_META, "Site:Nutzungsbedingungen"),
     (NS_META, "Site:Datenschutz"),
+    (NS_META, "Site:Impressum"),          # docker/mediawiki/site-impressum.wiki
+    (NS_META, "Site:Haftungsausschluss"),  # docker/mediawiki/site-haftungsausschluss.wiki
+    (NS_META, "Site:Über"),               # docker/mediawiki/site-ueber.wiki
 ]
 
 # Every content model this wiki legitimately stores.

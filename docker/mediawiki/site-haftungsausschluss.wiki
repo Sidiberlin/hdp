@@ -1,0 +1,15 @@
+'''Haftungsausschluss'''
+
+Diese Seite ist ein Platzhalter. Bitte passe den Haftungsausschluss an die Bedürfnisse deiner Organisation an.
+
+== Verwendung ==
+
+* Lösche diesen Platzhaltertext
+* Trage hier den Haftungsausschluss deiner Organisation ein
+* Veröffentliche die Seite
+
+----
+
+'''Disclaimer'''
+
+This page is a placeholder. Please customize the disclaimer for your organization.
