@@ -4,6 +4,7 @@ namespace ChatBot\Rest;
 
 use ChatBot\DeepsetApi\ChatApi;
 use Exception;
+use MediaWiki\Rest\HttpException;
 use MediaWiki\Rest\SimpleHandler;
 use Wikimedia\ParamValidator\ParamValidator;
 
@@ -22,12 +23,24 @@ class Chat extends SimpleHandler {
 	/**
 	 * @return array
 	 * @throws Exception
+	 * @throws HttpException
 	 */
 	public function execute(): array {
 		$params = $this->getValidatedParams();
 		$query = $params['query'];
 		$sessionId = $params['sessionId'];
 		$followUpType = $params['followUpType'];
+
+		// Both guards must sit before the try/catch: its catch (Exception)
+		// would swallow the HttpException into a 200 error frame, and
+		// chatApi->request() commits SSE headers that cannot be taken back.
+		$authority = $this->getAuthority();
+		if ( !$authority->isRegistered() ) {
+			throw new HttpException( 'rest-read-denied', 403 );
+		}
+		if ( !$authority->isAllowed( 'read' ) ) {
+			throw new HttpException( 'rest-read-denied', 403 );
+		}
 
 		try {
 			$this->chatApi->request( $query, $sessionId, $followUpType );
@@ -45,10 +58,6 @@ class Chat extends SimpleHandler {
 	 */
 	public function getSupportedRequestTypes(): array {
 		return [ 'text/event-stream' ];
-	}
-
-	public function needsReadAccess() {
-		return false;
 	}
 
 	/**
