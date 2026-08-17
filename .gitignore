@@ -71,6 +71,11 @@ docs/.codewiki-state.json
 .gstack/
 .pytest_cache/
 
+# GSD planning artifacts (.planning/PROJECT.md, ROADMAP.md, phase state) —
+# workflow scaffolding for AI-assisted dev runs, never part of the published
+# project or a release diff
+.planning/
+
 # T4's CI-only HuggingFace model cache (docker/ci/compose.cache.yml bind-mounts
 # this into the haystack container so actions/cache can save ~1.7 GB of model
 # weights between nightly runs). Never authored content.
