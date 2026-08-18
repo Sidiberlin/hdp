@@ -204,7 +204,8 @@ below.
 ## Pre-built images
 
 The three custom images are published to the GitHub Container Registry on
-every `v*` tag by [`.github/workflows/release.yml`](.github/workflows/release.yml):
+every release `v*` tag (`-QoL*` prerelease tags are repo-level and
+publish nothing) by [`.github/workflows/release.yml`](.github/workflows/release.yml):
 
 | Image | Tag | Approx. size |
 |---|---|---|

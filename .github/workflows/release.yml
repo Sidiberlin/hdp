@@ -55,6 +55,20 @@
 # the default an operator gets when they do not think about it must not be a
 # release candidate.
 #
+# ─── Why `-QoL*` tags publish nothing ───────────────────────────────
+#
+# The resolve step's regex accepts pre-release suffixes by design: an
+# rc-style candidate publishes the release it is a candidate for, so
+# `v5.1.9-rc1` builds real `:v5.1.9-rc1` images. `-QoL*` tags deliberately
+# diverge — they mark repo-level QA/QoL bundles (docs and process fixes
+# on top of `v5.1.9`), not image releases, and the four images they would
+# build are byte-identical to the base release's. The `images` job below
+# is therefore skipped for them, with one `if:` covering both entry
+# paths: the tag push (`github.ref_name`) and the dispatch re-publish
+# (`inputs.tag` — that input exists specifically to re-publish a tag).
+# `:latest` semantics are untouched — a pre-release never moved `:latest`
+# anyway (see the section above).
+#
 # ─── Why buildx and the GHA cache ───────────────────────────────────
 #
 # Same backend t4-smoke.yml already uses, with the same per-service `scope`
@@ -105,6 +119,10 @@ permissions:
 
 jobs:
   images:
+    # -QoL* tags are repo-level (docs/process only): they publish no images.
+    # Guards both entry paths: on a tag push github.ref_name is the tag and
+    # inputs.tag is ''; on dispatch the reverse.
+    if: ${{ !contains(github.ref_name, '-QoL') && !contains(inputs.tag, '-QoL') }}
     name: ${{ matrix.image }}${{ matrix.suffix }}
     runs-on: ubuntu-latest
     timeout-minutes: 60
