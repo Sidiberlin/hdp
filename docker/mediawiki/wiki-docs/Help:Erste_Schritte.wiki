@@ -44,6 +44,12 @@ container and is idempotent (safe to re-run):
 # '''Runs <code>update.php</code>''' to create all BlueSpice extension tables (run twice — once before, once after fixing directory permissions, since some extensions like SemanticMediaWiki need writable data dirs that don’t exist until the first pass creates them).
 # '''Populates the main page''' from [https://github.com/Sidiberlin/hdp/blob/main/docker/mediawiki/hauptseite.wiki <code>docker/mediawiki/hauptseite.wiki</code>] — once only, guarded by a <code>cache/.hauptseite-populated</code> marker so later admin edits are never overwritten.
 
+It also seeds the five placeholder legal pages (<code>Site:Nutzungsbedingungen</code>,
+<code>Site:Datenschutz</code>, <code>Site:Impressum</code>, <code>Site:Haftungsausschluss</code>,
+<code>Site:Über</code>) and the Help codewiki docs, each marker-guarded
+(<code>.site-pages-populated</code>, <code>.site-pages-populated-v2</code>) so later admin edits
+are never overwritten.
+
 == First Run: Create Content and Ask the Chatbot ==
 
 <ol style="list-style-type: decimal;">

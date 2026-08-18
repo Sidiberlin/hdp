@@ -49,7 +49,7 @@ instead, with no PHP code changes — only configuration
 
 | Method | Path | Handler | Notes |
 |---|---|---|---|
-| GET | `/bmbf/chat` | `ChatBot\Rest\Chat` | `text/event-stream` response; `needsReadAccess() = false` |
+| GET | `/bmbf/chat` | `ChatBot\Rest\Chat` | `text/event-stream` response; requires read access — anonymous requests get HTTP 403 `rest-read-denied` before the proxy/LLM pipeline is reached |
 | GET | `/bmbf/session` | `ChatBot\Rest\Session` | Creates a session via `chatbot-proxy`'s `/session` |
 | POST | `/bmbf/history` | `ChatBot\Rest\History` | |
 | POST | `/bmbf/feedback/{id}` | `ChatBot\Rest\ChatFeedback` | |

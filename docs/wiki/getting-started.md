@@ -70,6 +70,12 @@ container and is idempotent (safe to re-run):
    — once only, guarded by a `cache/.hauptseite-populated` marker so later
    admin edits are never overwritten.
 
+It also seeds the five placeholder legal pages (`Site:Nutzungsbedingungen`,
+`Site:Datenschutz`, `Site:Impressum`, `Site:Haftungsausschluss`,
+`Site:Über`) and the Help codewiki docs, each marker-guarded
+(`.site-pages-populated`, `.site-pages-populated-v2`) so later admin edits
+are never overwritten.
+
 ## First Run: Create Content and Ask the Chatbot
 
 1. Create a few wiki pages (through the UI, or `maintenance/edit.php` for

@@ -46,7 +46,7 @@ instead, with no PHP code changes — only configuration
 | GET
 | <code>/bmbf/chat</code>
 | <code>ChatBot\Rest\Chat</code>
-| <code>text/event-stream</code> response; <code>needsReadAccess() = false</code>
+| <code>text/event-stream</code> response; requires read access — anonymous requests get HTTP 403 <code>rest-read-denied</code> before the proxy/LLM pipeline is reached
 |-
 | GET
 | <code>/bmbf/session</code>
