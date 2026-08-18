@@ -46,9 +46,9 @@ container and is idempotent (safe to re-run):
 
 It also seeds the five placeholder legal pages (<code>Site:Nutzungsbedingungen</code>,
 <code>Site:Datenschutz</code>, <code>Site:Impressum</code>, <code>Site:Haftungsausschluss</code>,
-<code>Site:Über</code>) and the Help codewiki docs, each marker-guarded
-(<code>.site-pages-populated</code>, <code>.site-pages-populated-v2</code>) so later admin edits
-are never overwritten.
+<code>Site:Über</code>, guarded by <code>.site-pages-populated</code> and
+<code>.site-pages-populated-v2</code>) and the Help codewiki docs (guarded by
+<code>.wiki-docs-populated</code>), so later admin edits are never overwritten.
 
 == First Run: Create Content and Ask the Chatbot ==
 

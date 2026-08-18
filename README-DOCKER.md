@@ -8,12 +8,15 @@ wiki + Haystack RAG chatbot).
 | Resource | Minimum | Recommended |
 |----------|---------|-------------|
 | **RAM** | 8 GB | 16 GB |
-| **Disk** | 15 GB free | 30 GB free |
+| **Disk** | 20 GB free | 30 GB free |
 | **CPU** | 4 cores | 8 cores |
 | **Docker** | 24.0+ | Latest |
 
 Disk space breakdown: ~9 GB Docker images, ~2 GB MariaDB data, ~1.5 GB
 embedding model (first-download), ~1 GB OpenSearch index, plus wiki uploads.
+The 20 GB minimum covers that total (~13.5 GB before uploads) plus headroom
+for Docker layer/log overhead and the ~5 GB of transient build-cache layers
+a from-source build — the default path — needs on top of it.
 The Docker image total breaks down as:
 
 | Image | Approx. size |
