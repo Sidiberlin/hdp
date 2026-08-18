@@ -12,8 +12,21 @@ wiki + Haystack RAG chatbot).
 | **CPU** | 4 cores | 8 cores |
 | **Docker** | 24.0+ | Latest |
 
-Disk space breakdown: ~4 GB Docker images, ~2 GB MariaDB data, ~1.5 GB
+Disk space breakdown: ~9 GB Docker images, ~2 GB MariaDB data, ~1.5 GB
 embedding model (first-download), ~1 GB OpenSearch index, plus wiki uploads.
+The Docker image total breaks down as:
+
+| Image | Approx. size |
+|---|---|
+| `hdp-haystack` | 2.57 GB |
+| `hdp-opensearch` | 2.47 GB |
+| `hdp-chatbot-proxy` | 0.18 GB |
+| `mariadb` | 0.46 GB |
+| `mediawiki` ×3 | ≈ 3.08 GB |
+
+2.57 + 2.47 + 0.18 + 0.46 + 3.08 ≈ 8.8 ≈ 9 GB on a fresh pull —
+measured 2026-08-17 against `v5.1.9` images.
+
 CPU-only embedding ingestion takes 1–3 min per wiki page; a GPU or the
 `hf_space` embedding provider (see
 [`docs/embedding-providers.md`](docs/embedding-providers.md)) is significantly
