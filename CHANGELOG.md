@@ -11,6 +11,79 @@ For changes in the upstream BlueSpice HDP Edition, see the
 
 ## [Unreleased]
 
+---
+
+## [5.1.9-QoL2] — 2026-08-18
+
+### Security
+
+- **Anonymous chat requests are rejected before the LLM pipeline.** A
+  cookie-less request to `/w/rest.php/bmbf/chat` now answers HTTP 403 with
+  the `rest-read-denied` JSON body — the handler no longer opts out of the
+  read gate and an explicit authority guard runs first (`5da99ec88`). A new
+  integration test pins the behavior.
+- **Anonymous clients no longer receive exception details.** Error responses
+  now carry only the generic message — no exception message, backtrace or
+  hostnames — while the private error and exception logs are kept; only the
+  outward-facing responses are generic (`fa1f7c2e4` + `2ecd98950`).
+
+### Fixed
+
+- **`mediawiki-web` healthcheck works on any host port.** The probe now
+  targets the in-container `http://localhost:8080/w/` instead of the
+  host-interpolated `${MW_DOCKER_PORT}` — the wiki stays healthy on
+  non-default ports even though apache always listens on 8080 inside the
+  container (`70f58eca4`).
+- **All five footer legal pages exist on a fresh install.** `Site:Impressum`,
+  `Site:Haftungsausschluss` and `Site:Über` are seeded alongside the two
+  BlueSpice defaults (`6f73b3535`); on existing installs exactly the three
+  new pages are created under a versioned marker and existing pages or admin
+  edits are never overwritten (`5c73d7074`).
+
+### Docs
+
+- **README states the real image pull: ~9 GB** (hdp-haystack 2.57 +
+  hdp-opensearch 2.47 + hdp-chatbot-proxy 0.18 + mariadb 0.46 + the three
+  Wikimedia images ≈ 3.08 GB), and raises the disk minimum to 20 GB to
+  match (`f81e7fadd` + `ec367cb9f`).
+- A new recipe explains why `git describe --tags` reports a `-QoL*` tag
+  while `docker images` shows `v5.1.9`, and how to pin a version via
+  `HDP_IMAGE_TAG` (`00c88cbf9`).
+- docs/wiki sources synced to the shipped behavior (anon-chat 403, footer
+  legal pages) with the wikitext mirrors regenerated in the same commit
+  (`212c7307c`).
+- **`-QoL*` prerelease tags publish no images** — by design, not omission:
+  the release workflow's image-publish job skips them, and container images
+  keep tracking the base `v5.1.9` release this bundle rides on
+  (`7c887cac1`).
+
+### Known Issues
+
+- **The first avatar request on a fresh install can fail once.** Generating
+  a user's avatar image may answer HTTP 500 on the very first request; it
+  self-heals on the next request — reload the page. No action needed.
+- **A `?search=` URL does not feed the search term into the search lookup
+  server-side.** This does not reproduce for humans: a person typing into
+  the search bar gets results (the term is carried client-side). The QA
+  observation came from browser automation; upstream `SearchCenter` reads
+  only `q`/`raw_term`, never `search`.
+- QA Findings 7 and 8 are benign as reported: a first-boot PHP notice about
+  the `bs_settings3` table (no user impact) and console-only deprecation
+  warnings (deprecated `mediawiki.Uri` module, one unused preload).
+- **composer-audit reports CVE-2026-65954** (`phpcsstandards/phpcsutils`) —
+  a documented exception: the package is dev tooling only, never installed
+  in the production container, and no lockfile-only pin exists because the
+  fixed version conflicts with the pinned codesniffer toolchain. The fix
+  rides the next toolchain upgrade.
+- **The read-access lockout covers the chat handler only.** The four
+  sibling ChatBot REST handlers (`/bmbf/session`, `/bmbf/history`,
+  `/bmbf/pdf`, `/bmbf/odf`) remain open on non-default configurations — an
+  intentional deferral to the next release.
+
+---
+
+## [5.1.9-QoL1] — 2026-08-12
+
 ### Changed
 - **Upgraded MediaWiki 1.43.5 → 1.43.9 and BlueSpice 5.1.4 → 5.1.9.** Applied as
   upstream deltas rather than a tree replacement, so BlueSpice's own core
