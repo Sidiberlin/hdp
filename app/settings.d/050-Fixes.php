@@ -32,6 +32,13 @@ $GLOBALS['wgDebugLogFile'] = '';
 $GLOBALS['wgDebugLogGroups'] = [];
 $GLOBALS['wgDebugToolbar'] = false;
 
+// DevelopmentSettings.php also sets $wgShowExceptionDetails = true.
+// Nothing else resets it, so every uncaught exception — including on
+// anonymous-reachable REST routes — was answered with the full
+// exception class, message, backtrace and hostnames in the response
+// body. Return only the generic error message instead.
+$GLOBALS['wgShowExceptionDetails'] = false;
+
 // BlueSpiceExtendedSearch's default backend config (extension.json)
 // points at 127.0.0.1:9200, which is nothing inside the mediawiki
 // container — OpenSearch is a separate service reachable at
