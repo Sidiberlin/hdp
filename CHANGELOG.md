@@ -77,8 +77,8 @@ For changes in the upstream BlueSpice HDP Edition, see the
   rides the next toolchain upgrade.
 - **The read-access lockout covers the chat handler only.** The four
   sibling ChatBot REST handlers (`/bmbf/session`, `/bmbf/history`,
-  `/bmbf/pdf`, `/bmbf/odf`) remain open on non-default configurations — an
-  intentional deferral to the next release.
+  `/bmbf-export-chat`, `/bmbf-odf-export-chat`) remain open on non-default
+  configurations — an intentional deferral to the next release.
 
 ---
 
