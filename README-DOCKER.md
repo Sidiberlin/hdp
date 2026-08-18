@@ -275,6 +275,23 @@ Both files read the same variable, and the GPU one appends its suffix after it �
 `:latest` exists but deliberately does not follow a pre-release tag — `v5.1.9`
 moves it, `v5.1.9-rc1` does not. Pin explicitly for anything you care about.
 
+#### Why `git describe` and `docker images` disagree
+
+On a full clone checked out at a `-QoL*` tag the two commands disagree:
+
+```bash
+git describe --tags    # v5.1.9-QoL2[-N-gHASH] on a full clone at the tag
+docker images          # the hdp-* images are still tagged v5.1.9
+```
+
+Both outputs are correct. `-QoL*` tags are repository-level — docs, fixes,
+workflow changes — and publish no images at all: the release workflow skips
+them, so the images you pull track the base release they were built from
+(`v5.1.9`, measured 2026-08-17). To pin a release explicitly, set
+`HDP_IMAGE_TAG` as described above. For a third check — the OCI revision
+label naming the commit an image was built from — see
+[Verifying what you pulled](#verifying-what-you-pulled).
+
 ### Authentication
 
 None. The packages are public — `docker compose ... pull` and `up` work with
