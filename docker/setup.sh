@@ -513,10 +513,21 @@ fi
 # BlueSpice footer (FooterLinks.DE.wiki) and were red links on fresh
 # installs (Finding 2). Separate marker so existing installs gain exactly
 # these pages and the two original pages are never re-overwritten.
+#
+# edit.php overwrites unconditionally, so these three are seeded in
+# create-only mode: on an install whose admin already resolved the footer
+# red link by writing a real Site:Impressum, edit.php exits non-zero with
+# "Page already exists" on stderr — counted here as SUCCESS (the page
+# exists, the admin's content stays untouched), while any other failure
+# raises the failed flag. The v2 marker lands only when every seed file
+# was mounted AND every edit ended in one of the two success states, so a
+# failed or partial run retries on the next setup.sh instead of leaving a
+# permanent red link behind a marker that claims the work is done.
 if [ ! -f cache/.site-pages-populated-v2 ]; then
     echo ""
     echo "[4/4] Populating Site: legal placeholder pages (QoL2)..."
     missing=0
+    failed=0
     for page_file in \
         "Site:Impressum|/site-impressum.wiki" \
         "Site:Haftungsausschluss|/site-haftungsausschluss.wiki" \
@@ -525,19 +536,29 @@ if [ ! -f cache/.site-pages-populated-v2 ]; then
         file="${page_file##*|}"
         if [ -f "$file" ]; then
             echo "  -> ${page}"
-            php maintenance/run.php edit.php \
+            if seed_output="$(php maintenance/run.php edit.php \
+                --createonly \
                 --user Admin \
                 --summary "Initial setup: populate legal placeholder page" \
-                "$page" < "$file" \
-                || echo "  WARNING: population of ${page} failed (non-fatal, continuing)"
+                "$page" < "$file" 2>&1)"; then
+                printf '%s\n' "$seed_output"
+            elif grep -q "Page already exists" <<<"$seed_output"; then
+                echo "     ${page} already exists; existing content left untouched"
+            else
+                printf '%s\n' "$seed_output"
+                echo "  WARNING: population of ${page} failed (non-fatal, continuing)"
+                failed=1
+            fi
         else
             missing=1
         fi
     done
-    if [ "$missing" -eq 0 ]; then
+    if [ "$missing" -eq 0 ] && [ "$failed" -eq 0 ]; then
         touch cache/.site-pages-populated-v2
-    else
+    elif [ "$missing" -ne 0 ]; then
         echo "  WARNING: one or more Site: page files are not mounted; not marking populated"
+    else
+        echo "  WARNING: one or more Site: pages failed to seed; not marking populated"
     fi
 fi
 
