@@ -13,6 +13,28 @@ For changes in the upstream BlueSpice HDP Edition, see the
 
 ---
 
+## [5.1.9-QoL3] — 2026-08-19
+
+### Fixed
+
+- **A pipe-fed (`curl … | bash`) install survives model pre-download.** The
+  pre-download `docker compose run` now passes `-T` and reads
+  `< /dev/null`, so docker no longer drains the script pipe bash is
+  reading — the services step, the start-now prompt and the exit message
+  all execute instead of the installer dying silently after
+  "Models cached…" (`8080147a3`); a bats regression test pins the shape.
+- **First-boot setup tolerates slow MariaDB boots.** `docker/setup.sh`
+  waits up to 600 s (was 120 s) for MariaDB — cold-disk InnoDB init on
+  cloud boxes no longer kills setup while the compose healthcheck reads
+  healthy (`c6c626923`); the poll loop is unchanged.
+- **A port-less Server URL is caught at the prompt.** Entering a Server
+  URL without a port while the host port is not 80 now warns that
+  canonical redirects would point at port 80 and offers to append the
+  port (decline re-prompts; an explicitly different port, e.g. a reverse
+  proxy on 443, is never blocked) (`0f1e23c20`).
+
+---
+
 ## [5.1.9-QoL2] — 2026-08-18
 
 ### Security
