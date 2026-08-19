@@ -1020,10 +1020,15 @@ predownload_models() {
     fi
 
     printf '\n'
-    info "docker ${COMPOSE_ARGS[*]} run --rm --no-deps --entrypoint python3 haystack …"
+    info "docker ${COMPOSE_ARGS[*]} run --rm --no-deps -T --entrypoint python3 haystack …"
     printf '\n'
-    if docker "${COMPOSE_ARGS[@]}" run --rm --no-deps --entrypoint python3 \
-            haystack -c "$PREDOWNLOAD_PY"; then
+    # -T because stdin here is the installer's own stdin, which under
+    # `curl … | bash` is the script itself: an attached compose run drains the
+    # pipe bash is reading, and the installer dies silently after "Models
+    # cached…". The < /dev/null redirect is the second belt — it also covers
+    # any future docker-run fallback shape.
+    if docker "${COMPOSE_ARGS[@]}" run --rm --no-deps -T --entrypoint python3 \
+            haystack -c "$PREDOWNLOAD_PY" < /dev/null; then
         printf '\n'
         ok "Models cached in the haystack_models volume."
     else
