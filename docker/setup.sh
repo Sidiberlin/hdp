@@ -129,11 +129,14 @@ echo ""
 
 # ─── Step 0: Wait for MariaDB ──────────────────────────────────────
 echo "[0/4] Waiting for MariaDB at ${DB_HOST}..."
-max_wait=120
+max_wait=600   # was 120 — cold-disk InnoDB init on cloud boxes can out-run
+               # 120 s while the compose healthcheck reads healthy; the
+               # installer's own wait_ready allows 300 s for the same
+               # dependency. Poll loop unchanged.
 waited=0
 # MYSQL_PWD rather than -p"${DB_PASS}", for the same reason install.php below
 # gets its passwords from files: an argv password is world-readable via
-# /proc/<pid>/cmdline, and this loop can spawn up to 60 clients. The
+# /proc/<pid>/cmdline, and this loop can spawn up to 300 clients. The
 # environment is not perfect either, but /proc/<pid>/environ is readable only
 # by the process owner, and the variable is scoped to the one command.
 while ! MYSQL_PWD="${DB_PASS}" mariadb -h "${DB_HOST}" -u "${DB_USER}" -e "SELECT 1" "${DB_NAME}" &>/dev/null; do
