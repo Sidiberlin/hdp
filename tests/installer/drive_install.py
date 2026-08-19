@@ -88,7 +88,8 @@ def rules(gpu_choice="3", proceed_anyway="y", predownload="n"):
 
 
 def run(name, *, cuda=None, smi_style="both", gpu_choice="3",
-        proceed_anyway="y", with_smi=True, predownload="n", seed_env=None):
+        proceed_anyway="y", with_smi=True, predownload="n", seed_env=None,
+        host_port=None, server_url=None):
     work = tempfile.mkdtemp(prefix="hdp-install-test-")
     repo = os.path.join(work, "repo")
     binp = os.path.join(work, "bin")
@@ -121,6 +122,14 @@ def run(name, *, cuda=None, smi_style="both", gpu_choice="3",
     })
 
     answers = rules(gpu_choice, proceed_anyway, predownload)
+    if host_port is not None:
+        answers.append(("Host port for the wiki", host_port))
+    if server_url is not None:
+        # The append-confirm also says "Server URL", so it must match first:
+        # a bare Enter takes its default-y. Without this guard the URL rule
+        # would answer the y/n prompt with a hostname and spin the loop.
+        answers.append(("Append :", ""))
+        answers.append(("Server URL", server_url))
     pid, fd = pty.fork()
     if pid == 0:
         os.chdir(repo)
@@ -316,6 +325,8 @@ def main():
           bool(runs) and "docker-compose.gpu.yml" in runs[0], runs[:1])
     check(r, "…and not through prod-gpu.yml",
           bool(runs) and "prod-gpu" not in runs[0], runs[:1])
+    check(r, "…with -T, so a pipe-fed install keeps its stdin",
+          bool(runs) and "-T" in runs[0].split(), runs[:1])
 
     # 11 — "Skip" on a configured cu118 install keeps building from source
     # rather than silently switching to the pre-built cu124 image.
@@ -333,6 +344,34 @@ def main():
     check(r, "printed command builds from source",
           "docker-compose.gpu.yml" in log and "--build" in log
           and "docker-compose.prod-gpu.yml" not in log)
+
+    # 12 — a port-less Server URL beside host port 8080: the installer must
+    # warn that canonical redirects would point at port 80 and offer the
+    # append (default yes, taken here). $wgServer ends up carrying the port.
+    r = run("port-less Server URL + port 8080 -> warned, :8080 appended",
+            cuda="13.0", server_url="http://qa.example")
+    show(r)
+    log = strip(r["log"])
+    check(r, "exit 0", r["rc"] == 0, f"rc={r['rc']}")
+    check(r, "MW_SERVER got the port appended",
+          env_get(r["env"], "MW_SERVER") == "http://qa.example:8080",
+          str(env_get(r["env"], "MW_SERVER")))
+    check(r, "warns that redirects point at port 80",
+          "point at port 80" in log)
+    check(r, "offers the append",
+          "Append :8080 to the Server URL?" in log)
+
+    # 13 — the same port-less URL beside host port 80: port 80 IS the URL
+    # port, so the value is correct as typed — no warning, no append.
+    r = run("port-less Server URL + host port 80 -> accepted silently",
+            cuda="13.0", host_port="80", server_url="http://qa.example")
+    show(r)
+    log = strip(r["log"])
+    check(r, "exit 0", r["rc"] == 0, f"rc={r['rc']}")
+    check(r, "MW_SERVER untouched (no append)",
+          env_get(r["env"], "MW_SERVER") == "http://qa.example",
+          str(env_get(r["env"], "MW_SERVER")))
+    check(r, "no port warning", "point at port 80" not in log)
 
     print()
     if FAILED:

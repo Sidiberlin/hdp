@@ -456,8 +456,47 @@ while :; do
     # action URL is malformed. The operator sees the raw hostname in the
     # error, which is not obviously a missing-protocol problem.
     case "$MW_SERVER_VAL" in
-        http://*|https://*) break ;;
-        *) warn "the URL must start with http:// or https://" ;;
+        http://*|https://*) ;;
+        *) warn "the URL must start with http:// or https://"; continue ;;
+    esac
+    # The port matters just as much: a URL without one, accepted beside a
+    # host port other than 80, makes $wgServer build every canonical
+    # redirect on port 80 — logins die with connection-refused while the
+    # rest of the wiki keeps working. The missing-port sibling of the
+    # protocol bug above.
+    host_part="${MW_SERVER_VAL#http://}"
+    host_part="${host_part#https://}"
+    host_part="${host_part%%/*}"
+    case "$host_part" in
+        *:*)
+            # An explicit port. One that differs from the host port can be
+            # exactly right (a reverse proxy on 443) — never block it, note
+            # it. NB: a bracketless IPv6 literal lands here too; harmless,
+            # it reads as explicitly ported. The .env.example URLs are
+            # plain hostnames.
+            url_port="${host_part##*:}"
+            if [ "$url_port" != "$MW_PORT_VAL" ]; then
+                note "URL port :$url_port differs from host port $MW_PORT_VAL — fine behind a reverse proxy."
+            fi
+            break ;;
+        *)
+            if [ "$MW_PORT_VAL" != "80" ]; then
+                warn "without an explicit port, MediaWiki's links and redirects point at port 80."
+                if confirm "Append :$MW_PORT_VAL to the Server URL?" y; then
+                    # Rebuild at the host boundary, not the string end, so
+                    # http://host/wiki becomes http://host:PORT/wiki.
+                    path_part="${MW_SERVER_VAL#http://}"
+                    path_part="${path_part#https://}"
+                    path_part="${path_part#"$host_part"}"
+                    case "$MW_SERVER_VAL" in
+                        https://*) MW_SERVER_VAL="https://$host_part:$MW_PORT_VAL$path_part" ;;
+                        *)         MW_SERVER_VAL="http://$host_part:$MW_PORT_VAL$path_part" ;;
+                    esac
+                    break
+                fi
+                continue    # declined — re-prompt, never silently coerce
+            fi
+            break ;;        # port-less beside host port 80: correct as typed
     esac
 done
 set_env MW_SERVER "$MW_SERVER_VAL"
