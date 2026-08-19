@@ -89,7 +89,7 @@ def rules(gpu_choice="3", proceed_anyway="y", predownload="n"):
 
 def run(name, *, cuda=None, smi_style="both", gpu_choice="3",
         proceed_anyway="y", with_smi=True, predownload="n", seed_env=None,
-        host_port=None, server_url=None):
+        host_port=None, server_url=None, answer_queues=None):
     work = tempfile.mkdtemp(prefix="hdp-install-test-")
     repo = os.path.join(work, "repo")
     binp = os.path.join(work, "bin")
@@ -122,6 +122,9 @@ def run(name, *, cuda=None, smi_style="both", gpu_choice="3",
     })
 
     answers = rules(gpu_choice, proceed_anyway, predownload)
+    # Per-prompt FIFO answers, consumed before the static rule value: the only
+    # way to express "decline once, then accept" for a prompt that repeats.
+    queues = answer_queues or {}
     if host_port is not None:
         answers.append(("Host port for the wiki", host_port))
     if server_url is not None:
@@ -155,7 +158,8 @@ def run(name, *, cuda=None, smi_style="both", gpu_choice="3",
             reply = "\n"
             for needle, value in answers:
                 if needle in tail:
-                    reply = value + "\n"
+                    queued = queues.get(needle)
+                    reply = (queued.pop(0) if queued else value) + "\n"
                     break
             os.write(fd, reply.encode())
             pending = ""
@@ -372,6 +376,24 @@ def main():
           env_get(r["env"], "MW_SERVER") == "http://qa.example",
           str(env_get(r["env"], "MW_SERVER")))
     check(r, "no port warning", "point at port 80" not in log)
+
+    # 14 — declining the append re-prompts the Server URL rather than silently
+    # coercing or accepting: decline once (queued answer), the loop asks again,
+    # the same port-less URL is re-sent, and the second offer takes its default
+    # yes. Both the prompt and the warning must appear twice in the log.
+    r = run("declining the append re-prompts the Server URL",
+            cuda="13.0", server_url="http://qa.example",
+            answer_queues={"Append :": ["n"]})
+    show(r)
+    log = strip(r["log"])
+    check(r, "exit 0", r["rc"] == 0, f"rc={r['rc']}")
+    check(r, "MW_SERVER got the port on the second offer",
+          env_get(r["env"], "MW_SERVER") == "http://qa.example:8080",
+          str(env_get(r["env"], "MW_SERVER")))
+    check(r, "Server URL prompt shown at least twice",
+          log.count("Server URL [") >= 2, str(log.count("Server URL [")))
+    check(r, "port-80 warning shown at least twice",
+          log.count("point at port 80") >= 2, str(log.count("point at port 80")))
 
     print()
     if FAILED:
