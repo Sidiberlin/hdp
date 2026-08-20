@@ -1254,8 +1254,14 @@ if wait_ready "database and search  " 300 mariadb opensearch \
     # -T because stdin here is the installer's own stdin, which under
     # `curl … | bash` is the script itself and is not a terminal. Without it
     # compose refuses with "the input device is not a TTY" and the whole
-    # one-command promise dies on the last step.
-    docker "${COMPOSE_ARGS[@]}" exec -T mediawiki bash /setup.sh || SETUP_OK=0
+    # one-command promise dies on the last step. But -T only declines the
+    # pseudo-TTY — it does not detach stdin, and an exec client still drains
+    # the pipe bash is reading (found live: a pipe-fed install ended
+    # silently right here — setup done, then exit 0 with no ready block).
+    # The < /dev/null redirect is what keeps the script pipe alive, exactly
+    # as at the pre-download run above.
+    docker "${COMPOSE_ARGS[@]}" exec -T mediawiki bash /setup.sh < /dev/null \
+        || SETUP_OK=0
 else
     SETUP_OK=0
     printf '\n'
@@ -1295,7 +1301,11 @@ if [ "$SETUP_OK" -eq 1 ]; then
         info "docker ${COMPOSE_ARGS[*]} exec -T haystack python3 ingest_hdp_wiki.py"
         printf '\n'
         INGEST_OK=0
-        docker "${COMPOSE_ARGS[@]}" exec -T haystack python3 ingest_hdp_wiki.py || INGEST_OK=1
+        # Same belt as the setup exec above: -T alone does not detach stdin,
+        # and this is the last docker call of the run — a drained pipe here
+        # would eat the closing block and still exit 0.
+        docker "${COMPOSE_ARGS[@]}" exec -T haystack \
+            python3 ingest_hdp_wiki.py < /dev/null || INGEST_OK=1
         if [ "$INGEST_OK" -ne 0 ]; then
             printf '\n'
             warn "Ingestion did not complete — see the output above. Re-run with:"
