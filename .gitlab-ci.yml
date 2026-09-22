@@ -41,7 +41,7 @@ shellcheck:
     # Kept identical to scripts/check.sh's shellcheck step — the point of that
     # script is that its verdict is this job's verdict.
     - |
-      find docker scripts install.sh hdp.sh -name '*.sh' -print0 \
+      find docker scripts install.sh update.sh hdp.sh -name '*.sh' -print0 \
         | xargs -0 -r shellcheck --severity=warning --
 
 # ─── YAML validation ────────────────────────────────────────────────

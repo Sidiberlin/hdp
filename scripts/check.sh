@@ -232,11 +232,11 @@ skip() { SKIP_REASON["$1"]="$2"; return 77; }
 # status cannot be masked.
 check_shellcheck_run() {
     if have shellcheck; then
-        find docker scripts install.sh hdp.sh -name '*.sh' -print0 \
+        find docker scripts install.sh update.sh hdp.sh -name '*.sh' -print0 \
             | xargs -0 -r shellcheck --severity=warning --
     elif have_docker; then
         docker run --rm -v "$REPO_ROOT":/mnt -w /mnt "$IMG_SHELLCHECK" \
-            sh -c "find docker scripts install.sh hdp.sh -name '*.sh' -print0 | xargs -0 -r shellcheck --severity=warning --"
+            sh -c "find docker scripts install.sh update.sh hdp.sh -name '*.sh' -print0 | xargs -0 -r shellcheck --severity=warning --"
     else
         skip shellcheck "no shellcheck on PATH and no docker"
     fi

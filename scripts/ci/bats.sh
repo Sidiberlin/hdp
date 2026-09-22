@@ -2,8 +2,10 @@
 # ============================================================
 # Wave 2 — the bats runner.
 #
-# Three suites:
+# Five suites:
 #   infisical_loader.bats  docker/infisical-loader.sh — the Wave 0 security fixes
+#   install_pipe.bats      install.sh — the pipe-fed (-T + </dev/null) guards
+#   update_pipe.bats       update.sh — the same guards, its own count pin
 #   upgrade_report.bats    verify-patches.sh --upgrade-report — every state
 #   t4_disk_guard.bats     scripts/ci/lib/stack.sh — the T4 free-space maths,
 #                          pinned to the two runs that produced the numbers

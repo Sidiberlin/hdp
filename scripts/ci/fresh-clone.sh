@@ -62,6 +62,7 @@ REQUIRED_FILES=(
     docker/haystack/wikitext.py
     docker/haystack/render_pipeline.py
     install.sh
+    update.sh
     hdp.sh
     scripts/check.sh
     scripts/ci/bats.sh
