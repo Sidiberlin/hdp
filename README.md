@@ -127,6 +127,21 @@ chatbot. If you would rather read the script first, `git clone` and run
 See [README-DOCKER.md](README-DOCKER.md) for hardware requirements, the manual
 setup path, and the configuration reference (`.env.example`).
 
+## Updating an existing install
+
+```bash
+cd hdp && ./update.sh
+```
+
+`update.sh` follows **release tags**, not the tip of `main` — it moves an
+existing, configured install to the newest `v*` release, never to whatever
+just landed on the branch. Every destructive step (stopping containers,
+resetting the tree, running `docker/setup.sh`) is named and confirmed before
+it runs, and `.env`, the database and the volumes are left alone. See
+[README-DOCKER.md](README-DOCKER.md#updating-an-existing-install) for the
+full behavior, including the `HDP_UPDATE_REF` overrides and what happens on
+failure.
+
 ## License
 
 GPL-3.0-only.

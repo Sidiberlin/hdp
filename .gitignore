@@ -80,3 +80,8 @@ docs/.codewiki-state.json
 # this into the haystack container so actions/cache can save ~1.7 GB of model
 # weights between nightly runs). Never authored content.
 .hf-cache/
+
+# update.sh's pre-update database dumps (docs/dev/upgrade-runbook.md
+# "Rollback" — a code rollback after update.php needs one). Contains a full
+# mysqldump of the wiki's database; never commit it.
+backups/

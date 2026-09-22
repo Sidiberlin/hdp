@@ -1274,6 +1274,8 @@ if [ "$SETUP_OK" -eq 1 ]; then
 
     printf '  %sWiki%s      %s%s%s\n' "$C_BLD" "$C_OFF" "$C_BLD$C_BLU" "$WIKI_URL" "$C_OFF"
     printf '  %sLogin%s     Admin  /  %s%s%s\n' "$C_BLD" "$C_OFF" "$C_BLD" "$PW_ADMIN" "$C_OFF"
+    printf '  %sUpdate%s    cd %s && ./update.sh      %s# later, to move to the latest release%s\n' \
+        "$C_BLD" "$C_OFF" "$REPO_ROOT" "$C_DIM" "$C_OFF"
     printf '\n'
     note "BlueSpice shows nothing before you log in, including the main page."
     note "A privacy consent prompt on first login is expected."

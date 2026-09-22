@@ -184,6 +184,49 @@ MW_SERVER=http://192.168.1.50:8080
 Without this, logins and redirects send browsers to their own `localhost`
 and fail with `ERR_CONNECTION_REFUSED`.
 
+## Updating an existing install
+
+```bash
+cd hdp
+./update.sh
+```
+
+`update.sh` moves an already-configured, running install forward to the
+**latest release tag** — the newest `v*` tag on the remote, release
+candidates excluded. That is deliberately not "whatever is on `main` right
+now": `main` is where every commit lands, including work in progress, and
+the tagged releases are what this project considers shippable. Follow the
+branch instead only if you know you want that:
+
+```bash
+HDP_UPDATE_REF=main ./update.sh       # opt-in: tip of main
+HDP_UPDATE_REF=v5.2.0 ./update.sh     # pin one specific tag
+./update.sh --check                   # show the plan, change nothing
+```
+
+What it does, in order: fetches the target, refuses if the working tree has
+unexpected local changes, shows a plan (old → new commit, which of `.env`,
+the images, and the wiki code will be touched, and the exact commands),
+asks for confirmation, then — only after that — stops the two containers
+serving live traffic, resets the tree, pulls or rebuilds the three images
+this project builds, brings the stack back up, restarts the wiki for the
+PHP opcache, and re-runs `docker/setup.sh` (which runs MediaWiki's
+`update.php`). It offers a database backup first whenever `update.php` is
+going to run, because a code rollback afterwards needs one — `update.sh`
+itself never rolls back automatically; on failure it prints the exact
+commands to do it by hand.
+
+`.env`, the database and all three volumes are left alone except for one
+thing: a new release can add `.env.example` keys, and `update.sh` offers to
+append the ones with a documented default (keys with no safe default — API
+keys, passwords — are listed instead, with a pointer to re-run
+`./install.sh`, which pre-fills every answer from the existing `.env`).
+
+Reachable the same three ways as the installer: from inside the checkout
+(`./update.sh`), after the one-line install (`cd hdp && ./update.sh`), or
+piped from curl the same way the installer is. It needs a real git checkout
+— a tarball install has no history to fetch against.
+
 ## Architecture
 
 | Service | Image / Build | Purpose |

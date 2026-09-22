@@ -11,6 +11,31 @@ For changes in the upstream BlueSpice HDP Edition, see the
 
 ## [Unreleased]
 
+### Added
+
+- **`update.sh`** — moves an existing, configured install to the latest
+  release tag without losing `.env`, the database, the volumes or wiki
+  content. Follows the newest `v*` tag on the remote by default (pre-release
+  tags excluded, `-QoL*` tags included — see the script's own comments for
+  why); `HDP_UPDATE_REF=main` opts into tracking the branch instead, and
+  `HDP_UPDATE_REF=<tag>` pins one specific tag. Every destructive step
+  (stopping the two live-traffic containers, resetting the tree, rebuilding
+  images, running `docker/setup.sh`) is named and confirmed by a human first;
+  on failure it prints the exact rollback commands rather than running them.
+  Detects and offers a database backup whenever `update.php` is about to run,
+  detects the case where a `-QoL*`-shaped release publishes no new images and
+  offers to build from source instead of silently re-pulling stale ones, and
+  reports (without writing) `.env.example` drift that has no safe default.
+  Reachable from a checkout, after the one-line install, or piped from curl.
+
+### Changed
+
+- **`install.sh`** prints a one-line pointer to `./update.sh` in the
+  "Your wiki is ready" block.
+- **`README.md`** and **`README-DOCKER.md`** each gained an "Updating an
+  existing install" section — there was previously no "how do I update" text
+  anywhere in the repo.
+
 ---
 
 ## [5.1.9-QoL3] — 2026-08-19
