@@ -285,41 +285,55 @@ def show(name, res):
 
 
 def scenario_1_dirty_tree():
-    name = "1 dirty tree (a tracked file edited) -> exit 2, no fetch/reset"
+    name = "1 dirty tree (a tracked file edited outside app/) -> exit 2, no fetch/reset"
     work = tempfile.mkdtemp(prefix="hdp-update-test-")
     origin, seed = make_origin(work)
     clone = clone_install(origin, work)
     push_new(seed, {"app/marker.txt": "new\n"}, tags=["v1.0.1"])
     before = head_sha(clone)
-    with open(os.path.join(clone, "app/marker.txt"), "w") as fh:
-        fh.write("locally edited\n")
+    with open(os.path.join(clone, "docker-compose.yml"), "w") as fh:
+        fh.write("services: {}\n# locally edited\n")
 
     r = drive(clone, timeout=10)
     show(name, r)
     log = strip(r["log"])
     check(name, "exit 2", r["rc"] == 2, f"rc={r['rc']}")
-    check(name, "names the offending path", "app/marker.txt" in log)
+    check(name, "names the offending path", "docker-compose.yml" in log)
     check(name, "no docker mutating call", r["docker"].strip() == "", r["docker"])
     check(name, "HEAD unmoved", head_sha(clone) == before)
 
 
 def scenario_2_composer_lock_only():
-    name = "2 only app/composer.lock modified (F7 shape) -> proceeds"
+    name = "2 app/ install churn (composer.lock + manifests + i18n) -> proceeds"
     work = tempfile.mkdtemp(prefix="hdp-update-test-")
     origin, seed = make_origin(work)
-    # composer.lock must exist and be tracked in the OLD tree for a later
-    # local edit to register as a modification rather than an untracked file.
-    push_new(seed, {"app/composer.lock": '{"packages":[]}\n'}, message="add composer.lock")
+    # The measured real-install churn shape (QA box, 2026-09-22: 233 files):
+    # composer.lock rewritten by docker/setup.sh (F7), extension manifests
+    # touched by composer/npm runtime activity, i18n JSON churn. All under
+    # app/ -> machine churn the class rule allows and the reset discards.
+    push_new(seed, {
+        "app/composer.lock": '{"packages":[]}\n',
+        "app/extensions/Arrays/composer.json": '{"name":"arrays"}\n',
+        "app/extensions/Arrays/package-lock.json": '{"lockfileVersion":3}\n',
+        "app/extensions/CodeMirror/i18n/ar.json": '{"@metadata":[]}\n',
+    }, message="track the churnable files")
     clone = clone_install(origin, work)
     push_new(seed, {"app/marker.txt": "new\n"}, tags=["v1.0.1"])
-    with open(os.path.join(clone, "app/composer.lock"), "w") as fh:
-        fh.write('{"packages":["stripped-by-setup.sh"]}\n')
+    churn = {
+        "app/composer.lock": '{"packages":["stripped-by-setup.sh"]}\n',
+        "app/extensions/Arrays/composer.json": '{"name":"arrays","modified":true}\n',
+        "app/extensions/Arrays/package-lock.json": '{"lockfileVersion":3,"changed":true}\n',
+        "app/extensions/CodeMirror/i18n/ar.json": '{"@metadata":[],"x":1}\n',
+    }
+    for path_, content in churn.items():
+        with open(os.path.join(clone, path_), "w") as fh:
+            fh.write(content)
 
     r = drive(clone, args=["--check"], timeout=10)
     show(name, r)
     log = strip(r["log"])
     check(name, "exit 0", r["rc"] == 0, f"rc={r['rc']}")
-    check(name, "plan explains the composer.lock drift", "F7/F8" in log)
+    check(name, "plan explains the app/ churn allowance", "install churn" in log)
 
 
 def scenario_3_already_current():

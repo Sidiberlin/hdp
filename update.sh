@@ -194,26 +194,42 @@ get_env() {
 
 # ─── Dirty-tree guard (D2) ────────────────────────────────────────────
 # git reset --hard is only a sane "identical to upstream" operation on a tree
-# that has nothing of the operator's own in it. The one expected exception:
-# docker/setup.sh permanently rewrites the tracked app/composer.lock on
-# first boot (SSH->HTTPS rewrite, then strips the two private packages) and
-# never restores it — verified by reading docker/setup.sh (see its "Step 1:
-# Fix Composer" block); the committed form is safe to reset to because the
-# runtime never reads composer.lock once vendor/ exists (it re-strips it on
-# the next composer run regardless).
-ALLOWED_DRIFT=(app/composer.lock)
+# that has nothing of the operator's own in it.
+#
+# Drift policy (corrected against a real install, 2026-09-22): a live install
+# drifts under app/ far beyond app/composer.lock — measured 233 tracked files
+# on a standing QA install: composer.lock (docker/setup.sh rewrites it on
+# first boot and never restores it), extension composer.json /
+# package.json / package-lock.json / i18n/*.json churn from composer and
+# container runtime activity, and vendored binaries (app/_bluespice/tools/
+# mediawiki-adm). The vendored app/ tree is not where operators author —
+# docs/dev/upgrade-runbook.md routes every change through maintainer commits
+# — so tracked-file drift under app/ is treated as machine churn: allowed,
+# and discarded by the reset (the committed form is the upstream form).
+# Everywhere a human would actually edit (docker/, tests/, scripts/, docs/,
+# README*, CHANGELOG.md, .env.example, docker-compose*.yml, workflow files,
+# and every root-level file) the guard stays strict: ANY tracked
+# modification refuses the update, because there reset would destroy work
+# update.sh cannot tell from upstream's.
+is_allowed_drift() {
+    case "$1" in
+        app/*) return 0 ;;
+        *)     return 1 ;;
+    esac
+}
 
 if [ "$DISCARD_LOCAL" -eq 0 ]; then
     declare -a OFFENDING=()
     while IFS= read -r line; do
         [ -n "$line" ] || continue
         path="${line:3}"
-        allowed=0
-        for a in "${ALLOWED_DRIFT[@]}"; do
-            [ "$path" = "$a" ] && { allowed=1; break; }
-        done
-        [ "$allowed" -eq 1 ] || OFFENDING+=("$line")
+        is_allowed_drift "$path" || OFFENDING+=("$line")
     done < <(git status --porcelain --untracked-files=no)
+
+    CHURN=$(git status --porcelain --untracked-files=no | grep -c '^ M app/' || true)
+    if [ "${CHURN:-0}" -gt 0 ]; then
+        note "$CHURN tracked file(s) under app/ differ — install churn (composer, runtime); the reset restores upstream's forms."
+    fi
 
     if [ ${#OFFENDING[@]} -gt 0 ]; then
         printf '\n'
