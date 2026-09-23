@@ -17,11 +17,11 @@ This page is the prose; the manifest is the source of truth.
 
 ---
 
-## Inventory: 23 targets, 22 live
+## Inventory: 24 targets, 23 live
 
 | Class | Count | Applied by | Fails by |
 |---|---|---|---|
-| **A** — composer-clobbered | 5 | `scripts/apply-patches.sh`, called by `docker/setup.sh` | `composer install` reinstalls the package as a dist zipball over the patch |
+| **A** — composer-clobbered | 6 | `scripts/apply-patches.sh`, called by `docker/setup.sh` | `composer install` reinstalls the package as a dist zipball over the patch |
 | **B** — gitignore-swallowed | 0 | — | *(retired, see below)* |
 | **C** — inherited BlueSpice diffs | 18 | `app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh` | the script prints `FAILED!` and continues, with no exit code |
 
@@ -53,7 +53,7 @@ sidecars**, and `verify-patches.sh` reports 20 applicable plus 1 stale.
 
 ---
 
-## Class A — composer-clobbered (5)
+## Class A — composer-clobbered (6)
 
 These live under `app/extensions/`, are reinstalled from dist zipballs by
 `composer install`, and are re-applied afterwards by
@@ -66,6 +66,7 @@ These live under `app/extensions/`, are reinstalled from dist zipballs by
 | `maps-layercontrol-xss-php` | `extensions/Maps/src/LeafletService.php` | `HDP: backport of upstream Maps 12.1.3 (CVE-2026-52854)` |
 | `smw-ask-sep-xss` | `extensions/SemanticMediaWiki/src/Query/ResultPrinters/TableResultPrinter.php` | `HDP: backport of upstream SMW 7.2.0 (CVE-2026-77607)` |
 | `smw-ask-plain-header-xss` | `extensions/SemanticMediaWiki/src/Query/ResultPrinters/TableResultPrinter.php` | `HDP: backport of upstream SMW 7.2.0 (CVE-2026-77606)` |
+| `smw-searchbyproperty-error-xss` | `extensions/SemanticMediaWiki/src/MediaWiki/Specials/SearchByProperty/PageBuilder.php` | `HDP: backport of upstream SMW 7.2.0 (CVE-2026-77608)` |
 
 In every case the marker is a comment the patch inserts, not the code it
 changes. Matching the code would let verify pass if upstream one day made the

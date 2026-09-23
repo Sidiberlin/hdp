@@ -1,0 +1,41 @@
+# Class A — composer-clobbered, re-applied by scripts/apply-patches.sh.
+#
+# `composer install` reinstalls mediawiki/semantic-media-wiki as a dist
+# zipball, which overwrites app/extensions/SemanticMediaWiki wholesale on
+# every run. See docs/dev/patches.md "The SMW set" and
+# docker/ci/composer-audit-baseline.json's mediawiki/semantic-media-wiki
+# entry for the version this mitigates without fixing.
+id: smw-searchbyproperty-error-xss
+title: escape Special:SearchByProperty validation-error messages (CVE-2026-77608)
+class: A
+mode: insert
+target: extensions/SemanticMediaWiki/src/MediaWiki/Specials/SearchByProperty/PageBuilder.php
+applied_by: scripts/apply-patches.sh (called by docker/setup.sh)
+patch: docker/patches/smw-searchbyproperty-error-xss.patch
+# ERE. The line the first hunk is anchored after (also present, unmoved, after
+# the insertion — it names the method the helper is inserted just above).
+anchor: 'private function getResultHtml\(\) \{'
+marker: 'HDP: backport of upstream SMW 7\.2\.0 \(CVE-2026-77608\)'
+# The direct, unescaped return form both hunks replace. Present twice in the
+# unpatched file (property branch, value branch); absent once escapeErrorMessage
+# wraps both.
+anti: 'return \[ ProcessingErrorMsgHandler::getMessagesAsString\('
+group: smw-advisory-closure
+stale: false
+upstream_version: 'mediawiki/semantic-media-wiki 6.0.1'
+regex: ERE
+hunks: 2
+why: >-
+  CVE-2026-77608 / GHSA-59xw-qv23-j3rc, reflected XSS in
+  Special:SearchByProperty's `property` and `value` parameters. An invalid
+  property or value reflects ProcessingErrorMsgHandler::getMessagesAsString()
+  straight back as $resultMessage, which PageBuilder::getHtmlForm() then
+  inserts via Xml::tags( 'p', ..., $resultMessage ) — MediaWiki's raw-HTML
+  tag helper, which does not escape its content — so attacker-controlled
+  request text in the error message becomes executable HTML. Backported
+  from upstream SMW 7.2.0: escape the derived error text at both call sites
+  before it is returned. This tree vendors 6.0.1 and the BlueSpice pro
+  distribution constrains mediawiki/semantic-media-wiki to 6.0.*, so the
+  upstream fix (part of a wider constructor/DI rewrite not otherwise taken
+  here) cannot be reached by re-vendoring inside the 5.1 series. Retire this
+  patch and its sidecar when SMW reaches 7.2.0 or later.

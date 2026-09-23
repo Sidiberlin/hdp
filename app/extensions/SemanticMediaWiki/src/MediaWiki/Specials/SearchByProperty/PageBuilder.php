@@ -135,6 +135,15 @@ class PageBuilder {
 		return $html;
 	}
 
+	/**
+	 * HDP: backport of upstream SMW 7.2.0 (CVE-2026-77608).
+	 *
+	 * @since 7.2.0
+	 */
+	private function escapeErrorMessage( $text ) {
+		return htmlspecialchars( (string)$text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
+	}
+
 	private function getResultHtml() {
 		$resultList = '';
 		$resultMessage = '';
@@ -145,11 +154,20 @@ class PageBuilder {
 
 		// #1728
 		if ( !$this->pageRequestOptions->property->isValid() ) {
-			return [ ProcessingErrorMsgHandler::getMessagesAsString( $this->pageRequestOptions->property->getErrors() ), '', 0 ];
+			// HDP: backport of upstream SMW 7.2.0 (CVE-2026-77608). The error text
+			// derived from an invalid property/value can carry the raw request
+			// input, and getHtmlForm() below inserts $resultMessage via
+			// Xml::tags(), which does not escape its content — so it must be
+			// escaped here, at the point the untrusted text enters the message.
+			return [ $this->escapeErrorMessage(
+				ProcessingErrorMsgHandler::getMessagesAsString( $this->pageRequestOptions->property->getErrors() )
+			), '', 0 ];
 		}
 
 		if ( $this->pageRequestOptions->valueString !== '' && !$this->pageRequestOptions->value->isValid() ) {
-			return [ ProcessingErrorMsgHandler::getMessagesAsString( $this->pageRequestOptions->value->getErrors() ), '', 0 ];
+			return [ $this->escapeErrorMessage(
+				ProcessingErrorMsgHandler::getMessagesAsString( $this->pageRequestOptions->value->getErrors() )
+			), '', 0 ];
 		}
 
 		// Find out where the subject is used in connection with a query
