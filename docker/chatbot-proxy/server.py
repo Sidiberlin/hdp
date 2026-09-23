@@ -66,19 +66,24 @@ def extract_references(answer_text: str, documents: list) -> tuple:
     array the BlueSpice ChatBot frontend needs to render clickable links.
 
     The pipeline prompt tells the LLM to cite sources as [N] (1-based,
-    matching the Jinja loop.index in the document list). The frontend's
-    ReferenceFactory reads answer.meta._references — an array of
-    {document_position, document_id, answer_start_idx} — and uses
-    ReferencesUtil.insertLinks to replace each [N] with a markdown link
-    to the source wiki page.
+    matching the Jinja loop.index in the document list). In practice the
+    model doesn't always keep to one number per bracket — it also emits
+    combined citations like [2,5] or [2, 5] when a statement draws on
+    several documents, even though the prompt only shows the single-number
+    form. The frontend's ReferenceFactory reads answer.meta._references —
+    an array of {document_position, document_id, answer_start_idx} — and
+    uses ReferencesUtil.insertLinks to replace each cited number with a
+    markdown link to the source wiki page; a bracket the regex here never
+    matches is never removed and never linked, so it reaches the browser
+    as inert literal text with no entry in the reference list.
 
-    Without this, [3] appears as literal text with no link and no
-    reference list, which is the bug this fixes.
+    Without this, [3] (and [2,5]) appear as literal text with no link and
+    no reference list, which is the bug this fixes.
 
-    Returns (cleaned_text, references) where cleaned_text has the [N]
-    markers removed (insertLinks re-inserts them as links at the
-    positions given by answer_start_idx) and references is the list to
-    put in answer.meta._references.
+    Returns (cleaned_text, references) where cleaned_text has the citation
+    markers removed (insertLinks re-inserts them as links at the positions
+    given by answer_start_idx) and references is the list to put in
+    answer.meta._references.
     """
     import re
 
@@ -87,24 +92,28 @@ def extract_references(answer_text: str, documents: list) -> tuple:
     pos_in_cleaned = 0
     last_end = 0
 
-    for match in re.finditer(r'\[(\d+)\]', answer_text):
+    for match in re.finditer(r'\[\s*\d+(?:\s*,\s*\d+)*\s*\]', answer_text):
         # Text before this citation — kept verbatim
         prefix = answer_text[last_end:match.start()]
         cleaned_parts.append(prefix)
         pos_in_cleaned += len(prefix)
 
-        ref_num = int(match.group(1))
-        doc_index = ref_num - 1  # pipeline prompt uses 1-based loop.index
-        if 0 <= doc_index < len(documents):
-            doc = documents[doc_index]
-            references.append({
-                "document_position": ref_num,
-                "document_id": doc.get("id", str(doc_index)),
-                "answer_start_idx": pos_in_cleaned,
-            })
-        else:
-            # Citation number doesn't map to a retrieved document — keep it
-            # as literal text rather than silently dropping it.
+        ref_nums = [int(n) for n in re.findall(r'\d+', match.group(0))]
+        matched_any = False
+        for ref_num in ref_nums:
+            doc_index = ref_num - 1  # pipeline prompt uses 1-based loop.index
+            if 0 <= doc_index < len(documents):
+                doc = documents[doc_index]
+                references.append({
+                    "document_position": ref_num,
+                    "document_id": doc.get("id", str(doc_index)),
+                    "answer_start_idx": pos_in_cleaned,
+                })
+                matched_any = True
+
+        if not matched_any:
+            # None of the cited numbers map to a retrieved document — keep
+            # the bracket as literal text rather than silently dropping it.
             cleaned_parts.append(match.group(0))
             pos_in_cleaned += len(match.group(0))
 

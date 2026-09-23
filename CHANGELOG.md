@@ -11,6 +11,18 @@ For changes in the upstream BlueSpice HDP Edition, see the
 
 ## [Unreleased]
 
+### Fixed
+
+- **Chatbot citations**: `[N]` markers combining more than one document in a
+  single bracket (e.g. `[2,5]`, `[2, 5]`) reached the browser as inert plain
+  text — no link, no entry in the "Sources" list — because
+  `docker/chatbot-proxy/server.py`'s `extract_references()` matched only
+  single-number brackets (`\[(\d+)\]`). Single-number citations like `[1]`
+  and chained ones like `[1][3]` already worked. The regex now matches
+  comma-separated numbers inside one bracket and emits a `_references` entry
+  per number, so the frontend's existing `ReferenceFactory`/`ReferencesUtil`
+  link them like any other citation. Live-verified on the QA box.
+
 ### Docs
 
 - **`docs/dev/upgrade-runbook.md`** gained "Entering the update train:
