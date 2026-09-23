@@ -3,20 +3,32 @@ one open-redirect backported against vendored SemanticMediaWiki 6.0.1 (see
 docker/ci/composer-audit-baseline.json's mediawiki/semantic-media-wiki entry
 and docs/dev/patches.md "The SMW set").
 
-**Authored from source, not from a live capture.** The ratified plan
-(.planning/features/deps02-smw-revendor/PLAN.md §9.1) expected the
-orchestrator's O1 slot to hand this file a captured pre-fix request/response
-pair to derive the payload and assertion shape from, so the implementer would
-not have to invent one. That capture did not reach this implementer session
-— this session has no live-infrastructure access at all (orchestrator-owned).
-Every URL and parameter name below is instead traced directly from the
-vulnerable/patched PHP itself (`ParametersProcessor::process()` for the
-Special:Ask `p[...]`/`q`/`po`/`debug` wiring, `SpecialSearchByProperty`,
-`SpecialURIResolver`, `SpecialFacetedSearch`'s `checkRequest()` checksum
-gate), which is at least as authoritative as a capture but has not been
-exercised against a running wiki. **This file has not been run.** Treat a
-first run as a shakedown, not a rubber stamp — the request shapes here may
-need adjusting once O2's live pass happens.
+**The `sep` test (CVE-2026-77607) is O1 live-repro evidence, not a guess.**
+The orchestrator captured it against the QA box (SMW 6.0.1, authenticated
+session): `sep` only reaches `TableResultPrinter` through the compact
+Infolink `p=` parameter (`SMWInfolink::decodeParameters()`,
+`includes/SMW_Infolink.php:550`) — a bare `sep=` or a `params[sep]=` array
+never reaches the printer, confirmed on-box. Pre-patch, the payload landed
+raw inside the `<td>` joining a multi-value property's values, sink
+`TableResultPrinter.php:355`'s `implode`. That requires a page with *two*
+values of one property (a single value never invokes the separator at all)
+and an authenticated request — `request_type=raw` is read-gated by
+BlueSpice on this deployment, so the anonymous raw-output half of
+CVE-2026-77607 is not independently exercised here; the authenticated table
+path is. See `_compact_p()` and `test_ask_sep_parameter_is_escaped` below.
+
+Every other URL and parameter name in this file is traced from the
+vulnerable/patched PHP itself rather than captured live (`SpecialAsk`'s
+`debug` request parameter, `SpecialSearchByProperty`, `SpecialURIResolver`,
+`SpecialFacetedSearch`'s `checkRequest()` checksum gate) — this session has
+no live-infrastructure access beyond the one O1 capture relayed above.
+**Everything except the sep test has not been run.** Treat a first run of
+those as a shakedown, not a rubber stamp — request shapes other than `sep`'s
+may need adjusting once O2's fuller live pass happens. Given `sep`'s own
+correction (a plausible-looking `p[sep]=` array form silently not working),
+the other Special:Ask test here (`mainlabel`/`headers=plain`) is written
+using the same confirmed `p=` compact mechanism rather than the array form,
+on the working assumption that the same deployment quirk applies to it too.
 
 Unmarked (no `pytestmark`), so it runs in T3 like the rest of this
 directory: it needs the wiki and `mediawiki-web`, nothing else (the SMW
@@ -46,76 +58,132 @@ import zlib
 
 import pytest
 
-XSS_MARKER = "smwdeps02xss"
-XSS_PAYLOAD = f'"><img src=x onerror=alert(String.fromCharCode(88,83,83))data-{XSS_MARKER}=1>'
+XSS_PAYLOAD = '"><script>alert(1)</script>'
+XSS_PAYLOAD_RAW_MARKER = "<script>alert(1)</script>"
 
 
-def _ask(wiki, **params):
-    """GET Special:Ask with SMW's own p[...]/q/po/debug query-string wiring
-    (SMW\\MediaWiki\\Specials\\Ask\\ParametersProcessor::process()) rather than
-    MediaWiki's ordinary title-path convention, since #ask parameters (sep,
-    headers, mainlabel, format, ...) are not plain query-string keys — they
-    are nested under `p[...]` unless the request also carries a bare `p`
-    infolink string.
+def _compact_p(paramstring):
+    """SMW's compact Infolink `p=` encoding for a single `key=value` #ask
+    parameter, as a GET query-string value.
+
+    `SMWInfolink::decodeParameters()` (includes/SMW_Infolink.php:550)
+    reverses this with `rawurldecode( str_replace( '-', '%', $p ) )`, so the
+    forward direction is `rawurlencode($paramstring)` with every resulting
+    `%` turned into `-`. This is the mechanism O1's live repro confirmed is
+    required for `sep` to reach the printer at all — see the module
+    docstring. Must not be used with a paramstring containing a literal `-`
+    (it would collide with the substitution); none of this file's payloads
+    do.
     """
-    qp = {"title": "Special:Ask", "q": params.pop("q", "")}
-    if "po" in params:
-        qp["po"] = params.pop("po")
-    if "debug" in params:
-        qp["debug"] = params.pop("debug")
-    for key, value in params.items():
-        qp[f"p[{key}]"] = value
+    assert "-" not in paramstring, "payload contains '-', which _compact_p cannot encode safely"
+    return urllib.parse.quote(paramstring, safe="").replace("%", "-")
+
+
+def _ask(wiki, compact=None, **params):
+    """GET Special:Ask. `title`/`q`/`po`/`debug`/`format`/`limit` are bare
+    query-string keys (confirmed live for format/limit via O1's captured
+    URL; the others read directly off $request in SpecialAsk/ParametersProcessor).
+    `compact` is a list of raw `key=value` #ask-parameter strings (sep,
+    mainlabel, headers, ...) sent through the single `p=` compact Infolink
+    parameter — see `_compact_p()`.
+    """
+    qp = {"title": "Special:Ask"}
+    for key in ("q", "po", "debug", "format", "limit"):
+        if key in params:
+            qp[key] = params.pop(key)
+    assert not params, f"unexpected bare params, did you mean compact=[...]? {params}"
+    if compact:
+        qp["p"] = "/".join(_compact_p(entry) for entry in compact)
     return wiki.fetch("/index.php?" + urllib.parse.urlencode(qp))
 
 
 def _assert_payload_not_reflected_raw(resp, label):
     assert resp.status == 200, f"{label}: Special:Ask answered HTTP {resp.status}"
-    assert "onerror=alert" not in resp.text, (
-        f"{label}: the crafted onerror handler appears verbatim in the "
+    assert XSS_PAYLOAD_RAW_MARKER not in resp.text, (
+        f"{label}: the crafted <script> tag appears verbatim in the "
         f"response body — the payload was not escaped.\n"
         f"URL: {resp.url}"
     )
     # The escaped form must be present, not merely "the raw form is absent"
     # (which a truncated or errored response would also satisfy).
-    assert (
-        "&lt;img" in resp.text or "&#60;img" in resp.text or "onerror" not in resp.text
-    ), f"{label}: expected an HTML-escaped payload somewhere in the response.\nURL: {resp.url}"
+    assert "&lt;script&gt;" in resp.text or "&#60;script&#62;" in resp.text, (
+        f"{label}: expected an HTML-escaped <script> tag somewhere in the "
+        f"response.\nURL: {resp.url}"
+    )
+
+
+PROP = "Has number"  # predefined-adjacent, numeric-typed property named in O1's repro
+
+
+@pytest.fixture(scope="module")
+def two_valued_property_page(wiki):
+    """A page with two values of one property — CVE-2026-77607's sink is
+    the `implode()` joining a *multi*-value cell; a single value never
+    invokes the separator at all (per O1's live repro). The values
+    themselves are plain numbers; only `sep`, supplied at query time, ever
+    carries the payload.
+    """
+    title = "DEPS02_CVE_2026_77607_probe"
+    text = f"[[{PROP}::1]] [[{PROP}::2]]"
+    token = wiki.api(action="query", meta="tokens", type="csrf")["query"]["tokens"]["csrftoken"]
+    edit = wiki.api_post({
+        "action": "edit",
+        "title": title,
+        "text": text,
+        "token": token,
+        "bot": 1,
+        "summary": "DEPS-02 CVE-2026-77607 regression probe",
+    })
+    assert "edit" in edit and edit["edit"].get("result") == "Success", (
+        f"could not create the probe page: {edit}"
+    )
+    return title
 
 
 # ─── CVE-2026-77607 — Special:Ask table `sep` XSS ─────────────────────
+# O1 live repro against the QA box (SMW 6.0.1, authenticated session).
 
-def test_ask_sep_parameter_is_escaped(wiki):
+def test_ask_sep_parameter_is_escaped(wiki, two_valued_property_page):
     resp = _ask(
         wiki,
-        q="[[Text::+]]",
-        po="?Text",
+        q=f"[[{PROP}::+]]",
+        po=f"?{PROP}",
         format="table",
-        sep=XSS_PAYLOAD,
-        limit="1",
+        limit="10",
+        compact=[f"sep={XSS_PAYLOAD}"],
     )
     _assert_payload_not_reflected_raw(resp, "sep (CVE-2026-77607)")
 
 
-def test_ask_sep_br_allowlist_still_renders_a_real_linebreak(wiki):
+def test_ask_sep_br_allowlist_still_renders_a_real_linebreak(wiki, two_valued_property_page):
     """The fix's one deliberate exception: <br> must still work as a
     separator, or the patch traded an XSS for a broken feature.
     """
-    resp = _ask(wiki, q="[[Text::+]]", po="?Text", format="table", sep="<br>", limit="2")
+    resp = _ask(
+        wiki,
+        q=f"[[{PROP}::+]]",
+        po=f"?{PROP}",
+        format="table",
+        limit="10",
+        compact=["sep=<br>"],
+    )
     assert resp.status == 200
     assert "<br>" in resp.text or "<br/>" in resp.text or "<br />" in resp.text
 
 
 # ─── CVE-2026-77606 — Special:Ask plain-header (mainlabel) XSS ────────
+# Not O1-captured; written on the working assumption that mainlabel needs
+# the same p= compact mechanism sep turned out to need (see module
+# docstring) — unverified, flag for O2.
 
-def test_ask_plain_header_mainlabel_is_escaped(wiki):
+def test_ask_plain_header_mainlabel_is_escaped(wiki, two_valued_property_page):
     resp = _ask(
         wiki,
-        q="[[Text::+]]",
-        po="?Text",
+        q=f"[[{PROP}::+]]",
+        po=f"?{PROP}",
         format="table",
-        headers="plain",
-        mainlabel=XSS_PAYLOAD,
-        limit="1",
+        limit="10",
+        compact=["headers=plain", f"mainlabel={XSS_PAYLOAD}"],
     )
     _assert_payload_not_reflected_raw(resp, "mainlabel/headers=plain (CVE-2026-77606)")
 
@@ -130,7 +198,7 @@ def test_searchbyproperty_invalid_property_error_is_escaped(wiki):
         })
     )
     assert resp.status == 200, f"Special:SearchByProperty answered HTTP {resp.status}"
-    assert "onerror=alert" not in resp.text, (
+    assert XSS_PAYLOAD_RAW_MARKER not in resp.text, (
         "the invalid-property error message reflects the crafted payload "
         f"unescaped.\nURL: {resp.url}"
     )
@@ -182,7 +250,7 @@ def test_facetedsearch_cstate_is_escaped(wiki):
         })
     )
     assert resp.status == 200, f"Special:FacetedSearch answered HTTP {resp.status}"
-    assert "onerror=alert" not in resp.text, (
+    assert XSS_PAYLOAD_RAW_MARKER not in resp.text, (
         f"the cstate hidden-input value reflects the payload unescaped.\n"
         f"URL: {resp.url}"
     )
