@@ -1,0 +1,20 @@
+--- extensions/SemanticMediaWiki/src/Query/ResultPrinters/TableResultPrinter.php
++++ extensions/SemanticMediaWiki/src/Query/ResultPrinters/TableResultPrinter.php
+@@ -129,6 +129,17 @@
+ 				// #2702 Use a fixed output on a requested plain printout
+ 				$mode = $this->isHTML && $isPlain ? SMW_OUTPUT_WIKI : $outputMode;
+ 				$text = $pr->getText( $mode, ( $isPlain ? null : $this->mLinker ) );
++
++				// HDP: backport of upstream SMW 7.2.0 (CVE-2026-77606). getText()
++				// with SMW_OUTPUT_WIKI and a null linker returns the label unescaped,
++				// and HtmlTable::header() emits it verbatim into <th>, so a
++				// user-controlled plain header (e.g. mainlabel) must be escaped here;
++				// non-plain HTML is escaped by the formatter, and inline wikitext
++				// output is sanitised by the parser.
++				if ( $this->isHTML && $isPlain ) {
++					$text = htmlspecialchars( (string)$text, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
++				}
++
+ 				$headerList[] = $pr->getCanonicalLabel();
+ 				$this->htmlTable->header( ( $text === '' ? '&nbsp;' : $text ), $attributes );
+ 			}

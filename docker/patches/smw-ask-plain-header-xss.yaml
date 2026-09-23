@@ -1,0 +1,35 @@
+# Class A — composer-clobbered, re-applied by scripts/apply-patches.sh.
+#
+# `composer install` reinstalls mediawiki/semantic-media-wiki as a dist
+# zipball, which overwrites app/extensions/SemanticMediaWiki wholesale on
+# every run. See docs/dev/patches.md "The SMW set" and
+# docker/ci/composer-audit-baseline.json's mediawiki/semantic-media-wiki
+# entry for the version this mitigates without fixing.
+id: smw-ask-plain-header-xss
+title: escape Special:Ask plain table headers (CVE-2026-77606)
+class: A
+mode: insert
+target: extensions/SemanticMediaWiki/src/Query/ResultPrinters/TableResultPrinter.php
+applied_by: scripts/apply-patches.sh (called by docker/setup.sh)
+patch: docker/patches/smw-ask-plain-header-xss.patch
+# ERE. The line the hunk is anchored after.
+anchor: '\$text = \$pr->getText\( \$mode, \( \$isPlain \? null : \$this->mLinker \) \);'
+marker: 'HDP: backport of upstream SMW 7\.2\.0 \(CVE-2026-77606\)'
+anti: ''
+group: smw-advisory-closure
+stale: false
+upstream_version: 'mediawiki/semantic-media-wiki 6.0.1'
+regex: ERE
+hunks: 1
+why: >-
+  CVE-2026-77606 / GHSA-3jp5-3h47-28qf, reflected XSS. When headers=plain,
+  table header text was emitted into <th> via a raw HTML path: forcing
+  SMW_OUTPUT_WIKI mode with a null linker made PrintRequest::getText()
+  (via Formatter::getWikiText) return the label completely unescaped, and
+  HtmlTable::header() inserts header content verbatim, so a user-controlled
+  mainlabel became executable HTML. Backported from upstream SMW 7.2.0: the
+  fix is limited to the HTML/plain-header branch, escaping the label there
+  so other rendering modes are unaffected. This tree vendors 6.0.1 and the
+  BlueSpice pro distribution constrains mediawiki/semantic-media-wiki to
+  6.0.*, so the upstream fix cannot be taken by re-vendoring inside the 5.1
+  series. Retire this patch and its sidecar when SMW reaches 7.2.0 or later.
