@@ -83,6 +83,14 @@
         "PKSA-zk1n-qbm6-d3rq"
       ],
       "why": "Low, and specific to SimpleFakeCredentialGenerator used with an empty secret — a username-enumeration hardening feature, not an authentication bypass. The upgrade moved this 4.9.2 → 4.9.3, which does not clear it: the advisory covers >=4.9.0,<5.3.5 and mediawiki/web-authn requires ^4.9.2, so the fix is a major bump upstream has not taken. Not this fork's version to choose."
+    },
+    "phpcsstandards/phpcsutils": {
+      "installed": "1.0.12",
+      "advisories": [
+        "CVE-2026-65954",
+        "PKSA-kh6k-gs3g-dgr6"
+      ],
+      "why": "Dev-only transitive dependency (packages-dev), pulled in by mediawiki/mediawiki-codesniffer v45.0.0 whose own constraint chain caps phpcsutils below the 1.2.3 fix release; the 1.2.x line requires a codesniffer major bump (v45 -> v47+ drops phpcsutils entirely), which is a repo-wide code-style churn that belongs to the Phase 8 dependency pass, not to this hotfix. setup.sh installs the app with --no-dev, so the package is never present in a deployed stack. Same pattern as the squizlabs/php_codesniffer entry."
     }
   }
 }
