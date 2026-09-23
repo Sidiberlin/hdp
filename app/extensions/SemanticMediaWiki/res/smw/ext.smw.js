@@ -37,8 +37,14 @@ var smw = ( function ( $, undefined ) {
 	var x = document.getElementsByClassName( "smw-subtab" );
 	var i;
 
+	// HDP: backport of upstream SMW 7.0.0 (CVE-2025-61682). Reads the
+	// data-mw-subtab attribute HtmlTabs.php now writes: data-mw-* is reserved
+	// by MediaWiki's Sanitizer and stripped from user-supplied wikitext, so a
+	// forged data-subtab attribute (previously any editor could set one via
+	// {{#tag:div|class=smw-subtab|data-subtab=...}} and have its JSON-decoded
+	// value injected into innerHTML here) can no longer reach this element.
 	for ( i = 0; i < x.length; i++ ) {
-		x[i].innerHTML = JSON.parse( x[i].dataset.subtab ) + x[i].innerHTML;
+		x[i].innerHTML = JSON.parse( x[i].dataset.mwSubtab ) + x[i].innerHTML;
 	}
 
 	/*global console:true message:true */

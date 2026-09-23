@@ -1,0 +1,38 @@
+# Class A — composer-clobbered, re-applied by scripts/apply-patches.sh.
+#
+# `composer install` reinstalls mediawiki/semantic-media-wiki as a dist
+# zipball, which overwrites app/extensions/SemanticMediaWiki wholesale on
+# every run. Paired with smw-subtab-xss-php; both halves are needed, see
+# that sidecar.
+id: smw-subtab-xss-js
+title: read the renamed subtab data attribute (CVE-2025-61682)
+class: A
+mode: insert
+target: extensions/SemanticMediaWiki/res/smw/ext.smw.js
+applied_by: scripts/apply-patches.sh (called by docker/setup.sh)
+patch: docker/patches/smw-subtab-xss-js.patch
+# ERE. The line the hunk is anchored after.
+anchor: 'var x = document\.getElementsByClassName\( "smw-subtab" \);'
+marker: 'HDP: backport of upstream SMW 7\.0\.0 \(CVE-2025-61682\)'
+# The old attribute read this patch replaces. Absent once dataset.mwSubtab
+# lands.
+anti: 'JSON\.parse\( x\[i\]\.dataset\.subtab \)'
+group: smw-subtab-xss
+stale: false
+upstream_version: 'mediawiki/semantic-media-wiki 6.0.1'
+regex: ERE
+hunks: 1
+why: >-
+  CVE-2025-61682 / GHSA-hg8h-557g-q8pp, stored XSS. Every element carrying
+  class smw-subtab (itself settable via wikitext) had its data-subtab
+  attribute JSON.parse()'d and the result appended straight to innerHTML —
+  and data-subtab was, until the paired smw-subtab-xss-php patch, forgeable
+  by any editor through wikitext, since MediaWiki's Sanitizer only reserves
+  the data-mw-* prefix, not data-* generally. Backported verbatim from
+  upstream SMW 7.0.0: read the renamed data-mw-subtab attribute instead —
+  which the PHP half of this pair is what makes safe, since Sanitizer strips
+  that prefix from user-supplied wikitext; this half alone is cosmetic
+  without it. This tree vendors 6.0.1 and the BlueSpice pro distribution
+  constrains mediawiki/semantic-media-wiki to 6.0.*, so the upstream fix
+  cannot be taken by re-vendoring inside the 5.1 series. Retire this patch,
+  its pair and both sidecars when SMW reaches 7.0.0 or later.

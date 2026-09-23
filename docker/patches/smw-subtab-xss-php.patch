@@ -1,0 +1,22 @@
+--- extensions/SemanticMediaWiki/src/Utils/HtmlTabs.php
++++ extensions/SemanticMediaWiki/src/Utils/HtmlTabs.php
+@@ -120,8 +120,18 @@
+ 
+ 		// Attach the tab definition as `data` element so it can be loaded using
+ 		// JS
++		//
++		// HDP: backport of upstream SMW 7.0.0 (CVE-2025-61682). `data-subtab` is
++		// an ordinary data-* attribute, which MediaWiki's Sanitizer permits in
++		// user-authored wikitext (e.g. {{#tag:div|class=smw-subtab|data-subtab=...}}),
++		// so any editor could forge one and have ext.smw.js JSON.parse() +
++		// innerHTML it as though it were SMW's own markup. `data-mw-*` is
++		// reserved (Sanitizer::isReservedDataAttribute()) and stripped from
++		// user-supplied wikitext, so renaming the attribute — matched by the
++		// ext.smw.js half of this patch — closes the forgery at the source
++		// rather than trying to sanitise the JSON payload.
+ 		if ( $this->isSubTab ) {
+-			$attributes['data-subtab'] = json_encode( $tabs );
++			$attributes['data-mw-subtab'] = json_encode( $tabs );
+ 			$tabs = '';
+ 		}
+ 

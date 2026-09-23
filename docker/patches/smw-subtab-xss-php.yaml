@@ -1,0 +1,46 @@
+# Class A — composer-clobbered, re-applied by scripts/apply-patches.sh.
+#
+# `composer install` reinstalls mediawiki/semantic-media-wiki as a dist
+# zipball, which overwrites app/extensions/SemanticMediaWiki wholesale on
+# every run. Paired with smw-subtab-xss-js: this half stops the attribute
+# from being forgeable via wikitext at all; the JS half reads the renamed
+# attribute. One manifest entry is one target file, which is why a single
+# upstream commit is two patches here — same shape as the Maps pair, see
+# docs/dev/patches.md.
+id: smw-subtab-xss-php
+title: rename the subtab data attribute out of user-wikitext reach (CVE-2025-61682)
+class: A
+mode: insert
+target: extensions/SemanticMediaWiki/src/Utils/HtmlTabs.php
+applied_by: scripts/apply-patches.sh (called by docker/setup.sh)
+patch: docker/patches/smw-subtab-xss-php.patch
+# ERE. The line the hunk is anchored after.
+anchor: '// Attach the tab definition as .data. element so it can be loaded using'
+marker: 'HDP: backport of upstream SMW 7\.0\.0 \(CVE-2025-61682\)'
+# The forgeable attribute name this patch renames away from. Absent once
+# data-mw-subtab lands.
+anti: '\$attributes\[.data-subtab.\] = json_encode\( \$tabs \)'
+group: smw-subtab-xss
+stale: false
+upstream_version: 'mediawiki/semantic-media-wiki 6.0.1'
+regex: ERE
+hunks: 1
+why: >-
+  CVE-2025-61682 / GHSA-hg8h-557g-q8pp, stored XSS. HtmlTabs::buildHTML()
+  attached the JSON-encoded tab definition as a `data-subtab` attribute for
+  ext.smw.js to read — but `data-subtab` is an ordinary data-* attribute,
+  which MediaWiki's Sanitizer allows in user-authored wikitext
+  ({{#tag:div|class=smw-subtab|data-subtab=...}}), so any editor with edit
+  rights could forge the attribute on an arbitrary element and have the JS
+  half JSON.parse() + innerHTML their payload as though it were SMW's own
+  markup (e.g. data-subtab=""<img src='' onerror=alert(1)>""). Backported
+  verbatim from upstream SMW 7.0.0: rename the attribute to
+  `data-mw-subtab`. Sanitizer::isReservedDataAttribute() reserves the
+  `data-mw-*` prefix for extensions/core and strips it from user-supplied
+  wikitext (app/includes/parser/Sanitizer.php:599-607 in this tree), so the
+  forged attribute can no longer reach the page at all — closing the
+  vulnerability at the source rather than trying to sanitise the JSON
+  payload. This tree vendors 6.0.1 and the BlueSpice pro distribution
+  constrains mediawiki/semantic-media-wiki to 6.0.*, so the upstream fix
+  cannot be taken by re-vendoring inside the 5.1 series. Retire this patch,
+  its pair and both sidecars when SMW reaches 7.0.0 or later.

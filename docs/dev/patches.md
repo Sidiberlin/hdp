@@ -17,11 +17,11 @@ This page is the prose; the manifest is the source of truth.
 
 ---
 
-## Inventory: 27 targets, 26 live
+## Inventory: 29 targets, 28 live
 
 | Class | Count | Applied by | Fails by |
 |---|---|---|---|
-| **A** — composer-clobbered | 9 | `scripts/apply-patches.sh`, called by `docker/setup.sh` | `composer install` reinstalls the package as a dist zipball over the patch |
+| **A** — composer-clobbered | 11 | `scripts/apply-patches.sh`, called by `docker/setup.sh` | `composer install` reinstalls the package as a dist zipball over the patch |
 | **B** — gitignore-swallowed | 0 | — | *(retired, see below)* |
 | **C** — inherited BlueSpice diffs | 18 | `app/_bluespice/pre-autoload-dump.d/99-apply_patches.sh` | the script prints `FAILED!` and continues, with no exit code |
 
@@ -46,14 +46,19 @@ retired `es-searchcnt` from Class A and added `gallery-slideshow` to Class C,
 so the two classes traded a patch and the total did not move. See "Retired"
 below.
 
-It is now **21** (3 + 0 + 18): the two `maps-layercontrol-xss-*` patches landed
-on 2026-08-04 as the in-tree mitigation for CVE-2026-52854, which cannot be
-fixed by re-vendoring inside the BlueSpice 5.1 series. The manifest holds **21
-sidecars**, and `verify-patches.sh` reports 20 applicable plus 1 stale.
+It was **21** (3 + 0 + 18) after the two `maps-layercontrol-xss-*` patches
+landed on 2026-08-04 as the in-tree mitigation for CVE-2026-52854, which
+cannot be fixed by re-vendoring inside the BlueSpice 5.1 series.
+
+It is now **29** (11 + 0 + 18): DEPS-02 (2026-09-23) added eight more Class A
+sidecars — seven backported SMW advisories, one of them (CVE-2025-61682) two
+sidecars for one upstream commit, same reason as the Maps pair. See "The SMW
+set" below. The manifest holds **29 sidecars**, and `verify-patches.sh`
+reports 28 applicable plus 1 stale.
 
 ---
 
-## Class A — composer-clobbered (9)
+## Class A — composer-clobbered (11)
 
 These live under `app/extensions/`, are reinstalled from dist zipballs by
 `composer install`, and are re-applied afterwards by
@@ -70,6 +75,8 @@ These live under `app/extensions/`, are reinstalled from dist zipballs by
 | `smw-uriresolver-open-redirect` | `extensions/SemanticMediaWiki/src/MediaWiki/Specials/SpecialURIResolver.php` | `HDP: backport of upstream SMW 7.2.0 (CVE-2026-77609)` |
 | `smw-debug-query-xss` | `extensions/SemanticMediaWiki/src/Query/DebugFormatter.php` | `HDP: backport of upstream SMW 7.2.0 (CVE-2026-77610)` |
 | `smw-facetedsearch-cstate-xss` | `extensions/SemanticMediaWiki/src/MediaWiki/Specials/FacetedSearch/HtmlBuilder.php` | `HDP: backport of upstream SMW 7.2.1 (GHSA-9rcc-pmj8-ffhr)` |
+| `smw-subtab-xss-php` | `extensions/SemanticMediaWiki/src/Utils/HtmlTabs.php` | `HDP: backport of upstream SMW 7.0.0 (CVE-2025-61682)` |
+| `smw-subtab-xss-js` | `extensions/SemanticMediaWiki/res/smw/ext.smw.js` | `HDP: backport of upstream SMW 7.0.0 (CVE-2025-61682)` |
 
 In every case the marker is a comment the patch inserts, not the code it
 changes. Matching the code would let verify pass if upstream one day made the
@@ -125,6 +132,44 @@ turned the patch into a silent no-op. `apply-patches.sh` uses
 `patch --ignore-whitespace --fuzz 3`, which tolerates that drift, and re-checks
 the marker after applying so a patch that reports success without landing is
 still caught.
+
+### The SMW set — DEPS-02
+
+Same precedent as the Maps pair: `mediawiki/semantic-media-wiki` 6.0.1's fix
+floor is 7.3.0 (`docker/ci/composer-audit-baseline.json`'s
+`mediawiki/semantic-media-wiki` entry has the full derivation), reachable only
+by a BlueSpice series bump. Seven of the eight advisories that entry lists are
+mitigated in-tree instead, as seven Class A patches across eight sidecars —
+one upstream commit (CVE-2025-61682) needed two, one manifest entry per
+target file, same reason as the Maps pair:
+
+| id | Target | Fixed in | Marker |
+|---|---|---|---|
+| `smw-ask-sep-xss` | `TableResultPrinter.php` | 7.2.0 | `HDP: backport of upstream SMW 7.2.0 (CVE-2026-77607)` |
+| `smw-ask-plain-header-xss` | `TableResultPrinter.php` | 7.2.0 | `HDP: backport of upstream SMW 7.2.0 (CVE-2026-77606)` |
+| `smw-searchbyproperty-error-xss` | `SearchByProperty/PageBuilder.php` | 7.2.0 | `HDP: backport of upstream SMW 7.2.0 (CVE-2026-77608)` |
+| `smw-uriresolver-open-redirect` | `SpecialURIResolver.php` | 7.2.0 | `HDP: backport of upstream SMW 7.2.0 (CVE-2026-77609)` |
+| `smw-debug-query-xss` | `DebugFormatter.php` | 7.2.0 | `HDP: backport of upstream SMW 7.2.0 (CVE-2026-77610)` |
+| `smw-facetedsearch-cstate-xss` | `FacetedSearch/HtmlBuilder.php` | 7.2.1 | `HDP: backport of upstream SMW 7.2.1 (GHSA-9rcc-pmj8-ffhr)` |
+| `smw-subtab-xss-php` | `Utils/HtmlTabs.php` | 7.0.0 | `HDP: backport of upstream SMW 7.0.0 (CVE-2025-61682)` |
+| `smw-subtab-xss-js` | `res/smw/ext.smw.js` | 7.0.0 | `HDP: backport of upstream SMW 7.0.0 (CVE-2025-61682)` |
+
+All eight target paths above are relative to `extensions/SemanticMediaWiki/`.
+Each was derived by diffing this tree's vendored 6.0.1 source against the
+actual upstream release that fixed it (not just the advisory's prose), so
+every patch is the minimal change at the real vulnerable sink — not a
+mechanical port of upstream's surrounding refactor, most of which (property
+promotion, `MessageBuilder` → `wfMessage()`, the `TemplateParser` migration in
+FacetedSearch) is unrelated to the fix and not taken here.
+
+**Not backported here:** `GHSA-jr78-w6w5-m8f8` (`action=smwtask`, the one
+unauthenticated-reachable advisory of the eight). Deliberately carried, not
+mitigated, pending the ChatBot Sibling Handler Sweep — see the baseline
+entry's `why` and that phase's scope.
+
+Retire all eight sidecars together when SMW reaches 7.3.0 or later (the
+`smw-pager` Class C patch, discovered BLUE against 7.3.0 during this phase's
+research, is a separate case — see its own sidecar).
 
 ## Class B — retired
 
