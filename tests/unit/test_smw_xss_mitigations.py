@@ -23,7 +23,13 @@ tests/integration/test_smw_advisory_closure.py, which needs the 4-container
 profile (see that file's docstring) and is not run from here.
 """
 import os
+import shutil
 import subprocess
+
+import pytest
+
+PHP = shutil.which("php")
+requires_php = pytest.mark.skipif(PHP is None, reason="php binary not available on this runner")
 
 REPO = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 SMW = os.path.join(REPO, "app", "extensions", "SemanticMediaWiki")
@@ -52,12 +58,14 @@ def _read(rel_path):
         return f.read()
 
 
+@requires_php
 def test_php_available():
     subprocess.run(["php", "--version"], capture_output=True, check=True)
 
 
 # ─── the escaping primitive, actually executed ───────────────────────
 
+@requires_php
 def test_htmlspecialchars_neutralises_the_xss_payload():
     """The negative control shared by every ENT_QUOTES|ENT_SUBSTITUTE patch.
 
@@ -78,6 +86,7 @@ def test_htmlspecialchars_neutralises_the_xss_payload():
     assert "&quot;" in escaped or "&#034;" in escaped
 
 
+@requires_php
 def test_the_br_allowlist_still_passes_through_unescaped():
     """smw-ask-sep-xss's allowlist: legitimate <br> separators must survive."""
     for variant in ("<br>", "<br/>", "<br />", "  <BR>  "):
