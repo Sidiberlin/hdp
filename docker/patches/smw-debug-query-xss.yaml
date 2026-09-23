@@ -1,0 +1,44 @@
+# Class A — composer-clobbered, re-applied by scripts/apply-patches.sh.
+#
+# `composer install` reinstalls mediawiki/semantic-media-wiki as a dist
+# zipball, which overwrites app/extensions/SemanticMediaWiki wholesale on
+# every run. See docs/dev/patches.md "The SMW set" and
+# docker/ci/composer-audit-baseline.json's mediawiki/semantic-media-wiki
+# entry for the version this mitigates without fixing.
+id: smw-debug-query-xss
+title: escape SMW query debug output (CVE-2026-77610)
+class: A
+mode: insert
+target: extensions/SemanticMediaWiki/src/Query/DebugFormatter.php
+applied_by: scripts/apply-patches.sh (called by docker/setup.sh)
+patch: docker/patches/smw-debug-query-xss.patch
+# ERE. The line the first hunk is anchored after.
+anchor: '\$description = \$query->getDescription\(\);'
+marker: 'HDP: backport of upstream SMW 7\.2\.0 \(CVE-2026-77610\)'
+# The two unescaped echo sites this patch replaces. Alternation: absent means
+# both landed, matching the discipline docs/dev/patches.md documents for
+# maps-layercontrol-xss-js's two-hunk anti.
+anti: 'str_replace\( .\[., .&#91;., \$description->getQueryString\(\) \?\? .. \)|\$errors \.= \$error \. .<br />.'
+group: smw-advisory-closure
+stale: false
+upstream_version: 'mediawiki/semantic-media-wiki 6.0.1'
+regex: ERE
+hunks: 3
+why: >-
+  CVE-2026-77610 / GHSA-q5fm-9mx6-44f4, reflected XSS. SMW's query debug
+  output (format=debug, or the debug request parameter on Special:Ask) is
+  assembled by DebugFormatter and emitted as raw HTML with no
+  output-context encoding: buildHTML() echoed the re-serialized ASK query
+  string escaping only `[`, and the error list verbatim; prettifySQL()
+  returned the generated SQL verbatim, and query value literals reach it
+  through the database layer's SQL-escaping only. No special user right is
+  required — a query targeting a text/blob-typed property (the predefined
+  _txt properties every install ships suffice) reflects the payload back
+  unescaped, e.g. Special:Ask?q=[[Text::<script>...]]&debug=1. Backported
+  from upstream SMW 7.2.0: htmlspecialchars() each sink at the
+  DebugFormatter boundary before it is wrapped in HTML. This tree vendors
+  6.0.1 and the BlueSpice pro distribution constrains
+  mediawiki/semantic-media-wiki to 6.0.*, so the upstream fix (part of a
+  wider escape()-helper refactor not otherwise taken here) cannot be
+  reached by re-vendoring inside the 5.1 series. Retire this patch and its
+  sidecar when SMW reaches 7.2.0 or later.

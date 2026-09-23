@@ -82,7 +82,12 @@ class DebugFormatter {
 		if ( $query instanceof Query ) {
 			$preEntries = [];
 			$description = $query->getDescription();
-			$queryString = str_replace( '[', '&#91;', $description->getQueryString() ?? '' );
+			// HDP: backport of upstream SMW 7.2.0 (CVE-2026-77610). The query
+			// string is re-serialized from the request's own #ask condition, so a
+			// query targeting a text/blob-typed property (e.g. the predefined
+			// _txt properties every install ships) reflects attacker-controlled
+			// text here; only `[` was escaped before, `<>"'` passed through.
+			$queryString = str_replace( '[', '&#91;', htmlspecialchars( $description->getQueryString() ?? '', ENT_QUOTES ) );
 
 			$preEntries['ASK Query'] = '<div class="smwpre">' . $queryString . '</div>';
 			$entries = array_merge( $preEntries, $entries );
@@ -95,7 +100,7 @@ class DebugFormatter {
 			);
 
 			foreach ( $queryErrors as $error ) {
-				$errors .= $error . '<br />';
+				$errors .= htmlspecialchars( (string)$error, ENT_QUOTES ) . '<br />';
 			}
 
 			if ( $errors === '' ) {
@@ -258,6 +263,12 @@ class DebugFormatter {
 	 * @return string
 	 */
 	public function prettifySQL( $sql, $alias ) {
+		// HDP: backport of upstream SMW 7.2.0 (CVE-2026-77610). The generated
+		// SQL is returned verbatim; query value literals reach it through the
+		// database layer's quoting (SQL-escaping only, no HTML encoding), so
+		// markup in a value survives into this debug output. Escape before the
+		// pretty-printing below inserts its own literal `<br>` formatting.
+		$sql = htmlspecialchars( (string)$sql, ENT_QUOTES );
 		$matches = [];
 		$i = 0;
 
