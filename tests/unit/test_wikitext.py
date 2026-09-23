@@ -195,7 +195,7 @@ def test_split_by_sections_does_not_split_the_non_legacy_heading_dom():
 
 # ─── build_metadata ─────────────────────────────────────────────────────
 
-PAGE = {"page_id": 7, "page_namespace": 12, "page_title": "Cloud_Computing"}
+PAGE = {"page_id": 7, "page_namespace": 12, "page_title": "Cloud_Computing", "page_latest": 42007}
 
 
 def test_build_metadata_core_fields():
@@ -238,6 +238,16 @@ def test_build_metadata_joins_chatbotmeta_values():
 
 def test_build_metadata_chatbotmeta_defaults_to_empty():
     assert build_metadata({}, PAGE, "Intro")["chatbotmeta"] == ""
+
+
+def test_build_metadata_stages_revision():
+    """--missing-only compares meta.revision against page_latest to detect
+    edited pages. A missing/wrong revision makes every incremental run skip
+    or re-ingest the page wholesale, so the field is pinned like any other
+    prompt-required input."""
+    meta = build_metadata({}, PAGE, "Intro")
+    assert meta["revision"] == 42007
+    assert isinstance(meta["revision"], int)
 
 
 def test_build_metadata_display_title_is_stripped_of_markup():

@@ -35,6 +35,18 @@ For changes in the upstream BlueSpice HDP Edition, see the
 - **`README.md`** and **`README-DOCKER.md`** each gained an "Updating an
   existing install" section — there was previously no "how do I update" text
   anywhere in the repo.
+- **`--missing-only` ingestion now picks up edited pages.** It compared
+  only page_ids, so a page edited after its last ingestion stayed stale in
+  the index forever; `wikitext.build_metadata` now stages `meta.revision`
+  and the incremental run re-ingests any page whose `page_latest` is newer
+  than the revision in the index. Pages without revision metadata (an index
+  built before this change) self-heal with a one-time re-ingest. Also
+  replaces the terms aggregation (silent 1000-page cap — every page past it
+  was re-ingested on every run) with a paginated composite aggregation.
+- **The Nebius wizard default model name is one that exists.** The installer
+  offered `qwen-235b`; Nebius serves `Qwen/Qwen3-235B-A22B-Instruct-2507`
+  (live-verified against their API — the old default 404s on every chat
+  turn). OpenAI (`gpt-4o`) remains the default provider.
 
 ### Security
 

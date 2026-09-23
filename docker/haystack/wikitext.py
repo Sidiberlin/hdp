@@ -148,6 +148,13 @@ def build_metadata(parsed: dict, page: dict, section_name: str) -> dict:
         "tags": [],
         "sourcekey": "wikipage",
         "page_id": page["page_id"],
+        # Ingestion bookkeeping: which revision of the page this content was
+        # rendered from. ingest_hdp_wiki.py --missing-only compares this
+        # against page_latest to re-index edited pages, not just new ones.
+        # page_latest arrives as an int from get_namespace_pages; storing a
+        # number keeps the index mapping a long, so aggregations over it
+        # return sortable numeric terms.
+        "revision": page["page_latest"],
         "uri": f"http://mediawiki-web:8080/w/{prefixed_title.replace(' ', '_')}",
     }
     return meta

@@ -9,7 +9,9 @@ Usage:
   python3 ingest_hdp_wiki.py                        # Full reindex, local embedder
   python3 ingest_hdp_wiki.py --page "Hauptseite"     # Single page
   python3 ingest_hdp_wiki.py --dry-run               # Preview without writing
-  python3 ingest_hdp_wiki.py --missing-only          # Only pages not yet in OpenSearch
+  python3 ingest_hdp_wiki.py --missing-only          # New pages, plus pages
+                                                       # edited since their last
+                                                       # ingestion (revision-stamped)
   python3 ingest_hdp_wiki.py --provider remote       # Embed via an OpenAI-compatible API
   python3 ingest_hdp_wiki.py --provider hf_space      # Embed via a HuggingFace ZeroGPU
                                                        # Space (ingestion/testing only —
@@ -46,6 +48,7 @@ from haystack_integrations.document_stores.opensearch.document_store import (
     DuplicatePolicy,
     OpenSearchDocumentStore,
 )
+from ingest_select import classify_pages, max_revision_per_page
 
 # Pure transforms, extracted in Wave 2 so they are testable without
 # pymysql/requests/haystack being installed. Same directory, which is how
@@ -226,6 +229,26 @@ def get_namespace_pages(conn) -> list[dict]:
 
 def get_indexed_page_ids() -> set:
     """Get the set of page_ids already present in OpenSearch (for --missing-only)."""
+    return set(get_staged_revisions().keys())
+
+
+def get_staged_revisions() -> dict:
+    """Map every indexed page_id to the newest revision staged in the index.
+
+    Reads meta.revision (written by wikitext.build_metadata) via a composite
+    aggregation, paginated with after_key — a terms aggregation caps at
+    `size` buckets (1000 here), which on a real wiki would silently classify
+    every page past the cap as missing and re-ingest the tail of the wiki on
+    every run. Pages whose documents carry no revision (an index built
+    before the field existed) simply don't appear in the map, which classifies
+    them as new on their next --missing-only run: the index heals itself
+    once after an upgrade instead of staying stale forever.
+
+    Returns {} when the index doesn't exist or OpenSearch is unreachable —
+    callers treat that as "nothing is staged", i.e. a full ingest, which is
+    the correct behavior for a not-yet-created index and the loud behavior
+    (a visible full re-ingest) for an unreachable one.
+    """
     import ssl
     import urllib.request
     # TLS verification disabled: matches OpenSearchDocumentStore(verify_certs=False)
@@ -236,18 +259,61 @@ def get_indexed_page_ids() -> set:
     ctx.verify_mode = ssl.CERT_NONE
     import base64
     auth = base64.b64encode(f"admin:{OPENSEARCH_PASSWORD}".encode()).decode()
-    body = json.dumps({"size": 0, "aggs": {"ids": {"terms": {"field": "page_id", "size": 1000}}}}).encode()
-    req = urllib.request.Request(
-        f"https://{OPENSEARCH_HOST}:{OPENSEARCH_PORT}/{INDEX_NAME}/_search",
-        data=body, headers={"Authorization": f"Basic {auth}", "Content-Type": "application/json"},
-    )
-    try:
-        with urllib.request.urlopen(req, context=ctx, timeout=15) as resp:
-            data = json.loads(resp.read().decode())
-            return {b["key"] for b in data["aggregations"]["ids"]["buckets"]}
-    except Exception as e:
-        logger.warning(f"Could not fetch indexed page_ids (index may not exist yet): {e}")
-        return set()
+
+    out: dict = {}
+    after = None
+    for _page in range(1000):  # hard stop; 1000 pages of 1000 = absurd index
+        body: dict = {
+            "size": 0,
+            "aggs": {
+                "bypage": {
+                    "composite": {
+                        "size": 1000,
+                        "sources": [
+                            {"page_id": {"terms": {"field": "meta.page_id"}}},
+                            {"revision": {"terms": {"field": "meta.revision"}}},
+                        ],
+                    },
+                    "aggs": {
+                        "maxrev": {"max": {"field": "meta.revision"}},
+                    },
+                }
+            },
+        }
+        if after is not None:
+            body["aggs"]["bypage"]["composite"]["after"] = after
+        req = urllib.request.Request(
+            f"https://{OPENSEARCH_HOST}:{OPENSEARCH_PORT}/{INDEX_NAME}/_search",
+            data=json.dumps(body).encode(),
+            headers={"Authorization": f"Basic {auth}", "Content-Type": "application/json"},
+        )
+        try:
+            with urllib.request.urlopen(req, context=ctx, timeout=30) as resp:
+                data = json.loads(resp.read().decode())
+        except Exception as e:
+            if out:
+                logger.warning(f"OpenSearch pagination stopped early: {e}")
+            else:
+                logger.warning(f"Could not fetch staged revisions (index may not exist yet): {e}")
+            return out
+        buckets = data["aggregations"]["bypage"]["buckets"]
+        if not buckets:
+            break
+        pairs = []
+        for b in buckets:
+            rev = b.get("maxrev", {}).get("value")
+            # meta.revision is a long; composite sources return it as a
+            # number (or string on some mappings). Normalize via str().
+            pairs.append((b["key"]["page_id"], str(int(rev)) if rev is not None else None))
+        staged = max_revision_per_page(pairs)
+        for pid, rev in staged.items():
+            # Same cross-bucket max: one page's sections can span buckets.
+            if pid not in out or rev > out[pid]:
+                out[pid] = rev
+        after = data["aggregations"]["bypage"].get("after_key")
+        if after is None:
+            break
+    return out
 
 
 def mw_api_login() -> requests.Session:
@@ -373,7 +439,8 @@ def main():
     parser.add_argument("--dry-run", action="store_true", help="Don't write to OpenSearch")
     parser.add_argument(
         "--missing-only", action="store_true",
-        help="Only index pages whose page_id is not already in OpenSearch (fast resume)",
+        help="Index new pages plus pages edited since their last ingestion "
+             "(compares meta.revision against page_latest; fast incremental resume)",
     )
     parser.add_argument(
         "--provider", choices=["local", "remote", "hf_space"], default=None,
@@ -399,10 +466,14 @@ def main():
     logger.info(f"Found {len(pages)} pages in indexable namespaces")
 
     if args.missing_only:
-        indexed = get_indexed_page_ids()
+        staged = get_staged_revisions()
         before = len(pages)
-        pages = [p for p in pages if p["page_id"] not in indexed]
-        logger.info(f"--missing-only: {before - len(pages)} already indexed, {len(pages)} remaining")
+        pages, counts = classify_pages(pages, staged)
+        logger.info(
+            f"--missing-only: {counts['new']} new, {counts['edited']} edited "
+            f"({before - counts['unchanged']} of {before} to index, "
+            f"{counts['unchanged']} unchanged)"
+        )
 
     if not pages:
         logger.warning("No pages to index. Exiting.")
