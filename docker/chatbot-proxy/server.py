@@ -22,7 +22,7 @@ import os
 import urllib.error
 import urllib.request
 import uuid
-from http.server import BaseHTTPRequestHandler, HTTPServer
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 # ─── Config ──────────────────────────────────────────────────────────────
@@ -372,7 +372,18 @@ class ProxyHandler(BaseHTTPRequestHandler):
 
 
 if __name__ == "__main__":
-    server = HTTPServer(("0.0.0.0", PROXY_PORT), ProxyHandler)
+    # ThreadingHTTPServer, not HTTPServer: a plain HTTPServer handles one
+    # connection at a time. call_hayhooks() blocks the handler thread for up
+    # to 120s per request, and every step of the pipeline it calls (LLM,
+    # embedder, OpenSearch) can be slow on its own — so a single stuck
+    # request (an LLM outage, a hanging auth failure, anything slower than
+    # instant) queued out every other chatbot user behind it. Verified live:
+    # one held-open request made 8 concurrent healthy requests time out
+    # completely, with nothing crashed or unhealthy — indistinguishable from
+    # a dead server to everyone but the one request already being served.
+    # Threading means one slow backend call degrades only its own request.
+    server = ThreadingHTTPServer(("0.0.0.0", PROXY_PORT), ProxyHandler)
+    server.daemon_threads = True
     log.info(f"ChatBot proxy listening on :{PROXY_PORT}")
     log.info(f"Hayhooks backend: {HAYHOOKS_URL}")
     server.serve_forever()
