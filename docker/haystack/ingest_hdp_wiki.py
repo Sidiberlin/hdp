@@ -235,7 +235,8 @@ def get_indexed_page_ids() -> set:
 def get_staged_revisions() -> dict:
     """Map every indexed page_id to the newest revision staged in the index.
 
-    Reads meta.revision (written by wikitext.build_metadata) via a composite
+    Reads the staged revision (written by wikitext.build_metadata as meta.revision,
+    but flattened to a top-level field by the document writer) via a composite
     aggregation, paginated with after_key — a terms aggregation caps at
     `size` buckets (1000 here), which on a real wiki would silently classify
     every page past the cap as missing and re-ingest the tail of the wiki on
@@ -270,12 +271,12 @@ def get_staged_revisions() -> dict:
                     "composite": {
                         "size": 1000,
                         "sources": [
-                            {"page_id": {"terms": {"field": "meta.page_id"}}},
-                            {"revision": {"terms": {"field": "meta.revision"}}},
+                            {"page_id": {"terms": {"field": "page_id"}}},
+                            {"revision": {"terms": {"field": "revision"}}},
                         ],
                     },
                     "aggs": {
-                        "maxrev": {"max": {"field": "meta.revision"}},
+                        "maxrev": {"max": {"field": "revision"}},
                     },
                 }
             },
@@ -302,7 +303,7 @@ def get_staged_revisions() -> dict:
         pairs = []
         for b in buckets:
             rev = b.get("maxrev", {}).get("value")
-            # meta.revision is a long; composite sources return it as a
+            # The staged revision is a long; composite sources return it as a
             # number (or string on some mappings). Normalize via str().
             pairs.append((b["key"]["page_id"], str(int(rev)) if rev is not None else None))
         staged = max_revision_per_page(pairs)
@@ -440,7 +441,7 @@ def main():
     parser.add_argument(
         "--missing-only", action="store_true",
         help="Index new pages plus pages edited since their last ingestion "
-             "(compares meta.revision against page_latest; fast incremental resume)",
+             "(compares the staged revision against page_latest; fast incremental resume)",
     )
     parser.add_argument(
         "--provider", choices=["local", "remote", "hf_space"], default=None,
