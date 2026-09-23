@@ -192,6 +192,64 @@ def test_the_maps_mitigation_the_baseline_claims_actually_exists():
             )
 
 
+SMW_PATCHES = (
+    "smw-ask-sep-xss",
+    "smw-ask-plain-header-xss",
+    "smw-searchbyproperty-error-xss",
+    "smw-uriresolver-open-redirect",
+    "smw-debug-query-xss",
+    "smw-facetedsearch-cstate-xss",
+    "smw-subtab-xss-php",
+    "smw-subtab-xss-js",
+)
+
+
+def test_the_smw_mitigation_the_baseline_claims_actually_exists():
+    """The mediawiki/semantic-media-wiki entry says 7 of its 8 advisories are
+    mitigated by these eight patches (DEPS-02). Same contract as the Maps
+    mitigation test above, same reason: an acceptance that points at a
+    mitigation is only as good as the mitigation, and composer audit cannot
+    tell the difference — it reads the installed version, 6.0.1 either way.
+
+    GHSA-jr78-w6w5-m8f8 (`action=smwtask`) is deliberately NOT in this tuple:
+    it is carried, not mitigated, here — see D6/the baseline `why`. Phase 7
+    adds its patch id to both the `why` and this tuple in the same commit
+    that adds the patch, per the handoff note in the plan; do not add it here
+    ahead of that patch landing.
+    """
+    why = json.load(open(BASELINE, encoding="utf-8"))["accepted"]["mediawiki/semantic-media-wiki"]["why"]
+    patch_dir = os.path.join(REPO, "docker", "patches")
+    for patch_id in SMW_PATCHES:
+        if patch_id not in why:
+            continue
+        for suffix in (".yaml", ".patch"):
+            path = os.path.join(patch_dir, patch_id + suffix)
+            assert os.path.exists(path), (
+                f"the baseline's mediawiki/semantic-media-wiki entry names "
+                f"{patch_id}, but {path} is missing"
+            )
+
+
+def test_the_smwtask_advisory_is_not_yet_named_as_mitigated():
+    """GHSA-jr78-w6w5-m8f8 stays carried, not claimed-and-missing.
+
+    The pin test above only checks patch ids that ARE named in the `why`.
+    This one guards the other direction: the `why` must not yet claim a
+    smw-smwtask-* patch id that doesn't exist on disk (D6's handoff
+    contract — Phase 7 adds the id and the patch together, never the id
+    alone).
+    """
+    why = json.load(open(BASELINE, encoding="utf-8"))["accepted"]["mediawiki/semantic-media-wiki"]["why"]
+    patch_dir = os.path.join(REPO, "docker", "patches")
+    for fname in os.listdir(patch_dir):
+        if fname.startswith("smw-smwtask"):
+            stem = fname.rsplit(".", 1)[0]
+            assert stem in why, (
+                f"{fname} exists on disk but the baseline why does not name "
+                f"it — a mitigation must be claimed once it lands"
+            )
+
+
 # ─── The exit code, which is the part CI reads ──────────────────────
 # compare() found `moved` and render() printed it, but main() returned 1 only
 # on `new or problems` — so a package whose installed version changed under an
