@@ -357,11 +357,11 @@ def test_an_empty_patch_tree_warns_rather_than_passing_silently():
 
 
 def test_the_committed_patch_manifest_matches_the_tree():
-    """The real files: 21 sidecars, 3 class A + 18 class C, 18 .diff on disk."""
+    """The real files: 22 sidecars, 4 class A + 18 class C, 18 .diff on disk."""
     obs = versions.scan(versions.repo_root())
-    assert len(obs["patch_sidecars"]) == 21
+    assert len(obs["patch_sidecars"]) == 22
     classes = sorted(obs["patch_sidecars"].values())
-    assert classes.count("A") == 3
+    assert classes.count("A") == 4
     assert classes.count("C") == 18
     assert obs["class_c_diffs"] == 18
     rep = versions.Report()

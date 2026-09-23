@@ -1,0 +1,40 @@
+# Class A — composer-clobbered, re-applied by scripts/apply-patches.sh.
+#
+# `composer install` reinstalls mediawiki/semantic-media-wiki as a dist
+# zipball, which overwrites app/extensions/SemanticMediaWiki wholesale on
+# every run. See docs/dev/patches.md "The SMW set" for the group this
+# belongs to and docker/ci/composer-audit-baseline.json's
+# mediawiki/semantic-media-wiki entry for the version this mitigates without
+# fixing.
+id: smw-ask-sep-xss
+title: escape the Special:Ask table `sep` parameter (CVE-2026-77607)
+class: A
+mode: insert
+target: extensions/SemanticMediaWiki/src/Query/ResultPrinters/TableResultPrinter.php
+applied_by: scripts/apply-patches.sh (called by docker/setup.sh)
+patch: docker/patches/smw-ask-sep-xss.patch
+# ERE. The line the hunk is anchored after.
+anchor: '\} elseif \( !\$isSubject && \$sep === .ol. && count\( \$values \) > 1 \) \{'
+# The doc comment on the inserted method, not its signature: a re-derive that
+# dropped the call-site change but kept the helper would still match a
+# signature, and the helper alone changes nothing.
+marker: 'HDP: backport of upstream SMW 7\.2\.0 \(CVE-2026-77607\)'
+# The vulnerable call site this patch replaces. Must be gone once applied.
+anti: 'implode\( \$this->params\[.sep.\], \$values \)'
+group: smw-advisory-closure
+stale: false
+upstream_version: 'mediawiki/semantic-media-wiki 6.0.1'
+regex: ERE
+hunks: 1
+why: >-
+  CVE-2026-77607 / GHSA-7xv3-gf2g-498h, reflected XSS. The `sep` table
+  parameter was inserted verbatim into the HTML that joins a table cell's
+  values, reachable without authentication via both the standard
+  Special:Ask render and its raw request output (request_type=raw).
+  Backported from upstream SMW 7.2.0: in every non-wiki output mode
+  (HTML, raw request, file) `sep` is now escaped unless it is a safe `<br>`
+  variant, preserving the legitimate line-break separator while blocking
+  markup injection. This tree vendors 6.0.1 and the BlueSpice pro
+  distribution constrains mediawiki/semantic-media-wiki to 6.0.*, so the
+  upstream fix cannot be taken by re-vendoring inside the 5.1 series. Retire
+  this patch and its sidecar when SMW reaches 7.2.0 or later.

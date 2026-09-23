@@ -352,10 +352,36 @@ class TableResultPrinter extends ResultPrinter {
 		} elseif ( !$isSubject && $sep === 'ol' && count( $values ) > 1 ) {
 			$html = '<ol><li>' . implode( '</li><li>', $values ) . '</li></ol>';
 		} else {
-			$html = implode( $this->params['sep'], $values );
+			$html = implode( $this->getValueSeparator( $outputMode ), $values );
 		}
 
 		return $html;
+	}
+
+	/**
+	 * Returns the separator placed between the multiple values of a table cell.
+	 *
+	 * HDP: backport of upstream SMW 7.2.0 (CVE-2026-77607). Only wiki output
+	 * (inline #ask) is sanitised downstream by the parser; every other output
+	 * mode — HTML (Special:Ask), RAW (request_type=raw) and FILE — is emitted
+	 * straight into the response, so a user-supplied `sep` there must be
+	 * escaped, allowlisting only the `<br>` line-break variants that are the
+	 * intended separator markup.
+	 *
+	 * @since 7.2.0
+	 */
+	private function getValueSeparator( $outputMode ) {
+		$sep = $this->params['sep'];
+
+		if ( $outputMode === SMW_OUTPUT_WIKI ) {
+			return $sep;
+		}
+
+		if ( preg_match( '#^\s*<br\s*/?>\s*$#i', $sep ) ) {
+			return $sep;
+		}
+
+		return htmlspecialchars( $sep, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
 	}
 
 	/**
