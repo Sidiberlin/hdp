@@ -80,28 +80,37 @@ echo "OpenSearch is ready."
 
 # Pre-download embedding models (avoids timeout during first query)
 # Only needed for HDP_EMBEDDING_PROVIDER=local — remote mode has no local model.
+#
+# The ranker is pre-downloaded via sentence_transformers.CrossEncoder, not
+# SentenceTransformer — that's not cosmetic. The ranker component
+# (SentenceTransformersSimilarityRanker) loads its model through CrossEncoder
+# at query time, which requires a real sequence-classification head. A prior
+# ranker model (PM-AI/bi-encoder_msmarco_bert-base_german) was a bi-encoder
+# with no such head; pre-downloading it via SentenceTransformer(...) "worked"
+# (that loader doesn't need a classifier head) and never surfaced that the
+# actual ranker was silently scoring every document with an untrained,
+# randomly-initialized head. Using the same loader class here as the ranker
+# actually uses means a future model swap that repeats this mistake fails
+# loudly in this pre-download step instead of silently degrading answers.
 if [ "$HDP_EMBEDDING_PROVIDER" = "local" ]; then
-    echo "Pre-downloading embedding models..."
+    echo "Pre-downloading embedding model..."
     python3 -c "
 from sentence_transformers import SentenceTransformer
-models = [
-    '${HDP_EMBEDDING_MODEL:-mixedbread-ai/deepset-mxbai-embed-de-large-v1}',
-    'PM-AI/bi-encoder_msmarco_bert-base_german',
-]
-for m in models:
-    print(f'Downloading {m}...')
-    SentenceTransformer(m)
-    print(f'  OK')
-" || echo "WARNING: model pre-download failed. Models will be downloaded on first query."
+m = '${HDP_EMBEDDING_MODEL:-mixedbread-ai/deepset-mxbai-embed-de-large-v1}'
+print(f'Downloading {m}...')
+SentenceTransformer(m)
+print(f'  OK')
+" || echo "WARNING: embedding model pre-download failed. Model will be downloaded on first query."
 else
     echo "Skipping local embedding model pre-download (HDP_EMBEDDING_PROVIDER=${HDP_EMBEDDING_PROVIDER})"
-    echo "Still pre-downloading the cross-encoder ranker (always local)..."
-    python3 -c "
-from sentence_transformers import SentenceTransformer
-SentenceTransformer('PM-AI/bi-encoder_msmarco_bert-base_german')
+fi
+
+echo "Pre-downloading the cross-encoder ranker (always local)..."
+python3 -c "
+from sentence_transformers import CrossEncoder
+CrossEncoder('cross-encoder/msmarco-MiniLM-L6-en-de-v1')
 print('  OK')
 " || echo "WARNING: ranker model pre-download failed. Will be downloaded on first query."
-fi
 
 # Render the query-time embedder component (local vs remote) into the
 # pipeline YAML before hayhooks loads it. See render_pipeline.py for why

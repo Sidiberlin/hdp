@@ -12,7 +12,7 @@ this is the module’s single most important gotcha, see below.
 
 * '''Query reformulation''' — rewrite the (possibly chat-history-carrying) question into a search-friendly form via an LLM call.
 * '''Hybrid retrieval''' — parallel BM25 (<code>bm25_retriever</code>, top 30) and embedding similarity (<code>embedding_retriever</code>, top 40) search against OpenSearch, merged by <code>document_joiner</code>.
-* '''Cross-encoder ranking''' — re-rank the merged set down to the top 14 with a German bi-encoder similarity model.
+* '''Cross-encoder ranking''' — re-rank the merged set down to the top 14 with a cross-lingual EN-DE cross-encoder similarity model.
 * '''Multi-mode generation''' — a <code>conditional_router</code> selects between answer styles based on a <code>path</code> input.
 * '''Grounded answer generation''' — a strict German prompt instructing the LLM to answer only from the provided documents, cite them as <code>[N]</code>, and say so if no answer is found.
 
@@ -63,7 +63,7 @@ this is the module’s single most important gotcha, see below.
 |-
 | <code>ranker</code>
 | <code>SentenceTransformersSimilarityRanker</code>
-| Cross-encoder re-rank with <code>PM-AI/bi-encoder_msmarco_bert-base_german</code>, top 14
+| Cross-encoder re-rank with <code>cross-encoder/msmarco-MiniLM-L6-en-de-v1</code>, top 14
 |-
 | <code>conditional_router</code>
 | <code>ConditionalRouter</code>
@@ -102,8 +102,8 @@ this is the module’s single most important gotcha, see below.
 | Query + document embedding (German)
 | Configurable via <code>HDP_EMBEDDING_MODEL</code>; dimension via <code>HDP_EMBEDDING_DIM</code> (default 1024)
 |-
-| <code>PM-AI/bi-encoder_msmarco_bert-base_german</code>
-| Cross-encoder re-ranking
+| <code>cross-encoder/msmarco-MiniLM-L6-en-de-v1</code>
+| Cross-encoder re-ranking (EN-DE cross-lingual)
 | Hardcoded in <code>hdp_pipeline.yaml</code>, always downloaded locally regardless of embedding provider
 |-
 | Whatever <code>HDP_LLM_MODEL</code> points to (default <code>gpt-4o</code>)

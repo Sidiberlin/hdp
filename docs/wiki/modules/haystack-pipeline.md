@@ -16,7 +16,7 @@ this is the module's single most important gotcha, see below.
   embedding similarity (`embedding_retriever`, top 40) search against
   OpenSearch, merged by `document_joiner`.
 - **Cross-encoder ranking** — re-rank the merged set down to the top 14 with
-  a German bi-encoder similarity model.
+  a cross-lingual EN-DE cross-encoder similarity model.
 - **Multi-mode generation** — a `conditional_router` selects between answer
   styles based on a `path` input.
 - **Grounded answer generation** — a strict German prompt instructing the
@@ -43,7 +43,7 @@ this is the module's single most important gotcha, see below.
 | `query_embedder` | `SentenceTransformersTextEmbedder` (local) or `OpenAITextEmbedder` (remote) | Embeds the query — swapped by `render_pipeline.py`, see [embedding-providers](embedding-providers.md) |
 | `embedding_retriever` | `OpenSearchEmbeddingRetriever` | Dense search against `hdp_wiki`, top 40, `efficient_filtering: true` |
 | `document_joiner` | `DocumentJoiner` (`concatenate`) | Merges BM25 + embedding hits |
-| `ranker` | `SentenceTransformersSimilarityRanker` | Cross-encoder re-rank with `PM-AI/bi-encoder_msmarco_bert-base_german`, top 14 |
+| `ranker` | `SentenceTransformersSimilarityRanker` | Cross-encoder re-rank with `cross-encoder/msmarco-MiniLM-L6-en-de-v1`, top 14 |
 | `conditional_router` | `ConditionalRouter` | Six routes on `path` (`rag`, `followup_*`), but only `rag`/`normal` and `followup_elaborate` connect to an actual `PromptBuilder` |
 | `qa_prompt_builder` | `PromptBuilder` | The default grounded-answer prompt (`rag` path) |
 | `followup_elaborate` | `PromptBuilder` | Same prompt template, wired for the `followup_elaborate` path |
@@ -56,7 +56,7 @@ this is the module's single most important gotcha, see below.
 | Model | Role | Notes |
 |---|---|---|
 | `mixedbread-ai/deepset-mxbai-embed-de-large-v1` (default) | Query + document embedding (German) | Configurable via `HDP_EMBEDDING_MODEL`; dimension via `HDP_EMBEDDING_DIM` (default 1024) |
-| `PM-AI/bi-encoder_msmarco_bert-base_german` | Cross-encoder re-ranking | Hardcoded in `hdp_pipeline.yaml`, always downloaded locally regardless of embedding provider |
+| `cross-encoder/msmarco-MiniLM-L6-en-de-v1` | Cross-encoder re-ranking (EN-DE cross-lingual) | Hardcoded in `hdp_pipeline.yaml`, always downloaded locally regardless of embedding provider |
 | Whatever `HDP_LLM_MODEL` points to (default `gpt-4o`) | Query reformulation + answer generation | Any OpenAI-compatible chat completions endpoint via `HDP_LLM_BASE_URL` |
 
 ## Answer Modes (`conditional_router` paths)

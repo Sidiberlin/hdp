@@ -139,7 +139,20 @@ components:
   ranker:
     type: haystack.components.rankers.sentence_transformers_similarity.SentenceTransformersSimilarityRanker
     init_parameters:
-      model: PM-AI/bi-encoder_msmarco_bert-base_german
+      # cross-encoder/msmarco-MiniLM-L6-en-de-v1, not PM-AI/bi-encoder_msmarco_bert-base_german.
+      # The PM-AI model is a bi-encoder (SentenceTransformer.encode() + cosine
+      # similarity) with no sequence-classification head. This component loads
+      # its model via sentence_transformers.CrossEncoder, which requires a real
+      # classifier.weight/classifier.bias — loading the bi-encoder into it
+      # silently initializes that head with random weights (transformers logs
+      # "classifier.weight | MISSING" but does not error), so every rerank
+      # score was noise from an untrained head. Confirmed on the QA box: BM25
+      # ranked the correct document #1 for a literal-keyword query, but the
+      # broken ranker still dropped it below the top-14 cutoff. This
+      # cross-lingual EN-DE cross-encoder is a real classifier checkpoint
+      # (verified: no MISSING warnings) and was validated against the same
+      # live index — it puts the correct document back at #1.
+      model: cross-encoder/msmarco-MiniLM-L6-en-de-v1
       top_k: 14
       meta_fields_to_embed:
         - document.meta.chatbotmeta

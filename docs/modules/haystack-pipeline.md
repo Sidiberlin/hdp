@@ -6,7 +6,7 @@ The Haystack RAG pipeline performs retrieval-augmented generation over wiki cont
 
 - **Query reformulation** — Rewrite the user query using chat history for better retrieval
 - **Hybrid retrieval** — Parallel BM25 + dense embedding retrieval from OpenSearch
-- **Cross-encoder ranking** — Re-rank retrieved documents using a German bi-encoder model
+- **Cross-encoder ranking** — Re-rank retrieved documents using a cross-lingual EN-DE cross-encoder model
 - **Multi-mode generation** — Six answer styles controlled by a conditional router
 - **Grounded answer generation** — Strict prompts forcing the LLM to cite sources as `[N]` references
 
@@ -28,7 +28,7 @@ The Haystack RAG pipeline performs retrieval-augmented generation over wiki cont
 | `query_embedder` | `SentenceTransformersTextEmbedder` or `OpenAITextEmbedder` | Embeds query. **Swappable** via `HDP_EMBEDDING_PROVIDER` — see [docs/embedding-providers.md](../embedding-providers.md) |
 | `embedding_retriever` | `OpenSearchEmbeddingRetriever` | Dense search, top 40, efficient filtering |
 | `document_joiner` | `DocumentJoiner` | Merges BM25 + embedding results (concatenate) |
-| `ranker` | `SentenceTransformersSimilarityRanker` | Cross-encoder ranking with `bi-encoder_msmarco_bert-base_german`, top 14 |
+| `ranker` | `SentenceTransformersSimilarityRanker` | Cross-encoder ranking with `cross-encoder/msmarco-MiniLM-L6-en-de-v1`, top 14 |
 | `conditional_router` | `ConditionalRouter` | Routes to answer-mode-specific prompt builder |
 | `qa_prompt_builder` | `PromptBuilder` | Default RAG prompt (detailed German grounded answer) |
 | `followup_elaborate` | `PromptBuilder` | Elaborate answer mode |
@@ -41,7 +41,7 @@ The Haystack RAG pipeline performs retrieval-augmented generation over wiki cont
 | Model | Role | Dimensions |
 |---|---|---|
 | `mixedbread-ai/deepset-mxbai-embed-de-large-v1` (default, `local` mode) | Query + document embedding (German) | 1024, configurable via `HDP_EMBEDDING_DIM` |
-| `PM-AI/bi-encoder_msmarco_bert-base_german` | Cross-encoder re-ranking (German) | — |
+| `cross-encoder/msmarco-MiniLM-L6-en-de-v1` | Cross-encoder re-ranking (EN-DE cross-lingual) | — |
 | Configurable via `HDP_LLM_BASE_URL`/`HDP_LLM_MODEL` (any OpenAI-compatible API — OpenAI, z.ai/GLM, Nebius, etc.) | Query reformulation + answer generation | — |
 
 ## Answer Modes (ConditionalRouter Paths)
@@ -67,7 +67,7 @@ flowchart TD
     QE --> ER["embedding_retriever<br/>top 40"]
     BM25 --> DJ["document_joiner<br/>concatenate"]
     ER --> DJ
-    DJ --> RANK["ranker<br/>bi-encoder german<br/>top 14"]
+    DJ --> RANK["ranker<br/>cross-encoder EN-DE<br/>top 14"]
     RANK --> CR["conditional_router<br/>select answer mode"]
     CR -->|"rag"| QAP["qa_prompt_builder"]
     CR -->|"followup_*"| FUP["followup prompt builders"]

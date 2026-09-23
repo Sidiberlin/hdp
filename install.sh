@@ -1016,16 +1016,21 @@ fi
 PREDOWNLOAD_PY='
 import os
 
-from sentence_transformers import SentenceTransformer
+from sentence_transformers import CrossEncoder, SentenceTransformer
 
-models = [
-    os.environ.get("HDP_EMBEDDING_MODEL") or "mixedbread-ai/deepset-mxbai-embed-de-large-v1",
-    "PM-AI/bi-encoder_msmarco_bert-base_german",
-]
-for name in models:
-    print("  fetching  " + name, flush=True)
-    SentenceTransformer(name)
-    print("  cached    " + name, flush=True)
+embed_model = os.environ.get("HDP_EMBEDDING_MODEL") or "mixedbread-ai/deepset-mxbai-embed-de-large-v1"
+print("  fetching  " + embed_model, flush=True)
+SentenceTransformer(embed_model)
+print("  cached    " + embed_model, flush=True)
+
+# CrossEncoder, not SentenceTransformer: the ranker component loads its model
+# this way at query time, and that loader is the one that needs a real
+# sequence-classification head. See docker/haystack/hdp_pipeline.yaml ranker
+# comment for why that distinction mattered here before.
+ranker_model = "cross-encoder/msmarco-MiniLM-L6-en-de-v1"
+print("  fetching  " + ranker_model, flush=True)
+CrossEncoder(ranker_model)
+print("  cached    " + ranker_model, flush=True)
 print("OK")
 '
 
@@ -1042,7 +1047,7 @@ predownload_models() {
     info "Two models run in-container and are downloaded on first start:"
     printf '       %s%s%s %s(embedder, ~600 MB)%s\n' \
         "$C_BLD" "$model" "$C_OFF" "$C_DIM" "$C_OFF"
-    printf '       %sPM-AI/bi-encoder_msmarco_bert-base_german%s %s(ranker, ~450 MB)%s\n' \
+    printf '       %scross-encoder/msmarco-MiniLM-L6-en-de-v1%s %s(ranker, ~450 MB)%s\n' \
         "$C_BLD" "$C_OFF" "$C_DIM" "$C_OFF"
     note "Fetching them now makes the first start a start, rather than five to ten"
     note "minutes of a healthcheck with nothing to show for itself."

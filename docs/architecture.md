@@ -36,7 +36,7 @@ flowchart TD
     Pipeline -->|"BM25 + embedding retrieval"| OS1
     Pipeline -->|"GPT-4o generation"| AzureLLM{{"Azure OpenAI<br/>GPT-4o"}}
     Pipeline -->|"German embeddings"| EmbedModel{{"Sentence-Transformers<br/>deepset-mxbai-embed-de-large-v1"}}
-    Pipeline -->|"cross-encoder rank"| RankModel{{"PM-AI/bi-encoder<br/>msmarco_bert-base_german"}}
+    Pipeline -->|"cross-encoder rank"| RankModel{{"cross-encoder/msmarco<br/>-MiniLM-L6-en-de-v1"}}
     
     MW -->|"wiki search"| OS1
 ```
@@ -63,7 +63,7 @@ flowchart TD
 
 - **SQLite as default DB** — The Docker setup uses SQLite (`cache/sqlite/`) for zero-config startup. Production deployments can switch to MariaDB/MySQL via `MW_DBTYPE`.
 - **Dual OpenSearch role** — OpenSearch serves both BlueSpice ExtendedSearch (wiki search UI) and the Haystack RAG vector store (index `hdp_wiki`). The `hdp_wiki` index uses 1024-dimensional cosine similarity embeddings.
-- **German-first NLP models** — Embedding model (`deepset-mxbai-embed-de-large-v1`) and cross-encoder (`bi-encoder_msmarco_bert-base_german`) are specifically chosen for German-language content.
+- **German-first NLP models** — Embedding model (`deepset-mxbai-embed-de-large-v1`) is specifically chosen for German-language content; the cross-encoder ranker (`cross-encoder/msmarco-MiniLM-L6-en-de-v1`) is cross-lingual EN-DE, covering the wiki's mixed English/German pages.
 - **Six answer modes** — The `ConditionalRouter` supports six response styles: `rag` (default detailed), `followup_short`, `followup_elaborate`, `followup_bulletpoints`, `followup_onlytext`, `followup_citations`. Each routes to a different prompt template.
 - **SSE streaming** — Chat responses use Server-Sent Events for real-time token streaming from Haystack through MediaWiki to the browser, avoiding buffering.
 - **Indexed async pipeline** — Wiki content isn't indexed synchronously on edit; instead it's queued in `bmbf_index_pages` and processed every 5 minutes by a background job, decoupling edit latency from indexing.

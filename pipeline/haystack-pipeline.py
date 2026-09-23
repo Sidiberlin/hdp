@@ -203,7 +203,9 @@ embedding_retriever = OpenSearchEmbeddingRetriever(
 )
 document_joiner = DocumentJoiner(join_mode="concatenate")
 ranker = SentenceTransformersSimilarityRanker(
-    model="PM-AI/bi-encoder_msmarco_bert-base_german",
+    # See docker/haystack/hdp_pipeline.yaml's ranker component for why this
+    # must be a real cross-encoder, not the PM-AI bi-encoder.
+    model="cross-encoder/msmarco-MiniLM-L6-en-de-v1",
     top_k=14,
     meta_fields_to_embed=[
         "document.meta.chatbotmeta",

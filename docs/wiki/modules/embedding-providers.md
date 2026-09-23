@@ -134,7 +134,7 @@ and has no YAML-vs-class-instantiation constraint to work around.
   Infisical values on every container start — see
   [docker-services](docker-services.md#notable-patterns--gotchas).
 - **Ranker model is always local**, regardless of embedding provider —
-  `PM-AI/bi-encoder_msmarco_bert-base_german` is hardcoded in
+  `cross-encoder/msmarco-MiniLM-L6-en-de-v1` is hardcoded in
   `hdp_pipeline.yaml` and pre-downloaded by `entrypoint.sh` even when
   `HDP_EMBEDDING_PROVIDER=remote`.
 - **Dimension mismatch is a silent-until-query-time failure mode.**
