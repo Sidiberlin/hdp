@@ -141,9 +141,9 @@ def test_the_committed_baseline_is_complete():
 
 
 def test_the_fixable_ones_stay_marked():
-    """This one is fixable by re-vendoring, and the runbook reads this file.
+    """These are fixable by re-vendoring, and the runbook reads this file.
 
-    If an upgrade drops it, delete the entry — do not quietly drop the marker
+    If an upgrade drops one, delete the entry — do not quietly drop the marker
     while still carrying the vulnerable version.
 
     It was four before the 1.43.9 / 5.1.9 upgrade. That upgrade closed three:
@@ -153,10 +153,16 @@ def test_the_fixable_ones_stay_marked():
     and it cannot be fixed inside the 5.1 series at all: CVE-2026-52854 is
     fixed in 12.1.3 and the BlueSpice pro distribution constrains the package
     to 11.0.*, so only a series bump relaxes it.
+
+    DEPS-02 (2026-09-23) added mediawiki/semantic-media-wiki: 8 advisories
+    against vendored 6.0.1, the minimum fix floor 7.3.0, blocked the same way
+    — a distribution pin (6.0.*) plus a param-processor version conflict that
+    only a BlueSpice series bump resolves. Same class of entry as
+    mediawiki/maps, same reason it stays marked rather than silently carried.
     """
     data = json.load(open(BASELINE, encoding="utf-8"))
     flagged = {p for p, e in data["accepted"].items() if "ACTION REQUIRED" in e["why"]}
-    assert flagged == {"mediawiki/maps"}
+    assert flagged == {"mediawiki/maps", "mediawiki/semantic-media-wiki"}
 
 
 MAPS_PATCHES = ("maps-layercontrol-xss-php", "maps-layercontrol-xss-js")

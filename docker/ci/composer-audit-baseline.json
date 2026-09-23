@@ -20,7 +20,7 @@
     "(stripped from composer.lock — Track C, see VERSIONS.yml and SECURITY.md),",
     "or any vendored extension that is not also a composer package."
   ],
-  "reviewed": "2026-08-04",
+  "reviewed": "2026-09-23",
   "audited_against": {
     "bluespice": "5.1.9",
     "mw_core": "1.43.9",
@@ -40,6 +40,26 @@
         "PKSA-qxvb-2bpp-dnk6"
       ],
       "why": "Pinned to exactly 7.12.3 by upstream's app/composer.json (bluespice/core); wikimedia/shellbox is the only runtime requirer and asks for ^7.9.2, so this is not a version this fork picks. Guzzle is also the transport behind MediaWiki core's HttpRequestFactory (app/includes/http/GuzzleHttpRequest.php), which is a wider surface than the shellbox-only framing this entry used to carry. Every advisory below is fixed past 7.12.3, so all six move together when upstream repins — none is closable here.\n\nFOUR MEDIUMS, carried since the 1.43.9 / 5.1.9 upgrade cleared six of the ten this package used to have, and none with a CVE: URI fragments disclosed in redirect Referer headers, host-only cookie scope not preserved, unbounded response cookies, and Proxy-Authorization headers forwarded to origin servers. Fixed in 7.14.2 and 7.15.1.\n\nCVE-2026-69246 (high, CVSS 7.2, fixed in 7.15.2), new 2026-08. Guzzle hands the URI to the transport while supplying Host separately, and libcurl decodes a percent-encoded host — 127.0.0.%31 — that the application's own check saw literally, so a host allowlist, denylist or private-range check can be evaded. It needs the application both to build URIs from untrusted input and to host-validate before handing off, and this tree has no such check to evade: $wgAllowCopyUploads is left at core's default (off) and no $wgCopyUploadsDomains is set anywhere in app/settings.d/. ExternalData is loaded (app/settings.d/040-BlueSpiceProDistribution.php:70) with AllowGetters at its default true, so an editor can already point {{#get_web_data:}} at any host — that is unrestricted SSRF by configuration, which this CVE neither creates nor worsens. Re-review this paragraph the day a host allowlist is introduced, because that is the configuration the CVE is about.\n\nCVE-2026-69245 (medium, CVSS 6.5, fixed in 7.15.2), new 2026-08. SetCookie::matchesDomain() validates before canonicalising, so hex, octal and percent-escaped IP literals keep subdomain scope they should not (CWE-180). Not reachable here: core removes Guzzle's cookie middleware outright and substitutes its own MediaWiki CookieJar (app/includes/http/GuzzleHttpRequest.php:171), so matchesDomain() is not on the path for any core-originated request. The advisory also notes that no public DNS delegation yields such a name, which confines it to private networks and container environments."
+    },
+    "mediawiki/semantic-media-wiki": {
+      "installed": "6.0.1",
+      "advisories": [
+        "CVE-2025-61682",
+        "PKSA-q8ty-xz99-jhhj",
+        "CVE-2026-77606",
+        "PKSA-6xyn-p8dg-1kgj",
+        "CVE-2026-77607",
+        "PKSA-stqx-crkb-215f",
+        "CVE-2026-77608",
+        "PKSA-2trz-n7bz-xg2h",
+        "CVE-2026-77609",
+        "PKSA-k3v8-z9j2-2f38",
+        "CVE-2026-77610",
+        "PKSA-5kcn-7vbr-1pdw",
+        "PKSA-rt5h-3dwq-vdnx",
+        "PKSA-8k3f-637m-ptt7"
+      ],
+      "why": "ACTION REQUIRED, and still open as a version: 8 advisories against vendored 6.0.1, none closable by re-vendoring in this tree. Verified fix-version mapping (packagist security-advisories API + GitHub Advisory API first_patched_version, cross-checked against upstream RELEASE-NOTES-7.{0.0,2.0,2.1,3.0}.md, 2026-09-23): CVE-2025-61682 / GHSA-hg8h-557g-q8pp (high, stored XSS via a non-reserved data-* attribute) fixed in 7.0.0; CVE-2026-77606 / GHSA-3jp5-3h47-28qf, CVE-2026-77607 / GHSA-7xv3-gf2g-498h, CVE-2026-77608 / GHSA-59xw-qv23-j3rc, CVE-2026-77609 / GHSA-hw3m-8j5x-94ff, CVE-2026-77610 / GHSA-q5fm-9mx6-44f4 (all medium) fixed in 7.2.0; GHSA-9rcc-pmj8-ffhr (medium, no CVE) fixed in 7.2.1; GHSA-jr78-w6w5-m8f8 (`action=smwtask`, high, no CVE, unauthenticated) fixed in 7.3.0. The minimum version closing all 8 is 7.3.0.\n\nBLOCKED, twice over, same class as mediawiki/maps below. (1) app/_bluespice/build/bluespice-pro-distribution/composer.json:53 constrains mediawiki/semantic-media-wiki to 6.0.*, merged into the root resolver constraints by wikimedia/composer-merge-plugin via app/composer.local.json. (2) even with that relaxed, resolution fails on an empty intersection: bluespice/foundation@5.1.9 requires param-processor/param-processor 1.12.*, SMW 7.3.0 requires ~1.13 — closing it means forking bluespice/foundation's own composer.json, not a scoped re-vendor. Both constraints are upstream BlueSpice's, not this fork's; only a BlueSpice series bump (a milestone, not a phase — see Phase 6 of ROADMAP.md, DEPS-02) relaxes either. Full derivation: .planning/features/deps02-smw-revendor/PLAN.md §2-§3 (gitignored, not in this diff).\n\nMITIGATED IN TREE as of 2026-09-23, 7 of the 8: upstream fixes backported as Class A patches — smw-ask-sep-xss (CVE-2026-77607), smw-ask-plain-header-xss (CVE-2026-77606), smw-searchbyproperty-error-xss (CVE-2026-77608), smw-uriresolver-open-redirect (CVE-2026-77609), smw-debug-query-xss (CVE-2026-77610), smw-facetedsearch-cstate-xss (GHSA-9rcc-pmj8-ffhr), and the smw-subtab-xss pair (CVE-2025-61682) — see docs/dev/patches.md. Class A: composer reinstalls the package on every run and docker/setup.sh re-applies them via scripts/apply-patches.sh --class A; scripts/verify-patches.sh is what catches it if that ever stops happening.\n\nCARRIED, mitigation scheduled elsewhere: GHSA-jr78-w6w5-m8f8 (`action=smwtask`, high) grants unauthenticated access to admin-only maintenance operations and internal database statistics — the one unauthenticated-reachable advisory of the 8, and deliberately not backported here. It is handed off to the ChatBot Sibling Handler Sweep (Phase 7), which is already building the anon-request-refused T3 machinery this needs; that phase's ROADMAP entry and SEC-06's requirement text name it as inherited scope. Until it lands there, this one advisory stays unmitigated.\n\nThe entry stays and the marker stays because the installed version is still 6.0.1 — composer audit is reporting the truth, and a patched tree is not the same as a fixed dependency. Re-vendoring to 7.3.0 remains the real fix (recorded as a BlueSpice-series-bump milestone candidate); when it lands, delete this entry and all nine SMW patches together.\n\nUpstream report (AC8): the 6.0.* pin and the param-processor 1.12.* constraint behind it have not yet been filed with BlueSpice as of this commit — that is an orchestrator-owned action (no live upstream-facing reporting from this implementer session); record the reference here once filed."
     },
     "mediawiki/maps": {
       "installed": "11.0.1",
