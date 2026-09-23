@@ -11,6 +11,10 @@ For changes in the upstream BlueSpice HDP Edition, see the
 
 ## [Unreleased]
 
+---
+
+## [5.1.9-QoL4] — 2026-09-23
+
 ### Added
 
 - **`update.sh`** — moves an existing, configured install to the latest
