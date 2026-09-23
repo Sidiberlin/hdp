@@ -598,8 +598,8 @@ asserts is that both are still named in setup.sh's strip list, and that if they
 #### Known CVEs (`composer-audit`)
 
 `composer audit --locked` is the only automated CVE signal for the
-composer-visible packages. On this tree it reports **8 advisories across 3
-packages, two of them high** — none of which is this fork's choice, since
+composer-visible packages. On this tree it reports **16 advisories across 4
+packages, four of them high** — none of which is this fork's choice, since
 `app/composer.json` is upstream's `bluespice/core` and every affected package
 is a transitive dependency of MediaWiki 1.43.9 / BlueSpice 5.1.9.
 
@@ -608,7 +608,11 @@ It read 34 advisories across 12 packages, two critical, until the 1.43.9 /
 went 6 → 8 on 2026-08-04, when two new `guzzlehttp/guzzle` advisories
 (CVE-2026-69246 host-check bypass, high; CVE-2026-69245 cookie-domain scope,
 medium) were published against a version upstream pins exactly — the gate
-caught them, which is the whole point of it.
+caught them, which is the whole point of it. It went 8 → 16 on 2026-09-23
+(DEPS-02), when `composer-audit` caught 9 new advisories against vendored
+`mediawiki/semantic-media-wiki` 6.0.1, 8 of which entered the baseline (the
+9th, `phpcsstandards/phpcsutils` CVE-2026-65954, is DEPS-01's, tracked
+separately).
 
 A bare audit as a gate would therefore be red on every push, and a permanently
 red gate gets ignored. So the report is compared against
@@ -633,8 +637,20 @@ The fourth, `mediawiki/maps` (high, CVE-2026-52854, stored XSS via
 `display_map`), **did not move and cannot**: the fix is in 12.1.3 and
 `_bluespice/build/bluespice-pro-distribution/composer.json` constrains it to
 `11.0.*`. No amount of re-vendoring inside the 5.1 series will clear it — only
-a BlueSpice series bump that relaxes that constraint. Read the ACTION REQUIRED
-entries at the start of every upgrade; they are the reason to take one.
+a BlueSpice series bump that relaxes that constraint.
+
+DEPS-02 (2026-09-23) added a second: `mediawiki/semantic-media-wiki`, 8
+advisories against vendored 6.0.1 (two high — CVE-2025-61682 stored XSS and
+`action=smwtask` unauthenticated access — plus six medium XSS/open-redirect),
+fix floor 7.3.0. Blocked the same way, twice over: the same distribution file
+constrains the package to `6.0.*`, and even past that, SMW 7.3.0's
+`param-processor ~1.13` requirement has an empty intersection with
+`bluespice/foundation`'s `1.12.*`. 7 of the 8 are mitigated in-tree by Class A
+backport patches (`docs/dev/patches.md`) while the version itself stays
+6.0.1 — the entry and the marker both stay for that reason. The 8th,
+`action=smwtask`, is deliberately not backported here; it is carried by the
+ChatBot Sibling Handler Sweep instead. Read the ACTION REQUIRED entries at the
+start of every upgrade; they are the reason to take one.
 
 This gate is blind to MediaWiki core (vendored source, not a composer package —
 that is Track B, the release-watch job) and to the two frozen packages.

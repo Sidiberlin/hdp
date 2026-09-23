@@ -36,6 +36,41 @@ For changes in the upstream BlueSpice HDP Edition, see the
   existing install" section — there was previously no "how do I update" text
   anywhere in the repo.
 
+### Security
+
+- **`mediawiki/semantic-media-wiki` 6.0.1 (DEPS-02)** — `composer-audit`
+  caught 8 advisories against the vendored SMW tree. The fix floor is 7.3.0,
+  unreachable here: the BlueSpice pro distribution pins the package to
+  `6.0.*`, and even past that, SMW 7.3.0's `param-processor ~1.13`
+  requirement is empty against `bluespice/foundation`'s `1.12.*`. Only a
+  BlueSpice series bump relaxes either constraint, so the package is entered
+  in `docker/ci/composer-audit-baseline.json` as **ACTION REQUIRED** and 7 of
+  the 8 are mitigated in-tree as Class A backport patches
+  (`docs/dev/patches.md`) while the installed version stays 6.0.1:
+  - CVE-2026-77607 / `GHSA-7xv3-gf2g-498h` (medium) — `Special:Ask` table
+    `sep` parameter reflected XSS. Fixed upstream in 7.2.0.
+  - CVE-2026-77606 / `GHSA-3jp5-3h47-28qf` (medium) — `Special:Ask` plain
+    table header (`mainlabel`) reflected XSS. Fixed upstream in 7.2.0.
+  - CVE-2026-77608 / `GHSA-59xw-qv23-j3rc` (medium) — `Special:SearchByProperty`
+    reflected XSS via validation-error messages. Fixed upstream in 7.2.0.
+  - CVE-2026-77609 / `GHSA-hw3m-8j5x-94ff` (medium) — `Special:URIResolver`
+    open redirect to an off-host target. Fixed upstream in 7.2.0.
+  - CVE-2026-77610 / `GHSA-q5fm-9mx6-44f4` (medium) — query debug output
+    (`DebugFormatter`) reflected XSS. Fixed upstream in 7.2.0.
+  - `GHSA-9rcc-pmj8-ffhr` (medium, no CVE) — `Special:FacetedSearch` `cstate`
+    hidden-input reflected XSS, residual of CVE-2025-10354. Fixed upstream
+    in 7.2.1.
+  - CVE-2025-61682 / `GHSA-hg8h-557g-q8pp` (high) — stored XSS via the
+    `data-subtab` attribute, reachable by any user with edit rights. Fixed
+    upstream in 7.0.0.
+  - **Not mitigated here:** `GHSA-jr78-w6w5-m8f8` (high, no CVE) —
+    unauthenticated access to the `smwtask` API module's admin-only
+    maintenance operations and internal database statistics. Fixed upstream
+    in 7.3.0. This is the one unauthenticated-reachable advisory of the 8
+    and is deliberately carried, not backported, in this phase; mitigation
+    is scheduled in the ChatBot Sibling Handler Sweep (Phase 7), which is
+    already building the anonymous-request-refused machinery it needs.
+
 ---
 
 ## [5.1.9-QoL3] — 2026-08-19

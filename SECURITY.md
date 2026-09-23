@@ -119,17 +119,20 @@ upstream's dependency choices — `app/composer.json` is upstream's
 is red on every push is a gate people stop reading; a gate that fires on a
 *new* advisory is the signal worth having.
 
-**As reviewed on 2026-08-04 that is 8 advisories across 3 packages, two of them
-high.** It was 34 across 12 packages, two critical, until the 1.43.9 / 5.1.9
-upgrade cleared 28 — that is what the upgrade was for. The baseline file is the
-count of record; the numbers here date, it does not.
+**As reviewed on 2026-09-23 that is 16 advisories across 4 packages, four of
+them high.** It was 34 across 12 packages, two critical, until the 1.43.9 /
+5.1.9 upgrade cleared 28 — that is what the upgrade was for. It was 8 across 3
+packages as of 2026-08-04, until DEPS-02 (2026-09-23) added
+`mediawiki/semantic-media-wiki`'s 8. The baseline file is the count of record;
+the numbers here date, it does not.
 
-**One of those entries is marked ACTION REQUIRED** and is fixable only by
+**Two of those entries are marked ACTION REQUIRED** and are fixable only by
 re-vendoring upstream:
 
 | Package | Severity | Fixed in |
 |---|---|---|
 | `mediawiki/maps` | high — stored XSS via `display_map` | 12.1.3 |
+| `mediawiki/semantic-media-wiki` | high — unauthenticated `action=smwtask`; also 1 high + 6 medium XSS/redirect | 7.3.0 |
 
 It was four. The 1.43.9 / 5.1.9 upgrade closed three of them —
 `phpoffice/phpspreadsheet` (2 critical, 5 high; parses uploaded spreadsheets)
@@ -138,6 +141,17 @@ at 1.30.6, `phpseclib/phpseclib` (2 high; sits under the OIDC client) at
 usernames) at 3.6.4. `mediawiki/maps` survived and **cannot be fixed inside the
 5.1 series at all**: the fix is in 12.1.3 and the BlueSpice pro distribution
 constrains the package to `11.0.*`, so only a series bump relaxes it.
+
+`mediawiki/semantic-media-wiki` is the same class of entry, added by DEPS-02:
+8 advisories against vendored 6.0.1, fix floor 7.3.0, blocked twice over — the
+distribution pin (`6.0.*`) and, past that, an empty version intersection
+between `bluespice/foundation`'s `param-processor 1.12.*` requirement and SMW
+7.3.0's `~1.13`. 7 of the 8 are mitigated in-tree as Class A backport patches
+(`docs/dev/patches.md`); the installed version is still 6.0.1, so the entry
+and the marker both stay. The 8th, `action=smwtask` (unauthenticated access to
+admin-only maintenance operations), is carried here and mitigated in the
+ChatBot Sibling Handler Sweep (Phase 7) instead — see that phase's scope for
+the handoff.
 
 The other two entries — `guzzlehttp/guzzle` and `web-auth/webauthn-lib` — are
 carried, not fixable here, and not marked: both are pinned by upstream past the
