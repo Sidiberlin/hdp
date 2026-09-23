@@ -22,6 +22,17 @@ For changes in the upstream BlueSpice HDP Edition, see the
   comma-separated numbers inside one bracket and emits a `_references` entry
   per number, so the frontend's existing `ReferenceFactory`/`ReferencesUtil`
   link them like any other citation. Live-verified on the QA box.
+- **Chatbot citations to documents ranked 11–14**: `[N]` markers citing any
+  document beyond the 10th also reached the browser as inert plain text —
+  no link, no "Sources" entry — because `build_result_from_haystack()` in
+  `docker/chatbot-proxy/server.py` hard-capped the document list to
+  `docs[:10]` before both building the `documents` array and matching
+  citation numbers, while the pipeline prompt (`docker/haystack/hdp_pipeline.yaml`,
+  `ranker.top_k: 14`) numbers documents `[1]` through `[14]` and the model
+  cites accordingly. Removed the arbitrary 10-document cap so every document
+  the model was actually shown resolves to a link. Browser-verified on the
+  QA box: a real chat answer citing `[11]` rendered as dead text before the
+  fix and as a working link to `QAProbe/One` after it.
 
 ### Docs
 

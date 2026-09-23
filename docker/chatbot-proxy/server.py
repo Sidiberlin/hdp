@@ -171,7 +171,7 @@ def build_result_from_haystack(hay_response: dict, query: str) -> dict:
     if not docs:
         docs = data.get("documents", data.get("retrieved_documents", []))
     deepset_docs = []
-    for i, doc in enumerate(docs[:10]):
+    for i, doc in enumerate(docs):
         meta = doc.get("meta", doc) if isinstance(doc, dict) else {}
         content = doc.get("content", "") if isinstance(doc, dict) else str(doc)
         deepset_docs.append({
@@ -195,7 +195,14 @@ def build_result_from_haystack(hay_response: dict, query: str) -> dict:
     # The answer text is cleaned (citations stripped) because
     # ReferencesUtil.insertLinks re-inserts them as markdown links at the
     # positions recorded in answer_start_idx.
-    cleaned_answer, references = extract_references(answer_text, docs[:10])
+    #
+    # Must cover every document the LLM was actually shown, not an
+    # arbitrary prefix: the pipeline prompt numbers documents via Jinja's
+    # loop.index over the ranker's full output (hdp_pipeline.yaml's
+    # ranker.top_k is 14), so a citation like [11] is entirely valid and
+    # silently degrades to inert literal text (no link, no Sources entry)
+    # if the slice here is narrower than what the model was prompted with.
+    cleaned_answer, references = extract_references(answer_text, docs)
 
     result_id = str(uuid.uuid4())
     query_id = str(uuid.uuid4())
