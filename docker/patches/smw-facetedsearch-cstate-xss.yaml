@@ -1,0 +1,45 @@
+# Class A — composer-clobbered, re-applied by scripts/apply-patches.sh.
+#
+# `composer install` reinstalls mediawiki/semantic-media-wiki as a dist
+# zipball, which overwrites app/extensions/SemanticMediaWiki wholesale on
+# every run. See docs/dev/patches.md "The SMW set" and
+# docker/ci/composer-audit-baseline.json's mediawiki/semantic-media-wiki
+# entry for the version this mitigates without fixing.
+id: smw-facetedsearch-cstate-xss
+title: escape Special:FacetedSearch `cstate` hidden inputs (GHSA-9rcc-pmj8-ffhr)
+class: A
+mode: insert
+target: extensions/SemanticMediaWiki/src/MediaWiki/Specials/FacetedSearch/HtmlBuilder.php
+applied_by: scripts/apply-patches.sh (called by docker/setup.sh)
+patch: docker/patches/smw-facetedsearch-cstate-xss.patch
+# ERE. The line the second (functional) hunk is anchored after.
+anchor: '// request by adding hidden elements to the form'
+marker: 'HDP: backport of upstream SMW 7\.2\.1 \(GHSA-9rcc-pmj8-ffhr\)'
+# The unescaped concatenation this patch replaces. Absent once Html::hidden()
+# lands.
+anti: '\.= .<input name=. \. "cstate\[\$key\]" \. .. type=.hidden. value=.. \. \$value \. .>.'
+group: smw-advisory-closure
+stale: false
+upstream_version: 'mediawiki/semantic-media-wiki 6.0.1'
+regex: ERE
+hunks: 2
+why: >-
+  GHSA-9rcc-pmj8-ffhr, reflected XSS, residual of CVE-2025-10354. That
+  earlier hardening escaped Special:FacetedSearch's `q` parameter before
+  emitting it into the search-form template but left the adjacent `cstate`
+  -> `$hidden` construction loop untouched: both the array key and value of
+  `cstate[$key]` come straight from the request and were concatenated
+  unescaped into an HTML `value="..."` attribute, then inserted via the
+  template's `{{hidden}}` placeholder — SMW's TemplateEngine is a plain
+  str_replace, not a real Mustache engine, so nothing escapes it a second
+  time. `cstate` survives request filtering whenever `filtered=1` or `csum`
+  matches `crc32(q)`, both attacker-suppliable, so any remote request can
+  reach it. Backported verbatim from upstream SMW 7.2.1: build the hidden
+  input through MediaWiki's Html::hidden(), which escapes both the name and
+  the value via Html::element(), guarded by the same is_scalar() check
+  upstream added against a nested-array cstate value. This tree vendors
+  6.0.1 and the BlueSpice pro distribution constrains
+  mediawiki/semantic-media-wiki to 6.0.*, so the upstream fix (which also
+  moved the whole special page to MediaWiki\Html\TemplateParser, not taken
+  here) cannot be reached by re-vendoring inside the 5.1 series. Retire
+  this patch and its sidecar when SMW reaches 7.2.1 or later.

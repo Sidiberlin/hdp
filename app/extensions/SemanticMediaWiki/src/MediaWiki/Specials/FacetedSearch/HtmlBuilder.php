@@ -2,6 +2,7 @@
 
 namespace SMW\MediaWiki\Specials\FacetedSearch;
 
+use MediaWiki\Html\Html;
 use MediaWiki\Title\Title;
 use SMW\Localizer\Message;
 use SMW\Localizer\MessageLocalizerTrait;
@@ -177,8 +178,20 @@ class HtmlBuilder {
 
 		// Remember the "cstate" (aka card state) over the period of one
 		// request by adding hidden elements to the form
+		//
+		// HDP: backport of upstream SMW 7.2.1 (GHSA-9rcc-pmj8-ffhr). $key and
+		// $value come straight from the request (UrlArgs wraps
+		// $request->getValues()) and were concatenated unescaped into an HTML
+		// attribute context, then inserted via the template's {{hidden}}
+		// placeholder with no escaping of its own (SMW\Utils\TemplateEngine is a
+		// plain str_replace, not a real Mustache engine). Html::hidden() builds
+		// the element through Html::element(), which escapes both the name and
+		// the value; is_scalar() mirrors upstream's guard against a value that
+		// is itself an array (cstate[k][]=... nests further).
 		foreach ( $urlArgs->getArray( 'cstate', [] ) as $key => $value ) {
-			$hidden .= '<input name="' . "cstate[$key]" . '" type="hidden" value="' . $value . '">';
+			if ( is_scalar( $value ) ) {
+				$hidden .= Html::hidden( "cstate[$key]", $value );
+			}
 		}
 
 		$this->templateEngine->compile(
