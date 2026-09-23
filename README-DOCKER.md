@@ -230,6 +230,34 @@ Reachable the same three ways as the installer: from inside the checkout
 piped from curl the same way the installer is. It needs a real git checkout
 — a tarball install has no history to fetch against.
 
+### Changing `.env` after install
+
+A container's environment is captured when it is **created**, not read live
+from `.env` on every start. Editing `.env` and re-running `docker compose
+exec mediawiki bash /setup.sh` (or just restarting) against a container
+that already exists re-applies the *old* environment — `setup.sh` can only
+reconcile what it can see, and a stale container environment isn't
+something it can see. Recreate the container first:
+
+```bash
+# After editing .env:
+docker compose up -d                           # recreates any container whose env changed
+docker compose exec mediawiki bash /setup.sh    # only now does the new value apply
+```
+
+`MW_DOCKER_PORT` and `MW_SERVER` in particular have to move together:
+`MW_DOCKER_PORT` is the *published* port (what `docker compose ps` shows,
+what a browser connects to); `MW_SERVER` is what MediaWiki believes its own
+URL is, baked into `$wgServer`. If `MW_SERVER` doesn't carry whatever port
+`MW_DOCKER_PORT` publishes, every link, redirect, login return and the
+chatbot's own API calls resolve against a URL nothing is listening on —
+`ERR_CONNECTION_REFUSED` in the browser, `Connection refused` from the
+chatbot. `docker/setup.sh` reconciles `$wgServer`/`$wgCanonicalServer` from
+`MW_SERVER` on every run (not just first install), once the container
+actually has the right environment per the recreate step above; `update.sh`
+also warns before a `.env` migration would move the published port out
+from under a `MW_SERVER` that hasn't been updated to match.
+
 ## Architecture
 
 | Service | Image / Build | Purpose |
