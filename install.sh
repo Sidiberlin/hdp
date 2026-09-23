@@ -515,7 +515,7 @@ ask_choice "Provider" 1 \
 case "$REPLY_CHOICE" in
     1) LLM_PROVIDER='OpenAI';    LLM_BASE_URL='https://api.openai.com/v1';          LLM_MODEL_DEFAULT='gpt-4o' ;;
     2) LLM_PROVIDER='z.ai GLM';  LLM_BASE_URL='https://api.z.ai/api/coding/paas/v4'; LLM_MODEL_DEFAULT='glm-4.5-air' ;;
-    3) LLM_PROVIDER='Nebius';    LLM_BASE_URL='https://api.studio.nebius.ai/v1';    LLM_MODEL_DEFAULT='qwen-235b' ;;
+    3) LLM_PROVIDER='Nebius';    LLM_BASE_URL='https://api.studio.nebius.ai/v1';    LLM_MODEL_DEFAULT='Qwen/Qwen3-235B-A22B-Instruct-2507' ;;
     *) LLM_PROVIDER='Custom'
        ask "Base URL (must end in the OpenAI-compatible path, e.g. /v1)" "$(get_env HDP_LLM_BASE_URL)"
        LLM_BASE_URL="$REPLY_VALUE"
