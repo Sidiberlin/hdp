@@ -31,9 +31,12 @@ using the same confirmed `p=` compact mechanism rather than the array form,
 on the working assumption that the same deployment quirk applies to it too.
 
 Unmarked (no `pytestmark`), so it runs in T3 like the rest of this
-directory: it needs the wiki and `mediawiki-web`, nothing else (the SMW
-special pages under test are HTML page views, not job-queue or search-index
-dependent — see test_search.py's docstring for the contrast).
+directory: it needs the wiki and `mediawiki-web`, nothing else — except
+test_smws_own_subtab_markup_uses_the_reserved_attribute, which reaches the
+mediawiki container through mw_eval because its target class has no caller
+to route an HTTP request through (the SMW special pages under test are
+otherwise HTML page views, not job-queue or search-index dependent — see
+test_search.py's docstring for the contrast).
 
 Each advisory gets one positive assertion (patched behaviour) plus the
 negative control the plan's AC4 asks for: reverting the corresponding
@@ -42,9 +45,13 @@ docker/patches/smw-ask-sep-xss.patch` from the repo root, then
 `docker compose exec mediawiki php maintenance/run.php
 DumpRenderedHtml.php` is unnecessary — the bind mount is live, see
 docs/dev/CLAUDE.md "Bind mounts are live") before re-running this file must
-turn every assertion below red; re-applying it must turn them green again.
-That round trip is what proves these are real regression tests and not
-tautologies — see tests/unit/test_smw_xss_mitigations.py for the same
+turn every assertion below red, with one deliberate exception:
+test_the_reserved_subtab_attribute_cannot_be_forged_via_wikitext pins MediaWiki
+core's reserved-prefix behaviour rather than SMW's patch, so it stays green
+through the round trip by design; the subtab pair's two controls are the
+served-module and HtmlTabs tests. Re-applying the reverted patch must turn
+every other assertion green again. That round trip is what proves these are
+real regression tests and not tautologies — see tests/unit/test_smw_xss_mitigations.py for the same
 proof already carried out mechanically (and passing) at the unit tier,
 against the committed source rather than a live render.
 
@@ -257,21 +264,58 @@ def test_facetedsearch_cstate_is_escaped(wiki):
 
 
 # ─── CVE-2025-61682 — stored XSS via the subtab data attribute ────────
+#
+# Read the three tests below together, because what this advisory's fix does
+# is not what it looks like. GHSA-hg8h-557g-q8pp is explicit about the
+# mechanism: "most data attributes (except for reserved ones) like
+# data-subtab can be used in wikitext", so ext.smw.js was JSON.parse()ing +
+# innerHTML'ing a value any editor could author. Upstream SMW 7.0.0's fix —
+# which docker/patches/smw-subtab-xss-{php,js}.patch backport verbatim — is
+# the *rename*, not a sanitiser rule: `data-mw-*` is reserved
+# (Sanitizer::isReservedDataAttribute(), app/includes/parser/Sanitizer.php:604,
+# enforced at Sanitizer.php:523) and stripped from user wikitext, while plain
+# `data-*` is explicitly allowed. So after the fix a forged `data-subtab`
+# still renders; it is simply never read again.
+#
+# An earlier version of this section asserted `"data-subtab=" not in page`,
+# an invariant MediaWiki has never provided. It failed on every T3 run the
+# job has ever done (35862219039, 35864784956, 35870127456) with the same
+# escaped div every time:
+#
+#   <div class="smw-subtab" data-subtab="&quot;&lt;img src=&#39;&#39; onerror=alert(1)&gt;&quot;">
+#
+# present, escaped, inert. The three properties below are the ones the patch
+# pair actually buys, and two of them are reverting-red negative controls
+# (DEPS-02 AC4): one per half of the pair.
+#
+# Not asserted on purpose: "the payload never reaches ext.smw.js" as a DOM
+# fact. On a page with a wikitext-forged class="smw-subtab" element,
+# JSON.parse(dataset.mwSubtab) gets undefined and throws, aborting the module
+# before it touches innerHTML — pre-existing upstream fragility, identical
+# pre-patch, and it would confound any browser-level assertion.
+
+SUBTAB_PAYLOAD = '""<img src=\'\' onerror=alert(1)>""'
+SUBTAB_PAYLOAD_RAW_MARKER = "<img src=''"
+
 
 @pytest.fixture(scope="module")
 def subtab_xss_page(wiki):
-    """Create (or reuse) a throwaway page carrying the advisory's PoC
-    wikitext, then return its rendered Special:Ask... no — its own view.
+    """Create (or refresh) one page carrying both spellings of the advisory's
+    PoC attribute, and return its title.
 
-    {{#tag:div|...}} is a core parser function; no SMW markup needed beyond
-    the class/data attribute pair the advisory PoC uses.
+    `{{#tag:div|...}}` is a core parser function, so no SMW markup is needed
+    beyond the class/data-attribute pair the PoC uses. Both spellings sit on
+    one page so a single fetch shows the asymmetry the whole fix rests on:
+    the plain `data-*` one survives, the reserved `data-mw-*` one does not.
+    The third div checks the reserved-prefix match is case-insensitive, which
+    `isReservedDataAttribute()`'s `/i` flag promises and a future refactor
+    could silently drop.
     """
     title = "DEPS02_CVE_2025_61682_probe"
     text = (
-        '{{#tag:div|'
-        '|class=smw-subtab'
-        '|data-subtab=""<img src=\'\' onerror=alert(1)>""'
-        '}}'
+        "{{#tag:div||class=smw-subtab|data-subtab=" + SUBTAB_PAYLOAD + "}}\n"
+        "{{#tag:div||class=smw-subtab|data-mw-subtab=" + SUBTAB_PAYLOAD + "}}\n"
+        "{{#tag:div||class=smw-subtab|DATA-MW-SUBTAB=" + SUBTAB_PAYLOAD + "}}\n"
     )
     token = wiki.api(action="query", meta="tokens", type="csrf")["query"]["tokens"]["csrftoken"]
     edit = wiki.api_post({
@@ -288,19 +332,139 @@ def subtab_xss_page(wiki):
     return title
 
 
-def test_subtab_data_attribute_cannot_be_forged_via_wikitext(wiki, subtab_xss_page):
+def test_the_reserved_subtab_attribute_cannot_be_forged_via_wikitext(wiki, subtab_xss_page):
+    """The premise the smw-subtab-xss pair rests on, checked against a live
+    render rather than by reading Sanitizer.php — tests/unit/
+    test_smw_xss_mitigations.py::test_reserved_data_mw_prefix_is_what_makes_the_subtab_fix_work
+    does the static half.
+
+    This one does *not* go red when the patches are reverted, and that is
+    correct: it pins MediaWiki core's behaviour, not SMW's. If core ever
+    stopped reserving `data-mw-*`, the rename would protect nothing and the
+    pair would have to be replaced with real sanitisation — that is the
+    regression this test exists to catch, and nothing else in the suite would.
+    """
     resp = wiki.fetch("/index.php/" + subtab_xss_page)
-    assert resp.status == 200
-    assert "data-subtab=" not in resp.text, (
-        "a user-authored data-subtab attribute survived into the rendered "
-        "page — MediaWiki's Sanitizer should strip it under this patch's "
-        "data-mw-subtab rename, but it (or an unrenamed one) got through. "
-        "CVE-2025-61682 regression."
+    assert resp.status == 200, f"the probe page answered HTTP {resp.status}"
+
+    # Non-vacuity first: all three divs rendered, so the absences below are
+    # facts about attributes and not about a page that never parsed.
+    assert resp.text.count("smw-subtab") >= 3, (
+        f"expected three smw-subtab divs, found "
+        f"{resp.text.count('smw-subtab')} — the probe page did not render, so "
+        f"nothing below can be concluded; check {{{{#tag:div}}}} still parses.\n"
+        f"URL: {resp.url}"
     )
-    # Sanity: the tag itself rendered (class survives; only the reserved
-    # data-mw-* prefix is stripped from user wikitext), otherwise the two
-    # assertions above are vacuously true because the div never rendered.
+
+    assert "data-mw-subtab" not in resp.text.lower(), (
+        "a user-authored data-mw-subtab attribute survived into the rendered "
+        "page. MediaWiki's Sanitizer is supposed to strip the reserved "
+        "data-mw-* prefix from wikitext (isReservedDataAttribute(), "
+        "app/includes/parser/Sanitizer.php), and the smw-subtab-xss pair "
+        "depends on precisely that — it moves SMW's attribute into the "
+        "reserved namespace instead of sanitising the payload. If the prefix "
+        "is forgeable, CVE-2025-61682 is open again by another route.\n"
+        f"URL: {resp.url}"
+    )
+
+    # The plain data-* spelling is *expected* to survive: MediaWiki allows any
+    # non-reserved data-* attribute in wikitext and the fix is that nothing
+    # reads it any more (next test). What must never survive is a break-out of
+    # the attribute value into markup.
+    assert SUBTAB_PAYLOAD_RAW_MARKER not in resp.text, (
+        "the PoC <img> tag appears verbatim in the rendered page — the forged "
+        "attribute value escaped its quoting, which is live XSS regardless of "
+        "which attribute name SMW reads.\n"
+        f"URL: {resp.url}"
+    )
+    assert "&lt;img" in resp.text, (
+        "neither the raw nor the escaped <img> is in the page: the payload "
+        "vanished entirely, which makes the assertion above vacuously true.\n"
+        f"URL: {resp.url}"
+    )
+
+
+def test_the_served_smw_module_reads_only_the_reserved_subtab_attribute(wiki):
+    """The JS half of the pair, read off the wiki's own ResourceLoader output
+    instead of off the file in the repo.
+
+    This is the deployed-state negative control. `ext.smw` is a Class A patch
+    target: `composer install` reinstalls SemanticMediaWiki as a dist zipball
+    and wipes both halves on every run, and scripts/apply-patches.sh has to
+    put them back (docs/dev/patches.md, "The SMW set").
+    tests/unit/test_smw_xss_mitigations.py asserts the bytes on disk; only a
+    load.php fetch asserts what a browser is actually handed, which also
+    covers a stale ResourceLoader cache. Revert
+    docker/patches/smw-subtab-xss-js.patch and this goes red — the forgeable
+    read `x[i].dataset.subtab` comes back, in the minified output too.
+    """
+    resp = wiki.fetch("/load.php?modules=ext.smw&only=scripts&raw=1")
+    assert resp.status == 200, f"load.php answered HTTP {resp.status}"
+
+    # Confirm the right module was served before asserting on an absence: an
+    # unknown module name is a 200 with no code, which would satisfy the
+    # negative assertion for the wrong reason.
     assert "smw-subtab" in resp.text, (
-        "the probe page's div did not render at all — cannot conclude "
-        "anything about the data attribute; check the wikitext still parses"
+        "the ext.smw module body never mentions smw-subtab — load.php served "
+        "something else (unknown module names answer 200 with an empty body).\n"
+        f"URL: {resp.url}"
+    )
+    assert "dataset.mwSubtab" in resp.text, (
+        "the served ext.smw module does not read dataset.mwSubtab: "
+        "smw-subtab-xss-js is missing from the running wiki. Either composer "
+        "reinstalled SemanticMediaWiki without apply-patches.sh re-applying "
+        "it, or ResourceLoader is serving a cached pre-patch module. "
+        "CVE-2025-61682 regression.\n"
+        f"URL: {resp.url}"
+    )
+    assert "dataset.subtab" not in resp.text, (
+        "the served ext.smw module still reads dataset.subtab — the "
+        "wikitext-forgeable attribute. Any editor can set it via "
+        "{{#tag:div|class=smw-subtab|data-subtab=...}} and have this line "
+        "JSON.parse() + innerHTML the result. CVE-2025-61682 regression.\n"
+        f"URL: {resp.url}"
+    )
+
+
+def test_smws_own_subtab_markup_uses_the_reserved_attribute(mw_eval):
+    """The PHP half of the pair, exercised rather than grepped.
+
+    It has to be driven directly: `grep -rn 'isSubTab(' app/` finds only the
+    class itself, so nothing in this tree renders a real SMW subtab and there
+    is no page view to assert against (every Special: page in this file
+    reports zero data-mw-subtab attributes for exactly that reason). Without
+    this test the PHP half has no T3-tier negative control, and DEPS-02 AC4
+    ("the T3 assertions fail with the patches reverted") would hold for only
+    half of the pair.
+
+    Both directions matter. PHP writing data-subtab while JS reads
+    data-mw-subtab breaks subtabs silently; PHP writing data-subtab while JS
+    reads it too reopens the CVE. Revert
+    docker/patches/smw-subtab-xss-php.patch and this goes red.
+    """
+    out = mw_eval(
+        "$t = new SMW\\Utils\\HtmlTabs();"
+        "$t->isSubTab();"
+        "$t->tab( 'foo', 'FOO' );"
+        "$t->content( 'foo', '<...bar...>' );"
+        'echo "HTMLTABS:" . $t->buildHTML( [ "class" => "probe" ] );'
+    )
+    # eval.php prints a banner and blank lines around the result on some
+    # builds, so anchor on the marker the snippet echoes itself.
+    assert "HTMLTABS:" in out, f"eval.php produced no marked output:\n{out[-2000:]}"
+    html = out.split("HTMLTABS:", 1)[1]
+
+    assert "smw-subtab" in html, (
+        f"HtmlTabs::buildHTML() emitted no subtab div at all, so the "
+        f"assertions below would be vacuous:\n{html!r}"
+    )
+    assert "data-mw-subtab=" in html, (
+        "HtmlTabs::buildHTML() does not attach the renamed data-mw-subtab "
+        "attribute — smw-subtab-xss-php is not in the running tree, so the "
+        "JS half is reading an attribute nobody writes. "
+        f"CVE-2025-61682 regression.\n{html!r}"
+    )
+    assert "data-subtab=" not in html, (
+        "HtmlTabs::buildHTML() still attaches the wikitext-forgeable "
+        f"data-subtab attribute. CVE-2025-61682 regression.\n{html!r}"
     )

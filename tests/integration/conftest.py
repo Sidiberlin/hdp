@@ -206,6 +206,42 @@ def mw_globals(repo_root):
 
 
 @pytest.fixture(scope="session")
+def mw_eval(repo_root):
+    """Run a PHP snippet inside the wiki through `maintenance/run.php eval.php`.
+
+    eval.php reads PHP from stdin, which `mw_exec` cannot supply, so this
+    shells out to docker compose directly — the same mechanism `mw_globals`
+    already uses, generalised to an arbitrary snippet. Returns raw stdout:
+    eval.php prints a banner and blank lines around the result on some builds,
+    so callers should anchor on a marker they echo themselves rather than
+    parsing the whole buffer.
+
+    This is how a test reaches a class that no page view exercises — see
+    test_smw_advisory_closure.py::test_smws_own_subtab_markup_uses_the_reserved_attribute,
+    whose target (`HtmlTabs::isSubTab()`) has no caller anywhere in app/.
+    """
+
+    def _eval(snippet, timeout=300):
+        proc = subprocess.run(
+            ["docker", "compose", "exec", "-T", "mediawiki",
+             "php", "maintenance/run.php", "eval.php"],
+            cwd=str(repo_root),
+            input=snippet,
+            capture_output=True,
+            text=True,
+            timeout=timeout,
+            check=False,
+        )
+        assert proc.returncode == 0, (
+            f"eval.php exited {proc.returncode}\n"
+            f"stdout:\n{proc.stdout[-2000:]}\nstderr:\n{proc.stderr[-2000:]}"
+        )
+        return proc.stdout
+
+    return _eval
+
+
+@pytest.fixture(scope="session")
 def mw_sql(mw_exec):
     """Run one SQL statement through maintenance/sql.php and return raw stdout.
 
