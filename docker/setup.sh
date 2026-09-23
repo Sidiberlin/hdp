@@ -333,6 +333,28 @@ fi
 echo ""
 if [ -f LocalSettings.php ]; then
     echo "[2/4] LocalSettings.php exists — skipping install."
+
+    # ─── Reconcile $wgServer / $wgCanonicalServer on every run ────────
+    # install.php bakes --server into LocalSettings.php only on the branch
+    # below, at first install (F for "first boot only"). Nothing revisits it
+    # after that: change MW_SERVER, or migrate MW_DOCKER_PORT on an update
+    # (see update.sh's legacy-.env port-migration warning), and this file
+    # keeps citing whatever host/port the wiki was born with — every link,
+    # redirect and API URL it emits follows the stale value. Reconcile it
+    # here, on every setup.sh run, the same "$var = "value";" shape
+    # LocalSettingsGenerator itself writes, so an existing install self-heals
+    # instead of needing a hand edit.
+    reconcile_server_setting() {  # reconcile_server_setting <wgServer|wgCanonicalServer>
+        local var="$1" current escaped
+        current="$(sed -n "s/^\\\$${var} = \"\\(.*\\)\";.*/\\1/p" LocalSettings.php | tail -1)"
+        [ -n "$current" ] || return 0
+        [ "$current" = "$SERVER" ] && return 0
+        escaped="$(printf '%s\n' "$SERVER" | sed 's/[\&]/\\&/g')"
+        sed -i "s|^\\\$${var} = \".*\";.*|\\\$${var} = \"${escaped}\";|" LocalSettings.php
+        echo "  [2/4] \$${var}: ${current} -> ${SERVER}"
+    }
+    reconcile_server_setting wgServer
+    reconcile_server_setting wgCanonicalServer
 else
     echo "[2/4] Installing MediaWiki with MariaDB..."
 
