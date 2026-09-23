@@ -470,6 +470,58 @@ while IFS= read -r line; do
     esac
 done <<< "$NEW_ENV_EXAMPLE"
 
+# ─── Legacy port-migration warning ───────────────────────────────────
+# A .env from before MW_DOCKER_PORT existed had its published port fixed in
+# whatever docker-compose.yml shipped at the time — never recorded in .env
+# itself. The D4 loop above is about to append MW_DOCKER_PORT with
+# .env.example's current default (currently 8080). If the stack is actually
+# publishing a different port right now, appending that default silently
+# moves the published port: $wgServer (baked once, at first install — see
+# docker/setup.sh) keeps naming the old port, so every link, redirect and
+# API call the wiki emits keeps pointing at a URL nothing answers on anymore.
+detect_published_port() {  # currently published host port for the wiki, or 80
+    local cid mapping port
+    cid="$(docker "${COMPOSE_ARGS[@]}" ps -q mediawiki-web 2>/dev/null | head -1)"
+    if [ -n "$cid" ]; then
+        mapping="$(docker port "$cid" 8080/tcp 2>/dev/null | head -1)"
+        port="${mapping##*:}"
+        case "$port" in
+            ''|*[!0-9]*) ;;
+            *) printf '%s' "$port"; return 0 ;;
+        esac
+    fi
+    printf '80'
+}
+
+PORT_MIGRATION=0
+PORT_MIGRATION_OLD=''
+PORT_MIGRATION_NEW=''
+for kv in "${ENV_NEW_DEFAULTED[@]:-}"; do
+    case "$kv" in
+        MW_DOCKER_PORT=*)
+            PORT_MIGRATION_NEW="${kv#MW_DOCKER_PORT=}"
+            PORT_MIGRATION_OLD="$(detect_published_port)"
+            [ "$PORT_MIGRATION_OLD" != "$PORT_MIGRATION_NEW" ] && PORT_MIGRATION=1
+            ;;
+    esac
+done
+
+print_port_migration_warning() {
+    printf '\n'
+    warn "This install predates MW_DOCKER_PORT — the wiki is currently published"
+    note "  on port $PORT_MIGRATION_OLD, but the migration below would move it to"
+    note "  port $PORT_MIGRATION_NEW instead:"
+    printf '\n'
+    note "    old: http://<host>:$PORT_MIGRATION_OLD/w/"
+    note "    new: http://<host>:$PORT_MIGRATION_NEW/w/"
+    printf '\n'
+    note "  \$wgServer is baked into LocalSettings.php once, at first install —"
+    note "  if it still names port $PORT_MIGRATION_OLD, every link, redirect and API"
+    note "  call the wiki emits will point at a URL nothing answers on anymore."
+    note "  To keep the old port, set MW_DOCKER_PORT=$PORT_MIGRATION_OLD in .env"
+    note "  before continuing. See README-DOCKER.md, \"Changing .env after install\"."
+}
+
 declare -a ENV_GONE=()
 while IFS= read -r line; do
     case "$line" in
@@ -533,6 +585,8 @@ print_plan() {
             [ -n "$k" ] && note "  - $k   (in .env, no longer in .env.example — left as-is)"
         done
     fi
+
+    [ "$PORT_MIGRATION" -eq 1 ] && print_port_migration_warning
 
     printf '\n'
     info "docker ${COMPOSE_ARGS[*]} …"
@@ -665,6 +719,7 @@ if [ ${#ENV_NEW_DEFAULTED[@]} -gt 0 ]; then
     for kv in "${ENV_NEW_DEFAULTED[@]}"; do
         note "  $kv"
     done
+    [ "$PORT_MIGRATION" -eq 1 ] && print_port_migration_warning
     if confirm "Append them to .env?" y; then
         cp -p "$ENV_FILE" "$ENV_FILE.bak-update" && chmod 600 "$ENV_FILE.bak-update"
         for kv in "${ENV_NEW_DEFAULTED[@]}"; do

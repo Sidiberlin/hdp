@@ -70,6 +70,82 @@ MOCK
     [[ "$output" != *AFTER* ]]
 }
 
+build_port_migration_fixture() {  # build_port_migration_fixture <published-port-mapping>
+    # A minimal git remote + checkout standing in for a legacy install: the
+    # OLD commit ships plain docker-compose.yml, no .env.example key for
+    # MW_DOCKER_PORT; the NEW commit (fetched as tag v1.0.1, same shape
+    # update.sh's default channel resolves) adds MW_DOCKER_PORT=8080 with a
+    # default, i.e. exactly the D4 env-migration path. $1 is what the
+    # `docker port` mock reports for the currently-published wiki port.
+    local port_mapping="$1"
+    ORIGIN="$BATS_TEST_TMPDIR/origin.git"
+    git init --quiet --bare "$ORIGIN"
+
+    SEED="$BATS_TEST_TMPDIR/seed"
+    git init --quiet "$SEED"
+    git -C "$SEED" config user.email t@example.com
+    git -C "$SEED" config user.name test
+    git -C "$SEED" remote add origin "$ORIGIN"
+    printf 'services: {}\n' > "$SEED/docker-compose.yml"
+    git -C "$SEED" add docker-compose.yml
+    git -C "$SEED" commit --quiet -m old
+    OLD_SHA="$(git -C "$SEED" rev-parse HEAD)"
+    git -C "$SEED" push --quiet origin HEAD:refs/heads/main
+
+    printf 'services: {}\n# updated\n' > "$SEED/docker-compose.yml"
+    printf 'MW_DOCKER_PORT=8080\n' >> "$SEED/.env.example"
+    git -C "$SEED" add docker-compose.yml .env.example
+    git -C "$SEED" commit --quiet -m new
+    git -C "$SEED" tag v1.0.1
+    git -C "$SEED" push --quiet origin HEAD:refs/heads/main v1.0.1
+
+    WORK="$BATS_TEST_TMPDIR/work"
+    git clone --quiet "$ORIGIN" "$WORK"
+    git -C "$WORK" reset --quiet --hard "$OLD_SHA"
+    printf 'HDP_DB_ROOT_PASSWORD=x\n' > "$WORK/.env"
+
+    # docker is mocked, not the real client: `docker port` reports whatever
+    # $1 says the stack is publishing right now, everything else is a
+    # no-op success. mediawiki-web's container id is a fixed fake value.
+    cat > "$BIN/docker" <<MOCK
+#!/bin/sh
+case "\$*" in
+  *"ps -q mediawiki-web"*)
+    echo "mw-web-cid" ;;
+  *"port mw-web-cid 8080/tcp"*)
+    echo "$port_mapping" ;;
+esac
+exit 0
+MOCK
+    chmod +x "$BIN/docker"
+}
+
+run_update_check() {
+    # Piped, exactly like the documented `curl | bash` invocation — running
+    # update.sh via a plain path would resolve SCRIPT_DIR to THIS checkout
+    # (this file's own repo) instead of the fixture, since update.sh looks
+    # at BASH_SOURCE first. Piping leaves BASH_SOURCE unset, so it falls
+    # through to $PWD, which is set to the fixture below.
+    run bash -c "cd '$WORK' && NO_COLOR=1 bash -s -- --check < '$BATS_TEST_DIRNAME/../../update.sh'"
+}
+
+@test "legacy-.env migration that would change the published port warns loudly" {
+    build_port_migration_fixture "0.0.0.0:80"
+    run_update_check
+    [ "$status" -eq 0 ]
+    [[ "$output" == *"predates MW_DOCKER_PORT"* ]]
+    [[ "$output" == *"port 80"* ]]
+    [[ "$output" == *"port 8080"* ]]
+    [[ "$output" == *"MW_DOCKER_PORT=80"* ]]
+}
+
+@test "env migration that keeps the same published port stays quiet" {
+    build_port_migration_fixture "0.0.0.0:8080"
+    run_update_check
+    [ "$status" -eq 0 ]
+    [[ "$output" != *"predates MW_DOCKER_PORT"* ]]
+}
+
 @test "update.sh: every compose run/exec invocation carries -T and </dev/null" {
     # Same anchor discipline as install_pipe.bats's static pin, re-run over
     # update.sh. Prints every invocation missing either guard; fails on
