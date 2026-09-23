@@ -74,6 +74,17 @@ jobs:
       - name: Install pytest
         run: python3 -m pip install --quiet --no-cache-dir pytest==9.0.2
 
+      # docker-registry.wikimedia.org stopped answering anonymous pulls from
+      # GitHub runner IPs on 2026-09-23 — this job was green at 15:10 CET and
+      # every boot after it failed with the same HTML `denied`, while the same
+      # tags stayed pullable from everywhere else. This points the three wiki
+      # images at the GHCR mirror for the length of the job; docker-compose.yml
+      # keeps the upstream refs as its defaults, so nothing outside CI moves.
+      # The step fails loudly if the mirror has not got the pinned tag, which
+      # is the signal to re-run scripts/ci/mirror-images.sh --push.
+      - name: Point the wiki images at the CI mirror
+        run: bash scripts/ci/mirror-images.sh --github-env
+
       # Everything else lives in the script, so this job and a developer's
       # terminal run identical code. The script creates a throwaway .env with
       # generated passwords and removes it again, brings up the minimal

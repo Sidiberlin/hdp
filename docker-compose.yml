@@ -39,7 +39,12 @@ services:
 
   # ─── MediaWiki / BlueSpice (PHP-FPM) ──────────────────────────────
   mediawiki:
-    image: docker-registry.wikimedia.org/dev/bookworm-php83-fpm:1.0.0
+    # Overridable so CI can pull from a mirror. The default is the upstream
+    # ref and is what every install uses; only the GitHub workflows set the
+    # variable, because docker-registry.wikimedia.org stopped answering
+    # anonymous pulls from GitHub runner IPs on 2026-09-23. See
+    # scripts/ci/mirror-images.sh.
+    image: ${HDP_MEDIAWIKI_IMAGE:-docker-registry.wikimedia.org/dev/bookworm-php83-fpm:1.0.0}
     user: "${MW_DOCKER_UID:-0}:${MW_DOCKER_GID:-0}"
     restart: unless-stopped
     deploy:
@@ -116,7 +121,8 @@ services:
 
   # ─── Apache Web Server ────────────────────────────────────────────
   mediawiki-web:
-    image: docker-registry.wikimedia.org/dev/bookworm-apache2:1.0.1
+    # Overridable for CI — see the note on the mediawiki service above.
+    image: ${HDP_MEDIAWIKI_WEB_IMAGE:-docker-registry.wikimedia.org/dev/bookworm-apache2:1.0.1}
     user: "${MW_DOCKER_UID:-33}:${MW_DOCKER_GID:-33}"
     restart: unless-stopped
     deploy:
@@ -145,7 +151,8 @@ services:
 
   # ─── MediaWiki Job Runner ─────────────────────────────────────────
   mediawiki-jobrunner:
-    image: docker-registry.wikimedia.org/dev/bookworm-php83-jobrunner:1.0.0
+    # Overridable for CI — see the note on the mediawiki service above.
+    image: ${HDP_JOBRUNNER_IMAGE:-docker-registry.wikimedia.org/dev/bookworm-php83-jobrunner:1.0.0}
     user: "${MW_DOCKER_UID:-33}:${MW_DOCKER_GID:-33}"
     restart: unless-stopped
     deploy:

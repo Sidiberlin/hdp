@@ -110,6 +110,12 @@ whose failure is invisible.
 
 ### 5. VALIDATE — the whole pyramid, including T4
 
+**If this bump moved a wikimedia image tag in `docker-compose.yml`**, copy the new tag
+into the CI mirror before you push, from a machine the wikimedia registry still answers:
+`docker login ghcr.io -u <you>` then `scripts/ci/mirror-images.sh --push`. GitHub's
+runners cannot pull from `docker-registry.wikimedia.org` (blocked by source IP since
+2026-09-23), and T3/T5/T4 will fail at the mirror check until the copy exists.
+
 ```bash
 ./scripts/check.sh                # T0, TF, unit, bats, versions, composer-audit
 scripts/ci/t3-integration.sh      # the wiki boots and serves authenticated traffic

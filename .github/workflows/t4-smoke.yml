@@ -114,6 +114,12 @@ jobs:
       - name: Install pytest
         run: python3 -m pip install --quiet --no-cache-dir pytest==9.0.2
 
+      # Same as T3 and T5, and T4 is the only job that needs the third image:
+      # it is the only tier that boots mediawiki-jobrunner. See the note in
+      # .github/workflows/t3-integration.yml and scripts/ci/mirror-images.sh.
+      - name: Point the wiki images at the CI mirror
+        run: bash scripts/ci/mirror-images.sh --github-env
+
       # buildx is what understands `type=gha`; the classic builder does not.
       - name: Set up buildx
         uses: docker/setup-buildx-action@v3
