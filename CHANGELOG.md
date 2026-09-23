@@ -11,6 +11,18 @@ For changes in the upstream BlueSpice HDP Edition, see the
 
 ## [Unreleased]
 
+### Docs
+
+- **`docs/dev/upgrade-runbook.md`** gained "Entering the update train:
+  releases older than v5.1.9-QoL4" — how an install still on `v5.1.9-QoL3`
+  or earlier (no `update.sh` in the tree) gets onto the update path: the
+  curl\|bash one-liner pinned to a tag, the manual `checkout` + `bash
+  update.sh` fallback, the support matrix (current compose layout: verified;
+  the two pre-`v*` tags: reinstall, no root `docker-compose.yml` to detect),
+  and what actually migrates `.env` (only `update.sh` itself, read from the
+  code). Live-verified end to end on the QA box. `README-DOCKER.md` points
+  to it from "Updating an existing install".
+
 ---
 
 ## [5.1.9-QoL4] — 2026-09-23

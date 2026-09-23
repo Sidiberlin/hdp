@@ -8,6 +8,79 @@ version bump.
 
 ---
 
+## Entering the update train: releases older than v5.1.9-QoL4
+
+This section is for an **operator** with an already-running install that
+predates `update.sh` — not for a maintainer doing the source-level bump
+described in the rest of this document. If your checkout already has
+`update.sh`, skip to `README-DOCKER.md`'s "Updating an existing install",
+which owns that flow.
+
+**Version test** — does your checkout have the updater already?
+
+```bash
+test -f update.sh && echo "has update.sh" || echo "no update.sh — read on"
+git describe --tags   # which release you're actually on
+```
+
+`update.sh` first shipped in commit `78720f1c`, first tagged in
+`v5.1.9-QoL4`. Anything checked out at `v5.1.9-QoL3` or earlier has no
+`update.sh` in the tree.
+
+**Primary path — curl\|bash, pinned to the tag, never `main`:**
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/Sidiberlin/hdp/v5.1.9-QoL4/update.sh | bash
+```
+
+Run from inside the existing checkout. This works precisely because
+`update.sh` operates on the checkout *around* it (`git fetch` + `git reset
+--hard` to the newest `v*` tag) rather than on itself — the old tree's
+missing `update.sh` is irrelevant, since the reset lands the tree on the tag
+that contains it. And because every confirmation is read from fd 3 opened on
+`/dev/tty` (not stdin), the pipe from `curl` never swallows a prompt — the
+same reasoning as `install.sh`. Live-verified 2026-09-23 (QA box, tag
+`v5.1.9-QoL3` → `v5.1.9-QoL4`): the confirms landed in order ("Proceed with
+this update?", then "Take a database backup before updating?" since `app/`
+had changed), the tree reset, `docker/setup.sh` re-ran `update.php`, and the
+run exited 0 with all 7 services healthy.
+
+**Manual fallback — no curl, or air-gapped:**
+
+```bash
+cd /path/to/hdp
+git fetch --tags origin
+git checkout v5.1.9-QoL4
+bash update.sh
+```
+
+Verified: once the checkout is sitting *on* the target tag, `update.sh`
+correctly detects there is nothing left to do (`Already up to date —
+v5.1.9-QoL4 is <sha>.`, exit 0) rather than erroring — checking out the tag
+by hand and running `update.sh` afterward is safe, not just "also works."
+
+**Support matrix:**
+
+| Install at | Path | Why |
+|---|---|---|
+| `v5.1.9-QoL3`, or any tag with a root `docker-compose.yml` in this layout (`v5.1.9` onward) | **Verified** — curl\|bash or the manual fallback above | Same checkout-detection logic (`update.sh` looks for `docker-compose.yml` next to a `.git` dir) and the same `.env`/volume contract apply unchanged. |
+| `5.1.3+…`, `4.5.3-beta+…` (the two pre-`v*` tags) | **Reinstall recommended** | Neither tag has a root-level `docker-compose.yml` at all — the compose file lived under `app/docker-compose.yml` in a different layout `update.sh`'s own checkout detection doesn't recognize. There is no tree-reset path from here; treat it as a fresh install and migrate content by hand. |
+
+**The `.env` contract:** neither `docker/setup.sh` nor anything else touches
+`.env` — `update.sh` itself is the only thing that migrates it, and it does
+so as part of the same run described above (Q3/D4 in its comments): new
+`.env.example` keys that ship with a default are offered for append: `y`
+appends them to the existing `.env` (and backs up the previous file to
+`.env.bak-update` first); new keys with no safe default (API keys,
+passwords) are listed and left for `./install.sh` to fill in, since that
+script pre-fills every other answer from the existing `.env`; keys present
+in `.env` but dropped from `.env.example` are left alone and merely noted.
+Because this logic lives in the *fetched* `update.sh` (the one at the target
+tag), it runs unchanged whether the tree started at `QoL3` or already had an
+updater — there is no separate manual `.env.example` diff to do first.
+
+---
+
 ## Why this is not a normal dependency bump
 
 Four facts, each of which changes the procedure:

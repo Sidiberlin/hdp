@@ -186,6 +186,9 @@ and fail with `ERR_CONNECTION_REFUSED`.
 
 ## Updating an existing install
 
+On an install older than `v5.1.9-QoL4` (no `update.sh` in the checkout yet)?
+See `docs/dev/upgrade-runbook.md` § "Entering the update train" first.
+
 ```bash
 cd hdp
 ./update.sh
