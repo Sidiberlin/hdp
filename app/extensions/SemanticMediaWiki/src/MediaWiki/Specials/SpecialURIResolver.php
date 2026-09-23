@@ -65,9 +65,49 @@ class SpecialURIResolver extends SpecialPage {
 					SkinComponentUtils::makeSpecialUrl( 'ExportRDF', [ 'xmlmime' => 'rdf' ] )
 				);
 			} else {
-				$out->redirect( $title->getFullURL(), '303' );
+				$targetUrl = $title->getFullURL();
+
+				// HDP: backport of upstream SMW 7.2.0 (CVE-2026-77609). $title is
+				// resolved from a user-controlled subpage (an interwiki prefix can
+				// make it point off-host, and a resolved authority can even carry
+				// user:pass@host credentials), so the target must be validated
+				// against the current host before redirecting rather than trusted
+				// because it came from Title::getFullURL().
+				if ( $this->isLocalRedirectTarget( $targetUrl ) ) {
+					$out->redirect( $targetUrl, '303' );
+				} else {
+					$out->showErrorPage( 'badtitle', 'badtitletext' );
+				}
 			}
 		}
+	}
+
+	/**
+	 * HDP: backport of upstream SMW 7.2.0 (CVE-2026-77609).
+	 *
+	 * Whether a resolved redirect target is safe to hand to the browser: it
+	 * must resolve to the current host. Validated at the sink (the final URL),
+	 * not the input path, so an authority-like path cannot smuggle a foreign
+	 * host — including one embedding user:pass@ credentials — past
+	 * normalisation.
+	 *
+	 * @since 7.2.0
+	 */
+	private function isLocalRedirectTarget( $url ) {
+		$urlUtils = MediaWikiServices::getInstance()->getUrlUtils();
+
+		$targetBits = $urlUtils->parse( (string)$urlUtils->expand( $url, PROTO_CURRENT ) );
+		$serverBits = $urlUtils->parse( (string)$urlUtils->expand( '/', PROTO_CURRENT ) );
+
+		if ( $targetBits === null || $serverBits === null ) {
+			return false;
+		}
+
+		$targetHost = $targetBits['host'] ?? '';
+		$serverHost = $serverBits['host'] ?? '';
+
+		// Host comparison only; port is intentionally out of scope.
+		return $targetHost !== '' && $serverHost !== '' && strcasecmp( $targetHost, $serverHost ) === 0;
 	}
 
 	/**

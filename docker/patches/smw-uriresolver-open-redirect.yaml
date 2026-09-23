@@ -1,0 +1,40 @@
+# Class A — composer-clobbered, re-applied by scripts/apply-patches.sh.
+#
+# `composer install` reinstalls mediawiki/semantic-media-wiki as a dist
+# zipball, which overwrites app/extensions/SemanticMediaWiki wholesale on
+# every run. See docs/dev/patches.md "The SMW set" and
+# docker/ci/composer-audit-baseline.json's mediawiki/semantic-media-wiki
+# entry for the version this mitigates without fixing.
+id: smw-uriresolver-open-redirect
+title: validate the Special:URIResolver redirect target (CVE-2026-77609)
+class: A
+mode: insert
+target: extensions/SemanticMediaWiki/src/MediaWiki/Specials/SpecialURIResolver.php
+applied_by: scripts/apply-patches.sh (called by docker/setup.sh)
+patch: docker/patches/smw-uriresolver-open-redirect.patch
+# ERE. The line the first hunk is anchored after.
+anchor: 'SkinComponentUtils::makeSpecialUrl\( .ExportRDF., \[ .xmlmime. => .rdf. \] \)'
+marker: 'HDP: backport of upstream SMW 7\.2\.0 \(CVE-2026-77609\)'
+# The unconditional, unvalidated redirect this patch replaces. Absent once
+# isLocalRedirectTarget() gates it.
+anti: '\$out->redirect\( \$title->getFullURL\(\), .303. \)'
+group: smw-advisory-closure
+stale: false
+upstream_version: 'mediawiki/semantic-media-wiki 6.0.1'
+regex: ERE
+hunks: 1
+why: >-
+  CVE-2026-77609 / GHSA-hw3m-8j5x-94ff, open redirect. Special:URIResolver
+  resolves its user-controlled subpage to a MediaWiki title and issued an
+  HTTP 303 redirect to $title->getFullURL() without validating the
+  resolved target: a crafted subpage using an interwiki prefix (e.g.
+  Special:URIResolver/mw-3AFoo, decoding to mw:Foo) makes the target point
+  off-host, usable for phishing from a trusted wiki URL. Backported from
+  upstream SMW 7.2.0: parse the resolved target and the current server URL
+  with MediaWiki's UrlUtils and compare hosts at the redirect sink, showing
+  a bad-title error page on mismatch — validating the final URL rather than
+  the input path, since only the sink sees what normalisation produced.
+  This tree vendors 6.0.1 and the BlueSpice pro distribution constrains
+  mediawiki/semantic-media-wiki to 6.0.*, so the upstream fix cannot be
+  taken by re-vendoring inside the 5.1 series. Retire this patch and its
+  sidecar when SMW reaches 7.2.0 or later.
