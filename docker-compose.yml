@@ -370,7 +370,15 @@ services:
     # CMD, so a `command:` override on this image is appended as arguments
     # to entrypoint.sh, which ignores them and boots the whole RAG stack
     # (hayhooks + the query API) a second time instead of this loop.
-    entrypoint: ["/opt/pipeline/ingest-scheduler.sh"]
+    #
+    # Explicit `bash` rather than relying on the shebang + exec form
+    # (`["/opt/pipeline/ingest-scheduler.sh"]`): a direct exec sets PID 1's
+    # /proc/1/comm to the script's own basename, truncated to 15 chars
+    # ("ingest-schedule"), not "bash" — found live on the QA box, where the
+    # healthcheck below never went healthy. mediawiki-jobrunner's identical
+    # healthcheck works because ITS entrypoint is `["/bin/bash",
+    # "/entrypoint.sh"]` (see docker-compose.yml history) — matched here.
+    entrypoint: ["bash", "/opt/pipeline/ingest-scheduler.sh"]
     restart: unless-stopped
     deploy:
       resources:
