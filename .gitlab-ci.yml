@@ -133,8 +133,10 @@ bats:
   before_script:
     # jq/curl for the loader suite; python3 and patch for the upgrade-report
     # suite, which drives verify-patches.sh and would otherwise fail on the
-    # missing tool rather than on the behaviour under test.
-    - apk add --no-cache jq curl python3 patch > /dev/null
+    # missing tool rather than on the behaviour under test; git for
+    # update_pipe.bats's port-migration fixture (init/commit/tag/clone/push
+    # against a real bare remote). Kept in step with scripts/ci/bats.sh.
+    - apk add --no-cache jq curl python3 patch git > /dev/null
   script:
     - bats tests/bats
 

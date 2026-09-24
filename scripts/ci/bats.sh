@@ -67,8 +67,12 @@ have_docker() { have docker && docker info >/dev/null 2>&1; }
 # `patch` ran upgrade_report.bats against a missing tool and failed "on the tool
 # rather than on the behaviour" — which is the exact thing the docker branch's
 # own comment says it installs them to prevent. A host missing one of them now
-# falls through to docker instead of failing.
-HOST_TOOLS="bats jq python3 patch"
+# falls through to docker instead of failing. `git` joined this list (and the
+# docker branch's apk line) the same way `patch` did: update_pipe.bats grew a
+# fixture that shells out to it, and a bats image with none of these preinstalled
+# failed the new tests on "command not found" (127) rather than on the
+# behaviour under test.
+HOST_TOOLS="bats jq python3 patch git"
 host_ready() {
     local t
     for t in $HOST_TOOLS; do have "$t" || return 1; done
@@ -89,8 +93,9 @@ if ! have_docker; then
     # Name what is missing. "no bats+jq" sent people to install bats when the
     # gap was `patch`.
     echo "  no usable docker, and the host is missing:$missing"
-    echo "  (the suite needs$(printf ' %s' $HOST_TOOLS) — python3 for read-manifest.py"
-    echo "  and patch for the diff-mode probe in the upgrade report)"
+    echo "  (the suite needs$(printf ' %s' $HOST_TOOLS) — python3 for read-manifest.py,"
+    echo "  patch for the diff-mode probe in the upgrade report, and git for"
+    echo "  update_pipe.bats's port-migration fixture)"
     exit 77
 fi
 
@@ -99,9 +104,16 @@ fi
 #   jq, curl   the infisical-loader suite (curl is shadowed by a test double)
 #   python3    read-manifest.py, which verify-patches.sh shells out to
 #   patch      the diff-mode probe in the upgrade report
-# The last two are why upgrade_report.bats exists at all: the image ships
-# neither, and without them every one of its tests fails on the tool rather
-# than on the behaviour.
+#   git        update_pipe.bats's port-migration fixture builds a real bare
+#              remote + checkout (init/commit/tag/clone/push) to drive
+#              update.sh through a pipe-fed --check the same way the
+#              documented `curl | bash` invocation runs it
+# The image ships none of these — bare bash and ps only — so without them
+# the affected suite's tests fail on the missing tool (bats' own `command
+# not found` → 127) rather than on the behaviour under test, which is
+# exactly what host_ready()'s HOST_TOOLS list above exists to prevent on the
+# host path. This apk line is the docker path's answer to the same gap: it
+# would silently break the exact same way with an unmatched host.
 docker run --rm --entrypoint sh \
     -v "$REPO_ROOT":/w -w /w "$IMG_BATS" \
-    -c "apk add --no-cache jq curl python3 patch >/dev/null 2>&1 && bats $TEST_DIR"
+    -c "apk add --no-cache jq curl python3 patch git >/dev/null 2>&1 && bats $TEST_DIR"
