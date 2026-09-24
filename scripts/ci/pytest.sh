@@ -64,6 +64,7 @@
 #   scripts/ci/pytest.sh                  unit + haystack
 #   scripts/ci/pytest.sh --tier unit      stdlib tier only
 #   scripts/ci/pytest.sh --tier haystack  haystack tier only
+#   scripts/ci/pytest.sh --tier api           FastAPI TestClient, needs the built haystack image
 #   scripts/ci/pytest.sh --tier integration   needs a running, installed wiki
 #   scripts/ci/pytest.sh --tier smoke         needs the full 7-container stack
 #   scripts/ci/pytest.sh --tier migration     needs a stack t5-migration.sh upgraded
@@ -113,8 +114,8 @@ while [ $# -gt 0 ]; do
 done
 
 case "$TIER" in
-    unit|haystack|integration|smoke|migration|all) ;;
-    *) echo "--tier must be one of: unit, haystack, integration, smoke, migration, all (got '$TIER')" >&2; exit 2 ;;
+    unit|haystack|api|integration|smoke|migration|all) ;;
+    *) echo "--tier must be one of: unit, haystack, api, integration, smoke, migration, all (got '$TIER')" >&2; exit 2 ;;
 esac
 
 if [ "$REGEN" -eq 1 ]; then
@@ -216,6 +217,45 @@ run_haystack() {
                apt-get install -y -qq --no-install-recommends gettext-base >/dev/null 2>&1
                pip install --quiet --no-cache-dir --root-user-action=ignore -r tests/requirements.txt
                python -m pytest tests/haystack $(pytest_extra_args)"
+    return $?
+}
+
+# ─── api tier (T6) ──────────────────────────────────────────────────
+# tests/api/ exercises ingest_api.py's FastAPI router with TestClient — no
+# live stack, everything that would touch MariaDB/MediaWiki/OpenSearch is
+# monkeypatched at the seams ingest_api.py exposes. What it genuinely needs
+# is the runtime: ingest_api.py imports ingest_hdp_wiki, which imports
+# haystack/opensearch-haystack/pymysql/requests, none of which tests/unit's
+# or tests/haystack's tiers install (F20). Unlike the haystack tier, there
+# is no slim-image fallback here — the full set of dependencies is only
+# affordable already-assembled in the project's own image, so this tier
+# needs `docker compose build haystack` to have been run at least once and
+# reports 77 (SKIP, not a pass) otherwise, the same as `integration`/`smoke`
+# reporting 77 against a stack that was never started.
+run_api() {
+    echo "── tier: api (FastAPI TestClient against ingest_api.py, no live stack) ──"
+
+    if ! have_docker; then
+        echo "  no usable docker; this tier only runs inside the built haystack image."
+        return 77
+    fi
+
+    local image
+    image="$(find_haystack_image)"
+    if [ -z "$image" ]; then
+        echo "  no built haystack image found. Build one first:"
+        echo "    docker compose build haystack"
+        return 77
+    fi
+
+    echo "  using the built haystack image: $image"
+    # PYTHONPATH=/opt/pipeline: ingest_api.py, ingest_hdp_wiki.py etc. live
+    # there (see docker/haystack/Dockerfile), not on the default path when
+    # pytest's rootdir is the bind-mounted repo at /w.
+    docker run --rm --entrypoint sh \
+        -e PYTHONPATH=/opt/pipeline \
+        -v "$REPO_ROOT":/w -w /w "$image" \
+        -c "python -m pytest tests/api $(pytest_extra_args)"
     return $?
 }
 
@@ -325,6 +365,7 @@ ran=0
 # would mean every contributor's `scripts/ci/pytest.sh` ends in a skip notice
 # about containers they were never asked to start.
 SELECTED=(unit haystack)
+[ "$TIER" = "api" ] && SELECTED=(api)
 [ "$TIER" = "integration" ] && SELECTED=(integration)
 [ "$TIER" = "smoke" ] && SELECTED=(smoke)
 [ "$TIER" = "migration" ] && SELECTED=(migration)

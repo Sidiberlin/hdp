@@ -85,7 +85,7 @@ declare -a ONLY=()
 # `--only` per job: a mistyped matrix entry would otherwise be a permanently
 # green job that runs nothing at all.
 KNOWN_CHECKS=(
-    shellcheck yamllint ruff pytest-unit pytest-haystack bats php-lint compose
+    shellcheck yamllint ruff pytest-unit pytest-haystack pytest-api bats php-lint compose
     gitleaks env-example publiccode patch-ignore manifest versions composer-audit
     fresh-clone patches integration smoke
 )
@@ -121,6 +121,7 @@ list_checks() {
     printf '%-16s %-34s %s\n' ruff        'python under docker/ scripts/ tests/' "ruff | $IMG_RUFF"
     printf '%-16s %-34s %s\n' pytest-unit 'stdlib unit tests (~2s)' "pytest | $IMG_PYTHON"
     printf '%-16s %-34s %s\n' pytest-haystack 'to_native + load_pipeline' "haystack-ai | $IMG_PYTHON"
+    printf '%-16s %-34s %s\n' pytest-api   'ingest_api.py FastAPI router (T6)' 'built haystack image only, no fallback'
     printf '%-16s %-34s %s\n' bats        'infisical-loader.sh behaviour' "bats | ${IMG_BATS%%@*}"
     printf '%-16s %-34s %s\n' php-lint    'syntax of app/settings.d/*.php' "php | $IMG_PHP"
     printf '%-16s %-34s %s\n' compose     'compose + both prod overrides' 'docker compose v2'
@@ -292,6 +293,20 @@ check_pytest-unit_run() { scripts/ci/pytest.sh --tier unit; }
 check_pytest-haystack_run() {
     [ -d tests/haystack ] || { skip pytest-haystack "tests/haystack does not exist yet"; return; }
     scripts/ci/pytest.sh --tier haystack
+}
+
+# T6. Needs the project's own built haystack image (no slim-image fallback —
+# see scripts/ci/pytest.sh's run_api() for why), so unlike the two tiers
+# above this is routinely a SKIP on a bare checkout. Not opt-in behind a
+# flag, unlike --patches/--integration/--smoke: it costs one `docker image
+# inspect` call to find out, not a live stack or a composer install, so
+# there is nothing expensive to gate.
+check_pytest-api_run() {
+    [ -d tests/api ] || { skip pytest-api "tests/api does not exist yet"; return; }
+    scripts/ci/pytest.sh --tier api
+    local rc=$?
+    [ "$rc" -eq 77 ] && skip pytest-api "no built haystack image — docker compose build haystack"
+    return $rc
 }
 
 # ─── bats ───────────────────────────────────────────────────────────
@@ -547,6 +562,7 @@ run_check yamllint   "yaml we own"
 run_check ruff       "python under docker/ scripts/ tests/"
 run_check pytest-unit     "stdlib unit tests"
 run_check pytest-haystack "to_native + load_pipeline"
+run_check pytest-api      "ingest_api.py FastAPI router (T6)"
 run_check bats       "infisical-loader behaviour"
 run_check php-lint   "app/settings.d syntax"
 run_check compose    "compose + prod overrides"
