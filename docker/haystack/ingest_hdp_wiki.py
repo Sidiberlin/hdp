@@ -50,7 +50,7 @@ from haystack_integrations.document_stores.opensearch.document_store import (
     DuplicatePolicy,
     OpenSearchDocumentStore,
 )
-from ingest_select import classify_pages, max_revision_per_page
+from ingest_select import classify_pages, max_revision_per_page, truncate_to_max_pages
 
 # Pure transforms, extracted in Wave 2 so they are testable without
 # pymysql/requests/haystack being installed. Same directory, which is how
@@ -582,7 +582,9 @@ def main():
 
         # D3: bound the work per cycle. Applied AFTER classification and
         # logging above, so the counts always describe the whole wiki — a
-        # truncated run must not look like a smaller wiki than it is.
+        # truncated run must not look like a smaller wiki than it is. The
+        # slice itself is truncate_to_max_pages() (ingest_select.py), pinned
+        # by tests/unit/test_ingest_select.py.
         max_pages = args.max_pages
         if max_pages is None:
             max_pages = int(os.environ.get("HDP_INGEST_MAX_PAGES", "25"))
@@ -592,7 +594,7 @@ def main():
                 f"index down to {max_pages} this run; the rest will be picked "
                 f"up on a later run."
             )
-            pages = pages[:max_pages]
+        pages = truncate_to_max_pages(pages, max_pages)
 
     if not pages:
         logger.warning("No pages to index. Exiting.")

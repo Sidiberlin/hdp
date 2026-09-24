@@ -337,6 +337,7 @@ services:
       # see README-DOCKER.md's Ingestion API section.
       - ./docker/haystack/ingest_hdp_wiki.py:/opt/pipeline/ingest_hdp_wiki.py:ro
       - ./docker/haystack/ingest_api.py:/opt/pipeline/ingest_api.py:ro
+      - ./docker/haystack/ingest_validate.py:/opt/pipeline/ingest_validate.py:ro
     depends_on:
       opensearch:
         condition: service_healthy

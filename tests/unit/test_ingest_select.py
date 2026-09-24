@@ -8,7 +8,7 @@ into the ingest script.
 
 Standard library only.
 """
-from ingest_select import classify_pages, max_revision_per_page
+from ingest_select import classify_pages, max_revision_per_page, truncate_to_max_pages
 
 
 def page(pid, latest):
@@ -101,3 +101,59 @@ def test_result_order_preserves_page_order():
     pages = [page(9, "1"), page(2, "2"), page(5, "3")]
     to_index, _ = classify_pages(pages, {})
     assert [p["page_id"] for p in to_index] == [9, 2, 5]
+
+
+# ─── truncate_to_max_pages (D3) ─────────────────────────────────────
+
+
+def test_truncate_slices_after_the_fact():
+    """The slice is a pure list truncation — it does not touch the counts
+    classify_pages already produced, so the log line built from those
+    counts still describes the whole wiki, not the truncated run."""
+    pages = [page(i, "100") for i in range(1, 51)]  # 50 new pages
+    to_index, counts = classify_pages(pages, {})
+    assert counts == {"new": 50, "edited": 0, "unchanged": 0}
+
+    truncated = truncate_to_max_pages(to_index, 10)
+    assert len(truncated) == 10
+    assert [p["page_id"] for p in truncated] == list(range(1, 11))
+    # The classification counts are a separate object, untouched by the
+    # truncation that happened after they were computed.
+    assert counts == {"new": 50, "edited": 0, "unchanged": 0}
+
+
+def test_truncate_preserves_order():
+    to_index = [page(9, "1"), page(2, "2"), page(5, "3"), page(1, "4")]
+    truncated = truncate_to_max_pages(to_index, 2)
+    assert [p["page_id"] for p in truncated] == [9, 2]
+
+
+def test_truncate_noop_when_under_the_cap():
+    to_index = [page(1, "1"), page(2, "2")]
+    assert truncate_to_max_pages(to_index, 25) == to_index
+
+
+def test_truncate_noop_at_exactly_the_cap():
+    to_index = [page(i, "1") for i in range(5)]
+    assert truncate_to_max_pages(to_index, 5) == to_index
+
+
+def test_truncate_zero_means_unlimited():
+    """--max-pages 0 is an explicit operator override for an unbounded
+    catch-up run, not an accidental 'index nothing'."""
+    to_index = [page(i, "1") for i in range(100)]
+    assert truncate_to_max_pages(to_index, 0) == to_index
+
+
+def test_truncate_negative_means_unlimited():
+    to_index = [page(1, "1")]
+    assert truncate_to_max_pages(to_index, -1) == to_index
+
+
+def test_truncate_none_means_unlimited():
+    to_index = [page(1, "1")]
+    assert truncate_to_max_pages(to_index, None) == to_index
+
+
+def test_truncate_empty_input():
+    assert truncate_to_max_pages([], 25) == []

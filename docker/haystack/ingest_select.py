@@ -70,6 +70,22 @@ def _is_newer(latest: str, staged: str) -> bool:
     return latest > staged
 
 
+def truncate_to_max_pages(to_index: list, max_pages) -> list:
+    """D3: cap a --missing-only selection at `max_pages`, applied AFTER
+    classify_pages() has already produced its new/edited/unchanged counts —
+    so a truncated run's log line still describes the whole wiki, not just
+    the slice this cycle actually indexes. The rest converges over
+    following runs.
+
+    `max_pages` of `None` or `<= 0` disables the cap — matches
+    `--max-pages 0` meaning "no limit" for an operator who explicitly wants
+    an unbounded catch-up run.
+    """
+    if max_pages is None or max_pages <= 0:
+        return to_index
+    return to_index[:max_pages]
+
+
 def classify_pages(pages: list, staged_revs: dict) -> tuple:
     """Split wiki pages into the list to index plus counts for the log line.
 

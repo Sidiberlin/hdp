@@ -8,16 +8,19 @@ one call, authenticated by a bearer key nothing in this stack had before
 (F6 — hdp_api_server.py has no auth of any kind, and chatbot-proxy posts to
 it with no bearer either; there was no existing pattern to copy).
 
-Split into two halves on purpose (D7):
+Split into two modules on purpose (D7, the same Wave-2 pattern as
+wikitext.py/ingest_select.py):
 
-  - Pure (stdlib + pydantic only): validate_title, validate_category,
-    ensure_category, error_envelope, the request/response models, the
-    rate-limiter. Importable, and imported by tests/unit/test_ingest_api.py,
-    with no FastAPI, no requests, no pymysql, no haystack.
-  - Impure: `router`, the bearer dependency, the MediaWiki edit/login calls,
-    the lazy embedder/store singletons, and the ingest step itself, which
-    reuses ingest_hdp_wiki.get_pages_by_title()/process_page() unchanged —
-    this module does not reimplement rendering, splitting, or writing.
+  - Pure, stdlib-only: docker/haystack/ingest_validate.py — validate_title,
+    validate_category, ensure_category, error_envelope, the rate-limiter.
+    Imported directly by tests/unit/test_ingest_api.py, with no FastAPI, no
+    pydantic, no requests, no pymysql, no haystack — tests/unit's tier
+    installs nothing but pytest.
+  - Impure, here: `router`, the pydantic request/response models, the
+    bearer dependency, the MediaWiki edit/login calls, the lazy embedder/
+    store singletons, and the ingest step itself, which reuses
+    ingest_hdp_wiki.get_pages_by_title()/process_page() unchanged — this
+    module does not reimplement rendering, splitting, or writing.
 
 hdp_api_server.py mounts `router` with two lines; nothing else in that file
 changes, and the auth dependency below applies to these routes only — a
@@ -52,9 +55,7 @@ container that serves RAG queries.
 import hmac
 import logging
 import os
-import re
 import threading
-import time
 
 # Reuses everything without reimplementing it: DB/wiki/OpenSearch config,
 # mw_api_login (D9's user/password args), get_pages_by_title (D12),
@@ -66,6 +67,13 @@ import pymysql
 import requests
 from fastapi import APIRouter, Depends, Header, HTTPException
 from ingest_select import classify_pages
+from ingest_validate import (
+    RateLimiter,
+    ensure_category,
+    error_envelope,
+    validate_category,
+    validate_title,
+)
 from pydantic import BaseModel, Field, model_validator
 
 log = logging.getLogger("hdp-ingest-api")
@@ -88,103 +96,6 @@ def _allowed_categories() -> set:
     an operator has actually opted into a list."""
     raw = os.environ.get("HDP_INGEST_ALLOWED_CATEGORIES", "")
     return {c.strip() for c in raw.split(",") if c.strip()}
-
-
-# ─── Pure half ────────────────────────────────────────────────────────
-# stdlib + pydantic only — see tests/unit/test_ingest_api.py, which imports
-# this module directly with no FastAPI installed.
-
-_TITLE_FORBIDDEN_CHARS = set(":#<>[]|{}")
-
-
-def validate_title(title: str):
-    """None when `title` is an acceptable main-namespace page title (D12);
-    otherwise a human-readable reason the caller rejects it with.
-
-    Main namespace only, v1 (R6 in the plan): the colon rejection is what
-    stops a caller writing into MediaWiki:/Template:/Help: by prefixing a
-    title — it also rejects a legitimate title like "Berlin: eine Stadt",
-    which is a known, documented limitation (create such pages in the wiki
-    UI instead; see README-DOCKER.md's Ingestion API section).
-    """
-    if not title:
-        return "title must not be empty"
-    if len(title.encode("utf-8")) > 255:
-        return "title must not exceed 255 bytes"
-    if title != title.strip("_"):
-        return "title must not start or end with '_'"
-    bad = _TITLE_FORBIDDEN_CHARS & set(title)
-    if bad:
-        return f"title must not contain any of {sorted(bad)!r}"
-    return None
-
-
-_CATEGORY_FORBIDDEN_CHARS = set("[]|#<>{}")
-
-
-def validate_category(category: str):
-    """None when `category` is acceptable; otherwise a reason."""
-    if not category:
-        return "category must not be empty"
-    if len(category.encode("utf-8")) > 255:
-        return "category must not exceed 255 bytes"
-    bad = _CATEGORY_FORBIDDEN_CHARS & set(category)
-    if bad:
-        return f"category must not contain any of {sorted(bad)!r}"
-    return None
-
-
-def ensure_category(content: str, category: str) -> str:
-    """Append `[[Category:<category>]]` to `content` unless it is already
-    tagged with that category — idempotent (D12: "a content string that
-    already has the tag is returned unchanged"), so re-POSTing the same
-    page never doubles the tag. Matches any of the three colon spellings
-    MediaWiki accepts (`Category:x`, `Category : x`, with an optional
-    sort-key `|...`).
-    """
-    tag_re = re.compile(
-        r"\[\[\s*[Cc]ategory\s*:\s*" + re.escape(category) + r"\s*(\|[^\]]*)?\]\]"
-    )
-    if tag_re.search(content):
-        return content
-    if not content:
-        return f"[[Category:{category}]]\n"
-    sep = "\n\n" if not content.endswith("\n") else "\n"
-    return f"{content}{sep}[[Category:{category}]]\n"
-
-
-def error_envelope(message: str, error_type: str, code: str, param: str = None) -> dict:
-    """OpenAI's error body shape, exactly — the one thing every status this
-    API returns has in common."""
-    return {"error": {"message": message, "type": error_type, "param": param, "code": code}}
-
-
-class RateLimiter:
-    """At most `limit` calls per 60s, per key. A dict keyed by the bearer
-    token — there is one valid key today, but scoping by key rather than
-    globally is free and correct if that ever changes.
-
-    Thread-safe: uvicorn can run sync route handlers across worker threads.
-    """
-
-    def __init__(self, limit: int, window_seconds: float = 60.0):
-        self.limit = limit
-        self.window = window_seconds
-        self._hits: dict = {}
-        self._lock = threading.Lock()
-
-    def check(self, key: str):
-        """None when the call is allowed (and recorded); otherwise the
-        number of seconds until the caller should retry."""
-        now = time.monotonic()
-        with self._lock:
-            hits = [t for t in self._hits.get(key, []) if now - t < self.window]
-            if len(hits) >= self.limit:
-                self._hits[key] = hits
-                return max(self.window - (now - hits[0]), 1.0)
-            hits.append(now)
-            self._hits[key] = hits
-            return None
 
 
 _rate_limiter = RateLimiter(RATE_LIMIT_PER_MIN)
