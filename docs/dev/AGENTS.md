@@ -428,7 +428,7 @@ Four things here are load-bearing:
 - **Two indices, and confusing them has already cost a wave.**
   `bluespice_wikipage` is BlueSpice's own search index, ~808 documents because
   it counts nested section documents; `hdp_wiki` is written only by
-  `ingest_hdp_wiki.py` and holds **153 documents from 32 pages**. The "~828"
+  `ingest_hdp_wiki.py` and holds **157 documents from 32 pages**. The "~828"
   once quoted for `hdp_wiki` was the other index's number.
 
 The nightly workflow adds two things `t4-smoke.sh` takes as a flag rather than
@@ -826,7 +826,7 @@ For this project, "verified" means:
 3. **Authenticated pages load** — `scripts/ci/t3-integration.sh` is green. In
    particular `Special:Preferences`, the page QA Bug 4 broke
 4. **Ingestion succeeds** — OpenSearch `hdp_wiki` index has documents
-   (baseline: **153 documents from 32 pages**, not ~828 — that figure was
+   (baseline: **157 documents from 32 pages**, not ~828 — that figure was
    `bluespice_wikipage`, the ExtendedSearch index, which counts nested section
    documents)
 5. **End-to-end chatbot answer with citation** — Query returns a correct answer with `[N]` source links

@@ -49,11 +49,11 @@
 # not assertions. They live here so a failure reads as "the stack could not be
 # brought to the state under test" rather than as a test that timed out. The
 # assertions about the resulting state — no indexing work left queued, index
-# populated, 153 documents — are in tests/integration/test_search.py, which is
+# populated, 157 documents — are in tests/integration/test_search.py, which is
 # where a human looks to find out what broke.
 #
 # Ingestion is skippable (--no-ingest) because it is the single most expensive
-# step (~8 minutes; it embeds 155 sections on CPU) and a developer iterating on
+# step (~8 minutes; it embeds 159 sections on CPU) and a developer iterating on
 # the chatbot leg does not need it. The tests know the difference: HDP_INGEST_RAN
 # tells test_search.py whether to assert the exact count or merely a populated
 # index, so skipping degrades the assertion honestly instead of silently.
