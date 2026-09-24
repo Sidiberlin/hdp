@@ -39,17 +39,18 @@
 #
 # ─── Why HAYSTACK_CUDA_VERSION is here ──────────────────────────────
 #
-# Which CUDA build of PyTorch goes into the image. Defaults to cu124, which is
+# Which CUDA build of PyTorch goes into the image. Defaults to cu126, which is
 # also what the published -gpu image carries, so leaving it unset changes
-# nothing. Set it to cu118 in .env when the host's NVIDIA driver is older than
-# CUDA 12.4 — drivers are backward compatible, not forward compatible, so a
-# cu124 torch on a 12.0 driver fails at model load with "CUDA driver version is
-# insufficient for CUDA runtime version". install.sh reads the ceiling out of
-# nvidia-smi and writes this line for you; by hand, `nvidia-smi` prints it as
-# "CUDA Version:" in its header.
+# nothing. install.sh instead writes cu130 when the driver's ceiling is CUDA
+# 13.0+, or cu118 when it is older than CUDA 12.6 — drivers are backward
+# compatible, not forward compatible, so a cu126 torch on a 12.0 driver fails
+# at model load with "CUDA driver version is insufficient for CUDA runtime
+# version". install.sh reads the ceiling out of nvidia-smi and writes this
+# line for you; by hand, `nvidia-smi` prints it as "CUDA Version:" in its
+# header.
 #
-# This is a build arg only. There is no pre-built cu118 image, which is exactly
-# why the installer forces the from-source path on such a host.
+# This is a build arg only. There is no pre-built cu118 or cu130 image, which
+# is exactly why the installer forces the from-source path on such a host.
 #
 # ─── Do not stack this on docker-compose.prod.yml ───────────────────
 #
@@ -70,7 +71,10 @@ services:
     build:
       args:
         HAYSTACK_DEVICE: gpu
-        HAYSTACK_CUDA_VERSION: ${HAYSTACK_CUDA_VERSION:-cu124}
+        HAYSTACK_CUDA_VERSION: ${HAYSTACK_CUDA_VERSION:-cu126}
+        # install.sh sets this to match HAYSTACK_CUDA_VERSION whenever the
+        # two are not both current — see docker/haystack/Dockerfile's header.
+        HAYSTACK_TORCH_VERSION: ${HAYSTACK_TORCH_VERSION:-2.14.0}
     environment:
       HAYSTACK_DEVICE: gpu
     deploy:

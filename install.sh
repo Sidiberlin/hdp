@@ -569,26 +569,19 @@ fi
 
 # ─── Which PyTorch CUDA build this host's driver can run ────────────
 # `pip install torch` with no index URL takes whatever CUDA build PyPI
-# currently defaults to — cu124 today. NVIDIA drivers are backward compatible
-# but not forward compatible: a driver whose ceiling is CUDA 12.0 loads a cu118
-# torch happily and dies on a cu124 one with "CUDA driver version is
-# insufficient for CUDA runtime version". That failure arrives at model load,
-# inside the container, minutes after an install that looked like it worked, so
-# it is worth two seconds of nvidia-smi here.
+# currently defaults to. NVIDIA drivers are backward compatible but not
+# forward compatible: a driver whose ceiling is CUDA 12.0 loads a cu118 torch
+# happily and dies on a cu126 one with "CUDA driver version is insufficient
+# for CUDA runtime version". That failure arrives at model load, inside the
+# container, minutes after an install that looked like it worked, so it is
+# worth two seconds of nvidia-smi here.
 #
 # nvidia-smi's header prints the highest CUDA version the *driver* supports,
 # which is the number to compare against — not the CUDA toolkit that may or may
 # not be installed alongside it.
-#
-# The cu124 threshold is 12.4 and not 12.0: cu124 wheels want a 12.4 driver,
-# while cu118 wheels run on anything from 11.8 up, every 12.x driver included.
-# A 12.0 driver therefore takes cu118 — the closest build below it, not the
-# nearest 12.x one.
-CUDA_MIN_CU124='12.4'
-CUDA_MIN_CU118='11.8'
 
 CUDA_MAX=''          # highest CUDA the host driver supports, e.g. 12.4
-CUDA_WHEEL_TAG=''    # cu124 | cu118 | '' when no supported build fits
+CUDA_WHEEL_TAG=''    # cu130 | cu126 | cu118 | '' when no supported build fits
 CUDA_UNKNOWN=0       # nvidia-smi told us nothing parseable
 CUDA_TOO_OLD=0       # driver predates every PyTorch GPU build available
 CUDA_VERIFY_TAG=''   # nvidia/cuda image tag this driver can actually run
@@ -597,6 +590,57 @@ CUDA_VERIFY_TAG=''   # nvidia/cuda image tag this driver can actually run
 ver_ge() {
     [ "$1" = "$2" ] && return 0
     [ "$(printf '%s\n%s\n' "$1" "$2" | sort -V | tail -1)" = "$1" ]
+}
+
+# cuda_wheel_tag_for <cuda_max> — the PyTorch wheel tag for a driver whose
+# ceiling (as nvidia-smi's "CUDA Version:" reports it, e.g. "12.4") is
+# $cuda_max. Prints the tag and returns 0 on a match, prints nothing and
+# returns 1 when the driver predates every PyTorch GPU build (oldest is
+# cu118, which wants CUDA 11.8), and prints nothing and returns 2 when
+# $cuda_max does not parse as a version at all.
+#
+# The thresholds track what download.pytorch.org actually still publishes,
+# not what is newest in the abstract: cu124 is EXCLUDED here on purpose — as
+# of this writing PyTorch has not shipped a cu124 build past torch 2.6.0, so
+# selecting it would silently pin every matching driver to a two-year-stale
+# torch forever. cu126 and cu130 are both current (see
+# docker/haystack/Dockerfile's header for how that was verified); a driver
+# between 12.4 and 12.5 therefore now gets cu118 rather than a dead tag — an
+# older CUDA runtime that actually receives updates beats a frozen newer one.
+# Re-check the indexes before ever reintroducing a tag here:
+#   curl -s https://download.pytorch.org/whl/<tag>/torch/ | grep -o 'torch-[0-9.]*'| sort -V | tail -1
+#
+# Self-contained (calls only ver_ge) so it can be sourced in isolation —
+# tests/bats/gpu_wheel.bats slices exactly this function and ver_ge out of
+# the live script rather than testing a copy that could drift.
+cuda_wheel_tag_for() {
+    local cuda_max="$1"
+    case "$cuda_max" in
+        ''|*[!0-9.]*) return 2 ;;
+    esac
+    if ver_ge "$cuda_max" '13.0'; then
+        printf 'cu130'
+    elif ver_ge "$cuda_max" '12.6'; then
+        printf 'cu126'
+    elif ver_ge "$cuda_max" '11.8'; then
+        printf 'cu118'
+    else
+        return 1
+    fi
+}
+
+# cuda_torch_version_for <wheel_tag> — the pinned HAYSTACK_TORCH_VERSION for
+# that tag. cu118 is the one tag that does not track
+# docker/haystack/Dockerfile's default (2.14.0): PyTorch stopped publishing
+# cu118 wheels past 2.7.1, so a from-source cu118 build has to ask for that
+# version specifically or the (now-pinned) install fails outright instead of
+# silently picking an old one. Self-contained for the same reason as
+# cuda_wheel_tag_for above.
+cuda_torch_version_for() {
+    case "$1" in
+        cu118) printf '2.7.1' ;;
+        *)     printf '2.14.0' ;;
+    esac
 }
 
 if [ "$GPU_DETECTED" -eq 1 ] && have nvidia-smi; then
@@ -611,39 +655,36 @@ if [ "$GPU_DETECTED" -eq 1 ] && have nvidia-smi; then
 fi
 
 # Unparseable is not the same as too old, and the two get opposite treatment:
-# an unknown version defaults to cu124 and says so, because refusing the GPU on
-# a host that may well support it would be the more expensive mistake.
-case "$CUDA_MAX" in
-    ''|*[!0-9.]*)
-        CUDA_MAX=''; CUDA_UNKNOWN=1; CUDA_WHEEL_TAG='cu124' ;;
-    *)
-        if ver_ge "$CUDA_MAX" "$CUDA_MIN_CU124"; then
-            CUDA_WHEEL_TAG='cu124'
-        elif ver_ge "$CUDA_MAX" "$CUDA_MIN_CU118"; then
-            CUDA_WHEEL_TAG='cu118'
-        else
-            CUDA_TOO_OLD=1; CUDA_WHEEL_TAG=''
-        fi ;;
+# an unknown version defaults to cu126 (the current published default) and
+# says so, because refusing the GPU on a host that may well support it would
+# be the more expensive mistake.
+CUDA_WHEEL_TAG="$(cuda_wheel_tag_for "$CUDA_MAX")"
+case $? in
+    0) ;;
+    1) CUDA_TOO_OLD=1; CUDA_WHEEL_TAG='' ;;
+    2) CUDA_MAX=''; CUDA_UNKNOWN=1; CUDA_WHEEL_TAG='cu126' ;;
 esac
+CUDA_TORCH_VERSION="$(cuda_torch_version_for "$CUDA_WHEEL_TAG")"
 
 # The image the toolkit-verification command below uses. It must be one this
-# driver can run: nvidia/cuda:12.4.0-base on a 12.0 driver fails with the very
+# driver can run: nvidia/cuda:12.6.0-base on a 12.0 driver fails with the very
 # error this detection exists to avoid, and an operator debugging *that* would
 # reasonably conclude their container toolkit is broken when it is fine.
 case "$CUDA_WHEEL_TAG" in
     cu118) CUDA_VERIFY_TAG='11.8.0-base-ubuntu22.04' ;;
-    *)     CUDA_VERIFY_TAG='12.4.0-base-ubuntu22.04' ;;
+    cu130) CUDA_VERIFY_TAG='13.0.0-base-ubuntu22.04' ;;
+    *)     CUDA_VERIFY_TAG='12.6.0-base-ubuntu22.04' ;;
 esac
 
 if [ "$GPU_DETECTED" -eq 1 ]; then
     ok "NVIDIA GPU detected${GPU_NAMES:+: $GPU_NAMES}"
     if [ "$CUDA_TOO_OLD" -eq 1 ]; then
         note "  Driver supports CUDA $CUDA_MAX — older than every PyTorch GPU build"
-        note "  (the oldest, cu118, needs CUDA $CUDA_MIN_CU118)"
+        note "  (the oldest, cu118, needs CUDA 11.8)"
     elif [ "$CUDA_UNKNOWN" -eq 1 ]; then
         note "  Driver CUDA version could not be read from nvidia-smi"
     else
-        note "  Driver supports CUDA $CUDA_MAX — using PyTorch $CUDA_WHEEL_TAG build"
+        note "  Driver supports CUDA $CUDA_MAX — using PyTorch $CUDA_WHEEL_TAG build (torch $CUDA_TORCH_VERSION)"
     fi
 fi
 
@@ -670,9 +711,11 @@ ask_choice "Embeddings" "$DEFAULT_EMBED" \
 EMBED_SUMMARY='local (CPU, in-container)'
 EMBED_DEVICE='cpu'
 USE_GPU=0
+GPU_VERIFIED=''   # '' = N/A (CPU install), 1 = torch.cuda.is_available() was True, 0 = it was not
 # Set when the driver needs a PyTorch build the published -gpu image does not
-# carry. release.yml publishes exactly one GPU image and it is cu124, so a
-# cu118 host has nothing to pull that would work and must build from source.
+# carry. release.yml publishes exactly one GPU image and it is cu126, so a
+# cu118 or cu130 host has nothing to pull that would work and must build from
+# source.
 GPU_FORCE_BUILD=0
 
 case "$REPLY_CHOICE" in
@@ -732,7 +775,7 @@ case "$REPLY_CHOICE" in
             GPU_FELL_BACK_REASON="driver supports only CUDA $CUDA_MAX"
             warn "This host's NVIDIA driver supports only CUDA $CUDA_MAX."
             note "  The oldest PyTorch GPU build available is cu118, which needs a driver"
-            note "  supporting CUDA $CUDA_MIN_CU118 — so GPU mode here would fail at model load"
+            note "  supporting CUDA 11.8 — so GPU mode here would fail at model load"
             note "  with \"CUDA driver version is insufficient for CUDA runtime version\"."
             note "  Update the NVIDIA driver and re-run this installer to use the GPU."
             printf '\n'
@@ -747,12 +790,13 @@ case "$REPLY_CHOICE" in
 
         if [ "$GPU_PROCEED" -eq 1 ]; then
             USE_GPU=1
-            [ "$CUDA_WHEEL_TAG" = 'cu124' ] || GPU_FORCE_BUILD=1
+            [ "$CUDA_WHEEL_TAG" = 'cu126' ] || GPU_FORCE_BUILD=1
             set_env HDP_EMBEDDING_PROVIDER local
             set_env HDP_EMBEDDING_BASE_URL ""
             set_env HDP_EMBEDDING_API_KEY ""
             set_env HAYSTACK_DEVICE gpu
             set_env HAYSTACK_CUDA_VERSION "$CUDA_WHEEL_TAG"
+            set_env HAYSTACK_TORCH_VERSION "$CUDA_TORCH_VERSION"
             EMBED_DEVICE="gpu (NVIDIA, $CUDA_WHEEL_TAG)"
             EMBED_SUMMARY='local (GPU, in-container)'
             [ -n "$(get_env HDP_EMBEDDING_MODEL)" ] \
@@ -761,15 +805,15 @@ case "$REPLY_CHOICE" in
             printf '\n'
             ok "HAYSTACK_DEVICE=gpu — the CUDA PyTorch variant (~8 GB image)."
             if [ "$CUDA_UNKNOWN" -eq 1 ]; then
-                warn "Could not determine the CUDA driver version. Defaulting to cu124."
+                warn "Could not determine the CUDA driver version. Defaulting to cu126."
                 note "  If the container reports \"CUDA driver version insufficient\", set"
                 note "  HAYSTACK_CUDA_VERSION=cu118 in .env and rebuild:"
                 note "    docker compose -f docker-compose.yml -f docker-compose.gpu.yml up -d --build"
             else
-                ok "HAYSTACK_CUDA_VERSION=$CUDA_WHEEL_TAG — matched to a driver that supports CUDA $CUDA_MAX."
+                ok "HAYSTACK_CUDA_VERSION=$CUDA_WHEEL_TAG (torch $CUDA_TORCH_VERSION) — matched to a driver that supports CUDA $CUDA_MAX."
             fi
             if [ "$GPU_FORCE_BUILD" -eq 1 ]; then
-                warn "The pre-built GPU image carries CUDA 12.4 PyTorch, which this driver"
+                warn "The pre-built GPU image carries CUDA 12.6 PyTorch, which this driver"
                 note "  cannot run. Building from source with the $CUDA_WHEEL_TAG wheels instead —"
                 note "  one slower install, and the only build that will actually start."
             else
@@ -805,10 +849,10 @@ case "$REPLY_CHOICE" in
             # Take the wheel choice from .env too, not from this host's driver:
             # "skip" means "keep what is configured", and an existing cu118
             # install still has to build from source rather than silently
-            # switching to the pre-built cu124 image on the next start.
+            # switching to the pre-built cu126 image on the next start.
             CUDA_WHEEL_TAG="$(get_env HAYSTACK_CUDA_VERSION)"
-            [ -n "$CUDA_WHEEL_TAG" ] || CUDA_WHEEL_TAG='cu124'
-            [ "$CUDA_WHEEL_TAG" = 'cu124' ] || GPU_FORCE_BUILD=1
+            [ -n "$CUDA_WHEEL_TAG" ] || CUDA_WHEEL_TAG='cu126'
+            [ "$CUDA_WHEEL_TAG" = 'cu126' ] || GPU_FORCE_BUILD=1
             EMBED_DEVICE="gpu (NVIDIA, $CUDA_WHEEL_TAG)"
             USE_GPU=1
         fi
@@ -993,11 +1037,11 @@ COMPOSE_ARGS=("${PULL_ARGS[@]}")
 UP_FLAGS=(up -d)
 
 # …except on a GPU host whose driver cannot run the published image. There is
-# one published -gpu image and it is a CUDA 12.4 build, so on a driver that
-# needs cu118 the pull is not a shortcut, it is a 5 GB download of something
-# that will not start. Decided here rather than in start_stack() so that the
-# commands printed by the "not now" and "Docker is not running" exits are the
-# ones that would actually work.
+# one published -gpu image and it is a CUDA 12.6 build, so on a driver that
+# needs cu118 or cu130 the pull is not a shortcut, it is a 5 GB download of
+# something that will not start. Decided here rather than in start_stack() so
+# that the commands printed by the "not now" and "Docker is not running"
+# exits are the ones that would actually work.
 if [ "$GPU_FORCE_BUILD" -eq 1 ]; then
     COMPOSE_ARGS=("${BUILD_ARGS[@]}")
     UP_FLAGS=(up -d --build)
@@ -1102,6 +1146,47 @@ predownload_models() {
     fi
 }
 
+# verify_gpu — after the image exists, actually ask it whether it can see the
+# GPU, instead of trusting that HAYSTACK_DEVICE=gpu plus a build that
+# succeeded means it can. This is requirement C for the GPU wheel-selection
+# incident: a GPU request that silently lands on CPU torch previously showed
+# up nowhere — the image built, the container passed its healthcheck, and
+# GPU usage stayed at 0% until someone thought to check. Same check
+# entrypoint.sh now runs at every container start (see there for why it is
+# a hard failure there but not here): torch.cuda.is_available() inside the
+# actual built image, via a throwaway `run` so it costs one interpreter
+# start and needs no running OpenSearch.
+#
+# Sets GPU_VERIFIED to 1 or 0 and prints the result — this is also what the
+# closing summary reports as "GPU requested -> GPU verified/NOT verified".
+verify_gpu() {
+    [ "$USE_GPU" -eq 1 ] || return 0
+    info "Verifying the container can actually use the GPU…"
+    local out
+    # Same -T + < /dev/null shape as the pre-download run above — see that
+    # comment for why the redirect is load-bearing on a pipe-fed install.
+    out="$(docker "${COMPOSE_ARGS[@]}" run --rm --no-deps -T --entrypoint python3 \
+        haystack -c 'import torch; print("GPU_OK" if torch.cuda.is_available() else "GPU_MISSING")' \
+        < /dev/null 2>/dev/null)"
+    case "$out" in
+        *GPU_OK*)
+            GPU_VERIFIED=1
+            ok "GPU verified — torch.cuda.is_available() is True inside the container."
+            ;;
+        *)
+            GPU_VERIFIED=0
+            warn "GPU requested but NOT verified — torch.cuda.is_available() is False"
+            note "  inside the built container. The image exists and will start, but every"
+            note "  embedding will silently run on CPU until this is fixed."
+            note "  Check, in order: is the NVIDIA Container Toolkit installed and is"
+            note "  \"docker\" one of its configured runtimes (docker info | grep -i runtime)?"
+            note "  Does this work: docker run --rm --gpus all nvidia/cuda:${CUDA_VERIFY_TAG} nvidia-smi"
+            note "  Does docker-compose.yml's haystack service actually reserve a device"
+            note "  (check with: docker ${COMPOSE_ARGS[*]} config | grep -A3 capabilities)?"
+            ;;
+    esac
+}
+
 # ─── Bringing the stack up ──────────────────────────────────────────
 
 # compose_state <service> — one word describing the container behind a service:
@@ -1159,19 +1244,19 @@ wait_ready() {
 # wrong answer costs them five minutes or a stack that will not start. `pull` is
 # the probe because it is also the work — a successful pull leaves exactly the
 # images `up` is about to want. The exception is a GPU host whose driver cannot
-# run the published CUDA 12.4 image; there the answer is known in advance and
+# run the published CUDA 12.6 image; there the answer is known in advance and
 # the probe is skipped.
 start_stack() {
     if [ "$GPU_FORCE_BUILD" -eq 1 ]; then
         # The one case where the pull is not even attempted. There is a single
-        # published GPU image and it is a CUDA 12.4 build, so on a driver that
-        # needs cu118 the registry has nothing to probe for — and a successful
-        # pull here would be worse than a failed one, buying a container that
-        # starts and then cannot load a model.
+        # published GPU image and it is a CUDA 12.6 build, so on a driver that
+        # needs cu118 or cu130 the registry has nothing to probe for — and a
+        # successful pull here would be worse than a failed one, buying a
+        # container that starts and then cannot load a model.
         COMPOSE_ARGS=("${BUILD_ARGS[@]}")
         UP_FLAGS=(up -d --build)
         info "Building the haystack image from source — the published GPU image is a"
-        note "  CUDA 12.4 build and this host's driver needs $CUDA_WHEEL_TAG."
+        note "  CUDA 12.6 build and this host's driver needs $CUDA_WHEEL_TAG."
         note "  The CUDA build is ~8 GB, so allow longer on a slow disk."
     else
         info "Fetching the published images…"
@@ -1253,6 +1338,7 @@ fi
 
 printf '\n'
 start_stack
+verify_gpu
 
 printf '\n'
 ok "Containers are up."
@@ -1296,6 +1382,15 @@ if [ "$SETUP_OK" -eq 1 ]; then
 
     printf '  %sWiki%s      %s%s%s\n' "$C_BLD" "$C_OFF" "$C_BLD$C_BLU" "$WIKI_URL" "$C_OFF"
     printf '  %sLogin%s     Admin  /  %s%s%s\n' "$C_BLD" "$C_OFF" "$C_BLD" "$PW_ADMIN" "$C_OFF"
+    if [ -n "$GPU_VERIFIED" ]; then
+        if [ "$GPU_VERIFIED" -eq 1 ]; then
+            printf '  %sGPU%s       requested -> %sverified%s (torch.cuda.is_available() = True)\n' \
+                "$C_BLD" "$C_OFF" "$C_GRN" "$C_OFF"
+        else
+            printf '  %sGPU%s       requested -> %sNOT verified%s — see the warning above, embeddings will run on CPU\n' \
+                "$C_BLD" "$C_OFF" "$C_YEL" "$C_OFF"
+        fi
+    fi
     printf '  %sUpdate%s    cd %s && ./update.sh      %s# later, to move to the latest release%s\n' \
         "$C_BLD" "$C_OFF" "$REPO_ROOT" "$C_DIM" "$C_OFF"
     printf '  %sAuto-index%s every %s min · docker %s logs -f ingest-scheduler\n' \

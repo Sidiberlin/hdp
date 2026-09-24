@@ -4,11 +4,25 @@
 # Build args:
 #   HAYSTACK_DEVICE=cpu   (default) — CPU-only PyTorch, ~2GB image
 #   HAYSTACK_DEVICE=gpu             — CUDA PyTorch, ~8GB image (needs NVIDIA runtime)
-#   HAYSTACK_CUDA_VERSION=cu124 (default) — which CUDA PyTorch build, gpu only
+#   HAYSTACK_CUDA_VERSION=cu126 (default) — which CUDA PyTorch build, gpu only
+#   HAYSTACK_TORCH_VERSION=2.14.0 (default) — pinned torch version, both devices
 #
 # In docker-compose.yml:
 #   CPU:  just `docker compose build haystack`
 #   GPU:  set HAYSTACK_DEVICE=gpu in .env, add deploy.resources.reservations.devices
+#
+# ─── Why torch is pinned ─────────────────────────────────────────────
+# An unpinned `pip install torch --index-url .../cuXXX` takes whatever is
+# newest on THAT index, and PyTorch does not retire every CUDA tag's wheels at
+# the same version: as of this build, https://download.pytorch.org/whl/cu124
+# has not published anything past torch 2.6.0, while cu126/cu130 and the cpu
+# index are current at 2.14.0. Leaving torch unpinned on a retired tag means a
+# GPU build silently ships a torch eight minor releases stale — it installs
+# without error, the image builds and starts, and nothing says so. Pinning
+# HAYSTACK_TORCH_VERSION to a version that is confirmed present on every index
+# this Dockerfile actually uses (cpu, cu118, cu126, cu130) turns "silently
+# stale" into "fails the build" the day one of those indexes drops it, which
+# is the failure mode you want here.
 
 ARG HAYSTACK_DEVICE=cpu
 
@@ -18,7 +32,22 @@ ARG HAYSTACK_DEVICE=cpu
 # (docker-compose.yml passes both args for either device), and it is where you
 # look for the default. The stage below re-declares it because a global ARG is
 # out of scope inside a build stage — only the FROM lines can read it.
-ARG HAYSTACK_CUDA_VERSION=cu124
+#
+# cu126 replaces the old cu124 default: cu124 is a dead tag (see above), while
+# cu126 is still receiving current PyTorch releases and covers the same driver
+# floor class (a 12.6+ driver) that most present-day GPU hosts already clear —
+# install.sh's driver detection picks cu130 or cu118 instead when the host
+# needs one of those.
+ARG HAYSTACK_CUDA_VERSION=cu126
+
+# Pinned rather than left to float — see the note above. This must stay a
+# version published on every index in play: check with
+#   curl -s https://download.pytorch.org/whl/<tag>/torch/ | grep <version>
+# for cpu, cu118, cu126, cu130 before bumping it. cu118 is the one exception —
+# it is the legacy/old-driver path and does not receive current releases, so
+# its from-source build passes its own HAYSTACK_TORCH_VERSION override (see
+# install.sh) rather than this default.
+ARG HAYSTACK_TORCH_VERSION=2.14.0
 
 FROM python:3.11-slim-bookworm AS base
 
@@ -32,29 +61,31 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # ---- CPU variant: install CPU-only PyTorch (~200MB vs ~2GB) ----
 FROM base AS deps-cpu
+ARG HAYSTACK_TORCH_VERSION
 RUN pip install --no-cache-dir \
-    torch \
+    "torch==${HAYSTACK_TORCH_VERSION}" \
     --index-url https://download.pytorch.org/whl/cpu
 
 # ---- GPU variant: install CUDA PyTorch ----
 # The index URL is not optional decoration. Without it pip takes whatever CUDA
-# build PyPI currently defaults to — cu124 today — and NVIDIA drivers are
-# backward compatible but not forward compatible: a driver that tops out at
-# CUDA 12.0 loads a cu118 torch fine and dies on a cu124 one with "CUDA driver
-# version is insufficient for CUDA runtime version", at model load, inside the
+# build PyPI currently defaults to, and NVIDIA drivers are backward compatible
+# but not forward compatible: a driver that tops out at CUDA 12.0 loads a
+# cu118 torch fine and dies on a cu126 one with "CUDA driver version is
+# insufficient for CUDA runtime version", at model load, inside the
 # container, long after the build looked like it worked. install.sh reads the
 # host driver's ceiling out of nvidia-smi and pins this arg accordingly.
 #
-# cu124 stays the default so the published -gpu image and every existing build
+# cu126 stays the default so the published -gpu image and every existing build
 # are unchanged. Only deps-gpu carries the index URL, so the CPU stage above
 # still gets its CPU-only wheels.
 FROM base AS deps-gpu
-ARG HAYSTACK_CUDA_VERSION=cu124
+ARG HAYSTACK_CUDA_VERSION=cu126
+ARG HAYSTACK_TORCH_VERSION
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libgl1 \
         libglib2.0-0 \
     && pip install --no-cache-dir \
-        torch \
+        "torch==${HAYSTACK_TORCH_VERSION}" \
         --index-url "https://download.pytorch.org/whl/${HAYSTACK_CUDA_VERSION}" \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 

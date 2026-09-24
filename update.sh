@@ -401,9 +401,9 @@ BUILD_ARGS=(compose)
 GPU=0
 [ "$(get_env HAYSTACK_DEVICE)" = "gpu" ] && GPU=1
 CUDA_TAG="$(get_env HAYSTACK_CUDA_VERSION)"
-[ -n "$CUDA_TAG" ] || CUDA_TAG='cu124'
+[ -n "$CUDA_TAG" ] || CUDA_TAG='cu126'
 CUDA_FORCE_BUILD=0
-[ "$GPU" -eq 1 ] && [ "$CUDA_TAG" != 'cu124' ] && CUDA_FORCE_BUILD=1
+[ "$GPU" -eq 1 ] && [ "$CUDA_TAG" != 'cu126' ] && CUDA_FORCE_BUILD=1
 
 if [ "$GPU" -eq 1 ]; then
     PULL_ARGS=(compose -f docker-compose.yml -f docker-compose.prod-gpu.yml)

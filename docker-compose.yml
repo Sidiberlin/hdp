@@ -226,7 +226,12 @@ services:
         # Threaded here anyway so `HAYSTACK_DEVICE=gpu` in .env builds the CUDA
         # wheels the host driver can actually run, whether or not the operator
         # remembered to add docker-compose.gpu.yml. See that file's header.
-        HAYSTACK_CUDA_VERSION: ${HAYSTACK_CUDA_VERSION:-cu124}
+        HAYSTACK_CUDA_VERSION: ${HAYSTACK_CUDA_VERSION:-cu126}
+        # Pinned torch version — see docker/haystack/Dockerfile's header for
+        # why this is not left to float. install.sh writes a matching value
+        # when it writes HAYSTACK_CUDA_VERSION=cu118 (the one tag that does
+        # not track this default; see install.sh).
+        HAYSTACK_TORCH_VERSION: ${HAYSTACK_TORCH_VERSION:-2.14.0}
     # Named so the ingest-scheduler service below can build the identical
     # image under a known tag instead of an implicit compose-generated one —
     # see that service's `image:` for why (R4: the second `build:` becomes a

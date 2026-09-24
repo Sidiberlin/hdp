@@ -295,8 +295,9 @@ publish nothing) by [`.github/workflows/release.yml`](.github/workflows/release.
 
 Haystack is published twice because PyTorch is chosen at build time: the `-gpu`
 tag carries the CUDA wheels and the unsuffixed tag carries the CPU-only ones. No
-runtime flag converts one into the other. The `-gpu` tag is a **CUDA 12.4**
-build and needs a driver that supports 12.4 or newer; an older driver has to
+runtime flag converts one into the other. The `-gpu` tag is a **CUDA 12.6**
+build and needs a driver that supports 12.6 or newer (drivers are backward
+compatible, so a much newer driver still runs it fine); an older driver has to
 build from source with `HAYSTACK_CUDA_VERSION=cu118` — see
 [Driver compatibility](#driver-compatibility-haystack_cuda_version).
 OpenSearch and the chatbot proxy have
@@ -424,8 +425,8 @@ built with CUDA PyTorch (~8 GB, against ~2 GB for the CPU image).
 
 NVIDIA drivers are backward compatible but not forward compatible: a newer
 driver runs an older CUDA runtime, never the other way round. The published
-`-gpu` image and the default source build both carry **CUDA 12.4** PyTorch, so
-they need a driver that supports CUDA 12.4 or newer. On an older one the
+`-gpu` image and the default source build both carry **CUDA 12.6** PyTorch, so
+they need a driver that supports CUDA 12.6 or newer. On an older one the
 container builds, starts, passes its healthcheck, and then fails on the first
 embedding with:
 
@@ -433,18 +434,26 @@ embedding with:
 CUDA driver version is insufficient for CUDA runtime version
 ```
 
-`nvidia-smi` prints the ceiling in its header — `CUDA Version: 12.4` means "the
+`docker/haystack/entrypoint.sh` now checks this at container start when
+`HAYSTACK_DEVICE=gpu` and refuses to start rather than silently serving CPU —
+see [GPU inference](#gpu-inference).
+
+`nvidia-smi` prints the ceiling in its header — `CUDA Version: 12.6` means "the
 highest CUDA this driver supports", not "the toolkit installed here":
 
 | Driver supports  | `HAYSTACK_CUDA_VERSION` | How to get it                    |
 | ---------------- | ----------------------- | -------------------------------- |
-| CUDA 12.4+       | `cu124` (default)       | pre-built `-gpu` image, or source |
-| CUDA 11.8 – 12.3 | `cu118`                 | source build only                |
+| CUDA 13.0+       | `cu130`                 | source build only                 |
+| CUDA 12.6 – 12.9 | `cu126` (default)       | pre-built `-gpu` image, or source |
+| CUDA 11.8 – 12.5 | `cu118`                 | source build only                |
 | below CUDA 11.8  | —                       | no GPU build works; use CPU or update the driver |
 
-A CUDA 12.0 driver takes `cu118`, not `cu124`: `cu118` wheels run on every
-driver from 11.8 up, 12.x included. There is no pre-built `cu118` image, so that
-host must build from source:
+`cu124` is deliberately not offered here: PyTorch stopped publishing torch
+builds for that tag after 2.6.0, so selecting it would silently pin the
+install to a release that stops receiving anything new. A CUDA 12.0 driver
+takes `cu118`, not `cu126`: `cu118` wheels run on every driver from 11.8 up,
+12.x included. There is no pre-built `cu118` or `cu130` image, so those hosts
+must build from source:
 
 ```bash
 # in .env
@@ -468,9 +477,9 @@ sudo apt-get install -y nvidia-container-toolkit
 sudo nvidia-ctk runtime configure --runtime=docker
 sudo systemctl restart docker
 # verify (use an image tag your driver supports — 11.8.0-base-ubuntu22.04 on a
-# driver whose ceiling is below CUDA 12.4, or this check fails for a reason that
+# driver whose ceiling is below CUDA 12.6, or this check fails for a reason that
 # has nothing to do with the toolkit):
-docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi
+docker run --rm --gpus all nvidia/cuda:12.6.0-base-ubuntu22.04 nvidia-smi
 ```
 
 Without it, `up` fails with `could not select device driver "nvidia" with

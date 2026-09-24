@@ -52,6 +52,50 @@ case "$HDP_EMBEDDING_PROVIDER" in
         ;;
 esac
 
+# ─── GPU sanity check ────────────────────────────────────────────────
+# HAYSTACK_DEVICE=gpu chose the CUDA PyTorch wheels at *build* time
+# (docker/haystack/Dockerfile). This is the run-time half: confirm the wheel
+# that got baked in can actually see a GPU before serving a single query.
+#
+# This is the fix for the actual production incident, not a wheel-selection
+# bug as such — a GPU install that silently lands on CPU torch previously
+# showed up nowhere. The container built, started, passed its healthcheck,
+# and served every embedding on CPU with GPU utilization sitting at 0%, and
+# nothing said so. HAYSTACK_DEVICE=gpu is an explicit operator choice (set by
+# install.sh or by hand), so failing loudly here — rather than degrading to
+# CPU — is correct: a slow CPU container that LOOKS like the fast GPU one it
+# was configured to be is worse than one that refuses to start, because the
+# CPU one hides the misconfiguration behind a healthcheck that still passes.
+if [ "${HAYSTACK_DEVICE:-cpu}" = "gpu" ]; then
+    echo "=== GPU check (HAYSTACK_DEVICE=gpu) ==="
+    GPU_CHECK="$(python3 -c '
+import torch
+print("cuda_available=%s torch=%s cuda_build=%s" % (
+    torch.cuda.is_available(), torch.__version__, torch.version.cuda))
+if torch.cuda.is_available():
+    print("device=%s" % torch.cuda.get_device_name(0))
+' 2>&1)"
+    echo "$GPU_CHECK"
+    if ! printf '%s' "$GPU_CHECK" | grep -q 'cuda_available=True'; then
+        echo ""
+        echo "FATAL: HAYSTACK_DEVICE=gpu but torch.cuda.is_available() is False."
+        echo "       This container would silently serve every embedding on CPU."
+        echo "       Common causes:"
+        echo "         - NVIDIA Container Toolkit not installed/configured on the host"
+        echo "           (sudo apt-get install -y nvidia-container-toolkit &&"
+        echo "            sudo nvidia-ctk runtime configure --runtime=docker &&"
+        echo "            sudo systemctl restart docker)"
+        echo "         - the compose service is not reserving a GPU device"
+        echo "           (docker-compose.gpu.yml / docker-compose.prod-gpu.yml missing)"
+        echo "         - HAYSTACK_CUDA_VERSION does not match this driver's CUDA ceiling"
+        echo "           ('nvidia-smi' on the host prints the ceiling as 'CUDA Version:')"
+        echo "       See README-DOCKER.md#gpu-inference. Set HAYSTACK_DEVICE=cpu and"
+        echo "       rebuild if you want to run on CPU instead."
+        exit 1
+    fi
+    echo "GPU check passed."
+fi
+
 # Wait for OpenSearch
 OPENSEARCH_HOST="${OPENSEARCH_HOST:-opensearch}"
 OPENSEARCH_PORT="${OPENSEARCH_PORT:-9200}"

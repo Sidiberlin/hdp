@@ -23,21 +23,22 @@
 # `-gpu` image, chosen by release.yml's HAYSTACK_DEVICE=gpu build arg — so
 # nothing re-creates a `build:` key and there is nothing left to build.
 #
-# ─── The published image is a CUDA 12.4 build ───────────────────────
+# ─── The published image is a CUDA 12.6 build ───────────────────────
 #
 # release.yml builds the -gpu image with the Dockerfile's default
-# HAYSTACK_CUDA_VERSION=cu124, and there is no second published variant. NVIDIA
+# HAYSTACK_CUDA_VERSION=cu126, and there is no second published variant. NVIDIA
 # drivers are backward compatible but not forward compatible, so this image
-# needs a host driver that supports CUDA 12.4 or newer — `nvidia-smi` prints
-# that ceiling as "CUDA Version:" in its header. On an older driver (a 12.0 or
-# an 11.x one) it builds nothing, starts fine, and then fails on the first
+# needs a host driver that supports CUDA 12.6 or newer — `nvidia-smi` prints
+# that ceiling as "CUDA Version:" in its header. On an older driver (a 12.5 or
+# earlier one) it builds nothing, starts fine, and then fails on the first
 # embedding with "CUDA driver version is insufficient for CUDA runtime
 # version".
 #
-# That host wants docker-compose.gpu.yml with HAYSTACK_CUDA_VERSION=cu118 in
-# .env instead — a from-source build, because the wheels are chosen at build
-# time and no pre-built image carries the older ones. install.sh checks the
-# driver and picks between the two files on its own.
+# That host wants docker-compose.gpu.yml with HAYSTACK_CUDA_VERSION=cu118 (or
+# cu130, on a driver newer than this image's build) in .env instead — a
+# from-source build, because the wheels are chosen at build time and no
+# pre-built image carries anything but this one CUDA tag. install.sh checks
+# the driver and picks between the two files on its own.
 #
 # ─── What the host needs ────────────────────────────────────────────
 #
@@ -50,7 +51,7 @@
 #   sudo apt-get install -y nvidia-container-toolkit
 #   sudo nvidia-ctk runtime configure --runtime=docker
 #   sudo systemctl restart docker
-#   docker run --rm --gpus all nvidia/cuda:12.4.0-base-ubuntu22.04 nvidia-smi
+#   docker run --rm --gpus all nvidia/cuda:12.6.0-base-ubuntu22.04 nvidia-smi
 #
 # ─── Pinning ────────────────────────────────────────────────────────
 #

@@ -143,15 +143,28 @@ jobs:
           # `suffix` is left unset on the CPU entry on purpose: the unsuffixed
           # name is the default an operator gets, and docker-compose.prod.yml
           # already pulls it.
+          #
+          # `cuda_version`/`torch_version` on the gpu entry are passed as build
+          # args below rather than left to the Dockerfile's own defaults. Two
+          # values drifting apart silently is exactly how the GPU wheel
+          # incident happened: the Dockerfile's ARG default is what a local
+          # `docker compose build` picks up, and this is what release.yml
+          # publishes, and nothing enforced they were ever the same value.
+          # Pinning both explicitly here means a bump to either one is a
+          # one-line diff in this file, visible in review, rather than an
+          # implicit consequence of editing the Dockerfile.
           - image: hdp-haystack
             context: .
             dockerfile: docker/haystack/Dockerfile
             device: cpu
+            torch_version: '2.14.0'
           - image: hdp-haystack
             context: .
             dockerfile: docker/haystack/Dockerfile
             device: gpu
             suffix: '-gpu'
+            cuda_version: 'cu126'
+            torch_version: '2.14.0'
           - image: hdp-chatbot-proxy
             context: ./docker/chatbot-proxy
             dockerfile: ./docker/chatbot-proxy/Dockerfile
@@ -281,10 +294,16 @@ jobs:
           platforms: linux/amd64
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-          # Only the haystack entries carry `device`; for the other two this
-          # expression is the empty string, which build-push-action drops rather
-          # than passing as an unused build arg.
-          build-args: ${{ matrix.device && format('HAYSTACK_DEVICE={0}', matrix.device) || '' }}
+          # Only the haystack entries carry `device`; for the other two every
+          # line here is the empty string, which build-push-action drops rather
+          # than passing as an unused build arg. cuda_version/torch_version are
+          # set only on the gpu entry (see the matrix comment above) — the cpu
+          # entry still pins torch_version so its wheel is not left to drift
+          # independently of the gpu one.
+          build-args: |
+            ${{ matrix.device && format('HAYSTACK_DEVICE={0}', matrix.device) || '' }}
+            ${{ matrix.cuda_version && format('HAYSTACK_CUDA_VERSION={0}', matrix.cuda_version) || '' }}
+            ${{ matrix.torch_version && format('HAYSTACK_TORCH_VERSION={0}', matrix.torch_version) || '' }}
           # Scopes match docker/ci/compose.cache.yml so release builds and the
           # nightly T4 share one cache instead of evicting each other. The GPU
           # build appends its suffix and so gets a scope of its own — see the

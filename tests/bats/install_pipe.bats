@@ -123,10 +123,11 @@ MOCK
     # print ${COMPOSE_ARGS[*]} inside a string. Continuation lines (a line
     # ending in `\`) are joined first, so a multi-line invocation is judged
     # as the single command it is. Prints every invocation missing either
-    # guard; also fails when the count is not exactly 3 (the predownload
-    # run, the setup exec, the ingestion exec) so a NEW run/exec site
-    # cannot appear without extending this pin — and when it is 0, which
-    # would mean the anchor died and the pin went vacuous.
+    # guard; also fails when the count is not exactly 4 (the predownload
+    # run, the GPU-verification run added for the wheel-selection incident —
+    # see tests/bats/gpu_wheel.bats, the setup exec, the ingestion exec) so a
+    # NEW run/exec site cannot appear without extending this pin — and when
+    # it is 0, which would mean the anchor died and the pin went vacuous.
     run awk '
         {
             if (cont) { line = line $0 } else { line = $0 }
@@ -140,7 +141,7 @@ MOCK
         }
         END {
             if (n == 0) print "DEAD ANCHOR: no run/exec invocation matched"
-            else if (n != 3) print "COUNT: expected 3 run/exec invocations, saw " n
+            else if (n != 4) print "COUNT: expected 4 run/exec invocations, saw " n
         }' "$BATS_TEST_DIRNAME/../../install.sh"
     [ "$status" -eq 0 ]
     [ -z "$output" ]
