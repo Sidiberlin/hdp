@@ -646,15 +646,25 @@ fi
 # so a later password rotation in .env does not retry (or fail on) an
 # already-created account; rotate an existing bot's password with
 # changePassword.php by hand instead.
+#
+# --custom-groups editor, alongside --bot: found live on the QA box that
+# --bot alone is not sufficient to save an edit on this wiki's permission
+# model — BlueSpice's ContentStabilization/permission config here restricts
+# `edit` to Administrators/reviewer/Maintainer/editor, none of which the
+# plain bot group is a member of, so every action=edit call 404'd with
+# "The action you have requested is limited to users in one of the
+# groups...". `--bot` still does its job (hides these edits from the
+# default RecentChanges view); `editor` is what actually grants the right
+# to save a page.
 INGEST_BOT_USER="${HDP_INGEST_BOT_USER:-HDPIngestBot}"
 INGEST_BOT_PASS="${HDP_INGEST_BOT_PASSWORD:-}"
 if [ -n "$INGEST_BOT_PASS" ] && [ ! -f cache/.ingest-bot-created-v1 ]; then
     echo ""
     echo "[4/4] Creating the ${INGEST_BOT_USER} ingestion bot account..."
-    if php maintenance/run.php createAndPromote.php --bot \
+    if php maintenance/run.php createAndPromote.php --bot --custom-groups editor \
         "$INGEST_BOT_USER" "$INGEST_BOT_PASS"; then
         touch cache/.ingest-bot-created-v1
-        echo "  ${INGEST_BOT_USER} created and promoted to the bot group."
+        echo "  ${INGEST_BOT_USER} created and promoted to the bot/editor groups."
     else
         record_warning "could not create the ${INGEST_BOT_USER} ingestion bot account — the ingestion API will fall back to admin credentials"
     fi
