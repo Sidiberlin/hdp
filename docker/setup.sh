@@ -630,6 +630,35 @@ if [ ! -f cache/.extendedsearch-initialized ]; then
     echo "  ExtendedSearch initialized. Background jobs will finish indexing."
 fi
 
+# ─── Step 4f: Create the ingestion bot account (first install only) ───
+# D9: a dedicated HDPIngestBot account for the ingestion API's writes, so
+# they are attributable in page history, filterable in RecentChanges, and
+# revocable without rotating the wiki admin password the installer prints
+# to the operator. Only created when an operator has actually set
+# HDP_INGEST_BOT_PASSWORD — an install that never enables the ingestion API
+# never gets this account, and the API falls back to admin credentials with
+# a WARNING when it is absent (see docker/haystack/ingest_api.py's _login()).
+#
+# createAndPromote.php has no --passfile option, unlike install.php above —
+# the password is briefly visible on this process's argv/cmdline, the same
+# exposure anyone running this maintenance script by hand would accept.
+# Guarded by a marker file, in the style of the other seeded-content steps,
+# so a later password rotation in .env does not retry (or fail on) an
+# already-created account; rotate an existing bot's password with
+# changePassword.php by hand instead.
+INGEST_BOT_USER="${HDP_INGEST_BOT_USER:-HDPIngestBot}"
+INGEST_BOT_PASS="${HDP_INGEST_BOT_PASSWORD:-}"
+if [ -n "$INGEST_BOT_PASS" ] && [ ! -f cache/.ingest-bot-created-v1 ]; then
+    echo ""
+    echo "[4/4] Creating the ${INGEST_BOT_USER} ingestion bot account..."
+    if php maintenance/run.php createAndPromote.php --bot \
+        "$INGEST_BOT_USER" "$INGEST_BOT_PASS"; then
+        touch cache/.ingest-bot-created-v1
+        echo "  ${INGEST_BOT_USER} created and promoted to the bot group."
+    else
+        record_warning "could not create the ${INGEST_BOT_USER} ingestion bot account — the ingestion API will fall back to admin credentials"
+    fi
+fi
 
 # ─── Summary ────────────────────────────────────────────────────────
 # One line that always states the outcome, so "did this work?" never has to

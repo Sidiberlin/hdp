@@ -94,6 +94,23 @@ services:
               count: all
               capabilities: [gpu]
 
+  # Same `-gpu` image as haystack, pulled instead of built, with the same
+  # device reservation — see the identical note on docker-compose.gpu.yml's
+  # ingest-scheduler override for why both halves (image AND reservation)
+  # have to move together.
+  ingest-scheduler:
+    build: !reset null
+    image: ghcr.io/sidiberlin/hdp-haystack:${HDP_IMAGE_TAG:-v5.1.9}-gpu
+    environment:
+      HAYSTACK_DEVICE: gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+
   chatbot-proxy:
     build: !reset null
     # No GPU variant: this service is a stateless HTTP adapter with no model in

@@ -110,8 +110,10 @@ COPY docker/haystack/wikitext.py /opt/pipeline/wikitext.py
 COPY docker/haystack/ingest_select.py /opt/pipeline/ingest_select.py
 COPY docker/haystack/serialization.py /opt/pipeline/serialization.py
 COPY docker/haystack/hdp_api_server.py /opt/pipeline/hdp_api_server.py
+COPY docker/haystack/ingest_api.py /opt/pipeline/ingest_api.py
+COPY docker/haystack/ingest-scheduler.sh /opt/pipeline/ingest-scheduler.sh
 COPY docker/infisical-loader.sh /infisical-loader.sh
-RUN chmod +x /opt/pipeline/entrypoint.sh /infisical-loader.sh
+RUN chmod +x /opt/pipeline/entrypoint.sh /opt/pipeline/ingest-scheduler.sh /infisical-loader.sh
 
 # Re-declared: the ARG above the first FROM is only in scope for the FROM lines
 # themselves, so without this the two labels below interpolated to the empty

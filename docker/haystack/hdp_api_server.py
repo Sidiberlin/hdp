@@ -7,6 +7,12 @@ import os
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
+
+# The ingestion API (QoL6) — a router, not inlined here, so the auth
+# dependency it carries stays scoped to /v1/ingest/pages and does not touch
+# the unauthenticated routes below (see docker/haystack/ingest_api.py's
+# module docstring for why a global dependency would break chatbot-proxy).
+from ingest_api import router as ingest_router
 from pydantic import BaseModel
 
 # Extracted in Wave 2 so both are reachable from a test. Same directory, which
@@ -24,6 +30,7 @@ PIPELINE_FILE = os.path.join(
 pipeline, pipeline_error = load_pipeline(PIPELINE_FILE)
 
 app = FastAPI(title="HDP RAG API")
+app.include_router(ingest_router)
 
 class QueryRequest(BaseModel):
     question: str

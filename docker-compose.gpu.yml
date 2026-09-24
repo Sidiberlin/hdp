@@ -80,3 +80,28 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
+
+  # Mirrors haystack above, exactly. Without this the sidecar would inherit
+  # docker-compose.yml's HAYSTACK_DEVICE:-cpu default and the CPU build args
+  # while this file reserves no device for it either — both wrong, and
+  # silently: ingest-scheduler.sh's own GPU check (mirroring
+  # entrypoint.sh's, see that file) would still catch a HAYSTACK_DEVICE=gpu
+  # mismatch and refuse to start, which is the failure entrypoint.sh's
+  # check exists to produce, but the right fix is for this override to give
+  # the sidecar the same device and wheels as haystack in the first place —
+  # the exact incident F5 documents, one override away from recurring here.
+  ingest-scheduler:
+    build:
+      args:
+        HAYSTACK_DEVICE: gpu
+        HAYSTACK_CUDA_VERSION: ${HAYSTACK_CUDA_VERSION:-cu126}
+        HAYSTACK_TORCH_VERSION: ${HAYSTACK_TORCH_VERSION:-2.14.0}
+    environment:
+      HAYSTACK_DEVICE: gpu
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]

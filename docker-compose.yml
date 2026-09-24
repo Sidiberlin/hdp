@@ -227,6 +227,11 @@ services:
         # wheels the host driver can actually run, whether or not the operator
         # remembered to add docker-compose.gpu.yml. See that file's header.
         HAYSTACK_CUDA_VERSION: ${HAYSTACK_CUDA_VERSION:-cu124}
+    # Named so the ingest-scheduler service below can build the identical
+    # image under a known tag instead of an implicit compose-generated one —
+    # see that service's `image:` for why (R4: the second `build:` becomes a
+    # cache hit, not a second build).
+    image: hdp-haystack:local
     restart: unless-stopped
     ports:
       # Bound to loopback on purpose. Neither port carries any authentication:
@@ -300,8 +305,126 @@ services:
       MW_API_URL: "http://mediawiki-web:8080/w/api.php"
       MW_ADMIN_USER: "Admin"
       HDP_ADMIN_PASSWORD: "${HDP_ADMIN_PASSWORD}"
+      # Base URL used to build the ingestion API's page_urls in its response
+      # (D12) — the same value MediaWiki itself uses, see .env.example.
+      MW_SERVER: '${MW_SERVER:-http://localhost:${MW_DOCKER_PORT:-8080}}'
+      # ─── Ingestion API (QoL6, D8/D9/D12) — .env fallback for secrets;
+      # Infisical overwrites HDP_-prefixed ones at container start, same
+      # pattern as HDP_LLM_API_KEY above. Empty HDP_INGEST_API_KEY means the
+      # route answers 503 (fail closed, D8) — nothing below widens exposure
+      # on its own.
+      HDP_INGEST_API_KEY: '${HDP_INGEST_API_KEY:-}'
+      HDP_INGEST_BOT_USER: '${HDP_INGEST_BOT_USER:-HDPIngestBot}'
+      HDP_INGEST_BOT_PASSWORD: '${HDP_INGEST_BOT_PASSWORD:-}'
+      HDP_INGEST_API_MAX_PAGES: '${HDP_INGEST_API_MAX_PAGES:-50}'
+      HDP_INGEST_API_RATE_PER_MIN: '${HDP_INGEST_API_RATE_PER_MIN:-6}'
+      HDP_INGEST_ALLOWED_CATEGORIES: '${HDP_INGEST_ALLOWED_CATEGORIES:-}'
     volumes:
       - haystack_models:/root/.cache/huggingface
+      # D4's shared lock volume — mounted here and in ingest-scheduler below,
+      # both at the same path, so fcntl.flock() in ingest_hdp_wiki.py's
+      # acquire_lock() sees one inode regardless of which container an
+      # ingestion runs in.
+      - haystack_state:/var/lib/hdp-ingest
+      # R1 (ratified): bind-mount the ingestion pipeline module and the API
+      # router on top of the Dockerfile's COPY, read-only. On the
+      # docker-compose.prod*.yml paths the pulled image can be an older
+      # release that predates D3/D4/D9 (ingest_hdp_wiki.py) or the ingestion
+      # API entirely (ingest_api.py) — the bind mount is what makes the
+      # flock/--max-pages behavior work everywhere without a rebuild. The
+      # ingestion API route itself still needs hdp_api_server.py to import
+      # ingest_api's router (D7), which only a rebuilt/newer image carries —
+      # see README-DOCKER.md's Ingestion API section.
+      - ./docker/haystack/ingest_hdp_wiki.py:/opt/pipeline/ingest_hdp_wiki.py:ro
+      - ./docker/haystack/ingest_api.py:/opt/pipeline/ingest_api.py:ro
+    depends_on:
+      opensearch:
+        condition: service_healthy
+    networks:
+      - hdp
+
+  # ─── Ingestion Scheduler (periodic --missing-only re-ingest, QoL6) ─
+  # Same image as haystack (see haystack's `image:` note above — this is
+  # what turns the second `build:` into a cache hit, not a second image), a
+  # different entrypoint. D1: a sidecar rather than a second background
+  # process inside entrypoint.sh, so this loop has its own logs, its own
+  # restart policy, its own memory limit, and can be stopped
+  # (HDP_INGEST_INTERVAL_MIN=0, or `docker compose stop ingest-scheduler`)
+  # without taking the RAG query API down with it.
+  ingest-scheduler:
+    build:
+      context: .
+      dockerfile: docker/haystack/Dockerfile
+      args:
+        HAYSTACK_DEVICE: ${HAYSTACK_DEVICE:-cpu}
+        HAYSTACK_CUDA_VERSION: ${HAYSTACK_CUDA_VERSION:-cu126}
+        HAYSTACK_TORCH_VERSION: ${HAYSTACK_TORCH_VERSION:-2.14.0}
+    image: hdp-haystack:local
+    # F4: entrypoint:, never command: — docker/haystack/Dockerfile has no
+    # CMD, so a `command:` override on this image is appended as arguments
+    # to entrypoint.sh, which ignores them and boots the whole RAG stack
+    # (hayhooks + the query API) a second time instead of this loop.
+    entrypoint: ["/opt/pipeline/ingest-scheduler.sh"]
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: ${HDP_INGEST_SCHEDULER_MEM_LIMIT:-2g}
+    environment:
+      # ─── The three scheduler knobs (D3/D5/D6) ───────────────────────
+      HDP_INGEST_INTERVAL_MIN: '${HDP_INGEST_INTERVAL_MIN:-5}'
+      HDP_INGEST_MAX_PAGES: '${HDP_INGEST_MAX_PAGES:-25}'
+      HDP_INGEST_BACKOFF_MAX_MIN: '${HDP_INGEST_BACKOFF_MAX_MIN:-60}'
+      # ─── Everything ingest_hdp_wiki.py itself needs — haystack's
+      # environment: block minus the LLM/hayhooks-only keys. Kept in step by
+      # hand; tests/unit/test_compose_ingest_scheduler.py pins the parts that
+      # must never drift (entrypoint:, the healthcheck, the shared volume).
+      OPENSEARCH_HOST: opensearch
+      OPENSEARCH_PORT: "9200"
+      OPENSEARCH_PASSWORD: "${HDP_OPENSEARCH_PASSWORD}"
+      INFISICAL_URL: '${HDP_INFISICAL_URL}'
+      INFISICAL_PROJECT_ID: '${HDP_INFISICAL_PROJECT_ID}'
+      INFISICAL_CLIENT_ID: '${HDP_INFISICAL_CLIENT_ID}'
+      INFISICAL_CLIENT_SECRET: '${HDP_INFISICAL_CLIENT_SECRET}'
+      INFISICAL_ENV: '${HDP_INFISICAL_ENV:-prod}'
+      HAYSTACK_DEVICE: '${HAYSTACK_DEVICE:-cpu}'
+      HDP_EMBEDDING_PROVIDER: '${HDP_EMBEDDING_PROVIDER:-local}'
+      HDP_EMBEDDING_MODEL: '${HDP_EMBEDDING_MODEL:-mixedbread-ai/deepset-mxbai-embed-de-large-v1}'
+      HDP_EMBEDDING_DIM: '${HDP_EMBEDDING_DIM:-1024}'
+      HDP_EMBEDDING_BASE_URL: '${HDP_EMBEDDING_BASE_URL:-}'
+      HDP_EMBEDDING_HF_SPACE_ID: '${HDP_EMBEDDING_HF_SPACE_ID:-}'
+      HDP_EMBEDDING_API_KEY: '${HDP_EMBEDDING_API_KEY:-}'
+      HDP_EMBEDDING_HF_TOKEN: '${HDP_EMBEDDING_HF_TOKEN:-}'
+      DB_HOST: mariadb
+      DB_PORT: "3306"
+      DB_NAME: bluespice
+      DB_USER: bluespice
+      HDP_DB_PASSWORD: "${HDP_DB_PASSWORD}"
+      MW_API_URL: "http://mediawiki-web:8080/w/api.php"
+      MW_ADMIN_USER: "Admin"
+      HDP_ADMIN_PASSWORD: "${HDP_ADMIN_PASSWORD}"
+    volumes:
+      - haystack_models:/root/.cache/huggingface
+      - haystack_state:/var/lib/hdp-ingest
+      # R1 (ratified): bind-mount the scheduler's own entrypoint script plus
+      # the pipeline module it runs, read-only, in addition to the
+      # Dockerfile's COPY — see the identical note on haystack's volumes
+      # above. This is what makes the scheduler work on every install path,
+      # published-image ones included, with no image rebuild.
+      - ./docker/haystack/ingest-scheduler.sh:/opt/pipeline/ingest-scheduler.sh:ro
+      - ./docker/haystack/ingest_hdp_wiki.py:/opt/pipeline/ingest_hdp_wiki.py:ro
+    healthcheck:
+      # No HTTP endpoint — like mediawiki-jobrunner (F15), this is a bash
+      # loop. Confirm the entrypoint's bash process is still alive as PID 1.
+      # F14: every service in HDP_T4_SERVICES needs a healthcheck, or T4
+      # treats "no healthcheck" as unhealthy and hangs until its budget
+      # expires — this service is not in that list (it needs no live wiki
+      # traffic to be meaningful), but it gets one anyway on principle.
+      test: ["CMD-SHELL", "[ \"$(cat /proc/1/comm 2>/dev/null)\" = 'bash' ] || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
     depends_on:
       opensearch:
         condition: service_healthy
@@ -337,6 +460,10 @@ volumes:
   mariadb_data:
   opensearch_data:
   haystack_models:
+  # D4's shared lock volume — mounted at /var/lib/hdp-ingest in haystack and
+  # ingest-scheduler, nowhere else. Tiny (one lock file); not worth its own
+  # memory/size note.
+  haystack_state:
 
 networks:
   hdp:

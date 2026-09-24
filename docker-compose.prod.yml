@@ -48,6 +48,17 @@ services:
     build: !reset null
     image: ghcr.io/sidiberlin/hdp-haystack:${HDP_IMAGE_TAG:-v5.1.9}
 
+  # Same image as haystack, pulled instead of built — mirrors
+  # docker-compose.yml's haystack/ingest-scheduler pairing. R1: the bind
+  # mounts docker-compose.yml already declares on this service (ro, over the
+  # Dockerfile's COPY) are what let it run correctly even when
+  # HDP_IMAGE_TAG points at a release that predates this feature — a `-QoL*`
+  # tag publishes no images, so this path can otherwise be pulling an image
+  # with no ingest-scheduler.sh in it at all. See that file's header.
+  ingest-scheduler:
+    build: !reset null
+    image: ghcr.io/sidiberlin/hdp-haystack:${HDP_IMAGE_TAG:-v5.1.9}
+
   chatbot-proxy:
     build: !reset null
     image: ghcr.io/sidiberlin/hdp-chatbot-proxy:${HDP_IMAGE_TAG:-v5.1.9}

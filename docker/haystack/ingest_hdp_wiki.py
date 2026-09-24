@@ -23,10 +23,12 @@ HDP_EMBEDDING_* variables each mode reads.
 """
 
 import argparse
+import fcntl
 import hashlib
 import json
 import logging
 import os
+import sys
 import time
 import warnings
 
@@ -82,6 +84,48 @@ MW_ADMIN_PASS = os.environ.get("HDP_ADMIN_PASSWORD", "")
 
 # Content namespaces to index (from ChatBot extension.json, plus Help namespace)
 INDEXABLE_NAMESPACES = [0, 12, 5000, 5002]
+
+# ─── Cross-container mutual exclusion (D4) ───────────────────────────
+# A named volume, `haystack_state` in docker-compose.yml, mounted at this
+# path in every container that can run an ingestion: haystack (manual
+# `docker compose exec` runs and the ingestion API) and ingest-scheduler (the
+# periodic sidecar). The lock file itself, not its directory, is what flock
+# takes — same shared inode from every one of those processes regardless of
+# which container it runs in.
+LOCK_DIR = os.environ.get("HDP_INGEST_LOCK_DIR", "/var/lib/hdp-ingest")
+LOCK_PATH = os.path.join(LOCK_DIR, "ingest.lock")
+
+
+class IngestLockHeld(Exception):
+    """Raised by acquire_lock() when another process already holds the D4
+    lock. main() turns this into exit 75 (EX_TEMPFAIL); ingest_api.py
+    catches it directly and answers 429 `ingestion_in_progress` instead of
+    exiting a process that also serves RAG queries."""
+
+
+def acquire_lock():
+    """Non-blocking flock on the shared haystack_state volume (D4).
+
+    Returns the open file object — keep a reference alive for as long as the
+    lock should be held; the OS releases it when the file descriptor is
+    closed (or the process exits). Every ingestion entry point calls this at
+    the top of its own main()/request handler, so an operator's own
+    `docker compose exec haystack python3 ingest_hdp_wiki.py`, the scheduler
+    sidecar, and the ingestion API all serialize against the same lock no
+    matter which container or process runs them.
+
+    Raises IngestLockHeld — never exits or blocks — so both callers (a CLI
+    process that wants to sys.exit(75), and a FastAPI route that wants to
+    return 429) decide their own response to "someone else has it".
+    """
+    os.makedirs(LOCK_DIR, exist_ok=True)
+    lock_file = open(LOCK_PATH, "w")
+    try:
+        fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except OSError as e:
+        lock_file.close()
+        raise IngestLockHeld(LOCK_PATH) from e
+    return lock_file
 
 # Embedding provider config (see .env.example for the full variable set)
 EMBEDDING_PROVIDER = os.environ.get("HDP_EMBEDDING_PROVIDER", "local").strip().lower()
@@ -227,6 +271,36 @@ def get_namespace_pages(conn) -> list[dict]:
     return rows
 
 
+def get_pages_by_title(conn, titles: list) -> list:
+    """Fetch specific main-namespace pages by title — the ingestion API's
+    targeted-write counterpart to get_namespace_pages()'s full scan (D12).
+
+    Same SELECT, narrowed to page_namespace = 0 (main namespace only — the
+    API's v1 scope) and page_title IN (...). `titles` must already be in
+    MediaWiki's stored title form (spaces as underscores). Empty `titles`
+    short-circuits to [] rather than building an always-false `IN ()`, which
+    some SQL backends reject outright rather than simply matching nothing.
+    """
+    if not titles:
+        return []
+    with conn.cursor(pymysql.cursors.DictCursor) as cursor:
+        placeholders = ",".join(["%s"] * len(titles))
+        cursor.execute(f"""
+            SELECT p.page_id, p.page_namespace, p.page_title,
+                   p.page_is_redirect, p.page_latest, p.page_content_model
+            FROM page p
+            WHERE p.page_namespace = 0
+              AND p.page_title IN ({placeholders})
+              AND (p.page_content_model = 'wikitext' OR p.page_content_model IS NULL)
+            ORDER BY p.page_id
+        """, tuple(titles))
+        rows = cursor.fetchall()
+    for row in rows:
+        row["page_title"] = decode_varbinary(row["page_title"])
+        row["page_content_model"] = decode_varbinary(row["page_content_model"])
+    return rows
+
+
 def get_indexed_page_ids() -> set:
     """Get the set of page_ids already present in OpenSearch (for --missing-only)."""
     return set(get_staged_revisions().keys())
@@ -317,11 +391,20 @@ def get_staged_revisions() -> dict:
     return out
 
 
-def mw_api_login() -> requests.Session:
+def mw_api_login(user: str = None, password: str = None) -> requests.Session:
     """
     Login to MediaWiki API via clientlogin (action=login is blocked in MW 1.43+).
     Handles BlueSpice Privacy consent multi-step authentication.
+
+    `user`/`password` default to MW_ADMIN_USER/MW_ADMIN_PASS (today's global
+    behavior, unchanged). The ingestion API (D9) passes the HDPIngestBot
+    credentials instead, when HDP_INGEST_BOT_PASSWORD is configured — same
+    login flow, different account, so machine-written edits are attributable
+    and revocable without touching the wiki admin password.
     """
+    user = user if user is not None else MW_ADMIN_USER
+    password = password if password is not None else MW_ADMIN_PASS
+
     session = requests.Session()
 
     # Get login token
@@ -333,7 +416,7 @@ def mw_api_login() -> requests.Session:
     # Step 1: clientlogin with username/password
     r = session.post(MW_API_URL, data={
         "action": "clientlogin", "format": "json",
-        "username": MW_ADMIN_USER, "password": MW_ADMIN_PASS,
+        "username": user, "password": password,
         "logintoken": login_token,
         "loginreturnurl": "http://mediawiki-web:8080/w/",
     }, timeout=30)
@@ -362,7 +445,7 @@ def mw_api_login() -> requests.Session:
     result = cl.get("status", "")
     if result != "PASS":
         raise RuntimeError(f"MediaWiki clientlogin failed: {data}")
-    logger.info(f"Logged in to MediaWiki as {MW_ADMIN_USER}")
+    logger.info(f"Logged in to MediaWiki as {user}")
     return session
 
 
@@ -449,9 +532,30 @@ def main():
              "(itself defaulting to 'local'). 'hf_space' is for ingestion/testing "
              "only — never valid for the live query pipeline.",
     )
+    parser.add_argument(
+        "--max-pages", type=int, default=None,
+        help="Truncate the --missing-only selection to at most N pages per run "
+             "(D3). Defaults to $HDP_INGEST_MAX_PAGES (itself defaulting to 25). "
+             "Applied after classification, so the log line's new/edited/"
+             "unchanged counts describe the whole wiki, not the truncated slice. "
+             "Ignored without --missing-only.",
+    )
     args = parser.parse_args()
 
     provider = (args.provider or EMBEDDING_PROVIDER).strip().lower()
+
+    # D4 — first real work in main(): every entry point (this CLI, the
+    # scheduler sidecar, the ingestion API) takes the same lock before
+    # touching the database, so at most one ingestion runs at a time across
+    # every container. See acquire_lock()'s docstring.
+    try:
+        _lock = acquire_lock()  # noqa: F841 — held for the life of the process
+    except IngestLockHeld:
+        logger.warning(
+            f"Another ingestion already holds {LOCK_PATH} — exiting 75 "
+            "(EX_TEMPFAIL) rather than racing it."
+        )
+        sys.exit(75)
 
     # Connect to MariaDB
     conn = pymysql.connect(
@@ -475,6 +579,20 @@ def main():
             f"({before - counts['unchanged']} of {before} to index, "
             f"{counts['unchanged']} unchanged)"
         )
+
+        # D3: bound the work per cycle. Applied AFTER classification and
+        # logging above, so the counts always describe the whole wiki — a
+        # truncated run must not look like a smaller wiki than it is.
+        max_pages = args.max_pages
+        if max_pages is None:
+            max_pages = int(os.environ.get("HDP_INGEST_MAX_PAGES", "25"))
+        if max_pages > 0 and len(pages) > max_pages:
+            logger.warning(
+                f"--max-pages {max_pages}: truncating {len(pages)} pages to "
+                f"index down to {max_pages} this run; the rest will be picked "
+                f"up on a later run."
+            )
+            pages = pages[:max_pages]
 
     if not pages:
         logger.warning("No pages to index. Exiting.")
