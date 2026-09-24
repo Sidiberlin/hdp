@@ -249,7 +249,7 @@ def test_every_indexable_namespace_exists(wiki, indexable_namespaces):
     INDEXABLE_NAMESPACES`. A namespace in that list that the wiki does not
     define is not an error anywhere — the query simply returns nothing and the
     index quietly shrinks. Wave 2 established the baseline: 32 pages across
-    these namespaces produce 157 documents.
+    these namespaces produce 156 documents.
     """
     defined = {int(n) for n in wiki.siteinfo("namespaces")["namespaces"]}
     missing = [ns for ns in indexable_namespaces if ns not in defined]

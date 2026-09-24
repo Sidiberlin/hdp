@@ -62,11 +62,13 @@ ES_INDEX = "bluespice_wikipage"
 ES_INDEX_MIN_DOCS = 50
 
 # The Haystack RAG index, written by docker/haystack/ingest_hdp_wiki.py. This
-# one *is* exact: 157 documents from 32 pages, reproduced on three separate
+# one *is* exact: 156 documents from 32 pages (CI clean-seed ground truth;
+# a box that ran the T8 live API test measures 157 — its probe edit added a
+# section and was never reverted, so treat box numbers above 156 as tainted)
 # clean-box runs from an empty OpenSearch. See wave-progress.md — the "~828"
 # that used to be quoted for this index was bluespice_wikipage's number.
 HDP_INDEX = "hdp_wiki"
-HDP_INDEX_DOCS = 157
+HDP_INDEX_DOCS = 156  # CI ground truth @ 5266633e0: 158 written, 156 stored (Sequenzen collision folds 3->1, twice)
 
 # German content namespace. 30 Help pages live here; ns 0 has two.
 HELP_NS = 12
@@ -253,14 +255,14 @@ def test_search_center_special_page_renders(drained_job_queue, wiki):
 
 
 def test_haystack_index_holds_the_ingested_wiki(ingest_ran, os_count):
-    """`hdp_wiki` holds the 157 documents the RAG pipeline retrieves over.
+    """`hdp_wiki` holds the 156 documents the RAG pipeline retrieves over.
 
     This is the other index, and confusing the two has already cost this
     project a wave: `bluespice_wikipage` is BlueSpice's own search index and
     holds ~808 nested documents; `hdp_wiki` is written only by
-    `docker/haystack/ingest_hdp_wiki.py` and holds 157 documents from 32 pages
-    (namespaces 0 and 12 — `INDEXABLE_NAMESPACES`). 159 sections are written
-    and 157 stored, because `Help:Diagramme/Sequenzen` repeats a `Walkthrough`
+    `docker/haystack/ingest_hdp_wiki.py` and holds 156 documents from 32 pages
+    (namespaces 0 and 12 — `INDEXABLE_NAMESPACES`). 158 sections are written
+    and 156 stored, because `Help:Diagramme/Sequenzen` repeats a `Walkthrough`
     heading three times and all three collide on the same
     `sha256(page_id:section_name)`.
 
