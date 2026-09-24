@@ -848,7 +848,7 @@ fi
 
 # 10. Final health pass + HTTP probe.
 printf '\n'
-ALL_SERVICES=(mariadb opensearch mediawiki mediawiki-web mediawiki-jobrunner haystack chatbot-proxy)
+ALL_SERVICES=(mariadb opensearch mediawiki mediawiki-web mediawiki-jobrunner haystack chatbot-proxy ingest-scheduler)
 wait_ready "all services         " 60 "${ALL_SERVICES[@]}" \
     || fail_rollback "not every service reported healthy after the update"
 
