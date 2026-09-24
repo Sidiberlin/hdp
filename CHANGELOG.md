@@ -11,6 +11,10 @@ For changes in the upstream BlueSpice HDP Edition, see the
 
 ## [Unreleased]
 
+---
+
+## [5.1.9-QoL5] — 2026-09-24
+
 ### Fixed
 
 - **Chatbot citations**: `[N]` markers combining more than one document in a
