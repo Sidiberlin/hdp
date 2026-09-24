@@ -19,6 +19,7 @@
               "namespace": 12,
               "page_id": 104,
               "prefixed_title": "Help:Seite 4",
+              "sections": [],
               "title_level_1": "Help:Seite 4",
               "uri": "http://mediawiki-web:8080/w/Help:Seite_4"
             }
@@ -30,6 +31,7 @@
               "namespace": 12,
               "page_id": 105,
               "prefixed_title": "Help:Seite 5",
+              "sections": [],
               "title_level_1": "Help:Seite 5",
               "uri": "http://mediawiki-web:8080/w/Help:Seite_5"
             }
@@ -48,6 +50,7 @@
         "namespace": 12,
         "page_id": 104,
         "prefixed_title": "Help:Seite 4",
+        "sections": [],
         "title_level_1": "Help:Seite 4",
         "uri": "http://mediawiki-web:8080/w/Help:Seite_4"
       }
@@ -59,6 +62,7 @@
         "namespace": 12,
         "page_id": 105,
         "prefixed_title": "Help:Seite 5",
+        "sections": [],
         "title_level_1": "Help:Seite 5",
         "uri": "http://mediawiki-web:8080/w/Help:Seite_5"
       }

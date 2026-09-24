@@ -18,6 +18,7 @@
               "namespace": 12,
               "page_id": 101,
               "prefixed_title": "Help:Seite 1",
+              "sections": [],
               "title_level_1": "Help:Seite 1",
               "uri": "http://mediawiki-web:8080/w/Help:Seite_1"
             }
@@ -36,6 +37,7 @@
         "namespace": 12,
         "page_id": 101,
         "prefixed_title": "Help:Seite 1",
+        "sections": [],
         "title_level_1": "Help:Seite 1",
         "uri": "http://mediawiki-web:8080/w/Help:Seite_1"
       }
