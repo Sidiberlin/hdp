@@ -885,6 +885,8 @@ for f in "${CHANGED_FILES[@]}"; do
             printf '\n'
             note "docker/haystack/** changed — re-ingestion may be worth running:"
             note "  docker ${COMPOSE_ARGS[*]} exec haystack python3 ingest_hdp_wiki.py --missing-only"
+            note "The ingest-scheduler container now covers this on its own on a timer"
+            note "(HDP_INGEST_INTERVAL_MIN, default 5min) — this is only for an immediate resync."
             break
             ;;
     esac

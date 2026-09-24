@@ -822,6 +822,8 @@ step "8/8  Passwords"
 info "Four passwords are needed: MariaDB root, MariaDB user, wiki Admin, OpenSearch."
 note "OpenSearch additionally runs a zxcvbn strength check — leetspeak like"
 note "'Adm1nPassw0rd!' is rejected despite meeting every stated character rule."
+note "Two more secrets for the (optional, off-by-default) ingestion API are"
+note "generated alongside them, no extra question — see the Review below."
 printf '\n'
 
 # The OpenSearch shape (Hdp-<hex>-26!) satisfies all four character classes and
@@ -834,6 +836,12 @@ PW_DB_ROOT="$(get_env HDP_DB_ROOT_PASSWORD)"
 PW_DB="$(get_env HDP_DB_PASSWORD)"
 PW_ADMIN="$(get_env HDP_ADMIN_PASSWORD)"
 PW_OS="$(get_env HDP_OPENSEARCH_PASSWORD)"
+# D13: no new question. These two ride along in the same "generate all"
+# branch below; a manual-password operator gets neither generated, and the
+# ingestion API simply stays off (fail-closed default, D8) until they set
+# HDP_INGEST_API_KEY themselves.
+PW_INGEST_API_KEY="$(get_env HDP_INGEST_API_KEY)"
+PW_INGEST_BOT="$(get_env HDP_INGEST_BOT_PASSWORD)"
 
 GENERATED=0
 if confirm "Generate all four automatically with openssl?" y; then
@@ -841,6 +849,8 @@ if confirm "Generate all four automatically with openssl?" y; then
     PW_DB="$(gen_password)"
     PW_ADMIN="$(gen_password)"
     PW_OS="$(gen_os_password)"
+    PW_INGEST_API_KEY="$(gen_password)"
+    PW_INGEST_BOT="$(gen_password)"
     GENERATED=1
 else
     printf '\n'
@@ -895,6 +905,10 @@ set_env HDP_DB_ROOT_PASSWORD "$PW_DB_ROOT"
 set_env HDP_DB_PASSWORD "$PW_DB"
 set_env HDP_ADMIN_PASSWORD "$PW_ADMIN"
 set_env HDP_OPENSEARCH_PASSWORD "$PW_OS"
+# Empty is a valid, intentional value here (fail-closed, D8) — only written
+# when generated or hand-entered, same as the four above.
+[ -n "$PW_INGEST_API_KEY" ] && set_env HDP_INGEST_API_KEY "$PW_INGEST_API_KEY"
+[ -n "$PW_INGEST_BOT" ] && set_env HDP_INGEST_BOT_PASSWORD "$PW_INGEST_BOT"
 
 if [ "$GENERATED" -eq 1 ]; then
     printf '\n'
@@ -904,6 +918,8 @@ if [ "$GENERATED" -eq 1 ]; then
     printf '    %-26s %s\n' "MariaDB bluespice" "$PW_DB"
     printf '    %s%-26s %s%s\n' "$C_BLD" "Wiki Admin (login!)" "$PW_ADMIN" "$C_OFF"
     printf '    %-26s %s\n' "OpenSearch admin"  "$PW_OS"
+    printf '    %-26s %s\n' "Ingestion API key" "$PW_INGEST_API_KEY"
+    printf '    %-26s %s\n' "Ingestion bot (HDPIngestBot)" "$PW_INGEST_BOT"
     printf '\n'
 else
     ok "Passwords written to .env"
@@ -936,6 +952,7 @@ printf '  %-22s %s\n' "MariaDB root pw"   "$(mask "$PW_DB_ROOT")"
 printf '  %-22s %s\n' "MariaDB user pw"   "$(mask "$PW_DB")"
 printf '  %-22s %s\n' "Wiki Admin pw"     "$(mask "$PW_ADMIN")"
 printf '  %-22s %s\n' "OpenSearch pw"     "$(mask "$PW_OS")"
+printf '  %-22s %s\n' "Ingestion API key" "$(mask "$PW_INGEST_API_KEY")"
 printf '\n'
 note "Login after setup:  user 'Admin' with the wiki Admin password above."
 printf '\n'
@@ -1281,6 +1298,13 @@ if [ "$SETUP_OK" -eq 1 ]; then
     printf '  %sLogin%s     Admin  /  %s%s%s\n' "$C_BLD" "$C_OFF" "$C_BLD" "$PW_ADMIN" "$C_OFF"
     printf '  %sUpdate%s    cd %s && ./update.sh      %s# later, to move to the latest release%s\n' \
         "$C_BLD" "$C_OFF" "$REPO_ROOT" "$C_DIM" "$C_OFF"
+    printf '  %sAuto-index%s every %s min · docker %s logs -f ingest-scheduler\n' \
+        "$C_BLD" "$C_OFF" "$(get_env HDP_INGEST_INTERVAL_MIN)" "${COMPOSE_ARGS[*]}"
+    if [ -n "$PW_INGEST_API_KEY" ]; then
+        _ingest_api_port="$(get_env HDP_PDF_PORT)"
+        printf '  %sIngest API%s http://127.0.0.1:%s/v1/ingest/pages   %s# see README-DOCKER.md%s\n' \
+            "$C_BLD" "$C_OFF" "${_ingest_api_port:-1417}" "$C_DIM" "$C_OFF"
+    fi
     printf '\n'
     note "BlueSpice shows nothing before you log in, including the main page."
     note "A privacy consent prompt on first login is expected."
@@ -1325,6 +1349,11 @@ if [ "$SETUP_OK" -eq 1 ]; then
         printf '\n'
         printf '       docker %s exec haystack python3 ingest_hdp_wiki.py\n' "${COMPOSE_ARGS[*]}"
         printf '       %s# add --missing-only to resume an interrupted run%s\n' "$C_DIM" "$C_OFF"
+        printf '\n'
+        note "The ingest-scheduler container is already running, but D2 keeps it"
+        note "idle — no OpenSearch index to compare against yet — until this first"
+        note "full ingestion. It logs 'waiting for the initial ingestion' each cycle"
+        note "until then, then takes over incrementally on its own."
     fi
 
     printf '\n'
