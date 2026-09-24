@@ -193,9 +193,22 @@ def require_api_key(authorization: str = Header(default=None)):
 
 
 def _db_connect():
+    # autocommit=True — found live on the QA box: unlike ingest_hdp_wiki.py's
+    # main(), which does one read before any writes, this connection
+    # interleaves reads (get_pages_by_title) with writes that land through a
+    # *different* connection (the MediaWiki web server's own, via the HTTP
+    # edit call). Under pymysql's default autocommit=False and MariaDB's
+    # REPEATABLE READ, the first SELECT on this connection opens a
+    # transaction and pins its snapshot — every later SELECT in the same
+    # request then sees that snapshot, not the row the edit just committed,
+    # and get_pages_by_title() reports "page not found after edit" for every
+    # page but the first. autocommit=True starts a fresh transaction (and
+    # snapshot) per statement, which is what a read-only connection that
+    # must see other connections' latest commits needs.
     return pymysql.connect(
         host=ingest.DB_HOST, port=ingest.DB_PORT, user=ingest.DB_USER,
         password=ingest.DB_PASS, database=ingest.DB_NAME, charset="utf8mb4",
+        autocommit=True,
     )
 
 
