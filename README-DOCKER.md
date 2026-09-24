@@ -548,6 +548,41 @@ docker compose exec opensearch bash -c \
   'curl -sk -u "admin:$OPENSEARCH_INITIAL_ADMIN_PASSWORD" https://localhost:9200/hdp_wiki/_count'
 ```
 
+### Keeping the index fresh automatically
+
+A second container, `ingest-scheduler`, runs `ingest_hdp_wiki.py
+--missing-only` on a timer so routine wiki edits do not have to be
+re-indexed by hand. It is **on by default** and comes up with every
+install, but it deliberately does **not** perform the initial bulk ingest
+itself: until OpenSearch is reachable *and* `hdp_wiki` already holds at
+least one document, it logs `waiting for the initial ingestion` once per
+cycle and does nothing else. Run the full ingestion above once (by hand, or
+via install.sh's prompt) and the scheduler takes over incrementally from
+there — this is by design (a background loop that could silently trigger a
+full re-index the first time OpenSearch hiccups would be worse than a wiki
+that stays stale until someone runs `ingest_hdp_wiki.py`), and it also means
+a deliberately-wiped index (`DELETE /hdp_wiki`) stays wiped until an
+operator re-ingests on purpose.
+
+Three `.env` knobs, all with defaults that work out of the box:
+
+| Variable | Default | What it does |
+|---|---|---|
+| `HDP_INGEST_INTERVAL_MIN` | `5` | Minutes between cycles. `0` disables the scheduler — the container stays up, idle, rather than exiting or crash-looping. |
+| `HDP_INGEST_MAX_PAGES` | `25` | Cap on pages indexed per cycle, applied after classification — bounds the CPU cost of an unusually large batch (a DB restore, a mass import); the remainder catches up over the following cycles. |
+| `HDP_INGEST_BACKOFF_MAX_MIN` | `60` | Ceiling for the exponential backoff a failed cycle (or a failed preflight) doubles into. A concurrent ingestion holding the lock (see below) is not a failure and does not back off. |
+
+Every ingestion entry point — this scheduler, the ingestion API below, and a
+manual `docker compose exec haystack python3 ingest_hdp_wiki.py` — takes the
+same non-blocking file lock on the shared `haystack_state` volume before
+doing any work, so at most one ingestion runs at a time no matter which
+container starts it. A second one exits immediately (or, for the API,
+answers `429`) rather than racing the first.
+
+```bash
+docker compose logs -f ingest-scheduler
+```
+
 ## Testing the RAG Pipeline Directly
 
 Bypass the wiki UI and query the Haystack pipeline directly (useful for
@@ -563,6 +598,100 @@ Expect a 1-4 minute response time depending on the LLM's reasoning
 verbosity (see Troubleshooting below) — this hits the full pipeline:
 query reformulation → hybrid retrieval → cross-encoder ranking → grounded
 answer generation.
+
+## Ingestion API
+
+`POST /v1/ingest/pages` on the `haystack` container's `:1417` (same port as
+the RAG query API above) lets an external tool — an agent, an importer, a
+nightly job on another box — write wiki pages and have them indexed into
+the chatbot's knowledge base in one authenticated call, without a wiki
+login. It is **off by default**: with no `HDP_INGEST_API_KEY` configured
+the route answers `503` rather than opening up, so an install that never
+sets a key is unaffected by this feature existing.
+
+```bash
+curl -s -X POST http://127.0.0.1:1417/v1/ingest/pages \
+  -H "Authorization: Bearer $HDP_INGEST_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+        "category": "Betriebshandbuch",
+        "pages": [
+          {"title": "Backup-Konzept", "content": "Der Backup-Prozess läuft ..."}
+        ]
+      }'
+```
+
+```json
+{"indexed": 1, "skipped": 0, "failed": 0,
+ "page_urls": ["http://127.0.0.1:8080/w/index.php/Backup-Konzept"],
+ "errors": []}
+```
+
+- `indexed` — pages whose sections were written to OpenSearch.
+- `skipped` — the wiki edit was a no-op *and* the index already holds that
+  revision — nothing to do.
+- `failed` + `errors[]` — per-page failures (`{title, message, code}`).
+  Every page failing returns `502` with the same error envelope as below;
+  some failing still returns `200` with `failed > 0` — a silent partial
+  success would be worse than an accurate count.
+
+The category is appended as `[[Category:<name>]]` to each page's content
+(unless already present) and the `Category:` page is created if it does not
+exist yet, so it browses cleanly; category pages are never indexed
+themselves (namespace 14 is not in `INDEXABLE_NAMESPACES`).
+
+**Errors** use the same shape OpenAI's API uses —
+`{"error": {"message", "type", "param", "code"}}`:
+
+| Situation | Status | `error.type` / `error.code` |
+|---|---|---|
+| `HDP_INGEST_API_KEY` unset/empty | 503 | `service_unavailable` / `ingestion_api_disabled` |
+| No / malformed `Authorization` header, or the wrong key | 401 | `invalid_request_error` / `invalid_api_key` |
+| `category` not in `HDP_INGEST_ALLOWED_CATEGORIES` | 403 | `invalid_request_error` / `category_not_allowed` |
+| Over the per-key rate limit | 429 + `Retry-After` | `rate_limit_error` / `rate_limit_exceeded` |
+| An ingestion already holds the lock (see above) | 429 + `Retry-After` | `rate_limit_error` / `ingestion_in_progress` |
+
+**Limits**, all `.env`-overridable: ≤50 pages/request
+(`HDP_INGEST_API_MAX_PAGES`), ≤512 KiB per page's `content` and ≤8 MiB per
+request (a 422 before any wiki write), ≤6 requests/min per key
+(`HDP_INGEST_API_RATE_PER_MIN`), one ingestion at a time across the whole
+stack. `HDP_INGEST_ALLOWED_CATEGORIES` (comma-separated) defaults to empty,
+meaning any category — set it once you want a `403` to mean something.
+
+**Titles**: main namespace only in v1. Empty, over 255 bytes, or containing
+any of `` : # < > [ ] | { } `` is rejected, as is a title starting or ending
+with `_`. The colon rejection is what stops a caller writing into
+`MediaWiki:`, `Template:` or `Help:` by prefixing a title — it also rejects
+a legitimate title like "Berlin: eine Stadt"; create such pages by hand in
+the wiki UI instead.
+
+**Attribution**: writes go through a dedicated `HDPIngestBot` account
+(created by `setup.sh` when `HDP_INGEST_BOT_PASSWORD` is set) rather than
+the wiki admin, so machine-written edits are distinguishable in page
+history and RecentChanges, and revocable without rotating the admin
+password. An install that has not (re-)run `setup.sh` since upgrading falls
+back to the admin account with a `WARNING` line in the haystack logs.
+
+**Exposure and memory**: `:1417` stays bound to
+`${HDP_BIND_ADDR:-127.0.0.1}` like the RAG query API next to it — nothing
+here widens that. Reach it from elsewhere with an SSH tunnel
+(`ssh -L 1417:127.0.0.1:1417 your-host`) or a TLS-terminating reverse
+proxy; the bearer key is the second lock, not the first. Ingestion runs
+**in-process**, synchronously, in the same container that serves RAG
+queries — with `HDP_EMBEDDING_PROVIDER=local` a second copy of the ~1.3 GB
+embedding model can land in that process while a request is indexing, so
+raise `HDP_HAYSTACK_MEM_LIMIT` to `4g` if you enable this endpoint on the
+default local embedder. `HDP_EMBEDDING_PROVIDER=remote` removes the cost
+entirely.
+
+> The `ingest_api.py` module is bind-mounted into the `haystack` container
+> (read-only) on every install path, but the route itself only activates
+> once `hdp_api_server.py` — baked into the image — imports and mounts it.
+> On `docker-compose.prod.yml`/`docker-compose.prod-gpu.yml`, an installed
+> image published before this feature shipped does not have that import, so
+> the endpoint stays absent (not just disabled) until the image is rebuilt
+> or a newer tag is pulled. The periodic scheduler above does not have this
+> limitation — its script is bind-mounted *and* it is its own entrypoint.
 
 ## Reset / Reinstall
 

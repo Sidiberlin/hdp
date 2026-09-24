@@ -1,7 +1,7 @@
 = Module: Docker Services =
 
 [https://github.com/Sidiberlin/hdp/blob/main/docker-compose.yml <code>docker-compose.yml</code>] defines the entire HDP
-deployment: 7 services, 3 named volumes, 1 bridge network. Supporting build
+deployment: 8 services, 4 named volumes, 1 bridge network. Supporting build
 context and scripts live under [https://github.com/Sidiberlin/hdp/blob/main/docker <code>docker/</code>].
 
 == Responsibilities ==
@@ -13,7 +13,7 @@ context and scripts live under [https://github.com/Sidiberlin/hdp/blob/main/dock
 
 == Key Files ==
 
-* [https://github.com/Sidiberlin/hdp/blob/main/docker-compose.yml <code>docker-compose.yml</code>] — the compose file: 7 services, <code>mariadb_data</code>/<code>opensearch_data</code>/<code>haystack_models</code> volumes, <code>hdp</code> bridge network
+* [https://github.com/Sidiberlin/hdp/blob/main/docker-compose.yml <code>docker-compose.yml</code>] — the compose file: 8 services, <code>mariadb_data</code>/<code>opensearch_data</code>/<code>haystack_models</code>/<code>haystack_state</code> volumes, <code>hdp</code> bridge network
 * [https://github.com/Sidiberlin/hdp/blob/main/docker/setup.sh <code>docker/setup.sh</code>] — first-boot install script, run manually inside the <code>mediawiki</code> container (see [[Help:Erste_Schritte|getting-started.md]])
 * [https://github.com/Sidiberlin/hdp/blob/main/docker/infisical-loader.sh <code>docker/infisical-loader.sh</code>] — sourced by <code>setup.sh</code> and the Haystack entrypoint; fetches <code>HDP_*</code>-prefixed secrets from Infisical
 * [https://github.com/Sidiberlin/hdp/blob/main/docker/mariadb/sql-mode.cnf <code>docker/mariadb/sql-mode.cnf</code>] — server-side SQL mode (superseded in practice by <code>$wgSQLMode</code> in [https://github.com/Sidiberlin/hdp/blob/main/app/settings.d/050-Fixes.php <code>050-Fixes.php</code>], see [[Help:Modul/Settings.d|settings-d]])
@@ -35,6 +35,7 @@ context and scripts live under [https://github.com/Sidiberlin/hdp/blob/main/dock
         MDB[("mariadb<br>MariaDB 10.11")]
         OS[("opensearch<br>OpenSearch 2.18")]
         HS["haystack<br>hayhooks + hdp_api_server"]
+        Sched["ingest-scheduler<br>bash loop"]
         Proxy["chatbot-proxy"]
     end
 
@@ -42,6 +43,7 @@ context and scripts live under [https://github.com/Sidiberlin/hdp/blob/main/dock
         MDBV[("mariadb_data")]
         OSV[("opensearch_data")]
         HSV[("haystack_models")]
+        HSTV[("haystack_state")]
     end
 
     LLM[["LLM API<br>OpenAI-compatible"]]
@@ -55,10 +57,14 @@ context and scripts live under [https://github.com/Sidiberlin/hdp/blob/main/dock
     Proxy -->|":1417"| HS
     HS --> OS
     HS --> LLM
+    Sched -->|"--missing-only"| OS
+    Sched --> MDB
 
     MDBV -.-> MDB
     OSV -.-> OS
     HSV -.-> HS
+    HSTV -.-> HS
+    HSTV -.-> Sched
 }}
 == Service Details ==
 
@@ -99,10 +105,19 @@ context and scripts live under [https://github.com/Sidiberlin/hdp/blob/main/dock
 === haystack ===
 
 * '''Build:''' [https://github.com/Sidiberlin/hdp/blob/main/docker/haystack/Dockerfile <code>docker/haystack/Dockerfile</code>] — multi-stage: <code>python:3.11-slim-bookworm</code> base, <code>HAYSTACK_DEVICE</code> build arg selects CPU-only or CUDA PyTorch, then installs <code>haystack-ai==2.15.0</code>, <code>hayhooks==1.10.0</code>, <code>opensearch-haystack</code>, <code>sentence-transformers</code>, etc.
-* '''Ports:''' <code>${HAYHOOKS_PORT:-1416}:1416</code> (hayhooks admin/deploy API), <code>${HDP_PDF_PORT:-1417}:1417</code> (the actual query API used by <code>chatbot-proxy</code> — see [[Help:Modul/Haystack-Pipeline|haystack-pipeline]] for why there are two ports)
-* '''Volume:''' <code>haystack_models:/root/.cache/huggingface</code> — persists downloaded embedding/ranker models across restarts
+* '''Ports:''' <code>${HAYHOOKS_PORT:-1416}:1416</code> (hayhooks admin/deploy API), <code>${HDP_PDF_PORT:-1417}:1417</code> (the RAG query API ''and'', as of QoL6, the authenticated ingestion API’s <code>POST /v1/ingest/pages</code> — see [[Help:Modul/Haystack-Pipeline|haystack-pipeline]] for why there are two ports, and [[Help:Modul/Ingestion#the-ingestion-api-qol6|ingestion]] for the third route)
+* '''Volumes:''' <code>haystack_models:/root/.cache/huggingface</code> (downloaded embedding/ranker models, persists across restarts), <code>haystack_state:/var/lib/hdp-ingest</code> (the D4 lock file, shared with <code>ingest-scheduler</code>)
 * '''Depends on:''' <code>opensearch</code> (healthy)
 * '''Health check:''' <code>curl http://localhost:1417/health</code>, with a generous 90s <code>start_period</code> since cold start downloads models and deploys the pipeline
+
+=== ingest-scheduler (QoL6) ===
+
+* '''Build:''' the same <code>docker/haystack/Dockerfile</code> context/args as <code>haystack</code>, tagged <code>hdp-haystack:local</code> so the second <code>build:</code> in <code>docker compose build</code> is a cache hit rather than a duplicate build
+* '''Entrypoint:''' [https://github.com/Sidiberlin/hdp/blob/main/docker/haystack/ingest-scheduler.sh <code>docker/haystack/ingest-scheduler.sh</code>] — overrides <code>entrypoint:</code>, never <code>command:</code> (the image has no <code>CMD</code>, so a <code>command:</code> override would be appended as arguments to <code>entrypoint.sh</code> and boot a second whole RAG stack instead)
+* '''Role:''' runs <code>ingest_hdp_wiki.py --missing-only</code> on a timer (<code>HDP_INGEST_INTERVAL_MIN</code>, default 5 min) so the chatbot’s index does not drift behind wiki edits — see [[Help:Modul/Ingestion#the-periodic-scheduler-qol6|ingestion]]
+* '''Volumes:''' <code>haystack_models</code> (shared cache) and <code>haystack_state</code> (the D4 lock file, shared with <code>haystack</code>); <code>ingest-scheduler.sh</code> and <code>ingest_hdp_wiki.py</code> are additionally bind-mounted read-only so the container works on every install path, published-image ones included, without a rebuild
+* '''Depends on:''' <code>opensearch</code> (healthy)
+* '''Health check:''' confirms the entrypoint’s bash process is still PID 1 (no HTTP endpoint) — same pattern as <code>mediawiki-jobrunner</code>
 
 === chatbot-proxy ===
 
@@ -119,3 +134,4 @@ context and scripts live under [https://github.com/Sidiberlin/hdp/blob/main/dock
 * '''Memory limits are all overridable''' — every service’s <code>deploy.resources.limits.memory</code> reads an <code>HDP_*_MEM_LIMIT</code> env var with a sensible default; bump these in <code>.env</code> if a container gets OOM-killed on a constrained host.
 * '''Infisical shadows <code>.env</code>''' — <code>infisical-loader.sh</code> fetches ''every'' secret prefixed <code>HDP_</code> from Infisical and exports it, overriding whatever was passed via <code>.env</code>/<code>environment:</code> — including non-secret config like <code>HDP_LLM_MODEL</code> if it happens to also exist as an Infisical secret. See the Troubleshooting section of README-DOCKER.md.
 * '''<code>restart: unless-stopped</code> isn’t a supervisor everywhere''' — on some nested/sandboxed Docker hosts the documented restart policy doesn’t actually fire after an OOM kill; see the last Troubleshooting entry in README-DOCKER.md.
+* '''One ingestion lock, three entry points, one shared volume''' — a manual <code>docker compose exec haystack python3 ingest_hdp_wiki.py</code>, <code>ingest-scheduler</code>’s cycles, and the ingestion API’s requests all take a non-blocking <code>fcntl.flock</code> on the same file in <code>haystack_state</code> (<code>/var/lib/hdp-ingest/ingest.lock</code>) before doing any work. It has to be a shared volume, not an in-process lock, because these are three different containers (D4 in [[Help:Modul/Ingestion|ingestion]]).

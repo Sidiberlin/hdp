@@ -11,6 +11,35 @@ For changes in the upstream BlueSpice HDP Edition, see the
 
 ## [Unreleased]
 
+### Added
+
+- **QoL6 — periodic re-ingest + ingestion API.** The chatbot's OpenSearch
+  index no longer drifts behind wiki edits, and content can now arrive from
+  outside the wiki UI:
+  - A new `ingest-scheduler` container runs `ingest_hdp_wiki.py
+    --missing-only` on a timer (`HDP_INGEST_INTERVAL_MIN`, default 5 min,
+    `0` disables it). It never bulk-ingests on its own — it waits until
+    OpenSearch is up and `hdp_wiki` already has documents, then indexes
+    incrementally, bounded to `HDP_INGEST_MAX_PAGES` pages per cycle
+    (default 25) with exponential backoff on failure
+    (`HDP_INGEST_BACKOFF_MAX_MIN`, default 60). A new `haystack_state`
+    volume holds a cross-container lock so a scheduler cycle, a manual
+    `docker compose exec haystack python3 ingest_hdp_wiki.py`, and the new
+    ingestion API never race each other.
+  - A new authenticated `POST /v1/ingest/pages` endpoint on the `haystack`
+    container's existing `:1417` port lets an external tool write wiki
+    pages and have them indexed in one call — OpenAI-shaped error
+    responses, a bearer key (`HDP_INGEST_API_KEY`, empty by default so the
+    route is off until an operator opts in), a category allow-list, and
+    per-key rate limiting. Writes go through a new `HDPIngestBot` account
+    (`setup.sh`, when `HDP_INGEST_BOT_PASSWORD` is set) rather than the
+    wiki admin, falling back to admin credentials with a warning when it is
+    absent.
+  - `install.sh` generates both secrets alongside the existing four, no new
+    question; `update.sh` auto-appends the three scheduler knobs on
+    upgrade. See README-DOCKER.md's "Running / Re-running Ingestion" and
+    new "Ingestion API" sections.
+
 ---
 
 ## [5.1.9-QoL5] — 2026-09-24

@@ -2,13 +2,18 @@
 
 [`docker/haystack/ingest_hdp_wiki.py`](../../../docker/haystack/ingest_hdp_wiki.py)
 is the script that actually populates the RAG chatbot's knowledge base. It
-is **not** a background service — it's invoked manually (or by whatever
-external scheduler an operator sets up) via
+can still be invoked manually via
 `docker compose exec haystack python3 ingest_hdp_wiki.py`, and is
-idempotent/safe to re-run at any time. See
+idempotent/safe to re-run at any time, but as of QoL6 it is **also** a
+background service: the `ingest-scheduler` container
+([`docker/haystack/ingest-scheduler.sh`](../../../docker/haystack/ingest-scheduler.sh))
+runs it with `--missing-only` on a timer (`HDP_INGEST_INTERVAL_MIN`, default
+5 minutes), and a new ingestion API
+([`docker/haystack/ingest_api.py`](../../../docker/haystack/ingest_api.py))
+lets an external caller push individual pages into the wiki and have them
+indexed in the same call. See
 [architecture.md](../architecture.md#key-design-decisions) for why this
-script exists instead of the ChatBot extension's own built-in indexing
-job.
+script exists instead of the ChatBot extension's own built-in indexing job.
 
 ## Responsibilities
 
@@ -87,10 +92,70 @@ python3 ingest_hdp_wiki.py --provider hf_space  # One-off fast bulk embed via a 
   `LocalEmbedder`/`RemoteEmbedder`/`HFSpaceEmbedder` (see
   [embedding-providers](embedding-providers.md)), `OpenSearchDocumentStore`
   (`haystack_integrations`).
-- **Used by:** nothing programmatically — it's an operator-invoked
-  maintenance script, documented as the "re-run after content changes" step
-  in [getting-started.md](../getting-started.md) and
-  [README-DOCKER.md](../../../README-DOCKER.md).
+- **Used by:** the `ingest-scheduler` service (below) and
+  `docker/haystack/ingest_api.py` (below) both call into this module
+  directly rather than shelling out to it — `get_pages_by_title()` and
+  `process_page()` are reused unchanged. It remains documented as the
+  "re-run after content changes" step in
+  [getting-started.md](../getting-started.md) and
+  [README-DOCKER.md](../../../README-DOCKER.md) for manual/interactive use.
+
+## The periodic scheduler (QoL6)
+
+[`docker/haystack/ingest-scheduler.sh`](../../../docker/haystack/ingest-scheduler.sh)
+is the `ingest-scheduler` container's entrypoint — a bash loop, not a Python
+script, so it can decide whether to run `ingest_hdp_wiki.py` at all before
+paying for a Python interpreter start. Each cycle:
+
+1. **Preflight (D2).** Curls OpenSearch's `_cluster/health` and
+   `hdp_wiki/_count`. Anything other than "reachable and count > 0" is
+   treated as "not ready yet" and logged once per state change — this is
+   the guard against `get_staged_revisions()` returning `{}` (unreachable or
+   nonexistent index) and `classify_pages()` reading that as "index
+   everything," which would turn a 5-minute poll into an unattended full
+   re-ingest the first time OpenSearch hiccups.
+2. **Run.** `python3 ingest_hdp_wiki.py --missing-only --max-pages
+   "$HDP_INGEST_MAX_PAGES"`, stdout/stderr inherited so
+   `docker compose logs ingest-scheduler` shows each cycle verbatim.
+3. **Classify the exit code.** `0` → success, resets the backoff. `75`
+   (`EX_TEMPFAIL`) → the D4 lock was held by another ingestion; skip
+   silently, no backoff. Anything else → a real failure; the sleep interval
+   doubles, capped at `HDP_INGEST_BACKOFF_MAX_MIN`.
+
+The three knobs
+(`HDP_INGEST_INTERVAL_MIN`/`HDP_INGEST_MAX_PAGES`/`HDP_INGEST_BACKOFF_MAX_MIN`)
+and the lock/backoff decision logic are pure functions inside the script,
+pinned by `tests/bats/ingest_scheduler.bats` the same way
+`tests/bats/gpu_wheel.bats` pins `install.sh`'s driver-selection function.
+
+## The ingestion API (QoL6)
+
+[`docker/haystack/ingest_api.py`](../../../docker/haystack/ingest_api.py)
+is a FastAPI `APIRouter` mounted onto `hdp_api_server.py`
+(`POST /v1/ingest/pages`) — see
+[haystack-pipeline](haystack-pipeline.md) for that file's other routes.
+Unlike the scheduler, it does not shell out to `ingest_hdp_wiki.py` at all:
+it calls `get_pages_by_title()` and `process_page()` directly, in-process,
+synchronously, so the response's `indexed`/`skipped`/`failed` counts are
+real return values rather than something scraped from a log line.
+
+- **Auth** is a `Depends()` dependency scoped to this router only — the
+  existing `/hdp_pipeline/run`, `/health` and `/ready` routes stay
+  unauthenticated, matching what `chatbot-proxy` already expects. Fails
+  closed: an unset `HDP_INGEST_API_KEY` answers `503`, never "open".
+- **Attribution** goes through a dedicated `HDPIngestBot` account (created
+  by `docker/setup.sh` when `HDP_INGEST_BOT_PASSWORD` is set), falling back
+  to the wiki admin account with a `WARNING` log line otherwise —
+  `mw_api_login()` above grew optional `user`/`password` arguments for
+  exactly this.
+- **Concurrency** goes through the same `acquire_lock()`/D4 flock every
+  other entry point uses, so a request and a scheduler cycle (or a manual
+  run) never race each other regardless of which container either one is
+  in — the request answers `429 ingestion_in_progress` instead of blocking.
+
+Full request/response shape, the OpenAI-style error table, and the
+operational limits are in
+[README-DOCKER.md](../../../README-DOCKER.md#ingestion-api).
 
 ## Notable Patterns / Gotchas
 

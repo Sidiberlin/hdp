@@ -1,7 +1,7 @@
 # Module: Docker Services
 
 [`docker-compose.yml`](../../../docker-compose.yml) defines the entire HDP
-deployment: 7 services, 3 named volumes, 1 bridge network. Supporting build
+deployment: 8 services, 4 named volumes, 1 bridge network. Supporting build
 context and scripts live under [`docker/`](../../../docker).
 
 ## Responsibilities
@@ -17,7 +17,7 @@ context and scripts live under [`docker/`](../../../docker).
 
 ## Key Files
 
-- [`docker-compose.yml`](../../../docker-compose.yml) — the compose file: 7 services, `mariadb_data`/`opensearch_data`/`haystack_models` volumes, `hdp` bridge network
+- [`docker-compose.yml`](../../../docker-compose.yml) — the compose file: 8 services, `mariadb_data`/`opensearch_data`/`haystack_models`/`haystack_state` volumes, `hdp` bridge network
 - [`docker/setup.sh`](../../../docker/setup.sh) — first-boot install script, run manually inside the `mediawiki` container (see [getting-started.md](../getting-started.md))
 - [`docker/infisical-loader.sh`](../../../docker/infisical-loader.sh) — sourced by `setup.sh` and the Haystack entrypoint; fetches `HDP_*`-prefixed secrets from Infisical
 - [`docker/mariadb/sql-mode.cnf`](../../../docker/mariadb/sql-mode.cnf) — server-side SQL mode (superseded in practice by `$wgSQLMode` in [`050-Fixes.php`](../../../app/settings.d/050-Fixes.php), see [settings-d](settings-d.md))
@@ -40,6 +40,7 @@ flowchart TD
         MDB[("mariadb<br>MariaDB 10.11")]
         OS[("opensearch<br>OpenSearch 2.18")]
         HS["haystack<br>hayhooks + hdp_api_server"]
+        Sched["ingest-scheduler<br>bash loop"]
         Proxy["chatbot-proxy"]
     end
 
@@ -47,6 +48,7 @@ flowchart TD
         MDBV[("mariadb_data")]
         OSV[("opensearch_data")]
         HSV[("haystack_models")]
+        HSTV[("haystack_state")]
     end
 
     LLM{{"LLM API<br>OpenAI-compatible"}}
@@ -60,10 +62,14 @@ flowchart TD
     Proxy -->|":1417"| HS
     HS --> OS
     HS --> LLM
+    Sched -->|"--missing-only"| OS
+    Sched --> MDB
 
     MDBV -.-> MDB
     OSV -.-> OS
     HSV -.-> HS
+    HSTV -.-> HS
+    HSTV -.-> Sched
 ```
 
 ## Service Details
@@ -102,10 +108,18 @@ flowchart TD
 
 ### haystack
 - **Build:** [`docker/haystack/Dockerfile`](../../../docker/haystack/Dockerfile) — multi-stage: `python:3.11-slim-bookworm` base, `HAYSTACK_DEVICE` build arg selects CPU-only or CUDA PyTorch, then installs `haystack-ai==2.15.0`, `hayhooks==1.10.0`, `opensearch-haystack`, `sentence-transformers`, etc.
-- **Ports:** `${HAYHOOKS_PORT:-1416}:1416` (hayhooks admin/deploy API), `${HDP_PDF_PORT:-1417}:1417` (the actual query API used by `chatbot-proxy` — see [haystack-pipeline](haystack-pipeline.md) for why there are two ports)
-- **Volume:** `haystack_models:/root/.cache/huggingface` — persists downloaded embedding/ranker models across restarts
+- **Ports:** `${HAYHOOKS_PORT:-1416}:1416` (hayhooks admin/deploy API), `${HDP_PDF_PORT:-1417}:1417` (the RAG query API *and*, as of QoL6, the authenticated ingestion API's `POST /v1/ingest/pages` — see [haystack-pipeline](haystack-pipeline.md) for why there are two ports, and [ingestion](ingestion.md#the-ingestion-api-qol6) for the third route)
+- **Volumes:** `haystack_models:/root/.cache/huggingface` (downloaded embedding/ranker models, persists across restarts), `haystack_state:/var/lib/hdp-ingest` (the D4 lock file, shared with `ingest-scheduler`)
 - **Depends on:** `opensearch` (healthy)
 - **Health check:** `curl http://localhost:1417/health`, with a generous 90s `start_period` since cold start downloads models and deploys the pipeline
+
+### ingest-scheduler (QoL6)
+- **Build:** the same `docker/haystack/Dockerfile` context/args as `haystack`, tagged `hdp-haystack:local` so the second `build:` in `docker compose build` is a cache hit rather than a duplicate build
+- **Entrypoint:** [`docker/haystack/ingest-scheduler.sh`](../../../docker/haystack/ingest-scheduler.sh) — overrides `entrypoint:`, never `command:` (the image has no `CMD`, so a `command:` override would be appended as arguments to `entrypoint.sh` and boot a second whole RAG stack instead)
+- **Role:** runs `ingest_hdp_wiki.py --missing-only` on a timer (`HDP_INGEST_INTERVAL_MIN`, default 5 min) so the chatbot's index does not drift behind wiki edits — see [ingestion](ingestion.md#the-periodic-scheduler-qol6)
+- **Volumes:** `haystack_models` (shared cache) and `haystack_state` (the D4 lock file, shared with `haystack`); `ingest-scheduler.sh` and `ingest_hdp_wiki.py` are additionally bind-mounted read-only so the container works on every install path, published-image ones included, without a rebuild
+- **Depends on:** `opensearch` (healthy)
+- **Health check:** confirms the entrypoint's bash process is still PID 1 (no HTTP endpoint) — same pattern as `mediawiki-jobrunner`
 
 ### chatbot-proxy
 - **Build:** [`docker/chatbot-proxy/Dockerfile`](../../../docker/chatbot-proxy/Dockerfile) — `python:3.12-slim`, stdlib-only `server.py` (no dependencies)
@@ -141,3 +155,10 @@ flowchart TD
   nested/sandboxed Docker hosts the documented restart policy doesn't
   actually fire after an OOM kill; see the last Troubleshooting entry in
   [README-DOCKER.md](../../../README-DOCKER.md).
+- **One ingestion lock, three entry points, one shared volume** — a manual
+  `docker compose exec haystack python3 ingest_hdp_wiki.py`,
+  `ingest-scheduler`'s cycles, and the ingestion API's requests all take a
+  non-blocking `fcntl.flock` on the same file in `haystack_state`
+  (`/var/lib/hdp-ingest/ingest.lock`) before doing any work. It has to be a
+  shared volume, not an in-process lock, because these are three different
+  containers (D4 in [ingestion](ingestion.md)).
