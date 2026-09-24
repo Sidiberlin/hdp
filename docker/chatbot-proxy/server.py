@@ -187,6 +187,15 @@ def build_result_from_haystack(hay_response: dict, query: str) -> dict:
                 "namespace": meta.get("namespace", 0),
                 "page_id": meta.get("page_id", 0),
                 "title_level_1": meta.get("title_level_1", ""),
+                # Per-chunk section heading (e.g. ["Docker Services"]), set by
+                # wikitext.build_metadata. Without this, ReferenceFactory's
+                # Reference.getSection() always returns null: every chunk of
+                # the same page collapses to an identical Sources-list label
+                # (prefixed_title alone) and getLink()/getHtmlLink() never
+                # append a #section anchor, even though the frontend
+                # (Reference.ts) has always supported both once this field
+                # is present.
+                "sections": meta.get("sections", []),
             },
         })
 

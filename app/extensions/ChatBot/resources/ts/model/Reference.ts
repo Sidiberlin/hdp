@@ -77,8 +77,7 @@ export default class Reference extends EventEmitter {
 	}
 
 	private getLink( text: string ): string {
-		const section = this.getSection();
-		const sectionAnchor = section ? `#${ section }` : '';
+		const sectionAnchor = this.getSectionAnchor();
 
 		return `[${ text }](${ this.title.getUrl() + sectionAnchor } "${ this.title.getPrefixedText() }")`;
 	}
@@ -90,8 +89,7 @@ export default class Reference extends EventEmitter {
 		}
 		const clsString = `class="${ classes }"`;
 
-		const section = this.getSection();
-		const sectionAnchor = section ? `#${ section }` : '';
+		const sectionAnchor = this.getSectionAnchor();
 
 		return `<a title="${ this.title.getPrefixedText() + sectionAnchor }" ${ clsString }" href="${ this.title.getUrl() + sectionAnchor }">${ text }</a>`;
 	}
@@ -101,6 +99,22 @@ export default class Reference extends EventEmitter {
 			return this.meta.sections[ 0 ];
 		}
 		return null;
+	}
+
+	// MediaWiki heading ids replace whitespace with underscores (the
+	// html5 $wgFragmentMode); raw section text like "Docker Services"
+	// has to become "Docker_Services" or the browser's fragment
+	// navigation finds no matching id and lands on the page top instead
+	// of scrolling to the cited heading. This does not reproduce every
+	// edge case of Sanitizer::escapeIdForLink (e.g. stripped wikitext
+	// markup in a heading), only the whitespace normalization that
+	// covers plain-text headings.
+	private getSectionAnchor(): string {
+		const section = this.getSection();
+		if ( !section ) {
+			return '';
+		}
+		return '#' + section.trim().replace( /\s+/g, '_' );
 	}
 
 	toJSON() {
