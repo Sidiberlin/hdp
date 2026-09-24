@@ -17,7 +17,9 @@
           "doc-7",
           "doc-8",
           "doc-9",
-          "doc-10"
+          "doc-10",
+          "doc-11",
+          "doc-12"
         ],
         "documents": [
           {
@@ -128,6 +130,28 @@
               "prefixed_title": "Help:Seite 10",
               "title_level_1": "Help:Seite 10",
               "uri": "http://mediawiki-web:8080/w/Help:Seite_10"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 11.",
+            "id": "doc-11",
+            "meta": {
+              "namespace": 12,
+              "page_id": 111,
+              "prefixed_title": "Help:Seite 11",
+              "title_level_1": "Help:Seite 11",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_11"
+            }
+          },
+          {
+            "content": "Inhalt von Dokument 12.",
+            "id": "doc-12",
+            "meta": {
+              "namespace": 12,
+              "page_id": 112,
+              "prefixed_title": "Help:Seite 12",
+              "title_level_1": "Help:Seite 12",
+              "uri": "http://mediawiki-web:8080/w/Help:Seite_12"
             }
           }
         ]
@@ -245,6 +269,28 @@
         "prefixed_title": "Help:Seite 10",
         "title_level_1": "Help:Seite 10",
         "uri": "http://mediawiki-web:8080/w/Help:Seite_10"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 11.",
+      "id": "doc-11",
+      "meta": {
+        "namespace": 12,
+        "page_id": 111,
+        "prefixed_title": "Help:Seite 11",
+        "title_level_1": "Help:Seite 11",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_11"
+      }
+    },
+    {
+      "content": "Inhalt von Dokument 12.",
+      "id": "doc-12",
+      "meta": {
+        "namespace": 12,
+        "page_id": 112,
+        "prefixed_title": "Help:Seite 12",
+        "title_level_1": "Help:Seite 12",
+        "uri": "http://mediawiki-web:8080/w/Help:Seite_12"
       }
     }
   ],

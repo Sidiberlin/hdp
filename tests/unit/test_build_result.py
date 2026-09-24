@@ -99,8 +99,10 @@ CASES = {
         "retrieved_documents": [doc(6)],
     },
 
-    # Twelve documents; docs[:10] caps the list at ten.
-    "documents_capped_at_ten": {
+    # Twelve documents — more than the old docs[:10] cap removed in
+    # 7ea3b852c. The ranker's top_k is 14 (hdp_pipeline.yaml), so the proxy
+    # must carry every document the model was shown, not an arbitrary prefix.
+    "documents_not_truncated": {
         "answer_joiner": {"answers": [
             answer("Frage"),
             answer("Viele Quellen", documents=[doc(i) for i in range(1, 13)]),
@@ -202,9 +204,31 @@ def test_doc_ids_match_the_documents(name):
     assert answer_meta["documents"] == result["documents"]
 
 
-@pytest.mark.parametrize("name", sorted(CASES))
-def test_never_more_than_ten_documents(name):
-    assert len(build_result_from_haystack(CASES[name], QUERY)["documents"]) <= 10
+def test_documents_are_never_truncated():
+    """Regression guard for 7ea3b852c ("stop truncating citation documents to
+    a hardcoded top-10"). The pipeline prompt (hdp_pipeline.yaml) numbers
+    documents via loop.index over the ranker's full output (top_k: 14), so the
+    model can legitimately cite any of them. A proxy-side cap narrower than
+    that silently turns a valid citation into inert literal text — no link,
+    no Sources entry — for every document past the cut point."""
+    n = 12  # more than the old cap of 10
+    docs = [doc(i) for i in range(1, n + 1)]
+    citations = " ".join(f"[{i}]" for i in range(1, n + 1))
+    case = {
+        "answer_joiner": {"answers": [
+            answer("Frage"),
+            answer(f"Alle Quellen: {citations}", documents=docs),
+        ]}
+    }
+
+    result = build_result_from_haystack(case, QUERY)
+
+    assert len(result["documents"]) == n
+    referenced = {r["document_position"] for r in result["answers"][1]["meta"]["_references"]}
+    assert referenced == set(range(1, n + 1)), (
+        "not every cited document resolved to a reference — a citation is "
+        "silently reverting to unlinked literal text"
+    )
 
 
 @pytest.mark.parametrize("name", sorted(CASES))
